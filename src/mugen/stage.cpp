@@ -726,7 +726,7 @@ void MugenStage::physics(Object * player){
             if (enemy->getAlliance() != mugen->getAlliance()){
                 if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Object::FACING_RIGHT) ||
                     (enemy->getX() < mugen->getX() && mugen->getFacing() != Object::FACING_LEFT)){
-                    mugen->doTurn(*this);
+		    mugen->doTurn(*this);
                 }
             }
         }

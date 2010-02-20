@@ -2910,9 +2910,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
 }
 
 bool Character::canTurn() const {
-    return getCurrentState() == Standing ||
-           getCurrentState() == WalkingForwards ||
-           getCurrentState() == WalkingBackwards;
+    return !(getY() > 0);
 }
 
 static MugenSound * findSound(const Mugen::SoundMap & sounds, int group, int item){
