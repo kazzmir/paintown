@@ -273,8 +273,13 @@ public:
         }
 
         if (identifier == "inguarddist"){
-            /* FIXME */
-            return RuntimeValue(true);
+            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+
+            bool out = false;
+            out |= enemy->getMoveType() == Move::Attack;
+
+            /* FIXME: deal with distance as well */
+            return RuntimeValue(out);
         }
 
         if (identifier == "animtime"){
