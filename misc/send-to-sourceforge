@@ -1,5 +1,7 @@
 #!/bin/sh
 
+version=3.3
+
 if [ "x$1" = "x" ]; then
 	echo "Give some files as arguments"
 	exit 0
@@ -10,5 +12,4 @@ fi
 # http://sourceforge.net/apps/trac/sourceforge/wiki/Release files for download
 
 # old way
-# rsync --bwlimit=30 -avP -e ssh $* kazzmir@frs.sourceforge.net:uploads/
-echo "Update this script!!!"
+rsync --bwlimit=30 -avP -e ssh $* kazzmir,paintown@frs.sourceforge.net:/home/frs/project/p/pa/paintown/paintown/3.3
