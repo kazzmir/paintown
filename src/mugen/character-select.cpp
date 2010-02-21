@@ -12,7 +12,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "mugen/stage.h"
+#include "stage.h"
 
 #include "init.h"
 #include "resource.h"
