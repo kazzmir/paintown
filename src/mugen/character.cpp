@@ -554,7 +554,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case SuperPause : {
             Environment env(stage, guy);
-            stage.doSuperPause(time, animation, guy.getX() + (int) toNumber(evaluate(posX, env)), guy.getY() + toNumber(evaluate(posY, env)), sound.group, sound.item); 
+            stage.doSuperPause(time, animation, guy.getX() + (int) toNumber(evaluate(posX, env)), guy.getRY() + toNumber(evaluate(posY, env)), sound.group, sound.item); 
             break;
         }
         case TargetBind : {

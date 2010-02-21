@@ -96,7 +96,6 @@ Spark::~Spark(){
 
 }
 
-
 static bool centerCollision( Mugen::Character *p1, Mugen::Character *p2 ){
     //p1->getCurrentMovement()->getCurrentFrame();
     /* FIXME! */
