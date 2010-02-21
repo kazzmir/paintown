@@ -12,4 +12,4 @@ fi
 # http://sourceforge.net/apps/trac/sourceforge/wiki/Release files for download
 
 # old way
-rsync --bwlimit=30 -avP -e ssh $* kazzmir,paintown@frs.sourceforge.net:/home/frs/project/p/pa/paintown/paintown/$version
+rsync --bwlimit=40 -avP -e ssh $* kazzmir,paintown@frs.sourceforge.net:/home/frs/project/p/pa/paintown/paintown/$version
