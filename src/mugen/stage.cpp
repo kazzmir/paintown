@@ -1051,6 +1051,7 @@ void MugenStage::render(Bitmap *work){
     
     /* darken the background */
     if (superPause.time > 0){
+        /* FIXME: this should be faded I think */
         Bitmap::drawingMode(Bitmap::MODE_TRANS);
         Bitmap::transBlender(0, 0, 0, 128);
         board->rectangleFill(0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor(0, 0, 0));
