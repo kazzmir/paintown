@@ -1754,3 +1754,6 @@ const int MugenStage::getGameTime() const {
     }
     return 0;
 }
+    
+void MugenStage::superPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner){
+}

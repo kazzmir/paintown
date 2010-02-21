@@ -100,6 +100,10 @@ x(value1),
 y(value2),
 value(value1),
 variable(value2),
+posX(value1),
+posY(value2),
+time(0),
+animation(-1),
 changeMoveType(false),
 changeStateType(false),
 changePhysics(false),
@@ -241,7 +245,7 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
     return false;
 }
 
-void StateController::activate(const MugenStage & stage, Character & guy, const vector<string> & commands) const {
+void StateController::activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
     Global::debug(1 * !debug) << "Activate controller " << name << endl;
 
     if (changeControl){
@@ -544,6 +548,8 @@ void StateController::activate(const MugenStage & stage, Character & guy, const 
             break;
         }
         case SuperPause : {
+            Environment env(stage, guy);
+            stage.superPause(time, animation, (int) toNumber(evaluate(posX, env)), toNumber(evaluate(posY, env)), sound.group, sound.item); 
             break;
         }
         case TargetBind : {
@@ -1156,7 +1162,7 @@ void Character::resetStateTime(){
     stateTime = 0;
 }
         
-void Character::changeState(const MugenStage & stage, int stateNumber, const vector<string> & inputs){
+void Character::changeState(MugenStage & stage, int stateNumber, const vector<string> & inputs){
     /* reset juggle points once the player gets up */
     if (stateNumber == GetUpFromLiedown){
         juggleRemaining = getJugglePoints();
@@ -1703,6 +1709,37 @@ void Character::parseState(Ast::Section * section){
                     string type;
                     simple >> type;
                     controller->setStateType(type);
+                } else if (simple == "time"){
+                    int t;
+                    simple >> t;
+                    controller->setTime(t);
+                } else if (simple == "anim"){
+                    string what;
+                    simple >> what;
+                    if (PaintownUtil::matchRegex(what, "F[0-9]+")){
+                        ostringstream context;
+                        context << __FILE__ << ":" << __LINE__;
+                        Global::debug(0, context.str()) << "Warning: parse animation " << what << endl;
+                    } else if (PaintownUtil::matchRegex(what, "[0-9]+")){
+                        int t = atoi(what.c_str());
+                        controller->setAnimation(t);
+                    }
+                } else if (simple == "pos"){
+                    try{
+                        Ast::Value * x;
+                        Ast::Value * y;
+                        simple >> x >> y;
+                        controller->setPosition((Ast::Value*) x->copy(), (Ast::Value*) y->copy());
+                    } catch (const Ast::Exception & e){
+                        /* should delete the values above if an exception occurs */
+                    }
+                } else if (simple == "sound"){
+                    try{
+                        int group, item;
+                        simple >> group >> item;
+                        controller->setSound(group, item);
+                    } catch (const Ast::Exception & e){
+                    }
                 } else if (simple == "ctrl"){
                     controller->setControl((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "attr"){
@@ -2282,19 +2319,19 @@ bool Character::hasAnimation(int index) const {
  */
 static const int JumpIndex = 234823;
 
-void Character::resetJump(const MugenStage & stage, const vector<string> & inputs){
+void Character::resetJump(MugenStage & stage, const vector<string> & inputs){
     Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
     number->set(0);
     changeState(stage, JumpStart, inputs);
 }
 
-void Character::doubleJump(const MugenStage & stage, const vector<string> & inputs){
+void Character::doubleJump(MugenStage & stage, const vector<string> & inputs){
     Ast::MutableNumber * number = (Ast::MutableNumber*) getSystemVariable(JumpIndex);
     number->set(number->get() + 1);
     changeState(stage, AirJumpStart, inputs);
 }
 
-void Character::stopGuarding(const MugenStage & stage, const vector<string> & inputs){
+void Character::stopGuarding(MugenStage & stage, const vector<string> & inputs){
     if (stateType == StateType::Crouch){
         changeState(stage, Crouching, inputs);
     } else if (stateType == StateType::Air){
@@ -2696,7 +2733,7 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
     stateTime += 1;
     
     /* hack! */
-    const MugenStage & stage = *(MugenStage*) world;
+    MugenStage & stage = *(MugenStage*) world;
 
     /* active is the current set of commands */
     vector<string> active = doInput(stage);
@@ -2819,7 +2856,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
 }
 
 /* returns true if a state change occured */
-bool Character::doStates(const MugenStage & stage, const vector<string> & active, int stateNumber){
+bool Character::doStates(MugenStage & stage, const vector<string> & active, int stateNumber){
     int oldState = getCurrentState();
     if (states[stateNumber] != 0){
         State * state = states[stateNumber];
@@ -2950,7 +2987,7 @@ MugenSound * Character::getSound(int group, int item) const {
     */
 }
 
-void Character::doTurn(const MugenStage & stage){
+void Character::doTurn(MugenStage & stage){
     vector<string> active;
     if (getCurrentState() != Mugen::Crouching){
 	changeState(stage, Mugen::StandTurning, active);

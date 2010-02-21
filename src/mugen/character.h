@@ -726,7 +726,7 @@ public:
     };
 
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<std::string> & commands) const;
-    void activate(const MugenStage & stage, Character & who, const std::vector<std::string> & commands) const;
+    void activate(MugenStage & stage, Character & who, const std::vector<std::string> & commands) const;
 
     virtual inline void setType(Type type){
         this->type = type;
@@ -800,7 +800,7 @@ public:
         this->physics = p;
     }
 
-    virtual inline void setInternal(void (Character::*v)(const MugenStage & stage, const std::vector<std::string> & inputs)){
+    virtual inline void setInternal(void (Character::*v)(MugenStage & stage, const std::vector<std::string> & inputs)){
         internal = v;
     }
 
@@ -810,6 +810,24 @@ public:
 
     virtual inline bool getDebug() const {
         return debug;
+    }
+
+    virtual inline void setTime(int t){
+        time = t;
+    }
+
+    virtual inline void setAnimation(int a){
+        animation = a;
+    }
+
+    virtual inline void setPosition(Ast::Value * x, Ast::Value * y){
+        posX = x;
+        posY = y;
+    }
+
+    virtual inline void setSound(int group, int item){
+        sound.group = group;
+        sound.item = item;
     }
 
     virtual ~StateController();
@@ -837,7 +855,15 @@ protected:
 
     typedef Ast::Value *& ValueAlias;
 
-    ValueAlias x, y, value, variable;
+    ValueAlias x, y, value, variable, posX, posY;
+
+    int time;
+    int animation;
+    struct Sound {
+        Sound():group(-1), item(-1){}
+        int group;
+        int item;
+    } sound;
 
     std::map<int, std::vector<Ast::Value*> > triggers;
 
@@ -856,7 +882,7 @@ protected:
     std::string stateType;
     Physics::Type physics;
 
-    void (Character::*internal)(const MugenStage & stage, const std::vector<std::string> & inputs);
+    void (Character::*internal)(MugenStage & stage, const std::vector<std::string> & inputs);
 
     bool debug;
 };
@@ -1019,7 +1045,7 @@ public:
 	virtual double minZDistance() const;
 	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
-        virtual void changeState(const MugenStage & stage, int state, const std::vector<std::string> & inputs);
+        virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
 
         virtual void setAnimation(int animation);
 
@@ -1305,7 +1331,7 @@ public:
         virtual void setHurtable();
 
         bool canTurn() const;
-        void doTurn(const MugenStage & stage);
+        void doTurn(MugenStage & stage);
 
         /* recover after falling */
         virtual bool canRecover() const;
@@ -1424,9 +1450,9 @@ protected:
     virtual void setConstant(std::string name, double value);
 
     virtual std::vector<std::string> doInput(const MugenStage & stage);
-    virtual bool doStates(const MugenStage & stage, const std::vector<std::string> & active, int state);
+    virtual bool doStates(MugenStage & stage, const std::vector<std::string> & active, int state);
 
-    typedef void (internalCommand_t)(const MugenStage & stage, const std::vector<std::string> & inputs);
+    typedef void (internalCommand_t)(MugenStage & stage, const std::vector<std::string> & inputs);
 
     /*
     void resetJump(const MugenStage & stage, const std::vector<std::string> & inputs);

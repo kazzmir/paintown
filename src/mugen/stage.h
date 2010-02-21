@@ -156,6 +156,8 @@ public:
     
     virtual const int getGameTime() const;
 
+    virtual void superPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner);
+
     // Alliance setting
     enum teams{
         Player1Side = 5,
