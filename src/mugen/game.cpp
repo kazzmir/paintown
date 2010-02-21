@@ -82,8 +82,16 @@ void Game::run(){
         screen.BlitFromScreen(0, 0);
         Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
         error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
+        static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+        const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 20, 20 );
+        int y = 10;
+        font.printf(10, y, Bitmap::makeColor(255, 255, 255), error, "Press ENTER to continue", 0);
+        y += font.getHeight() * 2 + 1;
+        font.printf(10, y, Bitmap::makeColor(255, 255, 255), error, "We are very sorry but an error has occured while trying", 0);
+        y += font.getHeight() + 1;
+        font.printf(10, y, Bitmap::makeColor(255, 255, 255), error, "to load MUGEN.", 0);
 
-        Bitmap::transBlender(0, 0, 0, 196);
+        Bitmap::transBlender(0, 0, 0, 200);
         error.drawTrans(50, 50, screen);
         screen.BlitToScreen();
         InputMap<int> wait;
