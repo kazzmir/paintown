@@ -47,35 +47,49 @@ Game::~Game(){
 void Game::run(){
     Bitmap screen(GFX_X, GFX_Y);
     
-    switch (gameType){
-	default:
-	case Arcade:
-	    doArcade(screen);
-	    break;
-	case Versus:
-	    doVersus(screen);
-	    break;
-	case TeamArcade:
-	    //select.run("Team Arcade" , 1, true, &screen);
-	    break;
-	case TeamVersus:
-	    //gameInfo = select.run("Team Versus" , 2, true, &screen);
-	    break;
-	case TeamCoop:
-	    //gameInfo = select.run("Team Cooperative" , 1, true, &screen);
-	    break;
-	case Survival:
-	    //gameInfo = select.run("Survival" , 1, true, &screen);
-	    break;
-	case SurvivalCoop:
-	    //gameInfo = select.run("Survival Cooperative" , 1, true, &screen);
-	    break;
-	case Training:
-	    doTraining(screen);
-	    break;
-	case Watch:
-	    doWatch(screen);
-	    break;
+    try{
+        switch (gameType){
+            default:
+            case Arcade:
+                doArcade(screen);
+                break;
+            case Versus:
+                doVersus(screen);
+                break;
+            case TeamArcade:
+                //select.run("Team Arcade" , 1, true, &screen);
+                break;
+            case TeamVersus:
+                //gameInfo = select.run("Team Versus" , 2, true, &screen);
+                break;
+            case TeamCoop:
+                //gameInfo = select.run("Team Cooperative" , 1, true, &screen);
+                break;
+            case Survival:
+                //gameInfo = select.run("Survival" , 1, true, &screen);
+                break;
+            case SurvivalCoop:
+                //gameInfo = select.run("Survival Cooperative" , 1, true, &screen);
+                break;
+            case Training:
+                doTraining(screen);
+                break;
+            case Watch:
+                doWatch(screen);
+                break;
+        }
+    } catch (const MugenException e){
+        screen.BlitFromScreen(0, 0);
+        Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
+        error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
+
+        Bitmap::transBlender(0, 0, 0, 196);
+        error.drawTrans(50, 50, screen);
+        screen.BlitToScreen();
+        InputMap<int> wait;
+        wait.set(Keyboard::Key_ENTER, 0, false, 1);
+        InputManager::waitForPress(wait, 1);
+        InputManager::waitForRelease(wait, 1);
     }
 }
 

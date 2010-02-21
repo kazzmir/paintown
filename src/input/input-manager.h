@@ -54,6 +54,14 @@ public:
     }
 
     template <typename X>
+    static void waitForPress(InputMap<X> & input, X out){
+        while (!InputManager::pressed(input, out)){
+            Util::rest(1);
+            InputManager::poll();
+        }
+    }
+
+    template <typename X>
     static void captureInput(InputMap<X> & input){
         manager->_captureInput(input);
     }
