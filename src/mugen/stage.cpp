@@ -967,12 +967,11 @@ void MugenStage::logic( ){
 
         *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
 
-        // Backgrounds
-        background->act();
-
         if (superPause.time > 0){
             superPause.time -= 1;
         } else {
+            background->act();
+
             // Players go in here
             std::vector<Object *> add;
             for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
@@ -991,6 +990,10 @@ void MugenStage::logic( ){
 
                     // Non players, objects, projectiles misc
                 } else if (!isaPlayer(player) && player->getHealth() <= 0){
+                    /* FIXME: you can't do objects.erase(it) here if you are going
+                     * to have ++it in the for loop. move deletion of objects
+                     * to after this entire loop.
+                     */
                     delete player;
                     it = objects.erase(it);
                     if (it == objects.end()){
@@ -1758,9 +1761,10 @@ const int MugenStage::getGameTime() const {
     return 0;
 }
     
-void MugenStage::doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner){
+void MugenStage::doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundItem){
     superPause.time = time;
     if (animation != -1){
         addSpark(positionX, positionY, animation);
     }
+    playSound(soundGroup, soundItem, false);
 }
