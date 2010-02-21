@@ -912,6 +912,7 @@ vector<Object*> MugenStage::getOpponents(Object * who){
 void MugenStage::logic( ){
     Console::ConsoleEnd & cend = Console::Console::endl;
 
+    /* cycles slow the stage down, like after ko */
     cycles += 1;
     if (cycles >= 1 / gameRate){
         cycles = 0;
@@ -970,36 +971,39 @@ void MugenStage::logic( ){
         // Backgrounds
         background->act();
 
-        // Players go in here
-        std::vector<Object *> add;
-        for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
-            /* use local variables more often, iterators can be easily confused */
-            Object * player = *it;
-            player->act( &objects, this, &add);
-            physics(player);
+        if (superPause.time > 0){
+            superPause.time -= 1;
+        } else {
+            // Players go in here
+            std::vector<Object *> add;
+            for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+                /* use local variables more often, iterators can be easily confused */
+                Object * player = *it;
+                player->act( &objects, this, &add);
+                physics(player);
 
-            if (isaPlayer(player)){
-                // Lets check their boundaries and camera whateva
-                updatePlayer( player );
+                if (isaPlayer(player)){
+                    // Lets check their boundaries and camera whateva
+                    updatePlayer( player );
 
-                // Update old position
-                playerInfo[player].oldx = player->getX();
-                playerInfo[player].oldy = player->getY();
+                    // Update old position
+                    playerInfo[player].oldx = player->getX();
+                    playerInfo[player].oldy = player->getY();
 
-                // Non players, objects, projectiles misc
-            } else if (!isaPlayer(player) && player->getHealth() <= 0){
-                delete player;
-                it = objects.erase(it);
-                if (it == objects.end()){
-                    break;
+                    // Non players, objects, projectiles misc
+                } else if (!isaPlayer(player) && player->getHealth() <= 0){
+                    delete player;
+                    it = objects.erase(it);
+                    if (it == objects.end()){
+                        break;
+                    }
                 }
+
+                // Debug crap put it on console
+                *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
             }
-
-            // Debug crap put it on console
-            *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
+            objects.insert(objects.end(),add.begin(),add.end());
         }
-        objects.insert(objects.end(),add.begin(),add.end());
-
     }
     
     // Correct camera
@@ -1755,5 +1759,9 @@ const int MugenStage::getGameTime() const {
     return 0;
 }
     
-void MugenStage::superPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner){
+void MugenStage::doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner){
+    superPause.time = time;
+    if (animation != -1){
+        addSpark(positionX, positionY, animation);
+    }
 }

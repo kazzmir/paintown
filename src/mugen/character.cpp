@@ -102,8 +102,8 @@ value(value1),
 variable(value2),
 posX(value1),
 posY(value2),
-time(0),
-animation(-1),
+time(30),
+animation(30),
 changeMoveType(false),
 changeStateType(false),
 changePhysics(false),
@@ -185,8 +185,13 @@ void StateController::addSystemVariable(int number, Ast::Value * variable){
 }
 
 bool StateController::canTrigger(const MugenStage & stage, const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
-    RuntimeValue result = evaluate(expression, Environment(stage, character, commands));
+    /* this makes it easy to break in gdb */
     try{
+        if (debug){
+            int x = 2;
+            x += 1;
+        }
+        RuntimeValue result = evaluate(expression, Environment(stage, character, commands));
         return toBool(result);
     } catch (const MugenException & e){
         ostringstream out;
@@ -199,10 +204,10 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
     for (vector<Ast::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
         const Ast::Value * value = *it;
         if (!canTrigger(stage, character, value, commands)){
-            Global::debug(2*!getDebug()) << value->toString() << " did not trigger" << endl;
+            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
             return false;
         } else {
-            Global::debug(2*!getDebug()) << value->toString() << " did trigger" << endl;
+            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
         }
     }
     return true;
@@ -549,7 +554,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case SuperPause : {
             Environment env(stage, guy);
-            stage.superPause(time, animation, (int) toNumber(evaluate(posX, env)), toNumber(evaluate(posY, env)), sound.group, sound.item); 
+            stage.doSuperPause(time, animation, guy.getX() + (int) toNumber(evaluate(posX, env)), guy.getY() + toNumber(evaluate(posY, env)), sound.group, sound.item); 
             break;
         }
         case TargetBind : {

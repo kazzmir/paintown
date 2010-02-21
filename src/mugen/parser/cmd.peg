@@ -542,7 +542,7 @@ rules:
              }}
 		     | name:"numhelper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-	function_rest = s "," s all_compare s value
+	function_rest = s "," s all_compare? s value
                   | <void>
 
     # Keys and key modifiers need their own AST structures

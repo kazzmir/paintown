@@ -156,7 +156,7 @@ public:
     
     virtual const int getGameTime() const;
 
-    virtual void superPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner);
+    virtual void doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner);
 
     // Alliance setting
     enum teams{
@@ -480,6 +480,15 @@ protected:
         /* frequency of logic updates. 1 is normal, lower is slower */
         double gameRate;
         int cycles;
+
+        struct SuperPause{
+            SuperPause():time(0){
+            }
+
+            int time;
+            int positionX, positionY;
+            int soundGroup, soundItem;
+        } superPause;
 };
 
 #endif
