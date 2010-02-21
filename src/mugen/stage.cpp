@@ -1048,6 +1048,14 @@ void MugenStage::render(Bitmap *work){
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     // background->renderBackground(camerax, cameray, xaxis, yaxis, board);
     background->renderBackground((int) camerax, (int) cameray, *board);
+    
+    /* darken the background */
+    if (superPause.time > 0){
+        Bitmap::drawingMode(Bitmap::MODE_TRANS);
+        Bitmap::transBlender(0, 0, 0, 128);
+        board->rectangleFill(0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor(0, 0, 0));
+        Bitmap::drawingMode(Bitmap::MODE_SOLID);
+    }
 
     //! Render layer 0 HUD
     gameHUD->render(Mugen::Element::Background, *board);
