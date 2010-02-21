@@ -2090,170 +2090,176 @@ void Character::load(int useAct){
     const std::string ourDefFile = location;
      
     Ast::AstParse parsed(Util::parseDef(ourDefFile));
-    /* Extract info for our first section of our stage */
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
-        Ast::Section * section = *section_it;
-	std::string head = section->getName();
-        /* this should really be head = Mugen::Util::fixCase(head) */
-	head = Mugen::Util::fixCase(head);
-
-        if (head == "info"){
-            class InfoWalker: public Ast::Walker {
-            public:
-                InfoWalker(Character & who):
-                self(who){
-                }
-
-                Character & self;
-
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "name"){
-                        simple >> self.name;
-                    } else if (simple == "displayname"){
-                        simple >> self.displayName;
-                    } else if (simple == "versiondate"){
-                        simple >> self.versionDate;
-                    } else if (simple == "mugenversion"){
-                        simple >> self.mugenVersion;
-                    } else if (simple == "author"){
-                        simple >> self.author;
-                    } else if (simple == "pal.defaults"){
-                        vector<int> numbers;
-                        simple >> numbers;
-                        for (vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
-                            self.palDefaults.push_back((*it) - 1);
-                        }
-                        // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
-                    } else throw MugenException("Unhandled option in Info Section: " + simple.toString());
-                }
-            };
-
-            InfoWalker walker(*this);
+    try{
+        /* Extract info for our first section of our stage */
+        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
-            section->walk(walker);
-        } else if (head == "files"){
-            class FilesWalker: public Ast::Walker {
-            public:
-                FilesWalker(Character & self, const string & location):
-                location(location),
-                self(self){
-                }
+            std::string head = section->getName();
+            /* this should really be head = Mugen::Util::fixCase(head) */
+            head = Mugen::Util::fixCase(head);
 
-                vector<Location> stateFiles;
-                const string & location;
+            if (head == "info"){
+                class InfoWalker: public Ast::Walker {
+                    public:
+                        InfoWalker(Character & who):
+                            self(who){
+                            }
 
-                Character & self;
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "cmd"){
-                        simple >> self.cmdFile;
-                        /* loaded later after the state files */
-                    } else if (simple == "cns"){
-                        string file;
-                        simple >> file;
-                        /* just loads the constants */
-                        self.loadCnsFile(file);
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
-                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
-                        if (num >= 0 && num <= 12){
-                            string path;
-                            simple >> path;
-                            stateFiles.push_back(Location(self.baseDir, path));
-                            // simple >> self.stFile[num];
+                        Character & self;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "name"){
+                                simple >> self.name;
+                            } else if (simple == "displayname"){
+                                simple >> self.displayName;
+                            } else if (simple == "versiondate"){
+                                simple >> self.versionDate;
+                            } else if (simple == "mugenversion"){
+                                simple >> self.mugenVersion;
+                            } else if (simple == "author"){
+                                simple >> self.author;
+                            } else if (simple == "pal.defaults"){
+                                vector<int> numbers;
+                                simple >> numbers;
+                                for (vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
+                                    self.palDefaults.push_back((*it) - 1);
+                                }
+                                // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
+                            } else throw MugenException("Unhandled option in Info Section: " + simple.toString());
                         }
-                    } else if (simple == "stcommon"){
-                        string path;
-                        simple >> path;
-                        stateFiles.insert(stateFiles.begin(), Location(self.baseDir, path));
-                    } else if (simple == "st"){
-                        string path;
-                        simple >> path;
-                        stateFiles.push_back(Location(self.baseDir, path));
-                    } else if (simple == "sprite"){
-                        simple >> self.sffFile;
-                    } else if (simple == "anim"){
-                        simple >> self.airFile;
-                    } else if (simple == "sound"){
-                        simple >> self.sndFile;
-                        Mugen::Util::readSounds( Mugen::Util::fixFileName(self.baseDir, self.sndFile ), self.sounds);
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
-                        int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
-                        string what;
-                        simple >> what;
-                        self.palFile[num] = what;
-                    } else {
-                        Global::debug(0) << "Unhandled option in Files Section: " + simple.toString() << endl;
+                };
+
+                InfoWalker walker(*this);
+                Ast::Section * section = *section_it;
+                section->walk(walker);
+            } else if (head == "files"){
+                class FilesWalker: public Ast::Walker {
+                    public:
+                        FilesWalker(Character & self, const string & location):
+                            location(location),
+                            self(self){
+                            }
+
+                        vector<Location> stateFiles;
+                        const string & location;
+
+                        Character & self;
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "cmd"){
+                                simple >> self.cmdFile;
+                                /* loaded later after the state files */
+                            } else if (simple == "cns"){
+                                string file;
+                                simple >> file;
+                                /* just loads the constants */
+                                self.loadCnsFile(file);
+                            } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
+                                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
+                                if (num >= 0 && num <= 12){
+                                    string path;
+                                    simple >> path;
+                                    stateFiles.push_back(Location(self.baseDir, path));
+                                    // simple >> self.stFile[num];
+                                }
+                            } else if (simple == "stcommon"){
+                                string path;
+                                simple >> path;
+                                stateFiles.insert(stateFiles.begin(), Location(self.baseDir, path));
+                            } else if (simple == "st"){
+                                string path;
+                                simple >> path;
+                                stateFiles.push_back(Location(self.baseDir, path));
+                            } else if (simple == "sprite"){
+                                simple >> self.sffFile;
+                            } else if (simple == "anim"){
+                                simple >> self.airFile;
+                            } else if (simple == "sound"){
+                                simple >> self.sndFile;
+                                Mugen::Util::readSounds( Mugen::Util::fixFileName(self.baseDir, self.sndFile ), self.sounds);
+                            } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
+                                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
+                                string what;
+                                simple >> what;
+                                self.palFile[num] = what;
+                            } else {
+                                Global::debug(0) << "Unhandled option in Files Section: " + simple.toString() << endl;
+                            }
+                        }
+                };
+
+                FilesWalker walker(*this, location);
+                Ast::Section * section = *section_it;
+                section->walk(walker);
+
+                for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
+                    Location & where = *it;
+                    try{
+                        /* load definitions first */
+                        loadStateFile(where.base, where.file, true, false);
+                        /* then load controllers */
+                        loadStateFile(where.base, where.file, false, true);
+                    } catch (const MugenException & e){
+                        ostringstream out;
+                        out << "Problem loading state file " << where.file << ": " << e.getReason();
+                        throw MugenException(out.str());
                     }
                 }
-            };
 
-            FilesWalker walker(*this, location);
-            Ast::Section * section = *section_it;
-            section->walk(walker);
-
-            for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
-                Location & where = *it;
-                try{
-                    /* load definitions first */
-                    loadStateFile(where.base, where.file, true, false);
-                    /* then load controllers */
-                    loadStateFile(where.base, where.file, false, true);
-                } catch (const MugenException & e){
-                    ostringstream out;
-                    out << "Problem loading state file " << where.file << ": " << e.getReason();
-                    throw MugenException(out.str());
-                }
-            }
-                        
-            loadCmdFile(cmdFile);
+                loadCmdFile(cmdFile);
 
 #if 0
-            /* now just load the state controllers */
-            for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
-                Location & where = *it;
-                try{
-                    loadStateFile(where.base, where.file, false, true);
-                } catch (const MugenException & e){
-                    ostringstream out;
-                    out << "Problem loading state file " << where.file << ": " << e.getReason();
-                    throw MugenException(out.str());
-                }
-            }
-#endif
-
-            /*
-            if (commonStateFile != ""){
-                loadStateFile("mugen/data/", commonStateFile);
-            }
-            if (stateFile != ""){
-                loadStateFile("mugen/chars/" + location, stateFile);
-            }
-            if (
-            */
-
-	} else if (head == "arcade"){
-            class ArcadeWalker: public Ast::Walker {
-            public:
-                ArcadeWalker(Character & self):
-                self(self){
-                }
-
-                Character & self;
-
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "intro.storyboard"){
-                        simple >> self.introFile;
-                    } else if (simple == "ending.storyboard"){
-                        simple >> self.endingFile;
-                    } else {
-                        throw MugenException("Unhandled option in Arcade Section: " + simple.toString());
+                /* now just load the state controllers */
+                for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
+                    Location & where = *it;
+                    try{
+                        loadStateFile(where.base, where.file, false, true);
+                    } catch (const MugenException & e){
+                        ostringstream out;
+                        out << "Problem loading state file " << where.file << ": " << e.getReason();
+                        throw MugenException(out.str());
                     }
                 }
-            };
-            
-            ArcadeWalker walker(*this);
-            Ast::Section * section = *section_it;
-            section->walk(walker);
-	}
+#endif
+
+                /*
+                   if (commonStateFile != ""){
+                   loadStateFile("mugen/data/", commonStateFile);
+                   }
+                   if (stateFile != ""){
+                   loadStateFile("mugen/chars/" + location, stateFile);
+                   }
+                   if (
+                   */
+
+            } else if (head == "arcade"){
+                class ArcadeWalker: public Ast::Walker {
+                    public:
+                        ArcadeWalker(Character & self):
+                            self(self){
+                            }
+
+                        Character & self;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "intro.storyboard"){
+                                simple >> self.introFile;
+                            } else if (simple == "ending.storyboard"){
+                                simple >> self.endingFile;
+                            } else {
+                                throw MugenException("Unhandled option in Arcade Section: " + simple.toString());
+                            }
+                        }
+                };
+
+                ArcadeWalker walker(*this);
+                Ast::Section * section = *section_it;
+                section->walk(walker);
+            }
+        }
+    } catch (const Ast::Exception & e){
+        ostringstream out;
+        out << "Could not load " << ourDefFile << ": " << e.getReason();
+        throw MugenException(out.str());
     }
 
     // Current palette
