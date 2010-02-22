@@ -4,3 +4,5 @@ It should allow users to select zip files (or maybe with drag+drop) and have the
 installed as paintown mods but copying the files to the mod directory.
 
 Using python+qt would be nice. Sort out the details of dll's on windows.
+
+PyQt4: http://www.riverbankcomputing.co.uk/software/pyqt/download
