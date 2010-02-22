@@ -391,7 +391,9 @@ def getEnvironment(debug):
     def raw():
         cflags = []
         if debug:
-            cflags.append( ['-g3','-ggdb'] )
+            # for gcov:
+            # ['-fprofile-arcs', '-ftest-coverage']
+            cflags.append( ['-g3','-ggdb'])
         else:
             cflags.append( '-O2' )
 
@@ -480,6 +482,9 @@ dumb = buildDumb( 'build', dumbEnv )
 
 hawknl_static = buildHawknl('build-static', hawkStaticEnv)
 dumb_static = buildDumb('build-static', dumbStaticEnv)
+
+#if getDebug():
+#    env.Append(LIBS = ['gcov'])
 
 # change this to if True if you want to profile paintown
 if enableProfiled():

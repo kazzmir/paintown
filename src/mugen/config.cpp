@@ -100,32 +100,38 @@ Data & Data::getInstance(){
 }
 
 std::string Data::getDirectory(){
-    return Filesystem::find("mugen/");
+    // return Filesystem::find("mugen/");
+    return "mugen/";
 }
 
 std::string Data::getDataDirectory(){
-    return Filesystem::find(getDirectory() + "data/");
+    // return Filesystem::find(getDirectory() + "data/");
+    return getDirectory() + "data/";
 }
 
 std::string Data::getMotifDirectory(){
-    return Filesystem::find(getDirectory() + Util::getFileDir(getMotif()));
+    // return Filesystem::find(getDirectory() + Util::getFileDir(getMotif()));
+    return getDirectory() + Util::getFileDir(getMotif());
 }
 
 std::string Data::getCharDirectory(){
-    return Filesystem::find(getDirectory() + "chars/");
+    // return Filesystem::find(getDirectory() + "chars/");
+    return getDirectory() + "chars/";
 }
 
 std::string Data::getFontDirectory(){
-    return Filesystem::find(getDirectory() + "font/");
+    // return Filesystem::find(getDirectory() + "font/");
+    return getDirectory() + "font/";
 }
 
 std::string Data::getStageDirectory(){
-    return Filesystem::find(getDirectory() + "stages/");
+    // return Filesystem::find(getDirectory() + "stages/");
+    return getDirectory() + "stages/";
 }
 
 std::string Data::getFileFromMotif(const std::string & file){
     try{
-	return Filesystem::find(getMotifDirectory() + Util::stripDir(file));
+        return Filesystem::find(getMotifDirectory() + Util::stripDir(file));
     } catch (const Filesystem::NotFound & nf){
 	return Filesystem::find(getDataDirectory() + Util::stripDir(file));
     }
