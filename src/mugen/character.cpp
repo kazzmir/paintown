@@ -683,9 +683,9 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
 }
 
 State::State():
-animation(0),
+animation(NULL),
 changeControl(false),
-control(0),
+control(NULL),
 changeVelocity(false),
 changePhysics(false),
 changePower(false),
@@ -702,7 +702,6 @@ void State::addController(StateController * controller){
 
 void State::addControllerFront(StateController * controller){
     controllers.insert(controllers.begin(), controller);
-    controllers.push_back(controller);
 }
 
 void State::setJuggle(int juggle){
@@ -2450,6 +2449,7 @@ void Character::fixAssumptions(){
                             )));
             states[-1]->addController(controller);
         }
+
     }
 
     {
