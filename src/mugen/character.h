@@ -843,19 +843,12 @@ protected:
     std::string name;
     bool changeControl;
     Ast::Value * control;
-
-    /* each state controller should be a unique subclass but before we get there
-     * this is a convenient hack:
-     * only these values can be used to store expressions. state controllers will
-     * never use all the properties available, such as 'x', 'y' and 'value'.
-     * this means we can reuse the same variables for mutually exclusive variables.
-     */
-    Ast::Value * value1;
-    Ast::Value * value2;
-
-    typedef Ast::Value *& ValueAlias;
-
-    ValueAlias x, y, value, variable, posX, posY;
+    Ast::Value * x;
+    Ast::Value * y;
+    Ast::Value * value;
+    Ast::Value * variable;
+    Ast::Value * posX;
+    Ast::Value * posY;
 
     int time;
     int animation;

@@ -82,6 +82,7 @@ namespace PaintownUtil = ::Util;
 
 HitDefinition::~HitDefinition(){
     delete player1Facing;
+    delete player2Facing;
 }
 
 HitDefinition::Damage::~Damage(){
@@ -94,14 +95,12 @@ type(Unknown),
 name(name),
 changeControl(false),
 control(NULL),
-value1(NULL),
-value2(NULL),
-x(value1),
-y(value2),
-value(value1),
-variable(value2),
-posX(value1),
-posY(value2),
+x(NULL),
+y(NULL),
+value(NULL),
+variable(NULL),
+posX(NULL),
+posY(NULL),
 time(30),
 animation(30),
 changeMoveType(false),
@@ -130,9 +129,13 @@ StateController::~StateController(){
         delete value;
     }
 
-    delete value1;
-    delete value2;
+    delete x;
+    delete y;
     delete control;
+    delete value;
+    delete variable;
+    delete posX;
+    delete posY;
 }
 
 /*
