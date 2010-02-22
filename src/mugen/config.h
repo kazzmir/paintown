@@ -23,6 +23,9 @@ class Data{
         std::string getFontDirectory();
 
         std::string getStageDirectory();
+
+        /* remove the data directory from `path' */
+        std::string cleanse(const std::string & path);
 	
 	//! Gets a file from the current motif, if it doesn't exist then check the default motif
 	std::string getFileFromMotif(const std::string & file);

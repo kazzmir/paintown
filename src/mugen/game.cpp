@@ -363,9 +363,9 @@ void Game::doArcade(const Bitmap & bmp){
         // get intro and ending for player
 	std::string file;
 	if (playerType == Player1){
-	    file = Filesystem::find(select.getPlayer1Def());
+	    file = select.getPlayer1Def();
 	} else {
-	    file = Filesystem::find(select.getPlayer2Def());
+	    file = select.getPlayer2Def();
 	}
 	std::string baseDir = Util::getFileDir(file);
 	intro = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","intro.storyboard"));

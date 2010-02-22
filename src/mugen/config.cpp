@@ -220,3 +220,12 @@ int Data::getGameSpeed(){
 bool Data::getDrawShadows(){
     return drawShadows;
 }
+        
+string Data::cleanse(const string & path){
+    string str = path;
+    if (str.find(getDirectory()) == 0){
+        str.erase(0, getDirectory().length());
+    }
+    return str;
+
+}

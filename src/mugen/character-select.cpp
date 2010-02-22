@@ -39,6 +39,7 @@
 #include "character.h"
 #include "sound.h"
 #include "reader.h"
+#include "config.h"
 #include "sprite.h"
 #include "util.h"
 #include "font.h"
@@ -1808,6 +1809,7 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 	    const std::string baseDir = Filesystem::find("mugen/chars/" + character.name + "/");
 	    std::string str = Mugen::Util::stripDir(character.name);
 	    const std::string charDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
+	    // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
 	    Global::debug(0) << "Got character def: " << charDefFile << endl;
 	    CharacterInfo *charInfo = new CharacterInfo(charDefFile);
 	    charInfo->setRandomStage(character.randomStage);

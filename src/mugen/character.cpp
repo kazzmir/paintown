@@ -2086,7 +2086,7 @@ void Character::load(int useAct){
     }
 #endif
     
-    baseDir = Mugen::Util::getFileDir(location);
+    baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
     const std::string ourDefFile = location;
      
     Ast::AstParse parsed(Util::parseDef(ourDefFile));
@@ -2175,7 +2175,8 @@ void Character::load(int useAct){
                                 simple >> self.airFile;
                             } else if (simple == "sound"){
                                 simple >> self.sndFile;
-                                Mugen::Util::readSounds( Mugen::Util::fixFileName(self.baseDir, self.sndFile ), self.sounds);
+                                // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
+                                Mugen::Util::readSounds(Filesystem::find(self.baseDir + "/" + self.sndFile), self.sounds);
                             } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
                                 string what;
@@ -2306,10 +2307,12 @@ void Character::load(int useAct){
     */
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
-    Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
+    // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
+    Mugen::Util::readSprites(Filesystem::find(baseDir + "/" + sffFile), Filesystem::find(baseDir + "/" + paletteFile), sprites);
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
-    animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
+    // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
+    animations = Mugen::Util::loadAnimations(Filesystem::find(baseDir + "/" + airFile), sprites);
 
     fixAssumptions();
 
