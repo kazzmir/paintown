@@ -167,6 +167,7 @@ public:
      * returns 5 + the player's parent's statetime.
      */
     RuntimeValue evalValueList(const Ast::ValueList & value){
+        /* FIXME */
         return RuntimeValue(false);
     }
 
@@ -468,8 +469,11 @@ public:
         }
 
         if (keyword == "p2dist x"){
-            /* FIXME */
-            return RuntimeValue(0);
+            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+            /* FIXME: im not sure this is right, should it take into account
+             * the facing direction?
+             */
+            return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
         }
 
         ostringstream out;
