@@ -173,9 +173,10 @@ def server_side(make_commands):
         transfer_port = transfer.getsockname()[1]
         file = 'paintown-win32-3.3.exe'
         send_command(connection, 'md5sum misc/%s' % file)
-        send_command(connection, '%s %d misc/%s' % (transfer_message, transfer_port, file))
+
         receive = threading.Thread(target = do_receive_file, args = (transfer, file))
         receive.start()
+        send_command(connection, '%s %d misc/%s' % (transfer_message, transfer_port, file))
 
         # Wait 5 seconds to give time for the quit message to reach the
         # client script.
