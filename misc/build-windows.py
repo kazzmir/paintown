@@ -68,7 +68,7 @@ def client_side():
 
     def send_file(connection, port, path):
         send = connect(server_ip, port)
-        file = open(path, 'r')
+        file = open(path, 'rb')
         connection.sendall('Sending file %s' % path)
         send.sendall(file.read())
         file.close()
@@ -147,7 +147,7 @@ def server_side(make_commands):
     def do_receive_file(transfer, path):
         (client, ignore_address) = transfer.accept()
         size = 4096
-        file = open(path, 'w')
+        file = open(path, 'wb')
         data = client.recv(size)
         while data:
             file.write(data)
@@ -159,7 +159,7 @@ def server_side(make_commands):
     # gets the text output from sending commands
     def send_build_commands(connection):
         import socket
-        import thread
+        import threading
         # send_command(connection, 'ls')
         send_command(connection, 'cd c:/svn/paintown')
         send_command(connection, 'svn update')
@@ -174,7 +174,8 @@ def server_side(make_commands):
         file = 'paintown-win32-3.3.exe'
         send_command(connection, 'md5sum misc/%s' % file)
         send_command(connection, '%s %d misc/%s' % (transfer_message, transfer_port, file))
-        thread.start_new_thread(do_receive_file, (transfer, file))
+        receive = threading.Thread(target = do_receive_file, args = (transfer, file))
+        receive.start()
 
         # Wait 5 seconds to give time for the quit message to reach the
         # client script.
@@ -186,6 +187,7 @@ def server_side(make_commands):
             print data.strip()
             data = connection.recv(size)
         connection.close()
+        receive.join()
 
     def run():
         import time
