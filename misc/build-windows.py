@@ -94,7 +94,7 @@ def client_side():
                         return
                     elif command.split(' ')[0] == transfer_message:
                         all = command.split(' ')
-                        port = all[1]
+                        port = int(all[1])
                         file = all[2]
                         send_file(connection, port, file)
                     else:
@@ -159,6 +159,7 @@ def server_side(make_commands):
     # gets the text output from sending commands
     def send_build_commands(connection):
         import socket
+        import thread
         # send_command(connection, 'ls')
         send_command(connection, 'cd c:/svn/paintown')
         send_command(connection, 'svn update')
@@ -171,8 +172,9 @@ def server_side(make_commands):
         transfer.listen(1)
         transfer_port = transfer.getsockname()[1]
         file = 'paintown-win32-3.3.exe'
-        # send_command(connection, '%s %d misc/%s' % (transfer_message, transfer_port, file))
-        # thread.start_new_thread(do_receive_file, transfer, file)
+        send_command(connection, 'md5sum misc/%s' % file)
+        send_command(connection, '%s %d misc/%s' % (transfer_message, transfer_port, file))
+        thread.start_new_thread(do_receive_file, (transfer, file))
 
         # Wait 5 seconds to give time for the quit message to reach the
         # client script.
