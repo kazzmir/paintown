@@ -122,7 +122,12 @@ def checkOgg(context):
     env.Append(CPPDEFINES = ['HAVE_OGG'])
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
-        env.ParseConfig('pkg-config vorbisfile --libs --cflags')
+        try:
+            env.ParseConfig('pkg-config vorbisfile --libs --cflags')
+        except OSError:
+            context.sconf.env = tmp
+            context.Result(0)
+            return 0
 
     ret = context.TryLink("""
         #include <vorbis/vorbisfile.h>
