@@ -15,12 +15,13 @@
 # all that matters is the gateway IP is 192.168.90.2 (the server_ip variable).
 
 # This is completely arbitrary but the server and client need to agree on it.
-port = 15421
+main_port = 15421
 # Default network settings
 server_ip = '10.0.2.2'
 # network settings in jon's virtual box 
 # server_ip = '192.168.90.2'
 quit_message = '**quit**'
+transfer_message = '**transfer**'
 
 # higher numbers of verbose output more stuff
 verbose = 1
@@ -36,7 +37,7 @@ def log_error(str):
     log_debug(str, 0)
 
 def client_side():
-    def connect(address):
+    def connect(address, port):
         import socket
         connection = socket.socket()
         res = socket.getaddrinfo(address, port)
@@ -65,6 +66,15 @@ def client_side():
                 out = stdout.readline()
             process.wait()
 
+    def send_file(connection, port, path):
+        send = connect(server_ip, port)
+        file = open(path, 'r')
+        connection.send('Sending file %s' % path)
+        send.send(file.read())
+        file.close()
+        send.close()
+        connection.send('Sent file %s' % path)
+
     def read_commands(connection):
         import re
         try:
@@ -82,8 +92,15 @@ def client_side():
                     if command == quit_message:
                         connection.close()
                         return
-                    log_debug("Got command '%s'" % command)
-                    out = do_command(command, connection)
+                    elif command.split(' ')[0] == transfer_message:
+                        all = command.split(' ')
+                        port = all[1]
+                        file = all[2]
+                        send_file(connection, port, file)
+                    else:
+                        log_debug("Got command '%s'" % command)
+                        out = do_command(command, connection)
+
                     # chop of the command from the buffer
                     data = data[(len(command) + 2):]
                     get = line.match(data)
@@ -92,7 +109,7 @@ def client_side():
             connection.close()
 
     def run():
-        read_commands(connect(server_ip))
+        read_commands(connect(server_ip, main_port))
 
     run()
 
@@ -112,7 +129,7 @@ def server_side(make_commands):
         return process
 
     # returns a connection
-    def wait_for_connect():
+    def wait_for_connect(port):
         import socket
         server = socket.socket()
         server.bind(('0.0.0.0', port))
@@ -127,8 +144,21 @@ def server_side(make_commands):
         connection.send(command)
         connection.send("\n\n")
 
+    def do_receive_file(transfer, path):
+        (client, ignore_address) = transfer.accept()
+        size = 4096
+        file = open(path, 'w')
+        data = connection.recv(size)
+        while data:
+            file.write(data)
+            data = connection.recv(size)
+        file.close()
+        client.close()
+        transfer.close()
+
     # gets the text output from sending commands
     def send_build_commands(connection):
+        import socket
         # send_command(connection, 'ls')
         send_command(connection, 'cd c:/svn/paintown')
         send_command(connection, 'svn update')
@@ -136,6 +166,13 @@ def server_side(make_commands):
         send_command(connection, 'ant')
         send_command(connection, 'cd ..')
         send_command(connection, 'make %s' % ' '.join(make_commands))
+        transfer = socket.socket()
+        transfer.bind(('0.0.0.0', 0))
+        transfer.listen(1)
+        transfer_port = transfer.getsockname()[1]
+        file = 'paintown-win32-3.3.exe'
+        # send_command(connection, '%s %d misc/%s' % (transfer_message, transfer_port, file))
+        # thread.start_new_thread(do_receive_file, transfer, file)
 
         # Wait 5 seconds to give time for the quit message to reach the
         # client script.
@@ -152,7 +189,7 @@ def server_side(make_commands):
         import time
         start = time.time()
         vm = start_windows_vm()
-        send_build_commands(wait_for_connect())
+        send_build_commands(wait_for_connect(main_port))
         log_info("Waiting for vm to close")
         vm.wait()
         end = time.time()
