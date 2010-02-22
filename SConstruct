@@ -120,7 +120,7 @@ def checkOgg(context):
     tmp = context.env.Clone()
     env = context.env
     env.Append(CPPDEFINES = ['HAVE_OGG'])
-    (ok, stuff) = context.TryAction(Action("pkg-config"))
+    (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         env.ParseConfig('pkg-config vorbisfile --libs --cflags')
 
