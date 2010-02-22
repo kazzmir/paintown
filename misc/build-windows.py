@@ -55,25 +55,25 @@ def client_side():
         if args[0] == 'cd':
             import os
             os.chdir(args[1])
-            connection.send('changed directory to ' + args[1])
+            connection.sendall('changed directory to ' + args[1])
         else:
             process = subprocess.Popen(args, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, shell = True)
             stdout = process.stdout
             out = stdout.readline()
             while out != None and out != "":
                 log_debug("Sending line '%s'" % out)
-                connection.send(out)
+                connection.sendall(out)
                 out = stdout.readline()
             process.wait()
 
     def send_file(connection, port, path):
         send = connect(server_ip, port)
         file = open(path, 'r')
-        connection.send('Sending file %s' % path)
-        send.send(file.read())
+        connection.sendall('Sending file %s' % path)
+        send.sendall(file.read())
         file.close()
         send.close()
-        connection.send('Sent file %s' % path)
+        connection.sendall('Sent file %s' % path)
 
     def read_commands(connection):
         import re
@@ -141,17 +141,17 @@ def server_side(make_commands):
 
     # write the command and two newlines
     def send_command(connection, command):
-        connection.send(command)
-        connection.send("\n\n")
+        connection.sendall(command)
+        connection.sendall("\n\n")
 
     def do_receive_file(transfer, path):
         (client, ignore_address) = transfer.accept()
         size = 4096
         file = open(path, 'w')
-        data = connection.recv(size)
+        data = client.recv(size)
         while data:
             file.write(data)
-            data = connection.recv(size)
+            data = client.recv(size)
         file.close()
         client.close()
         transfer.close()
