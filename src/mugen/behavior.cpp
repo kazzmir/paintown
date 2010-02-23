@@ -182,9 +182,15 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
         } else if (direction == Stopped){
         }
             
+        /* after keeping a direction for 40 ticks, maybe change directions */
         if (dontMove > 40 && PaintownUtil::rnd(10) > 8){
             direction = randomDirection();
             dontMove = 0;
+        }
+
+        /* make the AI jump sometimes */
+        if (PaintownUtil::rnd(100) == 0){
+            out.push_back("holdup");
         }
     }
 
