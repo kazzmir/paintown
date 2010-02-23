@@ -1086,12 +1086,17 @@ Ast::Key * makeKey(const Value & value){
 class KeyModifier{
 public:
     virtual Ast::Key * apply(Ast::Key * in) = 0;
+    virtual ~KeyModifier(){
+    }
 };
 
 class ReleaseKeyModifier: public KeyModifier {
 public:
     ReleaseKeyModifier(int ticks):
     ticks(ticks){
+    }
+
+    virtual ~ReleaseKeyModifier(){
     }
 
     virtual Ast::Key * apply(Ast::Key * in){
@@ -1108,6 +1113,9 @@ public:
     virtual Ast::Key * apply(Ast::Key * in){
         return makeKeyModifier(in, Ast::KeyModifier::Direction);
     }
+
+    virtual ~DirectionKeyModifier(){
+    }
 };
 
 class HeldDownKeyModifier: public KeyModifier {
@@ -1115,12 +1123,18 @@ public:
     virtual Ast::Key * apply(Ast::Key * in){
         return makeKeyModifier(in, Ast::KeyModifier::MustBeHeldDown);
     }
+
+    virtual ~HeldDownKeyModifier(){
+    }
 };
 
 class OnlyKeyModifier: public KeyModifier {
 public:
     virtual Ast::Key * apply(Ast::Key * in){
         return makeKeyModifier(in, Ast::KeyModifier::Only);
+    }
+
+    virtual ~OnlyKeyModifier(){
     }
 };
 
