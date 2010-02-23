@@ -81,6 +81,10 @@ public:
     static int getScreenHeight();
     static std::string getMenuFont();
     static void setMenuFont(const std::string & str);
+    static int getMenuFontWidth();
+    static int getMenuFontHeight();
+    static void setMenuFontWidth(int x);
+    static void setMenuFontHeight(int x);
     static std::string getCurrentGame();
     static void setCurrentGame(const std::string & str);
 
@@ -145,6 +149,8 @@ private:
     static int screen_height;
 
     static std::string menuFont;
+    static int menuFontWidth;
+    static int menuFontHeight;
 
     /* directory of current game/mod */
     static std::string currentGameDir;

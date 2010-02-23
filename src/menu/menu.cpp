@@ -117,10 +117,14 @@ selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
 }
 
 void Menu::load(Token *token) throw (LoadException){
-    if ( *token != "menu" )
+    if ( *token != "menu" ){
         throw LoadException("Not a menu");
-    else if ( ! token->hasTokens() )
+    } else if (!token->hasTokens()){
         return;
+    }
+
+    sharedFontWidth = Configuration::getMenuFontWidth();
+    sharedFontHeight = Configuration::getMenuFontHeight();
 
     while ( token->hasTokens() ){
         try{
@@ -202,15 +206,15 @@ void Menu::load(Token *token) throw (LoadException){
                     Global::debug(0) << "Could not read option: " << le.getReason() << endl;
                     tok->print(" ");
                 }
-            } else if( *tok == "action" ) {
+            } else if (*tok == "action"){
                 ActionAct(tok);
-            } else if( *tok == "info-position" ) {
+            } else if (*tok == "info-position"){
                 *tok >> optionInfoTextLocation.x >> optionInfoTextLocation.y;
-            } else if( *tok == "menuinfo" ){
+            } else if (*tok == "menuinfo"){
                 *tok >> menuInfo;
-            } else if( *tok == "menuinfo-position" ){
+            } else if (*tok == "menuinfo-position"){
                 *tok >> menuInfoLocation.x >> menuInfoLocation.y;
-            } else if( *tok == "anim" ) {
+            } else if (*tok == "anim"){
                 MenuAnimation *animation = new MenuAnimation(tok);
                 if (animation->getLocation() == 0){
                     backgroundAnimations.push_back(animation);
@@ -218,7 +222,7 @@ void Menu::load(Token *token) throw (LoadException){
                     foregroundAnimations.push_back(animation);
                 }
             } else {
-                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                Global::debug(3) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
                 }
@@ -228,7 +232,7 @@ void Menu::load(Token *token) throw (LoadException){
             string m( "Menu parse error: " );
             m += ex.getReason();
             throw LoadException( m );
-        } catch ( const LoadException & ex ) {
+        } catch (const LoadException & ex){
             // delete current;
             throw ex;
         } catch (const Filesystem::NotFound & ex){
@@ -621,7 +625,9 @@ void Menu::setFontWidth(int w){
     if (w < 1){
         w = 1;
     }
+
     sharedFontWidth = w;
+    Configuration::setMenuFontWidth(w);
     setFont(sharedFont, getFontWidth(), getFontHeight());
 }
 
@@ -629,13 +635,15 @@ void Menu::setFontHeight(int h){
     if (h < 1){
         h = 1;
     }
+
     sharedFontHeight = h;
+    Configuration::setMenuFontHeight(h);
     setFont(sharedFont, getFontWidth(), getFontHeight());
 }
 
 //! set new font menu wide
 void Menu::setFont(const std::string &font, int w, int h){
-    if ( Util::exists(font) == true){
+    if (Util::exists(font) == true){
         /*std::map<std::string, Menu *>::iterator begin = menus.begin();
         std::map<std::string, Menu *>::iterator end = menus.end();
 

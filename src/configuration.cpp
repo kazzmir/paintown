@@ -36,6 +36,8 @@ define_config(joystick_configuration, "joystick-configuration");
 define_config(left, "left");
 define_config(lives, "lives");
 define_config(menu_font, "menu-font");
+define_config(menu_font_width, "menu-font-width");
+define_config(menu_font_height, "menu-font-height");
 define_config(npc_buddies, "npc-buddies");
 define_config(number, "number");
 define_config(play_mode, "play-mode");
@@ -183,6 +185,8 @@ Configuration & Configuration::operator=( const Configuration & config ){
 	setJoystickJump( config.getJoystickJump() );
 
     setMenuFont(config.getMenuFont());
+    setMenuFontWidth(config.getMenuFontWidth());
+    setMenuFontHeight(config.getMenuFontHeight());
 	return *this;
 }
 	
@@ -239,6 +243,22 @@ std::string Configuration::getMenuFont(){
 
 void Configuration::setMenuFont(const std::string & str){
     menuFont = str;
+}
+
+void Configuration::setMenuFontWidth(int x){
+    menuFontWidth = x;
+}
+
+int Configuration::getMenuFontWidth(){
+    return menuFontWidth;
+}
+
+void Configuration::setMenuFontHeight(int x){
+    menuFontHeight = x;
+}
+
+int Configuration::getMenuFontHeight(){
+    return menuFontHeight;
 }
 
 void Configuration::setRight( int i ){
@@ -571,6 +591,14 @@ void Configuration::loadConfigurations(){
                 string font;
                 *n >> font;
                 setMenuFont(font);
+            } else if (*n == config_menu_font_width){
+                int x;
+                *n >> x;
+                setMenuFontWidth(x);
+            } else if (*n == config_menu_font_height){
+                int x;
+                *n >> x;
+                setMenuFontHeight(x);
             } else if (*n == config_current_game){
                 string game;
                 *n >> game;
@@ -702,6 +730,18 @@ void Configuration::saveConfiguration(){
         head.addToken(font);
     }
 
+    {
+        Token * width = new Token();
+        *width << config_menu_font_width << Configuration::getMenuFontWidth();
+        head.addToken(width);
+    }
+
+    {
+        Token * height = new Token();
+        *height << config_menu_font_height << Configuration::getMenuFontHeight();
+        head.addToken(height);
+    }
+
     Token * mode = new Token();
     string smode;
     if (Configuration::getPlayMode() == Configuration::Cooperative){
@@ -748,6 +788,8 @@ Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
 int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
 std::string Configuration::menuFont = "";
+int Configuration::menuFontWidth = 24;
+int Configuration::menuFontHeight = 24;
 std::string Configuration::currentGameDir = "paintown";
 std::map<std::string, std::string> Configuration::properties;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
