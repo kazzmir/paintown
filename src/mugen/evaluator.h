@@ -145,6 +145,9 @@ public:
     commands(copy.commands){
     }
 
+    virtual ~Environment(){
+    }
+
     virtual inline const Character & getCharacter() const {
         return character;
     }

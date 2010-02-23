@@ -73,8 +73,11 @@ HL_EXP int HL_APIENTRY htMutexInit(HTmutex *mutex)
 	    }
         (void)pthread_mutexattr_init(&attr);
 #if defined MACOSX
-        /* GUSI is not fully POSIX compliant, and does not define PTHREAD_MUTEX_ERRORCHECK */
-        (void)pthread_mutexattr_settype(&attr, NULL);
+        /* GUSI is not fully POSIX compliant, and does not
+         * define PTHREAD_MUTEX_ERRORCHECK
+         * http://lists.apple.com/archives/unix-porting/2005/May/msg00021.html
+         */
+        (void)pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);
 #else
         (void)pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
 #endif
