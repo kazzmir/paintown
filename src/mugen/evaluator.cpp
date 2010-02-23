@@ -35,6 +35,8 @@ string toString(const RuntimeValue & value){
         return value.getStringValue();
     }
     raise(value, "string");
+
+    return "";
 }
 
 double toNumber(const RuntimeValue & value){
@@ -49,6 +51,8 @@ double toNumber(const RuntimeValue & value){
         }
     }
     raise(value, "number");
+
+    return 0;
 }
 
 int toRangeLow(const RuntimeValue & value){
@@ -56,6 +60,8 @@ int toRangeLow(const RuntimeValue & value){
         return value.getRangeLow();
     }
     raise(value, "range");
+
+    return 0;
 }
 
 int toRangeHigh(const RuntimeValue & value){
@@ -63,6 +69,8 @@ int toRangeHigh(const RuntimeValue & value){
         return value.getRangeHigh();
     }
     raise(value, "range");
+
+    return 0;
 }
 
 
@@ -74,6 +82,8 @@ bool toBool(const RuntimeValue & value){
         return value.getDoubleValue() != 0;
     }
     raise(value, "bool");
+
+    return false;
 }
 
 /* a meta-circular evaluator! */
@@ -104,6 +114,7 @@ public:
                         }
                         return RuntimeValue(false);
                     }
+                    default: return RuntimeValue(false);
                 }
                 break;
             }
@@ -115,12 +126,14 @@ public:
                     case RuntimeValue::String : {
                         return toString(value1) == toString(value2);
                     }
+                    default: return RuntimeValue(false);
                 }
                 break;
             }
             case RuntimeValue::RangeType : {
                 switch (value2.type){
                     case RuntimeValue::Double : return same(value2, value1);
+                    default: return RuntimeValue(false);
                 }
             }
             case RuntimeValue::Double : {
@@ -133,9 +146,11 @@ public:
                         return RuntimeValue(toNumber(value1) > toRangeLow(value2) &&
                                             toNumber(value1) < toRangeHigh(value2));
                     }
+                    default: return RuntimeValue(false);
                 }
                 break;
             }
+            default: return RuntimeValue(false);
         }
 
         return RuntimeValue(false);
