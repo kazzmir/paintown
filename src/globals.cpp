@@ -13,6 +13,7 @@ using namespace std;
 
 static int major_version = 3;
 static int minor_version = 3;
+static int micro_version = 1;
 
 /*
 const int MIN_WORLD_Z = 160;
@@ -70,12 +71,12 @@ bool Global::shutdown(){
 }
 
 int Global::getVersion(){
-    return major_version * 100 + minor_version;
+    return major_version * 1000 + minor_version * 100 + micro_version;
 }
 
 string Global::getVersionString(){
     ostringstream str;
-    str << major_version << "." << minor_version;
+    str << major_version << "." << minor_version << "." << micro_version;
     return str.str();
 }
 

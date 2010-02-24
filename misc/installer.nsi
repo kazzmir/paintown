@@ -1,6 +1,6 @@
 Name "Paintown"
 
-OutFile "paintown-win32-3.3.exe"
+OutFile "paintown-win32-3.3.1.exe"
 Icon "icon.ico"
 WindowIcon on
 

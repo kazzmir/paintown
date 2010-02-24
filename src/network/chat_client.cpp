@@ -101,7 +101,7 @@ enterPressed( false ){
 		nameMessage << HELLO;
                 nameMessage << Global::MagicId;
                 nameMessage << Global::getVersion();
-		nameMessage.send( socket );
+		nameMessage.send(socket);
 	} catch ( const Network::NetworkException & n ){
 		debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
 	}
