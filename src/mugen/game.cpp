@@ -26,6 +26,8 @@
 #include "storyboard.h"
 #include "behavior.h"
 
+#include "music.h"
+
 #include "config.h"
 
 namespace PaintownUtil = ::Util;
@@ -47,7 +49,7 @@ Game::~Game(){
 
 void Game::run(){
     Bitmap screen(GFX_X, GFX_Y);
-    
+
     try{
         switch (gameType){
             default:
@@ -178,6 +180,8 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
     gameInput.set(Keyboard::Key_F4, 10, true, 3);
     gameInput.set(Keyboard::Key_ESC, 0, true, 4);
     gameInput.set(Keyboard::Key_F5, 10, true, 5);
+
+    Music::changeSong();
 
     double gameSpeed = 1.0;
     double runCounter = 0;

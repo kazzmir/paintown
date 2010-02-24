@@ -11,6 +11,7 @@
 
 #include <pthread.h>
 #include "util/funcs.h"
+#include "util/file-system.h"
 
 using namespace std;
 
@@ -236,7 +237,7 @@ void Music::loadSong( const vector< string > & Songs ){
 
     for ( vector< string >::iterator it = songs.begin(); it != songs.end(); it++ ){
         Global::debug( 1 ) << "Trying to load song " << *it << endl;
-        if ( loadSong( *it ) ){
+        if (loadSong(*it)){
             break;
         }
     }
@@ -366,7 +367,7 @@ void Music::resume(){
 */
 
 static const char * typeToExtension( int i ){
-    switch ( i ){
+    switch (i){
         case 0 : return ".xm";
         case 1 : return ".s3m";
         case 2 : return ".it";
@@ -408,7 +409,10 @@ bool Music::internal_loadSong( const char * path ){
        */
 
     for ( int i = 0; i < 4; i++ ){
-        switch ( i ){
+        /* the order of trying xm/s3m/it/mod matters because mod could be
+         * confused with one of the other formats, so load it last.
+         */
+        switch (i){
             case 0 : {
                          music_file = dumb_load_xm_quick( path );
                          break;
@@ -432,7 +436,7 @@ bool Music::internal_loadSong( const char * path ){
         }
     }
 
-    if ( music_file ){
+    if (music_file){
         int buf = 1 << 11;
         player = al_start_duh( music_file, 2, 0, volume, buf, 22050 );
         // cout << "Loaded music player " << player << endl;
@@ -455,6 +459,13 @@ bool Music::internal_loadSong( const char * path ){
     }
     return true;
 
+}
+
+void Music::changeSong(){
+    pause();
+    fadeIn(0.3);
+    loadSong(Util::getFiles(Filesystem::find("/music/"), "*" ));
+    play();
 }
 
 #undef synchronized

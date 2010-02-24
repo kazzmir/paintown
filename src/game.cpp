@@ -770,10 +770,13 @@ void playVersusMode( Character * player1, Character * player2, int round ){
 	// Bitmap work( GFX_X, GFX_Y );
 	Bitmap screen_buffer( GFX_X, GFX_Y );
 
+        Music::changeSong();
+        /*
 	Music::pause();
 	Music::fadeIn( 0.3 );
 	Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
 	Music::play();
+        */
 
 	int roundColors[ 120 ];
 	int showRound = sizeof( roundColors ) / sizeof(int) - 1;

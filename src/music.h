@@ -18,6 +18,8 @@ public:
 	static bool loadSong( const char * song );
 	static bool loadSong( const std::string & song );
 
+        static void changeSong();
+
 	/* load one of the songs in 'songs' */
 	static void loadSong( const std::vector< std::string > & songs );
 
