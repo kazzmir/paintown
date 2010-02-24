@@ -204,11 +204,11 @@ class BackgroundElement : public Element {
 	}
 
         virtual inline int getX() const {
-            return x;
+            return (int) x;
         }
 
         virtual inline int getY() const {
-            return y;
+            return (int) y;
         }
 
         virtual void reset();

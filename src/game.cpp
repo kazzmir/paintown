@@ -428,7 +428,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 int x = 100;
                 int y = screen_buffer.getHeight() / 5;
                 int color = Bitmap::makeColor( 255, 255, 255 );
-                Bitmap::transBlender( 0, 0, 0, helpTime > 255 ? 255 : helpTime  );
+                Bitmap::transBlender( 0, 0, 0, (int)(helpTime > 255 ? 255 : helpTime));
                 screen_buffer.drawingMode( Bitmap::MODE_TRANS );
                 drawHelp( font, x, y, color, screen_buffer );
                 screen_buffer.drawingMode( Bitmap::MODE_SOLID );

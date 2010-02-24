@@ -566,7 +566,7 @@ rules:
 	key_rest(left) = s "+" another:key_real new_left:{{ value = makeKeyCombined(left, another); }} key_rest(new_left)
 	               | <void> {{ value = left; }}
 	key_real = mods:key_modifier* name:key_name {{ value = applyKeyModifiers(mods, makeKey(name)); }}
-	key_modifier = "~" num:digit* {{ value = new ReleaseKeyModifier(*parseDouble(num)); }}
+	key_modifier = "~" num:digit* {{ value = new ReleaseKeyModifier((int) *parseDouble(num)); }}
 	             | "$" {{ value = new DirectionKeyModifier(); }}
 		         | "/" {{ value = new HeldDownKeyModifier(); }}
 		         | ">" {{ value = new OnlyKeyModifier(); }}

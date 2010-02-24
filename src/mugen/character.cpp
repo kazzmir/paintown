@@ -557,7 +557,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case SuperPause : {
             Environment env(stage, guy);
-            stage.doSuperPause(time, animation, guy.getRX() + (int) toNumber(evaluate(posX, env)) * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1), guy.getRY() + toNumber(evaluate(posY, env)), sound.group, sound.item); 
+            stage.doSuperPause(time, animation, guy.getRX() + (int) toNumber(evaluate(posX, env)) * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1), guy.getRY() + (int) toNumber(evaluate(posY, env)), sound.group, sound.item); 
             break;
         }
         case TargetBind : {
@@ -2643,7 +2643,7 @@ const Bitmap * Character::getCurrentFrame() const {
 }
 
 void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
-    getCurrentAnimation()->renderReflection(getFacing() == Object::FACING_LEFT, true, intensity, getRX() - rel_x, getZ() + getY() - rel_y, *work);
+    getCurrentAnimation()->renderReflection(getFacing() == Object::FACING_LEFT, true, intensity, getRX() - rel_x, (int)(getZ() + getY() - rel_y), *work);
 }
 
 MugenAnimation * Character::getCurrentAnimation() const {
@@ -2794,7 +2794,7 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
             if (getHealth() >= getMaxHealth() - 2){
                 setHealth(getMaxHealth());
             } else {
-                setHealth((getMaxHealth() + getHealth()) / 2.0);
+                setHealth((int) ((getMaxHealth() + getHealth()) / 2.0));
             }
 
             if (getHealth() == getMaxHealth()){
@@ -2857,7 +2857,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     lastTicket = enemy->getTicket();
 
     if (hisHit.damage.damage != 0){
-        takeDamage(stage, enemy, toNumber(evaluate(hisHit.damage.damage, Environment(stage, *this))));
+        takeDamage(stage, enemy, (int) toNumber(evaluate(hisHit.damage.damage, Environment(stage, *this))));
     }
 
     /*

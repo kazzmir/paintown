@@ -1563,7 +1563,7 @@ do{
         data = """
 char %s = %s.get(%s.getPosition());
 if (%s != '\\0'){
-    %s.setValue((void*) %s);
+    %s.setValue((void*) (long) %s);
     %s.nextPosition();
 } else {
     %s
@@ -1618,7 +1618,7 @@ goto %s;
 char %s = %s.get(%s.getPosition());
 if (%s != '\\0' && strchr("%s", %s) != NULL){
     %s.nextPosition();
-    %s.setValue((void*) %s);
+    %s.setValue((void*) (long) %s);
 } else {
     %s
 }

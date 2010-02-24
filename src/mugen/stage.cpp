@@ -448,7 +448,7 @@ int MugenStage::currentZOffset() const {
         vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
         if (elements.size() != 0){
             Mugen::BackgroundElement * element = elements[0];
-            return element->getCurrentY();
+            return (int) element->getCurrentY();
         }
     }
 
@@ -683,11 +683,11 @@ static bool anyBlocking(const vector<MugenArea> & boxes1, int x1, int y1, int at
 }
 
 bool MugenStage::doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2){
-    return anyBlocking(obj1->getAttackBoxes(), obj1->getX(), obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), obj2->getX(), obj2->getY());
+    return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
 bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
-    return anyCollisions(obj1->getAttackBoxes(), obj1->getX(), obj1->getY(), obj2->getDefenseBoxes(), obj2->getX(), obj2->getY());
+    return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
 void MugenStage::addSpark(int x, int y, int sparkNumber){
@@ -823,7 +823,7 @@ void MugenStage::physics(Object * player){
                 Mugen::Character * menemy = (Mugen::Character *) enemy;
                 // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 /* TODO: make this cleaner */
-                while (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
+                while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
                     if (enemy->getX() < player->getX()){
                         if (enemy->getX() <= maximumLeft()){
                             /* FIXME */
@@ -1067,19 +1067,19 @@ void MugenStage::render(Bitmap *work){
 	/* Reflection */
         /* FIXME: reflection and shade need camerax/y */
 	if (reflectionIntensity > 0){
-            obj->drawReflection(board, camerax - DEFAULT_WIDTH / 2, cameray, reflectionIntensity);
+            obj->drawReflection(board, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
         }
 
 	/* Shadow */
-	obj->drawShade(board, camerax - DEFAULT_WIDTH / 2, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+	obj->drawShade(board, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
         /* draw the player */
-        obj->draw(board, camerax - DEFAULT_WIDTH / 2, cameray);
+        obj->draw(board, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
     for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
         Mugen::Spark * spark = *it;
-        spark->draw(*board, camerax - DEFAULT_WIDTH / 2, cameray);
+        spark->draw(*board, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
     //! Render layer 1 HUD
@@ -1423,11 +1423,11 @@ bool MugenStage::isaPlayer( Object * o ) const {
 }
 
 int MugenStage::maximumRight() const {
-    return camerax + DEFAULT_WIDTH / 2;
+    return (int)(camerax + DEFAULT_WIDTH / 2);
 }
 
 int MugenStage::maximumLeft() const {
-    return camerax - DEFAULT_WIDTH / 2;
+    return (int)(camerax - DEFAULT_WIDTH / 2);
 }
 
 void MugenStage::updatePlayer(Object * player){
@@ -1714,13 +1714,13 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
             
             // Render character
             if (reflectionIntensity > 0){
-                character->drawReflection(board, -(DEFAULT_WIDTH / 2), cameray, reflectionIntensity);
+                character->drawReflection(board, -(DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
             }
 
 	    /* Shadow */
 	    character->drawShade(board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
-            character->draw(board, -(DEFAULT_WIDTH / 2), cameray); 
+            character->draw(board, -(DEFAULT_WIDTH / 2), (int) cameray); 
             
             // Render continue text
             font.render(DEFAULT_WIDTH/2, 40, 0, 0, *board, "Continue?" );

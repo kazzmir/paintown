@@ -1631,7 +1631,7 @@ protected:
 	//  = 1      ;Number of air jumps allowed (opt)
 	int airjumpnum;
 	//  = 35  ;Minimum distance from ground before you can air jump (opt)
-	int airjumpheight;
+	double airjumpheight;
 	// = .44         ;Vertical acceleration
 	double yaccel;
 	//  = .85  ;Friction coefficient when standing

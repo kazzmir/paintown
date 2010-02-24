@@ -875,7 +875,7 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
      * otherwise do width.
      */
 
-    Tiler tiler(getTile(), getCurrentX(), getCurrentY(), addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
+    Tiler tiler(getTile(), (int) getCurrentX(), (int) getCurrentY(), addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
 
     while (tiler.hasMore()){
         Point where = tiler.nextPoint();

@@ -183,7 +183,7 @@ void MugenSprite::render(int facing, int vfacing, const int xaxis, const int yax
 */
 void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
     // temp for scaling
-    Bitmap modImage = Bitmap::temporaryBitmap(bitmap->getWidth() * effects.scalex, bitmap->getHeight() * effects.scaley);
+    Bitmap modImage = Bitmap::temporaryBitmap((int) (bitmap->getWidth() * effects.scalex), (int) (bitmap->getHeight() * effects.scaley));
     bitmap->Stretch(modImage);
     
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
