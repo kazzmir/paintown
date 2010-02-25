@@ -35,7 +35,7 @@ Section "Paintown (required)"
 	File "..\misc\dlls\python24.dll"
 	File "..\misc\dlls\msvcr71.dll"
 	File "..\editor\editor.jar"
-	File /r /x .svn /x graveyard "..\data"
+	File /r /x .svn /x graveyard "..\data\*.*"
 	WriteUninstaller "uninstall.exe"
 SectionEnd
 
