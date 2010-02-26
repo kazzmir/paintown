@@ -1,3 +1,5 @@
+#include "util/bitmap.h"
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -5,13 +7,12 @@
 #include <vector>
 #include <stdint.h>
 
-#include "mugen/font.h"
-
-#include "mugen/item.h"
-#include "mugen/item-content.h"
-#include "mugen/section.h"
-#include "mugen/reader.h"
-#include "mugen/util.h"
+#include "font.h"
+#include "item.h"
+#include "item-content.h"
+#include "section.h"
+#include "reader.h"
+#include "util.h"
 #include "globals.h"
 #include "util/funcs.h"
 
