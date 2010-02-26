@@ -25,9 +25,7 @@
 #include "character-select.h"
 #include "storyboard.h"
 #include "behavior.h"
-
 #include "music.h"
-
 #include "config.h"
 
 namespace PaintownUtil = ::Util;
@@ -36,6 +34,25 @@ using namespace Mugen;
 
 const int DEFAULT_WIDTH = 320;
 const int DEFAULT_HEIGHT = 240;
+
+static void showError(const Bitmap & screen, const MugenException & e){
+    screen.BlitFromScreen(0, 0);
+    Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
+    error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
+    static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+    const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 18, 18);
+    int y = 10;
+    std::ostringstream out;
+    out << "Press ENTER to continue\n";
+    out << "\n";
+    out << "We are very sorry but an error has occured while trying to load MUGEN.";
+    out << " " << e.getReason();
+    font.printfWrap(10, 10, Bitmap::makeColor(255, 255, 255), error, error.getWidth() - 20, out.str(), 0);
+
+    Bitmap::transBlender(0, 0, 0, 200);
+    error.drawTrans(50, 50, screen);
+    screen.BlitToScreen();
+}
 
 Game::Game(const PlayerType & playerType, const GameType & gameType, const std::string & systemFile):
 playerType(playerType),
@@ -82,29 +99,8 @@ void Game::run(){
                 break;
         }
     } catch (const MugenException e){
-        screen.BlitFromScreen(0, 0);
-        Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
-        error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
-        static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-        const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 18, 18);
-        int y = 10;
-        std::ostringstream out;
-        out << "Press ENTER to continue\n";
-        out << "\n";
-        out << "We are very sorry but an error has occured while trying to load MUGEN.";
-        out << " " << e.getReason();
-        font.printfWrap(10, 10, Bitmap::makeColor(255, 255, 255), error, error.getWidth() - 20, out.str(), 0);
-        /*
-        font.printf(10, y, Bitmap::makeColor(255, 255, 255), error, "Press ENTER to continue", 0);
-        y += font.getHeight() * 2 + 1;
-        font.printf(10, y, Bitmap::makeColor(255, 255, 255), error, "We are very sorry but an error has occured while trying", 0);
-        y += font.getHeight() + 1;
-        font.printf(10, y, Bitmap::makeColor(255, 255, 255), error, "to load MUGEN.", 0);
-        */
+        showError(screen, e);
 
-        Bitmap::transBlender(0, 0, 0, 200);
-        error.drawTrans(50, 50, screen);
-        screen.BlitToScreen();
         InputMap<int> wait;
         wait.set(Keyboard::Key_ENTER, 0, false, 1);
         wait.set(Keyboard::Key_ESC, 0, false, 1);

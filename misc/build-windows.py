@@ -22,6 +22,7 @@ server_ip = '10.0.2.2'
 # server_ip = '192.168.90.2'
 quit_message = '**quit**'
 transfer_message = '**transfer**'
+paintown_version = '3.3.1'
 
 # higher numbers of verbose output more stuff
 verbose = 1
@@ -171,7 +172,7 @@ def server_side(make_commands):
         transfer.bind(('0.0.0.0', 0))
         transfer.listen(1)
         transfer_port = transfer.getsockname()[1]
-        file = 'paintown-win32-3.3.exe'
+        file = 'paintown-win32-%s.exe' % paintown_version
         send_command(connection, 'md5sum misc/%s' % file)
 
         receive = threading.Thread(target = do_receive_file, args = (transfer, file))
