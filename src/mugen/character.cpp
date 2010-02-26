@@ -2050,23 +2050,18 @@ static string findStateFile(const string & base, const string & path){
 void Character::loadStateFile(const std::string & base, const string & path, bool allowDefinitions, bool allowStates){
     string full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
-    try{
-        /* st can use the Cmd parser */
-        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
-        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
-            Ast::Section * section = *section_it;
-            std::string head = section->getName();
-            /* this should really be head = Mugen::Util::fixCase(head) */
-            head = Util::fixCase(head);
-            if (allowDefinitions && PaintownUtil::matchRegex(head, "statedef")){
-                parseStateDefinition(section);
-            } else if (allowStates && PaintownUtil::matchRegex(head, "state ")){
-                parseState(section);
-            }
+    /* st can use the Cmd parser */
+    Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
+    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+        std::string head = section->getName();
+        /* this should really be head = Mugen::Util::fixCase(head) */
+        head = Util::fixCase(head);
+        if (allowDefinitions && PaintownUtil::matchRegex(head, "statedef")){
+            parseStateDefinition(section);
+        } else if (allowStates && PaintownUtil::matchRegex(head, "state ")){
+            parseState(section);
         }
-    } catch (const Mugen::Cmd::ParseException & e){
-        Global::debug(0) << "Could not parse " << path << endl;
-        Global::debug(0) << e.getReason() << endl;
     }
 }
 
@@ -2207,6 +2202,10 @@ void Character::load(int useAct){
                         /* then load controllers */
                         loadStateFile(where.base, where.file, false, true);
                     } catch (const MugenException & e){
+                        ostringstream out;
+                        out << "Problem loading state file " << where.file << ": " << e.getReason();
+                        throw MugenException(out.str());
+                    } catch (const Mugen::Cmd::ParseException & e){
                         ostringstream out;
                         out << "Problem loading state file " << where.file << ": " << e.getReason();
                         throw MugenException(out.str());
