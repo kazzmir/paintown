@@ -944,8 +944,8 @@ void Character::initialize(){
 
     matchWins = 0;
 
-    combo = 0;
-    nextCombo = 0;
+    combo = 1;
+    // nextCombo = 0;
 
     lastTicket = 0;
 
@@ -2717,12 +2717,14 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
         return;
     }
 
+    /*
     if (nextCombo > 0){
         nextCombo -= 1;
         if (nextCombo <= 0){
             combo = 0;
         }
     }
+    */
 
     MugenAnimation * animation = getCurrentAnimation();
     if (animation != 0){
@@ -2839,8 +2841,14 @@ void Character::didHit(Character * enemy){
     }
     addPower(states[getCurrentState()]->getPower());
 
-    combo += 1;
-    nextCombo = 15;
+    /* if he is already in a Hit state then increase combo */
+    if (enemy->getMoveType() == Move::Hit){
+        combo += 1;
+    } else {
+        combo = 1;
+    }
+
+    // nextCombo = 15;
 
     hitCount += 1;
 

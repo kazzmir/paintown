@@ -789,6 +789,10 @@ void MugenStage::physics(Object * player){
                     }
                     addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
                     playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
+
+                    /* order matters here, the guy attacking needs to know that
+                     * he hit enemy so the guy can update his combo stuff.
+                     */
                     mugen->didHit(enemy);
                     enemy->wasHit(*this, mugen, *mugen->getHit());
                     // enemy->changeState(5000);

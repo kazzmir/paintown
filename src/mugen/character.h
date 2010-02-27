@@ -1699,7 +1699,7 @@ protected:
         unsigned int lastTicket;
 
         int combo;
-        int nextCombo;
+        // int nextCombo;
         
         int hitCount;
 
