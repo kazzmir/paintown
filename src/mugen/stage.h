@@ -103,6 +103,10 @@ public:
         virtual const bool isMatchOver() const {
             return this->gameOver;
         }
+        
+        virtual Mugen::GameInfo * getGameInfo() const {
+            return gameHUD;
+        }
 
         //! Do continue screen return true to continue playing, false to end
         virtual bool doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> &,  const Bitmap &);
@@ -156,6 +160,7 @@ public:
     
     virtual const int getGameTime() const;
 
+    /* pause for dramatic effect */
     virtual void doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner);
 
     // Alliance setting

@@ -776,6 +776,10 @@ class GameInfo{
 	virtual inline int getGameTime(){
 	    return this->timer.getElapsedTicks();
 	}
+
+        virtual inline const Round & getRound() const {
+            return roundControl;
+        }
 	
     private:
         

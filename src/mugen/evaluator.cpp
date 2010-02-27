@@ -1,8 +1,9 @@
 #include "evaluator.h"
-#include "mugen/exception.h"
+#include "exception.h"
 #include "character.h"
-#include "mugen/stage.h"
-#include "mugen/animation.h"
+#include "characterhud.h"
+#include "stage.h"
+#include "animation.h"
 #include "ast/all.h"
 #include "util/funcs.h"
 #include <math.h>
@@ -243,8 +244,7 @@ public:
         }
 
         if (identifier == "roundno"){
-            /* FIXME */
-            return RuntimeValue(1);
+            return RuntimeValue(environment.getStage().getGameInfo()->getRound().getRound());
         }
 
         if (identifier == "roundsexisted"){
