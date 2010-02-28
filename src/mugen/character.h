@@ -986,7 +986,7 @@ public:
             return displayName;
         }
 	
-	virtual inline const unsigned int &getCurrentPalette() const {
+	virtual inline unsigned int getCurrentPalette() const {
             return currentPalette;
         }
 

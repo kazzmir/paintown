@@ -303,8 +303,7 @@ public:
         }
 
         if (identifier == "palno"){
-            /* FIXME */
-            return RuntimeValue(1);
+            return RuntimeValue((int) environment.getCharacter().getCurrentPalette());
         }
 
         if (identifier == "winko"){
