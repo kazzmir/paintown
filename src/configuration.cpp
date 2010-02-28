@@ -44,6 +44,7 @@ define_config(play_mode, "play-mode");
 define_config(right, "right");
 define_config(screen_size, "screen-size");
 define_config(sound, "sound");
+define_config(music, "music");
 define_config(up, "up");
 #undef def_config
 
@@ -596,6 +597,10 @@ void Configuration::loadConfigurations(){
                 int x;
                 *n >> x;
                 setSoundVolume(x);
+            } else if (*n == config_music){
+                int x;
+                *n >> x;
+                setMusicVolume(x);
             } else if (*n == config_menu_font_width){
                 int x;
                 *n >> x;
@@ -724,6 +729,10 @@ void Configuration::saveConfiguration(){
     Token * sound = new Token();
     *sound << config_sound << Configuration::getSoundVolume();
     head.addToken(sound);
+    
+    Token * music = new Token();
+    *music << config_sound << Configuration::getMusicVolume();
+    head.addToken(sound);
 
     Token * fullscreen = new Token();
     *fullscreen << config_fullscreen << Configuration::getFullscreen();
@@ -800,6 +809,7 @@ std::string Configuration::menuFont = "";
 int Configuration::menuFontWidth = 24;
 int Configuration::menuFontHeight = 24;
 int Configuration::soundVolume = 100;
+int Configuration::musicVolume = 100;
 std::string Configuration::currentGameDir = "paintown";
 std::map<std::string, std::string> Configuration::properties;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
@@ -895,4 +905,12 @@ int Configuration::getSoundVolume(){
 
 void Configuration::setSoundVolume(int volume){
     soundVolume = volume;
+}
+
+int Configuration::getMusicVolume(){
+    return musicVolume;
+}
+
+void Configuration::setMusicVolume(int volume){
+    musicVolume = volume;
 }

@@ -73,6 +73,8 @@ public:
     static void setLives(int l);
     static int getSoundVolume();
     static void setSoundVolume(int volume);
+    static int getMusicVolume();
+    static void setMusicVolume(int volume);
     static int getNpcBuddies();
     static void setNpcBuddies( int i );
     static PlayMode getPlayMode();
@@ -155,6 +157,7 @@ private:
     static int menuFontHeight;
 
     static int soundVolume;
+    static int musicVolume;
 
     /* directory of current game/mod */
     static std::string currentGameDir;
