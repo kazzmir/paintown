@@ -43,6 +43,7 @@ define_config(number, "number");
 define_config(play_mode, "play-mode");
 define_config(right, "right");
 define_config(screen_size, "screen-size");
+define_config(sound, "sound");
 define_config(up, "up");
 #undef def_config
 
@@ -591,6 +592,10 @@ void Configuration::loadConfigurations(){
                 string font;
                 *n >> font;
                 setMenuFont(font);
+            } else if (*n == config_sound){
+                int x;
+                *n >> x;
+                setSoundVolume(x);
             } else if (*n == config_menu_font_width){
                 int x;
                 *n >> x;
@@ -716,6 +721,10 @@ void Configuration::saveConfiguration(){
     *invincible << config_invincible << Configuration::getInvincible();
     head.addToken( invincible );
 
+    Token * sound = new Token();
+    *sound << config_sound << Configuration::getSoundVolume();
+    head.addToken(sound);
+
     Token * fullscreen = new Token();
     *fullscreen << config_fullscreen << Configuration::getFullscreen();
     head.addToken( fullscreen );
@@ -790,6 +799,7 @@ int Configuration::screen_height = 480;
 std::string Configuration::menuFont = "";
 int Configuration::menuFontWidth = 24;
 int Configuration::menuFontHeight = 24;
+int Configuration::soundVolume = 100;
 std::string Configuration::currentGameDir = "paintown";
 std::map<std::string, std::string> Configuration::properties;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
@@ -877,4 +887,12 @@ void Configuration::setScreenHeight(int i){
 
 int Configuration::getScreenHeight(){
     return screen_height;
+}
+
+int Configuration::getSoundVolume(){
+    return soundVolume;
+}
+
+void Configuration::setSoundVolume(int volume){
+    soundVolume = volume;
 }

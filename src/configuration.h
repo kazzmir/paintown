@@ -71,6 +71,8 @@ public:
     static void setFullscreen(bool f);
     static int getLives();
     static void setLives(int l);
+    static int getSoundVolume();
+    static void setSoundVolume(int volume);
     static int getNpcBuddies();
     static void setNpcBuddies( int i );
     static PlayMode getPlayMode();
@@ -151,6 +153,8 @@ private:
     static std::string menuFont;
     static int menuFontWidth;
     static int menuFontHeight;
+
+    static int soundVolume;
 
     /* directory of current game/mod */
     static std::string currentGameDir;
