@@ -732,7 +732,7 @@ void Configuration::saveConfiguration(){
     
     Token * music = new Token();
     *music << config_sound << Configuration::getMusicVolume();
-    head.addToken(sound);
+    head.addToken(music);
 
     Token * fullscreen = new Token();
     *fullscreen << config_fullscreen << Configuration::getFullscreen();

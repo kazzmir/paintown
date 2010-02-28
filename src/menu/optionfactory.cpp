@@ -47,6 +47,8 @@ MenuOption * OptionFactory::getOption(Token *token) throw (LoadException) {
         return new OptionJoystick(tok);
     } else if (*tok == "sound"){
         return new OptionSound(tok);
+    } else if (*tok == "music"){
+        return new OptionMusic(tok);
     } else if ( *tok == "adventure" ){
         // Adventure mode
         return new OptionAdventure(tok);

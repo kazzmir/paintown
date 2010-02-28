@@ -146,7 +146,7 @@ bool OptionMusic::leftKey(){
 }
 
 bool OptionMusic::rightKey(){
-    changeMusic(-1);
+    changeMusic(+1);
     
     lblue = lgreen = 0;
     return true;
