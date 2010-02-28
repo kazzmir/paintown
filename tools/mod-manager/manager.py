@@ -9,12 +9,24 @@ class MyTable(QtGui.QTableWidget):
     def __init__(self, parent):
         QtGui.QTableWidget.__init__(self, parent)
         self.setAcceptDrops(True)
+        self.resize(100, 100)
 
     def dragEnterEvent(self, event):
-        print "Drag event: mime %s" % event.mimeData().urls()
+        print "Has urls? %s" % event.mimeData().hasUrls()
+        if event.mimeData().hasUrls():
+            print "Accept event"
+            event.accept()
+        else:
+            event.ignore()
+        # print "Drag event: mime %s" % event.mimeData().urls()
+
+    def dragMoveEvent(self, event):
+        event.accept()
+        pass
+        # print "Drag move event"
 
     def dropEvent(self, event):
-        print "Drop event %s" % event
+        print "Drop event %s" % event.mimeData().urls()
 
 def run(app):
     # Set the look and feel
@@ -22,8 +34,8 @@ def run(app):
 
     main = uic.loadUi("main.ui")
 
-    main.setAcceptDrops(True)
-    main.mods.setAcceptDrops(True)
+    #main.setAcceptDrops(True)
+    #main.mods.setAcceptDrops(True)
     table = MyTable(main)
     # main.addWidget(MyTable())
 
