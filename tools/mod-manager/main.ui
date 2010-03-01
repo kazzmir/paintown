@@ -14,40 +14,55 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>261</width>
-      <height>18</height>
+      <x>10</x>
+      <y>10</y>
+      <width>761</width>
+      <height>521</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Drag and drop .zip files to install them</string>
-    </property>
-   </widget>
-   <widget class="MyTable" name="tableWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>40</y>
-      <width>691</width>
-      <height>421</height>
-     </rect>
-    </property>
-    <property name="acceptDrops">
-     <bool>true</bool>
-    </property>
-    <property name="dragEnabled">
-     <bool>true</bool>
-    </property>
-    <property name="dragDropMode">
-     <enum>QAbstractItemView::DragDrop</enum>
-    </property>
-    <property name="alternatingRowColors">
-     <bool>true</bool>
-    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Drag and drop .zip files to install them</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="MyTable" name="tableWidget">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>New Column</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Size</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
