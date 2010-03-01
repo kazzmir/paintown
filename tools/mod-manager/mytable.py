@@ -22,6 +22,7 @@ class MyTable(QtGui.QTableWidget):
     def __init__(self, parent):
         QtGui.QTableWidget.__init__(self, parent)
         self.setAcceptDrops(True)
+        self.mods = []
 
     def initialize(self):
         def maybeAdd(path):
@@ -29,6 +30,8 @@ class MyTable(QtGui.QTableWidget):
             #print "Check path %s" % path
             if os.path.exists("%s/%s.txt" % (path, os.path.basename(path))):
                 self.addMod(path)
+        
+        self.setColumnCount(3)
         
         import os
         for path in os.listdir(modPath):
@@ -40,9 +43,10 @@ class MyTable(QtGui.QTableWidget):
         column_size = 2
 
         mod = Mod(path)
+        self.mods.append(mod)
+
         row = self.rowCount()
         self.setRowCount(self.rowCount() + 1)
-        self.setColumnCount(3)
 
         self.setItem(row, column_name, QtGui.QTableWidgetItem(mod.name))
         # self.setItem(1, 1, QtGui.QTableWidgetItem('foobar'))
@@ -64,12 +68,16 @@ class MyTable(QtGui.QTableWidget):
         # print "Drag move event"
 
     def doFile(self, path):
-        if isZipFile(path):
-            print "Installing mod %s" % path
+        import zipfile, os
+        print "Installing mod '%s'" % path
+        zip = zipfile.ZipFile(path, 'r')
+        toplevel = os.path.dirname(zip.namelist()[0])
+        zip.extractall(modPath)
+        self.addMod('%s/%s' % (modPath, toplevel))
 
     def dropEvent(self, event):
         for file in event.mimeData().urls():
-            path = file.path()
+            path = str(file.path())
             if isZipFile(path):
                 self.doFile(path)
             else:
