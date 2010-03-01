@@ -2,6 +2,16 @@ from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+class Mod:
+    def __init__(self, path):
+        import os
+        self.path = path
+        self.size = None
+        self.name = None
+
+        if os.path.exists("%s/%s.txt" % (path, os.path.basename(path))):
+            self.name = os.path.basename(path)
+
 def isZipFile(path):
     import zipfile
     return zipfile.is_zipfile(path)
@@ -13,6 +23,25 @@ class MyTable(QtGui.QTableWidget):
     def __init__(self, parent):
         QtGui.QTableWidget.__init__(self, parent)
         self.setAcceptDrops(True)
+
+    def initialize(self):
+        self.addMod('/home/jon/.paintown/wolfburg')
+
+    def addMod(self, path):
+        column_name = 0
+        column_enabled = 1
+        column_size = 2
+
+        mod = Mod(path)
+        row = self.rowCount()
+        self.setRowCount(self.rowCount() + 1)
+        self.setColumnCount(3)
+
+        self.setItem(row, column_name, QtGui.QTableWidgetItem(mod.name))
+        # self.setItem(1, 1, QtGui.QTableWidgetItem('foobar'))
+        #for c in range(0, self.columnCount()):
+        #    for r in range(0, self.rowCount()):
+        #        self.setItem(r, c, QtGui.QTableWidgetItem('foobar'))
 
     def dragEnterEvent(self, event):
         # print "Has urls? %s" % event.mimeData().hasUrls()

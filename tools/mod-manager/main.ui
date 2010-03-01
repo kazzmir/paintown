@@ -32,7 +32,7 @@
       </widget>
      </item>
      <item>
-      <widget class="MyTable" name="tableWidget">
+      <widget class="MyTable" name="mods">
        <property name="acceptDrops">
         <bool>true</bool>
        </property>
@@ -52,7 +52,7 @@
        </column>
        <column>
         <property name="text">
-         <string>New Column</string>
+         <string>Enabled</string>
         </property>
        </column>
        <column>

@@ -10,6 +10,7 @@ def run(app):
     QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
     main = uic.loadUi("main.ui")
+    main.mods.initialize()
 
     #main.setAcceptDrops(True)
     #main.mods.setAcceptDrops(True)
