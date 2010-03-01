@@ -20,7 +20,7 @@ def run(app):
 
     exit = main.actionQuit
     exit.setShortcut('Ctrl+Q')
-    exit.setStatusTip('Quit')
+    exit.setStatusTip('Close the program')
     main.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
 
     #main.setAcceptDrops(True)

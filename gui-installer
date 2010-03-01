@@ -253,8 +253,6 @@ def forwardButton():
         widget.next.setEnabled(False)
         allowExit[0] = False
         widget.stackedWidget.setCurrentIndex(currentPage[0])
-        # ****FIXME**** Copy data ---- Need to do this in realtime or else it hangs the GUI
-        # copyData(widget.installOutput)
         doBackground(lambda emitter: copyData(dataLocation[0], widget.installOutput, emitter))
         widget.next.setEnabled(True)
         widget.installLabel.setText('Complete.')
@@ -326,5 +324,3 @@ widget.show()
 
 # Run
 app.exec_()
-
-

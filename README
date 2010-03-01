@@ -138,14 +138,25 @@ Topics:
     $ sudo apt-get install python-dev libfreetype6-dev liballegro4.2 zlib1g-dev
 
   * Detailed windows instructions
+    Get unxutils for things like mv, rm, cp - http://www.sf.net/projects/unxutils
+      Find the .zip. It unzips as usr\local\wbin, so put that in your path or just
+      copy all the files in usr\local\wbin to your c:\mingw\bin directory.
     For libpng/zlib see here: http://tjaden.strangesoft.net/loadpng/mingw.html
     Python 2.4.4 (yes this is old but the game is hardcoded to use it):
       http://www.python.org/download/releases/2.4.4/
+      Add c:\python24 to your PATH
+      Copy libs\libpython24.a to c:\mingw\lib
+    Scons - http://www.scons.org
+      Then add c:\python24\scripts to your PATH
+    pthreads - http://sources.redhat.com/pthreads-win32/
+      get pthreads-win32-2-8-0-release.exe, let it unzip somewhere, then copy
+      the stuff in prebuilt\include to your mingw\include directory. copy the
+      .a files to c:\mingw\lib
+    allegro - http://alleg.sf.net
+      get the 4.2.3 package and dx70_mgw.zip
     Get freetype from http://gnuwin32.sourceforge.net/packages/freetype.htm. Copy
      the resulting headers into your include path. Dont copy in freetype2, just the
      path underneath it, freetype2\freetype.
-    Get unxutils for things like mv, rm, cp - http://unxutils.sf.net.
-      Find the .zip. It unzips as usr\local\wbin, so put that in your path.
     Gnu regex: http://gnuwin32.sourceforge.net/packages/regex.htm
     Use the dependancy walker: http://www.dependencywalker.com/ to check that
       all required dlls are around.
