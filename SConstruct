@@ -528,11 +528,12 @@ if isWindows():
     
     env.Append( LIBS = ['alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     env.Append( CPPDEFINES = 'WINDOWS' )
-    env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
-    env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
-    
-    #env.Append( CCFLAGS = ['-mthreads'] )
-    #env.Append( LINKFLAGS = ['-mthreads'] )
+    if getDebug():
+        env.Append( CCFLAGS = ['-mthreads'] )
+        env.Append( LINKFLAGS = ['-mthreads'] )
+    else:
+        env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
+        env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
 
     staticEnv.Append(LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     staticEnv.Append(CPPDEFINES = 'WINDOWS')
