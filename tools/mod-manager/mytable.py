@@ -7,10 +7,7 @@ class Mod:
         import os
         self.path = path
         self.size = None
-        self.name = None
-
-        if os.path.exists("%s/%s.txt" % (path, os.path.basename(path))):
-            self.name = os.path.basename(path)
+        self.name = os.path.basename(path)
 
 def isZipFile(path):
     import zipfile
@@ -19,13 +16,23 @@ def isZipFile(path):
 def showError(error):
     print error
 
+modPath = '/home/jon/.paintown'
+
 class MyTable(QtGui.QTableWidget):
     def __init__(self, parent):
         QtGui.QTableWidget.__init__(self, parent)
         self.setAcceptDrops(True)
 
     def initialize(self):
-        self.addMod('/home/jon/.paintown/wolfburg')
+        def maybeAdd(path):
+            import os
+            #print "Check path %s" % path
+            if os.path.exists("%s/%s.txt" % (path, os.path.basename(path))):
+                self.addMod(path)
+        
+        import os
+        for path in os.listdir(modPath):
+            maybeAdd('%s/%s' % (modPath, path))
 
     def addMod(self, path):
         column_name = 0
