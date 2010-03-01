@@ -2,6 +2,8 @@ from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+import data
+
 class Mod:
     def __init__(self, path):
         import os
@@ -15,8 +17,6 @@ def isZipFile(path):
 
 def showError(error):
     print error
-
-modPath = '/home/jon/.paintown'
 
 class MyTable(QtGui.QTableWidget):
     def __init__(self, parent):
@@ -34,8 +34,8 @@ class MyTable(QtGui.QTableWidget):
         self.setColumnCount(3)
         
         import os
-        for path in os.listdir(modPath):
-            maybeAdd('%s/%s' % (modPath, path))
+        for path in os.listdir(data.modPath()):
+            maybeAdd('%s/%s' % (data.modPath(), path))
 
     def addMod(self, path):
         column_name = 0
@@ -72,8 +72,8 @@ class MyTable(QtGui.QTableWidget):
         print "Installing mod '%s'" % path
         zip = zipfile.ZipFile(path, 'r')
         toplevel = os.path.dirname(zip.namelist()[0])
-        zip.extractall(modPath)
-        self.addMod('%s/%s' % (modPath, toplevel))
+        zip.extractall(data.modPath())
+        self.addMod('%s/%s' % (data.modPath(), toplevel))
 
     def dropEvent(self, event):
         for file in event.mimeData().urls():
