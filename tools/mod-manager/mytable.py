@@ -28,14 +28,20 @@ class MyTable(QtGui.QTableWidget):
         def maybeAdd(path):
             import os
             #print "Check path %s" % path
-            if os.path.exists("%s/%s.txt" % (path, os.path.basename(path))):
+            full = os.path.join(path, '%s.txt' % os.path.basename(path))
+            if os.path.exists(full):
                 self.addMod(path)
         
         self.setColumnCount(3)
         
         import os
-        for path in os.listdir(data.modPath()):
-            maybeAdd('%s/%s' % (data.modPath(), path))
+        modpath = data.modPath()
+        if not os.path.exists(modpath):
+            os.makedirs(modpath)
+
+        for path in os.listdir(modpath):
+            full = os.path.join(modpath, path)
+            maybeAdd(full)
 
     def addMod(self, path):
         column_name = 0
@@ -69,15 +75,22 @@ class MyTable(QtGui.QTableWidget):
 
     def doFile(self, path):
         import zipfile, os
-        print "Installing mod '%s'" % path
+        modpath = data.modPath()
+        print "Installing mod '%s' to %s" % (path, modpath)
         zip = zipfile.ZipFile(path, 'r')
         toplevel = os.path.dirname(zip.namelist()[0])
-        zip.extractall(data.modPath())
-        self.addMod('%s/%s' % (data.modPath(), toplevel))
+        try:
+            os.makedirs(modpath)
+        except Exception:
+            pass
+        zip.extractall(modpath)
+        self.addMod('%s/%s' % (modpath, toplevel))
 
     def dropEvent(self, event):
         for file in event.mimeData().urls():
-            path = str(file.path())
+            # Warning: only works for file://, in the future
+            # try to handle http:// and whatever else
+            path = str(file.toLocalFile())
             if isZipFile(path):
                 self.doFile(path)
             else:
