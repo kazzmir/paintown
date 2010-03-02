@@ -2269,6 +2269,11 @@ void Character::load(int useAct){
         throw MugenException(out.str());
     }
 
+    if (getMaxHealth() == 0 || getHealth() == 0){
+        setHealth(1000);
+        setMaxHealth(1000);
+    }
+
     // Current palette
     if (palDefaults.empty()){
 	// Correct the palette defaults

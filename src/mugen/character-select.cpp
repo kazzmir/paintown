@@ -31,8 +31,7 @@
 
 #include "menu/menu_option.h"
 #include "menu/menu_global.h"
-#include "menu/option_quit.h"
-#include "menu/option_dummy.h"
+#include "menu/options.h"
 
 #include "animation.h"
 #include "background.h"

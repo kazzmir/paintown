@@ -3,7 +3,6 @@
 #include "menu/menu.h"
 #include "menu/menu_global.h"
 #include "menu/menu_option.h"
-#include "menu/option_level.h"
 #include "util/funcs.h"
 #include "util/sound.h"
 #include "util/token.h"
@@ -16,6 +15,7 @@
 #include "init.h"
 #include "configuration.h"
 #include "music.h"
+#include "options.h"
 
 using namespace std;
 
