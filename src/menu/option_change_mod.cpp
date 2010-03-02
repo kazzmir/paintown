@@ -4,6 +4,7 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/funcs.h"
+#include "util/file-system.h"
 #include "game/mod.h"
 #include "globals.h"
 #include "configuration.h"

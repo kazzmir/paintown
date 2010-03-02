@@ -192,7 +192,12 @@ int paintown_main( int argc, char ** argv ){
     diff.endTime();
     Global::debug(0) << diff.printTime("Init took") << endl;
 
-    Paintown::Mod::loadMod(Configuration::getCurrentGame());
+    try{
+        Paintown::Mod::loadMod(Configuration::getCurrentGame());
+    } catch (const Filesystem::NotFound & e){
+        Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << ": " << e.getReason() << endl;
+        Paintown::Mod::loadDefaultMod();
+    }
 
     InputManager input;
     Music music(music_on);

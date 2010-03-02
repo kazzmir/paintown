@@ -48,7 +48,11 @@ const string & Mod::getMenu(){
     return menu;
 }
 
-void Mod::loadMod(const string & name) throw (LoadException, Filesystem::NotFound){
+void Mod::loadDefaultMod(){
+    loadMod("paintown");
+}
+
+void Mod::loadMod(const string & name){
    string path = name + "/" + name + ".txt"; 
    Mod * newMod = new Mod(Filesystem::find(path));
    if (currentMod != NULL){

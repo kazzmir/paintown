@@ -2,6 +2,7 @@
 #include "input/keyboard.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
+#include "util/file-system.h"
 #include "input/input.h"
 #include "globals.h"
 #include "object/animation.h"
@@ -11,11 +12,6 @@
 #include <stdlib.h>
 
 #include <map>
-
-#ifdef _WIN32
-#define _WIN32_IE 0x400
-#include <shlobj.h>
-#endif
 
 /* text that appears in the config file */
 #define define_config(n,str) static const char * config_##n = str
@@ -440,22 +436,6 @@ void Configuration::setCurrentGame(const std::string & str){
     currentGameDir = str;
 }
 
-#ifdef _WIN32
-static string configFile(){
-	ostringstream str;
-	char path[ MAX_PATH ];
-	SHGetSpecialFolderPathA( 0, path, CSIDL_APPDATA, false );
-	str << path << "/paintown_configuration.txt";
-	return str.str();
-}
-#else
-static string configFile(){
-	ostringstream str;
-	str << getenv( "HOME" ) << "/.paintownrc";
-	return str.str();
-}
-#endif
-
 /* this nonsense is just to convert a regular integer into an enum */
 static Configuration::JoystickInput intToJoystick(int a){
     switch (a){
@@ -473,11 +453,11 @@ static Configuration::JoystickInput intToJoystick(int a){
 
 void Configuration::loadConfigurations(){
     try{
-        string file = configFile();
+        string file = Filesystem::configFile();
         TokenReader tr( file );
         Token * head = tr.readToken();
         if (*head != config_configuration){
-            throw LoadException( string("Config file ") + configFile() + " does not use the configuration format" );
+            throw LoadException( string("Config file ") + Filesystem::configFile() + " does not use the configuration format" );
         }
         while ( head->hasTokens() ){
             Token * n;
@@ -518,7 +498,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException( string("Config file ") + configFile() + " does not specifiy (number #) for a keyboard-configuration" );
+                    throw LoadException( string("Config file ") + Filesystem::configFile() + " does not specifiy (number #) for a keyboard-configuration" );
                 }
                 Configuration & myconfig = config(number);
                 myconfig.setRight(right);
@@ -570,7 +550,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException( string("Config file ") + configFile() + " does not specifiy (number #) for a joystick-configuration" );
+                    throw LoadException( string("Config file ") + Filesystem::configFile() + " does not specifiy (number #) for a joystick-configuration" );
                 }
                 Configuration & myconfig = config(number);
                 myconfig.setJoystickRight(right);
@@ -639,9 +619,9 @@ void Configuration::loadConfigurations(){
             }
         }
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Could not load configuration file " << configFile() << ": " << le.getReason() << endl;
+        Global::debug( 0 ) << "Could not load configuration file " << Filesystem::configFile() << ": " << le.getReason() << endl;
     } catch ( const TokenException & t ){
-        Global::debug( 0 ) << "Error loading configuration file '" << configFile() << "': " << t.getReason() << endl;
+        Global::debug( 0 ) << "Error loading configuration file '" << Filesystem::configFile() << "': " << t.getReason() << endl;
     }
 }
 
@@ -790,7 +770,7 @@ void Configuration::saveConfiguration(){
         head.addToken(property);
     }
 
-    ofstream out( configFile().c_str(), ios::trunc | ios::out );
+    ofstream out( Filesystem::configFile().c_str(), ios::trunc | ios::out );
     if ( ! out.bad() ){
         head.toString( out, string("") );
         out.close();

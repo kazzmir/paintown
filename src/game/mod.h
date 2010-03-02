@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "util/file-system.h"
 #include "util/load_exception.h"
 
 namespace Level{
@@ -24,7 +23,8 @@ public:
 
     virtual ~Mod();
 
-    static void loadMod(const std::string & path) throw (LoadException, Filesystem::NotFound);
+    static void loadMod(const std::string & path);
+    static void loadDefaultMod();
     static Mod * getCurrentMod();
     
 protected:
