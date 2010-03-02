@@ -158,7 +158,7 @@ def checkPython(context):
 
     # hacks for windows because distutils is broken
     if libs == None and isWindows():
-        libs = ['python24']
+        libs = ['python26']
     if lib_path == None and isWindows():
         import os
         lib_path = os.path.join(os.path.dirname(include_path),'libs')
