@@ -114,6 +114,8 @@ void OptionChangeMod::run(bool &endGame){
         menu.load(Filesystem::find("menu/change-mod.txt"));
         menu.run();
         changeMod(mods[select]);
+
+        /* TODO: throw ReloadMenu() or something here to make the menu update */
     } catch (const LoadException & le){
         Global::debug(0) << "Could not load menu/change-mod.txt: " << le.getReason() << endl;
     } catch (const Filesystem::NotFound & e){
