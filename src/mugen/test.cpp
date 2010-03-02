@@ -20,6 +20,7 @@
 #include "configuration.h"
 #include "music.h"
 
+#include "mugen/config.h"
 #include "mugen/reader.h"
 #include "mugen/section.h"
 #include "mugen/item-content.h"
@@ -44,8 +45,6 @@
 #include "level/utils.h"
 
 #include "factory/font_render.h"
-
-#include "gui/keyinput_manager.h"
 
 #include "object/object.h"
 #include "object/player.h"
@@ -90,6 +89,59 @@ static void showOptions(){
     Global::debug(0) << endl;
 }
 
+namespace LocalKeyboard {
+enum Keys {
+    F1,
+    F2,
+    F3,
+    F4,
+    F5,
+    F6,
+    F7,
+    F8,
+    F9,
+    F10,
+    F11,
+    F12,
+    Esc,
+    Enter,
+    Up,
+    Down,
+    Left,
+    Right,
+    Space,
+    PageUp,
+    PageDown,
+};
+
+static InputMap<Keys> getKeys(){
+    InputMap<Keys> input;
+    input.set(Keyboard::Key_F1, 10, false, F1);
+    input.set(Keyboard::Key_F2, 10, false, F2);
+    input.set(Keyboard::Key_F3, 10, false, F3);
+    input.set(Keyboard::Key_F4, 10, false, F4);
+    input.set(Keyboard::Key_F5, 10, false, F5);
+    input.set(Keyboard::Key_F6, 10, false, F6);
+    input.set(Keyboard::Key_F7, 10, false, F7);
+    input.set(Keyboard::Key_F8, 10, false, F8);
+    input.set(Keyboard::Key_F9, 10, false, F9);
+    input.set(Keyboard::Key_F10, 10, false, F10);
+    input.set(Keyboard::Key_F11, 10, false, F11);
+    input.set(Keyboard::Key_F12, 10, false, F12);
+    input.set(Keyboard::Key_ESC, 10, false, Esc);
+    input.set(Keyboard::Key_ENTER, 10, false, Enter);
+    input.set(Keyboard::Key_UP, 10, false, Up);
+    input.set(Keyboard::Key_DOWN, 10, false, Down);
+    input.set(Keyboard::Key_LEFT, 10, false, Left);
+    input.set(Keyboard::Key_RIGHT, 10, false, Right);
+    input.set(Keyboard::Key_SPACE, 10, false, Space);
+    input.set(Keyboard::Key_PGUP, 10, false, PageUp);
+    input.set(Keyboard::Key_PGDN, 10, false, PageDown);
+    
+    return input;
+}
+}
+
 /* testing testing 1 2 3 */
 void testPCX(){
     unsigned char data[1 << 18];
@@ -110,13 +162,6 @@ void testPCX(){
     work.BlitToScreen();
     Util::rest(3000);
 }
-
-/*
-static void inc_speed_counter() {
-	Global::speed_counter += 1;
-}
-END_OF_FUNCTION( inc_speed_counter );
-*/
 
 void showCharacter(const string & ourFile){
     /*set_color_depth(16);
@@ -148,10 +193,7 @@ void showCharacter(const string & ourFile){
 
      double gameSpeed = .5;
     double runCounter = 0;
-    /*
-    LOCK_VARIABLE( speed_counter );
-    LOCK_FUNCTION( (void *)inc_speed_counter );
-    */
+    InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
 	while( !quit ){
 	    bool draw = false;
 	    
@@ -161,51 +203,51 @@ void showCharacter(const string & ourFile){
 		    if( animate ) it->second->logic();
 		    runCounter -= 1;
 		    draw = true;
-		    
-		    if( keyInputManager::keyState(keys::UP, true) ){
+		    InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);
+		    if( out[LocalKeyboard::Up] ){
 			if( currentAnim < lastAnim ){
 			    currentAnim++;
 			    it++;
 			}
 			currentFrame = 0;
 		    }
-		    else if( keyInputManager::keyState(keys::DOWN, true) ){
+		    else if( out[LocalKeyboard::Down] ){
 			if( currentAnim > 0 ){
 			    currentAnim--;
 			    it--;
 			}
 			currentFrame = 0;
 		    }
-		    else if( keyInputManager::keyState(keys::LEFT, true) && !animate){
+		    else if( out[LocalKeyboard::Left] && !animate){
 			it->second->forwardFrame();
 			currentFrame = it->second->getCurrentPosition();
 		    }
-		    else if( keyInputManager::keyState(keys::RIGHT, true) && !animate){
+		    else if( out[LocalKeyboard::Right] && !animate){
 			it->second->backFrame();
 			currentFrame = it->second->getCurrentPosition();
 		    }
-		    else if( keyInputManager::keyState(keys::SPACE, true) ){
+		    else if( out[LocalKeyboard::Space] ){
 			animate = !animate;
 		    }
-		    else if( keyInputManager::keyState('a', true) ){
+		    else if( out[LocalKeyboard::F1] ){
 			showClsn1 = !showClsn1;
 			it->second->toggleOffense();
 		    }
-		    else if( keyInputManager::keyState('d', true) ){
+		    else if( out[LocalKeyboard::F2] ){
 			showClsn2 = !showClsn2;
 			it->second->toggleDefense();
 		    }
-		    else if( keyInputManager::keyState('1', true) ){
+		    else if( out[LocalKeyboard::F3] ){
 			character.priorPalette();
 		    }
-		    else if( keyInputManager::keyState('2', true) ){
+		    else if( out[LocalKeyboard::F4] ){
 			character.nextPalette();
 		    }
 		    
 		    if( mouse_b & 1 )moveImage = true;
 		    else if( !(mouse_b & 1) )moveImage = false;
 		    
-		    quit |= keyInputManager::keyState(keys::ESC, true );
+		    quit |= out[LocalKeyboard::Esc];
 		    
 		    if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
 		}
@@ -235,7 +277,7 @@ void showCharacter(const string & ourFile){
 	
         while (Global::speed_counter == 0){
             Util::rest(1);
-            keyInputManager::update();
+            InputManager::poll();
         }
     }
 
@@ -253,16 +295,6 @@ const char *music[] = {
 const int musicHits = sizeof(music) / sizeof(char*);
 
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
-    /*set_color_depth(16);
-    Bitmap::setGfxModeWindowed(640, 480);
-    loadpng_init();*/
-    /*
-    LOCK_VARIABLE( speed_counter );
-    LOCK_FUNCTION( (void *)inc_speed_counter );
-    */
-    /* set up the timers */
-    //install_int_ex( inc_speed_counter, BPS_TO_TIMER( 40 ) );
-    
     try{
 	std::string file = ourFile;
 	Global::debug(0) << "\"" << MugenStage::getStageName(file) << "\"" << endl;
@@ -273,7 +305,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
     Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
     MugenStage stage( ourFile );
-    stage.load();
+    //stage.load();
     Global::debug(0) << "Loaded stage: \"" << stage.getName() << "\" successfully." << endl;
     bool quit = false;
     
@@ -282,40 +314,26 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
-    //Object *p1 = new Player( "data/players/wolverine/wolverine.txt", 0 );//Game::selectPlayer( false, "Pick player1" );
-    /*Level::LevelInfo info;
-    Object *p1 = !p1_name.empty() ? new Player(p1_name,0) : Game::selectPlayer( false, "Pick player1", info);
-    Global::debug(0) << "Loading player 2" << endl;
-    //Object *p2 = new Player( "data/players/venom/venom.txt", 1 );//Game::selectPlayer( false, "Pick player2" );
-    Object *p2 = !p2_name.empty() ? new Player(p2_name,1) : Game::selectPlayer( false, "Pick player2", info);
-    ((Player *)p1)->setInvincible( false );
-    //p1->setMap( remap );
-    ((Player *)p1)->testAnimation();
-    ((Player *)p1)->setConfig(0);
-    //Configuration::config(0).setJump( Configuration::config(0).getUp() );
-    ((Player *)p2)->setInvincible( false );
-    //p2->setMap( remap );
-    ((Player *)p2)->testAnimation();
-    //((Player *)p2)->setConfig(1);
-    // Make them versus players
-    VersusPlayer p1v( *(Player *) p1 );
-    VersusEnemy p2v( *(Player *) p2 );
-    //VersusPlayer p2v( *(Player *) p2 );
-    */
-    Mugen::CharacterSelect selector("data/mugen/data/system.def", Mugen::Player1, Mugen::Arcade);
+    const std::string motif =  Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+    Mugen::CharacterSelect selector(motif, Mugen::Player1, Mugen::Arcade);
     try {
 	selector.load();
-	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
+	selector.setPlayer1Keys(Mugen::getPlayer1Keys(20));
 	selector.run("Test", Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
+    } catch (const ReturnException &e){
+	return;
     }
+    selector.setNextArcadeMatch();
     Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1Def());
+    Mugen::Character *player2 = new Mugen::Character(selector.getPlayer2Def());
     player1->load();
+    player2->load();
     stage.addPlayer1(player1);
-    //stage.addp1(&p1v);
-    //stage.addp2(&p2v);
-
+    stage.addPlayer2(player2);
+    stage.load();
+    stage.reset();
     double gameSpeed = 1.0;
     double runCounter = 0;
     
@@ -327,6 +345,9 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 		Global::debug(0) << "Now playing track: " << music[track] << endl;
     }
     
+    
+    InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
+    
     while( !quit ){
         bool draw = false;
         
@@ -334,19 +355,19 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
             runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
             while (runCounter > 1){
 		InputManager::poll();
-                keyInputManager::update();
                 stage.logic();
+		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 runCounter -= 1;
                 draw = true;
 
-                if( keyInputManager::keyState('r', true)){
+                if( out[LocalKeyboard::F2] ){
                     stage.reset();
                 }
-		if( keyInputManager::keyState('`', true)){
+		if( out[LocalKeyboard::F1] ){
 		    stage.toggleConsole();
 		}
 		// Change music track
-		if( keyInputManager::keyState('5', true)){
+		if( out[LocalKeyboard::F3] ){
 		    track++;
 		    if(track == musicHits)track = 0;
 		    if(Music::loadSong( Filesystem::find(string("mugen/music/") + music[track]) )){
@@ -355,14 +376,14 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 			Global::debug(0) << "Now playing track: " << music[track] << endl;
 		    }
 		}
-                if( keyInputManager::keyState(keys::ENTER, false)){
+                if( out[LocalKeyboard::F4] ){
                     stage.Quake( 5 );
                 }
-		if (keyInputManager::keyState('t', true)){
+		if (out[LocalKeyboard::F5] ){
 		    stage.toggleDebug();
 		}
 
-                quit |= keyInputManager::keyState(keys::ESC, true );
+                quit |= out[LocalKeyboard::Esc] ;
             }
             Global::speed_counter = 0;
         }
@@ -375,14 +396,11 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
         while (Global::speed_counter == 0){
             Util::rest(1);
-            keyInputManager::update();
         }
     }
     
-    //delete p1;
-    //delete p2;
-    
     delete player1;
+    delete player2;
 
 }
 
@@ -400,29 +418,32 @@ void showFont(const string & ourFile){
     double runCounter = 0;
     
     int currentBank = 0;
-    
+     
+    InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
+   
     while( !quit ){
         bool draw = false;
         
         if ( Global::speed_counter > 0 ){
             runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
             while (runCounter > 1){
-                keyInputManager::update();
+                InputManager::poll();
+		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 runCounter -= 1;
                 draw = true;
-		if( keyInputManager::keyState(keys::DOWN, true) ){
+		if( out[LocalKeyboard::Down] ){
                    if (font.getCurrentBank() != 0){
 		       currentBank--;
 		       font.changeBank(currentBank);
 		   }
                 }
-                if( keyInputManager::keyState(keys::UP, true) ){
+                if( out[LocalKeyboard::Up] ){
                    if (font.getCurrentBank() != font.getTotalBanks()-1){
 		       currentBank++;
 		       font.changeBank(currentBank);
 		   }
                 }
-                quit |= keyInputManager::keyState(keys::ESC, true );
+                quit |= out[LocalKeyboard::Esc];
             }
             Global::speed_counter = 0;
         }
@@ -439,7 +460,6 @@ void showFont(const string & ourFile){
 
         while (Global::speed_counter == 0){
             Util::rest(1);
-            keyInputManager::update();
         }
     }
 }
@@ -460,16 +480,19 @@ void showSFF(const string & ourFile, const std::string &actFile){
     double gameSpeed = 1.0;
     double runCounter = 0;
     
+    InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
+   
     while( !quit ){
         bool draw = false;
         
         if ( Global::speed_counter > 0 ){
             runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
             while (runCounter > 1){
-                keyInputManager::update();
+                InputManager::poll();
+		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 runCounter -= 1;
                 draw = true;
-		if( keyInputManager::keyState(keys::DOWN, true) ){
+		if( out[LocalKeyboard::Down] ){
                     int group = currentGroup;
                     bool found = false;
                     currentSprite = 0;
@@ -487,7 +510,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                         }
                     }
                 }
-                if( keyInputManager::keyState(keys::UP, true) ){
+                if( out[LocalKeyboard::Up] ){
 		    int group = currentGroup;
                     bool found = false;
                     currentSprite = 0;
@@ -505,7 +528,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                         }
                     }
                 }
-		if( keyInputManager::keyState(keys::LEFT, true) ){
+		if( out[LocalKeyboard::Left] ){
                     int sprite = currentSprite;
                     bool found = false;
                     while (!found){
@@ -522,7 +545,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                         }
                     }
                 }
-                if( keyInputManager::keyState(keys::RIGHT, true) ){
+                if( out[LocalKeyboard::Right] ){
                     int sprite = currentSprite;
                     bool found = false;
                     while (!found){
@@ -539,13 +562,13 @@ void showSFF(const string & ourFile, const std::string &actFile){
                         }
                     }
                 }
-		if( keyInputManager::keyState(keys::PGUP, true) ){
+		if( out[LocalKeyboard::PageUp] ){
                    currentGroup+=500;
                 }
-                if( keyInputManager::keyState(keys::PGDN, true) ){
+                if( out[LocalKeyboard::PageDown] ){
 		   currentGroup-=500;
                 }
-                quit |= keyInputManager::keyState(keys::ESC, true );
+                quit |= out[LocalKeyboard::Esc];
             }
             Global::speed_counter = 0;
         }
@@ -566,7 +589,6 @@ void showSFF(const string & ourFile, const std::string &actFile){
 
         while (Global::speed_counter == 0){
             Util::rest(1);
-            keyInputManager::update();
         }
     }
 }
