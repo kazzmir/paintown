@@ -230,13 +230,22 @@ void OptionChangeMod::run(bool &endGame){
         menu.setParent(getParent());
         vector<string> mods = findMods();
         int index = 0;
+        std::vector<OptionLevel *> options;
         for (vector<string>::iterator it = mods.begin(); it != mods.end(); it++){
             // menu.addOption(new OptionLevel(0, &select, 0));
             OptionLevel *opt = new OptionLevel(0, &select, index);
             opt->setText(modName(*it));
             opt->setInfoText("Choose this mod");
-            menu.addOption(opt);
+            if (modName(*it).compare(Util::upcase(modName(Configuration::getCurrentGame()))) == 0){
+                options.insert(options.begin(),opt);
+            } else {
+                options.push_back(opt);
+            }
             index += 1;
+        }
+
+        for (std::vector<OptionLevel *>::iterator it = options.begin(); it != options.end(); ++it){
+            menu.addOption(*it);
         }
 
         if (index == 0){
