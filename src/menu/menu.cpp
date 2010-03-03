@@ -537,22 +537,9 @@ void Menu::run(){
                 InputManager::poll();
             }
 
-            // endGame |= keyInputManager::keyState(keys::ESC, true );
             done |= endGame;
 
             /* can we move the check for ESC to act() ? */
-#if 0
-            if (keyInputManager::keyState(keys::ESC, true )){
-                (*selectedOption)->setState(MenuOption::Deselected);
-                /*
-                   if (backSound != ""){
-                   Sound * back = Resource::getSound(backSound);
-                   back->play();
-                   }
-                   */
-                throw ReturnException();
-            }
-#endif
         }
 
         // Reset it's state
@@ -908,10 +895,6 @@ void Menu::drawText(const Box &area, Bitmap *bmp){
 
         currentCounter = currentCounter + 1;
 
-        /*
-        optionAlpha+=optionAlphaIncrements;
-        if ( optionAlpha >= 250 ){optionAlphaIncrements -= optionAlphaIncrements*2;optionAlpha=250;}
-        */
     }
 }
 
