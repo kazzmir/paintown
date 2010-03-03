@@ -49,9 +49,7 @@
 #include "font.h"
 #include "storyboard.h"
 
-#include "option-arcade.h"
-#include "option-options.h"
-#include "option-versus.h"
+#include "options.h"
 #include "game.h"
 #include "ast/all.h"
 #include "parser/all.h"

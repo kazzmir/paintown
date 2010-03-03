@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "option-options.h"
+#include "options.h"
 #include "game.h"
 #include "menu.h"
 #include "config.h"

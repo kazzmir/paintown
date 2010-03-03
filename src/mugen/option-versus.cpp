@@ -1,9 +1,8 @@
 #include "util/bitmap.h"
-#include "mugen/option-versus.h"
-#include "mugen/game.h"
-#include "mugen/menu.h"
-
-#include "mugen/config.h"
+#include "options.h"
+#include "game.h"
+#include "menu.h"
+#include "config.h"
 
 using namespace std;
 using namespace Mugen;
