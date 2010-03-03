@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "configuration.h"
 #include "menu/menu_global.h"
+#include "menu/menu-exception.h"
 #include "mugen/menu.h"
 #include "mugen/config.h"
 #include "init.h"
@@ -247,7 +248,9 @@ void OptionChangeMod::run(bool &endGame){
         menu.run();
         changeMod(mods[select]);
 
-        /* TODO: throw ReloadMenu() or something here to make the menu update */
+        // Reload the menu
+        throw ReloadMenuException();
+
     } catch (const LoadException & le){
         Global::debug(0) << "Could not load menu/change-mod.txt: " << le.getReason() << endl;
     } catch (const Filesystem::NotFound & e){

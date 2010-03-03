@@ -8,6 +8,7 @@
 #include "music.h"
 #include "menu/menu.h"
 #include "menu/menu_global.h"
+#include "menu/menu-exception.h"
 #include "input/input-manager.h"
 #include "game/mod.h"
 #include "shutdown_exception.h"
@@ -201,31 +202,38 @@ int paintown_main( int argc, char ** argv ){
 
     InputManager input;
     Music music(music_on);
-    try{
-        Menu game;
-        game.load(mainMenuPath());
-        if (just_network_server){
-            Network::networkServer(&game);
-        } else if (mugen){
-            Mugen::run();
-        } else {
-            game.run();
+    while (true){
+        try{
+            Menu game;
+            game.load(mainMenuPath());
+            if (just_network_server){
+                Network::networkServer(&game);
+            } else if (mugen){
+                Mugen::run();
+            } else {
+                game.run();
+            }
+        } catch (const Filesystem::NotFound & ex){
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
+        } catch (const TokenException & ex){
+            Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
+            return -1;
+        } catch (const LoadException & ex){
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
+            return -1;
+        } catch (const ReturnException & ex){
+        } catch (const ShutdownException & shutdown){
+            Global::debug(1) << "Forced a shutdown. Cya!" << endl;
+        } catch (const MugenException & m){
+            Global::debug(0) << "Mugen exception: " << m.getReason() << endl;
+        } catch (const ReloadMenuException & ex){
+            Global::debug(1) << "Menu Reload Requested. Restarting...." << endl;
+            continue;
+        } catch (...){
+            Global::debug(0) << "Uncaught exception!" << endl;
         }
-    } catch (const Filesystem::NotFound & ex){
-        Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
-    } catch (const TokenException & ex){
-        Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
-        return -1;
-    } catch (const LoadException & ex){
-        Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
-        return -1;
-    } catch (const ReturnException & ex){
-    } catch (const ShutdownException & shutdown){
-        Global::debug(1) << "Forced a shutdown. Cya!" << endl;
-    } catch (const MugenException & m){
-        Global::debug(0) << "Mugen exception: " << m.getReason() << endl;
-    } catch (...){
-        Global::debug(0) << "Uncaught exception!" << endl;
+        
+        break;
     }
 
     Configuration::saveConfiguration();
