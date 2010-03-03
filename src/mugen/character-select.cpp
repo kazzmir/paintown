@@ -43,7 +43,6 @@
 #include "util.h"
 #include "font.h"
 
-#include "option-versus.h"
 #include "ast/all.h"
 #include "parser/all.h"
 
