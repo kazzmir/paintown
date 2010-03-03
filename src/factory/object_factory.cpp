@@ -12,6 +12,7 @@
 #include "object/heart.h"
 #include "object/item.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "object/object.h"
 #include "object_factory.h"
 #include "script/script.h"
@@ -136,13 +137,13 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
     maxObjectId(block->getId());
 
     try{
-        switch( block->getType() ){
+        switch (block->getType()){
             case ItemType : {
                 string cachePath = "item:" + block->getPath();
-                if ( cached[cachePath] == NULL ){
-                    cached[cachePath] = new Item( block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
+                if (cached[cachePath] == NULL){
+                    cached[cachePath] = new Item(block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
                     Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                    Global::info("Cached " + Filesystem::cleanse(block->getPath()));
                 }
 
                 return makeItem( (Item *) cached[cachePath]->copy(), block );
@@ -152,7 +153,7 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
                 if ( cached[cachedPath] == NULL ){
                     cached[cachedPath] = new NetworkCharacter( block->getPath(), 0 );
                     Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                    Global::info("Cached " + Filesystem::cleanse(block->getPath()));
                 }
                 return makeNetworkCharacter( (NetworkCharacter *) cached[cachedPath]->copy(), block );
             }
@@ -161,7 +162,7 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
                 if (cached[cachedPath] == NULL){
                     cached[cachedPath] = new NetworkPlayer( block->getPath(), 0 );
                     Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                    Global::info("Cached " + Filesystem::cleanse(block->getPath()));
                 }
                 return makeNetworkPlayer( (NetworkPlayer *) cached[cachedPath]->copy(), block );
             }
@@ -170,7 +171,7 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
                 if ( cached[cachedPath] == NULL ){
                     cached[cachedPath] = new Actor( block->getPath() );
                     Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                    Global::info("Cached " + Filesystem::cleanse(block->getPath()));
                 }
 
                 return makeActor( (Actor *) cached[cachedPath]->copy(), block );
@@ -180,7 +181,7 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
                 if ( cached[cachedPath] == NULL ){
                     cached[cachedPath] = new Enemy( block->getPath() );
                     Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                    Global::info("Cached " + Filesystem::cleanse(block->getPath()));
                 }
                 return makeEnemy( (Enemy *) cached[cachedPath]->copy(), block );
             }
@@ -189,7 +190,7 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
                 if ( cached[cachedPath] == NULL ){
                     cached[cachedPath] = new Cat( block->getPath() );
                     Global::debug( 1 ) << "Cached " << block->getPath() << endl;
-                    Global::info("Cached " + block->getPath());
+                    Global::info("Cached " + Filesystem::cleanse(block->getPath()));
                 }
 
                 return makeCat( (Cat *) cached[cachedPath]->copy(), block );
