@@ -106,7 +106,7 @@ enterPressed( false ){
 		debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
 	}
 
-	lineEdit = new LineEdit();
+    lineEdit = new Gui::LineEdit();
 	lineEdit->position.x = 20;
 	lineEdit->position.y = 20 + messages.getHeight() + 5;
 	lineEdit->position.width = 400;
@@ -116,13 +116,13 @@ enterPressed( false ){
 	lineEdit->position.body = Bitmap::makeColor( 0, 0, 0 );
 	lineEdit->position.bodyAlpha = 128;
 	lineEdit->position.border = Bitmap::makeColor( 255, 255, 0 );
-	lineEdit->setHorizontalAlign(LineEdit::T_Left);
+	lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
 	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
 	
 	lineEdit->setText("Hi!");
 	// lineEdit->setFont(Menu::getFont());
 	lineEdit->setFont(& Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20));
-	keyInputManager::pressed.connect(lineEdit,&LineEdit::keyPress);
+	keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
 	keyInputManager::pressed.connect(this,&ChatClient::keyPress);
 	keyInputManager::released.connect(this,&ChatClient::keyRelease);
 	lineEdit->setFocused(true);

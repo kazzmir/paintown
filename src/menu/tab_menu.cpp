@@ -26,6 +26,7 @@
 #include <map>
 
 using namespace std;
+using namespace Gui;
 
 static int FONT_W = 16;
 static int FONT_H = 16;

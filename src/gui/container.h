@@ -5,6 +5,9 @@
 #include "gui/rectarea.h"
 
 class Bitmap;
+
+namespace Gui{
+    
 class Widget;
 
 class Container
@@ -31,5 +34,7 @@ class Container
 	private:
 		std::list<Widget *>widgets;
 };
+
+}
 
 #endif

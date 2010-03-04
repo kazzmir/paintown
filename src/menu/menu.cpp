@@ -27,6 +27,7 @@
 #include <map>
 
 using namespace std;
+using namespace Gui;
 
 static std::string sharedFont = "";
 static int sharedFontWidth = 24;

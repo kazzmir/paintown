@@ -2,12 +2,12 @@
 #define _paintown_gui_widget_h
 
 #include "gui/rectarea.h"
-#include "gui/sigslot.h"
 
 class Bitmap;
 
-class Widget : public sigslot::has_slots<>
-{
+namespace Gui{
+
+class Widget{
 	public:
 		Widget();
 		Widget( const Widget & w );
@@ -34,5 +34,7 @@ class Widget : public sigslot::has_slots<>
 		
 		Bitmap *workArea;
 };
+
+}
 
 #endif

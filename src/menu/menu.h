@@ -51,10 +51,10 @@ public:
     virtual void act(bool &endGame, bool reset = true);
 
     /*! Draw */
-    virtual void draw(const Box &area, Bitmap *bmp);
+    virtual void draw(const Gui::Box &area, Bitmap *bmp);
 
     //! Draw text
-    virtual void drawText(const Box &area, Bitmap *bmp);
+    virtual void drawText(const Gui::Box &area, Bitmap *bmp);
 
     /*! run as it's own menu */
     virtual void run();
@@ -112,7 +112,7 @@ public:
     void setupOptions();
 
     //! Area for placement of option list
-    Box backboard;
+    Gui::Box backboard;
 
 protected:
     //! Current music
@@ -197,7 +197,7 @@ private:
     //! Fade speed
     int fadeSpeed;
 
-    Box fadeBox;
+    Gui::Box fadeBox;
 
     //! Set background for this menu
     Bitmap *background;

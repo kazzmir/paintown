@@ -16,6 +16,7 @@
 
 using namespace std;
 namespace PaintownUtil = ::Util;
+using namespace Gui;
 
 namespace Mugen{
 

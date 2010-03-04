@@ -5,6 +5,8 @@
 
 #include "gui/keys.h"
 
+using namespace Gui;
+
 static std::ostream & debug( int level ){
 	Global::debug( level ) << "[line edit] ";
 	return Global::debug( level );

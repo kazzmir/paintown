@@ -130,10 +130,10 @@ class BackgroundElement : public Element {
 	}
 	
 	virtual inline void setWindow(int x1, int y1, int x2, int y2){
-	    this->window = RectArea(x1,y1,x2-x1,y2-y1);
+	    this->window = Gui::RectArea(x1,y1,x2-x1,y2-y1);
 	}
 	
-	virtual inline const RectArea & getWindow() const {
+	virtual inline const Gui::RectArea & getWindow() const {
 	    return this->window;
 	}
 	
@@ -237,7 +237,7 @@ class BackgroundElement : public Element {
 	//! Tile spacing
 	Mugen::Point tileSpacing;
 	//! Window for clipping
-	RectArea window;
+    Gui::RectArea window;
 	//! Window delta
 	double windowDeltaX;
 	double windowDeltaY;

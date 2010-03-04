@@ -9,10 +9,14 @@
 
 #include "util/font.h"
 
+#include "gui/sigslot.h"
+
 
 class keys;
 
-class LineEdit : public Widget {
+namespace Gui{
+
+class LineEdit : public Widget, public sigslot::has_slots<>{
 public:
 	//! enumerator housing alignment positions
 	enum textAlign {
@@ -164,5 +168,7 @@ protected:
 		changed_ = false;
 	}
 };
+
+}
 
 #endif

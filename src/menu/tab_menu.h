@@ -29,17 +29,16 @@ class ColorBuffer{
 };
 
 // Provide menus in a box
-class MenuBox : public Box
-{
+class MenuBox : public Gui::Box{
     public:
 	MenuBox(int w, int h);
 	virtual ~MenuBox();
-	bool checkVisible(const RectArea &area);
-	void setColors(const RectArea &info, const int fontColor);
+	bool checkVisible(const Gui::RectArea &area);
+	void setColors(const Gui::RectArea &info, const int fontColor);
 	void setColors(const int bodyColor, const int borderColor, const int fontColor);
 	Menu menu;
 	int fontColor;
-	Box snapPosition;
+    Gui::Box snapPosition;
 	bool running;
 };
 
@@ -59,9 +58,9 @@ class TabMenu : public Menu
 	/*! do logic, draw whatever */
 	void run();
     private:
-	RectArea tabInfo;
-	RectArea selectedTabInfo;
-	RectArea runningTabInfo;
+    Gui::RectArea tabInfo;
+    Gui::RectArea selectedTabInfo;
+    Gui::RectArea runningTabInfo;
 	
 	int fontColor;
 	int selectedFontColor;

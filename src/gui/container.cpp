@@ -3,6 +3,8 @@
 #include "util/bitmap.h"
 #include "gui/widget.h"
 
+using namespace Gui;
+
 Container::Container()
 {
 	// Nothing yet

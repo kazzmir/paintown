@@ -39,6 +39,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace Gui;
 
 OptionAdventure::OptionAdventure(Token *token) throw( LoadException ):
 MenuOption(token, Event){

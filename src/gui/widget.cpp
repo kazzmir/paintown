@@ -3,6 +3,7 @@
 #include <math.h>
 #include "globals.h"
 
+using namespace Gui;
 
 static const double S_PI = 3.14159265358979323846;
 static const double DEG_TO_RAD = 180.0/S_PI;

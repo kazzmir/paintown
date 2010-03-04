@@ -5,8 +5,9 @@
 
 #include "gui/widget.h"
 
-class Box : public Widget
-{
+namespace Gui{
+
+class Box : public Widget{
 	public:
 		Box();
 		Box( const Box & b );
@@ -26,5 +27,7 @@ class Box : public Widget
 	
 	protected:
 };
+
+}
 
 #endif

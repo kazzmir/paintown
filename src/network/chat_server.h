@@ -10,7 +10,10 @@
 
 class Bitmap;
 class Keyboard;
-class LineEdit;
+
+namespace Gui{
+    class LineEdit;
+}
 
 enum Focus{
 	INPUT_BOX,
@@ -187,7 +190,7 @@ protected:
 	std::vector< Client * > clients;
 	std::string name;
 	bool accepting;
-	LineEdit * lineEdit;
+    Gui::LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
         std::vector<pthread_t> accepted;

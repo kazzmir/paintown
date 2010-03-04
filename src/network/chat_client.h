@@ -10,7 +10,9 @@
 
 class Keyboard;
 class Bitmap;
-class LineEdit;
+namespace Gui{
+    class LineEdit;
+}
 class keys;
 
 enum Focus{
@@ -69,7 +71,7 @@ private:
 	pthread_t inputThread;
 	std::vector< Buddy > buddies;
 	bool finished;
-	LineEdit * lineEdit;
+    Gui::LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
         std::queue<std::string> toSend;

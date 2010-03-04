@@ -5,6 +5,8 @@
 
 #include "util/font.h"
 
+using namespace Gui;
+
 Box::Box(){
 	// Nothing yet
 }
