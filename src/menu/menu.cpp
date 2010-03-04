@@ -743,14 +743,14 @@ void Menu::drawBackground(Bitmap *bmp){
 void Menu::drawTextBoard(Bitmap *bmp){
 	switch(currentDrawState){
 		case FadeIn : {
-			fadeBox.render( bmp );
+			fadeBox.render( *bmp );
 			break;
 		}
 		case FadeInText:
 		case NoFade:
 		default : {
 			// Our box widget
-			backboard.render(bmp);
+			backboard.render(*bmp);
 			break;
 		}
 	}
@@ -943,7 +943,7 @@ void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *
             area.position.borderAlpha = backboard.position.borderAlpha;
 
             // Draw box
-            area.render(bmp);
+            area.render(*bmp);
 
             // Draw text
             int sy = area.position.y - 5;

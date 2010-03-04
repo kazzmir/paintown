@@ -53,7 +53,7 @@ void LineEdit::fontChange()
 }
 
 // Update
-void LineEdit::logic()
+void LineEdit::act()
 {
 	if((blinkRate*2)<=cursorTime.msecs())cursorTime.reset();
 	if(changed_)
@@ -117,39 +117,35 @@ void LineEdit::logic()
 		stable();
 	}
 }
-	
-void LineEdit::render(const Bitmap & work){
-	this->render(&work);
-}
 		
 // Draw
-void LineEdit::render(const Bitmap *work){
+void LineEdit::render(const Bitmap & work){
 
 	checkWorkArea();
 	// Check if we are using a rounded box
 	if(position.radius>0) {
 		Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
 		roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.body );
-		workArea->drawTrans(position.x,position.y,*work);
+		workArea->drawTrans(position.x,position.y,work);
 		
 		workArea->fill(Bitmap::makeColor(255,0,255));
 		
 		Bitmap::transBlender( 0, 0, 0, position.borderAlpha );
 		roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.border );
-		workArea->drawTrans(position.x,position.y,*work);
+		workArea->drawTrans(position.x,position.y,work);
 	} else {
 		Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
 		workArea->rectangleFill( 0, 0, position.width-1, position.height-1, position.body );
-		workArea->drawTrans(position.x,position.y,*work);
+		workArea->drawTrans(position.x,position.y,work);
 		
 		workArea->fill(Bitmap::makeColor(255,0,255));
 		
 		Bitmap::transBlender( 0, 0, 0, position.borderAlpha );
 		workArea->rectangle( 0, 0, position.width-1, position.height-1, position.border );
-		workArea->drawTrans(position.x,position.y,*work);
+		workArea->drawTrans(position.x,position.y,work);
 	}
 
-	work->drawingMode( Bitmap::MODE_SOLID );
+	work.drawingMode( Bitmap::MODE_SOLID );
 	
 	workArea->fill(Bitmap::makeColor(255,0,255));
 	
@@ -163,7 +159,7 @@ void LineEdit::render(const Bitmap *work){
 		}
 	}
 	
-	workArea->draw(position.x,position.y,*work);
+	workArea->draw(position.x,position.y,work);
 }
 
 // Keypresses

@@ -273,7 +273,7 @@ void ChatClient::handleInput( Keyboard & keyboard ){
 	}
 	*/
 
-	lineEdit->logic();
+	lineEdit->act();
 
 	if ( lineEdit->didChanged( editCounter ) ){
 		needUpdate();

@@ -78,11 +78,10 @@ public:
 	void setCursorBlinkRate(unsigned int msecs);
 
 	//! Update
-	void logic();
+	void act();
 
 	//! Draw
-	void render(const Bitmap *work);
-	void render(const Bitmap & work);
+	void render(const Bitmap &);
 
 	//! set Focus
 	void setFocused(bool focus);

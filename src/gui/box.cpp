@@ -28,12 +28,12 @@ Box &Box::operator=( const Box &copy){
 }
 
 // Logic
-void Box::logic(){
+void Box::act(){
 	// Nothing yet
 }
 
 // Render
-void Box::render(const Bitmap *work){
+void Box::render(const Bitmap & work){
     checkWorkArea();
     // Check if we are using a rounded box
     if(position.radius>0){
@@ -45,8 +45,8 @@ void Box::render(const Bitmap *work){
     }
     Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
     workArea->drawingMode( Bitmap::MODE_TRANS );
-    workArea->drawTrans(position.x,position.y,*work);
-    work->drawingMode( Bitmap::MODE_SOLID );
+    workArea->drawTrans(position.x,position.y,work);
+    work.drawingMode( Bitmap::MODE_SOLID );
 }
 
 void Box::msgDialog(const Bitmap & bmp, const std::string & message, int radius){
@@ -64,7 +64,7 @@ void Box::msgDialog(const Bitmap & bmp, const std::string & message, int radius)
     dialog.position.border = Bitmap::makeColor(255,255,255);
     dialog.position.borderAlpha = 255;
     Bitmap temp = Bitmap::temporaryBitmap(width,height);
-    dialog.render(&temp);
+    dialog.render(temp);
     vFont.printf( 5, 5, Bitmap::makeColor(255,255,255), temp, message, -1);
     temp.BlitToScreen(x,y);
 }

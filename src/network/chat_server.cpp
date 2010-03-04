@@ -510,7 +510,7 @@ sigslot::slot ChatServer::keyRelease(const keys &k){
 
 void ChatServer::handleInput( Keyboard & keyboard ){
 
-	lineEdit->logic();
+	lineEdit->act();
 
 	if ( lineEdit->didChanged( editCounter ) ){
 		needUpdate();

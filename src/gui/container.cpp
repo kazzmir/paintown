@@ -28,25 +28,25 @@ void Container::remove(Widget *widget)
 }
 
 // Logic
-void Container::logic()
+void Container::act()
 {
 	std::list<Widget *>::iterator i = widgets.begin(), end = widgets.end();
 	while(i!=end)
 	{
-		(*i)->logic();
+		(*i)->act();
 		i++;
 	}
 }
 
 // Render
-void Container::render(Bitmap *work)
+void Container::render(const Bitmap & work)
 {
-	work->setClipRect(position.x,position.y,position.getX2(),position.getY2());
+	work.setClipRect(position.x,position.y,position.getX2(),position.getY2());
 	std::list<Widget *>::iterator i = widgets.begin(), end = widgets.end();
 	while(i!=end)
 	{
 		(*i)->render(work);
 		i++;
 	}
-	work->setClipRect(0,0,work->getWidth(),work->getHeight());
+	work.setClipRect(0,0,work.getWidth(),work.getHeight());
 }

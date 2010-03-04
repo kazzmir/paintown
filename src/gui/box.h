@@ -17,10 +17,10 @@ class Box : public Widget{
 		Box &operator=( const Box &);
 		
 		// Logic
-		virtual void logic();
+		virtual void act();
 		
 		// Render
-		virtual void render(const Bitmap *work);
+		virtual void render(const Bitmap &);
 		
 		// Do a message Dialog centered on the given bitmap
 		static void msgDialog(const Bitmap & bmp, const std::string & message, int radius = 0);

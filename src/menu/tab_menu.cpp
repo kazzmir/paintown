@@ -543,7 +543,7 @@ void TabMenu::drawMenus(Bitmap *bmp){
         }
         tab->position.x = tabstartx;
         tab->position.y = tabstarty;
-        tab->render(bmp);
+        tab->render(*bmp);
         // Draw text
         vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, tab->fontColor, *bmp, tab->menu.getName(), 0 );
         tabstartx += tab->position.width;

@@ -536,7 +536,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	    // render fonts
 	    font->render(DEFAULT_WIDTH/2, 20, 0, 0, workArea, "OPTIONS" );
 	    
-	    optionArea.render(&workArea);
+	    optionArea.render(workArea);
 	    
 	    doOptions(*font,optionArea.position.x,optionArea.position.y,workArea);
 	    

@@ -787,7 +787,7 @@ void OptionJoystick::run(bool &endGame){
     dialog.position.border = Bitmap::makeColor(255,255,255);
     dialog.position.borderAlpha = 255;
     Bitmap temp = Bitmap::temporaryBitmap(width,height);
-    dialog.render(&temp);
+    dialog.render(temp);
     vFont.printf( 5, 5, Bitmap::makeColor(255,255,255), temp, message, -1);
     temp.BlitToScreen(x,y);
     

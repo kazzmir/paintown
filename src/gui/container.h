@@ -20,10 +20,10 @@ class Container
 		RectArea position;
 		
 		// Logic
-		void logic();
+		void act();
 		
 		// Render
-		void render(Bitmap *work);
+		void render(const Bitmap &);
 		
 		// Add widget
 		void add(Widget *widget);

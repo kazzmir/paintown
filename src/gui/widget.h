@@ -20,10 +20,10 @@ class Widget{
 		RectArea position;
 		
 		// Logic
-		virtual void logic()=0;
+		virtual void act()=0;
 		
 		// Render
-		virtual void render(const Bitmap *work)=0;
+		virtual void render(const Bitmap &)=0;
 	
 	protected:
 		void arc( Bitmap *work, int x, int y, double startAngle, int radius, int color );
