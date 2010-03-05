@@ -510,7 +510,7 @@ class Grid{
 	virtual void moveCursorRight(Cursor & cursor);
 	virtual void moveCursorUp(Cursor & cursor);
 	virtual void moveCursorDown(Cursor & cursor);
-	virtual void selectCell(Cursor &cursor, const Mugen::Keys & key);
+	virtual void selectCell(Cursor &cursor, const Mugen::Keys & key, bool modifier);
 	virtual void selectStage();
         
         virtual inline void setRows(int r){
@@ -787,8 +787,9 @@ class Cursor{
             this->cancelRandom = cancel;
         }
 
-        virtual inline void setActSelection(const Mugen::Keys & key){
+        virtual inline void setActSelection(const Mugen::Keys & key, bool modifier = false){
             this->actSelection = key;
+            this->actModifier = modifier;
         }
 
         virtual int getActSelection();
@@ -850,6 +851,9 @@ class Cursor{
 
         //! Character Key selection for determing act
         Mugen::Keys actSelection;
+
+        //! Use modifier for selection
+        bool actModifier;
 };
 
 class VersusScreen {

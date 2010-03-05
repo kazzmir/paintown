@@ -10,40 +10,41 @@ namespace Gui{
 template <class T>
 class ContextBox : public Widget{
     public:
-	ContextBox():
-	current(0){
-	}
-	ContextBox( const ContextBox & b ):
-	current(0){
-	}
-	virtual ~ContextBox(){
-	}
+        ContextBox():
+        current(0){
+        }
+        ContextBox( const ContextBox & b ):
+        current(0){
+        }
+        virtual ~ContextBox(){
+        }
+        
+        //! copy
+	    ContextBox &operator=( const ContextBox &){
+	    }
 	
-	//! copy
-	ContextBox &operator=( const ContextBox &){
-	}
+	    //! Logic
+	    virtual void act(){
+	    }
 	
-	//! Logic
-	virtual void act(){
-	}
-	
-	//! Render
-	virtual void render(const Bitmap & work){
-	}
-
+	    //! Render
+	    virtual void render(const Bitmap & work){
+	    }
+    
         //! Next
         virtual void next(){
-	}
-
+	    }
+    
         //! Previous
         virtual void previous(){
-	}
-
+	    }
+    
         //! Set context list
         virtual inline void setList(std::vector<T> & list){
             this->context = &list;
-	    this->current = 0;
+            this->current = 0;
         }
+    
         //! Get current index
         virtual inline int getCurrentIndex(){
             return this->current;

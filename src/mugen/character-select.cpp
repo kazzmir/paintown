@@ -610,10 +610,10 @@ void Grid::moveCursorDown(Cursor &cursor){
     cursor.playMoveSound();
 }
 
-void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key){
+void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key, bool modifier){
     // *TODO use the key to determine which map(act) is used
     // Get the appropriate cell for flashing in case of random
-    cursor.setActSelection(key);
+    cursor.setActSelection(key, modifier);
     cursor.getCurrentCell()->getCharacter()->getReferenceCell()->startFlash();
     // set cursor state depending on state
     switch (type){
@@ -684,7 +684,8 @@ moveSound(0),
 selectSound(0),
 randomSound(0),
 cancelRandom(false),
-actSelection(A){
+actSelection(A),
+actModifier(false){
 }
 
 Cursor::~Cursor(){
@@ -735,36 +736,14 @@ void Cursor::act(Grid &grid){
 	    }
 
             if (!getCurrentCell()->isEmpty()){
-                    Mugen::Keys selectable[] = {A, B, C, X, Y, Z, Start};
+                    Mugen::Keys selectable[] = {A, B, C, X, Y, Z};
                 for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
                     if (out[selectable[key]]){
-                        grid.selectCell(*this, selectable[key]);
+                        grid.selectCell(*this, selectable[key], out[Start]);
                     }
                 }
             }
-            /*
-	    if (out[A]){
-		grid.selectCell(*this,A);
-	    }
-	    if (out[B]){
-		grid.selectCell(*this,B);
-	    }
-	    if (out[C]){
-		grid.selectCell(*this,C);
-	    }
-	    if (out[X]){
-		grid.selectCell(*this,X);
-	    }
-	    if (out[Y]){
-		grid.selectCell(*this,Y);
-	    }
-	    if (out[Z]){
-		grid.selectCell(*this,Z);
-	    }
-            */
 
-	    if (out[Start]){
-	    }
 	    if (blink && (currentCell->getCursorState() == Cell::Two)){
 		blinkCounter++;
 		if (blinkCounter > blinkRate){
@@ -875,23 +854,45 @@ void Cursor::renderPortrait(const Bitmap &bmp){
 int Cursor::getActSelection(){
     switch (actSelection){
         case A:
-            return 1;
+            if (!actModifier){
+                return 1;
+            } else {
+                return 7;
+            }
         case B:
-            return 2;
+            if (!actModifier){
+                return 2;
+            } else {
+                return 8;
+            }
         case C:
-            return 3;
+            if (!actModifier){
+                return 3;
+            } else {
+                return 9;
+            }
         case X:
-            return 4;
+            if (!actModifier){
+                return 4;
+            } else {
+                return 10;
+            }
         case Y:
-            return 5;
+            if (!actModifier){
+                return 5;
+            } else {
+                return 11;
+            }
         case Z:
-            return 6;
-        case Start:
-            return 7;
+            if (!actModifier){
+                return 6;
+            } else {
+                return 12;
+            }
         default:
             break;
     }
-    return PaintownUtil::rnd(1,7);
+    return PaintownUtil::rnd(1,12);
 }
 
 VersusScreen::VersusScreen():
