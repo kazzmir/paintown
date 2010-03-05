@@ -37,6 +37,7 @@
 #include "game/mod.h"
 
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 using namespace Gui;
@@ -1480,7 +1481,7 @@ static bool doSort(const ScreenSize & a, const ScreenSize & b){
 
 static vector<ScreenSize> sortResolutions(const vector<ScreenSize> & modes){
     vector<ScreenSize> copy(modes);
-    sort(copy.begin(), copy.end(), doSort);
+    std::sort(copy.begin(), copy.end(), doSort);
     return copy;
 }
 

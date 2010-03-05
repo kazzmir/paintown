@@ -26,6 +26,8 @@
 #include <queue>
 #include <map>
 
+#include "gui/context-box.h"
+
 using namespace std;
 using namespace Gui;
 

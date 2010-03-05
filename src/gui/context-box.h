@@ -9,29 +9,40 @@ namespace Gui{
 
 template <class T>
 class ContextBox : public Widget{
-	public:
-		ContextBox();
-		ContextBox( const Box & b );
-		virtual ~ContextBox();
-		
-		//! copy
-		ContextBox &operator=( const ContextBox &);
-		
-		//! Logic
-		virtual void act();
-		
-		//! Render
-		virtual void render(const Bitmap & work);
+    public:
+	ContextBox():
+	current(0){
+	}
+	ContextBox( const ContextBox & b ):
+	current(0){
+	}
+	virtual ~ContextBox(){
+	}
+	
+	//! copy
+	ContextBox &operator=( const ContextBox &){
+	}
+	
+	//! Logic
+	virtual void act(){
+	}
+	
+	//! Render
+	virtual void render(const Bitmap & work){
+	}
 
         //! Next
-        virtual void next();
+        virtual void next(){
+	}
 
         //! Previous
-        virtual void previous();
+        virtual void previous(){
+	}
 
         //! Set context list
         virtual inline void setList(std::vector<T> & list){
             this->context = &list;
+	    this->current = 0;
         }
         //! Get current index
         virtual inline int getCurrentIndex(){
@@ -47,6 +58,7 @@ class ContextBox : public Widget{
 
         //! Context list
         std::vector<T> * context;
+};
 
 }
 
