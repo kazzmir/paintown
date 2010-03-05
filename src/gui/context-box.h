@@ -20,31 +20,25 @@ class ContextBox : public Widget{
         }
         
         //! copy
-	    ContextBox &operator=( const ContextBox &){
-	    }
-	
-	    //! Logic
-	    virtual void act(){
-	    }
-	
-	    //! Render
-	    virtual void render(const Bitmap & work){
-	    }
-    
+        ContextBox &operator=( const ContextBox &){
+        }
+        //! Logic
+        virtual void act(){
+        }
+        //! Render
+        virtual void render(const Bitmap & work){
+        }
         //! Next
         virtual void next(){
-	    }
-    
+        }
         //! Previous
         virtual void previous(){
-	    }
-    
+        }
         //! Set context list
         virtual inline void setList(std::vector<T> & list){
             this->context = &list;
             this->current = 0;
         }
-    
         //! Get current index
         virtual inline int getCurrentIndex(){
             return this->current;
