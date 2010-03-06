@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "gui/widget.h"
+#include "gui/box.h"
 
 namespace Gui{
     
@@ -32,6 +33,10 @@ class ContextBox : public Widget{
         virtual void next();
         //! Previous
         virtual void previous();
+	//! open context box
+	virtual void open();
+	//! Close context box
+	virtual void close();
         //! Set context list
         virtual inline void setList(std::vector<ContextItem *> & list){
             this->context = &list;
@@ -47,12 +52,21 @@ class ContextBox : public Widget{
         virtual inline unsigned int getCurrentIndex(){
             return this->current;
         }
+        //! Is active?
+	virtual inline bool isActive(){
+	    return (this->fadeState != NotActive);
+	}
     private:
+	
+	void doFade();
+	
 	enum FadeState{
 	    NotActive,
-	    FadeIn,
+	    FadeInBox,
+	    FadeInText,
 	    Active,
-	    FadeOut,
+	    FadeOutText,
+	    FadeOutBox,
 	};
         //! Current index
         unsigned int current;
@@ -67,6 +81,15 @@ class ContextBox : public Widget{
 	std::string font;
 	int fontWidth;
 	int fontHeight;
+	
+	//! Fade speed
+	int fadeSpeed;
+	
+	//! Fade Aplha
+	int fadeAlpha;
+	
+	//! Board
+	Box board;
 };
 
 }
