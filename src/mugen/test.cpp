@@ -59,6 +59,8 @@
 #include "ast/Configuration.h"
 #include "input/input-manager.h"
 
+namespace PaintownUtil = ::Util;
+
 using namespace std;
 
 static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color, int &start ){
@@ -594,7 +596,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
 }
 
 void doSelectScreen(const std::string &file){
-    Mugen::CharacterSelect selector(Filesystem::AbsolutePath(file), Mugen::Player1, Mugen::Versus);
+    Mugen::CharacterSelect selector = Mugen::CharacterSelect(Filesystem::AbsolutePath(file), Mugen::Player1, Mugen::Versus);
     try {
 	selector.load();
 	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
@@ -607,7 +609,7 @@ void doSelectScreen(const std::string &file){
 }
 
 void doBackground(const std::string &file, const std::string &section){
-    Mugen::Background background(Filesystem::AbsolutePath(file), section);
+    Mugen::Background background = Mugen::Background(Filesystem::AbsolutePath(file), section);
     Bitmap workArea(320,240);
     Bitmap screen(640,480);
     
@@ -702,7 +704,7 @@ void doBackground(const std::string &file, const std::string &section){
 	}
 
 	while ( Global::speed_counter < 1 ){
-		Util::rest( 1 );
+		PaintownUtil::rest( 1 );
 	}
     }
 }
