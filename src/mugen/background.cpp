@@ -1528,16 +1528,16 @@ void BackgroundController::act(){
     }
 }
 
-Background::Background(const std::string &file, const std::string &header):
+Background::Background(const Filesystem::AbsolutePath &file, const std::string &header):
 file(file),
 header(header),
 debug(false),
 clearColor(-1){
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(Mugen::Util::parseDef(file));
+    Ast::AstParse parsed(Mugen::Util::parseDef(file.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     
     // for linked position in backgrounds
     BackgroundElement *priorElement = 0;
@@ -1563,10 +1563,10 @@ clearColor(-1){
 			    simple >> self.spriteFile;
 			    Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
 			    // Strip it of any directory it might have
-			    std::string baseDir = Util::getFileDir(self.file);
+                            Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
 			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
 			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-			    Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, self.spriteFile), "", sprites);
+			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites);
 			} 
 		    }
             };
@@ -1587,10 +1587,10 @@ clearColor(-1){
 			    simple >> self.spriteFile;
 			    Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
 			    // Strip it of any directory it might have
-			    std::string baseDir = Util::getFileDir(self.file);
+                            Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
 			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
 			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-			    Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, self.spriteFile), "", sprites);
+			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites);
 			} 
 		    }
             };
@@ -1611,10 +1611,10 @@ clearColor(-1){
 			    simple >> self.spriteFile;
 			    Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
 			    // Strip it of any directory it might have
-			    std::string baseDir = Util::getFileDir(self.file);
+                            Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
 			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
 			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-			    Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, self.spriteFile), "", sprites);
+			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites);
 			} else if (simple == "debugbg"){
 			    simple >> self.debug;
 			} else if (simple == "bgclearcolor"){

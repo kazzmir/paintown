@@ -198,7 +198,7 @@ allowReset(true){
                 int number;
                 std::string temp;
                 *token >> number >> temp;
-                Bitmap *bmp = new Bitmap(Filesystem::find(basedir + temp));
+                Bitmap *bmp = new Bitmap(Filesystem::find(Filesystem::RelativePath(basedir + temp)).path());
                 if (bmp->getError()){
                     delete bmp;
                 } else {

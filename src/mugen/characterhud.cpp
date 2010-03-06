@@ -1305,19 +1305,19 @@ FightElement &WinIcon::getPlayer2Win(const WinGame::WinType &win){
 	return *player2Icons[win];
 }
 
-GameInfo::GameInfo(const std::string & fightFile){
-    std::string baseDir = Mugen::Util::getFileDir(fightFile);
-    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(fightFile) );
+GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
+    Filesystem::AbsolutePath baseDir = fightFile.getDirectory();
+    const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, fightFile.getFilename().path());
     
-    if (ourDefFile.empty()){
-        throw MugenException( "Cannot locate fight definition file for: " + fightFile );
+    if (ourDefFile.isEmpty()){
+        throw MugenException( "Cannot locate fight definition file for: " + fightFile.path() );
     }
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
@@ -1325,18 +1325,18 @@ GameInfo::GameInfo(const std::string & fightFile){
         if (head == "Files"){
             class FileWalk: public Ast::Walker{
             public:
-                FileWalk(std::string & baseDir, GameInfo & self):
+                FileWalk(const Filesystem::AbsolutePath & baseDir, GameInfo & self):
                 baseDir(baseDir),
 		self(self){
                 }
-                std::string & baseDir;
+                const Filesystem::AbsolutePath & baseDir;
 		GameInfo & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "sff"){
 			std::string sff;
 			simple >> sff;
                         Global::debug(1) << "Got Sprite File: '" << sff << "'" << endl;
-			Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, sff), "", self.sprites);
+			Util::readSprites(Util::getCorrectFileLocation(baseDir, sff), Filesystem::AbsolutePath(), self.sprites);
 			for( Mugen::SpriteMap::iterator i = self.sprites.begin() ; i != self.sprites.end() ; ++i ){
 			    // Load these sprites so they are ready to use
 			    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -1351,7 +1351,7 @@ GameInfo::GameInfo(const std::string & fightFile){
                     } else if (simple == "snd"){
 			string temp;
                         simple >> temp;
-                        Mugen::Util::readSounds( Mugen::Util::getCorrectFileLocation(baseDir, temp ), self.sounds);
+                        Util::readSounds(Util::getCorrectFileLocation(baseDir, temp), self.sounds);
                         Global::debug(1) << "Got Sound File: '" << temp << "'" << endl;
 		    } 
                 }

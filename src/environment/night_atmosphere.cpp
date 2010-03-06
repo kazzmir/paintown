@@ -22,7 +22,7 @@ NightAtmosphere::NightAtmosphere():
 Atmosphere(),
 darkness(128){
 
-    lamp = new Bitmap(Filesystem::find("sprites/lamp.png"));
+    lamp = new Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/lamp.png")).path());
     /*
     addLight(500, 30, 50, 30, Bitmap::makeColor(32,32,0), 0);
     addLight(300, 30, 70, 30, Bitmap::makeColor(0,32,192), 128);

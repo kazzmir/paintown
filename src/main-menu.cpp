@@ -84,7 +84,7 @@ static const char * all(const char * args[], const int num, const char separate 
 static void showOptions(){
 	Global::debug(0) << "Paintown by Jon Rafkind" << endl;
 	Global::debug(0) << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
-	Global::debug(0) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2() << endl;
+	Global::debug(0) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2().path() << endl;
 	Global::debug(0) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
 	Global::debug(0) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
         Global::debug(0) << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
@@ -98,9 +98,9 @@ static void addArgs(vector<const char *> & args, const char * strings[], int num
     }
 }
 
-static string mainMenuPath() throw (TokenException, LoadException, Filesystem::NotFound){
+static Filesystem::AbsolutePath mainMenuPath() throw (TokenException, LoadException, Filesystem::NotFound){
     string menu = Paintown::Mod::getCurrentMod()->getMenu();
-    return Filesystem::find(menu);
+    return Filesystem::find(Filesystem::RelativePath(menu));
     /*
     string file = Filesystem::find(currentMod());
     TokenReader tr(file);

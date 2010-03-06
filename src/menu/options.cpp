@@ -180,12 +180,13 @@ static bool isModFile(const std::string & path){
     return false;
 }
 
+/* FIXME: change to AbsolutePath */
 static vector<string> findMods(){
     vector<string> mods;
 
-    vector<string> directories = Filesystem::findDirectories(".");
-    for (vector<string>::iterator dir = directories.begin(); dir != directories.end(); dir++){
-        string file = *dir + "/" + Filesystem::cleanse(*dir) + ".txt";
+    vector<Filesystem::AbsolutePath> directories = Filesystem::findDirectories(Filesystem::RelativePath("."));
+    for (vector<Filesystem::AbsolutePath>::iterator dir = directories.begin(); dir != directories.end(); dir++){
+        string file = (*dir).path() + "/" + Filesystem::cleanse(*dir).path() + ".txt";
         if (isModFile(file)){
             mods.push_back(file);
         }
@@ -194,15 +195,15 @@ static vector<string> findMods(){
     return mods;
 }
 
-static string modName(const std::string & path){
+static Filesystem::RelativePath modName(const Filesystem::AbsolutePath & path){
     try{
-        TokenReader reader(path);
-        Global::debug(1) << "Checking for a mod in " << path << endl;
+        TokenReader reader(path.path());
+        Global::debug(1) << "Checking for a mod in " << path.path() << endl;
         Token * name_token = reader.readToken()->findToken("game/name");
         if (name_token != NULL){
             string name;
             *name_token >> name;
-            return name;
+            return Filesystem::RelativePath(name);
         }
         return Filesystem::cleanse(path);
     } catch (const TokenException & e){
@@ -236,9 +237,9 @@ void OptionChangeMod::run(bool &endGame){
         for (vector<string>::iterator it = mods.begin(); it != mods.end(); it++){
             // menu.addOption(new OptionLevel(0, &select, 0));
             OptionLevel *opt = new OptionLevel(0, &select, index);
-            opt->setText(modName(*it));
+            opt->setText(modName(Filesystem::AbsolutePath(*it)).path());
             opt->setInfoText("Choose this mod");
-            if (modName(*it).compare(Util::upcase(modName(Configuration::getCurrentGame()))) == 0){
+            if (modName(Filesystem::AbsolutePath(*it)).path().compare(Util::upcase(Configuration::getCurrentGame())) == 0){
                 options.insert(options.begin(),opt);
             } else {
                 options.push_back(opt);
@@ -255,7 +256,7 @@ void OptionChangeMod::run(bool &endGame){
             return;
         }
         
-        menu.load(Filesystem::find("menu/change-mod.txt"));
+        menu.load(Filesystem::find(Filesystem::RelativePath("menu/change-mod.txt")));
         menu.run();
         changeMod(mods[select]);
 
@@ -320,7 +321,7 @@ title(Bitmap::makeColor(0,255,255)){
 				if ( background ){
 					delete background;
 				}
-				background = new Bitmap(Filesystem::find(temp));
+				background = new Bitmap(Filesystem::find(Filesystem::RelativePath(temp)).path());
 				if ( background->getError() ){
 					delete background;
 					background = NULL;
@@ -1089,7 +1090,7 @@ menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         *token >> temp;
-        menu->load(Filesystem::find(temp));
+        menu->load(Filesystem::find(Filesystem::RelativePath(temp)));
     } else {
         menu->load(token);
     }
@@ -1142,7 +1143,7 @@ MenuOption(token, Event){
                 // Filename
                 *tok >> temp;
                 // Set the default motif
-                Mugen::Data::getInstance().setMotif(temp);
+                Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
             } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -1658,10 +1659,11 @@ rgreen(255){
     // Find and set fonts now
     if (typeAdjust == fontName){
         try{
-            Global::debug(1, "fonts") << "Font directory " << Filesystem::find("fonts") << endl;
-            vector<string> ttfFonts = Util::getFiles(Filesystem::find("fonts"), "*.ttf");
+            Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
+            Global::debug(1, "fonts") << "Font directory " << fontsDirectory.path() << endl;
+            vector<string> ttfFonts = Util::getFiles(fontsDirectory, "*.ttf");
             Global::debug(1, "fonts") << "Found ttf fonts " << join(ttfFonts, ", ") << endl;
-            vector<string> otfFonts = Util::getFiles(Filesystem::find("fonts"), "*.otf");
+            vector<string> otfFonts = Util::getFiles(fontsDirectory, "*.otf");
             Global::debug(1, "fonts") << "Found otf fonts " << join(otfFonts, ", ") << endl;
             std::back_insert_iterator< std::vector<string> > inserter(fonts);
             copy(ttfFonts.begin(), ttfFonts.end(), inserter);
@@ -1859,7 +1861,7 @@ _menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         *token >> temp;
-        _menu->load(Filesystem::find(temp));
+        _menu->load(Filesystem::find(Filesystem::RelativePath(temp)));
     } else {
         _menu->load(token);
     }

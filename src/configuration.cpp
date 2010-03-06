@@ -453,11 +453,11 @@ static Configuration::JoystickInput intToJoystick(int a){
 
 void Configuration::loadConfigurations(){
     try{
-        string file = Filesystem::configFile();
-        TokenReader tr( file );
+        Filesystem::AbsolutePath file = Filesystem::configFile();
+        TokenReader tr(file.path());
         Token * head = tr.readToken();
         if (*head != config_configuration){
-            throw LoadException( string("Config file ") + Filesystem::configFile() + " does not use the configuration format" );
+            throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not use the configuration format" );
         }
         while ( head->hasTokens() ){
             Token * n;
@@ -498,7 +498,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException( string("Config file ") + Filesystem::configFile() + " does not specifiy (number #) for a keyboard-configuration" );
+                    throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
                 }
                 Configuration & myconfig = config(number);
                 myconfig.setRight(right);
@@ -550,7 +550,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException( string("Config file ") + Filesystem::configFile() + " does not specifiy (number #) for a joystick-configuration" );
+                    throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
                 }
                 Configuration & myconfig = config(number);
                 myconfig.setJoystickRight(right);
@@ -619,9 +619,9 @@ void Configuration::loadConfigurations(){
             }
         }
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Could not load configuration file " << Filesystem::configFile() << ": " << le.getReason() << endl;
+        Global::debug( 0 ) << "Could not load configuration file " << Filesystem::configFile().path() << ": " << le.getReason() << endl;
     } catch ( const TokenException & t ){
-        Global::debug( 0 ) << "Error loading configuration file '" << Filesystem::configFile() << "': " << t.getReason() << endl;
+        Global::debug( 0 ) << "Error loading configuration file '" << Filesystem::configFile().path() << "': " << t.getReason() << endl;
     }
 }
 
@@ -770,7 +770,7 @@ void Configuration::saveConfiguration(){
         head.addToken(property);
     }
 
-    ofstream out( Filesystem::configFile().c_str(), ios::trunc | ios::out );
+    ofstream out(Filesystem::configFile().path().c_str(), ios::trunc | ios::out );
     if ( ! out.bad() ){
         head.toString( out, string("") );
         out.close();

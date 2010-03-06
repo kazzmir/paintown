@@ -13,7 +13,7 @@ public:
 	/* constructors and destructor */
 	NetworkCharacter( int alliance ); 
 	NetworkCharacter( const char * filename, int alliance ) throw( LoadException );
-	NetworkCharacter( const std::string & filename, int alliance ) throw ( LoadException );
+	NetworkCharacter( const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException );
 	NetworkCharacter( const Character & chr ) throw( LoadException );
 	
 	virtual ~NetworkCharacter();

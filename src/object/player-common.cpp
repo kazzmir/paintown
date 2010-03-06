@@ -13,7 +13,7 @@ Character(filename, ALLIANCE_PLAYER),
 score(0){
 }
 
-PlayerCommon::PlayerCommon(const std::string & str) throw (LoadException):
+PlayerCommon::PlayerCommon(const Filesystem::AbsolutePath & str) throw (LoadException):
 Character(str, ALLIANCE_PLAYER),
 score(0){
 }

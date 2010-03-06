@@ -51,8 +51,8 @@ Font * FontFactory::getRealFont( const string & str, const int x, const int y ){
 }
 
 FontFactory::FontFactory(){
-	my_data = load_datafile(Filesystem::find("/fonts.dat").c_str() );
-	font_mapper[ "bios" ] = new AllegroFont( ::font );
+    my_data = load_datafile(Filesystem::find(Filesystem::RelativePath("fonts.dat")).path().c_str());
+    font_mapper[ "bios" ] = new AllegroFont( ::font );
 }
 
 FontFactory::~FontFactory(){

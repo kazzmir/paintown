@@ -6,6 +6,7 @@
 #include <Python.h>
 #include "script/script.h"
 #include <string>
+#include "util/file-system.h"
 
 class World;
 /* forward declaring this doesn't work.
@@ -14,7 +15,7 @@ class World;
 
 class PythonEngine: public Script::Engine {
 public:
-    PythonEngine(const std::string & path);
+    PythonEngine(const Filesystem::RelativePath & path);
 
     virtual void init();
     virtual void shutdown();
@@ -31,7 +32,7 @@ public:
 
     virtual ~PythonEngine();
 protected:
-    std::string path;
+    Filesystem::RelativePath path;
     std::string module;
     PyObject * user;
 };

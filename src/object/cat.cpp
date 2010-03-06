@@ -13,7 +13,7 @@
 
 using namespace std;
 
-Cat::Cat( const string & filename ) throw( LoadException ):
+Cat::Cat(const Filesystem::AbsolutePath & filename) throw( LoadException ):
 ObjectNonAttack( 0, 0 ),
 state( IDLE1 ){
 
@@ -22,7 +22,7 @@ state( IDLE1 ){
 	setMaxHealth( 1 );
 	setHealth( 1 );
 	
-	TokenReader tr( filename );
+	TokenReader tr(path.path());
 	try{
 		Token * head;
 		head = tr.readToken();
@@ -40,13 +40,13 @@ state( IDLE1 ){
 		if ( animations.size() == 0 ){
 			throw LoadException( "No animation given" );
 		}
-	} catch( const TokenException & ex ){
-		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
-		throw LoadException( "Could not open file" );
-	}
+        } catch (const TokenException & ex){
+            Global::debug(0) << "Could not read "<< filename.path() <<": "<< ex.getReason()<<endl;
+            throw LoadException("Could not open file " + filename.path());
+        }
 	current_animation = animations[ "idle1" ];
 
-	meow = Sound(Filesystem::find("/misc/cat/meow.wav"));
+	meow = Sound(Filesystem::find(Filesystem::RelativePath("misc/cat/meow.wav")).path());
 }
 
 Cat::Cat( const Cat & cat ):
@@ -237,8 +237,8 @@ Network::Message Cat::getCreateMessage(){
 	message << World::CREATE_CAT;
 	message << getId();
 
-	string mypath = Filesystem::cleanse(path);
-        message << mypath;
+        Filesystem::RelativePath mypath = Filesystem::cleanse(path);
+        message << mypath.path();
         /*
 	mypath.erase( 0, Util::getDataPath().length() );
 	message << mypath;

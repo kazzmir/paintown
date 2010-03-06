@@ -13,9 +13,9 @@ using namespace std;
 namespace Paintown{
 
 Mod * Mod::currentMod = NULL;
-Mod::Mod(const string & path) throw (LoadException){
+Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
     try{
-        TokenReader reader(path);
+        TokenReader reader(path.path());
         Token * head = reader.readToken();
 
         Token * name = head->findToken("game/name");
@@ -33,7 +33,7 @@ Mod::Mod(const string & path) throw (LoadException){
         }
 
     } catch (const TokenException & e){
-        Global::debug(0) << "Error while reading mod " << path << ":" << e.getReason() << endl;
+        Global::debug(0) << "Error while reading mod " << path.path() << ":" << e.getReason() << endl;
     }
 }
 
@@ -54,7 +54,7 @@ void Mod::loadDefaultMod(){
 
 void Mod::loadMod(const string & name){
    string path = name + "/" + name + ".txt"; 
-   Mod * newMod = new Mod(Filesystem::find(path));
+   Mod * newMod = new Mod(Filesystem::find(Filesystem::RelativePath(path)));
    if (currentMod != NULL){
        delete currentMod;
    }

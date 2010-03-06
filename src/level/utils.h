@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "util/file-system.h"
 
 class Token;
 class Bitmap;
@@ -19,7 +20,7 @@ public:
     virtual void addLevel(const std::string & s);
     virtual const std::vector<std::string> & getLevels() const;
     virtual const std::string & loadingMessage() const;
-    virtual const std::string & loadingBackground() const;
+    virtual const Filesystem::AbsolutePath & loadingBackground() const;
     virtual const std::string & getPlayerPath() const;
     virtual void setPosition(int x, int y);
 
@@ -53,7 +54,7 @@ protected:
     std::string playerPath;
     std::string name;
     std::string _loadingMessage;
-    std::string _loadingBackground;
+    Filesystem::AbsolutePath _loadingBackground;
     const Bitmap * background;
 
     int x, y;

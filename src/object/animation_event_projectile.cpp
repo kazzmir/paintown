@@ -33,13 +33,14 @@ life( 0 ){
 		} else if ( *current == "path" ){
 			string path;
 			*current >> path;
-			TokenReader reader(Filesystem::find(path));
+                        Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(path));
+			TokenReader reader(full.path());
 			try{
-				projectile = new Projectile( reader.readToken() );
+				projectile = new Projectile(reader.readToken());
 			} catch ( const TokenException & ex ){
-				cerr<< "Could not read " << Filesystem::find(path) <<" : " << ex.getReason() << endl;
+				cerr<< "Could not read " << full.path() <<" : " << ex.getReason() << endl;
 				// delete head;
-				throw LoadException("Could not open projectile file: " + Filesystem::find(path));
+				throw LoadException("Could not open projectile file: " + full.path());
 			}
 		} else if ( *current == "life" ){
 			int life;

@@ -37,7 +37,7 @@ public:
 
 	virtual bool finished() const = 0;
 
-	virtual void reloadLevel() throw( LoadException ) = 0;
+	virtual void reloadLevel() = 0;
 
     virtual Script::Engine * getEngine() const = 0;
 

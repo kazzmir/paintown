@@ -55,7 +55,7 @@ const std::string & LevelInfo::loadingMessage() const {
     return this->_loadingMessage;
 }
 
-const std::string & LevelInfo::loadingBackground() const {
+const Filesystem::AbsolutePath & LevelInfo::loadingBackground() const {
     return this->_loadingBackground;
 }
 

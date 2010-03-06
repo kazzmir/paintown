@@ -35,7 +35,7 @@ namespace Script{
     }
 
     /* sets the global engine */
-    void newEngine(const string name, const string path){
+    void newEngine(const string name, const Filesystem::RelativePath path){
 #ifdef HAVE_PYTHON
         if (name == "python"){
             new PythonEngine(path);
@@ -52,7 +52,7 @@ namespace Script{
             new NoEngine();
             return;
         }
-        Global::debug(0) << "*Warning* no such engine '" << name << "' for path " << path << endl;
+        Global::debug(0) << "*Warning* no such engine '" << name << "' for path " << path.path() << endl;
         new NoEngine();
         // throw NoSuchEngine(name);
     }

@@ -4,6 +4,7 @@
 #include "network.h"
 #include "game/adventure_world.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "object/object.h"
 #include "input/text-input.h"
 #include "chat-widget.h"
@@ -28,7 +29,7 @@ struct Packet{
 
 class NetworkWorld: public AdventureWorld, public ChatWidget {
 public:
-	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Object * > & players, const std::map<Object*, Network::Socket> & characterToClient, const std::string & path, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Object * > & players, const std::map<Object*, Network::Socket> & characterToClient, const Filesystem::AbsolutePath & path, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	virtual void act();

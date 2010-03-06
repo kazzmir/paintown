@@ -846,7 +846,7 @@ void HitState::update(bool inAir, const HitDefinition & hit){
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
 
-Character::Character( const string & s ):
+Character::Character(const Filesystem::RelativePath & s ):
 ObjectAttack(0),
 commonSounds(NULL),
 hit(NULL){
@@ -854,6 +854,7 @@ hit(NULL){
     initialize();
 }
 
+/*
 Character::Character( const char * location ):
 ObjectAttack(0),
 commonSounds(NULL),
@@ -861,8 +862,9 @@ hit(NULL){
     this->location = std::string(location);
     initialize();
 }
+*/
 
-Character::Character( const string & s, int alliance ):
+Character::Character( const Filesystem::RelativePath & s, int alliance ):
 ObjectAttack(alliance),
 commonSounds(NULL),
 hit(NULL){
@@ -870,7 +872,7 @@ hit(NULL){
     initialize();
 }
 
-Character::Character( const string & s, const int x, const int y, int alliance ):
+Character::Character( const Filesystem::RelativePath & s, const int x, const int y, int alliance ):
 ObjectAttack(x,y,alliance),
 commonSounds(NULL),
 hit(NULL){
@@ -981,13 +983,13 @@ void Character::initialize(){
 void Character::loadSelectData(){
     /* Load up info for the select screen */
     try{
-	baseDir = Filesystem::find("mugen/chars/" + location + "/");
-	Global::debug(1) << baseDir << endl;
-	std::string str = Mugen::Util::stripDir(this->location);
-	const std::string ourDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
+        Filesystem::AbsolutePath baseDir = Filesystem::find(location);
+	Global::debug(1) << baseDir.path() << endl;
+        Filesystem::RelativePath str = Filesystem::RelativePath(Util::stripDir(this->location.path()));
+	const Filesystem::AbsolutePath ourDefFile = Util::fixFileName(baseDir, str.path() + ".def");
 	
-	if (ourDefFile.empty()){
-	    Global::debug(1) << "Cannot locate player definition file for: " << location << endl;
+	if (ourDefFile.isEmpty()){
+	    Global::debug(1) << "Cannot locate player definition file for: " << location.path() << endl;
 	}
 	
 	// Set name of character
@@ -995,8 +997,8 @@ void Character::loadSelectData(){
 	this->displayName = Mugen::Util::probeDef(ourDefFile, "info", "displayname");
 	this->sffFile = Mugen::Util::probeDef(ourDefFile, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
-	this->sprites[9000][0] = Mugen::Util::probeSff( Mugen::Util::fixFileName(baseDir, this->sffFile), 9000,0);
-	this->sprites[9000][1] = Mugen::Util::probeSff( Mugen::Util::fixFileName(baseDir, this->sffFile), 9000,1);
+	this->sprites[9000][0] = Mugen::Util::probeSff(Util::fixFileName(baseDir, this->sffFile), 9000,0);
+	this->sprites[9000][1] = Mugen::Util::probeSff(Util::fixFileName(baseDir, this->sffFile), 9000,1);
 	
     } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't grab details for character!" << endl;
@@ -1013,13 +1015,13 @@ void Character::setAnimation(int animation){
     getCurrentAnimation()->reset();
 }
 
-void Character::loadCmdFile(const string & path){
-    string full = Filesystem::find(baseDir + path);
+void Character::loadCmdFile(const Filesystem::RelativePath & path){
+    Filesystem::AbsolutePath full = Filesystem::find(baseDir.join(path));
     try{
         int defaultTime = 15;
         int defaultBufferTime = 1;
 
-        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
+        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -1121,7 +1123,7 @@ void Character::loadCmdFile(const string & path){
         Global::debug(0) << e.getReason() << endl;
         */
         ostringstream out;
-        out << "Could not parse " << path << ": " << e.getReason();
+        out << "Could not parse " << path.path() << ": " << e.getReason();
         throw MugenException(out.str());
     }
 }
@@ -1196,11 +1198,11 @@ void Character::changeState(MugenStage & stage, int stateNumber, const vector<st
     }
 }
 
-void Character::loadCnsFile(const string & path){
-    string full = Filesystem::find(baseDir + path);
+void Character::loadCnsFile(const Filesystem::RelativePath & path){
+    Filesystem::AbsolutePath full = Filesystem::find(baseDir.join(path));
     try{
         /* cns can use the Cmd parser */
-        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
+        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -1433,11 +1435,11 @@ void Character::loadCnsFile(const string & path){
         }
     } catch (const Mugen::Cmd::ParseException & e){
         ostringstream out;
-        out << "Could not parse " << path << ": " << e.getReason();
+        out << "Could not parse " << path.path() << ": " << e.getReason();
         throw MugenException(out.str());
     } catch (const Ast::Exception & e){
         ostringstream out;
-        out << "Could not parse " << path << ": " << e.getReason();
+        out << "Could not parse " << path.path() << ": " << e.getReason();
         throw MugenException(out.str());
     }
 }
@@ -2035,23 +2037,23 @@ void Character::parseState(Ast::Section * section){
 
 }
 
-static string findStateFile(const string & base, const string & path){
+static Filesystem::AbsolutePath findStateFile(const Filesystem::RelativePath & base, const string & path){
     try{
         /* first look in the character's directory */
-        return Filesystem::find(base + "/" + path);
+        return Filesystem::find(base.join(Filesystem::RelativePath(path)));
     } catch (const Filesystem::NotFound & f){
         /* then look for it in the common data directory.
          * this is where common1.cns lives
          */
-        return Filesystem::find("mugen/data/" + path);
+        return Filesystem::find(Filesystem::RelativePath("mugen/data/" + path));
     }
 }
 
-void Character::loadStateFile(const std::string & base, const string & path, bool allowDefinitions, bool allowStates){
-    string full = findStateFile(base, path);
+void Character::loadStateFile(const Filesystem::RelativePath & base, const string & path, bool allowDefinitions, bool allowStates){
+    Filesystem::AbsolutePath full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
-    Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full));
+    Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
@@ -2067,11 +2069,11 @@ void Character::loadStateFile(const std::string & base, const string & path, boo
 
 /* a container for a directory and a file */
 struct Location{
-    Location(string base, string file):
+    Location(Filesystem::RelativePath base, string file):
         base(base), file(file){
         }
 
-    string base;
+    Filesystem::RelativePath base;
     string file;
 };
 
@@ -2088,10 +2090,11 @@ void Character::load(int useAct){
     }
 #endif
     
-    baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
-    const std::string ourDefFile = location;
+    // baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
+    baseDir = location.getDirectory();
+    // const std::string ourDefFile = location;
      
-    Ast::AstParse parsed(Util::parseDef(ourDefFile));
+    Ast::AstParse parsed(Util::parseDef(location.path()));
     try{
         /* Extract info for our first section of our stage */
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
@@ -2137,24 +2140,26 @@ void Character::load(int useAct){
             } else if (head == "files"){
                 class FilesWalker: public Ast::Walker {
                     public:
-                        FilesWalker(Character & self, const string & location):
+                        FilesWalker(Character & self, const Filesystem::RelativePath & location):
                             location(location),
                             self(self){
                             }
 
                         vector<Location> stateFiles;
-                        const string & location;
+                        const Filesystem::RelativePath & location;
 
                         Character & self;
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "cmd"){
-                                simple >> self.cmdFile;
+                                string file;
+                                simple >> file;
+                                self.cmdFile = Filesystem::RelativePath(self.cmdFile);
                                 /* loaded later after the state files */
                             } else if (simple == "cns"){
                                 string file;
                                 simple >> file;
                                 /* just loads the constants */
-                                self.loadCnsFile(file);
+                                self.loadCnsFile(Filesystem::RelativePath(file));
                             } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
                                 if (num >= 0 && num <= 12){
@@ -2178,7 +2183,7 @@ void Character::load(int useAct){
                             } else if (simple == "sound"){
                                 simple >> self.sndFile;
                                 // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
-                                Mugen::Util::readSounds(Filesystem::find(self.baseDir + "/" + self.sndFile), self.sounds);
+                                Util::readSounds(Filesystem::find(self.baseDir.join(Filesystem::RelativePath(self.sndFile))), self.sounds);
                             } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
                                 string what;
@@ -2265,7 +2270,7 @@ void Character::load(int useAct){
         }
     } catch (const Ast::Exception & e){
         ostringstream out;
-        out << "Could not load " << ourDefFile << ": " << e.getReason();
+        out << "Could not load " << location.path() << ": " << e.getReason();
         throw MugenException(out.str());
     }
 
@@ -2319,11 +2324,11 @@ void Character::load(int useAct){
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
-    Mugen::Util::readSprites(Filesystem::find(baseDir + "/" + sffFile), Filesystem::find(baseDir + "/" + paletteFile), sprites);
+    Util::readSprites(Filesystem::find(baseDir.join(Filesystem::RelativePath(sffFile))), Filesystem::find(baseDir.join(Filesystem::RelativePath(paletteFile))), sprites);
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
-    animations = Mugen::Util::loadAnimations(Filesystem::find(baseDir + "/" + airFile), sprites);
+    animations = Util::loadAnimations(Filesystem::find(baseDir.join(Filesystem::RelativePath(airFile))), sprites);
 
     fixAssumptions();
 
@@ -2939,7 +2944,7 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
 void Character::draw(Bitmap * work, int cameraX, int cameraY){
 
     if (debug){
-        const Font & font = Font::getFont(Filesystem::find("/fonts/arial.ttf"), 18, 18);
+        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string("fonts/arial.ttf"))).path(), 18, 18);
         int x = 0;
         if (getAlliance() == MugenStage::Player2Side){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;

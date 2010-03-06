@@ -60,7 +60,7 @@ static int selectedGradientEnd(){
     return color;
 }
 
-Menu::Menu(const std::string & str) throw (LoadException):
+Menu::Menu(const Filesystem::AbsolutePath & str) throw (LoadException):
 selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
     load(str);
 }
@@ -167,9 +167,10 @@ void Menu::load(Token *token) throw (LoadException){
                 if ( background ){
                     delete background;
                 }
-                background = new Bitmap(Filesystem::find(temp));
+                Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(temp));
+                background = new Bitmap(full.path());
                 if ( background->getError() ){
-                    Global::debug(0) << "Problem loading Bitmap: " << Filesystem::find(temp) << endl;
+                    Global::debug(0) << "Problem loading Bitmap: " << full.path() << endl;
                     delete background;
                     background = 0;
                 }
@@ -198,7 +199,8 @@ void Menu::load(Token *token) throw (LoadException){
             } else if ( *tok == "font" ) {
                 string str;
                 *tok >> str >> sharedFontWidth >> sharedFontHeight; 
-                sharedFont = Filesystem::find(str);
+                /* FIXME: make sharedFont an AbsolutePath */
+                sharedFont = Filesystem::find(Filesystem::RelativePath(str)).path();
             } else if( *tok == "option" ) {
                 try{
                     MenuOption *temp = OptionFactory::getOption(tok);
@@ -292,11 +294,11 @@ void Menu::setupOptions(){
 
 }
 
-void Menu::load(const std::string &filename) throw (LoadException){
+void Menu::load(const Filesystem::AbsolutePath & filename) throw (LoadException){
     // Must check for initial token, menu
     try{
-        Global::debug(1) << "Loading menu " << filename << endl;
-        TokenReader tr( filename );
+        Global::debug(1) << "Loading menu " << filename.path() << endl;
+        TokenReader tr(filename.path());
         Token * token = tr.readToken();
         load(token);
     } catch (const TokenException & e){

@@ -33,29 +33,29 @@ namespace Util{
     const std::string removeSpaces (const std::string &str);
     const std::string invertSlashes (const std::string &str);
     const std::string stripDir( const std::string &str );
-    const std::string fixFileName( const std::string &dir, std::string str );
+    const Filesystem::AbsolutePath fixFileName( const Filesystem::AbsolutePath &dir, std::string str );
     const std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok
     MugenItemContent *parseOpt( const std::string &opt );
     std::vector<Ast::Section*> collectBackgroundStuff(std::list<Ast::Section*>::iterator & section_it, const std::list<Ast::Section*>::iterator & end, const std::string & name = "bg");
-    bool readPalette(const std::string &filename, unsigned char *pal);
-    void readSprites(const std::string & filename, const std::string & palette, Mugen::SpriteMap & sprites);
-    void readSounds(const std::string & filename, SoundMap & sounds);
+    bool readPalette(const Filesystem::AbsolutePath &filename, unsigned char *pal);
+    void readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites);
+    void readSounds(const Filesystem::AbsolutePath & filename, SoundMap & sounds);
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)
     MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
     MugenAnimation *getAnimation( Ast::Section *section, const Mugen::SpriteMap &sprites );
 
-    std::map<int, MugenAnimation *> loadAnimations(const std::string & filename, const SpriteMap sprites);
+    std::map<int, MugenAnimation *> loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites);
 
-    const std::string getCorrectFileLocation( const std::string &dir, const std::string &file );
+    const Filesystem::AbsolutePath getCorrectFileLocation(const Filesystem::AbsolutePath & dir, const std::string &file );
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
-    const std::string probeDef(const std::string &file, const std::string &section, const std::string &search);
+    const std::string probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search);
     /*! Use to probe a SFF file for a specific sprite without loading the whole sprite list
        Throws exception if not found
     */
-    MugenSprite *probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile="");
+    MugenSprite *probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
 
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.

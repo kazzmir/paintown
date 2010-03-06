@@ -66,7 +66,7 @@ void Layer::reset(){
     }
 }
 	
-Scene::Scene(Ast::Section * data, const std::string & file, Ast::AstParse & parsed, SpriteMap & sprites):
+Scene::Scene(Ast::Section * data, const Filesystem::AbsolutePath & file, Ast::AstParse & parsed, SpriteMap & sprites):
 clearColor(-2),
 clearColorSet(false),
 ticker(0),
@@ -80,18 +80,18 @@ maxLayers(10){
     }
     class SceneWalker: public Ast::Walker {
 	public:
-	    SceneWalker(Scene & scene, const std::string & file, SpriteMap & sprites, Ast::AstParse & parse):
+	    SceneWalker(Scene & scene, const Filesystem::AbsolutePath & file, SpriteMap & sprites, Ast::AstParse & parse):
 	    scene(scene),
 	    file(file),
 	    sprites(sprites),
 	    parsed(parse){
 	    }
 
-	    ~SceneWalker(){
+	    virtual ~SceneWalker(){
 	    }
 	    
 	    Scene & scene;
-	    const std::string & file;
+	    const Filesystem::AbsolutePath & file;
 	    SpriteMap & sprites;
 	    Ast::AstParse & parsed;
 	    
@@ -249,18 +249,18 @@ void Scene::reset(){
     }
 }
 
-Storyboard::Storyboard(const string & file):
+Storyboard::Storyboard(const Filesystem::AbsolutePath & file):
 storyBoardFile(file),
 startscene(0){
     // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Util::getFileDir(storyBoardFile);
-    const std::string ourDefFile = Util::fixFileName( baseDir, Util::stripDir(storyBoardFile) );
+    Filesystem::AbsolutePath baseDir = storyBoardFile.getDirectory();
+    const Filesystem::AbsolutePath ourDefFile = Util::fixFileName(baseDir, storyBoardFile.getFilename().path());
     // get real basedir
     //baseDir = Util::getFileDir( ourDefFile );
-    Global::debug(1) << baseDir << endl;
+    Global::debug(1) << baseDir.path() << endl;
 
-    if (ourDefFile.empty()){
-        throw MugenException("Cannot locate storyboard definition file for: " + storyBoardFile);
+    if (ourDefFile.isEmpty()){
+        throw MugenException("Cannot locate storyboard definition file for: " + storyBoardFile.path());
     }
 
     std::string filesdir = "";
@@ -269,9 +269,9 @@ startscene(0){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(ourDefFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(ourDefFile.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
     // Default position for all layers
     bool defaultPositionSet = false;
@@ -311,19 +311,19 @@ startscene(0){
         } else if (head == "scenedef"){
             class SceneWalk: public Ast::Walker{
             public:
-                SceneWalk(const string & baseDir, Storyboard & board):
+                SceneWalk(const Filesystem::AbsolutePath & baseDir, Storyboard & board):
                     baseDir(baseDir),
                     board(board){
                 }
 
-                const string & baseDir;
+                const Filesystem::AbsolutePath & baseDir;
                 Storyboard & board;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "spr"){
 			std::string temp;
                         simple >> temp;
-                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), "", board.sprites);
+                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), Filesystem::AbsolutePath(), board.sprites);
                     } else if (simple == "startscene"){
                         simple >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;

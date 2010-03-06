@@ -61,7 +61,7 @@ class Layer{
 
 class Scene {
     public:
-	Scene(Ast::Section * data, const std::string & file, Ast::AstParse & parsed, SpriteMap & sprites);
+	Scene(Ast::Section * data, const Filesystem::AbsolutePath & file, Ast::AstParse & parsed, SpriteMap & sprites);
 	virtual ~Scene();
 	
         virtual void act();
@@ -141,7 +141,7 @@ class Scene {
 class Storyboard {
     public:
 	//! Location at dataPath() + "mugen/stages/"
-	Storyboard(const std::string & file);
+	Storyboard(const Filesystem::AbsolutePath & file);
 
 	virtual ~Storyboard();
 	
@@ -154,7 +154,7 @@ class Storyboard {
 	
     private:
         //! File
-        std::string storyBoardFile;
+        Filesystem::AbsolutePath storyBoardFile;
 	
         //! Beginning Scene Number
 	int startscene;

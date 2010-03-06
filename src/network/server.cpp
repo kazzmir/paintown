@@ -153,11 +153,11 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 #endif
 
 static int getServerPort(){
-    Bitmap background( Global::titleScreen() );
+    Bitmap background(Global::titleScreen().path());
 	const int drawY = 250;
 	{
 		// background.BlitToScreen();
-		const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+		const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
 		Bitmap black( 300, font.getHeight() * 4 );
 		black.clear();
 		black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
@@ -217,7 +217,7 @@ static int getServerPort(){
 			}
 			pressed.clear();
 			work.clear();
-			const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+			const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
 			font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
 			work.Blit( 100, drawY, background );
                         background.BlitToScreen();
@@ -542,7 +542,7 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
             message >> type;
             if ( type == World::CREATE_CHARACTER ){
                 int alliance = playerAlliance();
-                Character * client_character = new NetworkPlayer(Filesystem::find(message.path), alliance);
+                Character * client_character = new NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
                 characterToSocket[client_character] = socket;
                 /* Don't need this line now that NetworkPlayer exists.
                  * take it out at some point.
@@ -580,13 +580,13 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
         /* send all created characters to all clients */
         for ( vector<Object *>::iterator it = players.begin(); it != players.end(); it++ ){
             Character * c = (Character *) *it;
-            string path = Filesystem::cleanse(c->getPath());
+            Filesystem::RelativePath path = Filesystem::cleanse(c->getPath());
             // path.erase( 0, Util::getDataPath().length() );
             Message add;
             add << World::CREATE_CHARACTER;
             add << c->getId();
             add << c->getAlliance();
-            add.path = path;
+            add.path = path.path();
             sendToAll( sockets, add );
         }
 
@@ -620,14 +620,17 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
             }
 
             debug( 1 ) << "Create network world" << endl;
-            NetworkWorld world( sockets, players, characterToSocket, Filesystem::find(level), clientNames);
+            NetworkWorld world( sockets, players, characterToSocket, Filesystem::find(Filesystem::RelativePath(level)), clientNames);
 
             debug( 1 ) << "Load music" << endl;
 
+            Music::changeSong();
+            /* old stuff..
             Music::pause();
             Music::fadeIn( 0.3 );
-            Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
+            Music::loadSong(Util::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*" ));
             Music::play();
+            */
 
             /* wait for an ok from all the clients, then send another
              * ok to continue
@@ -718,7 +721,7 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
 
 static void popup( const Font & font, const string & message ){
 	int length = font.textLength( message.c_str() ) + 20; 
-        Bitmap background( Global::titleScreen() );
+        Bitmap background(Global::titleScreen().path());
 	Bitmap area( background, background.getWidth() / 2 - length / 2, 220, length, font.getHeight() * 3 );
 	Bitmap::transBlender( 0, 0, 0, 128 );
 	area.drawingMode( Bitmap::MODE_TRANS );
@@ -739,7 +742,7 @@ void networkServer(Menu * menu){
 
 	debug( 1 ) << "Port is " << port << endl;
 
-	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
 	try{
 		/*
 #ifdef _WIN32

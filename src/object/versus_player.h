@@ -11,7 +11,7 @@ class Bitmap;
 
 class VersusPlayer: public Player {
 public:
-	VersusPlayer( const std::string & str ) throw( LoadException );
+	VersusPlayer( const Filesystem::AbsolutePath & str ) throw( LoadException );
 	VersusPlayer( const Player & player ) throw( LoadException );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );

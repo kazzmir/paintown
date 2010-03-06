@@ -197,7 +197,7 @@ void TabMenu::load(Token *token) throw (LoadException){
                     if (tok->numTokens() == 1){
                         std::string temp;
                         *tok >> temp;
-                        menu->menu.load(Filesystem::find(temp));
+                        menu->menu.load(Filesystem::find(Filesystem::RelativePath(temp)));
                     } else {
                         menu->menu.load(tok);
                     }
@@ -255,10 +255,11 @@ void TabMenu::load(Token *token) throw (LoadException){
     calculateTabLines();
 }
 
-void TabMenu::load(const std::string &filename) throw (LoadException){
+/* FIXME: this method is a duplicate of Menu::load */
+void TabMenu::load(const Filesystem::AbsolutePath & filename) throw (LoadException){
     // Must check for initial token, menu
     try{
-        TokenReader tr( filename );
+        TokenReader tr(filename.path());
         Token * token = tr.readToken();
         load(token);
     } catch (const TokenException & e){

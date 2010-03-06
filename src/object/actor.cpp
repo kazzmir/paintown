@@ -8,13 +8,13 @@
 
 using namespace std;
 
-Actor::Actor( const string & filename ) throw( LoadException ):
+Actor::Actor( const Filesystem::AbsolutePath & filename ) throw( LoadException ):
 ObjectNonAttack( 0, 0 ){
 
 	setMaxHealth( 1 );
 	setHealth( 1 );
 	
-	TokenReader tr( filename );
+	TokenReader tr( filename.path() );
 	try{
 		Token * head;
 		head = tr.readToken();
@@ -33,7 +33,7 @@ ObjectNonAttack( 0, 0 ){
 			throw LoadException( "No animation given" );
 		}
 	} catch( const TokenException & ex ){
-		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
+            Global::debug(0) << "Could not read "<<filename.path()<<" : "<<ex.getReason()<<endl;
 		throw LoadException( "Could not open file" );
 	}
 	current_animation = animations[ 0 ];

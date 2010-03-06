@@ -5,12 +5,13 @@
 
 #include "script/script.h"
 #include <string>
+#include "util/file-system.h"
 
 class World;
 
 class RubyEngine: public Script::Engine {
 public:
-    RubyEngine(const std::string & path);
+    RubyEngine(const Filesystem::RelativePath & path);
 
     virtual void init();
     virtual void shutdown();

@@ -55,7 +55,7 @@ ignore_lives(false){
         commonInitialize();
 }
 	
-Player::Player( const string & filename, int config ) throw( LoadException ):
+Player::Player( const Filesystem::AbsolutePath & filename, int config ) throw( LoadException ):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
@@ -260,7 +260,7 @@ void Player::drawFront( Bitmap * work, int rel_x ){
 
 	// Font * player_font = FontFactory::getFont( NAME_FONT );
 	// const Font & player_font = Font::getFont( NAME_FONT );
-	const Font & player_font = Font::getFont(Filesystem::find(PLAYER_FONT), 20, 20 );
+	const Font & player_font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(PLAYER_FONT))).path(), 20, 20 );
 	const string & name = getName();
 	int nameHeight = player_font.getHeight( name ) / 2;
 	nameHeight = 20 / 2;

@@ -85,12 +85,12 @@ int Global::getDebug(){
 }
 
 void Global::showTitleScreen(){
-    Bitmap s( Global::titleScreen() );
+    Bitmap s(Global::titleScreen().path());
     s.BlitToScreen();
 }
 
-const std::string Global::titleScreen(){
-	return Filesystem::find("/menu/paintown.png");
+const Filesystem::AbsolutePath Global::titleScreen(){
+    return Filesystem::find(Filesystem::RelativePath("menu/paintown.png"));
 }
 
 namespace Global{

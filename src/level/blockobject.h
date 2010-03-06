@@ -2,6 +2,7 @@
 #define _block_object_h
 
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "factory/object_factory.h"
 #include <string>
 
@@ -28,8 +29,8 @@ public:
 		return name;
 	}
 
-	inline const std::string & getPath() const {
-		return path;
+	inline const Filesystem::AbsolutePath & getPath() const {
+            return path;
 	}
 
 	inline const std::string getStimulationType() const {
@@ -64,7 +65,7 @@ public:
 		type = l;
 	}
 
-	inline void setPath( const std::string & p ){
+	inline void setPath(const Filesystem::AbsolutePath & p){
 		path = p;
 	}
 
@@ -120,7 +121,7 @@ protected:
 
         std::string name;
         std::string alias;
-        std::string path;
+        Filesystem::AbsolutePath path;
 
         /* the sprite to map to */
         int map;

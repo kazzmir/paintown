@@ -12,11 +12,11 @@ using namespace std;
 
 Resource * Resource::resource = NULL;
 Sound * Resource::getSound(const std::string & path) throw (LoadException){
-    return resource->_getSound(Filesystem::find(path));
+    return resource->_getSound(Filesystem::find(Filesystem::RelativePath(path)));
 }
 
 Bitmap * Resource::getBitmap(const std::string & path) throw (LoadException){
-    return resource->_getBitmap(Filesystem::find(path));
+    return resource->_getBitmap(Filesystem::find(Filesystem::RelativePath(path)));
 }
 
 /* the resource is created in the Collector */
@@ -34,17 +34,17 @@ Resource::~Resource(){
     }
 }
 
-Sound * Resource::_getSound(const std::string & path) throw (LoadException){
-    if (sounds[path] == NULL){
-        sounds[path] = new Sound(path);
+Sound * Resource::_getSound(const Filesystem::AbsolutePath & path) throw (LoadException){
+    if (sounds[path.path()] == NULL){
+        sounds[path.path()] = new Sound(path.path());
     }
-    return sounds[path];
+    return sounds[path.path()];
 }
     
-Bitmap * Resource::_getBitmap(const std::string & path) throw (LoadException){
-    if (bitmaps[path] == NULL){
-        bitmaps[path] = new Bitmap(path);
+Bitmap * Resource::_getBitmap(const Filesystem::AbsolutePath & path) throw (LoadException){
+    if (bitmaps[path.path()] == NULL){
+        bitmaps[path.path()] = new Bitmap(path.path());
     }
 
-    return bitmaps[path];
+    return bitmaps[path.path()];
 }

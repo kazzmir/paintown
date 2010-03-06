@@ -13,11 +13,11 @@ AdventureWorld(),
 player1( player1 ),
 player2( player2 ),
 z( z ){
-	this->addObject( player1 );
-	this->addObject( player2 );
+	this->addObject(player1);
+	this->addObject(player2);
 
-	string bang_path(Filesystem::find("/misc/flash/flash.txt"));
-	Object * effect = new Effect( bang_path.c_str() );
+        Filesystem::AbsolutePath bang_path(Filesystem::find(Filesystem::RelativePath("misc/flash/flash.txt")));
+	Object * effect = new Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
 		delete bang;
 	}

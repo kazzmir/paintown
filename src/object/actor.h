@@ -11,7 +11,7 @@ class Animation;
 
 class Actor: public ObjectNonAttack {
 public:
-	Actor( const std::string & filename ) throw( LoadException );
+	Actor( const Filesystem::AbsolutePath & filename ) throw( LoadException );
 	Actor( const Actor & item );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );

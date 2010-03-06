@@ -3,6 +3,7 @@
 
 #include "character.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "heart.h"
 
 #include <string>
@@ -15,7 +16,7 @@ class Enemy: public Character{
 public:
 	Enemy( ); 
 	Enemy( const char * filename ) throw( LoadException );
-	Enemy( const std::string & filename ) throw( LoadException );
+	Enemy( const Filesystem::AbsolutePath & filename ) throw( LoadException );
 	Enemy( const Enemy & chr ) throw( LoadException );
 	Enemy( const Character & chr ) throw( LoadException );
 	

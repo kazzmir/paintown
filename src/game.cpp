@@ -74,45 +74,45 @@ static Network::Message removeMessage( int id ){
 	return message;
 }
 
-static vector< Background > readBackgrounds( const string & path ){
-	vector< Background > backgrounds;
+static vector< Background > readBackgrounds( const Filesystem::AbsolutePath & path ){
+    vector< Background > backgrounds;
 
-	try{
-		TokenReader reader( path + "/bgs.txt" );
-		Token * head = reader.readToken();
+    try{
+        TokenReader reader( path.path() + "/bgs.txt" );
+        Token * head = reader.readToken();
 
-		if ( *head == "backgrounds" ){
-			while ( head->hasTokens() ){
-				Token * background;
-				*head >> background;
-				if ( *background == "background" ){
-					Token * next;
-					Background b;
-					for ( int i = 0; i < 2; i++ ){
-						*background >> next;
-						if ( *next == "path" ){
-							*next >> b.path;
-						} else if ( *next == "z" ){
-							*next >> b.z;
-						}
-					}
-					backgrounds.push_back( b );
-				}
-			}
-		}
+        if ( *head == "backgrounds" ){
+            while ( head->hasTokens() ){
+                Token * background;
+                *head >> background;
+                if ( *background == "background" ){
+                    Token * next;
+                    Background b;
+                    for ( int i = 0; i < 2; i++ ){
+                        *background >> next;
+                        if ( *next == "path" ){
+                            *next >> b.path;
+                        } else if ( *next == "z" ){
+                            *next >> b.z;
+                        }
+                    }
+                    backgrounds.push_back( b );
+                }
+            }
+        }
 
-	} catch ( const TokenException & ex ){
-		Global::debug( 0 ) << "Could not load " + path + "/bgs.txt because " << ex.getReason() << endl;
-	}
+    } catch ( const TokenException & ex ){
+        Global::debug( 0 ) << "Could not load " + path.path() + "/bgs.txt because " << ex.getReason() << endl;
+    }
 
-	/*
-	Background b1;
-	b1.path = path + "/versus/bg1.png";
-	b1.z = 420;
-	backgrounds.push_back( b1 );
-	*/
+    /*
+       Background b1;
+       b1.path = path + "/versus/bg1.png";
+       b1.z = 420;
+       backgrounds.push_back( b1 );
+       */
 
-	return backgrounds;
+    return backgrounds;
 }
 
 static string findNextFile( const char * name ){
@@ -422,7 +422,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             FontRender * render = FontRender::getInstance();
             render->render( &screen_buffer );
 
-            const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 20, 20 );
+            const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path(), 20, 20 );
 
             if ( helpTime > 0 ){
                 int x = 100;
@@ -477,7 +477,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
 
     if (!force_quit){
         work.clear();
-        Sound snapshot(Filesystem::find("/sounds/snapshot.wav"));
+        Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
         for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
             Bitmap * shot = *it;
             int angle = Util::rnd(13) - 6;
@@ -560,13 +560,13 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
                */
 
             Global::info("Setting up world");
-            AdventureWorld world( players, Filesystem::find(*it));
+            AdventureWorld world(players, Filesystem::find(Filesystem::RelativePath(*it)));
             Global::info("World setup");
             Global::info(funnyGo());
 
             Music::pause();
             Music::fadeIn( 0.3 );
-            Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
+            Music::loadSong(Util::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
             Music::play();
 
             for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
@@ -713,17 +713,17 @@ const Level::LevelInfo selectLevelSet( const string & base ){
 #endif
 
 void fadeOut( Bitmap & work, const string & message ){
-	Bitmap dark( GFX_X, GFX_Y );
-	dark.clear();
-	Bitmap::transBlender( 0, 0, 0, 128 );
+    Bitmap dark( GFX_X, GFX_Y );
+    dark.clear();
+    Bitmap::transBlender( 0, 0, 0, 128 );
 
-	dark.drawTrans( 0, 0, work );
-	
-	const Font & f = Font::getFont( Filesystem::find(DEFAULT_FONT), 50, 50 );
-	f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
-        work.BlitToScreen();
+    dark.drawTrans( 0, 0, work );
 
-	Util::rest( 2000 );
+    const Font & f = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path(), 50, 50 );
+    f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
+    work.BlitToScreen();
+
+    Util::rest( 2000 );
 }
 
 static bool closeFloat(double a, double b){
@@ -753,14 +753,14 @@ void playVersusMode( Character * player1, Character * player2, int round ){
 	double gameSpeed = startingGameSpeed();
 
 	vector< Background > backgrounds;
-	backgrounds = readBackgrounds( Filesystem::find("/bgs/versus/"));
+	backgrounds = readBackgrounds(Filesystem::find(Filesystem::RelativePath("bgs/versus/")));
 
 	Bitmap background( 640, 480 );
 	int z = 400;
 	if ( backgrounds.size() != 0 ){
 		Background use = backgrounds[ Util::rnd( backgrounds.size() ) ];
-		Bitmap b(Filesystem::find(use.path));
-		b.Stretch( background );
+		Bitmap b(Filesystem::find(Filesystem::RelativePath(use.path)).path());
+		b.Stretch(background);
 		z = use.z;
 	}
 	
@@ -853,7 +853,7 @@ void playVersusMode( Character * player1, Character * player2, int round ){
 		*/
 	
 		if ( draw ){
-			const Font & font = Font::getFont( Filesystem::find(DEFAULT_FONT));
+			const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path());
 
 			background.Blit( work );
 			world.draw( &work );
@@ -1003,7 +1003,7 @@ void playVersusMode( Character * player1, Character * player2, int round ){
 				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
 				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-				const Font & font = Font::getFont( Filesystem::find(DEFAULT_FONT));
+				const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path());
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 

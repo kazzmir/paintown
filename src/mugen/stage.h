@@ -46,8 +46,8 @@ struct PlayerData {
 class MugenStage: public World {
 public:
 	// Location at dataPath() + "mugen/stages/"
-	MugenStage( const std::string & s );
-	MugenStage( const char * location );
+	MugenStage(const Filesystem::AbsolutePath & s);
+	// MugenStage( const char * location );
 
 	virtual ~MugenStage();
 	
@@ -204,9 +204,9 @@ protected:
 	This is where the def is loaded and all the relevant files
 	are loaded from
 	*/
-	std::string location;
+    Filesystem::AbsolutePath location;
 	
-	std::string baseDir;
+    Filesystem::AbsolutePath baseDir;
 	
 	/* These items are taken from stage.def file */
 	

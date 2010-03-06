@@ -77,7 +77,7 @@ static void playGame( Socket socket ){
         Level::LevelInfo info;
         Character * player = (Character *) Game::selectPlayer( false, "Pick a player", info);
         ((Player *) player)->ignoreLives();
-        string path = Filesystem::cleanse(player->getPath());
+        Filesystem::RelativePath path = Filesystem::cleanse(player->getPath());
         // path.erase( 0, Util::getDataPath().length() );
 
         Loader::startLoading( &loadingThread );
@@ -85,7 +85,7 @@ static void playGame( Socket socket ){
         /* send the path of the chosen player */
         Message create;
         create << World::CREATE_CHARACTER;
-        create.path = path;
+        create.path = path.path();
         create.send( socket );
 
         /* get the id from the server */
@@ -121,7 +121,7 @@ static void playGame( Socket socket ){
                     next >> id >> alliance;
                     if ( uniqueId( players, id ) ){
                         Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
-                        Character * c = new NetworkPlayer(Filesystem::find(next.path), alliance);
+                        Character * c = new NetworkPlayer(Filesystem::find(Filesystem::RelativePath(next.path)), alliance);
                         c->setId( id );
                         ((NetworkCharacter *)c)->alwaysShowName();
                         players.push_back( c );
@@ -136,11 +136,11 @@ static void playGame( Socket socket ){
                     break;
                 }
                 case World::LOAD_LEVEL : {
-                    string level = Filesystem::find(next.path);
+                    Filesystem::AbsolutePath level = Filesystem::find(Filesystem::RelativePath(next.path));
                     NetworkWorldClient world(socket, players, level, client_id, clientNames);
                     Music::pause();
                     Music::fadeIn( 0.3 );
-                    Music::loadSong( Util::getFiles(Filesystem::find("/music/"), "*" ) );
+                    Music::loadSong(Util::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*" ) );
                     Music::play();
 
                     Global::info("Waiting for ok from server");
@@ -311,7 +311,7 @@ static const char * getANumber(){
 
 
 void networkClient(){
-	Bitmap background( Global::titleScreen() );
+	Bitmap background(Global::titleScreen().path());
 	Global::speed_counter = 0;
 	Keyboard keyboard;
 	keyboard.setAllDelay( 200 );
@@ -328,7 +328,7 @@ void networkClient(){
 		NAME, HOST, PORT, CONNECT, BACK
 	};
 			
-	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
 
 	Bitmap work( GFX_X, GFX_Y );
 	

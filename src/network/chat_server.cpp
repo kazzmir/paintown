@@ -290,7 +290,7 @@ name( name ),
 accepting( true ),
 enterPressed( false ){
 	debug( 1 ) << "Constructor" << endl;
-	background = new Bitmap( Global::titleScreen() );
+	background = new Bitmap(Global::titleScreen().path());
 
 	debug( 1 ) << "Start accepting connections" << endl;
 	lineEdit = new Gui::LineEdit();
@@ -308,7 +308,7 @@ enterPressed( false ){
 	
 	lineEdit->setText("Hi!");
 	// lineEdit->setFont(Menu::getFont());
-	lineEdit->setFont(& Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20));
+	lineEdit->setFont(& Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20));
 	keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
 	keyInputManager::pressed.connect(this,&ChatServer::keyPress);
 	keyInputManager::released.connect(this,&ChatServer::keyRelease);
@@ -709,7 +709,7 @@ bool ChatServer::needToDraw(){
 }
 
 void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
-	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
 
 	work.drawingMode( Bitmap::MODE_TRANS );
 	Bitmap::transBlender( 0, 0, 0, 128 );
@@ -752,7 +752,7 @@ int ChatServer::focusColor( Focus f ){
 void ChatServer::draw( const Bitmap & work ){
 	int start_x = 20;
 	int start_y = 20;
-	const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 20, 20 );
+	const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
 	background->Blit( work );
 	messages.draw( start_x, start_y, work, font );
 		

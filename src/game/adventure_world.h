@@ -17,6 +17,7 @@ class Gradient;
 #include <string>
 
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "network/network.h"
 #include "world.h"
 #include "level/cacher.h"
@@ -34,7 +35,7 @@ struct PlayerTracker{
 class AdventureWorld: public World {
 public:
 	AdventureWorld();
-	AdventureWorld(const std::vector< Object * > & players, const std::string & path, Level::Cacher * cacher = new Level::DefaultCacher(), int screen_size = 320) throw (LoadException);
+	AdventureWorld(const std::vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher = new Level::DefaultCacher(), int screen_size = 320) throw (LoadException);
 
 	virtual ~AdventureWorld();
 
@@ -48,7 +49,7 @@ public:
 
 	virtual bool finished() const;
 
-	virtual void reloadLevel() throw( LoadException );
+	virtual void reloadLevel();
 
     virtual Script::Engine * getEngine() const;
 
@@ -101,7 +102,7 @@ protected:
         void enterSlowMotion(const int amount);
 
 	Network::Message deleteMessage( unsigned int id );
-	void loadLevel( const std::string & path ) throw( LoadException );
+	void loadLevel( const Filesystem::AbsolutePath & path );
 
 	void drawWorld( const PlayerTracker & tracker, Bitmap * where, const std::map< int, std::vector< Object * > > & object_z );
 
@@ -129,7 +130,7 @@ protected:
 
     // int min_x;
     int screen_size;
-    std::string path;
+    Filesystem::AbsolutePath path;
 
     bool draw_minimaps;
 

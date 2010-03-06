@@ -67,7 +67,7 @@ trail_counter(0),
 trail_life(0){
 }
 
-Character::Character( const string & filename, int alliance ) throw( LoadException ):
+Character::Character(const Filesystem::AbsolutePath & filename, int alliance) throw( LoadException ):
 ObjectAttack( 0, 0, alliance ),
 type( 0 ),
 shadow( 0 ),
@@ -95,9 +95,8 @@ draw_shadow( true ),
 trail_generator(0),
 trail_counter(0),
 trail_life(0){
-	name = "";
-
-	loadSelf( filename.c_str() );
+    name = "";
+    loadSelf(filename);
 }
 
 Character::Character( const char * filename, int alliance ) throw( LoadException ):
@@ -128,9 +127,9 @@ draw_shadow( true ),
 trail_generator(0),
 trail_counter(0),
 trail_life(0){
-	name = "";
+    name = "";
 
-	loadSelf( filename );
+    loadSelf(Filesystem::AbsolutePath(string(filename)));
 }
 
 Character::Character( const Character & chr ) throw( LoadException ):
@@ -237,44 +236,44 @@ Network::Message Character::getCreateMessage(){
 	message << getId();
 	message << getCurrentMap();
 	Global::debug( 1 ) << "Character create id " << getId() << endl;
-	Global::debug( 1 ) << "Character create path: '" << getPath() << "'" << endl;
-	string path = Filesystem::cleanse(getPath());
+	Global::debug( 1 ) << "Character create path: '" << getPath().path() << "'" << endl;
+        Filesystem::RelativePath path = Filesystem::cleanse(getPath());
         /*
 	path.erase( 0, Util::getDataPath().length() );
         */
-	Global::debug( 1 ) << "Character create sending: '" << path << "'" << endl;
-	message << path;
+	Global::debug( 1 ) << "Character create sending: '" << path.path() << "'" << endl;
+	message << path.path();
 
 	return message;
 }
 
-void Character::loadSelf( const char * filename ) throw ( LoadException ){
+void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException ){
 
-	// setInvincibility( 1000 );
-	TokenReader tr( filename );
+    // setInvincibility( 1000 );
+    TokenReader tr(filename.path());
 
-	Token * head = NULL;
-	try{
-		head = tr.readToken();
-	} catch( const TokenException & ex ){
-		// cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
-		// delete head;
-		throw LoadException(string("Could not open character file: ") + string(filename) + " because " + ex.getReason());
-	}
-	string xls = "Load time for ";
-	xls += filename;
+    Token * head = NULL;
+    try{
+        head = tr.readToken();
+    } catch( const TokenException & ex ){
+        // cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
+        // delete head;
+        throw LoadException(string("Could not open character file: ") + filename.path() + " because " + ex.getReason());
+    }
+    string xls = "Load time for ";
+    xls += filename.path();
 
-	if ( *head != "character" ){
-		// cout<<filename<< " is not a character"<<endl;
-		// delete head;
-		throw LoadException(string("File is not a character: ") + string(filename));
-	}
+    if ( *head != "character" ){
+        // cout<<filename<< " is not a character"<<endl;
+        // delete head;
+        throw LoadException(string("File is not a character: ") + filename.path());
+    }
 
-	current_map = 0;
+    current_map = 0;
 
-	map< string, string > remaps;
+    map<string, Filesystem::AbsolutePath> remaps;
 
-	Token * n = NULL;
+    Token * n = NULL;
     try{
 
         while ( head->hasTokens() ){
@@ -312,15 +311,15 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
             } else if ( *n == "hit-sound" ){
                 string _snd;
                 *n >> _snd;
-                setHit(Sound(Filesystem::find(_snd)));
+                setHit(Sound(Filesystem::find(Filesystem::RelativePath(_snd)).path()));
             } else if ( *n == "die-sound" ){
                 string _snd;
                 *n >> _snd;
-                die_sound = new Sound(Filesystem::find(_snd));
+                die_sound = new Sound(Filesystem::find(Filesystem::RelativePath(_snd)).path());
             } else if ( *n == "landed" ){
                 string st;
                 *n >> st;
-                landed_sound = new Sound(Filesystem::find(st));
+                landed_sound = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
             } else if ( *n == "speed" ){
                 *n >> speed;
             } else if ( *n == "type" ){
@@ -333,20 +332,20 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
                 string icon_path;
                 *n >> icon_path;
                 // cout<<"Loading icon "<<icon_path<<endl;
-                icon = new Bitmap(Filesystem::find(icon_path));
+                icon = new Bitmap(Filesystem::find(Filesystem::RelativePath(icon_path)).path());
             } else if ( *n == "remap" ){
                 string first;
                 string second;
                 *n >> first >> second;
-                remaps[Filesystem::find(second)] = Filesystem::find(first);
+                remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             } else {
-                cout<<"Unhandled character attribute: "<<endl;
+                Global::debug(0) << "Unhandled character attribute: " << endl;
                 n->print(" ");
             }
 
         }
 
-        squish_sound = new Sound(Filesystem::find("sounds/squish.wav"));
+        squish_sound = new Sound(Filesystem::find(Filesystem::RelativePath("sounds/squish.wav")).path());
 
         if ( getMovement( "idle" ) == NULL ){
             throw LoadException("No 'idle' movement");
@@ -371,7 +370,7 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
 
     } catch (const Filesystem::NotFound & ex){
         ostringstream ss;
-        ss << "Could not load character " << filename << " because " << ex.getReason();
+        ss << "Could not load character " << filename.path() << " because " << ex.getReason();
         throw LoadException(ss.str());
     } catch( const TokenException & tex ){
         cout<< "TokenException: " << tex.getReason() << endl;
@@ -383,17 +382,17 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
         throw LoadException("Error parsing character");
     } catch (const LoadException & lex){
         ostringstream ss;
-        ss << "Could not load character " << filename << " because " << lex.getReason();
+        ss << "Could not load character " << filename.path() << " because " << lex.getReason();
         throw LoadException(ss.str());
     }
 
-	// delete head;
+    // delete head;
 
-	for ( map<string,string>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
-		const string & x1 = (*it).first;
-		const string & alter = (*it).second;
-		reMap( alter, x1, getMapper().size() );
-	}
+    for ( map<string, Filesystem::AbsolutePath>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
+        const string & x1 = (*it).first;
+        const Filesystem::AbsolutePath & alter = (*it).second;
+        reMap(alter.path(), x1, getMapper().size() );
+    }
 
     if (getMovement("walk") != NULL){
         if (getMovement("walk")->getKeys().size() > 0){
@@ -401,15 +400,15 @@ void Character::loadSelf( const char * filename ) throw ( LoadException ){
         }
     }
 
-	// animation_current = movements[ "idle" ];
-	animation_current = getMovement( "idle" );
+    // animation_current = movements[ "idle" ];
+    animation_current = getMovement( "idle" );
 
-	body_parts = getBodyParts( getMovement( "idle" ) );
+    body_parts = getBodyParts( getMovement( "idle" ) );
     own_stuff = true;
 
     addEffect(new DrawNormalEffect(this));
 
-	path = filename;
+    path = filename;
 }
         
 void Character::addEffect(DrawEffect * effect){
@@ -436,49 +435,48 @@ static void replacePart( vector< BodyPart > & parts, Bitmap * bitmap ){
 }
 	
 vector< BodyPart > Character::getBodyParts( Animation * animation ){
-	vector< BodyPart > parts;
+    vector< BodyPart > parts;
 
-	Bitmap * bitmap = animation->getFrame( 0 );
-	if ( bitmap == NULL ){
-		return parts;	
-	}
+    Bitmap * bitmap = animation->getFrame( 0 );
+    if ( bitmap == NULL ){
+        return parts;	
+    }
 
-	const int gib_size = 12;
-	for ( int x = 0; x < bitmap->getWidth(); x += gib_size ){
-		for ( int y = 0; y < bitmap->getHeight(); y += gib_size ){
-			// Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
-                        Bitmap * sub = new Bitmap(gib_size, gib_size);
-                        bitmap->Blit(x, y, 0, 0, *sub);
+    const int gib_size = 12;
+    for ( int x = 0; x < bitmap->getWidth(); x += gib_size ){
+        for ( int y = 0; y < bitmap->getHeight(); y += gib_size ){
+            // Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
+            Bitmap * sub = new Bitmap(gib_size, gib_size);
+            bitmap->Blit(x, y, 0, 0, *sub);
 
-                        // for (int num = 0; num < gib_size / 3; num++){
-                        for (int num = 0; num < 2; num++){
-                            sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::MaskColor);
-                            sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::makeColor(255,0,0));
-                        }
+            for (int num = 0; num < 2; num++){
+                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::MaskColor);
+                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::makeColor(255,0,0));
+            }
 
-			if ( 100.0 * (double) nonMaskingPixels( sub ) / (double) (sub->getWidth() * sub->getHeight()) < 10.0 ){
-				delete sub;
-			} else {
-				parts.push_back( BodyPart( x - getWidth() / 2, getHeight() - y, sub ) );
-			}
-		}
-	}
+            if ( 100.0 * (double) nonMaskingPixels( sub ) / (double) (sub->getWidth() * sub->getHeight()) < 10.0 ){
+                delete sub;
+            } else {
+                parts.push_back( BodyPart( x - getWidth() / 2, getHeight() - y, sub ) );
+            }
+        }
+    }
 
-	const char * more[] = { "/misc/body/arm.png",
-				"/misc/body/bone.png",
-				"/misc/body/hand.png",
-				"/misc/body/intestines.png",
-				"/misc/body/leg.png",
-				"/misc/body/ribcage.png",
-				"/misc/body/skull.png",
-				"/misc/body/spine.png",
-				"/misc/body/torso.png" };
+    const char * more[] = {"misc/body/arm.png",
+        "misc/body/bone.png",
+        "misc/body/hand.png",
+        "misc/body/intestines.png",
+        "misc/body/leg.png",
+        "misc/body/ribcage.png",
+        "misc/body/skull.png",
+        "misc/body/spine.png",
+        "misc/body/torso.png" };
 
-	for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i++ ){
-		replacePart(parts, new Bitmap(Filesystem::find(more[ i ])));	
-	}
+    for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i++ ){
+        replacePart(parts, new Bitmap(Filesystem::find(Filesystem::RelativePath(more[i])).path()));	
+    }
 
-	return parts;
+    return parts;
 }
 
 void Character::nextMap(){

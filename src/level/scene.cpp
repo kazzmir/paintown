@@ -49,7 +49,7 @@ frontBuffer(NULL){
     // Token * current = tr.readToken();
     Token * current;
 
-    Script::newEngine("none","none");
+    Script::newEngine("none", Filesystem::RelativePath("none"));
 
     /* the first panel index */
     // char panel_num = 'a';
@@ -69,7 +69,7 @@ frontBuffer(NULL){
             } else if ( *tok == "background" ){
                 string n;
                 *tok >> n;
-                background = new Bitmap(Filesystem::find(n));
+                background = new Bitmap(Filesystem::find(Filesystem::RelativePath(n)).path());
             } else if ( *tok == "background-parallax" ){
                 double d;
                 *tok >> d;
@@ -84,7 +84,7 @@ frontBuffer(NULL){
                 string kind;
                 string scriptPath;
                 *tok >> kind >> scriptPath;
-                Script::newEngine(kind, scriptPath);
+                Script::newEngine(kind, Filesystem::RelativePath(scriptPath));
             } else if ( *tok == "atmosphere" ){
                 while (tok->hasTokens()){
                     string s;
@@ -117,7 +117,7 @@ frontBuffer(NULL){
                 Bitmap * x_neon = NULL;
                 Bitmap * x_screen = NULL;
                 if ( normal != "none" ){
-                    x_normal = new Bitmap(Filesystem::find(normal));
+                    x_normal = new Bitmap(Filesystem::find(Filesystem::RelativePath(normal)).path());
                 }
                 x_neon = new Bitmap();
                 x_screen = new Bitmap();
@@ -141,7 +141,7 @@ frontBuffer(NULL){
             } else if ( *tok == "frontpanel" ){
                 string file;
                 *tok >> file;
-                Bitmap * front = new Bitmap(Filesystem::find(file));
+                Bitmap * front = new Bitmap(Filesystem::find(Filesystem::RelativePath(file)).path());
                 front_panels.push_back( front );
             } else if ( *tok == "order" ){
                 // *tok >> order;
@@ -172,7 +172,7 @@ frontBuffer(NULL){
     current_block = level_blocks.front();
     level_blocks.pop_front();
 
-    arrow = new Bitmap(Filesystem::find("/sprites/arrow.png"));
+    arrow = new Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/arrow.png")).path());
     arrow_blink = 0;
 
     // delete current;
@@ -449,5 +449,5 @@ Scene::~Scene(){
 		delete *it;
 	}
 	*/
-    Script::newEngine("none", "none");
+    Script::newEngine("none", Filesystem::RelativePath("none"));
 }

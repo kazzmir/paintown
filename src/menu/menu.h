@@ -6,6 +6,7 @@
 
 #include "util/load_exception.h"
 #include "util/gradient.h"
+#include "util/file-system.h"
 #include "input/input-map.h"
 #include "return_exception.h"
 #include "gui/box.h"
@@ -37,12 +38,12 @@ class Menu{
 public:
     /*! ctor dtor */
     Menu();
-    Menu(const std::string & str) throw (LoadException);
+    Menu(const Filesystem::AbsolutePath & str) throw (LoadException);
     Menu(Token * token) throw (LoadException);
     virtual ~Menu();
 
     /*! load */
-    virtual void load(const std::string &filename) throw (LoadException);
+    virtual void load(const Filesystem::AbsolutePath & filename) throw (LoadException);
 
     /*! load */
     virtual void load(Token *token) throw (LoadException);

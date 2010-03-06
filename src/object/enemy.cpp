@@ -36,7 +36,7 @@ aggression( NORMAL_AGRESSION ){
 	constructSelf();
 }
 
-Enemy::Enemy( const string & filename ) throw( LoadException ):
+Enemy::Enemy( const Filesystem::AbsolutePath & filename ) throw( LoadException ):
 Character( filename, ALLIANCE_ENEMY  ),
 aggression( NORMAL_AGRESSION ){
 	constructSelf();
@@ -103,7 +103,7 @@ void Enemy::drawFront( Bitmap * work, int rel_x ){
 		FontRender * fac = FontRender::getInstance();
 		// Font * my_font = FontFactory::getFont( NAME_FONT );
 		// const Font & my_font = Font::getFont( NAME_FONT );
-		const Font & my_font = Font::getFont(Filesystem::find(ENEMY_FONT), 20, 20 );
+		const Font & my_font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(ENEMY_FONT))).path(), 20, 20 );
 		const string & name = getName();
 		// const int height = my_font.getHeight( name ) / 2;
 		const int height = 20 / 2;

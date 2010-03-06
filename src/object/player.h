@@ -16,7 +16,7 @@ class Player: public PlayerCommon {
 public:
 
     Player( const char * filename, int config = 0 ) throw( LoadException );
-    Player( const std::string & str, int config = 0 ) throw( LoadException );
+    Player( const Filesystem::AbsolutePath & str, int config = 0 ) throw( LoadException );
     Player( const Player & pl ) throw( LoadException );
     Player( const Character & chr ) throw( LoadException );
 

@@ -40,7 +40,7 @@ static void showError(const Bitmap & screen, const MugenException & e){
     Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
     error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
     static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-    const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 18, 18);
+    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(DEFAULT_FONT)).path(), 18, 18);
     int y = 10;
     std::ostringstream out;
     out << "Press ENTER to continue\n";
@@ -54,11 +54,11 @@ static void showError(const Bitmap & screen, const MugenException & e){
     screen.BlitToScreen();
 }
 
-Game::Game(const PlayerType & playerType, const GameType & gameType, const std::string & systemFile):
+Game::Game(const PlayerType & playerType, const GameType & gameType, const Filesystem::AbsolutePath & systemFile):
 playerType(playerType),
 gameType(gameType),
 systemFile(systemFile),
-motifDirectory(Util::getFileDir(systemFile)){
+motifDirectory(systemFile.getDirectory()){
 }
 
 Game::~Game(){
@@ -264,8 +264,8 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
             render->render(&buffer);
 
             if (show_fps){
-                static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-                const Font & font = Font::getFont(Filesystem::find(DEFAULT_FONT), 20, 20 );
+                static const char * DEFAULT_FONT = "fonts/arial.ttf";
+                const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(DEFAULT_FONT)).path(), 20, 20 );
                 font.printf(buffer.getWidth() - 120, buffer.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), buffer, "FPS: %0.2f", 0, fps );
             }
 
@@ -348,28 +348,28 @@ void Game::doArcade(const Bitmap & bmp){
     select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
     select.load();
     select.run("Arcade", bmp);
-    std::string intro;
-    std::string ending;
+    Filesystem::AbsolutePath intro;
+    Filesystem::AbsolutePath ending;
     bool displayWinScreen = false;
     bool continueScreenEnabled = false;
     bool defaultEndingEnabled = false;
-    std::string defaultEnding;
+    Filesystem::AbsolutePath defaultEnding;
     bool gameOverEnabled = false;
-    std::string gameOver;
+    Filesystem::AbsolutePath gameOver;
     bool creditsEnabled = false;
-    std::string credits;
+    Filesystem::AbsolutePath credits;
 
     try{
         // get intro and ending for player
-	std::string file;
+        Filesystem::AbsolutePath file;
 	if (playerType == Player1){
 	    file = select.getPlayer1Def();
 	} else {
 	    file = select.getPlayer2Def();
 	}
-	std::string baseDir = Util::getFileDir(file);
-	intro = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","intro.storyboard"));
-	ending = Util::getCorrectFileLocation(baseDir,Util::probeDef(file,"arcade","ending.storyboard"));
+        Filesystem::AbsolutePath baseDir = file.getDirectory();
+	intro = Util::getCorrectFileLocation(baseDir,Util::probeDef(file, "arcade","intro.storyboard"));
+	ending = Util::getCorrectFileLocation(baseDir,Util::probeDef(file, "arcade","ending.storyboard"));
         
         // Win screen if player has ending it will not show this
         if (Util::probeDef(systemFile, "win screen", "enabled") == "1"){
@@ -379,17 +379,17 @@ void Game::doArcade(const Bitmap & bmp){
         // Get Default ending
         if (Util::probeDef(systemFile, "default ending", "enabled") == "1"){
             defaultEndingEnabled = true;
-            defaultEnding = Mugen::Data::getInstance().getFileFromMotif(Util::probeDef(systemFile, "default ending", "storyboard"));
+            defaultEnding = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "default ending", "storyboard")));
         }
         // Get Game Over
         if (Util::probeDef(systemFile, "game over screen", "enabled") == "1"){
             gameOverEnabled = true;
-            gameOver = Mugen::Data::getInstance().getFileFromMotif(Util::probeDef(systemFile, "game over screen", "storyboard"));
+            gameOver = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "game over screen", "storyboard")));
         }
         // Get credits
         if (Util::probeDef(systemFile, "end credits", "enabled") == "1"){
             gameOverEnabled = true;
-            credits = Mugen::Data::getInstance().getFileFromMotif(Util::probeDef(systemFile, "end credits", "storyboard"));
+            credits = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "end credits", "storyboard")));
         }
 
     } catch (const MugenException & e){
@@ -404,7 +404,7 @@ void Game::doArcade(const Bitmap & bmp){
     }
 	
     // Run intro before we begin game
-    if (!intro.empty()){
+    if (!intro.isEmpty()){
 	Storyboard story(intro);
 	story.setInput(input);
 	story.run(bmp);
@@ -467,31 +467,31 @@ void Game::doArcade(const Bitmap & bmp){
                 // There is a win they may proceed
                 if (!select.setNextArcadeMatch()){
                     // Game is over and player has won display ending storyboard
-                    if (displayWinScreen && ending.empty()){
+                    if (displayWinScreen && ending.isEmpty()){
                         // Need to parse that and display it for now just ignore
 
                         // Show Default ending if enabled
                         if (defaultEndingEnabled){
-                            if (!defaultEnding.empty()){
+                            if (!defaultEnding.isEmpty()){
                                 Storyboard story(defaultEnding);
                                 story.setInput(input);
                                 story.run(bmp);
                             }
                         }
-                    } else if (defaultEndingEnabled && ending.empty()){
-                        if (!defaultEnding.empty()){
+                    } else if (defaultEndingEnabled && ending.isEmpty()){
+                        if (!defaultEnding.isEmpty()){
                             Storyboard story(defaultEnding);
                             story.setInput(input);
                             story.run(bmp);
                         }
-                    } else if (!ending.empty()){
+                    } else if (!ending.isEmpty()){
                         Storyboard story(ending);
                         story.setInput(input);
                         story.run(bmp);
                     } 
                     if (creditsEnabled){                    
                         // credits
-                        if (!credits.empty()){
+                        if (!credits.isEmpty()){
                             Storyboard story(defaultEnding);
                             story.setInput(input);
                             story.run(bmp);
@@ -516,7 +516,7 @@ void Game::doArcade(const Bitmap & bmp){
 
     // Show game over if ended through game otherwise just get out
     if (displayGameOver){
-        if (!gameOver.empty()){
+        if (!gameOver.isEmpty()){
             Storyboard story(gameOver);
             story.setInput(input);
             story.run(bmp);

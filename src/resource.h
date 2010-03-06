@@ -3,6 +3,7 @@
 
 #include "factory/collector.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -21,8 +22,8 @@ private:
     Resource();
     virtual ~Resource();
 
-    Sound * _getSound(const std::string & path) throw (LoadException);
-    Bitmap * _getBitmap(const std::string & path) throw (LoadException);
+    Sound * _getSound(const Filesystem::AbsolutePath & path) throw (LoadException);
+    Bitmap * _getBitmap(const Filesystem::AbsolutePath & path) throw (LoadException);
 
 private:
     static Resource * resource;

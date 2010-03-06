@@ -6,6 +6,7 @@
 #include <map>
 #include "object_attack.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "network/network.h"
 
 class Bitmap;
@@ -48,7 +49,7 @@ public:
 	/* constructors and destructor */
 	Character( int alliance ); 
 	Character( const char * filename, int alliance ) throw( LoadException );
-	Character( const std::string & filename, int alliance ) throw ( LoadException );
+	Character(const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException );
 	Character( const Character & chr ) throw( LoadException );
 	
 	virtual ~Character();
@@ -310,8 +311,8 @@ public:
 	
 	virtual void drawLifeBar( int x, int y, Bitmap * work );
 	
-	virtual inline const std::string getPath() const {
-		return path;
+	virtual inline const Filesystem::AbsolutePath & getPath() const {
+            return path;
 	}
 
 	virtual int spawnTime(){
@@ -363,7 +364,7 @@ protected:
 
 	virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
 	virtual void reMap( const std::string & from, const std::string & to, int id );
-	void loadSelf( const char * filename ) throw ( LoadException );
+	void loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException );
 	bool realCollision( ObjectAttack * obj );
 	
         std::vector< BodyPart > getBodyParts( Animation * animation );
@@ -470,7 +471,7 @@ protected:
 
 	bool draw_shadow;
 
-        std::string path;
+        Filesystem::AbsolutePath path;
 
         /* list of faded animations that act as a trail */
         std::vector<AnimationTrail*> trails;

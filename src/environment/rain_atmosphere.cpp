@@ -19,7 +19,7 @@ RainAtmosphere::RainAtmosphere():
 Atmosphere(),
 playing( false ){
 
-	rain_sound = Sound(Filesystem::find("sounds/rain.wav"));
+	rain_sound = Sound(Filesystem::find(Filesystem::RelativePath("sounds/rain.wav")).path());
 
 	int colors[ 2 ];
 	colors[ 0 ] = Bitmap::makeColor( 0x22, 0x66, 0x66 );

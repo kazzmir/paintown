@@ -30,7 +30,7 @@ MenuGlobals::~MenuGlobals(){
 }
 
 void MenuGlobals::setMusic(const std::string &file) throw (Filesystem::NotFound){
-    if (Music::loadSong(Filesystem::find(file))){
+    if (Music::loadSong(Filesystem::find(Filesystem::RelativePath(file)).path())){
         Music::pause();
         Music::play();
     }
@@ -168,7 +168,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
             opt->setInfoText("Select a set of levels to play");
             temp.addOption(opt);
         }
-        temp.load(Filesystem::find("menu/level_select.txt"));
+        temp.load(Filesystem::find(Filesystem::RelativePath("menu/level_select.txt")));
         temp.backboard.position.height = count;
         // Run it
         temp.run();

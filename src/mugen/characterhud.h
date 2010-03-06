@@ -765,7 +765,7 @@ class WinIcon{
 /*! Player HUD *TODO Need to compensate for team stuff later */
 class GameInfo{
     public:
-	GameInfo(const std::string & fightFile);
+	GameInfo(const Filesystem::AbsolutePath & fightFile);
 	virtual ~GameInfo();
 
         virtual void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);

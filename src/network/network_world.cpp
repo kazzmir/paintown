@@ -58,7 +58,7 @@ static void * handleMessages( void * arg ){
     return NULL;
 }
 
-NetworkWorld::NetworkWorld(vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const string & path, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
+NetworkWorld::NetworkWorld(vector< Network::Socket > & sockets, const vector< Object * > & players, const map<Object*, Network::Socket> & characterToClient, const Filesystem::AbsolutePath & path, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
 AdventureWorld( players, path, new Level::DefaultCacher(), screen_size ),
 ChatWidget(*this, 0),
 sockets(sockets),

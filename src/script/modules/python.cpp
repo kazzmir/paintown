@@ -65,7 +65,7 @@ namespace PaintownLevel{
             string spath(path);
             BlockObject block;
             block.setType(ObjectFactory::EnemyType);
-            block.setPath(Filesystem::find(spath));
+            block.setPath(Filesystem::find(Filesystem::RelativePath(spath)));
             Enemy * enemy = (Enemy*) ObjectFactory::createObject(&block);
             delete enemy;
         }
@@ -90,7 +90,7 @@ namespace PaintownLevel{
             string spath(path);
             string sname(name);
             BlockObject block;
-            block.setPath(Filesystem::find(spath));
+            block.setPath(Filesystem::find(Filesystem::RelativePath(spath)));
             block.setName(sname);
             block.setAlias(sname);
             block.setMap(map);
@@ -330,7 +330,7 @@ static PyMethodDef PaintownModule[] = {
 };
 
 /* initialize the intepreter and set up the module paths */
-PythonEngine::PythonEngine(const string & path):
+PythonEngine::PythonEngine(const Filesystem::RelativePath & path):
 Script::Engine(),
 path(path){
     Global::debug(1) << "Loading python.." << endl;
@@ -338,18 +338,18 @@ path(path){
     Py_Initialize();
 
     Py_InitModule((char*) paintown_internal, PaintownModule);
-    Global::debug(1) << "Load module " << path << endl;
+    Global::debug(1) << "Load module " << path.path() << endl;
 
     /* TODO: Use PySys_GetObject() to get sys.path and then use
      * PyString_FromStringAndSize() and PyList_Append()
      */
     ostringstream python_string;
-    python_string << "x = \"" << Filesystem::find(path) << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('" << Filesystem::find("scripts") << "');";
+    python_string << "x = \"" << Filesystem::find(path).path() << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('" << Filesystem::find(Filesystem::RelativePath("scripts")).path() << "');";
     Global::debug(1) << "Executing '" << python_string.str() << "'" << endl;
     Global::debug(1) << "Python: " << PyRun_SimpleString(python_string.str().c_str()) << endl;
-    int from = path.rfind("/")+1;
-    int to = path.rfind(".");
-    module = path.substr(from, to - from);
+    int from = path.path().rfind("/")+1;
+    int to = path.path().rfind(".");
+    module = path.path().substr(from, to - from);
 
     /* Load the user module so that it can register itself */
     Global::debug(1) << "Loading module " << module << endl;

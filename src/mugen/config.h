@@ -1,8 +1,8 @@
-#ifndef _mugen_config_h
-#define _mugen_config_h
+#ifndef _paintown_mugen_config_h
+#define _paintown_mugen_config_h
 
 #include <string>
-
+#include "util/file-system.h"
 
 namespace Mugen{
 
@@ -12,27 +12,22 @@ class Data{
 
         static Data & getInstance();
 
-        std::string getDirectory();
+        Filesystem::RelativePath getDirectory();
+        Filesystem::RelativePath getDataDirectory();
+        Filesystem::RelativePath getMotifDirectory();
+        Filesystem::RelativePath getCharDirectory();
+        Filesystem::RelativePath getFontDirectory();
+        Filesystem::RelativePath getStageDirectory();
 
-        std::string getDataDirectory();
-	
-	std::string getMotifDirectory();
-
-        std::string getCharDirectory();
-        
-        std::string getFontDirectory();
-
-        std::string getStageDirectory();
-
-        /* remove the data directory from `path' */
-        std::string cleanse(const std::string & path);
+        /* remove the data directory from `path', basically removes mugen/ */
+        Filesystem::RelativePath cleanse(const Filesystem::RelativePath & path);
 	
 	//! Gets a file from the current motif, if it doesn't exist then check the default motif
-	std::string getFileFromMotif(const std::string & file);
+        Filesystem::AbsolutePath getFileFromMotif(const Filesystem::RelativePath & file);
         
-        void setMotif(const std::string & motif);
+        void setMotif(const Filesystem::RelativePath & motif);
 
-        const std::string & getMotif();
+        const Filesystem::RelativePath & getMotif();
 
         void setDifficulty(int difficulty);
 
@@ -75,14 +70,14 @@ class Data{
         /* *TODO add in remaining getters */ 
 
     private:
-        Data(const std::string & configFile);
+        Data(const Filesystem::AbsolutePath & configFile);
         ~Data();
 	
 	//! Instance
 	static Data * data;
 
         //! Current Set Motif
-        std::string motif;
+        Filesystem::RelativePath motif;
         
         //! Current set Difficulty (default 4)
         int difficulty;

@@ -8,7 +8,7 @@ class PlayerCommon: public Character {
 public:
     PlayerCommon(const Character& chr) throw (LoadException);
     PlayerCommon(const char * filename) throw (LoadException);
-    PlayerCommon(const std::string & str) throw (LoadException);
+    PlayerCommon(const Filesystem::AbsolutePath & str) throw (LoadException);
     PlayerCommon(const PlayerCommon & pl) throw (LoadException);
     virtual ~PlayerCommon();
 

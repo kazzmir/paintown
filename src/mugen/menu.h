@@ -104,7 +104,7 @@ class MugenMenu : public Menu {
     public:
 	/*! ctor dtor */
         explicit MugenMenu(const MugenMenu & menu);
-	MugenMenu(const std::string &filename);
+	MugenMenu(const Filesystem::RelativePath &filename);
 	virtual ~MugenMenu();
 	
 	/*! load */
@@ -113,7 +113,7 @@ class MugenMenu : public Menu {
 	/*! do logic, draw whatever */
 	virtual void run();
 	
-        virtual inline std::string getSelectInfoFile() const {
+        virtual inline Filesystem::AbsolutePath getSelectInfoFile() const {
             return selectInfoFile;
         }
 	
@@ -124,7 +124,7 @@ class MugenMenu : public Menu {
 	// Option offset
 	int optionLocation;
 	
-	std::string location;
+        Filesystem::RelativePath location;
 	
 	//spr = system.sff          ;Filename of sprite data
 	std::string spriteFile;
@@ -218,7 +218,7 @@ class MugenMenu : public Menu {
 	// Draw text
 	void renderText(Bitmap *bmp);
 
-        std::string selectInfoFile;
+        Filesystem::AbsolutePath selectInfoFile;
 	
 	// Options
 	std::vector<Mugen::ItemOption *> options;

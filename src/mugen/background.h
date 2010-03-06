@@ -415,7 +415,7 @@ class BackgroundController{
 class Background{
     public:
 	//! Pass in the file that has the background and the base name ie 'BG'
-	Background(const std::string &file, const std::string &header);
+	Background(const Filesystem::AbsolutePath & file, const std::string &header);
 	virtual ~Background();
 	
 	virtual void act();
@@ -436,7 +436,7 @@ class Background{
     private:
 	
 	//! File where background is in
-	std::string file;
+        Filesystem::AbsolutePath file;
 	
 	//! What's the section we are looking for ie 'BG'
 	std::string header;

@@ -17,7 +17,7 @@
 
 using namespace std;
 
-NetworkPlayer::NetworkPlayer(const string & filename, int alliance) throw ( LoadException ):
+NetworkPlayer::NetworkPlayer(const Filesystem::AbsolutePath & filename, int alliance) throw ( LoadException ):
 NetworkCharacter( filename, alliance ),
 score(0),
 attack_bonus(0),
@@ -119,7 +119,7 @@ void NetworkPlayer::drawFront( Bitmap * work, int rel_x ){
 
     int hasIcon = icon ? icon->getWidth() : 0;
 
-    const Font & player_font = Font::getFont(Filesystem::find(PLAYER_FONT), 20, 20 );
+    const Font & player_font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(PLAYER_FONT))).path(), 20, 20 );
     const string & name = getName();
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;

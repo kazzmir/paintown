@@ -11,7 +11,7 @@
 class NetworkPlayer: public NetworkCharacter {
 public:
 
-	NetworkPlayer(const std::string & filename, int alliance) throw ( LoadException );
+	NetworkPlayer(const Filesystem::AbsolutePath & filename, int alliance) throw ( LoadException );
 	NetworkPlayer(const Character & chr) throw( LoadException );
 	
 	virtual ~NetworkPlayer();

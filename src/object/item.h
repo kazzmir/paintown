@@ -2,6 +2,7 @@
 #define _paintown_item_h
 
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "object/object_nonattack.h"
 #include "util/sound.h"
 #include "util/bitmap.h"
@@ -16,8 +17,8 @@ class World;
 
 class Item: public ObjectNonAttack {
 public:
-	Item( const std::string & filename, Stimulation * const stimulation ) throw( LoadException );
-	Item( const Item & item );
+	Item(const Filesystem::AbsolutePath & filename, Stimulation * const stimulation) throw( LoadException );
+	Item(const Item & item);
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Bitmap * work, int rel_x, int rel_y );
@@ -37,8 +38,8 @@ public:
 protected:
 	Stimulation * copyStimulation() const;
 
-	inline const std::string getPath() const {
-		return path;
+	inline const Filesystem::AbsolutePath & getPath() const {
+            return path;
 	}
 
 	inline Stimulation * getStimulation() const {
@@ -49,7 +50,7 @@ protected:
 	ECollide * collide;
 	Stimulation * const stimulation;
 	Sound sound;
-	std::string path;
+        Filesystem::AbsolutePath path;
 };
 
 #endif

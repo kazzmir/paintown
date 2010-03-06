@@ -7,13 +7,14 @@
 #include "object_nonattack.h"
 #include "util/sound.h"
 #include "network/network.h"
+#include "util/file-system.h"
 
 class Bitmap;
 class Animation;
 
 class Cat: public ObjectNonAttack {
 public:
-	Cat( const std::string & filename ) throw( LoadException );
+	Cat(const Filesystem::AbsolutePath & filename ) throw( LoadException );
 	Cat( const Cat & cat );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
@@ -37,7 +38,7 @@ protected:
     /* meow meow! */
 	Sound meow;
 
-    std::string path;
+        Filesystem::AbsolutePath path;
 
 	enum State{
 		IDLE1,

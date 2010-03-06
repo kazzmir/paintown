@@ -328,21 +328,21 @@ OptionOptions::~OptionOptions(){
 }
 
 void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
-    std::string systemFile = Data::getInstance().getFileFromMotif(Data::getInstance().getMotif());
+    Filesystem::AbsolutePath systemFile = Data::getInstance().getFileFromMotif(Data::getInstance().getMotif());
     // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Util::getFileDir(systemFile);
+    Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
     
-    Global::debug(1) << baseDir << endl;
+    Global::debug(1) << baseDir.path() << endl;
     
-    if (systemFile.empty()){
-        throw MugenException( "Cannot locate character select definition file for: " + systemFile );
+    if (systemFile.isEmpty()){
+        throw MugenException( "Cannot locate character select definition file for: " + systemFile.path());
     }
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(systemFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(systemFile.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + systemFile + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
     Background * background = 0;
     std::vector< MugenFont *> fonts;
@@ -356,9 +356,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
 	if (head == "Files"){
-            class FileWalker: public Ast::Walker{
+            class FileWalker: public Ast::Walker {
                 public:
-                    FileWalker(std::vector<MugenFont *> & fonts, SoundMap & sounds, const string & baseDir):
+                    FileWalker(std::vector<MugenFont *> & fonts, SoundMap & sounds, const Filesystem::AbsolutePath & baseDir):
                         fonts(fonts),
 			sounds(sounds),
                         baseDir(baseDir){
@@ -366,13 +366,13 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
                     std::vector<MugenFont *> & fonts;
 		    SoundMap & sounds;
-                    const string & baseDir;
+                    const Filesystem::AbsolutePath & baseDir;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "snd"){
 			    std::string file;
                             simple >> file;
-                            Util::readSounds( Util::getCorrectFileLocation(baseDir, file ), sounds);
+                            Util::readSounds(Util::getCorrectFileLocation(baseDir, file ), sounds);
                             Global::debug(1) << "Got Sound File: '" << file << "'" << endl;
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string temp;

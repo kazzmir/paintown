@@ -8,6 +8,7 @@
 
 // Extend the font interface already made for paintown
 #include "util/font.h"
+#include "util/file-system.h"
 
 class Bitmap;
 
@@ -21,10 +22,10 @@ struct FontLocation{
     int width;
 };
 
-class MugenFont : public Font{
+class MugenFont : public Font {
 public:
-    MugenFont( const std::string & file );
-    MugenFont( const char * file );
+    MugenFont( const Filesystem::AbsolutePath & file );
+    // MugenFont( const char * file );
     MugenFont( const MugenFont &copy );
     virtual ~MugenFont();
     

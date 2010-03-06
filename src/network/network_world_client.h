@@ -6,6 +6,7 @@
 #include "network.h"
 #include "object/object.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include "input/input-map.h"
 #include "input/text-input.h"
 #include "chat-widget.h"
@@ -16,7 +17,7 @@ class Bitmap;
 class NetworkWorldClient: public AdventureWorld, public ChatWidget {
 public:
 
-	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const std::string & path, Object::networkid_t id, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const Filesystem::AbsolutePath & path, Object::networkid_t id, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
 	virtual void draw(Bitmap * work);

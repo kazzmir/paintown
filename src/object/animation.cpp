@@ -215,7 +215,7 @@ contact( NULL ){
 			} else if ( current == "contact" ){
 				string st;
 				current >> st;
-				contact = new Sound(Filesystem::find(st));
+				contact = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
 			} else if ( current == "keys" ){
 
 				while ( current.hasTokens() ){
@@ -225,7 +225,7 @@ contact( NULL ){
 					// nm->print("combo ");
 					if ( !nm->hasTokens() ){
 						string key_name = nm->getName();
-                        Input::PaintownInput actualKey = convertKeyPress( key_name );
+                                                Input::PaintownInput actualKey = convertKeyPress( key_name );
 						if ( actualKey == Input::Unknown ){
 							Global::debug( 0 ) << "Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
 						}
@@ -322,11 +322,11 @@ contact( NULL ){
 				current >> st;
 
 				if ( sounds.find( st ) == sounds.end() ){
-					Sound * sp = new Sound(Filesystem::find(st));
+					Sound * sp = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
 					sounds[ st ] = sp;
 				}
 
-				AnimationEvent * aes = new AnimationEventSound( st );
+				AnimationEvent * aes = new AnimationEventSound(st);
 				events.push_back( aes );
 
 			} else if ( current == "setstatus" ){
@@ -384,18 +384,18 @@ contact( NULL ){
 			} else if ( current == "frame" ){
 				string path;
 				current >> path;
-				path = Filesystem::find(basedir + path);
-				if (frames.find(path) == frames.end()){
-					Bitmap * pic = new Bitmap(path);
+                                Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
+				if (frames.find(full.path()) == frames.end()){
+					Bitmap * pic = new Bitmap(full.path());
 					ECollide * collide = new ECollide(pic);
 					Frame * f = new Frame( pic, collide );
-					frames[ path ] = f;
+					frames[full.path()] = f;
 					if ( pic->getError() ){
 						Global::debug( 0 ) <<"Pic error"<<endl;
 						throw LoadException("Could not load picture");
 					}
 				}
-				AnimationEvent * ani = new AnimationEventFrame( path );
+				AnimationEvent * ani = new AnimationEventFrame(full.path());
 				events.push_back( ani );
 			} else {
 				Global::debug( 0 ) << tok->getFileName() << " Unhandled animation attribute: "<<endl;

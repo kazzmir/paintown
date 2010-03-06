@@ -19,8 +19,8 @@ health( 1 ),
 coords_x( 0 ),
 coords_z( 0 ),
 id(-1),
-stimulationType( "none" ),
-stimulationValue( 0 ){
+stimulationType("none"),
+stimulationValue(0){
 }
 
 BlockObject::BlockObject(const BlockObject & copy):
@@ -85,7 +85,7 @@ stimulationValue( 0 ){
 			} else if ( *current == "path" ){
 				string n;
 				*current >> n;
-				setPath(Filesystem::find(n));
+				setPath(Filesystem::find(Filesystem::RelativePath(n)));
 			} else if ( *current == "aggression" ){
 				int a;
 				*current >> a;
@@ -137,13 +137,13 @@ stimulationValue( 0 ){
 		setAlias( getName() );
         }
 
-	if ( getPath() == "" ){
+	if (getPath().isEmpty()){
             Global::debug(0) << endl;
             Global::debug(0) << "**WARNING**"<<endl;
             tok->print(" ");
             string str("No path given for ");
             str += getName();
-            throw LoadException( str );
+            throw LoadException(str);
 	}
 }
 

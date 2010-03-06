@@ -203,7 +203,7 @@ public:
 
 }
 
-MugenMenu::MugenMenu(const std::string &filename):
+MugenMenu::MugenMenu(const Filesystem::RelativePath &filename):
 optionLocation(0),
 location(filename),
 spriteFile(""),
@@ -224,21 +224,21 @@ intro(0){
 
 void MugenMenu::loadData(){
      // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Filesystem::find( Mugen::Data::getInstance().getDirectory() + Mugen::Util::getFileDir(location));
-    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(location) );
+    Filesystem::AbsolutePath baseDir = Filesystem::find(Mugen::Data::getInstance().getDirectory().join(location.getDirectory()));
+    const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, location.getFilename().path());
     // get real basedir
     //baseDir = Mugen::Util::getFileDir( ourDefFile );
-    Global::debug(1) << baseDir << endl;
+    Global::debug(1) << baseDir.path() << endl;
     
-    if (ourDefFile.empty()){
-        throw MugenException( "Cannot locate menu definition file for: " + location );
+    if (ourDefFile.isEmpty()){
+        throw MugenException( "Cannot locate menu definition file for: " + location.path() );
     }
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
     
     /*
     MugenReader reader( ourDefFile );
@@ -280,19 +280,19 @@ void MugenMenu::loadData(){
         } else if (head == "files"){
             class FileWalker: public Ast::Walker{
                 public:
-                    FileWalker(MugenMenu & menu, const string & baseDir):
+                    FileWalker(MugenMenu & menu, const Filesystem::AbsolutePath & baseDir):
                         menu(menu),
                         baseDir(baseDir){
                         }
 
                     MugenMenu & menu;
-                    const string & baseDir;
+                    const Filesystem::AbsolutePath & baseDir;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
                             simple >> menu.spriteFile;
                             Global::debug(1) << "Got Sprite File: '" << menu.spriteFile << "'" << endl;
-                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, menu.spriteFile), "", menu.sprites);
+                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, menu.spriteFile), Filesystem::AbsolutePath(), menu.sprites);
                         } else if (simple == "snd"){
                             simple >> menu.soundFile;
                             Mugen::Util::readSounds( Mugen::Util::getCorrectFileLocation(baseDir, menu.soundFile ), menu.sounds);
@@ -302,7 +302,7 @@ void MugenMenu::loadData(){
                                 simple >> menu.logoFile;
 				if (!menu.logoFile.empty()){
 				    try{
-					Global::debug(1) << "Logo file " << baseDir << "/" << menu.logoFile << endl;
+					Global::debug(1) << "Logo file " << baseDir.path() << "/" << menu.logoFile << endl;
 					menu.logo = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
 					Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
 				    } catch (const MugenException &ex){
@@ -316,7 +316,7 @@ void MugenMenu::loadData(){
                                 simple >> menu.introFile;
 				if (!menu.introFile.empty()){
 				    try{
-					Global::debug(1) << "Intro file " << baseDir << "/" << menu.introFile << endl;
+					Global::debug(1) << "Intro file " << baseDir.path() << "/" << menu.introFile << endl;
 					menu.intro = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.introFile));
 					Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
 				    } catch (const MugenException &ex){

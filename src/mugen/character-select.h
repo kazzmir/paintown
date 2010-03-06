@@ -117,7 +117,7 @@ class Cell;
 /*! Character Info handler, portrait name and etc */
 class CharacterInfo {
     public:
-        CharacterInfo(const std::string &definitionFile);
+        CharacterInfo(const Filesystem::AbsolutePath &definitionFile);
         virtual ~CharacterInfo();
 	
 	virtual void loadPlayer1();
@@ -125,10 +125,10 @@ class CharacterInfo {
 	virtual void loadPlayer2();
 	
 	virtual inline bool operator==(CharacterInfo &character){
-	    return (this->definitionFile.compare(character.definitionFile) == 0);
+	    return (this->definitionFile.path().compare(character.definitionFile.path()) == 0);
 	}
 	
-	virtual inline const std::string &getDefinitionFile(){
+	virtual inline const Filesystem::AbsolutePath & getDefinitionFile(){
 	    return this->definitionFile;
 	}
 
@@ -168,11 +168,11 @@ class CharacterInfo {
             return randomStage;
         }
 
-        virtual inline void setStage(const std::string &str){
+        virtual inline void setStage(const Filesystem::AbsolutePath &str){
             stageFile = str;
         }
 
-        virtual inline const std::string &getStage() const{
+        virtual inline const Filesystem::AbsolutePath &getStage() const{
             return stageFile;
         }
 
@@ -210,11 +210,11 @@ class CharacterInfo {
 
     private:
         /* The characters definition File to pass on to stage or anything else */
-        const std::string definitionFile;
+        const Filesystem::AbsolutePath definitionFile;
         /* Character base directory */
-        const std::string baseDirectory;
+        const Filesystem::AbsolutePath baseDirectory;
         /* Sprite File */
-        std::string spriteFile;
+        Filesystem::RelativePath spriteFile;
         /* Characters Name */
         std::string name;
         /* Characters Display Name */
@@ -223,7 +223,7 @@ class CharacterInfo {
         int currentPlayer1Act;
         int currentPlayer2Act;
         /* Act Collection */
-        std::vector< std::string > actCollection;
+        std::vector<Filesystem::RelativePath> actCollection;
         /* image 9000 */
         MugenSprite *icon;
         /* image 9001 */
@@ -231,7 +231,7 @@ class CharacterInfo {
         /* Random Stage */
         bool randomStage;
         /* Stage File */
-        std::string stageFile;
+        Filesystem::AbsolutePath stageFile;
         /* Music for stage */
         std::string music;
         /* Order in which to be set during Arcade mode */
@@ -256,10 +256,10 @@ class StageHandler{
 	virtual void render(const Bitmap &);
 	
 	//! Get current selected stage
-	virtual const std::string &getStage();
+	virtual const Filesystem::AbsolutePath &getStage();
 	
 	//! Get random stage
-	virtual const std::string &getRandomStage();
+	virtual const Filesystem::AbsolutePath &getRandomStage();
 	
 	//! Set Next Stage
 	virtual void next();
@@ -305,7 +305,7 @@ class StageHandler{
 	unsigned int currentStage;
 	
 	//! Stage list First stage is reserved for random
-	std::vector< std::string > stages;
+	std::vector<Filesystem::AbsolutePath> stages;
 	
 	//! Actual Stage names first is reserved for random
 	std::vector< std::string > stageNames;
@@ -932,7 +932,7 @@ class VersusScreen {
 
 class CharacterSelect {
     public:
-        CharacterSelect(const std::string & file, const PlayerType &, const GameType &);
+        CharacterSelect(const Filesystem::AbsolutePath & file, const PlayerType &, const GameType &);
         virtual ~CharacterSelect();
 	
 	virtual void load() throw (MugenException);
@@ -970,17 +970,17 @@ class CharacterSelect {
 	    return this->currentStage;
 	}
 	
-	virtual inline const std::string &getPlayer1Def(){
+	virtual inline const Filesystem::AbsolutePath & getPlayer1Def(){
 	    return currentPlayer1->getDefinitionFile();
 	}
 
-	virtual inline const std::string &getPlayer2Def(){
+	virtual inline const Filesystem::AbsolutePath & getPlayer2Def(){
 	    return currentPlayer2->getDefinitionFile();
 	}
 	
 	/*! **FIXME These are temporary until a method is 
 	    figured to handling teams and multiple players elegantly */
-	virtual inline const std::string &getStageOld(){
+	virtual inline const Filesystem::AbsolutePath &getStageOld(){
 	    return grid.getStageHandler().getStage();
 	}
 	
@@ -993,10 +993,10 @@ class CharacterSelect {
 	std::vector<CharacterInfo *> getCharacterGroup(int orderNumber);
 	
 	//! Parse select file to get characters and stages
-	void parseSelect(const std::string &selectFile);
+	void parseSelect(const Filesystem::AbsolutePath &selectFile);
 	
 	//! Location of file
-	const std::string systemFile;
+	const Filesystem::AbsolutePath systemFile;
 	
 	//! sprite file
 	std::string sffFile;

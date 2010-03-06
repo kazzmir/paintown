@@ -48,9 +48,9 @@ const std::string Mugen::Util::fixCase( const std::string &str ){
 
 const std::string Mugen::Util::removeSpaces( const std::string &str ){
     std::string tempStr = str;
-    if( tempStr.find(' ') != std::string::npos ){
+    if (tempStr.find(' ') != std::string::npos){
 	Global::debug(2) << "Removing spaces from: " << tempStr << endl;
-	for( int i = tempStr.size()-1; i>-1; --i){
+	for (int i = tempStr.size()-1; i>-1; --i){
 	    if( tempStr[i] == ' ' )tempStr.erase( tempStr.begin()+i );
 	    else if( tempStr[i] == '\t' )tempStr.erase( tempStr.begin()+i );
 	}
@@ -72,40 +72,40 @@ std:string getHeadDir( const std::string & dir ){
     return dir.substr( ( dir.find_lastof( '/' ) != std::string::npos ? dir.find_lastof( '/' ) : 0 ), lastslash,dir.size() );
 }*/
 
-const std::string Mugen::Util::fixFileName( const std::string &dir, std::string str ){
+const Filesystem::AbsolutePath Mugen::Util::fixFileName( const Filesystem::AbsolutePath &dir, std::string str ){
     Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
     str = Mugen::Util::removeSpaces(str);
     // Fixes windows paths
     str = Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
-    Global::debug(2) << "Checking for file in " << (dir+str) << endl;
-    if( ::Util::exists( dir + str ) == false ){
+    Global::debug(2) << "Checking for file in " << (dir.path()+str) << endl;
+    if (::Util::exists( dir.path() + str ) == false){
 	Global::debug(2) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
 	std::vector< string > files = ::Util::getFiles( dir, "*" );
-	Global::debug(2) << "Correcting file: " << str << ", in directory: "<< dir <<".\nGot " << files.size() << " files." << endl;
+	Global::debug(2) << "Correcting file: " << str << ", in directory: "<< dir.path() <<".\nGot " << files.size() << " files." << endl;
 	for( unsigned int i = 0; i < files.size(); ++i ){
 	    std::string temp = files[i].c_str();
 	    temp = Mugen::Util::fixCase( temp );
-	    if( std::string( dir + str ) == temp ){
+	    if (std::string( dir.path() + str ) == temp ){
 		// We got number one chinese retaurant
-		returnString = files[i];
-		break;
+		// returnString = Filesystem::AbsolutePath(files[i]);
+                return Filesystem::AbsolutePath(files[i]);
+		// break;
 	    }
 	}
-	Global::debug(2) << "Corrected file: " << returnString << endl;
-	return returnString;
+        throw Filesystem::NotFound(str);
+	// Global::debug(2) << "Corrected file: " << returnString << endl;
+	// return returnString;
     }
-    return std::string(dir + str);
+    return Filesystem::AbsolutePath(dir.path() + str);
 }
-
 
 /* this is basename() */
 const std::string Mugen::Util::stripDir( const std::string &str ){ 
     return Filesystem::stripDir(str);
 }
-
 
 /* this is dirname() */
 const std::string Mugen::Util::getFileDir( const std::string &str ){
@@ -184,12 +184,14 @@ typedef struct {
 /* Source: ZSoft Corporation's PCX File Format Technical Reference Manual, Revision 5. */
 
 
-bool Mugen::Util::readPalette(const string &filename, unsigned char *pal){
+bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigned char *pal){
     unsigned char colorsave[3]; // rgb pal save
-    FILE *act_file = fopen( filename.c_str(), "rb" );
+    FILE *act_file = fopen(filename.path().c_str(), "rb");
     if( !act_file ){
-	Global::debug(1) << "Unable to open ACT file: " << filename << endl;
-	if( act_file )fclose( act_file );
+	Global::debug(1) << "Unable to open ACT file: " << filename.path() << endl;
+	if (act_file){
+            fclose( act_file );
+        }
 	pal = 0;
 	return false;
     }
@@ -206,13 +208,13 @@ bool Mugen::Util::readPalette(const string &filename, unsigned char *pal){
 		pal[3*i+1]=colorsave[1];
 		pal[3*i+2]=colorsave[2];
 	    }
-	    Global::debug(1) << "Applying palette from ACT file: " << filename << endl;
+	    Global::debug(1) << "Applying palette from ACT file: " << filename.path() << endl;
 	    if( act_file )fclose( act_file );
 	    return true;
 	}
 	// 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size.
 	else if( ftell(act_file) < 897 ){ 
-            Global::debug(1) << "File " << filename << " is not a valid palette file." << endl;
+            Global::debug(1) << "File " << filename.path() << " is not a valid palette file." << endl;
 	    if( act_file )fclose( act_file );
 	    pal = 0;
 	    return false;
@@ -230,11 +232,11 @@ bool Mugen::Util::readPalette(const string &filename, unsigned char *pal){
                 if( colorsave[0] == 12 ){
                     fseek( act_file, -768, SEEK_END );
                     bleh = fread( pal, 768, 1, act_file );
-                    Global::debug(1) << "Applying palette from PCX file: " << filename << endl;
+                    Global::debug(1) << "Applying palette from PCX file: " << filename.path() << endl;
 		    return true;
                 }
                 else{
-                    Global::debug(1) << "File " << filename << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+                    Global::debug(1) << "File " << filename.path() << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
 		    if( act_file )fclose( act_file );
 		    pal =0;
 		    return false;
@@ -243,7 +245,7 @@ bool Mugen::Util::readPalette(const string &filename, unsigned char *pal){
             // Add support for JASC and RIFF palette files later... 
             // Minimum JASC PAL size = 1,813 bytes (carriage returns are necessary). 
             else{
-		Global::debug(1) << "File " << filename << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+		Global::debug(1) << "File " << filename.path() << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
 		if( act_file )fclose( act_file );
 		pal = 0;
 		return false;;
@@ -270,16 +272,16 @@ namespace Mugen{
 
 class SffReader{
 public:
-    SffReader(const string & filename, const string & palette):
+    SffReader(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette):
     filename(filename),
     currentSprite(0){
         /* 16 skips the header stuff */
-        sffStream.open(filename.c_str(), ios::binary);
+        sffStream.open(filename.path().c_str(), ios::binary);
         if (!sffStream){
-            throw MugenException("Could not open SFF file: '" + filename + "'");
+            throw MugenException("Could not open SFF file: '" + filename.path() + "'");
         }
 
-        filesize = computeFileSize(filename);
+        filesize = computeFileSize(filename.path());
 
         /* TODO: read the first 16 bytes to get the version info.
          * Data starts at the 16th byte.
@@ -319,7 +321,7 @@ public:
         //unsigned char colorsave[3]; // rgb pal save
 
         // Load in first palette
-        if (Mugen::Util::readPalette(palette, palsave1)){
+        if (readPalette(palette, palsave1)){
             useact = true;
         }
     }
@@ -332,7 +334,7 @@ public:
     MugenSprite * readSprite(){
         bool islinked = false;
         if (location > filesize){
-            throw MugenException("Error in SFF file: " + filename + ". Offset of image beyond the end of the file.");
+            throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.");
         }
 
         MugenSprite * sprite = new MugenSprite();
@@ -434,7 +436,7 @@ public:
     }
 
 protected:
-    const string filename;
+    const Filesystem::AbsolutePath filename;
     ifstream sffStream;
     unsigned long currentSprite;
     int totalSprites;
@@ -449,7 +451,7 @@ protected:
     }
 }
 
-void Mugen::Util::readSprites(const string & filename, const string & palette, Mugen::SpriteMap & sprites){
+void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites){
     SffReader reader(filename, palette);
     while (reader.moreSprites()){
         try{
@@ -471,17 +473,17 @@ void Mugen::Util::readSprites(const string & filename, const string & palette, M
 }
 
 /* TODO: turn this code into a class like SffReader */
-void Mugen::Util::readSounds(const string & filename, Mugen::SoundMap & sounds){
+void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::SoundMap & sounds){
     /* 16 skips the header stuff */
     int location = 16;
     ifstream ifile;
-    ifile.open(filename.c_str(), ios::binary);
+    ifile.open(filename.path().c_str(), ios::binary);
     if (!ifile){
-	throw MugenException("Could not open SND file: " + filename);
+	throw MugenException("Could not open SND file: " + filename.path());
     }
     
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
-    ifile.seekg(location,ios::beg);
+    ifile.seekg(location, ios::beg);
     int totalSounds;
     
     ifile.read( (char *)&totalSounds, 4 );
@@ -914,8 +916,8 @@ list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
     }
 }
 
-std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const string & filename, const SpriteMap sprites){
-    Ast::AstParse parsed(parseAir(filename));
+std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites){
+    Ast::AstParse parsed(parseAir(filename.path()));
     Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
     
     map<int, MugenAnimation*> animations;
@@ -946,38 +948,38 @@ static std::string removeLastDir( const std::string &dir ){
     return dir;
 }
 
-const std::string Mugen::Util::getCorrectFileLocation( const std::string &dir, const std::string &file ){
+const Filesystem::AbsolutePath Mugen::Util::getCorrectFileLocation(const Filesystem::AbsolutePath &dir, const std::string &file ){
     // First check initial location else it should be in the base dir
     std::string ourFile = file;
     ourFile = Mugen::Util::removeSpaces(ourFile);
-    if (::Util::exists(dir + ourFile) == true){
-	Global::debug(1) << "No correction needed found File: " << dir + ourFile << endl;
-	return dir + ourFile;
+    if (::Util::exists(dir.path() + ourFile) == true){
+	Global::debug(1) << "No correction needed found File: " << (dir.path() + ourFile) << endl;
+	return dir.join(Filesystem::RelativePath(ourFile));
     } else {
 	// Descend two levels.. if not good enough screw it it doesn't exist
-	std::string tempDir = removeLastDir(dir);
+	std::string tempDir = removeLastDir(dir.path());
 	Global::debug(1) << "Going down one dir: " << tempDir + ourFile << endl;
 	if (::Util::exists(tempDir + ourFile) == true){
 	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
-	    return tempDir + ourFile;
+	    return Filesystem::AbsolutePath(tempDir + ourFile);
 	} 
 	tempDir = removeLastDir(tempDir);
 	Global::debug(1) << "Going down one more dir: " << tempDir + ourFile << endl;
 	if (::Util::exists(tempDir + ourFile) == true){
 	    Global::debug(1) << "Found File: " << tempDir + ourFile << endl;
-	    return tempDir + ourFile;
+	    return Filesystem::AbsolutePath(tempDir + ourFile);
 	} 
     }
-    Global::debug(1) << "No correction needed File: " << dir + ourFile << endl;
-    return dir + ourFile;
+    Global::debug(1) << "No correction needed File: " << dir.path() + ourFile << endl;
+    return dir.join(Filesystem::RelativePath(ourFile));
 }
 
-const std::string Mugen::Util::probeDef(const std::string &file, const std::string &section, const std::string &search){
+const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search){
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(parseDef(file));
+    Ast::AstParse parsed(parseDef(file.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     
     std::string ourSection = Mugen::Util::fixCase(section);;
     std::string ourSearch = Mugen::Util::fixCase(search);;
@@ -1009,17 +1011,17 @@ const std::string Mugen::Util::probeDef(const std::string &file, const std::stri
 	    astSection->walk(walk);
 	    
 	    if (!result.empty()){
-		Global::debug(1) << "Found '" << search << "' in Section '" << section << "' in Definition file '" << file << "'" << endl;
+		Global::debug(1) << "Found '" << search << "' in Section '" << section << "' in Definition file '" << file.path() << "'" << endl;
 		return result;
 	    }
 	}
     }
     // Couldn't find search item throw exception
-    throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file + "'");
+    throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file.path() + "'");
 }
 
 /* clean this function up */
-MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int spriteNumber, const std::string &actFile){
+MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, const Filesystem::AbsolutePath &actFile){
     SffReader reader(file, actFile);
     vector<MugenSprite*> sprites;
     while (reader.moreSprites()){
@@ -1045,7 +1047,7 @@ MugenSprite *Mugen::Util::probeSff(const std::string &file, int groupNumber, int
     }
     /* Not found */
     ostringstream out;
-    out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file;
+    out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file.path();
     throw MugenException(out.str());
 }
 

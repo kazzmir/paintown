@@ -18,7 +18,7 @@ using namespace Mugen;
 
 Data *Data::data = 0;
 
-Data::Data(const std::string & configFile):
+Data::Data(const Filesystem::AbsolutePath & configFile):
 motif(""),
 difficulty(),
 life(),
@@ -40,18 +40,18 @@ helperMax(),
 playerProjectileMax(),
 firstRun(){
     
-    std::string baseDir = Mugen::Util::getFileDir(configFile);
-    const std::string ourDefFile = Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(configFile) );
+    Filesystem::AbsolutePath baseDir = configFile.getDirectory();
+    const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, configFile.getFilename().path());
     
-    if (ourDefFile.empty()){
-        throw MugenException( "Cannot locate fight definition file for: " + configFile );
+    if (ourDefFile.isEmpty()){
+        throw MugenException("Cannot locate fight definition file for: " + configFile.path());
     }
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(ourDefFile.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
@@ -77,7 +77,9 @@ firstRun(){
                     } else if (simple == "team.loseonko"){
                         simple >> self.teamLoseOnKO;
                     } else if (simple == "motif"){
-                        simple >> self.motif;
+                        string out;
+                        simple >> out;
+                        self.motif = Filesystem::RelativePath(out);
                     } 
                 }  
             };
@@ -94,54 +96,54 @@ Data::~Data(){
 Data & Data::getInstance(){
     if (!data){
         // Grab mugen.cfg
-	data = new Data(Filesystem::find("mugen/data/mugen.cfg")); 
+	data = new Data(Filesystem::find(Filesystem::RelativePath("mugen/data/mugen.cfg"))); 
     }
     return *data;
 }
 
-std::string Data::getDirectory(){
+Filesystem::RelativePath Data::getDirectory(){
     // return Filesystem::find("mugen/");
-    return "mugen/";
+    return Filesystem::RelativePath("mugen/");
 }
 
-std::string Data::getDataDirectory(){
+Filesystem::RelativePath Data::getDataDirectory(){
     // return Filesystem::find(getDirectory() + "data/");
-    return getDirectory() + "data/";
+    return getDirectory().join(Filesystem::RelativePath("data/"));
 }
 
-std::string Data::getMotifDirectory(){
+Filesystem::RelativePath Data::getMotifDirectory(){
     // return Filesystem::find(getDirectory() + Util::getFileDir(getMotif()));
-    return getDirectory() + Util::getFileDir(getMotif());
+    return getDirectory().join(getMotif().getDirectory());
 }
 
-std::string Data::getCharDirectory(){
+Filesystem::RelativePath Data::getCharDirectory(){
     // return Filesystem::find(getDirectory() + "chars/");
-    return getDirectory() + "chars/";
+    return getDirectory().join(Filesystem::RelativePath("chars/"));
 }
 
-std::string Data::getFontDirectory(){
+Filesystem::RelativePath Data::getFontDirectory(){
     // return Filesystem::find(getDirectory() + "font/");
-    return getDirectory() + "font/";
+    return getDirectory().join(Filesystem::RelativePath("font/"));
 }
 
-std::string Data::getStageDirectory(){
+Filesystem::RelativePath Data::getStageDirectory(){
     // return Filesystem::find(getDirectory() + "stages/");
-    return getDirectory() + "stages/";
+    return getDirectory().join(Filesystem::RelativePath("stages/"));
 }
 
-std::string Data::getFileFromMotif(const std::string & file){
+Filesystem::AbsolutePath Data::getFileFromMotif(const Filesystem::RelativePath & file){
     try{
-        return Filesystem::find(getMotifDirectory() + Util::stripDir(file));
+        return Filesystem::find(getMotifDirectory().join(file.getFilename()));
     } catch (const Filesystem::NotFound & nf){
-	return Filesystem::find(getDataDirectory() + Util::stripDir(file));
+	return Filesystem::find(getDataDirectory().join(file.getFilename()));
     }
 }
 
-void Data::setMotif(const std::string & motif){
+void Data::setMotif(const Filesystem::RelativePath & motif){
     this->motif = motif;
 }
 
-const std::string & Data::getMotif(){
+const Filesystem::RelativePath & Data::getMotif(){
     return motif;
 }
 
@@ -221,11 +223,11 @@ bool Data::getDrawShadows(){
     return drawShadows;
 }
         
-string Data::cleanse(const string & path){
-    string str = path;
-    if (str.find(getDirectory()) == 0){
-        str.erase(0, getDirectory().length());
+Filesystem::RelativePath Data::cleanse(const Filesystem::RelativePath & path){
+    string str = path.path();
+    if (str.find(getDirectory().path()) == 0){
+        str.erase(0, getDirectory().path().length());
     }
-    return str;
+    return Filesystem::RelativePath(str);
 
 }

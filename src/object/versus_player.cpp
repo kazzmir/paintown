@@ -11,7 +11,7 @@
 
 using namespace std;
 
-VersusPlayer::VersusPlayer(const std::string & str) throw( LoadException ):
+VersusPlayer::VersusPlayer(const Filesystem::AbsolutePath & str) throw( LoadException ):
 Player(str, 0){
 }
 	

@@ -119,7 +119,7 @@ static bool centerCollision( Mugen::Character *p1, Mugen::Character *p2 ){
     return true;
 }
 
-MugenStage::MugenStage(const string & location):
+MugenStage::MugenStage(const Filesystem::AbsolutePath & location):
 World(),
 location(location),
 baseDir(""),
@@ -191,6 +191,7 @@ gameRate(1),
 cycles(0){
 }
 
+#if 0
 MugenStage::MugenStage( const char * location ):
 World(),
 location( std::string(location) ),
@@ -263,6 +264,7 @@ gameOver(false),
 gameRate(1),
 cycles(0){
 }
+#endif
 
 MugenStage::~MugenStage(){
     cleanup();
@@ -491,14 +493,17 @@ void MugenStage::load(){
         throw MugenException( "Cannot locate stage definition file for: " + location );
     }
 #endif
-    baseDir = Mugen::Util::getFileDir(location);
-    const std::string ourDefFile = location;
+    baseDir = location.getDirectory();
+    const Filesystem::AbsolutePath ourDefFile = location;
     
     std::string filesdir = "";
     
-    size_t strloc = location.find_last_of("/");
+    /* will this screw up on windows??
+     * FIXME: redo this code to work with Path objects instead of their strings
+     */
+    size_t strloc = location.path().find_last_of("/");
     if (strloc != std::string::npos){
-	filesdir = location.substr(0, strloc);
+	filesdir = location.path().substr(0, strloc);
 	filesdir += "/";
     }
     
@@ -506,9 +511,9 @@ void MugenStage::load(){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(parseDef(ourDefFile));
+    Ast::AstParse parsed(parseDef(ourDefFile.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
 
     struct cymk_holder shadow;
@@ -595,10 +600,10 @@ void MugenStage::load(){
     shadowIntensity = Util::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 
-    Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif("fightfx.sff"), "", effects);
-    sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif("fightfx.air"), effects);
+    Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.sff")), Filesystem::AbsolutePath(), effects);
+    sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.air")), effects);
 
-    Mugen::Util::readSounds(Mugen::Data::getInstance().getFileFromMotif("common.snd"), sounds);
+    Mugen::Util::readSounds(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("common.snd")), sounds);
 
     /*
     for (Mugen::SpriteMap::iterator it = effects.begin(); it != effects.end(); it++){
@@ -623,9 +628,10 @@ void MugenStage::load(){
     
     // *FIXME Use current motif instead of direct file access
     try{
-        gameHUD = new Mugen::GameInfo(Mugen::Data::getInstance().getFileFromMotif("fight.def"));
+        gameHUD = new Mugen::GameInfo(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fight.def")));
     } catch (const MugenException &e){
         Global::debug(0) << "Problem loading HUD. Reason: " << e.getReason() << endl;
+        /* FIXME: throw an exception here?? */
     }
 
     // Stage is loaded
@@ -1351,15 +1357,15 @@ void MugenStage::changePause(){
 
 const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
-    std::string dir = Filesystem::find("mugen/stages/");
-    Global::debug(1) << dir << endl;
+    Filesystem::AbsolutePath dir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
+    Global::debug(1) << dir.path() << endl;
     string fullname = filename;
     if ( fullname.find(".def") == std::string::npos){
 	fullname += ".def";
     }
-    const std::string defFile = Mugen::Util::fixFileName( dir, std::string(fullname) );
+    const Filesystem::AbsolutePath defFile = Mugen::Util::fixFileName( dir, std::string(fullname) );
     
-    if (defFile.empty()){
+    if (defFile.isEmpty()){
         throw MugenException( "Cannot locate stage definition file for: " + fullname );
     }
     
@@ -1373,7 +1379,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile.path()));
     return parsed.findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );
@@ -1580,19 +1586,24 @@ void MugenStage::updatePlayer(Object * player){
 
 void MugenStage::initializeName(){
     try{
-	std::string str = this->location;
+#if 0
+        Filesystem::AbsolutePath str = this->location;
 	// Lets look for our def since some people think that all file systems are case insensitive
-	baseDir = Filesystem::find("mugen/stages/");
-	Global::debug(1) << baseDir << endl;
-	if (str.find(".def")==std::string::npos){
-	    str+=".def";
+	baseDir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
+	Global::debug(1) << baseDir.path() << endl;
+
+        /* FIXME: this is ugly */
+	if (str.path().find(".def") == std::string::npos){
+	    str = Filesystem::AbsolutePath(str.path() + ".def");
 	}
+
 	// Get correct directory
-	baseDir = Mugen::Util::getFileDir(baseDir + str);
-	str = Mugen::Util::stripDir(str);
-	const std::string ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, str);
+	baseDir = baseDir.join(str).getDirectory();
+	// str = str.getFilename();
+	const Filesystem::AbsolutePath ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, Filesystem::RelativePath(str.getFilename()).path());
+#endif
 	// Set name of map
-	name = Mugen::Util::probeDef(ourDefFile, "info", "name");
+	name = Mugen::Util::probeDef(location, "info", "name");
     } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't find the name of the map!" << endl;
 	Global::debug(1) << "Error was: " << ex.getReason() << endl;
@@ -1609,24 +1620,24 @@ void MugenStage::setGameRate(double rate){
 //! Do continue screen return true to continue playing, false to end
 bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input, const Bitmap & buffer){
 
-    std::string systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+    Filesystem::AbsolutePath systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
     
     // Check if we have the continue screen enabled
-    std::string enabled = Mugen::Util::probeDef(systemFile,"Continue Screen", "enabled");
+    std::string enabled = Mugen::Util::probeDef(systemFile, "Continue Screen", "enabled");
     // If so we can render it otherwise it's not enabled, so no continue
     if (enabled != "1"){
         return false;
     }
 
     // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Mugen::Util::getFileDir(systemFile);
+    Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
 
     // Uses system font3 by default
-    std::string fontFile = Mugen::Util::probeDef(systemFile,"Files", "font3");
+    std::string fontFile = Mugen::Util::probeDef(systemFile, "Files", "font3");
 
     MugenFont font(Mugen::Util::getCorrectFileLocation(baseDir, fontFile));
     
-    Mugen::Character * character;
+    Mugen::Character * character = NULL;
 
     switch (type){
         case Mugen::Player1:

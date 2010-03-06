@@ -77,9 +77,9 @@ void * loadingScreen( void * arg ){
     const int infobox_width = 300;
     const int infobox_height = 150;
     Info info;
-    string fontName = Filesystem::find("/fonts/arial.ttf");
-    const Font & myFont = Font::getFont(fontName, 24, 24);
-    const Font & infoFont = Font::getFont(fontName, 24, 24);
+    Filesystem::AbsolutePath fontName = Filesystem::find(Filesystem::RelativePath("fonts/arial.ttf"));
+    const Font & myFont = Font::getFont(fontName.path(), 24, 24);
+    const Font & infoFont = Font::getFont(fontName.path(), 24, 24);
     Level::LevelInfo levelInfo;
     if (arg != NULL){
         levelInfo = *(Level::LevelInfo*) arg;
@@ -140,7 +140,7 @@ void * loadingScreen( void * arg ){
     if (levelInfo.getBackground() != 0){
         setupBackground(*levelInfo.getBackground(), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
     } else {
-        setupBackground(Bitmap(levelInfo.loadingBackground()), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
+        setupBackground(Bitmap(levelInfo.loadingBackground().path()), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
         /*
         Bitmap background(levelInfo.loadingBackground());
         background.Blit(load_x, load_y, load_width, load_height, 0, 0, work);
@@ -187,9 +187,9 @@ void * loadingScreen( void * arg ){
                 /* cheesy hack to change the font size. the font
                  * should store the size and change it on its own
                  */
-                Font::getFont(fontName, 13, 13);
+                Font::getFont(fontName.path(), 13, 13);
                 infobox.draw(0, 0, infoWork, infoFont);
-                Font::getFont(fontName, 24, 24);
+                Font::getFont(fontName.path(), 24, 24);
                 infoWork.BlitAreaToScreen(infobox_x, infobox_y);
             }
             /* work already contains the correct background */

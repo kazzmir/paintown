@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "util/load_exception.h"
+#include "util/file-system.h"
 
 namespace Level{
     class LevelInfo;
@@ -15,7 +16,7 @@ namespace Paintown{
 
 class Mod{
 public:
-    Mod(const std::string & path) throw (LoadException);
+    Mod(const Filesystem::AbsolutePath & path) throw (LoadException);
 
     const std::string & getMenu();
 

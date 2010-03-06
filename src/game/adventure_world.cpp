@@ -39,7 +39,7 @@ descriptionGradient(0){
 
 static const int DESCRIPTION_TIME = 700;
 
-AdventureWorld::AdventureWorld( const vector< Object * > & players, const string & path, Level::Cacher * cacher, int _screen_size ) throw( LoadException ):
+AdventureWorld::AdventureWorld( const vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher, int _screen_size ) throw( LoadException ):
 World(),
 path( path ),
 draw_minimaps( true ),
@@ -131,11 +131,11 @@ Script::Engine * AdventureWorld::getEngine() const {
     */
 }
 
-void AdventureWorld::reloadLevel() throw( LoadException ){
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		it->min_x = 0;
-	}
-	loadLevel( path );
+void AdventureWorld::reloadLevel(){
+    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+        it->min_x = 0;
+    }
+    loadLevel(path);
 }
         
 void AdventureWorld::changePause(){
@@ -154,7 +154,7 @@ void AdventureWorld::unpause(){
     is_paused = false;
 }
 	
-void AdventureWorld::loadLevel( const string & path ) throw (LoadException){
+void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	/*
 	if ( scene ){
 		delete scene;
@@ -166,14 +166,14 @@ void AdventureWorld::loadLevel( const string & path ) throw (LoadException){
 	}
 	*/
 
-	Scene * s = new Scene(path.c_str(), *cacher);
+	Scene * s = new Scene(path.path().c_str(), *cacher);
 	if ( scene != NULL ){
 		delete scene;
 	}
 	scene = s;
 	
-	string bang_path(Filesystem::find("/misc/flash/flash.txt"));
-	Object * effect = new Effect( bang_path.c_str() );
+        Filesystem::AbsolutePath bang_path(Filesystem::find(Filesystem::RelativePath("misc/flash/flash.txt")));
+	Object * effect = new Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
 		delete bang;
 	}
@@ -588,7 +588,7 @@ void AdventureWorld::draw( Bitmap * work ){
     Global::debug( 4 ) << "World draw" << endl;
 
     if (descriptionTime > 0 && scene->getDescription() != ""){
-        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 30, 30);
+        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 30, 30);
         FontRender * render = FontRender::getInstance();
         string description = scene->getDescription();
         int trans = (DESCRIPTION_TIME - descriptionTime) / 2;
@@ -632,7 +632,7 @@ void AdventureWorld::draw( Bitmap * work ){
     }
 
     if (is_paused){
-        const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
+        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 15, 15);
         work->transBlender( 0, 0, 0, 128 );
         work->drawingMode( Bitmap::MODE_TRANS );
         work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );

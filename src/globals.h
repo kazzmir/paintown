@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include <string>
+#include "util/file-system.h"
 
 class Bitmap;
 class MessageQueue;
@@ -34,7 +35,7 @@ int getDebug();
 std::ostream & debug(int i, const std::string & context = "paintown");
 
 void showTitleScreen();
-const std::string titleScreen();
+const Filesystem::AbsolutePath titleScreen();
 
 void registerInfo(MessageQueue *);
 void unregisterInfo(MessageQueue *);

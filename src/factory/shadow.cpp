@@ -35,12 +35,12 @@ void Shadow::destroy(){
 }
 
 Shadow::Shadow(){
-	for ( int x = 1; x <= 6; x++ ){
-		string s = "/sprites/shadow/shadow";
-		s += (char)(x+'0');
-		s += ".png";
-		shadows.push_back(new Bitmap(Filesystem::find(s)));
-	}
+    for ( int x = 1; x <= 6; x++ ){
+        string s = "sprites/shadow/shadow";
+        s += (char)(x+'0');
+        s += ".png";
+        shadows.push_back(new Bitmap(Filesystem::find(Filesystem::RelativePath(s)).path()));
+    }
 }
 
 Shadow::~Shadow(){

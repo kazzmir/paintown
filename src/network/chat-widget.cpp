@@ -91,7 +91,7 @@ void ChatWidget::receiveMessage(string message){
 }
 
 void ChatWidget::drawChat(Bitmap * work, int start){
-    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 18, 18);
+    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 18, 18);
     FontRender * render = FontRender::getInstance();
 
     // int y = work->getHeight() * 2 - 1 - font.getHeight() * 2 - 1;

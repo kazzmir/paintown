@@ -62,19 +62,18 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
-static const std::string fixStageName(const std::string &stage){
+static const Filesystem::AbsolutePath fixStageName(const std::string &stage){
     /* FIXME not a good solution to get file
      * jon: why isn't it good?
      */
     std::string ourDefFile = stage;
-    std::string baseDir = Filesystem::find("mugen/stages/");
+    Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
     if (ourDefFile.find(".def")==std::string::npos){
 	ourDefFile += ".def";
     }
     // Get correct directory
-    baseDir = Mugen::Util::getFileDir(baseDir + ourDefFile);
-    ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, Mugen::Util::stripDir(ourDefFile));
-    return ourDefFile;
+    baseDir = Filesystem::AbsolutePath(Mugen::Util::getFileDir(baseDir.path() + ourDefFile));
+    return Mugen::Util::getCorrectFileLocation(baseDir, Filesystem::RelativePath(ourDefFile).getFilename().path());
 }
 
 FontHandler::FontHandler():
@@ -135,10 +134,10 @@ void FontHandler::render(const std::string &text, const Bitmap &bmp){
     }
 }
 
-CharacterInfo::CharacterInfo(const std::string &definitionFile):
+CharacterInfo::CharacterInfo(const Filesystem::AbsolutePath &definitionFile):
 definitionFile(definitionFile),
-baseDirectory(Util::getFileDir(definitionFile)),
-spriteFile(Util::probeDef(definitionFile,"files","sprite")),
+baseDirectory(definitionFile.getDirectory()),
+spriteFile(Util::probeDef(definitionFile, "files","sprite")),
 name(Util::probeDef(definitionFile,"info","name")),
 displayName(Util::probeDef(definitionFile,"info","displayname")),
 currentPlayer1Act(1),
@@ -155,16 +154,16 @@ character2(0){
         stringstream act;
         act << "pal" << i;
         try {
-            std::string actFile = Util::probeDef(definitionFile,"files",act.str());
-            actCollection.push_back(actFile);
+            std::string actFile = Util::probeDef(definitionFile, "files", act.str());
+            actCollection.push_back(Filesystem::RelativePath(actFile));
         } catch (const MugenException &me){
             // Ran its course got what we needed
         }
     }
     // just a precaution
-    spriteFile = Util::removeSpaces(spriteFile);
-    icon = Util::probeSff(baseDirectory + spriteFile,9000,0,baseDirectory + actCollection[0]);
-    portrait = Util::probeSff(baseDirectory + spriteFile,9000,1,baseDirectory + actCollection[0]);
+    // spriteFile = Util::removeSpaces(spriteFile);
+    icon = Util::probeSff(baseDirectory.join(spriteFile), 9000, 0, baseDirectory.join(actCollection[0]));
+    portrait = Util::probeSff(baseDirectory.join(spriteFile), 9000, 1, baseDirectory.join(actCollection[0]));
 }
 
 CharacterInfo::~CharacterInfo(){
@@ -186,7 +185,7 @@ void CharacterInfo::loadPlayer1(){
     if (character1){
 	return;
     }
-    character1 = new Mugen::Character(definitionFile);
+    character1 = new Mugen::Character(Filesystem::cleanse(definitionFile));
     character1->load(currentPlayer1Act);
 }
 
@@ -194,7 +193,7 @@ void CharacterInfo::loadPlayer2(){
     if (character2){
 	return;
     }
-    character2 = new Mugen::Character(definitionFile);
+    character2 = new Mugen::Character(Filesystem::cleanse(definitionFile));
     character2->load(currentPlayer2Act);
 }
 
@@ -213,7 +212,7 @@ display(false),
 selecting(true),
 moveSound(0),
 selectSound(0){
-    stages.push_back("Random");
+    stages.push_back(Filesystem::AbsolutePath()); // "Random"
     stageNames.push_back("Stage: Random");
 }
 
@@ -231,7 +230,7 @@ void StageHandler::render(const Bitmap &bmp){
 }
 	
 //! Get current selected stage
-const std::string &StageHandler::getStage(){
+const Filesystem::AbsolutePath & StageHandler::getStage(){
     // check if random first;
     if (currentStage == 0){
 	return getRandomStage();
@@ -240,7 +239,7 @@ const std::string &StageHandler::getStage(){
 }
 
 //! Get random stage
-const std::string &StageHandler::getRandomStage(){
+const Filesystem::AbsolutePath & StageHandler::getRandomStage(){
     return stages[PaintownUtil::rnd(1,stages.size())];
 }
 
@@ -292,11 +291,11 @@ void StageHandler::toggleSelecting(){
 void StageHandler::addStage(const std::string &stage){
     try {
 	// *FIXME not a good solution to get file
-	std::string ourDefFile = fixStageName(stage);
+        Filesystem::AbsolutePath ourDefFile = fixStageName(stage);
         // If stage is already stored, ignore it
-        if (std::find(stages.begin(),stages.end(),ourDefFile) == stages.end()){
+        if (std::find(stages.begin(), stages.end(), ourDefFile) == stages.end()){
             stringstream temp;
-            temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile,"info","name");
+            temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile, "info","name");
 	    stageNames.push_back(temp.str());
 	    stages.push_back(ourDefFile);
         }
@@ -1065,7 +1064,7 @@ static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iter
     return stuff;
 }
 
-CharacterSelect::CharacterSelect(const std::string &file, const PlayerType & playerType, const GameType & gameType):
+CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file, const PlayerType & playerType, const GameType & gameType):
 systemFile(file),
 sffFile(""),
 sndFile(""),
@@ -1111,19 +1110,19 @@ CharacterSelect::~CharacterSelect(){
 
 void CharacterSelect::load() throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
-    std::string baseDir = Mugen::Util::getFileDir(systemFile);
+    Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
     
-    Global::debug(1) << baseDir << endl;
+    Global::debug(1) << baseDir.path() << endl;
     
-    if (systemFile.empty()){
-        throw MugenException( "Cannot locate character select definition file for: " + systemFile );
+    if (systemFile.isEmpty()){
+        throw MugenException( "Cannot locate character select definition file for: " + systemFile.path());
     }
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(systemFile));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(systemFile.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + systemFile + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
@@ -1135,19 +1134,19 @@ void CharacterSelect::load() throw (MugenException){
         } else if (head == "files"){
             class FileWalker: public Ast::Walker{
                 public:
-                    FileWalker(Mugen::CharacterSelect & select, const string & baseDir):
+                    FileWalker(Mugen::CharacterSelect & select, const Filesystem::AbsolutePath & baseDir):
                         select(select),
                         baseDir(baseDir){
                         }
 
                     Mugen::CharacterSelect & select;
-                    const string & baseDir;
+                    const Filesystem::AbsolutePath & baseDir;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
                             simple >> select.sffFile;
                             Global::debug(1) << "Got Sprite File: '" << select.sffFile << "'" << endl;
-                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, select.sffFile), "", select.sprites);
+                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, select.sffFile), Filesystem::AbsolutePath(), select.sprites);
 			    for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
 				// Load these sprites so they are ready to use
 				for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -1578,7 +1577,7 @@ void CharacterSelect::load() throw (MugenException){
 	else if (head == "music" ){ /* Ignore for now */ }
 	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
         else {
-            throw MugenException("Unhandled Section in '" + systemFile + "': " + head, __FILE__, __LINE__ ); 
+            throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
         }
     }
     
@@ -1608,7 +1607,7 @@ void CharacterSelect::load() throw (MugenException){
 	    break;
     }
     // Now load up our characters
-    parseSelect(Mugen::Util::fixFileName( baseDir, Mugen::Util::stripDir(selectFile)));
+    parseSelect(Mugen::Util::fixFileName(baseDir, Mugen::Util::stripDir(selectFile)));
 }
 
 //! Get group of characters by order number
@@ -1647,14 +1646,14 @@ class CharacterCollect{
 	std::string song;
 };
 
-void CharacterSelect::parseSelect(const std::string &selectFile){
-    const std::string file = Mugen::Util::getCorrectFileLocation(Mugen::Util::getFileDir(selectFile), Mugen::Util::stripDir(selectFile));
+void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
+    const Filesystem::AbsolutePath file = Mugen::Util::getCorrectFileLocation(selectFile.getDirectory(), selectFile.getFilename().path());
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + file + " in" + diff.printTime("") << endl;
+    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     
     // Characters
     std::vector< CharacterCollect > characterCollection;
@@ -1793,7 +1792,7 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 	    OptionWalker walk(arcadeMaxMatches,teamMaxMatches);
 	    section->walk(walk);
 	} else {
-	    throw MugenException("Unhandled Section in '" + file + "': " + head, __FILE__, __LINE__); 
+	    throw MugenException("Unhandled Section in '" + file.path() + "': " + head, __FILE__, __LINE__); 
 	}
     }
     
@@ -1805,11 +1804,11 @@ void CharacterSelect::parseSelect(const std::string &selectFile){
 	if (!character.random){
 	    // Get character
 	    // *FIXME Not an elegant solution for character location
-	    const std::string baseDir = Filesystem::find("mugen/chars/" + character.name + "/");
-	    std::string str = Mugen::Util::stripDir(character.name);
-	    const std::string charDefFile = Mugen::Util::fixFileName(baseDir, std::string(str + ".def"));
+	    const Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/chars/" + character.name + "/"));
+            Filesystem::RelativePath str = Filesystem::RelativePath(character.name).getFilename();
+	    const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
 	    // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
-	    Global::debug(0) << "Got character def: " << charDefFile << endl;
+	    Global::debug(0) << "Got character def: " << charDefFile.path() << endl;
 	    CharacterInfo *charInfo = new CharacterInfo(charDefFile);
 	    charInfo->setRandomStage(character.randomStage);
 	    // Set stage

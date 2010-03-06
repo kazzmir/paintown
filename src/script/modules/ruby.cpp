@@ -18,7 +18,7 @@ namespace PaintownLevel{
     }
 }
 
-RubyEngine::RubyEngine(const std::string & path):
+RubyEngine::RubyEngine(const Filesystem::RelativePath & path):
 Script::Engine(){
     ruby_init();
     ruby_init_loadpath();
@@ -27,9 +27,9 @@ Script::Engine(){
     VALUE module = rb_define_module("PaintownInternal");
     Global::debug(1) << "Defined ruby module " << module << endl;
     rb_define_module_function(module, "register", RUBY_METHOD_FUNC(PaintownLevel::_register), 1);
-    ruby_incpush(Filesystem::find("scripts").c_str());
+    ruby_incpush(Filesystem::find(Filesystem::RelativePath("scripts")).path().c_str());
 
-    rb_load_file(Filesystem::find(path).c_str());
+    rb_load_file(Filesystem::find(path).path().c_str());
     int result = ruby_exec();
     if (result != 0){
         Global::debug(0) << "Ruby returned " << result << endl;

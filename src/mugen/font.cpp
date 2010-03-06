@@ -44,7 +44,7 @@ static MugenItemContent *getOpts( const std::string &opt ){
 }
 
 
-MugenFont::MugenFont( const string & file ):
+MugenFont::MugenFont( const Filesystem::AbsolutePath & file ):
 type(Fixed),
 width(0),
 height(0),
@@ -57,7 +57,7 @@ bmp(0),
 pcx(0),
 pcxsize(0),
 currentBank(0){
-    std::string temp = file;
+    std::string temp = file.path();
     temp = Mugen::Util::invertSlashes(temp);
     Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
     ifile.open( temp.c_str() );
@@ -69,6 +69,7 @@ currentBank(0){
     load();
 }
 
+#if 0
 MugenFont::MugenFont( const char * file ):
 type(Fixed),
 width(0),
@@ -93,6 +94,7 @@ currentBank(0){
     
     load();
 }
+#endif
 
 MugenFont::MugenFont( const MugenFont &copy ){
     this->type = copy.type;

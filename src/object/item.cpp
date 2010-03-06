@@ -13,11 +13,11 @@
 
 using namespace std;
 
-Item::Item( const string & filename, Stimulation * const stimulation ) throw( LoadException ):
+Item::Item( const Filesystem::AbsolutePath & filename, Stimulation * const stimulation ) throw( LoadException ):
 ObjectNonAttack( 0, 0 ),
 collide( 0 ),
 stimulation( stimulation ){
-	TokenReader tr( filename );
+	TokenReader tr(filename.path());
 
 	setMaxHealth( 1 );
 	setHealth( 1 );
@@ -35,16 +35,16 @@ stimulation( stimulation ){
 			if ( *next == "frame" ){
 				string file;
 				*next >> file;
-				picture.load(Filesystem::find(file));
+				picture.load(Filesystem::find(Filesystem::RelativePath(file)).path());
 			} else if ( *next == "sound" ){
 				string path;
 				*next >> path;
-				sound = Sound(Filesystem::find(path));
+				sound = Sound(Filesystem::find(Filesystem::RelativePath(path)).path());
 			}
 		}
-	} catch( const TokenException & ex ){
-		cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
-		throw LoadException("Could not open item file");
+	} catch (const TokenException & ex){
+            Global::debug(0) << "Could not read "<<filename.path()<< ": "<<ex.getReason()<<endl;
+            throw LoadException("Could not open item file");
 	}
 
 	collide = new ECollide( picture );
@@ -139,9 +139,9 @@ Network::Message Item::getCreateMessage(){
 	message << (int) getZ();
 	this->stimulation->createMessage( message );
 
-	string mypath = Filesystem::cleanse(path);
-        Global::debug(2) << "Create item id " << getId() << " path " << mypath << endl;
-        message << mypath;
+        Filesystem::RelativePath mypath = Filesystem::cleanse(path);
+        Global::debug(2) << "Create item id " << getId() << " path " << mypath.path() << endl;
+        message << mypath.path();
         /*
 	mypath.erase( 0, Util::getDataPath().length() );
 	message << mypath;

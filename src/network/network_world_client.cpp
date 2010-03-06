@@ -78,7 +78,7 @@ static void * handleMessages( void * arg ){
     return NULL;
 }
 	
-NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const string & path, Object::networkid_t id, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
+NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const Filesystem::AbsolutePath & path, Object::networkid_t id, const map<Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
 super( players, path, new NetworkCacher(), screen_size ),
 ChatWidget(*this, id),
 server( server ),
@@ -179,7 +179,7 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
     int alliance;
     Object::networkid_t id;
     int map;
-    string path = Filesystem::find(message.path);
+    Filesystem::AbsolutePath path = Filesystem::find(Filesystem::RelativePath(message.path));
     message >> alliance >> id >> map;
     if ( uniqueObject( id ) ){
         bool found = false;
@@ -204,13 +204,13 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
                 block.setType( ObjectFactory::NetworkCharacterType );
             }
             block.setMap( map );
-            block.setPath( path );
+            block.setPath(path);
             Character * character = (Character *) ObjectFactory::createObject( &block );
             if ( character == NULL ){
                 debug( 0 ) << "Could not create character!" << endl;
                 return;
             }
-            debug( 1 ) << "Create '" << path << "' with id " << id << " alliance " << alliance << endl;
+            debug( 1 ) << "Create '" << path.path() << "' with id " << id << " alliance " << alliance << endl;
             /* this is the network id */
             character->setId( id );
             character->setAlliance( alliance );
@@ -229,7 +229,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
     Object::networkid_t id;
     message >> id;
     if ( uniqueObject( id ) ){
-        string path = Filesystem::find(message.path);
+        Filesystem::AbsolutePath path = Filesystem::find(Filesystem::RelativePath(message.path));
         BlockObject block;
         block.setType( ObjectFactory::CatType );
         block.setPath( path );
@@ -271,10 +271,10 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
         int x, z;
         int value;
         message >> x >> z >> value;
-        string path = Filesystem::find(message.path);
+        Filesystem::AbsolutePath path = Filesystem::find(Filesystem::RelativePath(message.path));
         BlockObject block;
-        block.setType( ObjectFactory::ItemType );
-        block.setPath( path );
+        block.setType(ObjectFactory::ItemType);
+        block.setPath(path);
         /* TODO: dont hard-code this */
         block.setStimulationType( "health" );
         block.setStimulationValue( value );
@@ -547,7 +547,7 @@ void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages,
 	
 void NetworkWorldClient::draw(Bitmap * work){
     super::draw(work);
-    const Font & font = Font::getFont(Filesystem::find(Global::DEFAULT_FONT), 15, 15);
+    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 15, 15);
     FontRender * render = FontRender::getInstance();
 
     /* the coordinates are only right becuase I know that the screen is twice as
