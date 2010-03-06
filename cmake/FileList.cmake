@@ -162,6 +162,7 @@ set(GUI_SRC
 src/gui/al_keyinput.cpp
 src/gui/box.cpp
 src/gui/container.cpp
+src/gui/context-box.cpp
 src/gui/keys.cpp
 src/gui/keyinput.cpp
 src/gui/keyinput_manager.cpp
