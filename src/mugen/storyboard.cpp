@@ -279,7 +279,7 @@ startscene(0){
     
     // Default clear color for all scenes
     bool clearColorSet = false;
-    int clearColor;
+    int clearColor = 0;
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;

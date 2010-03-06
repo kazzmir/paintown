@@ -2091,7 +2091,7 @@ bool CharacterSelect::setNextArcadeMatch(){
 	}
 	characters = arcadeMatches.front();
     }
-    CharacterInfo * tempPlayer;
+    CharacterInfo * tempPlayer = NULL;
     if (playerType == Player1){
 	tempPlayer = currentPlayer2 = characters.front();
         currentPlayer2->setPlayer2Act(PaintownUtil::rnd(1,12));
