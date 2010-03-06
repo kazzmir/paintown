@@ -24,60 +24,60 @@ id(-1),
 finished( -1 ),
 continuous( false ){
 
-	if ( *tok != "block" ){
-		throw LoadException("Not a scene block");
-	}
+    if ( *tok != "block" ){
+        throw LoadException("Not a scene block");
+    }
 
-	while ( tok->hasTokens() ){
+    while ( tok->hasTokens() ){
 
-		try{
-			Token * current;
-			*tok >> current;
-			if ( *current == "length" ){
-				int l;
-				*current >> l;
-				setLength( l );
-			} else if ( *current == "wait" ){
-				*current >> wait;
-			} else if ( *current == "id" ){
-                            int id;
-                            *current >> id;
-                            setId(id);
-			} else if ( *current == "continuous" ){
-				setContinuous( true );
-			} else if ( *current == "finish" ){
-				int f;
-				*current >> f;
-				setFinished( f );
-			} else if ( *current == "object" ){
-				try{ 
-					BlockObject * so = new BlockObject( current );
+        try{
+            Token * current;
+            *tok >> current;
+            if ( *current == "length" ){
+                int l;
+                *current >> l;
+                setLength( l );
+            } else if ( *current == "wait" ){
+                *current >> wait;
+            } else if ( *current == "id" ){
+                int id;
+                *current >> id;
+                setId(id);
+            } else if ( *current == "continuous" ){
+                setContinuous( true );
+            } else if ( *current == "finish" ){
+                int f;
+                *current >> f;
+                setFinished( f );
+            } else if ( *current == "object" ){
+                try{ 
+                    BlockObject * so = new BlockObject( current );
 
-					/* cache the object in the factory */
-					// Object * tmp = ObjectFactory::createObject(so);
-					Object * tmp = cacher.cache(*so);
-					if ( tmp == NULL ){
-						current->print(" ");
-						delete so;
-						throw LoadException( "Could not cache object" );
-					} else {
-						/* clean up! */
+                    /* cache the object in the factory */
+                    // Object * tmp = ObjectFactory::createObject(so);
+                    Object * tmp = cacher.cache(*so);
+                    if ( tmp == NULL ){
+                        current->print(" ");
+                        delete so;
+                        throw LoadException( "Could not cache object" );
+                    } else {
+                        /* clean up! */
 
-						delete tmp;
-						objects.push_back( so );
-					}
+                        delete tmp;
+                        objects.push_back( so );
+                    }
 
-				} catch ( const LoadException & le ){
-					throw le;
-				}
-			}
-		} catch( const TokenException & te ){
-			throw LoadException("Block parse exception: " + te.getReason());
-		} catch( const LoadException & le ){
-			cout<<"Ignoring error: "<<le.getReason()<<endl;
-			// throw le;
-		}
-	}
+                } catch ( const LoadException & le ){
+                    throw le;
+                }
+            }
+        } catch( const TokenException & te ){
+            throw LoadException("Block parse exception: " + te.getReason());
+        } catch( const LoadException & le ){
+            cout<<"Ignoring error: "<<le.getReason()<<endl;
+            // throw le;
+        }
+    }
 
 }
 	

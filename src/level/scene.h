@@ -30,7 +30,7 @@ struct Panel{
 
 class Scene{
 public:
-	Scene(const char * filename, const Level::Cacher & cacher) throw (LoadException);
+	Scene(const char * filename, const Level::Cacher & cacher);
 
 	// void Draw( int x, Bitmap * work );
 	void drawFront( int x, Bitmap * work );

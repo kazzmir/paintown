@@ -590,6 +590,9 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
              * the loading screen
              */
             stopLoading( loading_screen_thread );
+        } catch (const ShutdownException & se){
+            stopLoading(loading_screen_thread);
+            throw se;
         }
 
         ObjectFactory::destroy();

@@ -16,7 +16,6 @@ class Gradient;
 #include <map>
 #include <string>
 
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include "network/network.h"
 #include "world.h"
@@ -35,7 +34,7 @@ struct PlayerTracker{
 class AdventureWorld: public World {
 public:
 	AdventureWorld();
-	AdventureWorld(const std::vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher = new Level::DefaultCacher(), int screen_size = 320) throw (LoadException);
+	AdventureWorld(const std::vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher = new Level::DefaultCacher(), int screen_size = 320);
 
 	virtual ~AdventureWorld();
 

@@ -18,6 +18,7 @@
 #include "script/script.h"
 #include "trigger/trigger.h"
 #include "cacher.h"
+#include "shutdown_exception.h"
 
 using namespace std;
 
@@ -33,7 +34,7 @@ Panel::~Panel(){
 	if ( screen_overlay ) delete screen_overlay;
 }
 
-Scene::Scene(const char * filename, const Level::Cacher & cacher) throw( LoadException ):
+Scene::Scene(const char * filename, const Level::Cacher & cacher):
 background( NULL ),
 block_length( 0 ),
 minimum_z( 0 ),
@@ -61,6 +62,10 @@ frontBuffer(NULL){
             throw LoadException("Not a level");
 
         while ( current->hasTokens() ){
+            /* stop loading if a shutdown occurs */
+            if (Global::shutdown()){
+                throw ShutdownException();
+            }
 
             Token * tok;
             *current >> tok;

@@ -4,7 +4,6 @@
 #include "object/object.h"
 #include "object/object_attack.h"
 #include "object/character.h"
-#include "util/load_exception.h"
 #include "util/font.h"
 #include "util/file-system.h"
 #include "util/gradient.h"
@@ -39,7 +38,7 @@ descriptionGradient(0){
 
 static const int DESCRIPTION_TIME = 700;
 
-AdventureWorld::AdventureWorld( const vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher, int _screen_size ) throw( LoadException ):
+AdventureWorld::AdventureWorld( const vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher, int _screen_size ):
 World(),
 path( path ),
 draw_minimaps( true ),
