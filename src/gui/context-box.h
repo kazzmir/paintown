@@ -60,6 +60,8 @@ class ContextBox : public Widget{
 	
 	void doFade();
 	
+	void drawText(const Bitmap &);
+	
 	enum FadeState{
 	    NotActive,
 	    FadeInBox,

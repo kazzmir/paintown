@@ -1,4 +1,7 @@
+#include "util/bitmap.h"
+
 #include "gui/context-box.h"
+#include "util/font.h"
 
 using namespace std;
 using namespace Gui;
@@ -46,6 +49,10 @@ void ContextBox::act(){
 }
 
 void ContextBox::render(const Bitmap & work){
+    board.render(work);
+    work.setClipRect(position.x+2, position.y+2, position.getX2()-2, position.getY2()-2);
+    drawText(work);
+    work.setClipRect(0, 0, work.getWidth(), work.getHeight());
 }
 
 void ContextBox::next(){
@@ -166,4 +173,9 @@ void ContextBox::doFade(){
 	default:
 	    break;
     }
+}
+
+void ContextBox::drawText(const Bitmap & bmp){
+    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    const double spacing = 1.3;
 }
