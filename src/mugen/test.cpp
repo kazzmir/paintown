@@ -167,7 +167,7 @@ void showCharacter(const string & ourFile){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);*/
     Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
-    Mugen::Character character( ourFile );
+    Mugen::Character character = Mugen::Character(Filesystem::RelativePath(ourFile));
     character.load();
     Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
     bool quit = false;
@@ -304,7 +304,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     }
 
     Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
-    MugenStage stage( ourFile );
+    MugenStage stage = MugenStage(Filesystem::AbsolutePath(ourFile));
     //stage.load();
     Global::debug(0) << "Loaded stage: \"" << stage.getName() << "\" successfully." << endl;
     bool quit = false;
@@ -314,7 +314,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
-    const std::string motif =  Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+    const Filesystem::AbsolutePath motif =  Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
     Mugen::CharacterSelect selector(motif, Mugen::Player1, Mugen::Arcade);
     try {
 	selector.load();
@@ -326,8 +326,8 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 	return;
     }
     selector.setNextArcadeMatch();
-    Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1Def());
-    Mugen::Character *player2 = new Mugen::Character(selector.getPlayer2Def());
+    Mugen::Character *player1 = new Mugen::Character(Filesystem::cleanse(selector.getPlayer1Def()));
+    Mugen::Character *player2 = new Mugen::Character(Filesystem::cleanse(selector.getPlayer2Def()));
     player1->load();
     player2->load();
     stage.addPlayer1(player1);
@@ -339,10 +339,10 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     Music m(true);
     int track = rand() % (musicHits -1);
-    if(Music::loadSong( Filesystem::find(string("mugen/music/") + music[track]) )){
-		Music::pause();
-		Music::play();
-		Global::debug(0) << "Now playing track: " << music[track] << endl;
+    if(Music::loadSong( Filesystem::find(Filesystem::RelativePath(string("mugen/music/") + music[track])).path())){
+        Music::pause();
+        Music::play();
+        Global::debug(0) << "Now playing track: " << music[track] << endl;
     }
     
     
@@ -370,7 +370,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 		if( out[LocalKeyboard::F3] ){
 		    track++;
 		    if(track == musicHits)track = 0;
-		    if(Music::loadSong( Filesystem::find(string("mugen/music/") + music[track]) )){
+		    if(Music::loadSong(Filesystem::find(Filesystem::RelativePath(string("mugen/music/") + music[track])).path())){
 			Music::pause();
 			Music::play();
 			Global::debug(0) << "Now playing track: " << music[track] << endl;
@@ -406,7 +406,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
 void showFont(const string & ourFile){
     Global::debug(0) << "Trying to load font: " << ourFile << "..." << endl;
-    MugenFont font( Filesystem::find( ourFile ));
+    MugenFont font( Filesystem::find(Filesystem::RelativePath(ourFile)));
     Global::debug(0) << "Loaded font: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;
@@ -469,7 +469,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
     int currentGroup = 0;
     int currentSprite = 0;
     Global::debug(0) << "Trying to load SFF File: " << ourFile << "..." << endl;
-    Mugen::Util::readSprites(ourFile, actFile, sprites);
+    Mugen::Util::readSprites(Filesystem::AbsolutePath(ourFile), Filesystem::AbsolutePath(actFile), sprites);
     Global::debug(0) << "Loaded SFF file: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;
@@ -594,7 +594,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
 }
 
 void doSelectScreen(const std::string &file){
-    Mugen::CharacterSelect selector(file, Mugen::Player1, Mugen::Versus);
+    Mugen::CharacterSelect selector(Filesystem::AbsolutePath(file), Mugen::Player1, Mugen::Versus);
     try {
 	selector.load();
 	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
@@ -607,7 +607,7 @@ void doSelectScreen(const std::string &file){
 }
 
 void doBackground(const std::string &file, const std::string &section){
-    Mugen::Background background(file, section);
+    Mugen::Background background(Filesystem::AbsolutePath(file), section);
     Bitmap workArea(320,240);
     Bitmap screen(640,480);
     
@@ -1008,7 +1008,7 @@ int main( int argc, char ** argv ){
 	}
 	else if ( configLoaded == 4 ){
 	    try{
-                Mugen::Storyboard story(ourFile);
+                Mugen::Storyboard story = Mugen::Storyboard(Filesystem::AbsolutePath(ourFile));
 		story.setInput(Mugen::getPlayer1Keys());
 		// run it and repeat
 		Bitmap screen(640, 480);
