@@ -19,7 +19,7 @@ int main(int argc, char ** argv){
         try{
             TimeDifference diff;
             diff.startTime();
-            Mugen::Character kfm(Filesystem::find("mugen/chars/kfm/kfm.def"));
+            Mugen::Character kfm(Filesystem::find(Filesystem::RelativePath("mugen/chars/kfm/kfm.def")));
             kfm.load();
             diff.endTime();
             Global::debug(0, "test") << "Success! Took " << diff.printTime() << endl;

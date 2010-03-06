@@ -959,10 +959,10 @@ class Command;
 class Character: public ObjectAttack {
 public:
 	// Location at dataPath() + "mugen/chars/"
-	Character(const Filesystem::RelativePath & s );
+	Character(const Filesystem::AbsolutePath & s );
 	// Character(const char * location );
-	Character(const Filesystem::RelativePath & s, int alliance );
-	Character(const Filesystem::RelativePath & s, const int x, const int y, int alliance );
+	Character(const Filesystem::AbsolutePath & s, int alliance );
+	Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance );
 	Character(const Character &copy );
 
 	virtual ~Character();
@@ -1435,7 +1435,7 @@ protected:
 
     virtual void loadCmdFile(const Filesystem::RelativePath & path);
     virtual void loadCnsFile(const Filesystem::RelativePath & path);
-    virtual void loadStateFile(const Filesystem::RelativePath & base, const std::string & path, bool allowDefinitions, bool allowStates);
+    virtual void loadStateFile(const Filesystem::AbsolutePath & base, const std::string & path, bool allowDefinitions, bool allowStates);
 
     virtual void addCommand(Command * command);
 
@@ -1468,9 +1468,9 @@ protected:
 	This is where the def is loaded and all the relevant files
 	are loaded from
 	*/
-    Filesystem::RelativePath location;
+    Filesystem::AbsolutePath location;
 	
-        Filesystem::RelativePath baseDir;
+        Filesystem::AbsolutePath baseDir;
 	
 	/* These items are taken from character.def file */
 	

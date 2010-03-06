@@ -846,7 +846,7 @@ void HitState::update(bool inAir, const HitDefinition & hit){
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
 
-Character::Character(const Filesystem::RelativePath & s ):
+Character::Character(const Filesystem::AbsolutePath & s ):
 ObjectAttack(0),
 commonSounds(NULL),
 hit(NULL){
@@ -864,7 +864,7 @@ hit(NULL){
 }
 */
 
-Character::Character( const Filesystem::RelativePath & s, int alliance ):
+Character::Character( const Filesystem::AbsolutePath & s, int alliance ):
 ObjectAttack(alliance),
 commonSounds(NULL),
 hit(NULL){
@@ -872,7 +872,7 @@ hit(NULL){
     initialize();
 }
 
-Character::Character( const Filesystem::RelativePath & s, const int x, const int y, int alliance ):
+Character::Character( const Filesystem::AbsolutePath & s, const int x, const int y, int alliance ):
 ObjectAttack(x,y,alliance),
 commonSounds(NULL),
 hit(NULL){
@@ -983,9 +983,9 @@ void Character::initialize(){
 void Character::loadSelectData(){
     /* Load up info for the select screen */
     try{
-        Filesystem::AbsolutePath baseDir = Filesystem::find(location);
+        Filesystem::AbsolutePath baseDir = location.getDirectory();
 	Global::debug(1) << baseDir.path() << endl;
-        Filesystem::RelativePath str = Filesystem::RelativePath(Util::stripDir(this->location.path()));
+        Filesystem::RelativePath str = Filesystem::RelativePath(location.getFilename().path());
 	const Filesystem::AbsolutePath ourDefFile = Util::fixFileName(baseDir, str.path() + ".def");
 	
 	if (ourDefFile.isEmpty()){
@@ -1016,7 +1016,7 @@ void Character::setAnimation(int animation){
 }
 
 void Character::loadCmdFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Filesystem::find(baseDir.join(path));
+    Filesystem::AbsolutePath full = baseDir.join(path);
     try{
         int defaultTime = 15;
         int defaultBufferTime = 1;
@@ -1199,7 +1199,7 @@ void Character::changeState(MugenStage & stage, int stateNumber, const vector<st
 }
 
 void Character::loadCnsFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Filesystem::find(baseDir.join(path));
+    Filesystem::AbsolutePath full = baseDir.join(path);
     try{
         /* cns can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
@@ -2037,19 +2037,28 @@ void Character::parseState(Ast::Section * section){
 
 }
 
-static Filesystem::AbsolutePath findStateFile(const Filesystem::RelativePath & base, const string & path){
+static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & base, const string & path){
+    if (PaintownUtil::exists(base.join(Filesystem::RelativePath(path)).path())){
+        return base.join(Filesystem::RelativePath(path));
+    } else {
+        return Filesystem::find(Filesystem::RelativePath("mugen/data/" + path));
+    }
+
+#if 0
     try{
         /* first look in the character's directory */
-        return Filesystem::find(base.join(Filesystem::RelativePath(path)));
+        // return Filesystem::find(base.join(Filesystem::RelativePath(path)));
+        
     } catch (const Filesystem::NotFound & f){
         /* then look for it in the common data directory.
          * this is where common1.cns lives
          */
         return Filesystem::find(Filesystem::RelativePath("mugen/data/" + path));
     }
+#endif
 }
 
-void Character::loadStateFile(const Filesystem::RelativePath & base, const string & path, bool allowDefinitions, bool allowStates){
+void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path, bool allowDefinitions, bool allowStates){
     Filesystem::AbsolutePath full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
@@ -2069,11 +2078,11 @@ void Character::loadStateFile(const Filesystem::RelativePath & base, const strin
 
 /* a container for a directory and a file */
 struct Location{
-    Location(Filesystem::RelativePath base, string file):
+    Location(Filesystem::AbsolutePath base, string file):
         base(base), file(file){
         }
 
-    Filesystem::RelativePath base;
+    Filesystem::AbsolutePath base;
     string file;
 };
 
@@ -2140,13 +2149,13 @@ void Character::load(int useAct){
             } else if (head == "files"){
                 class FilesWalker: public Ast::Walker {
                     public:
-                        FilesWalker(Character & self, const Filesystem::RelativePath & location):
+                        FilesWalker(Character & self, const Filesystem::AbsolutePath & location):
                             location(location),
                             self(self){
                             }
 
                         vector<Location> stateFiles;
-                        const Filesystem::RelativePath & location;
+                        const Filesystem::AbsolutePath & location;
 
                         Character & self;
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
@@ -2183,7 +2192,7 @@ void Character::load(int useAct){
                             } else if (simple == "sound"){
                                 simple >> self.sndFile;
                                 // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
-                                Util::readSounds(Filesystem::find(self.baseDir.join(Filesystem::RelativePath(self.sndFile))), self.sounds);
+                                Util::readSounds(self.baseDir.join(Filesystem::RelativePath(self.sndFile)), self.sounds);
                             } else if (PaintownUtil::matchRegex(simple.idString(), "pal[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(simple.idString(), "pal([0-9]+)", 0).c_str());
                                 string what;
@@ -2324,11 +2333,11 @@ void Character::load(int useAct){
     Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
-    Util::readSprites(Filesystem::find(baseDir.join(Filesystem::RelativePath(sffFile))), Filesystem::find(baseDir.join(Filesystem::RelativePath(paletteFile))), sprites);
+    Util::readSprites(baseDir.join(Filesystem::RelativePath(sffFile)), baseDir.join(Filesystem::RelativePath(paletteFile)), sprites);
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
-    animations = Util::loadAnimations(Filesystem::find(baseDir.join(Filesystem::RelativePath(airFile))), sprites);
+    animations = Util::loadAnimations(baseDir.join(Filesystem::RelativePath(airFile)), sprites);
 
     fixAssumptions();
 

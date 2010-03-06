@@ -167,7 +167,7 @@ void showCharacter(const string & ourFile){
     /*set_color_depth(16);
     Bitmap::setGfxModeWindowed(640, 480);*/
     Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
-    Mugen::Character character = Mugen::Character(Filesystem::RelativePath(ourFile));
+    Mugen::Character character = Mugen::Character(Filesystem::AbsolutePath(ourFile));
     character.load();
     Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
     bool quit = false;
@@ -326,8 +326,8 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 	return;
     }
     selector.setNextArcadeMatch();
-    Mugen::Character *player1 = new Mugen::Character(Filesystem::cleanse(selector.getPlayer1Def()));
-    Mugen::Character *player2 = new Mugen::Character(Filesystem::cleanse(selector.getPlayer2Def()));
+    Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1Def());
+    Mugen::Character *player2 = new Mugen::Character(selector.getPlayer2Def());
     player1->load();
     player2->load();
     stage.addPlayer1(player1);
