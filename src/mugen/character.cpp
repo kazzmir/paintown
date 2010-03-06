@@ -2162,7 +2162,7 @@ void Character::load(int useAct){
                             if (simple == "cmd"){
                                 string file;
                                 simple >> file;
-                                self.cmdFile = Filesystem::RelativePath(self.cmdFile);
+                                self.cmdFile = Filesystem::RelativePath(file);
                                 /* loaded later after the state files */
                             } else if (simple == "cns"){
                                 string file;
