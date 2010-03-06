@@ -39,7 +39,7 @@ static void showError(const Bitmap & screen, const MugenException & e){
     screen.BlitFromScreen(0, 0);
     Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
     error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
-    static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+    static const char * DEFAULT_FONT = "fonts/arial.ttf";
     const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(DEFAULT_FONT)).path(), 18, 18);
     int y = 10;
     std::ostringstream out;
@@ -48,6 +48,7 @@ static void showError(const Bitmap & screen, const MugenException & e){
     out << "We are very sorry but an error has occured while trying to load MUGEN.";
     out << " " << e.getReason();
     font.printfWrap(10, 10, Bitmap::makeColor(255, 255, 255), error, error.getWidth() - 20, out.str(), 0);
+    Global::debug(0) << out.str() << std::endl;
 
     Bitmap::transBlender(0, 0, 0, 200);
     error.drawTrans(50, 50, screen);

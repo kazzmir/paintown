@@ -691,8 +691,7 @@ changePhysics(false),
 changePower(false),
 powerAdd(0),
 moveType(Move::Idle),
-/* FIXME: whats the default juggle? */
-juggle(1),
+juggle(0),
 hitDefPersist(false){
 }
 
@@ -704,7 +703,7 @@ void State::addControllerFront(StateController * controller){
     controllers.insert(controllers.begin(), controller);
 }
 
-void State::setJuggle(int juggle){
+void State::setJuggle(Ast::Value * juggle){
     this->juggle = juggle;
 }
 
@@ -737,7 +736,9 @@ void State::transitionTo(const MugenStage & stage, Character & who){
         who.setControl(toBool(evaluate(control, Environment(stage, who))));
     }
 
-    who.setCurrentJuggle(juggle);
+    if (juggle != 0){
+        who.setCurrentJuggle((int) toNumber(evaluate(juggle, Environment(stage, who))));
+    }
 
     who.setMoveType(moveType);
 
@@ -795,6 +796,7 @@ State::~State(){
 
     delete animation;
     delete control;
+    delete juggle;
 }
 
 void HitState::update(bool inAir, const HitDefinition & hit){
@@ -1510,9 +1512,7 @@ void Character::parseStateDefinition(Ast::Section * section){
                     simple >> power;
                     definition->setPower(power);
                 } else if (simple == "juggle"){
-                    int j;
-                    simple >> j;
-                    definition->setJuggle(j);
+                    definition->setJuggle((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "facep2"){
                 } else if (simple == "hitdefpersist"){
                     bool what;

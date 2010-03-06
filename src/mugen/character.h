@@ -906,7 +906,7 @@ public:
         this->control = control;
     }
 
-    virtual void setJuggle(int juggle);
+    virtual void setJuggle(Ast::Value * juggle);
 
     virtual void setVelocity(double x, double y);
     virtual void setPhysics(Physics::Type p);
@@ -950,7 +950,7 @@ protected:
     bool changePower;
     int powerAdd;
     std::string moveType;
-    int juggle;
+    Ast::Value * juggle;
     bool hitDefPersist;
 };
 
