@@ -35,7 +35,7 @@
 
 using namespace std;
 
-static const char * DEFAULT_FONT = "/fonts/arial.ttf";
+static const char * DEFAULT_FONT = "fonts/arial.ttf";
 // static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
 

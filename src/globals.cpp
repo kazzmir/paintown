@@ -32,7 +32,7 @@ const int MIN_RELATIVE_DISTANCE = 10;
 // static bool global_debug = false;
 static int global_debug_level = 0;
 
-const char * Global::DEFAULT_FONT = "/fonts/arial.ttf";
+const char * Global::DEFAULT_FONT = "fonts/arial.ttf";
 
 class nullstreambuf_t: public std::streambuf {
 public:

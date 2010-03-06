@@ -213,7 +213,7 @@ int paintown_main( int argc, char ** argv ){
             } else {
                 game.run();
             }
-        } catch (const Filesystem::NotFound & ex){
+        } catch (const Filesystem::Exception & ex){
             Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
         } catch (const TokenException & ex){
             Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
