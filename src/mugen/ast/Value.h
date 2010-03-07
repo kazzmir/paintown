@@ -90,8 +90,8 @@ public:
     virtual ~Value(){
     }
 
-private:
-    void fail(const std::string & what) const {
+protected:
+    virtual void fail(const std::string & what) const {
         throw Exception("Cannot read a " + what + " from a " + getType());
     }
 };

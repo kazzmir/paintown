@@ -103,6 +103,10 @@ public:
     }
 
 protected:
+    virtual void fail(const std::string & what) const {
+        throw Exception("Cannot read a " + what + " from function " + getName());
+    }
+
     std::string name;
     const Value * arg1;
     const Value * arg2;
