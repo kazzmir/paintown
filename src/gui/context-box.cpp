@@ -50,9 +50,7 @@ void ContextBox::act(){
 
 void ContextBox::render(const Bitmap & work){
     board.render(work);
-    work.setClipRect(position.x+2, position.y+2, position.getX2()-2, position.getY2()-2);
     drawText(work);
-    work.setClipRect(0, 0, work.getWidth(), work.getHeight());
 }
 
 void ContextBox::next(){
@@ -64,6 +62,10 @@ void ContextBox::previous(){
     if (fadeState != Active){
 	return;
     }
+}
+void ContextBox::adjustLeft(){
+}
+void ContextBox::adjustRight(){
 }
 void ContextBox::open(){
     // Set the fade stuff
@@ -175,7 +177,19 @@ void ContextBox::doFade(){
     }
 }
 
+void ContextBox::calculateText(){
+    //const total = 
+    renderable.clear();
+    if (context->size() == 1){
+	renderable.push_back(context->front());
+	return;
+    }
+    //if (current
+}
+
 void ContextBox::drawText(const Bitmap & bmp){
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     const double spacing = 1.3;
+    bmp.setClipRect(position.x+2, position.y+2, position.getX2()-2, position.getY2()-2);
+    bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }

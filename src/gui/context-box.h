@@ -15,6 +15,7 @@ class ContextItem{
 	virtual ~ContextItem();
 	
 	virtual const std::string & getText()=0;
+	virtual const bool isAdjustable()=0;
 };
 
 class ContextBox : public Widget{
@@ -33,6 +34,10 @@ class ContextBox : public Widget{
         virtual void next();
         //! Previous
         virtual void previous();
+	//! Adjust left
+	virtual void adjustLeft();
+	//! Adjust right
+	virtual void adjustRight();
 	//! open context box
 	virtual void open();
 	//! Close context box
@@ -59,6 +64,8 @@ class ContextBox : public Widget{
     private:
 	
 	void doFade();
+	
+	void calculateText();
 	
 	void drawText(const Bitmap &);
 	
@@ -92,6 +99,9 @@ class ContextBox : public Widget{
 	
 	//! Board
 	Box board;
+	
+	//! Drawable items on the list
+	std::vector<ContextItem *> renderable;
 };
 
 }
