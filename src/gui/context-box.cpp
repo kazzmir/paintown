@@ -178,13 +178,35 @@ void ContextBox::doFade(){
 }
 
 void ContextBox::calculateText(){
-    //const total = 
     renderable.clear();
+    if (context->empty()){
+        return;
+    } 
+    renderable.push_back((*context)[current]);
     if (context->size() == 1){
-	renderable.push_back(context->front());
-	return;
+	    return;
     }
-    //if (current
+    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    const double spacing = 1.3;
+    const int displayTotal = (int)(position.height/vFont.getHeight()) + 2;
+    
+    unsigned int position = current + 1;
+    for (int i = 0; i < (int)(displayTotal/2); ++i){
+        if (position == context->size()){
+            position = 0;
+        }
+        renderable.push_back((*context)[position]);
+        position++;
+    }
+    position = current - 1;
+    for (int i = 0; i < (int)(displayTotal/2); ++i){
+        if (position < 0){
+            position = context->size()-1;
+        }
+        renderable.insert(renderable.begin(), (*context)[position]);
+        position--;
+    }
+
 }
 
 void ContextBox::drawText(const Bitmap & bmp){
