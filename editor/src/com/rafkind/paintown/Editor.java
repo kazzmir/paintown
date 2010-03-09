@@ -29,7 +29,6 @@ public class Editor extends JFrame {
 
     /* global thing for copy/pasting */
     private Thing copy;
-    private static File dataPath = new File( "data" );
 
     public Editor(){
         super( "Paintown Editor" );
@@ -118,8 +117,8 @@ public class Editor extends JFrame {
                 final SwingEngine engine = new SwingEngine( "data-path.xml" );
                 final JTextField path = (JTextField) engine.find( "path" );
                 final ObjectBox box = new ObjectBox();
-                box.set( getDataPath() );
-                path.setText( getDataPath().getPath() );
+                box.set(Data.getDataPath());
+                path.setText(Data.getDataPath().getPath() );
                 final JButton change = (JButton) engine.find( "change" );
                 change.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
@@ -138,7 +137,7 @@ public class Editor extends JFrame {
                 final JDialog dialog = new JDialog( Editor.this, "Paintown data path" );
                 save.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
-                        setDataPath( (File) box.get() );
+                        Data.setDataPath( (File) box.get() );
                         dialog.setVisible( false );
                     }
                 });
@@ -266,19 +265,11 @@ public class Editor extends JFrame {
     }
 
     public static File dataPath( File f ){
-        return new File( getDataPath().getPath() + "/" + f.getPath() );
+        return new File(Data.getDataPath().getPath() + "/" + f.getPath() );
     }
 
     public static String dataPath( String s ){
-        return getDataPath().getPath() + "/" + s;
-    }
-
-    private static File getDataPath(){
-        return dataPath;
-    }
-
-    private static void setDataPath( File f ){
-        dataPath = f;
+        return Data.getDataPath().getPath() + "/" + s;
     }
 
     private String generateBoysName(){
@@ -1110,7 +1101,7 @@ public class Editor extends JFrame {
 
             add.addActionListener( new AbstractAction(){
                 public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
+                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
                     int ret = chooser.open();
                     if ( ret == RelativeFileChooser.OK ){
                         final String path = chooser.getPath();
@@ -1281,7 +1272,7 @@ public class Editor extends JFrame {
             final JButton add = (JButton) levelEngine.find( "add-front-panel" );
             add.addActionListener( new AbstractAction(){
                 public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
+                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
                     int ret = chooser.open();
                     if ( ret == RelativeFileChooser.OK ){
                         try{
@@ -1315,7 +1306,7 @@ public class Editor extends JFrame {
             final JButton add = (JButton) levelEngine.find( "add-back-panel" );
             add.addActionListener( new AbstractAction(){
                 public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
+                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
                     int ret = chooser.open();
                     if ( ret == RelativeFileChooser.OK ){
                         try{
@@ -1377,7 +1368,7 @@ public class Editor extends JFrame {
 
         levelChangeBackground.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, getDataPath() );
+                RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();

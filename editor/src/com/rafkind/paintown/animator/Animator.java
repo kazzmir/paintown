@@ -30,7 +30,6 @@ import com.rafkind.paintown.animator.DrawState;
 
 public class Animator extends JFrame {
 
-    private static File dataPath = new File( "data" );
     private static int CURRENT_TAB = 0;
     private static Animator animator;
 
@@ -155,7 +154,7 @@ public class Animator extends JFrame {
             public QuickCharacterLoaderModel(){
                 listeners = new ArrayList();
                 filtered = new ArrayList();
-                load(Animator.this.getDataPath());
+                load(Data.getDataPath());
                 filter = Pattern.compile(".*");
             }
 
@@ -393,8 +392,8 @@ public class Animator extends JFrame {
                 final SwingEngine engine = new SwingEngine( "data-path.xml" );
                 final JTextField path = (JTextField) engine.find( "path" );
                 final ObjectBox box = new ObjectBox();
-                box.set( getDataPath() );
-                path.setText( getDataPath().getPath() );
+                box.set( Data.getDataPath() );
+                path.setText( Data.getDataPath().getPath() );
                 final JButton change = (JButton) engine.find( "change" );
                 change.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
@@ -414,7 +413,7 @@ public class Animator extends JFrame {
                 save.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
                         File path = (File) box.get();
-                        setDataPath(path);
+                        Data.setDataPath(path);
                         quickLoaderModel.load(path);
                         dialog.setVisible( false );
                     }
@@ -654,23 +653,15 @@ public class Animator extends JFrame {
     }
 
     public static File dataPath( File f ){
-        return new File( getDataPath().getPath() + "/" + f.getPath() );
+        return new File( Data.getDataPath().getPath() + "/" + f.getPath() );
     }
 
     public static String dataPath( String s ){
-        return getDataPath().getPath() + "/" + s;
-    }
-
-    public static File getDataPath(){
-        return dataPath;
-    }
-
-    private static void setDataPath( File f ){
-        dataPath = f;
+        return Data.getDataPath().getPath() + "/" + s;
     }
 
     public static RelativeFileChooser getNewFileChooser(){
-        return new RelativeFileChooser( animator, getDataPath() );
+        return new RelativeFileChooser( animator, Data.getDataPath() );
     }
 
     public void addNewTab(final SpecialPanel panel, final String name){
