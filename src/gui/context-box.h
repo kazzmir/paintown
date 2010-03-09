@@ -14,7 +14,7 @@ class ContextItem{
 	ContextItem();
 	virtual ~ContextItem();
 	
-	virtual const std::string & getText()=0;
+	virtual const std::string & getName()=0;
 	virtual const bool isAdjustable()=0;
 };
 
@@ -43,8 +43,8 @@ class ContextBox : public Widget{
 	//! Close context box
 	virtual void close();
         //! Set context list
-        virtual inline void setList(std::vector<ContextItem *> & list){
-            this->context = &list;
+        virtual inline void setList(const std::vector<ContextItem *> & list){
+            this->context = list;
             this->current = 0;
         }
         //! Set current font
@@ -61,6 +61,14 @@ class ContextBox : public Widget{
 	virtual inline bool isActive(){
 	    return (this->fadeState != NotActive);
 	}
+    //!set fadespeed
+    virtual inline void setFadeSpeed(int speed){
+        this->fadeSpeed = speed;
+    }
+    //!set fade alpha
+    virtual inline void setFadeAlpha(int alpha){
+        this->fadeAlpha = alpha;
+    }
     private:
 	
 	void doFade();
@@ -84,7 +92,7 @@ class ContextBox : public Widget{
 	FadeState fadeState;
 
         //! Context list
-        std::vector<ContextItem *> * context;
+        std::vector<ContextItem *> context;
 	
 	//! Current font
 	std::string font;
@@ -100,8 +108,12 @@ class ContextBox : public Widget{
 	//! Board
 	Box board;
 	
-	//! Drawable items on the list
-	std::vector<ContextItem *> renderable;
+    //! The centered position 
+    int cursorCenter;
+    //! Current y coordinate to render text from
+    int cursorLocation;
+    //! scroll wait
+    int scrollWait;
 };
 
 }

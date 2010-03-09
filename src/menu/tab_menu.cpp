@@ -126,17 +126,26 @@ void TabMenu::load(Token *token) throw (LoadException){
                 setName(temp);
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
-                *tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
+                //*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
+                *tok >> contextMenu.position.x >> contextMenu.position.y >> contextMenu.position.width >> contextMenu.position.height;
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
+                /*
                 *tok >> r >> g >> b >> backboard.position.bodyAlpha;
                 backboard.position.body = Bitmap::makeColor(r,g,b);
+                */
+                *tok >> r >> g >> b >> contextMenu.position.bodyAlpha;
+                contextMenu.position.body = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "position-border" ) {
                 // This handles the border color of the menu box
                 int r,g,b;
+                /*
                 *tok >> r >> g >> b >> backboard.position.borderAlpha;
                 backboard.position.border = Bitmap::makeColor(r,g,b);
+                */
+                *tok >> r >> g >> b >> contextMenu.position.borderAlpha;
+                contextMenu.position.border = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "tab-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
@@ -190,7 +199,8 @@ void TabMenu::load(Token *token) throw (LoadException){
                     foregroundAnimations.push_back(animation);
                 }
             } else if (*tok == "menu"){
-                MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
+                //MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
+                MenuBox *menu = new MenuBox(contextMenu.position.width, contextMenu.position.height);
                 if (menu){
                     // To avoid issues
                     menu->menu.setAsOption(true);
@@ -328,7 +338,7 @@ void TabMenu::run(){
     }
 
     // Reset fade stuff
-    resetFadeInfo();
+    //resetFadeInfo();
 
     // Reset animations
     for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
@@ -365,11 +375,13 @@ void TabMenu::run(){
                         if (currentTab > tabs.begin()){
                             currentTab--;
                             location--;
-                            targetOffset+=backboard.position.width;
+                            //targetOffset+=backboard.position.width;
+                            targetOffset+=contextMenu.position.width;
                         } else {
                             currentTab = tabs.end()-1;
                             location=tabs.size()-1;
-                            targetOffset = (location*backboard.position.width) * -1;
+                            //targetOffset = (location*backboard.position.width) * -1;
+                            targetOffset = (location*contextMenu.position.width) * -1;
                         }
                         (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
                     }
@@ -381,7 +393,8 @@ void TabMenu::run(){
                         if (currentTab < tabs.begin()+tabs.size()-1){
                             currentTab++;
                             location++;
-                            targetOffset-=backboard.position.width;
+                            //targetOffset-=backboard.position.width;
+                            targetOffset-=contextMenu.position.width;
                         } else {
                             currentTab = tabs.begin();
                             location = 0;
@@ -453,7 +466,7 @@ void TabMenu::run(){
                 }
 
                 // Lets do some logic for the box with text
-                updateFadeInfo();
+                //updateFadeInfo();
 
                 if (scrollCounter == 0 && !closeFloat(totalOffset, targetOffset)){
                     totalOffset = (totalOffset + targetOffset) / 2;
@@ -480,7 +493,7 @@ void TabMenu::run(){
             }
 
             // Draw text board
-            drawTextBoard(work);
+            //drawTextBoard(work);
 
             // Menus
             if (currentDrawState == NoFade){
@@ -511,35 +524,36 @@ void TabMenu::run(){
 }
 
 void TabMenu::drawMenus(Bitmap *bmp){
-    const double incrementx = backboard.position.width;
-    double startx = backboard.position.x + totalOffset;
+    Gui::RectArea & backboard = contextMenu.position;
+    const double incrementx = backboard.width;
+    double startx = backboard.x + totalOffset;
 
     // Drawing menus
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
         tab->snapPosition.position.x = (int) startx;
-        tab->snapPosition.position.y = backboard.position.y;
-        if (tab->checkVisible(backboard.position)){
+        tab->snapPosition.position.y = backboard.y;
+        if (tab->checkVisible(backboard)){
             /* Set clipping rectangle need to know why text isn't clipping */
-            int x1 = backboard.position.x+(backboard.position.radius/2);
-            int y1 = backboard.position.y+(backboard.position.radius/2);
-            int x2 = (backboard.position.x+backboard.position.width)-(backboard.position.radius/2);
-            int y2 = (backboard.position.y+backboard.position.height)-(backboard.position.radius/2);
+            int x1 = backboard.x+(backboard.radius/2);
+            int y1 = backboard.y+(backboard.radius/2);
+            int x2 = (backboard.x+backboard.width)-(backboard.radius/2);
+            int y2 = (backboard.y+backboard.height)-(backboard.radius/2);
             bmp->setClipRect(x1, y1, x2, y2);
-            tab->menu.drawText(tab->snapPosition,bmp);
+            //tab->menu.drawText(tab->snapPosition,bmp);
             bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
         }
         startx += incrementx;
     }
     const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
-    int tabstartx = backboard.position.x;
-    int tabstarty = backboard.position.y - ((vFont.getHeight() + TEXT_SPACING_H) * totalLines);
+    int tabstartx = backboard.x;
+    int tabstarty = backboard.y - ((vFont.getHeight() + TEXT_SPACING_H) * totalLines);
     // Now draw tabs, has to be seperate from above since we need this to overlay the snaps
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
         const int tabWidth = tab->position.width;
-        if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
-            tabstartx = backboard.position.x;
+        if ((tabstartx + tabWidth) > (backboard.x + backboard.width)){
+            tabstartx = backboard.x;
             tabstarty += tab->position.height;
         }
         tab->position.x = tabstartx;
@@ -553,12 +567,12 @@ void TabMenu::drawMenus(Bitmap *bmp){
 
 // Calculate the amount of lines per tabs
 void TabMenu::calculateTabLines(){
-    int tabstartx = backboard.position.x;
+    int tabstartx = contextMenu.position.x;//backboard.position.x;
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
         const int tabWidth = tab->position.width;
-        if ((tabstartx + tabWidth) > (backboard.position.x + backboard.position.width)){
-            tabstartx = backboard.position.x;
+        if ((tabstartx + tabWidth) > (contextMenu.position.x + contextMenu.position.width)){//(backboard.position.x + backboard.position.width)){
+            tabstartx = contextMenu.position.x;//backboard.position.x;
             totalLines++;
         }
         tabstartx+=tab->position.width;

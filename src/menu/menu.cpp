@@ -60,6 +60,15 @@ static int selectedGradientEnd(){
     return color;
 }
 
+
+static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> & list){
+    std::vector<ContextItem *> contextItems;
+    for (std::vector<MenuOption *>::const_iterator i = list.begin(); i != list.end(); ++i){
+        contextItems.push_back(*i);
+    }
+    return contextItems;
+}
+
 Menu::Menu(const Filesystem::AbsolutePath & str) throw (LoadException):
 selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
     load(str);
@@ -82,13 +91,14 @@ parent(0),
 _name(""),
 hasOptions(false),
 removeOption(false),
-fadeAlpha(0),
-fadeSpeed(12),
+//fadeAlpha(0),
+//fadeSpeed(12),
 background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
 option(false),
 selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
-	backboard.position.radius = 15;
+	//backboard.position.radius = 15;
+    contextMenu.position.radius = 15;
 	optionInfoTextLocation.x = 320;
 	optionInfoTextLocation.y = 100;
 	menuInfoLocation.x = 320;
@@ -182,20 +192,32 @@ void Menu::load(Token *token) throw (LoadException){
                 clearColor = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
-                *tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
+                //*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
+                *tok >> contextMenu.position.x >> contextMenu.position.y >> contextMenu.position.width >> contextMenu.position.height;
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
+                /*
                 *tok >> r >> g >> b >> backboard.position.bodyAlpha;
                 backboard.position.body = Bitmap::makeColor(r,g,b);
+                */
+                *tok >> r >> g >> b >> contextMenu.position.bodyAlpha;
+                contextMenu.position.body = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "position-border" ) {
                 // This handles the border color of the menu box
                 int r,g,b;
+                /*
                 *tok >> r >> g >> b >> backboard.position.borderAlpha;
                 backboard.position.border = Bitmap::makeColor(r,g,b);
+                */
+                *tok >> r >> g >> b >> contextMenu.position.borderAlpha;
+                contextMenu.position.border = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "fade-speed" ) {
                 // Menu fade in speed
-                *tok >> fadeSpeed;
+                int speed;
+                //*tok >> fadeSpeed;
+                *tok >> speed;
+                contextMenu.setFadeSpeed(speed);
             } else if ( *tok == "font" ) {
                 string str;
                 *tok >> str >> sharedFontWidth >> sharedFontHeight; 
@@ -249,7 +271,10 @@ void Menu::load(Token *token) throw (LoadException){
         throw LoadException("No name set, the menu should have a name!");
     }
 
-    if ( backboard.position.empty() ){
+    /*if ( backboard.position.empty() ){
+        throw LoadException("The position for the menu '" + getName() + "' list must be set!");
+    }*/
+    if ( contextMenu.position.empty() ){
         throw LoadException("The position for the menu '" + getName() + "' list must be set!");
     }
     // Omit menu if no options are available
@@ -291,6 +316,8 @@ void Menu::setupOptions(){
     // Set initial location
     selectedOption = menuOptions.begin();
     menuOptions.front()->setState(MenuOption::Selected);
+
+    contextMenu.setList(toContextList(menuOptions));
 
 }
 
@@ -335,6 +362,7 @@ void Menu::act(bool &endGame, bool reset){
         if (menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
         }
+        contextMenu.previous();
     }
 
     if (inputState[Down]){
@@ -352,6 +380,7 @@ void Menu::act(bool &endGame, bool reset){
         if (menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
         }
+        contextMenu.next();
     }
 
     if (inputState[Left]){
@@ -390,7 +419,7 @@ void Menu::act(bool &endGame, bool reset){
             } catch (const ReturnException & re){
                 /* hack to make sure the current menu is drawn properly */
                 if (reset){
-                    resetFadeInfo();
+                    //resetFadeInfo();
                 }
                 tryPlaySound(backSound);
             }
@@ -432,7 +461,7 @@ void Menu::act(bool &endGame, bool reset){
     }
 
     // Lets do some logic for the box with text
-    updateFadeInfo();
+    //updateFadeInfo();
 }
 
 void Menu::draw(const Box &area, Bitmap *bmp){
@@ -460,7 +489,7 @@ void Menu::run(){
         motion = 0;
 
         // Reset fade stuff
-        resetFadeInfo();
+        //resetFadeInfo();
 
         // Reset animations
         for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
@@ -474,6 +503,10 @@ void Menu::run(){
         if ( !music.empty() ){
             MenuGlobals::setMusic(music);
         }
+
+        // Set font and fade in
+        contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
+        contextMenu.open();
 
         while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
 
@@ -490,6 +523,7 @@ void Menu::run(){
                     runCounter -= 1;
                     InputManager::poll();
                     act(endGame);
+                    contextMenu.act();
                 }
 
                 Global::speed_counter = 0;
@@ -517,12 +551,15 @@ void Menu::run(){
                 // Draw any misc stuff in the background of the menu of selected object 
                 (*selectedOption)->drawBelow(work);
                 // Draw text board
-                drawTextBoard(work);
+                //drawTextBoard(work);
                 // Draw text
                 // Set clipping so that text won't go beyond it's boundaries
+                /*
                 work->setClipRect(backboard.position.x+2, backboard.position.y+2,backboard.position.getX2()-2,backboard.position.getY2()-2);
                 drawText(backboard, work);
                 work->setClipRect(0, 0, work->getWidth(), work->getHeight());
+                */
+                contextMenu.render(*work);
                 // Draw option info text
                 drawInfoBox((*selectedOption)->getInfoText(), optionInfoTextLocation, work);
                 // Draw menu info text
@@ -667,7 +704,7 @@ void Menu::checkTextLength(MenuOption *opt){
 		}
 	}
 }
-
+#if 0
 //! Reset fade info
 void Menu::resetFadeInfo(){
 	// Set the fade stuff
@@ -678,7 +715,8 @@ void Menu::resetFadeInfo(){
 	fadeBox.position.y = backboard.position.y+(backboard.position.height/2);
 	fadeAlpha = 0;
 }
-
+#endif
+#if 0
 //! Do fade logic
 void Menu::updateFadeInfo(){
      // Lets do some logic for the box with text
@@ -733,7 +771,7 @@ void Menu::updateFadeInfo(){
 	}
     }
 }
-
+#endif
 void Menu::drawBackground(Bitmap *bmp){
     Bitmap *temp = getBackground();
     if ( !temp ){
@@ -742,7 +780,7 @@ void Menu::drawBackground(Bitmap *bmp){
 	temp->Stretch(*bmp);
     }
 }
-
+#if 0
 //! Draw board
 void Menu::drawTextBoard(Bitmap *bmp){
 	switch(currentDrawState){
@@ -759,6 +797,7 @@ void Menu::drawTextBoard(Bitmap *bmp){
 		}
 	}
 }
+#endif
 
 int Menu::getSelectedColor(bool selected){
     if (selected){
@@ -769,6 +808,7 @@ int Menu::getSelectedColor(bool selected){
     }
 }
 
+#if 0
 //! Draw text
 void Menu::drawText(const Box &area, Bitmap *bmp){
     const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
@@ -903,6 +943,8 @@ void Menu::drawText(const Box &area, Bitmap *bmp){
     }
 }
 
+#endif
+
 // Draw info box
 void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp ){
     if ( info.empty() ) return;
@@ -942,9 +984,12 @@ void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *
             area.position.y = location.y - (area.position.height / 2);
             // area.position.body = backboard.position.body;
             area.position.body = Bitmap::makeColor(32,32,0);
-            area.position.bodyAlpha = backboard.position.bodyAlpha;
-            area.position.border = backboard.position.border;
-            area.position.borderAlpha = backboard.position.borderAlpha;
+            //area.position.bodyAlpha = backboard.position.bodyAlpha;
+            area.position.bodyAlpha = contextMenu.position.bodyAlpha;
+            //area.position.border = backboard.position.border;
+            area.position.border = contextMenu.position.border;
+            //area.position.borderAlpha = backboard.position.borderAlpha;
+            area.position.border = contextMenu.position.borderAlpha;
 
             // Draw box
             area.render(*bmp);

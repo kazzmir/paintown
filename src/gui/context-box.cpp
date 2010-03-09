@@ -17,7 +17,10 @@ fadeState(NotActive),
 fontWidth(0),
 fontHeight(0),
 fadeSpeed(12),
-fadeAlpha(0){
+fadeAlpha(0),
+cursorCenter(0),
+cursorLocation(0),
+scrollWait(4){
 }
 ContextBox::ContextBox( const ContextBox & copy ):
 current(0),
@@ -28,6 +31,9 @@ fadeState(NotActive){
     this->fontHeight = copy.fontHeight;
     this->fadeSpeed = copy.fadeSpeed;
     this->fadeAlpha = copy.fadeAlpha;
+    this->cursorCenter = copy.cursorCenter;
+    this->cursorLocation = copy.cursorLocation;
+    this->scrollWait = copy.scrollWait;
 }
 ContextBox::~ContextBox(){
 }
@@ -40,12 +46,18 @@ ContextBox & ContextBox::operator=( const ContextBox & copy){
     this->fontHeight = copy.fontHeight;
     this->fadeSpeed = copy.fadeSpeed;
     this->fadeAlpha = copy.fadeAlpha;
+    this->cursorCenter = copy.cursorCenter;
+    this->cursorLocation = copy.cursorLocation;
+    this->scrollWait = copy.scrollWait;
     return *this;
 }
 
 void ContextBox::act(){
     // do fade
     doFade();
+
+    // Calculate text info
+    calculateText();
 }
 
 void ContextBox::render(const Bitmap & work){
@@ -57,10 +69,26 @@ void ContextBox::next(){
     if (fadeState != Active){
 	return;
     }
+    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    const double spacing = 1.3;
+    cursorLocation += vFont.getHeight();
+    if (current < context.size()-1){
+        current++;
+    } else {
+        current = 0;
+    }
 }
 void ContextBox::previous(){
     if (fadeState != Active){
 	return;
+    }
+    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    const double spacing = 1.3;
+    cursorLocation -= vFont.getHeight();
+    if (current > 0){
+        current--;
+    } else {
+        current = context.size()-1;
     }
 }
 void ContextBox::adjustLeft(){
@@ -178,40 +206,73 @@ void ContextBox::doFade(){
 }
 
 void ContextBox::calculateText(){
-    renderable.clear();
-    if (context->empty()){
+    if (context.empty()){
         return;
     } 
-    renderable.push_back((*context)[current]);
-    if (context->size() == 1){
-	    return;
-    }
-    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    const double spacing = 1.3;
-    const int displayTotal = (int)(position.height/vFont.getHeight()) + 2;
     
-    unsigned int position = current + 1;
-    for (int i = 0; i < (int)(displayTotal/2); ++i){
-        if (position == context->size()){
-            position = 0;
-        }
-        renderable.push_back((*context)[position]);
-        position++;
+    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    
+    cursorCenter = (position.y + (int)position.height/2) - vFont.getHeight()/2;
+    
+    if (cursorLocation == cursorCenter){
+	    scrollWait = 4;
+    } else {
+	if (scrollWait <= 0){
+	    cursorLocation = (cursorLocation + cursorCenter)/2;
+	    scrollWait = 4;
+	} else {
+	    scrollWait--;
+	}
     }
-    position = current - 1;
-    for (int i = 0; i < (int)(displayTotal/2); ++i){
-        if (position < 0){
-            position = context->size()-1;
-        }
-        renderable.insert(renderable.begin(), (*context)[position]);
-        position--;
-    }
-
 }
 
 void ContextBox::drawText(const Bitmap & bmp){
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     const double spacing = 1.3;
     bmp.setClipRect(position.x+2, position.y+2, position.getX2()-2, position.getY2()-2);
+    int locationY = cursorLocation;
+    int currentOption = current;
+    int count = 0;
+    while (locationY < position.getX2() + vFont.getHeight()){
+        const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
+        if (count == 0){
+            const int color = Bitmap::makeColor(0,255,255);
+            vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+        } else {
+            const int color = Bitmap::makeColor(255,255,255);
+            vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+        }
+        if (context.size() == 1){
+            bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
+            return;
+        }
+        currentOption++;
+        if (currentOption == (int)context.size()){
+            currentOption = 0;
+        }
+        locationY += vFont.getHeight();
+        count++;
+        /*if (context.size() < 2 && count == 2){
+            break;
+        }*/
+    }
+    locationY = cursorLocation - vFont.getHeight();
+    currentOption = current;
+    currentOption--;
+    count = 0;
+    while (locationY > position.x - vFont.getHeight()){
+        if (currentOption < 0){
+            currentOption = context.size()-1;
+        }
+        const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
+        const int color = Bitmap::makeColor(255,255,255);
+        vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+        currentOption--;
+        locationY -= vFont.getHeight();
+        count++;
+        /*if (context.size() < 2 && count == 1){
+            break;
+        }*/
+    }
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }

@@ -169,7 +169,8 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
             temp.addOption(opt);
         }
         temp.load(Filesystem::find(Filesystem::RelativePath("menu/level_select.txt")));
-        temp.backboard.position.height = count;
+        //temp.backboard.position.height = count;
+        temp.setMenuHeight(count);
         // Run it
         temp.run();
         return possible[index];

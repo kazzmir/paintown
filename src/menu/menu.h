@@ -10,6 +10,7 @@
 #include "input/input-map.h"
 #include "return_exception.h"
 #include "gui/box.h"
+#include "gui/context-box.h"
 
 #ifdef _MSC_VER
 #ifndef uint32_t
@@ -55,7 +56,7 @@ public:
     virtual void draw(const Gui::Box &area, Bitmap *bmp);
 
     //! Draw text
-    virtual void drawText(const Gui::Box &area, Bitmap *bmp);
+    //virtual void drawText(const Gui::Box &area, Bitmap *bmp);
 
     /*! run as it's own menu */
     virtual void run();
@@ -113,7 +114,13 @@ public:
     void setupOptions();
 
     //! Area for placement of option list
-    Gui::Box backboard;
+    //Gui::Box backboard;
+    //
+
+    //! Set height of context menu
+    virtual inline void setMenuHeight(int height){
+        this->contextMenu.position.height = height;
+    }
 
 protected:
     //! Current music
@@ -124,6 +131,9 @@ protected:
     std::string okSound;
     //! longest menu text
     int longestTextLength;
+
+    //! Context box
+    Gui::ContextBox contextMenu;
 
     std::vector <MenuOption *> menuOptions;
 public:
@@ -154,13 +164,13 @@ protected:
     void drawBackground(Bitmap *work);
 
     //! Reset fade data
-    void resetFadeInfo();
+    //void resetFadeInfo();
 
     //! Do fade logic
-    void updateFadeInfo();
+    //void updateFadeInfo();
 
     //! Draw board
-    void drawTextBoard(Bitmap *work);
+    //void drawTextBoard(Bitmap *work);
 
     //! Draw info box
     void drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp );
@@ -193,12 +203,12 @@ private:
     void optionCleanup();
 
     //! Fade alpha
-    int fadeAlpha;
+    //int fadeAlpha;
 
     //! Fade speed
-    int fadeSpeed;
+    //int fadeSpeed;
 
-    Gui::Box fadeBox;
+    //Gui::Box fadeBox;
 
     //! Set background for this menu
     Bitmap *background;
@@ -227,5 +237,6 @@ private:
     };
 
     InputMap<MenuInput> input;
+
 };
 #endif

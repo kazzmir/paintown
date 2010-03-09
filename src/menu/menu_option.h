@@ -7,6 +7,7 @@
 #include "util/load_exception.h"
 #include "util/language-string.h"
 #include "return_exception.h"
+#include "gui/context-box.h"
 
 class Bitmap;
 class Token;
@@ -14,7 +15,7 @@ class Menu;
 class MenuAnimation;
 class Point;
 
-class MenuOption{
+class MenuOption : public Gui::ContextItem{
 public:
     // Do logic before run part
     virtual void logic()=0;
@@ -99,6 +100,10 @@ public:
     inline void setForRemoval(const bool r) { forRemoval = r; }
     inline bool scheduledForRemoval() const { return forRemoval; }
     inline Menu *getParent() const { return parent; }
+
+public:
+    inline const std::string & getName(){ return this->text.get(); }
+    inline const bool isAdjustable(){ return (this->mType == AdjustableOption); }
 
 protected:
     void readName(Token * token);
