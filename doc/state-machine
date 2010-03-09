@@ -1,0 +1,22 @@
+* Describe the state machine used in paintown here *
+
+States should consist of strings: 'walk', 'stand', etc.
+Any internal states should be prefixed with 'paintown:', such as
+  'paintown:fall', 'paintown:die'
+
+When errors are reported due to missing states, use levenshtein distance to find
+the closest matching state to avoid common spelling mistakes.
+
+The state machine will be a prioritized NFA where each state can transition to multiple
+other states but those states will be arranged in a total order such that a single
+unique state can always be chosen.
+
+Can states be heirarchical? All ground moves could be in the 'ground' state and then
+even if the character is doing a move, any other character only has to test for the
+'ground' state instead of enumerating all possible states. States could be specified
+using paths, where parts farther to the left are parents.
+
+  /ground/attack/kick
+
+  /air/fall/high
+  /air/fall/low
