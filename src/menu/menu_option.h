@@ -102,8 +102,10 @@ public:
     inline Menu *getParent() const { return parent; }
 
 public:
-    inline const std::string & getName(){ return this->text.get(); }
+    inline const std::string getName(){ return this->getText(); }
     inline const bool isAdjustable(){ return (this->mType == AdjustableOption); }
+    inline const int getLeftColor(){ return this->adjustLeftColor; }
+    inline const int getRightColor(){ return this->adjustRightColor; }
 
 protected:
     void readName(Token * token);

@@ -14,8 +14,10 @@ class ContextItem{
 	ContextItem();
 	virtual ~ContextItem();
 	
-	virtual const std::string & getName()=0;
-	virtual const bool isAdjustable()=0;
+	virtual const std::string getName()=0;
+	virtual const bool isAdjustable();
+        virtual const int getLeftColor();
+        virtual const int getRightColor();
 };
 
 class ContextBox : public Widget{

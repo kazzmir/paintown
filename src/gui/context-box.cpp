@@ -12,6 +12,15 @@ ContextItem::ContextItem(){
 }
 ContextItem::~ContextItem(){
 }
+const bool ContextItem::isAdjustable(){
+    return false;
+}
+const int ContextItem::getLeftColor(){
+    return 0;
+}
+const int ContextItem::getRightColor(){
+    return 0;
+}
 
 ContextBox::ContextBox():
 current(0),
@@ -106,11 +115,13 @@ void ContextBox::open(){
     board.position.y = position.y+(position.height/2);
     board.position.borderAlpha = board.position.bodyAlpha = 0;
     fadeAlpha = 0;
+    cursorLocation = 0;
 }
 
 void ContextBox::close(){
     fadeState = FadeOutText;
     fadeAlpha = 255;
+    cursorLocation = 480;
 }
 
 
@@ -293,6 +304,15 @@ void ContextBox::drawText(const Bitmap & bmp){
         if (count == 0){
             const int color = Bitmap::makeColor(0,255,255);
             vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+            if (context[currentOption]->isAdjustable()){
+                const int triangleSize = 10;
+                int cx = (position.x + startx) - 15;
+                int cy = (int)(locationY + (vFont.getHeight()/FONT_SPACER) / 2 + 2);
+                bmp.triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getLeftColor() );
+
+                cx = (position.x+startx + vFont.textLength(context[currentOption]->getName().c_str()))+15;
+                bmp.triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getRightColor() );
+            }
         } else {
             const int color = Bitmap::makeColor(255,255,255);
             vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
