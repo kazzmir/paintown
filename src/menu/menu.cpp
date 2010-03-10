@@ -83,7 +83,6 @@ Menu::Menu():
 music(""),
 selectSound(""),
 longestTextLength(0),
-motion(0),
 currentDrawState( NoFade ),
 work(new Bitmap(GFX_X, GFX_Y)),
 menuInfo(""),
@@ -91,14 +90,11 @@ parent(0),
 _name(""),
 hasOptions(false),
 removeOption(false),
-//fadeAlpha(0),
-//fadeSpeed(12),
 background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
 option(false),
 selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
-	//backboard.position.radius = 15;
-    contextMenu.position.radius = 15;
+	contextMenu.position.radius = 15;
 	optionInfoTextLocation.x = 320;
 	optionInfoTextLocation.y = 100;
 	menuInfoLocation.x = 320;
@@ -192,30 +188,20 @@ void Menu::load(Token *token) throw (LoadException){
                 clearColor = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
-                //*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
                 *tok >> contextMenu.position.x >> contextMenu.position.y >> contextMenu.position.width >> contextMenu.position.height;
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
-                /*
-                *tok >> r >> g >> b >> backboard.position.bodyAlpha;
-                backboard.position.body = Bitmap::makeColor(r,g,b);
-                */
                 *tok >> r >> g >> b >> contextMenu.position.bodyAlpha;
                 contextMenu.position.body = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "position-border" ) {
                 // This handles the border color of the menu box
                 int r,g,b;
-                /*
-                *tok >> r >> g >> b >> backboard.position.borderAlpha;
-                backboard.position.border = Bitmap::makeColor(r,g,b);
-                */
                 *tok >> r >> g >> b >> contextMenu.position.borderAlpha;
                 contextMenu.position.border = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "fade-speed" ) {
                 // Menu fade in speed
                 int speed;
-                //*tok >> fadeSpeed;
                 *tok >> speed;
                 contextMenu.setFadeSpeed(speed);
             } else if ( *tok == "font" ) {
@@ -271,9 +257,6 @@ void Menu::load(Token *token) throw (LoadException){
         throw LoadException("No name set, the menu should have a name!");
     }
 
-    /*if ( backboard.position.empty() ){
-        throw LoadException("The position for the menu '" + getName() + "' list must be set!");
-    }*/
     if ( contextMenu.position.empty() ){
         throw LoadException("The position for the menu '" + getName() + "' list must be set!");
     }
@@ -347,13 +330,6 @@ void Menu::act(bool &endGame, bool reset){
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
 
     if (inputState[Up]){
-        /*motion -= getFontHeight();
-        selectedOption->setState(MenuOption::Deselected);
-        if (selectedOption > menuOptions.begin()){
-            selectedOption--;
-        } else {
-            selectedOption = menuOptions.end() -1;
-        }*/
         selectedOption->setState(MenuOption::Deselected);
         bool moved = contextMenu.previous();
         selectedOption = menuOptions[contextMenu.getCurrentIndex()];
@@ -366,15 +342,6 @@ void Menu::act(bool &endGame, bool reset){
     }
 
     if (inputState[Down]){
-        /*
-        motion += getFontHeight();
-        selectedOption->setState(MenuOption::Deselected);
-        if (selectedOption < menuOptions.begin()+menuOptions.size()-1){
-            selectedOption++;
-        } else {
-            selectedOption = menuOptions.begin();
-        }*/
-        
         selectedOption->setState(MenuOption::Deselected);
         bool moved = contextMenu.next();
         selectedOption = menuOptions[contextMenu.getCurrentIndex()];
@@ -400,13 +367,6 @@ void Menu::act(bool &endGame, bool reset){
 
     if (inputState[Exit]){
         selectedOption->setState(MenuOption::Deselected);
-        /*
-           if (backSound != ""){
-           Sound * back = Resource::getSound(backSound);
-           back->play();
-           }
-           */
-
         InputManager::waitForRelease(input, Exit);
         
         throw ReturnException();
@@ -417,44 +377,12 @@ void Menu::act(bool &endGame, bool reset){
             selectedOption->setState(MenuOption::Run);
             tryPlaySound(okSound);
             contextMenu.close();
-#if 0
-            // lets run it
-            try{
-                tryPlaySound(okSound);
-                selectedOption->run(endGame);
-            } catch (const ReturnException & re){
-                /* hack to make sure the current menu is drawn properly */
-                if (reset){
-                    //resetFadeInfo();
-                }
-                tryPlaySound(backSound);
-            }
-            selectedOption->setState(MenuOption::Selected);
-            selectedOption->resetAnimations();
-            // Reset music
-            if ( !music.empty() ){
-                MenuGlobals::setMusic(music);
-            }
-#endif
         }
     }
 
     for ( std::vector <MenuOption *>::iterator b = menuOptions.begin() ; b != menuOptions.end(); b++ ){
         (*b)->logic();
-        // Recalculate placement
-        //checkTextLength((*b));
     }
-
-    const double motion_speed = 1.8;
-    if (motion >= motion_speed){
-        motion -= motion_speed;
-    } else if (motion <= -motion_speed){
-        motion += motion_speed;
-    } else {
-        motion = 0;
-    }
-
-    // motion = 0;
 
     // Current option animation logic
     selectedOption->updateAnimations();
@@ -466,9 +394,6 @@ void Menu::act(bool &endGame, bool reset){
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
         (*i)->act();
     }
-
-    // Lets do some logic for the box with text
-    //updateFadeInfo();
 }
 
 void Menu::draw(const Box &area, Bitmap *bmp){
@@ -492,12 +417,7 @@ void Menu::run(){
     double runCounter = 0;
     while( ! endGame ){
         Global::speed_counter = 0;
-        // int game_time = 100;
-        motion = 0;
-
-        // Reset fade stuff
-        //resetFadeInfo();
-
+        
         // Reset animations
         for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
             (*i)->reset();
@@ -721,25 +641,6 @@ void Menu::drawBackground(Bitmap *bmp){
     }
 }
 
-#if 0
-//! Draw board
-void Menu::drawTextBoard(Bitmap *bmp){
-	switch(currentDrawState){
-		case FadeIn : {
-			fadeBox.render( *bmp );
-			break;
-		}
-		case FadeInText:
-		case NoFade:
-		default : {
-			// Our box widget
-			backboard.render(*bmp);
-			break;
-		}
-	}
-}
-#endif
-
 int Menu::getSelectedColor(bool selected){
     if (selected){
         return selectedGradient.current();
@@ -748,143 +649,6 @@ int Menu::getSelectedColor(bool selected){
         return white;
     }
 }
-
-#if 0
-//! Draw text
-void Menu::drawText(const Box &area, Bitmap *bmp){
-    const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
-    const double spacing = 1.3;
-
-    const int displayTotal = (int)((area.position.height / (int)(vFont.getHeight()/spacing)) % 2 ==0 ? area.position.height / (vFont.getHeight()/spacing) - 1 : backboard.position.height / (vFont.getHeight()/spacing)) + 2;
-    const int fromMiddle = (displayTotal - 1)/2;
-    const int starty = (int)((area.position.height/2)-(((vFont.getHeight()/spacing) * displayTotal)/2));
-
-    std::vector <MenuOption *>::iterator beginIter = menuOptions.begin();
-    std::vector <MenuOption *>::iterator endIter = menuOptions.end();
-
-    int middle = 0;
-    int currentCounter = 0;
-
-    selectedGradient.update();
-
-    /*
-    int optionAlphaIncrements = 250 / (fromMiddle + 1);
-    int optionAlpha = optionAlphaIncrements;
-    */
-
-    for (int i = 0; beginIter != endIter; ++beginIter, ++i){
-        if (beginIter == selectedOption){
-            middle = i;
-            break;
-        }
-    }
-
-    currentCounter = middle - fromMiddle;
-    if ( currentCounter < 0 ){
-        currentCounter = (menuOptions.size()) + currentCounter;
-    }
-
-
-    for (int i=0;i<displayTotal;++i){
-        std::vector <MenuOption *>::iterator iterOption = menuOptions.begin() + currentCounter % menuOptions.size();
-        const int startx = (area.position.width/2)-(vFont.textLength((*iterOption)->getText().c_str())/2);
-
-        // const unsigned int color = ((*iterOption)->getState() == MenuOption::Selected) ? yellow : white;
-        const unsigned int color = getSelectedColor((*iterOption)->getState() == MenuOption::Selected);
-
-        int distance;
-        if (i > fromMiddle){
-            distance = i - fromMiddle;
-        } else {
-            distance = fromMiddle - i;
-        }
-
-        // distance = (currentCounter + middle) % (fromMiddle);
-
-        // printf("counter %d distance %d middle %d\n", currentCounter, distance, middle);
-        double normal = (double) distance / (double) fromMiddle;
-        int textAlpha = (int)(255.0 - 164.0 * normal * normal);
-
-	if( textAlpha < 0 && (displayTotal == 1 || displayTotal == 2 )){
-	  textAlpha = 255;
-	} else if (textAlpha < 0){
-            textAlpha = 25;
-        } else if (textAlpha > 255){
-            textAlpha = 255;
-        }
-
-        int text_x = area.position.x + startx;
-        int text_y = (int)((area.position.y + starty + i * vFont.getHeight()/spacing) + motion);
-
-        switch (currentDrawState){
-            case FadeIn : {
-                break;
-            }
-            case FadeInText : {
-                Bitmap::transBlender( 0, 0, 0, fadeAlpha );
-                bmp->drawingMode( Bitmap::MODE_TRANS );
-                if (iterOption == selectedOption) {
-                    switch((*iterOption)->getType()) {
-                        case MenuOption::AdjustableOption : {
-                            const int triangleSize = 10;
-                            int cx = (area.position.x + startx) - 15;
-                            int cy = (int)(text_y + (vFont.getHeight()/spacing) / 2 + 2);
-                            bmp->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
-
-                            cx = (area.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
-                            bmp->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
-                            break;
-                            }
-                        case MenuOption::Option:
-                        default: {
-                            break;
-                        }
-                    }
-                }
-
-                int alpha = (int)(textAlpha * fadeAlpha / 255.0);
-                Bitmap::transBlender(0, 0, 0, alpha);
-                vFont.printf(text_x, text_y, color, *bmp, (*iterOption)->getText(), 0 );
-                bmp->drawingMode( Bitmap::MODE_SOLID );
-                break;
-            }
-            case NoFade:
-            default: {
-                if ( iterOption == selectedOption ) {
-                    switch((*iterOption)->getType()) {
-                        case MenuOption::AdjustableOption : {
-                            const int triangleSize = 10;
-                            int cx = (area.position.x + startx) - 15;
-                            int cy = (int)(text_y + (vFont.getHeight()/spacing) / 2 + 2);
-                            bmp->triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getLeftAdjustColor() );
-
-                            cx = (area.position.x+startx + vFont.textLength((*iterOption)->getText().c_str()))+15;
-                            bmp->triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, (*iterOption)->getRightAdjustColor() );
-                            break;
-                        }
-                        case MenuOption::Option:
-                        default: {
-                            break;
-                        }
-                    }
-                }
-
-                // Global::debug(1) << "menu option '" << (*iterOption)->getText() << "' at " << text_x << ", " << text_y << " in color " << color << " alpha " << textAlpha << endl;
-
-                Bitmap::transBlender(0, 0, 0, textAlpha);
-                bmp->drawingMode( Bitmap::MODE_TRANS );
-                vFont.printf(text_x, text_y, color, *bmp, (*iterOption)->getText(), 0 );
-                bmp->drawingMode( Bitmap::MODE_SOLID );
-                break;
-            }
-        }
-
-        currentCounter = currentCounter + 1;
-
-    }
-}
-
-#endif
 
 // Draw info box
 void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp ){
@@ -923,13 +687,9 @@ void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *
             area.position.height = height;
             area.position.x = location.x - (area.position.width / 2);
             area.position.y = location.y - (area.position.height / 2);
-            // area.position.body = backboard.position.body;
             area.position.body = Bitmap::makeColor(32,32,0);
-            //area.position.bodyAlpha = backboard.position.bodyAlpha;
             area.position.bodyAlpha = contextMenu.position.bodyAlpha;
-            //area.position.border = backboard.position.border;
             area.position.border = contextMenu.position.border;
-            //area.position.borderAlpha = backboard.position.borderAlpha;
             area.position.border = contextMenu.position.borderAlpha;
 
             // Draw box

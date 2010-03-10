@@ -55,9 +55,6 @@ public:
     /*! Draw */
     virtual void draw(const Gui::Box &area, Bitmap *bmp);
 
-    //! Draw text
-    //virtual void drawText(const Gui::Box &area, Bitmap *bmp);
-
     /*! run as it's own menu */
     virtual void run();
 
@@ -113,10 +110,6 @@ public:
     /* finish initializing stuff for options */
     void setupOptions();
 
-    //! Area for placement of option list
-    //Gui::Box backboard;
-    //
-
     //! Set height of context menu
     virtual inline void setMenuHeight(int height){
         this->contextMenu.position.height = height;
@@ -140,7 +133,6 @@ public:
     /* hack to make tab menu work */
     MenuOption * selectedOption;
 protected:
-    double motion;
     //! Animations
     std::vector <MenuAnimation *>backgroundAnimations;
     std::vector <MenuAnimation *>foregroundAnimations;
@@ -162,15 +154,6 @@ protected:
 
     //! Draw background
     void drawBackground(Bitmap *work);
-
-    //! Reset fade data
-    //void resetFadeInfo();
-
-    //! Do fade logic
-    //void updateFadeInfo();
-
-    //! Draw board
-    //void drawTextBoard(Bitmap *work);
 
     //! Draw info box
     void drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp );
@@ -201,14 +184,6 @@ private:
 
     //! Cleanup options to remove omited items
     void optionCleanup();
-
-    //! Fade alpha
-    //int fadeAlpha;
-
-    //! Fade speed
-    //int fadeSpeed;
-
-    //Gui::Box fadeBox;
 
     //! Set background for this menu
     Bitmap *background;
