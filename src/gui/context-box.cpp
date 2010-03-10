@@ -77,7 +77,7 @@ void ContextBox::render(const Bitmap & work){
 }
 
 bool ContextBox::next(){
-    if (fadeState != Active){
+    if (fadeState == FadeOutText || fadeState == FadeOutBox){
 	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
@@ -90,7 +90,7 @@ bool ContextBox::next(){
     return true;
 }
 bool ContextBox::previous(){
-    if (fadeState != Active){
+    if (fadeState == FadeOutText || fadeState == FadeOutBox){
 	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
