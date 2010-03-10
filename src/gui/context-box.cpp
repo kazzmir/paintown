@@ -4,6 +4,17 @@
 #include "util/font.h"
 
 static const double FONT_SPACER = 1.3;
+static const int GradientMax = 50;
+
+static int selectedGradientStart(){
+    static int color = Bitmap::makeColor(19, 167, 168);
+    return color;
+}
+
+static int selectedGradientEnd(){
+    static int color = Bitmap::makeColor(27, 237, 239);
+    return color;
+}
 
 using namespace std;
 using namespace Gui;
@@ -31,11 +42,13 @@ fadeSpeed(12),
 fadeAlpha(0),
 cursorCenter(0),
 cursorLocation(0),
-scrollWait(4){
+scrollWait(4),
+selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
 }
 ContextBox::ContextBox( const ContextBox & copy ):
 current(0),
-fadeState(NotActive){
+fadeState(NotActive),
+selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
     this->context = copy.context;
     this->font = copy.font;
     this->fontWidth = copy.fontWidth;
@@ -69,6 +82,9 @@ void ContextBox::act(){
 
     // Calculate text info
     calculateText();
+    
+    // Update gradient
+    selectedGradient.update();
 }
 
 void ContextBox::render(const Bitmap & work){
@@ -302,7 +318,7 @@ void ContextBox::drawText(const Bitmap & bmp){
     while (locationY < position.getX2() + vFont.getHeight()){
         const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
         if (count == 0){
-            const int color = Bitmap::makeColor(0,255,255);
+            const int color = selectedGradient.current();
             vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
             if (context[currentOption]->isAdjustable()){
                 const int triangleSize = 10;
@@ -352,3 +368,4 @@ void ContextBox::drawText(const Bitmap & bmp){
     Bitmap::drawingMode( Bitmap::MODE_SOLID );
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
+

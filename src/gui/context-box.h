@@ -7,6 +7,8 @@
 #include "gui/widget.h"
 #include "gui/box.h"
 
+#include "util/gradient.h"
+
 namespace Gui{
     
 class ContextItem{
@@ -116,6 +118,9 @@ class ContextBox : public Widget{
     int cursorLocation;
     //! scroll wait
     int scrollWait;
+    
+    //! Gradient for selected cursor
+    Effects::Gradient selectedGradient;
 };
 
 }
