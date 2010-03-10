@@ -355,12 +355,12 @@ void Menu::act(bool &endGame, bool reset){
             selectedOption = menuOptions.end() -1;
         }*/
         selectedOption->setState(MenuOption::Deselected);
-        contextMenu.previous();
+        bool moved = contextMenu.previous();
         selectedOption = menuOptions[contextMenu.getCurrentIndex()];
         selectedOption->setState(MenuOption::Selected);
         selectedOption->resetAnimations();
 
-        if (menuOptions.size() > 1){
+        if (moved && menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
         }
     }
@@ -376,12 +376,12 @@ void Menu::act(bool &endGame, bool reset){
         }*/
         
         selectedOption->setState(MenuOption::Deselected);
-        contextMenu.next();
+        bool moved = contextMenu.next();
         selectedOption = menuOptions[contextMenu.getCurrentIndex()];
         selectedOption->setState(MenuOption::Selected);
         selectedOption->resetAnimations();
 
-        if (menuOptions.size() > 1){
+        if (moved && menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
         }
     }
@@ -415,6 +415,9 @@ void Menu::act(bool &endGame, bool reset){
     if (inputState[Select]){
         if (selectedOption->isRunnable()){
             selectedOption->setState(MenuOption::Run);
+            tryPlaySound(okSound);
+            contextMenu.close();
+#if 0
             // lets run it
             try{
                 tryPlaySound(okSound);
@@ -432,6 +435,7 @@ void Menu::act(bool &endGame, bool reset){
             if ( !music.empty() ){
                 MenuGlobals::setMusic(music);
             }
+#endif
         }
     }
 
@@ -510,8 +514,12 @@ void Menu::run(){
         // Set font and fade in
         contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
         contextMenu.open();
+        
+        done = false;
+        
+        bool requestsReturn = false;
 
-        while ( ! done && selectedOption->getState() != MenuOption::Run ){
+        while ( !done && contextMenu.isActive() ){
 
             bool draw = false;
 
@@ -525,22 +533,19 @@ void Menu::run(){
                 while ( runCounter >= 1.0 ){
                     runCounter -= 1;
                     InputManager::poll();
-                    act(endGame);
+                    try{
+                        act(endGame);
+                    } catch (const ReturnException &ex){
+                        done = requestsReturn = true;
+                    }
+                    if (selectedOption->getState() == MenuOption::Run){
+                        done = true;
+                    }
                     contextMenu.act();
                 }
 
                 Global::speed_counter = 0;
             }
-
-            /*
-            while ( Global::second_counter > 0 ){
-                game_time--;
-                Global::second_counter--;
-                if ( game_time < 0 ){
-                    game_time = 0;
-                }
-            }
-            */
 
             if ( draw && selectedOption->getState() != MenuOption::Run ){
                 // Draw
@@ -553,15 +558,7 @@ void Menu::run(){
                 }
                 // Draw any misc stuff in the background of the menu of selected object 
                 selectedOption->drawBelow(work);
-                // Draw text board
-                //drawTextBoard(work);
-                // Draw text
-                // Set clipping so that text won't go beyond it's boundaries
-                /*
-                work->setClipRect(backboard.position.x+2, backboard.position.y+2,backboard.position.getX2()-2,backboard.position.getY2()-2);
-                drawText(backboard, work);
-                work->setClipRect(0, 0, work->getWidth(), work->getHeight());
-                */
+                // Draw menu
                 contextMenu.render(*work);
                 // Draw option info text
                 drawInfoBox(selectedOption->getInfoText(), optionInfoTextLocation, work);
@@ -583,10 +580,23 @@ void Menu::run(){
             }
 
             done |= endGame;
-
-            /* can we move the check for ESC to act() ? */
         }
-
+        // Check if requesting return
+        if (requestsReturn){
+            throw ReturnException();
+        }
+        // lets run it
+        try{
+            selectedOption->run(endGame);
+        } catch (const ReturnException & re){
+            tryPlaySound(backSound);
+        }
+        selectedOption->setState(MenuOption::Selected);
+        selectedOption->resetAnimations();
+        // Reset music
+        if ( !music.empty() ){
+            MenuGlobals::setMusic(music);
+        }
         // Reset it's state
         selectedOption->setState(MenuOption::Selected);
         if ( !selectSound.empty() ){
@@ -676,12 +686,6 @@ void Menu::setFontHeight(int h){
 //! set new font menu wide
 void Menu::setFont(const std::string &font, int w, int h){
     if (Util::exists(font) == true){
-        /*std::map<std::string, Menu *>::iterator begin = menus.begin();
-        std::map<std::string, Menu *>::iterator end = menus.end();
-
-        for ( ;begin!=end;++begin ){
-            begin->second->longestTextLength = Font::getFont(font, w, h).textLength(begin->second->menuOptions[0]->getText().c_str());
-        }*/
         sharedFont = font;
         sharedFontWidth = w;
         sharedFontHeight = h;
@@ -707,74 +711,7 @@ void Menu::checkTextLength(MenuOption *opt){
 		}
 	}
 }
-#if 0
-//! Reset fade info
-void Menu::resetFadeInfo(){
-	// Set the fade stuff
-	currentDrawState = FadeIn;
-	fadeBox.position = backboard.position;
-	fadeBox.position.width = fadeBox.position.height = 0;
-	fadeBox.position.x = backboard.position.x+(backboard.position.width/2);
-	fadeBox.position.y = backboard.position.y+(backboard.position.height/2);
-	fadeAlpha = 0;
-}
-#endif
-#if 0
-//! Do fade logic
-void Menu::updateFadeInfo(){
-     // Lets do some logic for the box with text
-    switch ( currentDrawState ){
-	case FadeIn : {
-	    if (fadeBox.position.x> backboard.position.x){
-		fadeBox.position.x -= fadeSpeed;
-	    } else if ( fadeBox.position.x < backboard.position.x ){
-		fadeBox.position.x = backboard.position.x;
-	    }
 
-	    if (fadeBox.position.y > backboard.position.y){
-		fadeBox.position.y -= fadeSpeed;
-	    } else if (fadeBox.position.y<backboard.position.y){
-		fadeBox.position.y = backboard.position.y;
-	    }
-
-	    if (fadeBox.position.width<backboard.position.width){
-		fadeBox.position.width += (fadeSpeed*2);
-	    } else if (fadeBox.position.width>backboard.position.width){
-		fadeBox.position.width = backboard.position.width;
-	    }
-
-	    if (fadeBox.position.height<backboard.position.height){
-		fadeBox.position.height += (fadeSpeed*2);
-	    } else if (fadeBox.position.height>backboard.position.height){
-		fadeBox.position.height = backboard.position.height;
-	    }
-
-	    if (fadeBox.position == backboard.position){
-		currentDrawState = FadeInText;
-	    }
-
-	    break;
-	}
-	case FadeInText : {
-	    if (fadeAlpha < 255){
-		fadeAlpha += (fadeSpeed+2);
-	    }
-
-	    if (fadeAlpha >= 255){
-		fadeAlpha = 255;
-		currentDrawState = NoFade;
-	    }
-	    break;
-	}
-	case NoFade : {
-	    break;
-	}
-	default : {
-	    break;
-	}
-    }
-}
-#endif
 void Menu::drawBackground(Bitmap *bmp){
     Bitmap *temp = getBackground();
     if ( !temp ){
@@ -783,6 +720,7 @@ void Menu::drawBackground(Bitmap *bmp){
 	temp->Stretch(*bmp);
     }
 }
+
 #if 0
 //! Draw board
 void Menu::drawTextBoard(Bitmap *bmp){

@@ -3,6 +3,8 @@
 #include "gui/context-box.h"
 #include "util/font.h"
 
+static const double FONT_SPACER = 1.3;
+
 using namespace std;
 using namespace Gui;
 
@@ -65,31 +67,31 @@ void ContextBox::render(const Bitmap & work){
     drawText(work);
 }
 
-void ContextBox::next(){
+bool ContextBox::next(){
     if (fadeState != Active){
-	return;
+	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    const double spacing = 1.3;
-    cursorLocation += vFont.getHeight();
+    cursorLocation += vFont.getHeight()/FONT_SPACER;
     if (current < context.size()-1){
         current++;
     } else {
         current = 0;
     }
+    return true;
 }
-void ContextBox::previous(){
+bool ContextBox::previous(){
     if (fadeState != Active){
-	return;
+	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    const double spacing = 1.3;
-    cursorLocation -= vFont.getHeight();
+    cursorLocation -= vFont.getHeight()/FONT_SPACER;
     if (current > 0){
         current--;
     } else {
         current = context.size()-1;
     }
+    return true;
 }
 void ContextBox::adjustLeft(){
 }
@@ -108,6 +110,7 @@ void ContextBox::open(){
 
 void ContextBox::close(){
     fadeState = FadeOutText;
+    fadeAlpha = 255;
 }
 
 
@@ -153,6 +156,7 @@ void ContextBox::doFade(){
 
 	    if (board.position == position){
 		fadeState = FadeInText;
+                fadeAlpha = 0;
 	    }
 
 	    break;
@@ -166,6 +170,18 @@ void ContextBox::doFade(){
 		fadeAlpha = 255;
 		fadeState = Active;
 	    }
+	    if (board.position.borderAlpha < position.borderAlpha){
+                board.position.borderAlpha += (int)(fadeSpeed/4);
+                if (board.position.borderAlpha >= position.borderAlpha){
+                    board.position.borderAlpha = position.borderAlpha;
+                }
+            }
+            if (board.position.bodyAlpha < position.bodyAlpha){
+                board.position.bodyAlpha += (int)(fadeSpeed/4);
+                if (board.position.bodyAlpha >= position.bodyAlpha){
+                    board.position.bodyAlpha = position.bodyAlpha;
+                }
+            }
 	    break;
 	}
 	case FadeOutText: {
@@ -177,6 +193,18 @@ void ContextBox::doFade(){
 		fadeAlpha = 0;
 		fadeState = FadeOutBox;
 	    }
+	    if (board.position.borderAlpha > 0){
+                board.position.borderAlpha -= (int)(fadeSpeed/4);
+                if (board.position.borderAlpha <= 0){
+                    board.position.borderAlpha = 0;
+                }
+            }
+            if (board.position.bodyAlpha < 0){
+                board.position.bodyAlpha -= (int)(fadeSpeed/4);
+                if (board.position.bodyAlpha <= 0){
+                    board.position.bodyAlpha = 0;
+                }
+            }
 	    break;
 	}
 	case FadeOutBox: {
@@ -209,6 +237,19 @@ void ContextBox::doFade(){
 	    if (board.position == RectArea()){
 		fadeState = NotActive;
 	    }
+	    
+	    if (board.position.borderAlpha > 0){
+                board.position.borderAlpha -= (int)(fadeSpeed/2);
+                if (board.position.borderAlpha <= 0){
+                    board.position.borderAlpha = 0;
+                }
+            }
+            if (board.position.bodyAlpha > 0){
+                board.position.bodyAlpha -= (int)(fadeSpeed/2);
+                if (board.position.bodyAlpha <= 0){
+                    board.position.bodyAlpha = 0;
+                }
+            }
 
 	    break;
 	}
@@ -242,11 +283,11 @@ void ContextBox::calculateText(){
 
 void ContextBox::drawText(const Bitmap & bmp){
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    const double spacing = 1.3;
     bmp.setClipRect(board.position.x+2, board.position.y+2, board.position.getX2()-2, board.position.getY2()-2);
     int locationY = cursorLocation;
     int currentOption = current;
     int count = 0;
+    Bitmap::transBlender(0, 0, 0, (int)fadeAlpha/255.0);
     while (locationY < position.getX2() + vFont.getHeight()){
         const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
         if (count == 0){
@@ -264,13 +305,13 @@ void ContextBox::drawText(const Bitmap & bmp){
         if (currentOption == (int)context.size()){
             currentOption = 0;
         }
-        locationY += vFont.getHeight();
+        locationY += vFont.getHeight()/FONT_SPACER;
         count++;
         /*if (context.size() < 2 && count == 2){
             break;
         }*/
     }
-    locationY = cursorLocation - vFont.getHeight();
+    locationY = cursorLocation - vFont.getHeight()/FONT_SPACER;
     currentOption = current;
     currentOption--;
     count = 0;
@@ -282,11 +323,12 @@ void ContextBox::drawText(const Bitmap & bmp){
         const int color = Bitmap::makeColor(255,255,255);
         vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
         currentOption--;
-        locationY -= vFont.getHeight();
+        locationY -= vFont.getHeight()/FONT_SPACER;
         count++;
         /*if (context.size() < 2 && count == 1){
             break;
         }*/
     }
+    Bitmap::drawingMode( Bitmap::MODE_SOLID );
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
