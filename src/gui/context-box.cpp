@@ -309,6 +309,9 @@ void ContextBox::calculateText(){
 }
 
 void ContextBox::drawText(const Bitmap & bmp){
+    if (context.empty()){
+        return;
+    }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     bmp.setClipRect(board.position.x+2, board.position.y+2, board.position.getX2()-2, board.position.getY2()-2);
     int locationY = cursorLocation;

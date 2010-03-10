@@ -348,6 +348,10 @@ void TabMenu::run(){
         (*i)->reset();
     }
 
+    // Set font and fade in
+    contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
+    contextMenu.open();
+
     while (!done){
 
         bool draw = false;
@@ -467,6 +471,7 @@ void TabMenu::run(){
 
                 // Lets do some logic for the box with text
                 //updateFadeInfo();
+                contextMenu.act();
 
                 if (scrollCounter == 0 && !closeFloat(totalOffset, targetOffset)){
                     totalOffset = (totalOffset + targetOffset) / 2;
@@ -494,6 +499,7 @@ void TabMenu::run(){
 
             // Draw text board
             //drawTextBoard(work);
+            contextMenu.render(*work);
 
             // Menus
             if (currentDrawState == NoFade){
@@ -541,6 +547,7 @@ void TabMenu::drawMenus(Bitmap *bmp){
             int y2 = (backboard.y+backboard.height)-(backboard.radius/2);
             bmp->setClipRect(x1, y1, x2, y2);
             //tab->menu.drawText(tab->snapPosition,bmp);
+            tab->menu.draw(tab->snapPosition,bmp);
             bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
         }
         startx += incrementx;
