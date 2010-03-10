@@ -97,7 +97,7 @@ bool ContextBox::next(){
 	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    cursorLocation += vFont.getHeight()/FONT_SPACER;
+    cursorLocation += (int)(vFont.getHeight()/FONT_SPACER);
     if (current < context.size()-1){
         current++;
     } else {
@@ -110,7 +110,7 @@ bool ContextBox::previous(){
 	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    cursorLocation -= vFont.getHeight()/FONT_SPACER;
+    cursorLocation -= (int)(vFont.getHeight()/FONT_SPACER);
     if (current > 0){
         current--;
     } else {
@@ -314,10 +314,11 @@ void ContextBox::drawText(const Bitmap & bmp){
     int locationY = cursorLocation;
     int currentOption = current;
     int count = 0;
-    Bitmap::transBlender(0, 0, 0, (int)fadeAlpha/255.0);
     while (locationY < position.getX2() + vFont.getHeight()){
         const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
         if (count == 0){
+            Bitmap::transBlender(0, 0, 0, fadeAlpha);
+            Bitmap::drawingMode( Bitmap::MODE_TRANS );
             const int color = selectedGradient.current();
             vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
             if (context[currentOption]->isAdjustable()){
@@ -329,9 +330,17 @@ void ContextBox::drawText(const Bitmap & bmp){
                 cx = (position.x+startx + vFont.textLength(context[currentOption]->getName().c_str()))+15;
                 bmp.triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getRightColor() );
             }
+            Bitmap::drawingMode(Bitmap::MODE_SOLID);
         } else {
+            int textAlpha = fadeAlpha - (count * 35);
+            if (textAlpha < 0){
+                textAlpha = 0;
+            }
+            Bitmap::transBlender(0, 0, 0, textAlpha);
+            Bitmap::drawingMode( Bitmap::MODE_TRANS );
             const int color = Bitmap::makeColor(255,255,255);
             vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+            Bitmap::drawingMode( Bitmap::MODE_SOLID );
         }
         if (context.size() == 1){
             bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
@@ -341,13 +350,13 @@ void ContextBox::drawText(const Bitmap & bmp){
         if (currentOption == (int)context.size()){
             currentOption = 0;
         }
-        locationY += vFont.getHeight()/FONT_SPACER;
+        locationY += (int)(vFont.getHeight()/FONT_SPACER);
         count++;
         /*if (context.size() < 2 && count == 2){
             break;
         }*/
     }
-    locationY = cursorLocation - vFont.getHeight()/FONT_SPACER;
+    locationY = cursorLocation - (int)(vFont.getHeight()/FONT_SPACER);
     currentOption = current;
     currentOption--;
     count = 0;
@@ -356,16 +365,22 @@ void ContextBox::drawText(const Bitmap & bmp){
             currentOption = context.size()-1;
         }
         const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
+        int textAlpha = fadeAlpha - (count * 35);
+        if (textAlpha < 0){
+            textAlpha = 0;
+        }
+        Bitmap::transBlender(0, 0, 0, textAlpha);
+        Bitmap::drawingMode( Bitmap::MODE_TRANS );
         const int color = Bitmap::makeColor(255,255,255);
         vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+        Bitmap::drawingMode( Bitmap::MODE_SOLID );
         currentOption--;
-        locationY -= vFont.getHeight()/FONT_SPACER;
+        locationY -= (int)(vFont.getHeight()/FONT_SPACER);
         count++;
         /*if (context.size() < 2 && count == 1){
             break;
         }*/
     }
-    Bitmap::drawingMode( Bitmap::MODE_SOLID );
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
 
