@@ -138,7 +138,7 @@ protected:
     std::vector <MenuOption *> menuOptions;
 public:
     /* hack to make tab menu work */
-    std::vector <MenuOption *>::iterator selectedOption;
+    MenuOption * selectedOption;
 protected:
     double motion;
     //! Animations

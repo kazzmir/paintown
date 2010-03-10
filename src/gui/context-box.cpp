@@ -102,6 +102,7 @@ void ContextBox::open(){
     board.position.width = board.position.height = 0;
     board.position.x = position.x+(position.width/2);
     board.position.y = position.y+(position.height/2);
+    board.position.borderAlpha = board.position.bodyAlpha = 0;
     fadeAlpha = 0;
 }
 
@@ -136,6 +137,19 @@ void ContextBox::doFade(){
 	    } else if (board.position.height > position.height){
 		board.position.height = position.height;
 	    }
+	    
+	    if (board.position.borderAlpha < position.borderAlpha){
+                board.position.borderAlpha += (int)(fadeSpeed/2);
+                if (board.position.borderAlpha >= position.borderAlpha){
+                    board.position.borderAlpha = position.borderAlpha;
+                }
+            }
+            if (board.position.bodyAlpha < position.bodyAlpha){
+                board.position.bodyAlpha += (int)(fadeSpeed/2);
+                if (board.position.bodyAlpha >= position.bodyAlpha){
+                    board.position.bodyAlpha = position.bodyAlpha;
+                }
+            }
 
 	    if (board.position == position){
 		fadeState = FadeInText;
@@ -229,7 +243,7 @@ void ContextBox::calculateText(){
 void ContextBox::drawText(const Bitmap & bmp){
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     const double spacing = 1.3;
-    bmp.setClipRect(position.x+2, position.y+2, position.getX2()-2, position.getY2()-2);
+    bmp.setClipRect(board.position.x+2, board.position.y+2, board.position.getX2()-2, board.position.getY2()-2);
     int locationY = cursorLocation;
     int currentOption = current;
     int count = 0;

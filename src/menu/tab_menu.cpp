@@ -439,7 +439,7 @@ void TabMenu::run(){
                         (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
                     } catch (const ReturnException & re){
                         (*currentTab)->running = false;
-                        (*(*currentTab)->menu.selectedOption)->setState(MenuOption::Selected);
+                        (*currentTab)->menu.selectedOption->setState(MenuOption::Selected);
                         (*currentTab)->setColors(selectedTabInfo, selectedFontColor);
                     }
                 }

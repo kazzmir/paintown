@@ -314,10 +314,9 @@ void Menu::setupOptions(){
     }
 
     // Set initial location
-    selectedOption = menuOptions.begin();
-    menuOptions.front()->setState(MenuOption::Selected);
-
     contextMenu.setList(toContextList(menuOptions));
+    selectedOption = menuOptions[contextMenu.getCurrentIndex()];
+    selectedOption->setState(MenuOption::Selected);
 
 }
 
@@ -348,55 +347,59 @@ void Menu::act(bool &endGame, bool reset){
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
 
     if (inputState[Up]){
-        motion -= getFontHeight();
-        (*selectedOption)->setState(MenuOption::Deselected);
+        /*motion -= getFontHeight();
+        selectedOption->setState(MenuOption::Deselected);
         if (selectedOption > menuOptions.begin()){
             selectedOption--;
         } else {
             selectedOption = menuOptions.end() -1;
-        }
-
-        (*selectedOption)->setState(MenuOption::Selected);
-        (*selectedOption)->resetAnimations();
+        }*/
+        selectedOption->setState(MenuOption::Deselected);
+        contextMenu.previous();
+        selectedOption = menuOptions[contextMenu.getCurrentIndex()];
+        selectedOption->setState(MenuOption::Selected);
+        selectedOption->resetAnimations();
 
         if (menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
         }
-        contextMenu.previous();
     }
 
     if (inputState[Down]){
+        /*
         motion += getFontHeight();
-        (*selectedOption)->setState(MenuOption::Deselected);
+        selectedOption->setState(MenuOption::Deselected);
         if (selectedOption < menuOptions.begin()+menuOptions.size()-1){
             selectedOption++;
         } else {
             selectedOption = menuOptions.begin();
-        }
-
-        (*selectedOption)->setState(MenuOption::Selected);
-        (*selectedOption)->resetAnimations();
+        }*/
+        
+        selectedOption->setState(MenuOption::Deselected);
+        contextMenu.next();
+        selectedOption = menuOptions[contextMenu.getCurrentIndex()];
+        selectedOption->setState(MenuOption::Selected);
+        selectedOption->resetAnimations();
 
         if (menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
         }
-        contextMenu.next();
     }
 
     if (inputState[Left]){
-        if ((*selectedOption)->leftKey()){
+        if (selectedOption->leftKey()){
             /* ??? */
         }
     }
 
     if (inputState[Right]){
-        if ((*selectedOption)->rightKey()){
+        if (selectedOption->rightKey()){
             /* ??? */
         }
     }
 
     if (inputState[Exit]){
-        (*selectedOption)->setState(MenuOption::Deselected);
+        selectedOption->setState(MenuOption::Deselected);
         /*
            if (backSound != ""){
            Sound * back = Resource::getSound(backSound);
@@ -410,12 +413,12 @@ void Menu::act(bool &endGame, bool reset){
     }
 
     if (inputState[Select]){
-        if ((*selectedOption)->isRunnable()){
-            (*selectedOption)->setState(MenuOption::Run);
+        if (selectedOption->isRunnable()){
+            selectedOption->setState(MenuOption::Run);
             // lets run it
             try{
                 tryPlaySound(okSound);
-                (*selectedOption)->run(endGame);
+                selectedOption->run(endGame);
             } catch (const ReturnException & re){
                 /* hack to make sure the current menu is drawn properly */
                 if (reset){
@@ -423,8 +426,8 @@ void Menu::act(bool &endGame, bool reset){
                 }
                 tryPlaySound(backSound);
             }
-            (*selectedOption)->setState(MenuOption::Selected);
-            (*selectedOption)->resetAnimations();
+            selectedOption->setState(MenuOption::Selected);
+            selectedOption->resetAnimations();
             // Reset music
             if ( !music.empty() ){
                 MenuGlobals::setMusic(music);
@@ -435,7 +438,7 @@ void Menu::act(bool &endGame, bool reset){
     for ( std::vector <MenuOption *>::iterator b = menuOptions.begin() ; b != menuOptions.end(); b++ ){
         (*b)->logic();
         // Recalculate placement
-        checkTextLength((*b));
+        //checkTextLength((*b));
     }
 
     const double motion_speed = 1.8;
@@ -450,7 +453,7 @@ void Menu::act(bool &endGame, bool reset){
     // motion = 0;
 
     // Current option animation logic
-    (*selectedOption)->updateAnimations();
+    selectedOption->updateAnimations();
 
     // Animations
     for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
@@ -475,8 +478,8 @@ void Menu::run(){
         return;
     }
 
-    selectedOption = menuOptions.begin();
-    menuOptions.front()->setState(MenuOption::Selected);
+    selectedOption = menuOptions[contextMenu.getCurrentIndex()];
+    selectedOption->setState(MenuOption::Selected);
 
     if ( !selectSound.empty() ){
         MenuGlobals::setSelectSound(selectSound);
@@ -508,7 +511,7 @@ void Menu::run(){
         contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
         contextMenu.open();
 
-        while ( ! done && (*selectedOption)->getState() != MenuOption::Run ){
+        while ( ! done && selectedOption->getState() != MenuOption::Run ){
 
             bool draw = false;
 
@@ -539,7 +542,7 @@ void Menu::run(){
             }
             */
 
-            if ( draw && (*selectedOption)->getState() != MenuOption::Run ){
+            if ( draw && selectedOption->getState() != MenuOption::Run ){
                 // Draw
 
                 // Do the background
@@ -549,7 +552,7 @@ void Menu::run(){
                     (*i)->draw(work);
                 }
                 // Draw any misc stuff in the background of the menu of selected object 
-                (*selectedOption)->drawBelow(work);
+                selectedOption->drawBelow(work);
                 // Draw text board
                 //drawTextBoard(work);
                 // Draw text
@@ -561,7 +564,7 @@ void Menu::run(){
                 */
                 contextMenu.render(*work);
                 // Draw option info text
-                drawInfoBox((*selectedOption)->getInfoText(), optionInfoTextLocation, work);
+                drawInfoBox(selectedOption->getInfoText(), optionInfoTextLocation, work);
                 // Draw menu info text
                 drawInfoBox(menuInfo, menuInfoLocation, work);
                 // Draw foreground animations
@@ -569,7 +572,7 @@ void Menu::run(){
                     (*i)->draw(work);
                 }
                 // Draw any misc stuff in the foreground of the menu of selected object 
-                (*selectedOption)->drawAbove(work);
+                selectedOption->drawAbove(work);
                 // Finally render to screen
                 work->BlitToScreen();
             }
@@ -585,7 +588,7 @@ void Menu::run(){
         }
 
         // Reset it's state
-        (*selectedOption)->setState(MenuOption::Selected);
+        selectedOption->setState(MenuOption::Selected);
         if ( !selectSound.empty() ){
             MenuGlobals::setSelectSound(selectSound);
         }
