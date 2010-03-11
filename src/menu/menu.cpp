@@ -397,6 +397,7 @@ void Menu::act(bool &endGame, bool reset){
 }
 
 void Menu::draw(const Box &area, Bitmap *bmp){
+    contextMenu.position = area.position;
     contextMenu.render(*bmp);
 }
 

@@ -3,6 +3,7 @@
 
 #include "menu.h"
 #include "gui/box.h"
+#include "gui/popup-box.h"
 #include "return_exception.h"
 #include "input/input-map.h"
 
@@ -58,9 +59,9 @@ class TabMenu : public Menu
 	/*! do logic, draw whatever */
 	void run();
     private:
-    Gui::RectArea tabInfo;
-    Gui::RectArea selectedTabInfo;
-    Gui::RectArea runningTabInfo;
+        Gui::RectArea tabInfo;
+        Gui::RectArea selectedTabInfo;
+        Gui::RectArea runningTabInfo;
 	
 	int fontColor;
 	int selectedFontColor;
@@ -79,8 +80,10 @@ class TabMenu : public Menu
 	// Total lines from options
 	int totalLines;
 
-    void drawMenus(Bitmap *bmp);
+        void drawMenus(Bitmap *bmp);
 	
 	void calculateTabLines();
+        
+        Gui::PopupBox contentArea;
 };
 #endif

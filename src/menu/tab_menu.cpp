@@ -107,6 +107,7 @@ location(0),
 targetOffset(0),
 totalOffset(0),
 totalLines(1){
+    contentArea.position.radius=15;
 }
 
 void TabMenu::load(Token *token) throw (LoadException){
@@ -127,7 +128,7 @@ void TabMenu::load(Token *token) throw (LoadException){
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
                 //*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
-                *tok >> contextMenu.position.x >> contextMenu.position.y >> contextMenu.position.width >> contextMenu.position.height;
+                *tok >> contentArea.position.x >> contentArea.position.y >> contentArea.position.width >> contentArea.position.height;
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
@@ -135,8 +136,8 @@ void TabMenu::load(Token *token) throw (LoadException){
                 *tok >> r >> g >> b >> backboard.position.bodyAlpha;
                 backboard.position.body = Bitmap::makeColor(r,g,b);
                 */
-                *tok >> r >> g >> b >> contextMenu.position.bodyAlpha;
-                contextMenu.position.body = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> contentArea.position.bodyAlpha;
+                contentArea.position.body = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "position-border" ) {
                 // This handles the border color of the menu box
                 int r,g,b;
@@ -144,8 +145,8 @@ void TabMenu::load(Token *token) throw (LoadException){
                 *tok >> r >> g >> b >> backboard.position.borderAlpha;
                 backboard.position.border = Bitmap::makeColor(r,g,b);
                 */
-                *tok >> r >> g >> b >> contextMenu.position.borderAlpha;
-                contextMenu.position.border = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> contentArea.position.borderAlpha;
+                contentArea.position.border = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "tab-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
@@ -200,7 +201,7 @@ void TabMenu::load(Token *token) throw (LoadException){
                 }
             } else if (*tok == "menu"){
                 //MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
-                MenuBox *menu = new MenuBox(contextMenu.position.width, contextMenu.position.height);
+                MenuBox *menu = new MenuBox(contentArea.position.width, contentArea.position.height);
                 if (menu){
                     // To avoid issues
                     menu->menu.setAsOption(true);
@@ -222,6 +223,12 @@ void TabMenu::load(Token *token) throw (LoadException){
                         // set info on the box itself
                         menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
                         menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
+                        menu->menu.getContextMenu().setFont(getFont(),getFontWidth(),getFontHeight());
+                        menu->menu.getContextMenu().open();
+                        menu->menu.getContextMenu().position = contentArea.position;
+                        while(!menu->menu.getContextMenu().isActive()){
+                            menu->menu.getContextMenu().act();
+                        }
                     } else {
                         delete menu;
                     }
@@ -348,9 +355,8 @@ void TabMenu::run(){
         (*i)->reset();
     }
 
-    // Set font and fade in
-    contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
-    contextMenu.open();
+    // fade in
+    contentArea.open();
 
     while (!done){
 
@@ -380,12 +386,12 @@ void TabMenu::run(){
                             currentTab--;
                             location--;
                             //targetOffset+=backboard.position.width;
-                            targetOffset+=contextMenu.position.width;
+                            targetOffset+=contentArea.position.width;
                         } else {
                             currentTab = tabs.end()-1;
                             location=tabs.size()-1;
                             //targetOffset = (location*backboard.position.width) * -1;
-                            targetOffset = (location*contextMenu.position.width) * -1;
+                            targetOffset = (location*contentArea.position.width) * -1;
                         }
                         (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
                     }
@@ -398,7 +404,7 @@ void TabMenu::run(){
                             currentTab++;
                             location++;
                             //targetOffset-=backboard.position.width;
-                            targetOffset-=contextMenu.position.width;
+                            targetOffset-=contentArea.position.width;
                         } else {
                             currentTab = tabs.begin();
                             location = 0;
@@ -471,7 +477,7 @@ void TabMenu::run(){
 
                 // Lets do some logic for the box with text
                 //updateFadeInfo();
-                contextMenu.act();
+                contentArea.act();
 
                 if (scrollCounter == 0 && !closeFloat(totalOffset, targetOffset)){
                     totalOffset = (totalOffset + targetOffset) / 2;
@@ -499,7 +505,7 @@ void TabMenu::run(){
 
             // Draw text board
             //drawTextBoard(work);
-            contextMenu.render(*work);
+            contentArea.render(*work);
 
             // Menus
             if (currentDrawState == NoFade){
@@ -530,7 +536,7 @@ void TabMenu::run(){
 }
 
 void TabMenu::drawMenus(Bitmap *bmp){
-    Gui::RectArea & backboard = contextMenu.position;
+    Gui::RectArea & backboard = contentArea.position;
     const double incrementx = backboard.width;
     double startx = backboard.x + totalOffset;
 
@@ -574,12 +580,12 @@ void TabMenu::drawMenus(Bitmap *bmp){
 
 // Calculate the amount of lines per tabs
 void TabMenu::calculateTabLines(){
-    int tabstartx = contextMenu.position.x;//backboard.position.x;
+    int tabstartx = contentArea.position.x;//backboard.position.x;
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
         const int tabWidth = tab->position.width;
-        if ((tabstartx + tabWidth) > (contextMenu.position.x + contextMenu.position.width)){//(backboard.position.x + backboard.position.width)){
-            tabstartx = contextMenu.position.x;//backboard.position.x;
+        if ((tabstartx + tabWidth) > (contentArea.position.x + contentArea.position.width)){//(backboard.position.x + backboard.position.width)){
+            tabstartx = contentArea.position.x;//backboard.position.x;
             totalLines++;
         }
         tabstartx+=tab->position.width;

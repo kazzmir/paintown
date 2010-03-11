@@ -114,6 +114,11 @@ public:
     virtual inline void setMenuHeight(int height){
         this->contextMenu.position.height = height;
     }
+    
+    //! Get context menu
+    virtual inline Gui::ContextBox & getContextMenu(){
+        return this->contextMenu;
+    }
 
 protected:
     //! Current music
