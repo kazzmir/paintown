@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "gui/widget.h"
-#include "gui/box.h"
+#include "gui/popup-box.h"
 
 #include "util/gradient.h"
 
@@ -65,14 +65,14 @@ class ContextBox : public Widget{
 	virtual inline bool isActive(){
 	    return (this->fadeState != NotActive);
 	}
-    //!set fadespeed
-    virtual inline void setFadeSpeed(int speed){
-        this->fadeSpeed = speed;
-    }
-    //!set fade alpha
-    virtual inline void setFadeAlpha(int alpha){
-        this->fadeAlpha = alpha;
-    }
+        //!set fadespeed
+        virtual inline void setFadeSpeed(int speed){
+            this->fadeSpeed = speed;
+        }
+        //!set fade alpha
+        virtual inline void setFadeAlpha(int alpha){
+            this->fadeAlpha = alpha;
+        }
     private:
 	
 	void doFade();
@@ -83,11 +83,9 @@ class ContextBox : public Widget{
 	
 	enum FadeState{
 	    NotActive,
-	    FadeInBox,
-	    FadeInText,
+	    FadeIn,
 	    Active,
-	    FadeOutText,
-	    FadeOutBox,
+	    FadeOut,
 	};
         //! Current index
         unsigned int current;
@@ -110,17 +108,17 @@ class ContextBox : public Widget{
 	int fadeAlpha;
 	
 	//! Board
-	Box board;
+	PopupBox board;
 	
-    //! The centered position 
-    int cursorCenter;
-    //! Current y coordinate to render text from
-    int cursorLocation;
-    //! scroll wait
-    int scrollWait;
-    
-    //! Gradient for selected cursor
-    Effects::Gradient selectedGradient;
+        //! The centered position 
+        int cursorCenter;
+        //! Current y coordinate to render text from
+        int cursorLocation;
+        //! scroll wait
+        int scrollWait;
+        
+        //! Gradient for selected cursor
+        Effects::Gradient selectedGradient;
 };
 
 }

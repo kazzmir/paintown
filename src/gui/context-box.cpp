@@ -77,6 +77,9 @@ ContextBox & ContextBox::operator=( const ContextBox & copy){
 }
 
 void ContextBox::act(){
+    // update board
+    board.act();
+    
     // do fade
     doFade();
 
@@ -93,7 +96,7 @@ void ContextBox::render(const Bitmap & work){
 }
 
 bool ContextBox::next(){
-    if (fadeState == FadeOutText || fadeState == FadeOutBox){
+    if (fadeState == FadeOut){
 	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
@@ -106,7 +109,7 @@ bool ContextBox::next(){
     return true;
 }
 bool ContextBox::previous(){
-    if (fadeState == FadeOutText || fadeState == FadeOutBox){
+    if (fadeState == FadeOut){
 	return false;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
@@ -124,18 +127,16 @@ void ContextBox::adjustRight(){
 }
 void ContextBox::open(){
     // Set the fade stuff
-    fadeState = FadeInBox;
+    fadeState = FadeIn;
     board.position = position;
-    board.position.width = board.position.height = 0;
-    board.position.x = position.x+(position.width/2);
-    board.position.y = position.y+(position.height/2);
-    board.position.borderAlpha = board.position.bodyAlpha = 0;
+    board.open();
     fadeAlpha = 0;
     cursorLocation = 0;
 }
 
 void ContextBox::close(){
-    fadeState = FadeOutText;
+    fadeState = FadeOut;
+    board.close();
     fadeAlpha = 255;
     cursorLocation = 480;
 }
@@ -143,141 +144,30 @@ void ContextBox::close(){
 
 void ContextBox::doFade(){
     switch ( fadeState ){
-	case FadeInBox: {
-	    if (board.position.x > position.x){
-		board.position.x -= fadeSpeed;
-	    } else if ( board.position.x < position.x ){
-		board.position.x = position.x;
-	    }
-
-	    if (board.position.y > position.y){
-		board.position.y -= fadeSpeed;
-	    } else if (board.position.y < position.y){
-		board.position.y = position.y;
-	    }
-
-	    if (board.position.width < position.width){
-		board.position.width += (fadeSpeed*2);
-	    } else if (board.position.width > position.width){
-		board.position.width = position.width;
-	    }
-
-	    if (board.position.height < position.height){
-		board.position.height += (fadeSpeed*2);
-	    } else if (board.position.height > position.height){
-		board.position.height = position.height;
-	    }
-	    
-	    if (board.position.borderAlpha < position.borderAlpha){
-                board.position.borderAlpha += (int)(fadeSpeed/2);
-                if (board.position.borderAlpha >= position.borderAlpha){
-                    board.position.borderAlpha = position.borderAlpha;
-                }
-            }
-            if (board.position.bodyAlpha < position.bodyAlpha){
-                board.position.bodyAlpha += (int)(fadeSpeed/2);
-                if (board.position.bodyAlpha >= position.bodyAlpha){
-                    board.position.bodyAlpha = position.bodyAlpha;
-                }
-            }
-
-	    if (board.position == position){
-		fadeState = FadeInText;
-                fadeAlpha = 0;
-	    }
-
-	    break;
-	}
-	case FadeInText: {
+	case FadeIn: {
 	    if (fadeAlpha < 255){
 		fadeAlpha += (fadeSpeed+2);
 	    }
 
 	    if (fadeAlpha >= 255){
 		fadeAlpha = 255;
-		fadeState = Active;
+                if (board.isActive()){
+                    fadeState = Active;
+                }
 	    }
-	    if (board.position.borderAlpha < position.borderAlpha){
-                board.position.borderAlpha += (int)(fadeSpeed/4);
-                if (board.position.borderAlpha >= position.borderAlpha){
-                    board.position.borderAlpha = position.borderAlpha;
-                }
-            }
-            if (board.position.bodyAlpha < position.bodyAlpha){
-                board.position.bodyAlpha += (int)(fadeSpeed/4);
-                if (board.position.bodyAlpha >= position.bodyAlpha){
-                    board.position.bodyAlpha = position.bodyAlpha;
-                }
-            }
 	    break;
 	}
-	case FadeOutText: {
+	case FadeOut: {
 	    if (fadeAlpha > 0){
 		fadeAlpha -= (fadeSpeed+2);
 	    }
 
 	    if (fadeAlpha <= 0){
 		fadeAlpha = 0;
-		fadeState = FadeOutBox;
-	    }
-	    if (board.position.borderAlpha > 0){
-                board.position.borderAlpha -= (int)(fadeSpeed/4);
-                if (board.position.borderAlpha <= 0){
-                    board.position.borderAlpha = 0;
+                if (!board.isActive()){
+                    fadeState = NotActive;
                 }
-            }
-            if (board.position.bodyAlpha < 0){
-                board.position.bodyAlpha -= (int)(fadeSpeed/4);
-                if (board.position.bodyAlpha <= 0){
-                    board.position.bodyAlpha = 0;
-                }
-            }
-	    break;
-	}
-	case FadeOutBox: {
-	    const int positionX = position.x+(position.width/2);
-	    const int positionY = position.y+(position.height/2);
-	    if (board.position.x < positionX){
-		board.position.x += fadeSpeed;
-	    } else if ( board.position.x > positionX ){
-		board.position.x = positionX;
 	    }
-
-	    if (board.position.y < positionY){
-		board.position.y += fadeSpeed;
-	    } else if (board.position.y < positionY){
-		board.position.y = positionY;
-	    }
-
-	    if (board.position.width > 0){
-		board.position.width -= (fadeSpeed*2);
-	    } else if (board.position.width < 0){
-		board.position.width = 0;
-	    }
-
-	    if (board.position.height > 0){
-		board.position.height -= (fadeSpeed*2);
-	    } else if (board.position.height < 0){
-		board.position.height = 0;
-	    }
-
-	    if (board.position == RectArea()){
-		fadeState = NotActive;
-	    }
-	    
-	    if (board.position.borderAlpha > 0){
-                board.position.borderAlpha -= (int)(fadeSpeed/2);
-                if (board.position.borderAlpha <= 0){
-                    board.position.borderAlpha = 0;
-                }
-            }
-            if (board.position.bodyAlpha > 0){
-                board.position.bodyAlpha -= (int)(fadeSpeed/2);
-                if (board.position.bodyAlpha <= 0){
-                    board.position.bodyAlpha = 0;
-                }
-            }
-
 	    break;
 	}
 	case Active:
@@ -313,7 +203,7 @@ void ContextBox::drawText(const Bitmap & bmp){
         return;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    bmp.setClipRect(board.position.x+2, board.position.y+2, board.position.getX2()-2, board.position.getY2()-2);
+    bmp.setClipRect(board.getArea().x+2, board.getArea().y+2, board.getArea().getX2()-2, board.getArea().getY2()-2);
     int locationY = cursorLocation;
     int currentOption = current;
     int count = 0;
