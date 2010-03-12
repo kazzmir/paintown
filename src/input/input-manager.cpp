@@ -11,9 +11,12 @@ using namespace std;
 InputManager * InputManager::manager = 0;
 
 InputManager::InputManager():
-capture(0){
+capture(0),
+joystick(NULL){
     manager = this;
-    joystick = Joystick::create();
+    if (Configuration::isJoystickEnabled()){
+        joystick = Joystick::create();
+    }
 }
 
 InputManager::~InputManager(){

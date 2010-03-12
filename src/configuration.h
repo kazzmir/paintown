@@ -92,6 +92,8 @@ public:
     static std::string getCurrentGame();
     static void setCurrentGame(const std::string & str);
 
+    static bool isJoystickEnabled();
+
     static void setStringProperty(const std::string & path, const std::string & value);
     static std::string getStringProperty(const std::string & path, const std::string & defaultValue);
 

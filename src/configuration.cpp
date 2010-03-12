@@ -894,3 +894,7 @@ int Configuration::getMusicVolume(){
 void Configuration::setMusicVolume(int volume){
     musicVolume = volume;
 }
+
+bool Configuration::isJoystickEnabled(){
+    return true;
+}
