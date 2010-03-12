@@ -462,7 +462,7 @@ void TabMenu::run(){
                          * to work just fine without waiting.
                          * anyway, no real harm comes from waiting so just wait.
                          */
-                        InputManager::waitForRelease(input, Tab::Select);
+                        //InputManager::waitForRelease(input, Tab::Select);
                         // Run menu
                         (*currentTab)->running = true;
                         backgroundBuffer.reset();
