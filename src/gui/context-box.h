@@ -73,6 +73,12 @@ class ContextBox : public Widget{
         virtual inline void setFadeAlpha(int alpha){
             this->fadeAlpha = alpha;
         }
+        
+        //! use gradient?
+        virtual inline void setUseGradient(bool useGradient){
+            this->useGradient = useGradient;
+        }
+
     private:
 	
 	void doFade();
@@ -119,6 +125,9 @@ class ContextBox : public Widget{
         
         //! Gradient for selected cursor
         Effects::Gradient selectedGradient;
+
+        //! Use gradient
+        bool useGradient;
 };
 
 }

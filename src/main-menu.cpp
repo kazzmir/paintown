@@ -14,6 +14,7 @@
 #include "shutdown_exception.h"
 #include "util/timedifference.h"
 #include "util/funcs.h"
+#include "util/ftalleg.h"
 #include "util/file-system.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
@@ -229,6 +230,8 @@ int paintown_main( int argc, char ** argv ){
         } catch (const ReloadMenuException & ex){
             Global::debug(1) << "Menu Reload Requested. Restarting...." << endl;
             continue;
+        } catch (const ftalleg::Exception & ex){
+            Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
         } catch (...){
             Global::debug(0) << "Uncaught exception!" << endl;
         }

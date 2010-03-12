@@ -43,7 +43,8 @@ fadeAlpha(0),
 cursorCenter(0),
 cursorLocation(0),
 scrollWait(4),
-selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
+selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()),
+useGradient(true){
 }
 ContextBox::ContextBox( const ContextBox & copy ):
 current(0),
@@ -58,6 +59,7 @@ selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
     this->cursorCenter = copy.cursorCenter;
     this->cursorLocation = copy.cursorLocation;
     this->scrollWait = copy.scrollWait;
+    this->useGradient = copy.useGradient;
 }
 ContextBox::~ContextBox(){
 }
@@ -73,6 +75,7 @@ ContextBox & ContextBox::operator=( const ContextBox & copy){
     this->cursorCenter = copy.cursorCenter;
     this->cursorLocation = copy.cursorLocation;
     this->scrollWait = copy.scrollWait;
+    this->useGradient = copy.useGradient;
     return *this;
 }
 
@@ -203,7 +206,12 @@ void ContextBox::drawText(const Bitmap & bmp){
         return;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    bmp.setClipRect(board.getArea().x+2, board.getArea().y+2, board.getArea().getX2()-2, board.getArea().getY2()-2);
+    const int x1 = board.getArea().x+(board.getArea().radius/2);
+    const int y1 = board.getArea().y+2;//(board.getArea().radius/2);
+    const int x2 = board.getArea().getX2()-(board.getArea().radius/2);
+    const int y2 = board.getArea().getY2()-2;//(board.getArea().radius/2);
+            
+    bmp.setClipRect(x1, y1, x2, y2);
     int locationY = cursorLocation;
     int currentOption = current;
     int count = 0;
@@ -212,7 +220,7 @@ void ContextBox::drawText(const Bitmap & bmp){
         if (count == 0){
             Bitmap::transBlender(0, 0, 0, fadeAlpha);
             Bitmap::drawingMode( Bitmap::MODE_TRANS );
-            const int color = selectedGradient.current();
+            const int color = useGradient ? selectedGradient.current() : selectedGradientStart();
             vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
             if (context[currentOption]->isAdjustable()){
                 const int triangleSize = 10;
