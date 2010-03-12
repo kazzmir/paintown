@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "gui/box.h"
 #include "gui/popup-box.h"
+#include "gui/context-box.h"
 #include "return_exception.h"
 #include "input/input-map.h"
 
@@ -39,7 +40,8 @@ class MenuBox : public Gui::Box{
 	void setColors(const int bodyColor, const int borderColor, const int fontColor);
 	Menu menu;
 	int fontColor;
-    Gui::Box snapPosition;
+        //Gui::Box snapPosition;
+        Gui::ContextBox context;
 	bool running;
 };
 

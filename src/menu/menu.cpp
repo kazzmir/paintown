@@ -300,7 +300,16 @@ void Menu::setupOptions(){
     contextMenu.setList(toContextList(menuOptions));
     selectedOption = menuOptions[contextMenu.getCurrentIndex()];
     selectedOption->setState(MenuOption::Selected);
+    
+    // Set context menu stuff font and fade in
+    contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
+    contextMenu.open();
+    
 
+}
+
+std::vector<Gui::ContextItem *> Menu::getContextList(){
+    return toContextList(menuOptions);
 }
 
 void Menu::load(const Filesystem::AbsolutePath & filename) throw (LoadException){
@@ -394,10 +403,13 @@ void Menu::act(bool &endGame, bool reset){
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
         (*i)->act();
     }
+    
+    // Menu
+    contextMenu.act();
 }
 
-void Menu::draw(const Box &area, Bitmap *bmp){
-    contextMenu.position = area.position;
+void Menu::draw(const Gui::RectArea & area, Bitmap *bmp){
+    contextMenu.position = area;
     contextMenu.render(*bmp);
 }
 
@@ -408,9 +420,6 @@ void Menu::run(){
     if ( menuOptions.empty() ){
         return;
     }
-
-    selectedOption = menuOptions[contextMenu.getCurrentIndex()];
-    selectedOption->setState(MenuOption::Selected);
 
     if ( !selectSound.empty() ){
         MenuGlobals::setSelectSound(selectSound);
@@ -463,7 +472,6 @@ void Menu::run(){
                     if (selectedOption->getState() == MenuOption::Run){
                         done = true;
                     }
-                    contextMenu.act();
                 }
 
                 Global::speed_counter = 0;
@@ -508,19 +516,11 @@ void Menu::run(){
             throw ReturnException();
         }
         // lets run it
-        try{
-            selectedOption->run(endGame);
-        } catch (const ReturnException & re){
-            tryPlaySound(backSound);
-        }
-        selectedOption->setState(MenuOption::Selected);
-        selectedOption->resetAnimations();
+        runOption(endGame);
         // Reset music
         if ( !music.empty() ){
             MenuGlobals::setMusic(music);
         }
-        // Reset it's state
-        selectedOption->setState(MenuOption::Selected);
         if ( !selectSound.empty() ){
             MenuGlobals::setSelectSound(selectSound);
         }
@@ -530,6 +530,35 @@ void Menu::run(){
                 MenuGlobals::popSelectSound();
             }
         }
+    }
+}
+
+void Menu::runOption(bool &endGame){
+    if (selectedOption->getState() == MenuOption::Run){
+        // lets run it
+        try{
+            selectedOption->run(endGame);
+        } catch (const ReturnException & re){
+            tryPlaySound(backSound);
+        }
+        selectedOption->setState(MenuOption::Selected);
+        selectedOption->resetAnimations();
+        
+        // Set font and fade in
+        contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
+        contextMenu.open();
+    }
+}
+
+void Menu::runOption(unsigned int index){
+    if (index >= menuOptions.size()){
+        return;
+    }
+    try{
+        bool endGame = false;
+        menuOptions[index]->run(endGame);
+    } catch (const ReturnException & re){
+        tryPlaySound(backSound);
     }
 }
 

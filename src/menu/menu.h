@@ -53,10 +53,16 @@ public:
     virtual void act(bool &endGame, bool reset = true);
 
     /*! Draw */
-    virtual void draw(const Gui::Box &area, Bitmap *bmp);
+    virtual void draw(const Gui::RectArea &, Bitmap *bmp);
 
     /*! run as it's own menu */
     virtual void run();
+    
+    /*! run option */
+    virtual void runOption(bool &endGame);
+    
+    /*! run option */
+    virtual void runOption(unsigned int index);
 
     /*! Parent */
     virtual void setParent(Menu *menu);
@@ -116,9 +122,7 @@ public:
     }
     
     //! Get context menu
-    virtual inline Gui::ContextBox & getContextMenu(){
-        return this->contextMenu;
-    }
+    virtual std::vector<Gui::ContextItem *> getContextList();
 
 protected:
     //! Current music

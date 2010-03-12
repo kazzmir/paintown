@@ -70,18 +70,21 @@ MenuBox::MenuBox(int w, int h):
 fontColor(Bitmap::makeColor(255,255,255)),
 running(false){
     position.radius=15;
-    snapPosition.position.width = w;
-    snapPosition.position.height = h;
+    context.position.radius = 15;
+    context.position.width = w;
+    context.position.height = h;
+    context.position.borderAlpha = 0;
+    context.position.bodyAlpha = 0;
 }
 
 MenuBox::~MenuBox(){
 }
 
 bool MenuBox::checkVisible(const RectArea &area){
-    return (snapPosition.position.x < area.x + area.width
-	    && snapPosition.position.x + snapPosition.position.width > area.x
-	    && snapPosition.position.y < area.y + area.height
-	    && snapPosition.position.y + snapPosition.position.height > area.y);
+    return (context.position.x < area.x + area.width
+	    && context.position.x + context.position.width > area.x
+	    && context.position.y < area.y + area.height
+	    && context.position.y + context.position.height > area.y);
 }
 
 void MenuBox::setColors (const RectArea &info, const int fontColor){
@@ -223,11 +226,12 @@ void TabMenu::load(Token *token) throw (LoadException){
                         // set info on the box itself
                         menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
                         menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
-                        menu->menu.getContextMenu().setFont(getFont(),getFontWidth(),getFontHeight());
-                        menu->menu.getContextMenu().open();
-                        menu->menu.getContextMenu().position = contentArea.position;
-                        while(!menu->menu.getContextMenu().isActive()){
-                            menu->menu.getContextMenu().act();
+                        menu->context.setFont(getFont(),getFontWidth(),getFontHeight());
+                        menu->context.setList(menu->menu.getContextList());
+                        menu->context.setFadeSpeed(50);
+                        menu->context.open();
+                        while(!menu->context.isActive()){
+                            menu->context.act();
                         }
                     } else {
                         delete menu;
@@ -289,6 +293,8 @@ void TabMenu::load(const Filesystem::AbsolutePath & filename) throw (LoadExcepti
  */
 namespace Tab{
     enum Input{
+        Up,
+        Down,
         Left,
         Right,
         Select,
@@ -314,6 +320,8 @@ void TabMenu::run(){
     int scrollCounter = 0;
 
     InputMap<Tab::Input> input;
+    input.set(Keyboard::Key_UP, 0, true, Tab::Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Tab::Down);
     input.set(Keyboard::Key_H, 0, true, Tab::Left);
     input.set(Keyboard::Key_L, 0, true, Tab::Right);
     input.set(Keyboard::Key_LEFT, 0, true, Tab::Left);
@@ -443,29 +451,44 @@ void TabMenu::run(){
                         InputManager::waitForRelease(input, Tab::Exit);
                         throw ReturnException();
                     }
+                    /* act tabs */
+                    const double incrementx = contentArea.position.width;
+                    double startx = contentArea.position.x + totalOffset;
+                    for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+                        MenuBox *tab = *i;
+                        tab->context.position.x = (int) startx;
+                        tab->context.position.y = contentArea.position.y;
+                        tab->context.position.width = contentArea.position.width;
+                        tab->context.position.height = contentArea.position.height;
+                        tab->context.act();
+                        startx += incrementx;
+                    }
                 } else {
                     try{
-                        (*currentTab)->menu.act(done, false);
+                        if (inputState[Tab::Up]){
+                            (*currentTab)->context.previous();
+                        }
+                        if (inputState[Tab::Down]){
+                            (*currentTab)->context.next();
+                        }
+                        if (inputState[Tab::Select]){
+                            InputManager::waitForRelease(input, Tab::Select);
+                            // Run menu
+                            (*currentTab)->menu.runOption((*currentTab)->context.getCurrentIndex());
+                        }
+
+                        if (inputState[Tab::Exit]){
+                            /* is there a reason to set done = true ? */
+                            InputManager::waitForRelease(input, Tab::Exit);
+                            throw ReturnException();
+                        }
+                        (*currentTab)->context.act();
                         (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
                     } catch (const ReturnException & re){
                         (*currentTab)->running = false;
-                        (*currentTab)->menu.selectedOption->setState(MenuOption::Selected);
                         (*currentTab)->setColors(selectedTabInfo, selectedFontColor);
                     }
                 }
-
-                /*
-                if (inputState[Exit]){
-                    if (!(*currentTab)->running){
-                        done = true;
-                        InputManager::waitForRelease(input, Exit);
-                        throw ReturnException();
-                    } else {
-                        (*currentTab)->running = false;
-                        (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
-                    }
-                }
-                */
 
                 // Animations
                 for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
@@ -503,12 +526,11 @@ void TabMenu::run(){
                 (*i)->draw(work);
             }
 
-            // Draw text board
-            //drawTextBoard(work);
+            // Draw menu area
             contentArea.render(*work);
 
             // Menus
-            if (currentDrawState == NoFade){
+            if (contentArea.isActive()){
                 drawMenus(work);
             }
 
@@ -537,14 +559,9 @@ void TabMenu::run(){
 
 void TabMenu::drawMenus(Bitmap *bmp){
     Gui::RectArea & backboard = contentArea.position;
-    const double incrementx = backboard.width;
-    double startx = backboard.x + totalOffset;
-
     // Drawing menus
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
-        tab->snapPosition.position.x = (int) startx;
-        tab->snapPosition.position.y = backboard.y;
         if (tab->checkVisible(backboard)){
             /* Set clipping rectangle need to know why text isn't clipping */
             int x1 = backboard.x+(backboard.radius/2);
@@ -552,11 +569,10 @@ void TabMenu::drawMenus(Bitmap *bmp){
             int x2 = (backboard.x+backboard.width)-(backboard.radius/2);
             int y2 = (backboard.y+backboard.height)-(backboard.radius/2);
             bmp->setClipRect(x1, y1, x2, y2);
-            //tab->menu.drawText(tab->snapPosition,bmp);
-            tab->menu.draw(tab->snapPosition,bmp);
+            tab->context.render(*bmp);
             bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
         }
-        startx += incrementx;
+        //startx += incrementx;
     }
     const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
     int tabstartx = backboard.x;
