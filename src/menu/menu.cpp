@@ -50,16 +50,120 @@ y(y){
 Point::~Point(){
 }
 
-static int selectedGradientStart(){
-    static int color = Bitmap::makeColor(19, 167, 168);
-    return color;
+InfoBox::InfoBox():
+state(NotActive),
+font(Filesystem::RelativePath(sharedFont)),
+fontWidth(sharedFontWidth),
+fontHeight(sharedFontHeight),
+fadeAlpha(0){
+    popup.setFadeSpeed(10);
+
 }
 
-static int selectedGradientEnd(){
-    static int color = Bitmap::makeColor(27, 237, 239);
-    return color;
+InfoBox::~InfoBox(){
+}
+ 
+void InfoBox::act(){
+    popup.act();
+    
+    switch ( state ){
+        case Opening: {
+            if (fadeAlpha < 255){
+                fadeAlpha += 5;
+            }
+
+            if (fadeAlpha >= 255){
+                fadeAlpha = 255;
+                if (popup.isActive()){
+                    state = Active;
+                }
+            }
+            break;
+        }
+        case Closing: {
+            if (fadeAlpha > 0){
+                fadeAlpha -= 5;
+            }
+
+            if (fadeAlpha <= 0){
+                fadeAlpha = 0;
+                if (!popup.isActive()){
+                    state = NotActive;
+                }
+            }
+            break;
+        }
+        case Active:
+        case NotActive:
+        default:
+            break;
+    }
 }
 
+void InfoBox::render(const Bitmap & bmp){
+    popup.render(bmp);
+    
+    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    
+    const int x1 = popup.getArea().x+(popup.getArea().radius/2);
+    const int y1 = popup.getArea().y+2;
+    const int x2 = popup.getArea().getX2()-(popup.getArea().radius/2);
+    const int y2 = popup.getArea().getY2()-2;
+    bmp.setClipRect(x1, y1, x2, y2);
+    
+    int sy = position.y - 5;
+    for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
+        static int white = Bitmap::makeColor(255,255,255);
+        string & str = *it;
+        Bitmap::transBlender(0, 0, 0, fadeAlpha);
+        Bitmap::drawingMode( Bitmap::MODE_TRANS );
+        vFont.printf(position.x + 5, sy, white, bmp, str, 0 );
+        Bitmap::drawingMode(Bitmap::MODE_SOLID);
+        sy += vFont.getHeight();
+    }
+    bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
+}
+
+void InfoBox::open(){
+    state = Opening;
+    popup.position = position;
+    popup.open();
+    fadeAlpha = 0;
+}
+
+void InfoBox::close(){
+    state = Closing;
+    popup.close();
+}
+
+void InfoBox::setText(const std::string & info){
+    if (info.empty()){
+        return;
+    }
+    text.clear();
+    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    size_t start = 0;
+    size_t last = 0;
+    start = info.find("\n");
+    while (start != string::npos){
+        text.push_back(info.substr(last, start - last));
+        last = start + 1;
+        start = info.find("\n", last);
+    }
+    text.push_back(info.substr(last));
+
+    int maxWidth = 0;
+    int height = 0;
+    for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
+        int w = vFont.textLength((*it).c_str()) + 10;
+        if (w > maxWidth){
+            maxWidth = w;
+        }
+        height += vFont.getHeight();
+    }
+    position.width = maxWidth;
+    position.height = height;
+}
 
 static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> & list){
     std::vector<ContextItem *> contextItems;
@@ -69,13 +173,11 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
     return contextItems;
 }
 
-Menu::Menu(const Filesystem::AbsolutePath & str) throw (LoadException):
-selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
+Menu::Menu(const Filesystem::AbsolutePath & str) throw (LoadException){
     load(str);
 }
 
-Menu::Menu(Token * token) throw (LoadException):
-selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
+Menu::Menu(Token * token) throw (LoadException){
     load(token);
 }
 
@@ -92,8 +194,7 @@ hasOptions(false),
 removeOption(false),
 background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
-option(false),
-selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
+option(false){
 	contextMenu.position.radius = 15;
 	optionInfoTextLocation.x = 320;
 	optionInfoTextLocation.y = 100;
@@ -279,8 +380,7 @@ void Menu::load(Token *token) throw (LoadException){
 }
 
 void Menu::setupOptions(){
-    longestTextLength = Font::getFont(Filesystem::RelativePath(getFont()), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
-
+    longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
     // Before we finish lets get rid of the cruft
     for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
         if( (*optBegin)->scheduledForRemoval() ){
@@ -300,6 +400,7 @@ void Menu::setupOptions(){
     contextMenu.setList(toContextList(menuOptions));
     selectedOption = menuOptions[contextMenu.getCurrentIndex()];
     selectedOption->setState(MenuOption::Selected);
+    addInfoBox(selectedOption->getInfoText());
     
     // Set context menu stuff font and fade in
     contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
@@ -345,6 +446,7 @@ void Menu::act(bool &endGame, bool reset){
 
         if (moved && menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
+            addInfoBox(selectedOption->getInfoText());
         }
     }
 
@@ -357,6 +459,7 @@ void Menu::act(bool &endGame, bool reset){
 
         if (moved && menuOptions.size() > 1){
             MenuGlobals::playSelectSound();
+            addInfoBox(selectedOption->getInfoText());
         }
     }
 
@@ -404,6 +507,12 @@ void Menu::act(bool &endGame, bool reset){
     
     // Menu
     contextMenu.act();
+
+    // Menu info
+    menuInfoBox.act();
+
+    // Info boxes
+    actInfoBoxes();
 }
 
 void Menu::draw(const Gui::RectArea & area, Bitmap *bmp){
@@ -443,6 +552,9 @@ void Menu::run(){
         // Set font and fade in
         contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
         contextMenu.open();
+
+        // Setup menu info
+        setMenuInfo(menuInfo);
         
         done = false;
         
@@ -489,9 +601,9 @@ void Menu::run(){
                 // Draw menu
                 contextMenu.render(*work);
                 // Draw option info text
-                drawInfoBox(selectedOption->getInfoText(), optionInfoTextLocation, work);
+                renderInfoBoxes(*work);
                 // Draw menu info text
-                drawInfoBox(menuInfo, menuInfoLocation, work);
+                menuInfoBox.render(*work);
                 // Draw foreground animations
                 for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
                     (*i)->draw(work);
@@ -558,6 +670,13 @@ void Menu::runOption(unsigned int index){
     } catch (const ReturnException & re){
         tryPlaySound(backSound);
     }
+}
+
+MenuOption * Menu::getOption(unsigned int index){
+    if (index >= menuOptions.size()){
+        return 0;
+    }
+    return menuOptions[index];
 }
 
 /*! set parent */
@@ -670,94 +789,99 @@ void Menu::drawBackground(Bitmap *bmp){
     }
 }
 
-int Menu::getSelectedColor(bool selected){
-    if (selected){
-        return selectedGradient.current();
-    } else {
-        static int white = Bitmap::makeColor(255,255,255);
-        return white;
-    }
+void Menu::setMenuInfo(const std::string & text){
+    // Setup menu info
+    menuInfoBox.setFont(getFont(), getFontWidth(), getFontHeight());
+    menuInfoBox.setText(text);
+    menuInfoBox.position.x = menuInfoLocation.x - (menuInfoBox.position.width / 2);
+    menuInfoBox.position.y = menuInfoLocation.y - (menuInfoBox.position.height / 2);
+    menuInfoBox.position.radius = contextMenu.position.radius;
+    menuInfoBox.position.body = Bitmap::makeColor(32,32,0);
+    menuInfoBox.position.bodyAlpha = contextMenu.position.bodyAlpha;
+    menuInfoBox.position.border = contextMenu.position.border;
+    menuInfoBox.position.border = contextMenu.position.borderAlpha;
+    menuInfoBox.open();
 }
 
-// Draw info box
-void Menu::drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp ){
-    if ( info.empty() ) return;
-    const Font & vFont = Font::getFont(getFont(), getFontWidth(), getFontHeight());
-    switch ( currentDrawState ){
-        case FadeIn :
-            break;
-        case FadeInText :
-            break;
-        case NoFade:
-        default: {
-            Box area;
-            vector<string> strings;
-            size_t start = 0;
-            size_t last = 0;
-            start = info.find("\n");
-            while (start != string::npos){
-                strings.push_back(info.substr(last, start - last));
-                last = start + 1;
-                start = info.find("\n", last);
-            }
-            strings.push_back(info.substr(last));
+void Menu::addInfoBox(const std::string & text){
+    if (text.empty()){
+        return;
+    }
+    if (!optionInfoBoxes.empty()){
+        optionInfoBoxes.back()->close();
+    }
+    InfoBox * temp = new InfoBox();
+    temp->setFont(getFont(),getFontWidth(),getFontHeight());
+    temp->setText(text);
+    temp->position.x = optionInfoTextLocation.x - (temp->position.width / 2);
+    temp->position.y = optionInfoTextLocation.y - (temp->position.height / 2);
+    temp->position.radius = contextMenu.position.radius;
+    temp->position.body = Bitmap::makeColor(32,32,0);
+    temp->position.bodyAlpha = contextMenu.position.bodyAlpha;
+    temp->position.border = contextMenu.position.border;
+    temp->position.border = contextMenu.position.borderAlpha;
+    temp->open();
+    optionInfoBoxes.push_back(temp);
+}
 
-            area.position.radius = 15;
-            int maxWidth = 0;
-            int height = 0;
-            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
-                int w = vFont.textLength((*it).c_str()) + 10;
-                if (w > maxWidth){
-                    maxWidth = w;
-                }
-                height += vFont.getHeight();
-            }
-            area.position.width = maxWidth;
-            area.position.height = height;
-            area.position.x = location.x - (area.position.width / 2);
-            area.position.y = location.y - (area.position.height / 2);
-            area.position.body = Bitmap::makeColor(32,32,0);
-            area.position.bodyAlpha = contextMenu.position.bodyAlpha;
-            area.position.border = contextMenu.position.border;
-            area.position.border = contextMenu.position.borderAlpha;
-
-            // Draw box
-            area.render(*bmp);
-
-            // Draw text
-            int sy = area.position.y - 5;
-            for (vector<string>::iterator it = strings.begin(); it != strings.end(); it++){
-                static int white = Bitmap::makeColor(255,255,255);
-                string & str = *it;
-                vFont.printf(area.position.x + 5, sy, white, *bmp, str, 0 );
-                sy += vFont.getHeight();
-            }
-            break;
+//! Update info boxes
+void Menu::actInfoBoxes(){
+    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        InfoBox *box = *i;
+        box->act();
+        if (!box->isActive()){
+            delete box;
+            i = optionInfoBoxes.erase(i);
         }
     }
 }
 
+//! Render info boxes
+void Menu::renderInfoBoxes(const Bitmap &){
+    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        InfoBox *box = *i;
+        box->render(*work);
+    }
+}
+
+void Menu::closeInfoBoxes(){
+    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        InfoBox *box = *i;
+        box->close();
+    }
+}
+
+
 Menu::~Menu(){
-	// cleanup
-	if (work){
-	    delete work;
-	}
-	
-	std::vector <MenuOption *>::iterator b = menuOptions.begin();
-	std::vector <MenuOption *>::iterator e = menuOptions.end();
-	for(;b!=e;++b){
-		if((*b))delete (*b);
-	}
-	if( background )delete background;
-	
-	for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	    if (*i){
-		delete *i;
-	    }
-	}
-	for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	    if (*i){
-		delete *i;
-	    }
-	}
+    // cleanup
+    if (work){
+        delete work;
+    }
+
+    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        InfoBox *box = *i;
+        if (box){
+            delete box;
+        }
+    }
+
+
+    vector <MenuOption *>::iterator b = menuOptions.begin();
+    vector <MenuOption *>::iterator e = menuOptions.end();
+    for(;b!=e;++b){
+        if((*b))delete (*b);
+    }
+
+    if( background )delete background;
+
+    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+        if (*i){
+            delete *i;
+        }
+    }
+    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+        if (*i){
+            delete *i;
+        }
+    }
 }

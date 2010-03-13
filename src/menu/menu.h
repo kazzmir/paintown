@@ -34,7 +34,7 @@ class Point{
     ~Point();
 };
 
-class InfoBox : public Gui::Widget{
+class InfoBox: public Gui::Widget {
     public:
         InfoBox();
         ~InfoBox();
@@ -49,7 +49,7 @@ class InfoBox : public Gui::Widget{
             return (this->state != NotActive);
         }
         
-        inline void setFont(const std::string & font, int width, int height){
+        inline void setFont(const Filesystem::RelativePath & font, int width, int height){
             this->font = font;
             this->fontWidth = width;
             this->fontHeight = height;
@@ -66,7 +66,7 @@ class InfoBox : public Gui::Widget{
         State state;
         Gui::PopupBox popup;
         
-        std::string font;
+        Filesystem::RelativePath font;
         int fontWidth;
         int fontHeight;
         
