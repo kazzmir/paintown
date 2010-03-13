@@ -56,7 +56,7 @@ font(Filesystem::RelativePath(sharedFont)),
 fontWidth(sharedFontWidth),
 fontHeight(sharedFontHeight),
 fadeAlpha(0){
-    popup.setFadeSpeed(10);
+    popup.setFadeSpeed(20);
 
 }
 
@@ -66,10 +66,11 @@ InfoBox::~InfoBox(){
 void InfoBox::act(){
     popup.act();
     
-    switch ( state ){
+    int speed = 9;
+    switch (state){
         case Opening: {
             if (fadeAlpha < 255){
-                fadeAlpha += 5;
+                fadeAlpha += speed;
             }
 
             if (fadeAlpha >= 255){
@@ -82,7 +83,7 @@ void InfoBox::act(){
         }
         case Closing: {
             if (fadeAlpha > 0){
-                fadeAlpha -= 5;
+                fadeAlpha -= speed;
             }
 
             if (fadeAlpha <= 0){
@@ -112,13 +113,17 @@ void InfoBox::render(const Bitmap & bmp){
     bmp.setClipRect(x1, y1, x2, y2);
     
     int sy = position.y - 5;
+    static int white = Bitmap::makeColor(255,255,255);
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
-        static int white = Bitmap::makeColor(255,255,255);
         string & str = *it;
-        Bitmap::transBlender(0, 0, 0, fadeAlpha);
-        Bitmap::drawingMode( Bitmap::MODE_TRANS );
-        vFont.printf(position.x + 5, sy, white, bmp, str, 0 );
-        Bitmap::drawingMode(Bitmap::MODE_SOLID);
+        if (fadeAlpha < 255){
+            Bitmap::transBlender(0, 0, 0, fadeAlpha);
+            Bitmap::drawingMode( Bitmap::MODE_TRANS );
+            vFont.printf(position.x + 5, sy, white, bmp, str, 0 );
+            Bitmap::drawingMode(Bitmap::MODE_SOLID);
+        } else {
+            vFont.printf(position.x + 5, sy, white, bmp, str, 0 );
+        }
         sy += vFont.getHeight();
     }
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
