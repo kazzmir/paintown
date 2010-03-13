@@ -54,46 +54,46 @@ void Messages::addMessage( const std::string & s ){
 }
 	
 void Messages::draw( int x, int y, const Bitmap & work, const Font & font ){
-	work.drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender(0, 0, 0, this->opaque);
-	work.rectangleFill( x, y, x + width, y + height, Bitmap::makeColor( 0, 0, 0 ) );
-	work.drawingMode( Bitmap::MODE_SOLID );
-	// work.rectangle( x, y, x + width-1, y + height-1, Bitmap::makeColor( 255, 255, 255 ) );
+    work.drawingMode( Bitmap::MODE_TRANS );
+    Bitmap::transBlender(0, 0, 0, this->opaque);
+    work.rectangleFill( x, y, x + width, y + height, Bitmap::makeColor( 0, 0, 0 ) );
+    work.drawingMode( Bitmap::MODE_SOLID );
+    // work.rectangle( x, y, x + width-1, y + height-1, Bitmap::makeColor( 255, 255, 255 ) );
     work.border(0, 1, borderColor);
 
     /* fast because its a sub-bitmap */
-	Bitmap area(work, x, y, width, height);
+    Bitmap area(work, x, y, width, height);
 
-	int current_y = height - font.getHeight() - 1;
-	// int max_length = area.getWidth() / font.textLength( "E" );
-	for ( vector< string >::reverse_iterator it = messages.rbegin(); it != messages.rend(); it++ ){
-		if ( current_y < 0 - font.getHeight() ){
-			break;
-		}
-		const string & s = *it;
-		vector< string > all;
-		all = wrapStrings( s, "", font, area.getWidth(), all );
-		current_y -= font.getHeight() * (all.size() - 1);
-		int my = current_y;
-		for ( vector< string >::iterator str = all.begin(); str != all.end(); str++ ){
-			font.printf( 0, my, Bitmap::makeColor( 255, 255, 255 ), area, *str, 0 );
-			my += font.getHeight();
+    int current_y = height - font.getHeight() - 1;
+    // int max_length = area.getWidth() / font.textLength( "E" );
+    for ( vector< string >::reverse_iterator it = messages.rbegin(); it != messages.rend(); it++ ){
+        if ( current_y < 0 - font.getHeight() ){
+            break;
+        }
+        const string & s = *it;
+        vector< string > all;
+        all = wrapStrings(s, "", font, area.getWidth() - 3, all);
+        current_y -= font.getHeight() * (all.size() - 1);
+        int my = current_y;
+        for ( vector< string >::iterator str = all.begin(); str != all.end(); str++ ){
+            font.printf(2, my, Bitmap::makeColor( 255, 255, 255 ), area, *str, 0);
+            my += font.getHeight();
 
-		}
-		// current_y = wrapPrint( area, current_y, current_y, font, s, "" );
-		/*
-		int lines = font.textLength( s.c_str() ) / area.getWidth();
-		current_y -= font.getHeight() * lines;
-		int my = current_y;
-		while ( s != "" ){
-			string sub = s.substr( 0, max_length );
-			s.erase( 0, max_length );
-			font.printf( 0, my, Bitmap::makeColor( 255, 255, 255 ), area, sub, 0 );
-			my += font.getHeight();
-		}
-		*/
-		current_y -= font.getHeight();
-	}
+        }
+        // current_y = wrapPrint( area, current_y, current_y, font, s, "" );
+        /*
+           int lines = font.textLength( s.c_str() ) / area.getWidth();
+           current_y -= font.getHeight() * lines;
+           int my = current_y;
+           while ( s != "" ){
+           string sub = s.substr( 0, max_length );
+           s.erase( 0, max_length );
+           font.printf( 0, my, Bitmap::makeColor( 255, 255, 255 ), area, sub, 0 );
+           my += font.getHeight();
+           }
+           */
+        current_y -= font.getHeight();
+    }
 }
 	
 Messages::~Messages(){
