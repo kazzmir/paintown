@@ -13,7 +13,7 @@
 
 using namespace std;
 
-static const char * PLAYER_FONT = "/fonts/arial.ttf";
+static const char * PLAYER_FONT = "fonts/arial.ttf";
 
 static const int SPAWN_TIME = 1500;
 

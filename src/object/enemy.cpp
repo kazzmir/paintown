@@ -19,7 +19,7 @@
 
 using namespace std;
 
-static const char * ENEMY_FONT = "/fonts/arial.ttf";
+static const char * ENEMY_FONT = "fonts/arial.ttf";
 
 const int NORMAL_AGRESSION = 97;
 

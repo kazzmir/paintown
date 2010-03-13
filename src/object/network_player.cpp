@@ -109,7 +109,7 @@ Network::Message NetworkPlayer::scoreMessage(){
 }
 
 void NetworkPlayer::drawFront( Bitmap * work, int rel_x ){
-    static const char * PLAYER_FONT = "/fonts/arial.ttf";
+    static const char * PLAYER_FONT = "fonts/arial.ttf";
 
     int x1, y1;
     NamePlacer::getPlacement( x1, y1, name_id );
