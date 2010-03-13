@@ -69,6 +69,7 @@ class ContextBox : public Widget{
         //!set fadespeed
         virtual inline void setFadeSpeed(int speed){
             this->fadeSpeed = speed;
+            this->board.setFadeSpeed(speed);
         }
         //!set fade alpha
         virtual inline void setFadeAlpha(int alpha){

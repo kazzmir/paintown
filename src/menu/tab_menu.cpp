@@ -389,7 +389,9 @@ void TabMenu::run(){
 
     // Recalculate lines
     calculateTabLines();
-
+    
+    // set menu info
+    setMenuInfo(menuInfo);
 
     while (!done){
 
@@ -445,29 +447,15 @@ void TabMenu::run(){
                         }
                         (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
                     }
-                    /*
-                       if (keyInputManager::keyState(keys::DOWN, true) ||
-                       keyInputManager::keyState(vi_down, true)){
-                       MenuGlobals::playSelectSound();
-                       }
-
-                       if ( keyInputManager::keyState(keys::UP, true )||
-                       keyInputManager::keyState(vi_up, true )){
-                       MenuGlobals::playSelectSound();
-                       }
-                       */
+                    
                     if (inputState[Tab::Select]){
-                        /* im not sure why we have to wait for select to
-                         * be released here. all the other menus seem
-                         * to work just fine without waiting.
-                         * anyway, no real harm comes from waiting so just wait.
-                         */
-                        //InputManager::waitForRelease(input, Tab::Select);
-                        // Run menu
                         (*currentTab)->running = true;
                         backgroundBuffer.reset();
                         borderBuffer.reset();
                         fontBuffer.reset();
+                        setMenuInfo(runningInfo);
+                        MenuOption *opt = (*currentTab)->menu.getOption((*currentTab)->context.getCurrentIndex());
+                        addInfoBox(opt->getInfoText());
                     }
 
                     if (inputState[Tab::Exit]){
@@ -481,11 +469,15 @@ void TabMenu::run(){
                         if (inputState[Tab::Up]){
                             if ((*currentTab)->context.previous()){
                                 MenuGlobals::playSelectSound();
+                                MenuOption *opt = (*currentTab)->menu.getOption((*currentTab)->context.getCurrentIndex());
+                                addInfoBox(opt->getInfoText());
                             }
                         }
                         if (inputState[Tab::Down]){
                             if ((*currentTab)->context.next()){
                                 MenuGlobals::playSelectSound();
+                                MenuOption *opt = (*currentTab)->menu.getOption((*currentTab)->context.getCurrentIndex());
+                                addInfoBox(opt->getInfoText());
                             }
                         }
                         if (inputState[Tab::Select]){
@@ -504,6 +496,8 @@ void TabMenu::run(){
                     } catch (const ReturnException & re){
                         (*currentTab)->running = false;
                         (*currentTab)->setColors(selectedTabInfo, selectedFontColor);
+                        setMenuInfo(menuInfo);
+                        closeInfoBoxes();
                     }
                 }
 
@@ -530,8 +524,11 @@ void TabMenu::run(){
                 }
 
                 // Lets do some logic for the box with text
-                //updateFadeInfo();
                 contentArea.act();
+                
+                menuInfoBox.act();
+                
+                actInfoBoxes();
 
                 if (scrollCounter == 0 && !closeFloat(totalOffset, targetOffset)){
                     totalOffset = (totalOffset + targetOffset) / 2;
@@ -566,11 +563,9 @@ void TabMenu::run(){
             }
 
             // Draw menu info text
-            if (!(*currentTab)->running){
-                drawInfoBox(menuInfo, menuInfoLocation, work);
-            } else {
-                drawInfoBox(runningInfo, menuInfoLocation, work);
-            }
+            menuInfoBox.render(*work);
+            
+            renderInfoBoxes(*work);
 
             // Draw foreground animations
             for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){

@@ -5,12 +5,13 @@
 #include <string>
 
 #include "util/load_exception.h"
-#include "util/gradient.h"
 #include "util/file-system.h"
 #include "input/input-map.h"
 #include "return_exception.h"
 #include "gui/box.h"
 #include "gui/context-box.h"
+#include "gui/popup-box.h"
+#include "gui/widget.h"
 
 #ifdef _MSC_VER
 #ifndef uint32_t
@@ -24,8 +25,6 @@ class MenuOption;
 class Token;
 class MenuAnimation;
 
-
-
 class Point{
     public:
     int x;
@@ -33,6 +32,47 @@ class Point{
     Point();
     Point(int x, int y);
     ~Point();
+};
+
+class InfoBox : public Gui::Widget{
+    public:
+        InfoBox();
+        ~InfoBox();
+        
+        void act();
+        void render(const Bitmap &);
+        void open();
+        void close();
+        void setText(const std::string &);
+        
+        inline bool isActive(){
+            return (this->state != NotActive);
+        }
+        
+        inline void setFont(const std::string & font, int width, int height){
+            this->font = font;
+            this->fontWidth = width;
+            this->fontHeight = height;
+        }
+        
+    private:
+        enum State{
+            NotActive,
+            Opening,
+            Active,
+            Closing,
+        };
+        
+        State state;
+        Gui::PopupBox popup;
+        
+        std::string font;
+        int fontWidth;
+        int fontHeight;
+        
+        int fadeAlpha;
+        
+        std::vector<std::string> text;
 };
 
 class Menu{
@@ -63,6 +103,9 @@ public:
     
     /*! run option */
     virtual void runOption(unsigned int index);
+    
+    /*! get option */
+    virtual MenuOption * getOption(unsigned int index);
 
     /*! Parent */
     virtual void setParent(Menu *menu);
@@ -163,13 +206,24 @@ protected:
 
     //! Draw background
     void drawBackground(Bitmap *work);
-
-    //! Draw info box
-    void drawInfoBox (const std::string &info, const Point &location, Bitmap *bmp );
-
-    int getSelectedColor(bool selected);
-
-
+    
+    void setMenuInfo(const std::string &);
+    
+    //! Menu info box
+    InfoBox menuInfoBox;
+    
+    //! Add Info box
+    void addInfoBox (const std::string &);
+    
+    //! Update info boxes
+    void actInfoBoxes();
+    
+    //! Render info boxes
+    void renderInfoBoxes(const Bitmap &);
+    
+    //! Get rid of info boxes
+    void closeInfoBoxes();
+    
     //! General text about the menu, similar to info about options if empty it draws nothing it also borrows the colors of the main menu box
     std::string menuInfo;
 
@@ -205,8 +259,9 @@ private:
 
     //! This is the location of the option info text
     Point optionInfoTextLocation;
-
-    Effects::Gradient selectedGradient;
+    
+    //! Info boxes
+    std::vector<InfoBox *> optionInfoBoxes;
 
     enum MenuInput{
         Up,
