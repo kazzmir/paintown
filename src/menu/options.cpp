@@ -1668,6 +1668,10 @@ rgreen(255){
             std::back_insert_iterator< std::vector<string> > inserter(fonts);
             copy(ttfFonts.begin(), ttfFonts.end(), inserter);
             copy(otfFonts.begin(), otfFonts.end(), inserter);
+            for (vector<string>::iterator it = fonts.begin(); it != fonts.end(); it++){
+                string & name = *it;
+                name = Filesystem::cleanse(Filesystem::AbsolutePath(name)).path();
+            }
         } catch (const Filesystem::NotFound & e){
             throw LoadException("Could not load font: " + e.getReason());
         }
