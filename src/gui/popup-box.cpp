@@ -142,6 +142,3 @@ void PopupBox::doFade(){
 	    break;
     }
 }
-
-
-

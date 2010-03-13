@@ -831,12 +831,14 @@ void Menu::addInfoBox(const std::string & text){
 
 //! Update info boxes
 void Menu::actInfoBoxes(){
-    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
         InfoBox *box = *i;
         box->act();
         if (!box->isActive()){
             delete box;
             i = optionInfoBoxes.erase(i);
+        } else {
+            i++;
         }
     }
 }
