@@ -28,7 +28,8 @@ radius(0){
 }
 
 bool RectArea::empty(){
-    return (x==0 && y==0 && width==0 && height==0);
+    // return (x==0 && y==0 && width==0 && height==0);
+    return width == 0 && height == 0;
 }
 
 bool RectArea::operator==( const RectArea &rect){

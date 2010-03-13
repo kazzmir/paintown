@@ -131,7 +131,7 @@ void PopupBox::doFade(){
                 }
             }
             
-            if (board.position == RectArea() && board.position.borderAlpha == 0 && board.position.bodyAlpha == 0){
+            if (board.position.empty() && board.position.borderAlpha == 0 && board.position.bodyAlpha == 0){
                 fadeState = Closed;
             }
 	    break;

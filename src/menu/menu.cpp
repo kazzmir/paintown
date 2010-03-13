@@ -831,6 +831,7 @@ void Menu::addInfoBox(const std::string & text){
 
 //! Update info boxes
 void Menu::actInfoBoxes(){
+    // Global::debug(0) << "Info boxes " << optionInfoBoxes.size() << endl;
     for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
         InfoBox *box = *i;
         box->act();
