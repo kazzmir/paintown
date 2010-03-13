@@ -23,7 +23,7 @@ namespace Global{
 	
 extern const unsigned int MagicId;
 
-extern const char * DEFAULT_FONT;
+extern const Filesystem::RelativePath DEFAULT_FONT;
 
 int getVersion();
 std::string getVersionString();

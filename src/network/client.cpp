@@ -328,7 +328,7 @@ void networkClient(){
 		NAME, HOST, PORT, CONNECT, BACK
 	};
 			
-	const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
+	const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
 	Bitmap work( GFX_X, GFX_Y );
 	

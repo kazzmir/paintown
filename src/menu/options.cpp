@@ -1681,7 +1681,7 @@ OptionSelectFont::~OptionSelectFont(){
 void OptionSelectFont::logic(){
     switch (typeAdjust){
         case fontName:	  
-            setText("Current Font: " + Menu::getFont());
+            setText("Current Font: " + Menu::getFont().path());
             break;
         case fontWidth:{
             ostringstream temp;
@@ -1765,7 +1765,7 @@ void OptionSelectFont::nextIndex(bool forward){
 
     int index = 0;
     for (unsigned int i = 0 ; i < fonts.size() ; ++i){
-        if (Menu::getFont() == fonts[i]){
+        if (Menu::getFont().path() == fonts[i]){
             if (forward){
                 index = i + 1;
                 if (index >= (int) fonts.size()){

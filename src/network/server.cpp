@@ -157,7 +157,7 @@ static int getServerPort(){
 	const int drawY = 250;
 	{
 		// background.BlitToScreen();
-		const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
+		const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 		Bitmap black( 300, font.getHeight() * 4 );
 		black.clear();
 		black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
@@ -217,7 +217,7 @@ static int getServerPort(){
 			}
 			pressed.clear();
 			work.clear();
-			const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
+			const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 			font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
 			work.Blit( 100, drawY, background );
                         background.BlitToScreen();
@@ -742,7 +742,7 @@ void networkServer(Menu * menu){
 
 	debug( 1 ) << "Port is " << port << endl;
 
-	const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
+	const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 	try{
 		/*
 #ifdef _WIN32

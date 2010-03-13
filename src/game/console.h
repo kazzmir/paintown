@@ -6,6 +6,7 @@
 #include <sstream>
 #include <map>
 #include "input/input-map.h"
+#include "util/file-system.h"
 #include "return_exception.h"
 
 class Bitmap;
@@ -33,7 +34,7 @@ public:
 
 class Console{
 public:
-    Console(const int maxHeight, const std::string & font = Console::DEFAULT_FONT);
+    Console(const int maxHeight, const Filesystem::RelativePath & font = Global::DEFAULT_FONT);
     virtual ~Console();
 
     virtual void act();
@@ -50,7 +51,7 @@ public:
     inline void setTextHeight(int h){ textHeight = h; };
     inline void setTextWidth(int w){ textWidth = w; };
 
-    inline const std::string & getFont() const {
+    inline const Filesystem::RelativePath & getFont() const {
         return font;
     }
 
@@ -65,7 +66,6 @@ public:
     /* for end of line, always pass Console::endl */
     Console & operator<<(const ConsoleEnd & e);
 
-    static const std::string DEFAULT_FONT;
     static ConsoleEnd endl;
 
 protected:
@@ -86,7 +86,7 @@ protected:
     const int maxHeight;
     int height;
 
-    std::string font;
+    Filesystem::RelativePath font;
     
     // Text height
     int textHeight;

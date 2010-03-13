@@ -39,8 +39,7 @@ static void showError(const Bitmap & screen, const MugenException & e){
     screen.BlitFromScreen(0, 0);
     Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
     error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
-    static const char * DEFAULT_FONT = "fonts/arial.ttf";
-    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(DEFAULT_FONT)).path(), 18, 18);
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 18, 18);
     int y = 10;
     std::ostringstream out;
     out << "Press ENTER to continue\n";
@@ -265,8 +264,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
             render->render(&buffer);
 
             if (show_fps){
-                static const char * DEFAULT_FONT = "fonts/arial.ttf";
-                const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(DEFAULT_FONT)).path(), 20, 20 );
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
                 font.printf(buffer.getWidth() - 120, buffer.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), buffer, "FPS: %0.2f", 0, fps );
             }
 

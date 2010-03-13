@@ -8,6 +8,7 @@
 #include "gui/popup-box.h"
 
 #include "util/gradient.h"
+#include "util/file-system.h"
 
 namespace Gui{
     
@@ -52,7 +53,7 @@ class ContextBox : public Widget{
             this->current = 0;
         }
         //! Set current font
-	virtual inline void setFont(const std::string & font, int width, int height){
+	virtual inline void setFont(const Filesystem::RelativePath & font, int width, int height){
 	    this->font = font;
 	    this->fontWidth = width;
 	    this->fontHeight = height;
@@ -103,7 +104,7 @@ class ContextBox : public Widget{
         std::vector<ContextItem *> context;
 	
 	//! Current font
-	std::string font;
+        Filesystem::RelativePath font;
 	int fontWidth;
 	int fontHeight;
 	

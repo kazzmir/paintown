@@ -121,7 +121,7 @@ enterPressed( false ){
 	
 	lineEdit->setText("Hi!");
 	// lineEdit->setFont(Menu::getFont());
-	lineEdit->setFont(& Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20));
+	lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
 	keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
 	keyInputManager::pressed.connect(this, &ChatClient::keyPress);
 	keyInputManager::released.connect(this, &ChatClient::keyRelease);
@@ -228,7 +228,7 @@ bool ChatClient::sendMessage( const string & message ){
 }
 
 void ChatClient::popup( Bitmap & work, Keyboard & key, const std::string & str ){
-    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
     int length = font.textLength( str.c_str() ) + 20;
     int height = font.getHeight() * 2;
     Bitmap area( work, work.getWidth() / 2 - length / 2, work.getHeight() / 2, length, height );
@@ -321,7 +321,7 @@ bool ChatClient::logic( Keyboard & keyboard ){
 }
 
 void ChatClient::drawInputBox( int x, int y, const Bitmap & work ){
-    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
     work.drawingMode( Bitmap::MODE_TRANS );
     Bitmap::transBlender( 0, 0, 0, 128 );
@@ -357,7 +357,7 @@ void ChatClient::drawBuddies( const Bitmap & area, int x, int y, const Font & fo
 void ChatClient::draw( const Bitmap & work ){
     int start_x = 20;
     int start_y = 20;
-    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 20, 20 );
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
     background->Blit( work );
     messages.draw( start_x, start_y, work, font );
     // drawInputBox( start_x, start_y + messages.getHeight() + 5, work );

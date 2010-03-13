@@ -35,7 +35,6 @@
 
 using namespace std;
 
-static const char * DEFAULT_FONT = "fonts/arial.ttf";
 // static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
 
@@ -422,7 +421,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             FontRender * render = FontRender::getInstance();
             render->render( &screen_buffer );
 
-            const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path(), 20, 20 );
+            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
             if ( helpTime > 0 ){
                 int x = 100;
@@ -722,7 +721,7 @@ void fadeOut( Bitmap & work, const string & message ){
 
     dark.drawTrans( 0, 0, work );
 
-    const Font & f = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path(), 50, 50 );
+    const Font & f = Font::getFont(Global::DEFAULT_FONT, 50, 50 );
     f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
     work.BlitToScreen();
 
@@ -856,7 +855,7 @@ void playVersusMode( Character * player1, Character * player2, int round ){
 		*/
 	
 		if ( draw ){
-			const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path());
+			const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
 			background.Blit( work );
 			world.draw( &work );
@@ -1006,7 +1005,7 @@ void playVersusMode( Character * player1, Character * player2, int round ){
 				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
 				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
 				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-				const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(DEFAULT_FONT))).path());
+				const Font & font = Font::getFont(Global::DEFAULT_FONT);
 				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 

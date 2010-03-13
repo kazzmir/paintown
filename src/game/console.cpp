@@ -20,9 +20,8 @@ static int Control = 7;
 static int Enter = 6;
 
 ConsoleEnd Console::endl;
-const std::string Console::DEFAULT_FONT = Global::DEFAULT_FONT;
 
-Console::Console(const int maxHeight, const std::string & font):
+Console::Console(const int maxHeight, const Filesystem::RelativePath & font):
 state(Closed),
 maxHeight(maxHeight),
 height(0),
@@ -186,7 +185,7 @@ void Console::draw(const Bitmap & work){
 	Bitmap::transBlender(0, 0, 0, 160);
         work.rectangleFill(0, 0, work.getWidth(), height, Bitmap::makeColor(200,0,0));
         work.horizontalLine(0, height, work.getWidth(), Bitmap::makeColor(200, 200, 200));
-        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(getFont())).path(), textWidth, textHeight);
+        const Font & font = Font::getFont(getFont(), textWidth, textHeight);
         //font.printf(0, height - font.getHeight(), Bitmap::makeColor(255, 255, 255), work, "Console!", 0 );
         Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	// if (state == Open){

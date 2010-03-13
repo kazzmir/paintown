@@ -587,7 +587,7 @@ void AdventureWorld::draw( Bitmap * work ){
     Global::debug( 4 ) << "World draw" << endl;
 
     if (descriptionTime > 0 && scene->getDescription() != ""){
-        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 30, 30);
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 30, 30);
         FontRender * render = FontRender::getInstance();
         string description = scene->getDescription();
         int trans = (DESCRIPTION_TIME - descriptionTime) / 2;
@@ -631,7 +631,7 @@ void AdventureWorld::draw( Bitmap * work ){
     }
 
     if (is_paused){
-        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 15, 15);
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
         work->transBlender( 0, 0, 0, 128 );
         work->drawingMode( Bitmap::MODE_TRANS );
         work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );

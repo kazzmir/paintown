@@ -283,7 +283,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 // background.Stretch( work );
                 background.Blit( backgroundX, 0, work );
                 background.Blit( work.getWidth() + backgroundX, 0, work );
-                const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path());
+                const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
                 if (ch->isLoaded()){
                     const int stand = 50;
@@ -327,7 +327,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
                 if (!loader.done()){
 
-                    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 10, 10 );
+                    const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10 );
                     font.printf(1, 1, Bitmap::makeColor(200,0,0), work, "Loading...", 0);
                 }
 
@@ -354,7 +354,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     } else {
                         /* FIXME: center the text */
 
-                        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 15, 15);
+                        const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
                         font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Bitmap::makeColor(255, 255, 255), box, displayed->getName(), 0);
                     }
 
@@ -714,7 +714,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
 
             copy1.draw( &preview1, 0, 0 );
             preview1.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
-            const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path());
+            const Font & font = Font::getFont(Global::DEFAULT_FONT);
             font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, copy1.getName(), 0 );
 
             ch2->setMap(remap2[current2]);

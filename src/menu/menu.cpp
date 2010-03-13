@@ -279,7 +279,7 @@ void Menu::load(Token *token) throw (LoadException){
 }
 
 void Menu::setupOptions(){
-    longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
+    longestTextLength = Font::getFont(Filesystem::RelativePath(getFont()), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
 
     // Before we finish lets get rid of the cruft
     for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
@@ -304,8 +304,6 @@ void Menu::setupOptions(){
     // Set context menu stuff font and fade in
     contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
     contextMenu.open();
-    
-
 }
 
 std::vector<Gui::ContextItem *> Menu::getContextList(){
@@ -594,8 +592,8 @@ Bitmap *Menu::getWork(){
     return work;
 }
 
-std::string &Menu::getFont(){
-	return sharedFont;
+const Filesystem::RelativePath Menu::getFont(){
+    return Filesystem::RelativePath(sharedFont);
 }
 
 //! get font width

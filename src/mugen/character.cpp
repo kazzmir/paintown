@@ -2953,7 +2953,7 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
 void Character::draw(Bitmap * work, int cameraX, int cameraY){
 
     if (debug){
-        const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string("fonts/arial.ttf"))).path(), 18, 18);
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 18, 18);
         int x = 0;
         if (getAlliance() == MugenStage::Player2Side){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;

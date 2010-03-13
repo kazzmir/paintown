@@ -547,7 +547,7 @@ void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages,
 	
 void NetworkWorldClient::draw(Bitmap * work){
     super::draw(work);
-    const Font & font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(Global::DEFAULT_FONT))).path(), 15, 15);
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
     FontRender * render = FontRender::getInstance();
 
     /* the coordinates are only right becuase I know that the screen is twice as

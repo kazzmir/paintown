@@ -25,7 +25,6 @@
 // this can probably be user defined in the future
 static const int GLOBAL_KEY_DELAY = 15;
 static const unsigned int KEY_CACHE_SIZE = 100;
-static const char * PLAYER_FONT = Global::DEFAULT_FONT;
 
 using namespace std;
 
@@ -260,9 +259,9 @@ void Player::drawFront( Bitmap * work, int rel_x ){
 
 	// Font * player_font = FontFactory::getFont( NAME_FONT );
 	// const Font & player_font = Font::getFont( NAME_FONT );
-	const Font & player_font = Font::getFont(Filesystem::find(Filesystem::RelativePath(string(PLAYER_FONT))).path(), 20, 20 );
+	const Font & player_font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 	const string & name = getName();
-	int nameHeight = player_font.getHeight( name ) / 2;
+	int nameHeight = player_font.getHeight(name) / 2;
 	nameHeight = 20 / 2;
 	// cout << "Height: " << player_font.getHeight( name ) << endl;
 	// Font * player_font = FontFactory::getFont( "bios" );

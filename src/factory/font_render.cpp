@@ -89,6 +89,6 @@ void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const
 	addMessage( f, x, y, fg, bg, -1, mm );
 }
 	
-void FontRender::addMessage( const char * font_name, int x, int y, int fg, int bg, const string & str ){
-	addMessage( Font::getFont( font_name ), x, y, fg, bg, -1, str );
+void FontRender::addMessage(const Filesystem::RelativePath & font_name, int x, int y, int fg, int bg, const string & str ){
+    addMessage(Font::getFont(font_name), x, y, fg, bg, -1, str );
 }

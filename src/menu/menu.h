@@ -86,7 +86,7 @@ public:
     Bitmap *getWork();
 
     //! get font
-    static std::string &getFont();
+    static const Filesystem::RelativePath getFont();
 
     //! get font width
     static int getFontWidth();
