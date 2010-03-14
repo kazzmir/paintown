@@ -908,7 +908,7 @@ public:
 
     virtual void setJuggle(Ast::Value * juggle);
 
-    virtual void setVelocity(double x, double y);
+    virtual void setVelocity(Ast::Value * x, Ast::Value * y);
     virtual void setPhysics(Physics::Type p);
     virtual void setPower(int power);
 
@@ -944,7 +944,7 @@ protected:
     Ast::Value * control;
     std::vector<StateController*> controllers;
     bool changeVelocity;
-    double velocity_x, velocity_y;
+    Ast::Value * velocity_x, * velocity_y;
     bool changePhysics;
     Physics::Type physics;
     bool changePower;

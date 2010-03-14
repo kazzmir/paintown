@@ -687,6 +687,8 @@ animation(NULL),
 changeControl(false),
 control(NULL),
 changeVelocity(false),
+velocity_x(NULL),
+velocity_y(NULL),
 changePhysics(false),
 changePower(false),
 powerAdd(0),
@@ -707,7 +709,7 @@ void State::setJuggle(Ast::Value * juggle){
     this->juggle = juggle;
 }
 
-void State::setVelocity(double x, double y){
+void State::setVelocity(Ast::Value * x, Ast::Value * y){
     changeVelocity = true;
     velocity_x = x;
     velocity_y = y;
@@ -758,8 +760,8 @@ void State::transitionTo(const MugenStage & stage, Character & who){
     }
 
     if (changeVelocity){
-        who.setXVelocity(velocity_x);
-        who.setYVelocity(velocity_y);
+        who.setXVelocity(toNumber(evaluate(velocity_x, Environment(stage, who))));
+        who.setYVelocity(toNumber(evaluate(velocity_y, Environment(stage, who))));
     }
 
     if (changePhysics){
@@ -797,6 +799,8 @@ State::~State(){
     delete animation;
     delete control;
     delete juggle;
+    delete velocity_x;
+    delete velocity_y;
 }
 
 void HitState::update(bool inAir, const HitDefinition & hit){
@@ -1502,9 +1506,10 @@ void Character::parseStateDefinition(Ast::Section * section){
                 } else if (simple == "anim"){
                     definition->setAnimation((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "velset"){
-                    double x, y;
+                    Ast::Value * x;
+                    Ast::Value * y;
                     simple >> x >> y;
-                    definition->setVelocity(x, y);
+                    definition->setVelocity((Ast::Value*) x->copy(), (Ast::Value*) y->copy());
                 } else if (simple == "ctrl"){
                     definition->setControl((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "poweradd"){
