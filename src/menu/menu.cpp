@@ -31,7 +31,7 @@
 using namespace std;
 using namespace Gui;
 
-static std::string sharedFont = "";
+static std::string sharedFont = "fonts/arial.ttf";
 static int sharedFontWidth = 24;
 static int sharedFontHeight = 24;
 
@@ -509,6 +509,11 @@ void Menu::act(bool &endGame, bool reset){
     for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
         (*i)->act();
     }
+    
+    /* FIXME: this is a hack to forcifully update the contextMenu's font
+     * in case the font option changes the menu font.
+     */
+    contextMenu.setFont(getFont(), getFontWidth(), getFontHeight());
     
     // Menu
     contextMenu.act();
