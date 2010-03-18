@@ -90,6 +90,11 @@ HitDefinition::Damage::~Damage(){
     delete guardDamage;
 }
 
+
+HitDefinition::Fall::~Fall(){
+    delete fall;
+}
+
 StateController::StateController(const string & name):
 type(Unknown),
 name(name),
@@ -803,7 +808,7 @@ State::~State(){
     delete velocity_y;
 }
 
-void HitState::update(bool inAir, const HitDefinition & hit){
+void HitState::update(MugenStage & stage, const Character & guy, bool inAir, const HitDefinition & hit){
     /* FIXME: choose the proper ground/air/guard types */
 
     shakeTime = hit.pause.player2;
@@ -837,7 +842,9 @@ void HitState::update(bool inAir, const HitDefinition & hit){
         xVelocity = hit.airVelocity.x;
         yVelocity = hit.airVelocity.y;
 
-        fall.fall |= hit.fall.fall;
+        if (hit.fall.fall != NULL){
+            fall.fall |= toBool(evaluate(hit.fall.fall, Environment(stage, guy)));
+        }
         fall.yVelocity = hit.fall.yVelocity;
     } else {
         animationType = hit.animationType;
@@ -2004,7 +2011,7 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "forcestand"){
                     simple >> controller->getHit().forceStand;
                 } else if (simple == "fall"){
-                    simple >> controller->getHit().fall.fall;
+                    controller->getHit().fall.fall = (Ast::Value*) simple.getValue()->copy();
                 } else if (simple == "fall.xvelocity"){
                     simple >> controller->getHit().fall.xVelocity;
                 } else if (simple == "fall.yvelocity"){
@@ -2882,7 +2889,7 @@ void Character::didHit(Character * enemy){
 }
 
 void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){
-    hitState.update(getY() > 0, hisHit);
+    hitState.update(stage, *this, getY() > 0, hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
