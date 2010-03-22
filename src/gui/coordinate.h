@@ -1,78 +1,71 @@
-#ifndef _paintown_gui_coordinate
-#define _paintown_gui_coordinate
+#ifndef _paintown_gui_coordinate_h
+#define _paintown_gui_coordinate_h
 
 namespace Gui {
 
 /* Coordinate system for handling scalable graphics */
 
-class Coordinate {
+class AbsolutePoint {
     public:
-        Coordinate();
-        virtual ~Coordinate();
-
-        virtual setAbsoluteX(int x);
-        virtual setAbsoluteY(int y);
-        virtual setAbsoluteZ(int z);
-        virtual setAbsoluteWidth(int width);
-        virtual setAbsoluteHeight(int height);
-        virtual setAbsoluteRadius(int radius);
+        AbsolutePoint();
+        AbsolutePoint(int x, int y);
+        virtual ~AbsolutePoint();
         
-        virtual setRelativeX(double x);
-        virtual setRelativeY(double y);
-        virtual setRelativeZ(double z);
-        virtual setRelativeWidth(double width);
-        virtual setRelativeHeight(double height);
-        virtual setRelativeRadius(double radius);
+        virtual int getX();
+        virtual int getY();
+    private:
+        int x;
+        int y;
+};
 
-        virtual int getAbsoluteX();
-        virtual int getAbsoluteY();
-        virtual int getAbsoluteX2();
-        virtual int getAbsoluteY2();
-        virtual int getAbsoluteZ();
-        virtual int getAbsoluteWidth();
-        virtual int getAbsoluteHeight();
-        virtual int getAbsouluteRadius();
-
-        virtual inline double getX() {
-            return this->getRelativeX();
-        }
-        virtual inline double getY() {
-            return this->getRelativeY();
-        }
-        virtual inline double getZ() {
-            return this->getRelativeZ();
-        }
-        virtual inline double getX2() {
-            return this->getRelativeX2();
-        }
-        virtual inline double getY2() {
-            return this->getRelativeY2();
-        }
-        virtual inline double getWidth() {
-            return this->getRelativeWidth();
-        }
-        virtual inline double getHeight() {
-            return this->getRelativeHeight();
-        }
-        virtual inline double getRadius() {
-            return this->getRelativeRadius();
-        }
-
+class RelativePoint {
+    public:
+        RelativePoint();
+        RelativePoint(double x, double y);
+        virtual ~RelativePoint();
+        
+        virtual int getX();
+        virtual int getY();
+        virtual const AbsolutePoint & getAbsolute();
         virtual double getRelativeX();
         virtual double getRelativeY();
-        virtual double getRelativeZ();
-        virtual double getRelativeX2();
-        virtual double getRelativeY2();
-        virtual double getRelativeWidth();
-        virtual double getRelativeHeight();
-        virtual double getRelativeRadius();
-
     private:
         double x;
         double y;
+};
+
+class Coordinate {
+    public:
+        Coordinate();
+        Coordinate(const AbsolutePoint &, const AbsolutePoint &);
+        Coordinate(const RelativePoint &, const RelativePoint &);
+        virtual ~Coordinate();
+    
+        virtual void setZ(int z);
+        virtual inline int getZ(){
+            return this->z;
+        }
+        virtual void setRadius(int radius);
+        virtual inline int getRadius(){
+            return this->radius;
+        }
+        
+        virtual int getX();
+        virtual int getY();
+        virtual int getWidth();
+        virtual int getHeight();
+        
+        virtual inline const RelativePoint & getPosition(){
+            return this->position;
+        }
+        virtual inline const RelativePoint & getDimensions(){
+            return this->dimensions;
+        }
+        
+    private:
+        RelativePoint position;
+        RelativePoint dimensions;
         double z;
-        double width;
-        double height;
         double radius;
 };
 
