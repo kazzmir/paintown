@@ -2225,6 +2225,20 @@ void Character::load(int useAct){
                     try{
                         /* load definitions first */
                         loadStateFile(where.base, where.file, true, false);
+                    } catch (const MugenException & e){
+                        ostringstream out;
+                        out << "Problem loading state file " << where.file << ": " << e.getReason();
+                        throw MugenException(out.str());
+                    } catch (const Mugen::Cmd::ParseException & e){
+                        ostringstream out;
+                        out << "Problem loading state file " << where.file << ": " << e.getReason();
+                        throw MugenException(out.str());
+                    }
+                }
+                        
+                for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
+                    Location & where = *it;
+                    try{
                         /* then load controllers */
                         loadStateFile(where.base, where.file, false, true);
                     } catch (const MugenException & e){
