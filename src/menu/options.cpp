@@ -38,6 +38,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <time.h>
 
 using namespace std;
 using namespace Gui;
@@ -270,6 +271,25 @@ void OptionChangeMod::run(bool &endGame){
     }
 }
 
+static bool todaysDate(int month, int day, int year){
+    int currentMonth;
+    int currentDay;
+    int currentYear;
+    time_t result = time(NULL);
+    struct tm * local = localtime(&result);
+    return (month == 0 || month == (local->tm_mon + 1)) &&
+           (day == 0 || day == local->tm_mday) &&
+           (year == 0 || year == local->tm_year + 1900);
+}
+
+static bool jonBirthday(){
+    return todaysDate(3, 25, 0);
+}
+
+static bool miguelBirthday(){
+    return todaysDate(8, 11, 0);
+}
+
 OptionCredits::OptionCredits( Token * token ) throw( LoadException ):
 MenuOption(token, Event),
 background(0),
@@ -277,6 +297,16 @@ music(""),
 color(Bitmap::makeColor(255,255,255)),
 title(Bitmap::makeColor(0,255,255)){
 	/* Always */
+    if (jonBirthday()){
+        credits.push_back("Happy birthday, Jon!");
+        credits.push_back("");
+    }
+
+    if (miguelBirthday()){
+        credits.push_back("Happy Birthday, Miguel!");
+        credits.push_back("");
+    }
+
 	credits.push_back("Paintown");
 	credits.push_back("");
 	credits.push_back("Programming");
