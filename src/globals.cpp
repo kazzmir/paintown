@@ -117,5 +117,13 @@ void info(const std::string & str){
     }
 }
 
+int getScreenWidth(){
+    return Bitmap::getScreenWidth();
+}
+
+int getScreenHeight(){
+    return Bitmap::getScreenHeight();
+}
+
 
 }

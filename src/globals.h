@@ -41,6 +41,10 @@ void registerInfo(MessageQueue *);
 void unregisterInfo(MessageQueue *);
 void info(const std::string & str);
 
+/* the real, physical screen size */
+int getScreenWidth();
+int getScreenHeight();
+
 }
 
 #endif
