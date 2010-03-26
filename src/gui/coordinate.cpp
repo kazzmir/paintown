@@ -4,38 +4,12 @@
 
 using namespace Gui;
 
-static int getHorizontalAbsolute(double x){
-    const int center = Global::getScreenWidth()/2;
+static int relativeToAbsolute(double x, int center){
     return (int)(center + (center * x));
 }
 
-static int getVerticalAbsolute(double y){
-    const int center = Global::getScreenHeight()/2;
-    return (int)(center + (center * y));
-}
-
-static double getHorizontalRelative(int x){
-    const int center = Global::getScreenWidth()/2;
-    if (x == center){
-        return 0;
-    } else if (x < center){
-        return -( (x/center) * .01);
-    } else if (x > center){
-        return ( ((x - center)/center) * .01);
-    }
-    return 0;
-}
-
-static double getVerticalRelative(int y){
-    const int center = Global::getScreenHeight()/2;
-    if (y == center){
-        return 0;
-    } else if (y < center){
-        return -( (y/center) * .01);
-    } else if (y > center){
-        return ( ((y - center)/center) * .01);
-    }
-    return 0;
+static double absoluteToRelative(int x, int center){
+    return (x-center)/center;
 }
 
 AbsolutePoint::AbsolutePoint(){
@@ -59,13 +33,13 @@ RelativePoint::RelativePoint(double x, double y){
 RelativePoint::~RelativePoint(){
 }
 int RelativePoint::getX(){
-    return getHorizontalAbsolute(x);
+    return relativeToAbsolute(x,Global::getScreenWidth()/2);
 }
 int RelativePoint::getY(){
-    return getVerticalAbsolute(y);
+    return relativeToAbsolute(y,Global::getScreenHeight()/2);
 }
 AbsolutePoint RelativePoint::getAbsolute(){
-    return AbsolutePoint(getHorizontalAbsolute(x),getVerticalAbsolute(y));
+    return AbsolutePoint(relativeToAbsolute(x,Global::getScreenWidth()/2), relativeToAbsolute(y,Global::getScreenHeight()/2));
 }
 double RelativePoint::getRelativeX(){
     return x;
