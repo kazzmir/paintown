@@ -14,6 +14,30 @@ static int getVerticalAbsolute(double y){
     return (int)(center + (center * y));
 }
 
+static double getHorizontalRelative(int x){
+    const int center = Global::getScreenWidth()/2;
+    if (x == center){
+        return 0;
+    } else if (x < center){
+        return -( (x/center) * .01);
+    } else if (x > center){
+        return ( ((x - center)/center) * .01);
+    }
+    return 0;
+}
+
+static double getVerticalRelative(int y){
+    const int center = Global::getScreenHeight()/2;
+    if (y == center){
+        return 0;
+    } else if (y < center){
+        return -( (y/center) * .01);
+    } else if (y > center){
+        return ( ((y - center)/center) * .01);
+    }
+    return 0;
+}
+
 AbsolutePoint::AbsolutePoint(){
 }
 AbsolutePoint::AbsolutePoint(int x, int y){
