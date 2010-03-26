@@ -6,12 +6,12 @@ using namespace Gui;
 
 static int getHorizontalAbsolute(double x){
     const int center = Global::getScreenWidth()/2;
-    return center + (center * x);
+    return (int)(center + (center * x));
 }
 
 static int getVerticalAbsolute(double y){
     const int center = Global::getScreenHeight()/2;
-    return center + (center * y);
+    return (int)(center + (center * y));
 }
 
 AbsolutePoint::AbsolutePoint(){
@@ -58,9 +58,9 @@ Coordinate::Coordinate(const RelativePoint &, const RelativePoint &){
 }
 Coordinate::~Coordinate(){
 }
-void Coordinate::setZ(int z){
+void Coordinate::setZ(double z){
 }
-void Coordinate::setRadius(int radius){
+void Coordinate::setRadius(double radius){
 }
 int Coordinate::getX(){
     return position.getX();

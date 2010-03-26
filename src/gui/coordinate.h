@@ -41,12 +41,12 @@ class Coordinate {
         Coordinate(const RelativePoint &, const RelativePoint &);
         virtual ~Coordinate();
     
-        virtual void setZ(int z);
-        virtual inline int getZ(){
+        virtual void setZ(double z);
+        virtual inline double getZ(){
             return this->z;
         }
-        virtual void setRadius(int radius);
-        virtual inline int getRadius(){
+        virtual void setRadius(double radius);
+        virtual inline double getRadius(){
             return this->radius;
         }
         
