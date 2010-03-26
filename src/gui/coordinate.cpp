@@ -12,12 +12,27 @@ static double absoluteToRelative(int x, int center){
     return (x-center)/center;
 }
 
-AbsolutePoint::AbsolutePoint(){
+AbsolutePoint::AbsolutePoint():
+x(0),
+y(0){
 }
-AbsolutePoint::AbsolutePoint(int x, int y){
+AbsolutePoint::AbsolutePoint(int x, int y):
+x(x),
+y(y){
+}
+AbsolutePoint::AbsolutePoint(const AbsolutePoint & copy):
+x(copy.x),
+y(copy.y){
 }
 AbsolutePoint::~AbsolutePoint(){
 }
+
+const AbsolutePoint & AbsolutePoint::operator=(const AbsolutePoint & copy){
+    this->x = copy.x;
+    this->y = copy.y;
+    return *this;
+}
+
 int AbsolutePoint::getX(){
     return x;
 }
@@ -26,12 +41,34 @@ int AbsolutePoint::getY(){
 }
 
 
-RelativePoint::RelativePoint(){
+RelativePoint::RelativePoint():
+x(0),
+y(0){
 }
-RelativePoint::RelativePoint(double x, double y){
+RelativePoint::RelativePoint(double x, double y):
+x(x),
+y(y){
 }
+
+RelativePoint::RelativePoint(const RelativePoint & copy):
+x(copy.x),
+y(copy.y){
+}
+
+RelativePoint::RelativePoint(AbsolutePoint & point):
+x(absoluteToRelative(point.getX(),Global::getScreenWidth()/2)),
+y(absoluteToRelative(point.getY(),Global::getScreenHeight()/2)){
+}
+
 RelativePoint::~RelativePoint(){
 }
+
+const RelativePoint & RelativePoint::operator=(const RelativePoint & copy){
+    this->x = copy.x;
+    this->y = copy.y;
+    return *this;
+}
+
 int RelativePoint::getX(){
     return relativeToAbsolute(x,Global::getScreenWidth()/2);
 }
@@ -50,7 +87,7 @@ double RelativePoint::getRelativeY(){
 
 Coordinate::Coordinate(){
 }
-Coordinate::Coordinate(const AbsolutePoint &, const AbsolutePoint &){
+Coordinate::Coordinate(const AbsolutePoint & position, const AbsolutePoint & dimensions){
 }
 Coordinate::Coordinate(const RelativePoint &, const RelativePoint &){
 }

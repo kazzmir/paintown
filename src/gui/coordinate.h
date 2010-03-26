@@ -9,9 +9,17 @@ class AbsolutePoint {
     public:
         AbsolutePoint();
         AbsolutePoint(int x, int y);
+        AbsolutePoint(const AbsolutePoint &);
         virtual ~AbsolutePoint();
         
+        const AbsolutePoint & operator=(const AbsolutePoint &);
+        virtual inline void setX(int x){
+            this->x = x;
+        }
         virtual int getX();
+        virtual inline void setY(int y){
+            this->y = y;
+        }
         virtual int getY();
     private:
         int x;
@@ -22,9 +30,18 @@ class RelativePoint {
     public:
         RelativePoint();
         RelativePoint(double x, double y);
+        RelativePoint(const RelativePoint &);
+        RelativePoint(AbsolutePoint &);
         virtual ~RelativePoint();
         
+        const RelativePoint & operator=(const RelativePoint &);
+        virtual inline void setX(double x){
+            this->x = x;
+        }
         virtual int getX();
+        virtual inline void setY(double y){
+            this->y = y;
+        }
         virtual int getY();
         virtual AbsolutePoint getAbsolute();
         virtual double getRelativeX();
