@@ -26,7 +26,7 @@ class RelativePoint {
         
         virtual int getX();
         virtual int getY();
-        virtual const AbsolutePoint & getAbsolute();
+        virtual AbsolutePoint getAbsolute();
         virtual double getRelativeX();
         virtual double getRelativeY();
     private:
