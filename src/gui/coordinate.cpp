@@ -1,3 +1,5 @@
+#include "util/bitmap.h"
+
 #include "gui/coordinate.h"
 
 #include "globals.h"
@@ -68,6 +70,12 @@ const RelativePoint & RelativePoint::operator=(const RelativePoint & copy){
     this->y = copy.y;
     return *this;
 }
+bool RelativePoint::operator==(const RelativePoint & point){
+    return (this->x == point.x && this->y == point.y);
+}
+bool RelativePoint::operator!=(const RelativePoint & point){
+    return (this->x != point.x || this->y != point.y);
+}
 
 int RelativePoint::getX(){
     return relativeToAbsolute(x,Global::getScreenWidth()/2);
@@ -85,17 +93,23 @@ double RelativePoint::getRelativeY(){
     return y;
 }
 
-Coordinate::Coordinate(){
+Coordinate::Coordinate():
+z(0),
+radius(0){
 }
-Coordinate::Coordinate(const AbsolutePoint & position, const AbsolutePoint & dimensions){
+Coordinate::Coordinate(AbsolutePoint & position, AbsolutePoint & dimensions):
+position(position),
+dimensions(dimensions),
+z(0),
+radius(0){
 }
-Coordinate::Coordinate(const RelativePoint &, const RelativePoint &){
+Coordinate::Coordinate(const RelativePoint &, const RelativePoint &):
+position(position),
+dimensions(dimensions),
+z(0),
+radius(0){
 }
 Coordinate::~Coordinate(){
-}
-void Coordinate::setZ(double z){
-}
-void Coordinate::setRadius(double radius){
 }
 int Coordinate::getX(){
     return position.getX();
@@ -109,4 +123,28 @@ int Coordinate::getWidth(){
 int Coordinate::getHeight(){
     return dimensions.getY();
 }
+int Coordinate::getX2(){
+    return position.getX() + dimensions.getX();
+}
+int Coordinate::getY2(){
+    return position.getY() + dimensions.getY();
+}
+bool Coordinate::operator==( const Coordinate & coord){
+    return ( (position == coord.position) &&
+            (dimensions == coord.dimensions));
+}
 
+bool Coordinate::operator!=( const Coordinate & coord){
+    return ( (position != coord.position) ||
+            (dimensions != coord.dimensions));
+}
+
+bool Coordinate::operator==( const Bitmap & bmp){
+    return ( (dimensions.getX() == bmp.getWidth()) &&
+            (dimensions.getY() == bmp.getHeight()));
+}
+
+bool Coordinate::operator!=( const Bitmap & bmp){
+    return ( (dimensions.getX() != bmp.getWidth()) ||
+            (dimensions.getY() != bmp.getHeight()));
+}

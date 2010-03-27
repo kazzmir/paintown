@@ -1,6 +1,8 @@
 #ifndef _paintown_gui_coordinate_h
 #define _paintown_gui_coordinate_h
 
+class Bitmap;
+
 namespace Gui {
 
 /* Coordinate system for handling scalable graphics */
@@ -35,6 +37,8 @@ class RelativePoint {
         virtual ~RelativePoint();
         
         const RelativePoint & operator=(const RelativePoint &);
+        bool operator==(const RelativePoint &);
+        bool operator!=(const RelativePoint &);
         virtual inline void setX(double x){
             this->x = x;
         }
@@ -54,15 +58,19 @@ class RelativePoint {
 class Coordinate {
     public:
         Coordinate();
-        Coordinate(const AbsolutePoint &, const AbsolutePoint &);
+        Coordinate(AbsolutePoint &, AbsolutePoint &);
         Coordinate(const RelativePoint &, const RelativePoint &);
         virtual ~Coordinate();
     
-        virtual void setZ(double z);
+        virtual inline void setZ(double z){
+            this->z = z;
+        }
         virtual inline double getZ(){
             return this->z;
         }
-        virtual void setRadius(double radius);
+        virtual inline void setRadius(double radius){
+            this->radius = radius;
+        }
         virtual inline double getRadius(){
             return this->radius;
         }
@@ -71,6 +79,12 @@ class Coordinate {
         virtual int getY();
         virtual int getWidth();
         virtual int getHeight();
+        virtual int getX2();
+        virtual int getY2();
+        bool operator==( const Coordinate &);
+        bool operator!=( const Coordinate &);
+        bool operator==( const Bitmap &);
+        bool operator!=( const Bitmap &);
         
         virtual inline const RelativePoint & getPosition(){
             return this->position;
