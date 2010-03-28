@@ -74,7 +74,7 @@ bool RelativePoint::operator==(const RelativePoint & point){
     return (this->x == point.x && this->y == point.y);
 }
 bool RelativePoint::operator!=(const RelativePoint & point){
-    return (this->x != point.x || this->y != point.y);
+    return !(*this == point);
 }
 
 int RelativePoint::getX(){
