@@ -135,8 +135,8 @@ bool Coordinate::operator==( const Coordinate & coord){
 }
 
 bool Coordinate::operator!=( const Coordinate & coord){
-    return ( (position != coord.position) ||
-            (dimensions != coord.dimensions));
+    return ( !(position == coord.position) ||
+            !(dimensions == coord.dimensions));
 }
 
 bool Coordinate::operator==( const Bitmap & bmp){
@@ -145,6 +145,6 @@ bool Coordinate::operator==( const Bitmap & bmp){
 }
 
 bool Coordinate::operator!=( const Bitmap & bmp){
-    return ( (dimensions.getX() != bmp.getWidth()) ||
-            (dimensions.getY() != bmp.getHeight()));
+    return ( !(dimensions.getX() == bmp.getWidth()) ||
+            !(dimensions.getY() == bmp.getHeight()));
 }
