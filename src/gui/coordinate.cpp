@@ -70,6 +70,10 @@ const RelativePoint & RelativePoint::operator=(const RelativePoint & copy){
     this->y = copy.y;
     return *this;
 }
+const RelativePoint & RelativePoint::operator=(AbsolutePoint & point){
+    *this = RelativePoint(point);
+    return *this;
+}
 bool RelativePoint::operator==(const RelativePoint & point){
     return (this->x == point.x && this->y == point.y);
 }
@@ -109,8 +113,24 @@ dimensions(dimensions),
 z(0),
 radius(0){
 }
+Coordinate::Coordinate(const Coordinate & copy):
+position(copy.position),
+dimensions(copy.dimensions),
+z(copy.z),
+radius(copy.radius){
+}
 Coordinate::~Coordinate(){
 }
+
+const Coordinate & Coordinate::operator=(const Coordinate & copy){
+    this->position = copy.position;
+    this->dimensions = copy.dimensions;
+    this->z = copy.z;
+    this->radius = copy.radius;
+    
+    return *this;
+}
+
 int Coordinate::getX(){
     return position.getX();
 }
@@ -118,16 +138,16 @@ int Coordinate::getY(){
     return position.getY();
 }
 int Coordinate::getWidth(){
-    return dimensions.getX();
+    return dimensions.getX() - position.getX();
 }
 int Coordinate::getHeight(){
-    return dimensions.getY();
+    return dimensions.getY() - position.getY();
 }
 int Coordinate::getX2(){
-    return position.getX() + dimensions.getX();
+    return dimensions.getX();
 }
 int Coordinate::getY2(){
-    return position.getY() + dimensions.getY();
+    return dimensions.getY();
 }
 bool Coordinate::operator==( const Coordinate & coord){
     return ( (position == coord.position) &&

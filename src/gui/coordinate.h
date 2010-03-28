@@ -37,6 +37,7 @@ class RelativePoint {
         virtual ~RelativePoint();
         
         const RelativePoint & operator=(const RelativePoint &);
+        const RelativePoint & operator=(AbsolutePoint &);
         bool operator==(const RelativePoint &);
         bool operator!=(const RelativePoint &);
         virtual inline void setX(double x){
@@ -60,7 +61,10 @@ class Coordinate {
         Coordinate();
         Coordinate(AbsolutePoint &, AbsolutePoint &);
         Coordinate(const RelativePoint &, const RelativePoint &);
+        Coordinate(const Coordinate &);
         virtual ~Coordinate();
+        
+        const Coordinate & operator=(const Coordinate &);
     
         virtual inline void setZ(double z){
             this->z = z;
@@ -86,11 +90,15 @@ class Coordinate {
         bool operator==( const Bitmap &);
         bool operator!=( const Bitmap &);
         
-        virtual inline const RelativePoint & getPosition(){
+        virtual inline RelativePoint & getPosition(){
             return this->position;
         }
-        virtual inline const RelativePoint & getDimensions(){
+        virtual inline RelativePoint & getDimensions(){
             return this->dimensions;
+        }
+        
+        virtual inline bool empty(){
+            return (dimensions.getX() == 0 && dimensions.getY() == 0);
         }
         
     private:
