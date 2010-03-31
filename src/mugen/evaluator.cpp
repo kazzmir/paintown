@@ -158,9 +158,8 @@ public:
     }
     
     RuntimeValue evalRange(const Ast::Range & range){
-        int low, high;
-        *range.getLow() >> low;
-        *range.getHigh() >> high;
+        int low = (int) toNumber(evaluate(range.getLow()));
+        int high = (int) toNumber(evaluate(range.getHigh()));
         switch (range.getRangeType()){
             case Ast::Range::AllInclusive : return RuntimeValue(low - 1, high + 1);
             case Ast::Range::AllExclusive : return RuntimeValue(low, high);
