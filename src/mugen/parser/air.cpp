@@ -832,7 +832,7 @@ Result rule_line(Stream & stream, const int position, Value current){
         
         
     }
-    
+    stream.update(result_peg_18.getPosition());
     
     return result_peg_18;
     out_peg_20:
@@ -862,11 +862,11 @@ Result rule_line(Stream & stream, const int position, Value current){
         
         
     }
-    
+    stream.update(result_peg_21.getPosition());
     
     return result_peg_21;
     out_peg_23:
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -1013,7 +1013,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
         
     }
-    
+    stream.update(result_peg_42.getPosition());
     
     return result_peg_42;
     out_peg_44:
@@ -1044,7 +1044,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
         
     }
-    
+    stream.update(result_peg_45.getPosition());
     
     return result_peg_45;
     out_peg_47:
@@ -1075,7 +1075,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
         
     }
-    
+    stream.update(result_peg_49.getPosition());
     
     return result_peg_49;
     out_peg_51:
@@ -1106,7 +1106,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
         
     }
-    
+    stream.update(result_peg_53.getPosition());
     
     return result_peg_53;
     out_peg_55:
@@ -1137,11 +1137,11 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         
         
     }
-    
+    stream.update(result_peg_57.getPosition());
     
     return result_peg_57;
     out_peg_59:
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }

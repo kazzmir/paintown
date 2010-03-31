@@ -2250,7 +2250,7 @@ def rule_%s(%s, %s%s%s):
         
         def updateChunk(new, columnVar, memo):
             if not memo:
-                return ""
+                return "%s.update(%s.getPosition());" % (stream, new)
             chunk = chunk_accessor.getChunk(columnVar)
             data = """
 if (%s == 0){

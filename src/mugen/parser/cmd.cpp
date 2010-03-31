@@ -1323,7 +1323,7 @@ Result rule_line(Stream & stream, const int position, Value current){
         
         
     }
-    
+    stream.update(result_peg_23.getPosition());
     
     return result_peg_23;
     out_peg_25:
@@ -1353,11 +1353,11 @@ Result rule_line(Stream & stream, const int position, Value current){
         
         
     }
-    
+    stream.update(result_peg_26.getPosition());
     
     return result_peg_26;
     out_peg_28:
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -2025,7 +2025,7 @@ Result rule_section_item(Stream & stream, const int position, Value ast){
         
         
     }
-    
+    stream.update(result_peg_118.getPosition());
     
     return result_peg_118;
     out_peg_120:
@@ -2056,11 +2056,11 @@ Result rule_section_item(Stream & stream, const int position, Value ast){
         
         
     }
-    
+    stream.update(result_peg_121.getPosition());
     
     return result_peg_121;
     out_peg_123:
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -4733,10 +4733,10 @@ Result rule_expr_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_454.getPosition());
     
     return result_peg_454;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -4817,10 +4817,10 @@ Result rule_expr2_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_466.getPosition());
     
     return result_peg_466;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -4901,10 +4901,10 @@ Result rule_expr3_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_478.getPosition());
     
     return result_peg_478;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -4985,10 +4985,10 @@ Result rule_expr4_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_490.getPosition());
     
     return result_peg_490;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -5069,10 +5069,10 @@ Result rule_expr5_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_502.getPosition());
     
     return result_peg_502;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -5153,10 +5153,10 @@ Result rule_expr6_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_514.getPosition());
     
     return result_peg_514;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -5237,10 +5237,10 @@ Result rule_expr7_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_526.getPosition());
     
     return result_peg_526;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -5373,10 +5373,10 @@ Result rule_expr8_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_545.getPosition());
     
     return result_peg_545;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -5458,10 +5458,10 @@ Result rule_expr9_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_557.getPosition());
     
     return result_peg_557;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -5828,10 +5828,10 @@ Result rule_expr10_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_598.getPosition());
     
     return result_peg_598;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -6016,10 +6016,10 @@ Result rule_expr11_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_624.getPosition());
     
     return result_peg_624;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -6100,10 +6100,10 @@ Result rule_expr12_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_636.getPosition());
     
     return result_peg_636;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
@@ -9287,10 +9287,10 @@ Result rule_key_rest(Stream & stream, const int position, Value left){
         
         
     }
-    
+    stream.update(result_peg_991.getPosition());
     
     return result_peg_991;
-    
+    stream.update(errorResult.getPosition());
     
     return errorResult;
 }
