@@ -981,33 +981,39 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     
-    std::string ourSection = Mugen::Util::fixCase(section);;
-    std::string ourSearch = Mugen::Util::fixCase(search);;
+    std::string ourSection = fixCase(section);;
+    std::string ourSearch = fixCase(search);;
    
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
 	Ast::Section * astSection = *section_it;
 	std::string head = astSection->getName();
         
-	head = Mugen::Util::fixCase(head);
+	head = fixCase(head);
 
         if (head.compare(ourSection) == 0){
 	    class SearchWalker: public Ast::Walker{
-		public:
-		    SearchWalker(const std::string &search, std::string &result):
-		    search(search),
-		    result(result){}
-		    virtual ~SearchWalker(){}
-		    const std::string &search;
-		    std::string &result;
-		    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-			if (simple.idString().find(search)!=std::string::npos){
-			    simple >> result;
-			    Global::debug(1) << "Found result: " << result << endl;
-			} 
-		    }
+            public:
+                SearchWalker(const std::string &search, std::string &result):
+                search(search),
+                result(result){}
+                virtual ~SearchWalker(){}
+                const std::string &search;
+                std::string &result;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    /* I don't think using 'find' is the right thing, instead you want
+                     * to compare the strings for an exact case-insensitive equivalence.
+                     * that is, if the attribute is 'foobar = 2' and you search for
+                     * 'foo' then you should not get a match.
+                     */
+                    if (fixCase(simple.idString()).find(search) != std::string::npos){
+                        simple >> result;
+                        Global::debug(1) << "Found result: " << result << endl;
+                    } 
+                }
 	    };
-	    std::string result = "";
-	    SearchWalker walk(ourSearch,result);
+	    std::string result;
+	    SearchWalker walk(ourSearch, result);
 	    astSection->walk(walk);
 	    
 	    if (!result.empty()){
