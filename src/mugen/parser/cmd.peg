@@ -411,6 +411,7 @@ rules:
 	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
 	line(current) = s comment
 	              | s section {{ addSection(current, $2); }}
+                  | s newline
 	line_end = newline+
 	         | &<eof> <void>
 	inline newline = "\n"
