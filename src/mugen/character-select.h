@@ -935,7 +935,7 @@ class CharacterSelect {
         CharacterSelect(const Filesystem::AbsolutePath & file, const PlayerType &, const GameType &);
         virtual ~CharacterSelect();
 	
-	virtual void load() throw (MugenException);
+	virtual void load();
 	
 	virtual void run(const std::string & title, const Bitmap &);
 

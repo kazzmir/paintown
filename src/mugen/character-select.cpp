@@ -1108,7 +1108,7 @@ CharacterSelect::~CharacterSelect(){
     }
 }
 
-void CharacterSelect::load() throw (MugenException){
+void CharacterSelect::load(){
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
     
