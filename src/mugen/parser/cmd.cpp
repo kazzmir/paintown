@@ -3116,7 +3116,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_268 = rule_value(stream, result_peg_268.getPosition());
+        result_peg_268 = rule_expr_c(stream, result_peg_268.getPosition());
             if (result_peg_268.error()){
                 goto out_peg_270;
             }
@@ -3149,7 +3149,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_268 = rule_value(stream, result_peg_268.getPosition());
+        result_peg_268 = rule_expr_c(stream, result_peg_268.getPosition());
             if (result_peg_268.error()){
                 goto out_peg_270;
             }
@@ -3215,7 +3215,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_279 = rule_value(stream, result_peg_279.getPosition());
+        result_peg_279 = rule_expr_c(stream, result_peg_279.getPosition());
             if (result_peg_279.error()){
                 goto out_peg_281;
             }
@@ -3248,7 +3248,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_279 = rule_value(stream, result_peg_279.getPosition());
+        result_peg_279 = rule_expr_c(stream, result_peg_279.getPosition());
             if (result_peg_279.error()){
                 goto out_peg_281;
             }
@@ -3314,7 +3314,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_290 = rule_value(stream, result_peg_290.getPosition());
+        result_peg_290 = rule_expr_c(stream, result_peg_290.getPosition());
             if (result_peg_290.error()){
                 goto out_peg_292;
             }
@@ -3347,7 +3347,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_290 = rule_value(stream, result_peg_290.getPosition());
+        result_peg_290 = rule_expr_c(stream, result_peg_290.getPosition());
             if (result_peg_290.error()){
                 goto out_peg_292;
             }
@@ -3413,7 +3413,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_301 = rule_value(stream, result_peg_301.getPosition());
+        result_peg_301 = rule_expr_c(stream, result_peg_301.getPosition());
             if (result_peg_301.error()){
                 goto out_peg_303;
             }
@@ -3446,7 +3446,7 @@ Result rule_range(Stream & stream, const int position){
         
         
         
-        result_peg_301 = rule_value(stream, result_peg_301.getPosition());
+        result_peg_301 = rule_expr_c(stream, result_peg_301.getPosition());
             if (result_peg_301.error()){
                 goto out_peg_303;
             }

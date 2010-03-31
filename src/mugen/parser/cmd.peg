@@ -442,10 +442,10 @@ rules:
 	            | "+"
     # [,] is inclusive
     # (,) is exclusive
-	range = "[" s low:value s "," s high:value s "]" {{ value = makeRange(Ast::Range::AllInclusive, low, high); }}
-	      | "(" s low:value s "," s high:value s ")" {{ value = makeRange(Ast::Range::AllExclusive, low, high); }}
-	      | "(" s low:value s "," s high:value s "]" {{ value = makeRange(Ast::Range::LeftExclusiveRightInclusive, low, high); }}
-	      | "[" s low:value s "," s high:value s ")" {{ value = makeRange(Ast::Range::LeftInclusiveRightExclusive, low, high); }}
+	range = "[" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::AllInclusive, low, high); }}
+	      | "(" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::AllExclusive, low, high); }}
+	      | "(" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::LeftExclusiveRightInclusive, low, high); }}
+	      | "[" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::LeftInclusiveRightExclusive, low, high); }}
 	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	alpha_digit = letter
