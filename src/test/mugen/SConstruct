@@ -1,7 +1,7 @@
 Import('use')
 
 testEnv = use.Clone()
-testEnv.BuildDir('test', '../../')
+testEnv.BuildDir('test', '../../', duplicate = False)
 
 use = testEnv
 SConscript('../../mugen/parser/SConstruct', exports = ['use'], build_dir = 'test-parser')
