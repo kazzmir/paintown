@@ -424,6 +424,7 @@ rules:
 	comment = ";" (!"\n" .)*
 	        | "=" (!"\n" .)*
 		    | "-" "-"+
+            | ":" ":"+
     section = section_title ast:{{ value = makeSection($1); }} whitespace newline+ (section_item(ast) whitespace line_end)* {{ value = ast; }}
 
     section_item(ast) = s comment
