@@ -1001,12 +1001,7 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
                 std::string &result;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    /* I don't think using 'find' is the right thing, instead you want
-                     * to compare the strings for an exact case-insensitive equivalence.
-                     * that is, if the attribute is 'foobar = 2' and you search for
-                     * 'foo' then you should not get a match.
-                     */
-                    if (fixCase(simple.idString()).find(search) != std::string::npos){
+                    if (simple == search){
                         simple >> result;
                         Global::debug(1) << "Found result: " << result << endl;
                     } 
