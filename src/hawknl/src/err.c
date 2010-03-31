@@ -73,7 +73,7 @@ void nlSetError(NLenum err)
     }
     if(key != KEY_NULL)
     {
-        (void)pthread_setspecific(key, (void *)err);
+        (void)pthread_setspecific(key, (void *)(long)err);
     }
 #endif
 }
@@ -110,7 +110,7 @@ HL_EXP NLenum HL_APIENTRY nlGetError(void)
     }
     else
     {
-        result = (NLenum)pthread_getspecific(key);
+        result = (NLenum)(long)pthread_getspecific(key);
         return result;
     }
 #endif
