@@ -253,12 +253,12 @@ rules:
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
 	value = string
 	      | date
-	      | number
+	      | number !letter !"-" {{ value = $1; }}
           | attribute_simple
           | keyword {{ value = makeKeyword($1); }}
-	      | "s"{case} !letter !"." {{ value = makeKeyword($1); }}
-	      | "h"{case} !letter !"." {{ value = makeKeyword($1); }}
-	      | "a"{case} number? !letter {{ value = makeKeyword($1); }}
+	      | "s"{case} !filename_char !"." {{ value = makeKeyword($1); }}
+	      | "h"{case} !filename_char !"." {{ value = makeKeyword($1); }}
+	      | "a"{case} number? !filename_char {{ value = makeKeyword($1); }}
           | filename
     keyword = "normal"
             | "parallax"
