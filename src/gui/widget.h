@@ -5,6 +5,7 @@
 #include "gui/coordinate.h"
 
 class Bitmap;
+class Token;
 
 namespace Gui{
     
@@ -23,6 +24,10 @@ class Widget{
         
         // copy
         Widget &operator=( const Widget &);
+        
+        void setCoordinates(Token * token);
+        
+        void setColors(Token * token);
         
         //! position info
         RectArea position;

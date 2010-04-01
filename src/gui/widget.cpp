@@ -2,6 +2,8 @@
 #include "gui/widget.h"
 #include <math.h>
 #include "globals.h"
+#include "util/token.h"
+#include "gui/coordinate.h"
 
 using namespace Gui;
 
@@ -45,6 +47,46 @@ Widget &Widget::operator=( const Widget &copy){
 	workArea = copy.workArea;
 	
 	return *this;
+}
+
+void Widget::setCoordinates(Token * token){
+    if ( *token == "position" ){
+        int x, y, width, height;
+        *token >> x >> y >> width >> height;
+        AbsolutePoint pos(x, y);
+        AbsolutePoint dimensions(x + width, y + height);
+        location = Coordinate(pos, dimensions);
+        // Set rectarea to facilitate compatibility but will remove later
+        position = RectArea(x,y,width,height);
+    } else if ( *token == "relative-position" ){
+        double x1, y1, x2, y2;
+        *token >> x1 >> y1 >> x2 >> y2;
+        RelativePoint pos(x1,y1);
+        RelativePoint dimensions(x2,y2);
+        location = Coordinate(pos, dimensions);
+        // Set rectarea to facilitate compatibility but will remove later
+        position = RectArea(location.getX(),location.getY(),location.getWidth(),location.getHeight());
+    }
+}
+
+void Widget::setColors(Token * token){
+    if ( *token == "position-body" ) {
+        // This handles the body color of the widget
+        int r,g,b;
+        *token >> r >> g >> b >> colors.bodyAlpha;
+        colors.body = Bitmap::makeColor(r,g,b);
+        // Set rectarea to facilitate compatibility but will remove later
+        position.body = colors.body;
+        position.bodyAlpha = colors.bodyAlpha;
+    } else if ( *token == "position-border" ) {
+        // This handles the border color of the widget
+        int r,g,b;
+        *token >> r >> g >> b >> colors.borderAlpha;
+        colors.border = Bitmap::makeColor(r,g,b);
+        // Set rectarea to facilitate compatibility but will remove later
+        position.border = colors.border;
+        position.borderAlpha = colors.borderAlpha;
+    } 
 }
 
 void Widget::arc( Bitmap *work, int x, int y, double startAngle, int radius, int color )

@@ -200,7 +200,6 @@ removeOption(false),
 background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
 option(false){
-	contextMenu.position.radius = 15;
 	optionInfoTextLocation.x = 320;
 	optionInfoTextLocation.y = 100;
 	menuInfoLocation.x = 320;
@@ -294,17 +293,15 @@ void Menu::load(Token *token) throw (LoadException){
                 clearColor = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
-                *tok >> contextMenu.position.x >> contextMenu.position.y >> contextMenu.position.width >> contextMenu.position.height;
+                contextMenu.setCoordinates(tok);
+            } else if ( *tok == "relative-position"){
+                contextMenu.setCoordinates(tok);
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
-                int r,g,b;
-                *tok >> r >> g >> b >> contextMenu.position.bodyAlpha;
-                contextMenu.position.body = Bitmap::makeColor(r,g,b);
+                contextMenu.setColors(tok);
             } else if ( *tok == "position-border" ) {
                 // This handles the border color of the menu box
-                int r,g,b;
-                *tok >> r >> g >> b >> contextMenu.position.borderAlpha;
-                contextMenu.position.border = Bitmap::makeColor(r,g,b);
+                contextMenu.setColors(tok);
             } else if ( *tok == "fade-speed" ) {
                 // Menu fade in speed
                 int speed;
@@ -382,6 +379,10 @@ void Menu::load(Token *token) throw (LoadException){
     if (hasOptions){
         setupOptions();
     }
+    
+    // Make menus rounded
+    contextMenu.position.radius = 15;
+        
 }
 
 void Menu::setupOptions(){

@@ -108,7 +108,6 @@ location(0),
 targetOffset(0),
 totalOffset(0),
 totalLines(1){
-    contentArea.position.radius=15;
 }
 
 void TabMenu::load(Token *token) throw (LoadException){
@@ -128,26 +127,13 @@ void TabMenu::load(Token *token) throw (LoadException){
                 setName(temp);
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
-                //*tok >> backboard.position.x >> backboard.position.y >> backboard.position.width >> backboard.position.height;
-                *tok >> contentArea.position.x >> contentArea.position.y >> contentArea.position.width >> contentArea.position.height;
+                contentArea.setCoordinates(tok);
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
-                int r,g,b;
-                /*
-                *tok >> r >> g >> b >> backboard.position.bodyAlpha;
-                backboard.position.body = Bitmap::makeColor(r,g,b);
-                */
-                *tok >> r >> g >> b >> contentArea.position.bodyAlpha;
-                contentArea.position.body = Bitmap::makeColor(r,g,b);
+                contentArea.setColors(tok);
             } else if ( *tok == "position-border" ) {
                 // This handles the border color of the menu box
-                int r,g,b;
-                /*
-                *tok >> r >> g >> b >> backboard.position.borderAlpha;
-                backboard.position.border = Bitmap::makeColor(r,g,b);
-                */
-                *tok >> r >> g >> b >> contentArea.position.borderAlpha;
-                contentArea.position.border = Bitmap::makeColor(r,g,b);
+                contentArea.setColors(tok);
             } else if ( *tok == "tab-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
@@ -276,6 +262,9 @@ void TabMenu::load(Token *token) throw (LoadException){
 
     // Set totalLines
     calculateTabLines();
+    
+    // Set radius
+    contentArea.position.radius=15;
 }
 
 /* FIXME: this method is a duplicate of Menu::load */
