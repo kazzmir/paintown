@@ -2712,7 +2712,7 @@ std::cout << "Parsed def!" << std::endl;
 
 # BNF for parsing BNF description
 # This bootstraps the system so we can write normal BNF rules in a file
-def peg_bnf():
+def peg_bnf(peg_name):
     rules = [
         Rule("start", [
             PatternSequence([
@@ -3163,12 +3163,12 @@ value = peg.PatternRule(name, rule_parameters, parameters)
         Rule("newlines", [PatternRepeatMany(PatternVerbatim("\\n"))]),
     ]
 
-    peg = Peg("start", None, None, ['peg'], rules, [])
+    peg = Peg("start", None, None, [peg_name], rules, [])
     # print peg.generate_python()
     return peg
 
-def make_peg_parser():
-    return create_peg(peg_bnf())
+def make_peg_parser(name = 'peg'):
+    return create_peg(peg_bnf(name))
     # answer = parser('peg.in')
     # print "Got " + str(answer)
     # print answer.generate()
@@ -3193,7 +3193,7 @@ def help_syntax():
     print "  <eof>"
     print
     print "BNF grammar for a peg grammar"
-    print peg_bnf().generate_bnf()
+    print peg_bnf('peg').generate_bnf()
 
 def help():
     print "Options:"
@@ -3203,16 +3203,20 @@ def help():
     print "--python : Generate python parser"
     print "--cpp,--c++ : Generate c++ parser"
     print "--save=filename : Save all generated parser output to a file, 'filename'"
+    print "--peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'."
 
 # make_peg_parser()
 if __name__ == '__main__':
     import sys
     import re
-    parser = make_peg_parser()
     doit = []
     file = None
     helped = 0
+    def default_peg():
+        return make_peg_parser()
+    peg_maker = default_peg
     save_re = re.compile('--save=(.*)')
+    peg_name_re = re.compile('--peg-name=(.*)')
     def print_it(p):
         print p
     do_output = print_it
@@ -3232,6 +3236,12 @@ if __name__ == '__main__':
             parallel[0] = True
         elif arg == "--help-syntax":
             help_syntax()
+        elif peg_name_re.match(arg):
+            all = peg_name_re.match(arg)
+            name = all.group(1)
+            def make_peg():
+                return make_peg_parser(name)
+            peg_maker = make_peg
         elif save_re.match(arg):
             all = save_re.match(arg)
             fout = open(all.group(1), 'w')
@@ -3244,13 +3254,14 @@ if __name__ == '__main__':
             helped = 1
         else:
             file = arg
-
+    
     if file != None:
+        parser = peg_maker()
         out = parser(file)
         # print out
         if out != None:
             if len(doit) == 0:
-                print "Grammar file looks good!. Use some options to generate code"
+                print "Grammar file '%s' looks good!. Use some options to generate a peg parser. -h will list all available options." % file
             else:
                 for generate in doit:
                     do_output(generate(out))
