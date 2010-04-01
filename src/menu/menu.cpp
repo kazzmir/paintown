@@ -810,7 +810,7 @@ void Menu::setMenuInfo(const std::string & text){
     menuInfoBox.position.body = Bitmap::makeColor(32,32,0);
     menuInfoBox.position.bodyAlpha = contextMenu.position.bodyAlpha;
     menuInfoBox.position.border = contextMenu.position.border;
-    menuInfoBox.position.border = contextMenu.position.borderAlpha;
+    menuInfoBox.position.borderAlpha = contextMenu.position.borderAlpha;
     menuInfoBox.open();
 }
 
@@ -830,7 +830,7 @@ void Menu::addInfoBox(const std::string & text){
     temp->position.body = Bitmap::makeColor(32,32,0);
     temp->position.bodyAlpha = contextMenu.position.bodyAlpha;
     temp->position.border = contextMenu.position.border;
-    temp->position.border = contextMenu.position.borderAlpha;
+    temp->position.borderAlpha = contextMenu.position.borderAlpha;
     temp->open();
     optionInfoBoxes.push_back(temp);
 }

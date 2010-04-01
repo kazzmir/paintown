@@ -66,6 +66,34 @@ void Widget::setCoordinates(Token * token){
         location = Coordinate(pos, dimensions);
         // Set rectarea to facilitate compatibility but will remove later
         position = RectArea(location.getX(),location.getY(),location.getWidth(),location.getHeight());
+    } else if ( *token == "coordinate" ){
+        Token * tok;
+        *token >> tok;
+        while (tok->hasTokens()){
+            Token * coordToken;
+            *tok >> coordToken;
+            if (*coordToken == "absolute"){
+                int x, y, width, height;
+                *coordToken >> x >> y >> width >> height;
+                AbsolutePoint pos(x, y);
+                AbsolutePoint dimensions(x + width, y + height);
+                location = Coordinate(pos, dimensions);
+            } else if (*coordToken == "relative"){
+                double x1, y1, x2, y2;
+                *coordToken >> x1 >> y1 >> x2 >> y2;
+                RelativePoint pos(x1,y1);
+                RelativePoint dimensions(x2,y2);
+                location = Coordinate(pos, dimensions);                
+            } else if (*coordToken == "radius"){
+                double radius;
+                *coordToken >> radius;
+                location.setRadius(radius);
+            } else if (*coordToken == "z"){
+                double z;
+                *coordToken >> z;
+                location.setZ(z);
+            }
+        }
     }
 }
 
