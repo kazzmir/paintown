@@ -16,6 +16,11 @@ public:
     values(values){
         current_value = this->values.begin();
     }
+
+    ValueList(Value * value){
+        values.push_back(value);
+        current_value = this->values.begin();
+    }
     
     virtual void walk(Walker & walker) const {
         walker.onValueList(*this);
@@ -27,6 +32,17 @@ public:
 
     virtual bool hasMultiple() const {
         return true;
+    }
+
+    virtual Value * get(unsigned int index) const {
+        if (index >= 0 && index < values.size()){
+            unsigned int count = 0;
+            std::list<Value*>::const_iterator it;
+            for (it = values.begin(); count < index && it != values.end(); it++, count++){
+            }
+            return *it;
+        }
+        return 0;
     }
     
     virtual Element * copy() const {
@@ -147,22 +163,6 @@ public:
             value->mark(marks);
         }
     }
-
-    /*
-    virtual bool referenced(const void * value) const {
-        if (Value::referenced(value)){
-            return true;
-        }
-        
-        for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
-            if ((*it)->referenced(value)){
-                return true;
-            }
-        }
-
-        return false;
-    }
-    */
 
     virtual ~ValueList(){
         for (std::list<Value*>::iterator it = values.begin(); it != values.end(); it++){

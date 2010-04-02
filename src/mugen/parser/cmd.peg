@@ -176,12 +176,36 @@ Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     return expression;
 }
 
+Ast::Value * makeValueList(const Value & front, const Value & rest){
+    std::list<Ast::Value*> values;
+    values.push_back(as<Ast::Value*>(front));
+    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
+        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        if (value == 0){
+            /* FIXME! replace empty with a new node */
+            value = makeKeyword("empty");
+            values.push_back(value);
+        } else {
+            values.push_back(value);
+        }
+    }
+
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeFunction(const Value & name, const Value & arg1){
-    Ast::Value * function = new Ast::Function(std::string(as<const char*>(name)), as<Ast::Value*>(arg1));
+    Ast::Value * function = new Ast::Function(std::string(as<const char*>(name)), as<Ast::ValueList*>(arg1));
     GC::save(function);
     return function;
 }
 
+Ast::Value * makeFunction1(const Value & name, const Value & arg1){
+    return makeFunction(name, makeValueList(arg1, Value()));
+}
+
+/*
 Ast::Value * makeFunction(const Value & name, const Value & arg1, const Value & arg2, const Value & arg3){
     Ast::Value * function = new Ast::Function(std::string(as<const char*>(name)),
                                               as<Ast::Value*>(arg1),
@@ -190,6 +214,7 @@ Ast::Value * makeFunction(const Value & name, const Value & arg1, const Value & 
     GC::save(function);
     return function;
 }
+*/
 
 Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Value & high){
     Ast::Value * range = new Ast::Range(type, as<Ast::Value*>(low), as<Ast::Value*>(high));
@@ -223,25 +248,6 @@ Ast::Attribute * makeAttribute(const Value & id){
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
     Ast::Attribute * object = new Ast::AttributeArray(as<Ast::Identifier*>(id), as<Ast::Value*>(index), as<Ast::Value*>(data));
-    GC::save(object);
-    return object;
-}
-
-Ast::Value * makeValueList(const Value & front, const Value & rest){
-    std::list<Ast::Value*> values;
-    values.push_back(as<Ast::Value*>(front));
-    for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
-        Ast::Value * value = as<Ast::Value*>((*it).getValue());
-        if (value == 0){
-            /* FIXME! replace empty with a new node */
-            value = makeKeyword("empty");
-            values.push_back(value);
-        } else {
-            values.push_back(value);
-        }
-    }
-
-    Ast::ValueList * object = new Ast::ValueList(values);
     GC::save(object);
     return object;
 }
@@ -527,37 +533,72 @@ rules:
 	            | value
 	            | "(" s e:expr s ")" {{ value = e; }}
 
-    function = name:"abs"{case} s "(" s arg1:expr s ")"  {{ value = makeFunction(name, arg1); }}
-	         | name:"const"{case} s "(" s arg1:expr s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"selfanimexist"{case} s "(" s arg1:expr s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"ifelse"{case} s "(" s arg1:expr_c s "," s arg2:expr_c s "," s arg3:expr_c s ")" {{ value = makeFunction("ifelse", arg1, arg2, arg3); }}
-		     | name:"gethitvar"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"floor"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"ceil"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"sin"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"sysvar"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"var"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"numexplod"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"numhelper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"numprojid"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"helper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"fvar"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"enemynear"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"target"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"ishelper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"numtarget"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"animelemtime"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"animelemno"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"animexist"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"projguarded"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"projhittime"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"projcontact"{case} s "(" s arg1:expr_c s ")" s "=" s integer function_rest {{ value = makeExpression(); }}
+    function = name:function_name s "(" s args:args s ")" {{ value = makeFunction(name, args); }}
 		     | name:"animelem"{case} s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
-                value = makeFunction(name, arg1);
+                value = makeFunction1(name, arg1);
              }}
-		     | name:"numhelper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
-		     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+
+    args = expr1:expr_c expr_rest:(s "," s expr_c)* {{ value = makeValueList(expr1, expr_rest); }}
+    function_name = "abs"{case}
+	              | "const"{case}
+		          | "selfanimexist"{case}
+		          | "ifelse"{case}
+		          | "gethitvar"{case}
+		          | "floor"{case}
+		          | "ceil"{case}
+		          | "sin"{case}
+		          | "sysvar"{case}
+		          | "var"{case}
+		          | "numexplod"{case}
+		          | "numhelper"{case}
+		          | "numprojid"{case}
+		          | "helper"{case}
+		          | "fvar"{case}
+		          | "enemynear"{case}
+		          | "target"{case}
+		          | "ishelper"{case}
+		          | "numtarget"{case}
+		          | "animelemtime"{case}
+		          | "animelemno"{case}
+		          | "animexist"{case}
+		          | "projguarded"{case}
+		          | "projhittime"{case}
+		          | "projcontact"{case}
+		          | "numhelper"{case}
+		          | "helper"{case} s
+
+    #function1 = name:"abs"{case} s "(" s arg1:expr s ")"  {{ value = makeFunction(name, arg1); }}
+	#         | name:"const"{case} s "(" s arg1:expr s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"selfanimexist"{case} s "(" s arg1:expr s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"ifelse"{case} s "(" s arg1:expr_c s "," s arg2:expr_c s "," s arg3:expr_c s ")" {{ value = makeFunction("ifelse", arg1, arg2, arg3); }}
+	#	     | name:"gethitvar"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"floor"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"ceil"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"sin"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"sysvar"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"var"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"numexplod"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"numhelper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"numprojid"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"helper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"fvar"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"enemynear"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"target"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"ishelper"{case} s "(" s arg1:integer s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"numtarget"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"animelemtime"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"animelemno"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"animexist"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"projguarded"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"projhittime"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"projcontact"{case} s "(" s arg1:expr_c s ")" s "=" s integer function_rest {{ value = makeExpression(); }}
+	#	     | name:"animelem"{case} s "=" s arg1:integer function_rest {{
+    #            /* FIXME: handle function rest */
+    #            value = makeFunction(name, arg1);
+    #         }}
+	#	     | name:"numhelper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
+	#	     | name:"helper"{case} s "(" s arg1:expr_c s ")" {{ value = makeFunction(name, arg1); }}
 	function_rest = s "," s all_compare? s value
                   | <void>
 

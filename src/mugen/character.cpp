@@ -2489,7 +2489,7 @@ void Character::fixAssumptions(){
                             new Ast::Keyword("pos y")),
                         new Ast::SimpleIdentifier("internal:airjump-height")));
             controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::LessThan,
-                        new Ast::Function("sysvar", new Ast::Number(JumpIndex)),
+                        new Ast::Function("sysvar", new Ast::ValueList(new Ast::Number(JumpIndex))),
                         new Ast::SimpleIdentifier("internal:extra-jumps")));
             controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
