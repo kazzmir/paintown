@@ -2813,7 +2813,7 @@ value = 'debug%s' % number
                 PatternCode("""
 # print "all start symbol values " + str(values)
 # print "values[0] " + str(values[0])
-value = ''.join(values[0])
+value = ''.join(values[0]).replace('-', '__')
 # print "got word " + value
 """)
                 ]),
@@ -3140,7 +3140,7 @@ value = peg.PatternRule(name, rule_parameters, parameters)
         Rule("spaces", [PatternSequence([PatternRepeatMany(PatternRule("space"))])]),
         # Rule("space", [PatternRange(' \t')]),
         Rule("space", [PatternSequence([PatternVerbatim(" ")]), PatternSequence([PatternVerbatim("\\t")])]),
-        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_')]),
+        Rule("any_char", [PatternRange('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-')]),
         Rule("any", [PatternSequence([
             PatternVerbatim("."),
             PatternCode("""value = peg.PatternAny()""")]),
