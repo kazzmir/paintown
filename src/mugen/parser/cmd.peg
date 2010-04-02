@@ -166,6 +166,13 @@ Ast::Value * makeExpressionPower(const Value & left, const Value & right){
     return makeExpressionInfix(Ast::ExpressionInfix::Power, left, right);
 }
 
+Ast::Value * negateExpression(const Value & exp){
+    Ast::Value * expression = as<Ast::Value*>(exp);
+    Ast::Value * negation = new Ast::ExpressionUnary(Ast::ExpressionUnary::Negation, expression);
+    GC::save(negation);
+    return negation;
+}
+
 Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     Ast::Value * expression = as<Ast::Value*>(exp);
     for (Value::iterator it = unaries.getValues().begin(); it != unaries.getValues().end(); it++){
@@ -439,6 +446,7 @@ rules:
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
                | name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
+               | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
                | name:identifier s "=" s &line_end {{ value = makeAttribute(name); }}
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
 	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
