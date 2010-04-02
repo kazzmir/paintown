@@ -1013,6 +1013,13 @@ Ast::Identifier * makeSimpleIdentifier(const Value & name){
     return identifier;
 }
 
+Ast::Identifier * makeSimpleIdentifier(const char * name){
+    Ast::Identifier * identifier = new Ast::SimpleIdentifier(name);
+    GC::save(identifier);
+    return identifier;
+}
+
+
 double * parseDouble(const Value & value){
     std::string * str = toString(value);
     std::istringstream get(*str);
@@ -8664,7 +8671,7 @@ Result rule_hitflag(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                value = makeKeyword("A");
+                value = makeSimpleIdentifier("A");
                 result_peg_917.setValue(value);
             }
         

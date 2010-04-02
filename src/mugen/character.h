@@ -912,10 +912,14 @@ public:
 
     virtual void setVelocity(Ast::Value * x, Ast::Value * y);
     virtual void setPhysics(Physics::Type p);
-    virtual void setPower(int power);
+    virtual void setPower(Ast::Value * power);
 
-    virtual inline int getPower() const {
+    virtual inline Ast::Value * getPower() const {
         return powerAdd;
+    }
+
+    virtual inline bool powerChanged() const {
+        return changePower;
     }
 
     virtual void setMoveType(const std::string & type);
@@ -950,7 +954,7 @@ protected:
     bool changePhysics;
     Physics::Type physics;
     bool changePower;
-    int powerAdd;
+    Ast::Value * powerAdd;
     std::string moveType;
     Ast::Value * juggle;
     bool hitDefPersist;
@@ -1299,7 +1303,7 @@ public:
         }
 
         /* `this' hit `enemy' */
-        void didHit(Character * enemy);
+        void didHit(Character * enemy, MugenStage & stage);
 
         /* `enemy' hit `this' with hitdef `hit' */
         void wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hit);

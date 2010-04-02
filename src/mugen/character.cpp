@@ -696,7 +696,7 @@ velocity_x(NULL),
 velocity_y(NULL),
 changePhysics(false),
 changePower(false),
-powerAdd(0),
+powerAdd(NULL),
 moveType(Move::Idle),
 juggle(0),
 hitDefPersist(false){
@@ -720,7 +720,7 @@ void State::setVelocity(Ast::Value * x, Ast::Value * y){
     velocity_y = y;
 }
 
-void State::setPower(int power){
+void State::setPower(Ast::Value * power){
     powerAdd = power;
     changePower = true;
 }
@@ -801,6 +801,7 @@ State::~State(){
         delete (*it);
     }
 
+    delete powerAdd;
     delete animation;
     delete control;
     delete juggle;
@@ -1520,9 +1521,7 @@ void Character::parseStateDefinition(Ast::Section * section){
                 } else if (simple == "ctrl"){
                     definition->setControl((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "poweradd"){
-                    int power;
-                    simple >> power;
-                    definition->setPower(power);
+                    definition->setPower((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "juggle"){
                     definition->setJuggle((Ast::Value*) simple.getValue()->copy());
                 } else if (simple == "facep2"){
@@ -2880,11 +2879,14 @@ void Character::addPower(double d){
     }
 }
         
-void Character::didHit(Character * enemy){
+void Character::didHit(Character * enemy, MugenStage & stage){
     if (getHit() != NULL){
         hitState.shakeTime = getHit()->pause.player1;
     }
-    addPower(states[getCurrentState()]->getPower());
+
+    if (states[getCurrentState()]->powerChanged()){
+        addPower(toNumber(evaluate(states[getCurrentState()]->getPower(), Environment(stage, *this))));
+    }
 
     /* if he is already in a Hit state then increase combo */
     if (enemy->getMoveType() == Move::Hit){

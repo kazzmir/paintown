@@ -799,7 +799,7 @@ void MugenStage::physics(Object * player){
                     /* order matters here, the guy attacking needs to know that
                      * he hit enemy so the guy can update his combo stuff.
                      */
-                    mugen->didHit(enemy);
+                    mugen->didHit(enemy, *this);
                     enemy->wasHit(*this, mugen, *mugen->getHit());
                     // enemy->changeState(5000);
                 }

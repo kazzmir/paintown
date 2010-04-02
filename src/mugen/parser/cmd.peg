@@ -265,6 +265,13 @@ Ast::Identifier * makeSimpleIdentifier(const Value & name){
     return identifier;
 }
 
+Ast::Identifier * makeSimpleIdentifier(const char * name){
+    Ast::Identifier * identifier = new Ast::SimpleIdentifier(name);
+    GC::save(identifier);
+    return identifier;
+}
+
+
 double * parseDouble(const Value & value){
     std::string * str = toString(value);
     std::istringstream get(*str);
@@ -646,7 +653,7 @@ rules:
           | hitflag
 
     # FIXME: return proper hitflag
-    hitflag = hitflag_char+ hitflag_modifier? {{ value = makeKeyword("A"); }}
+    hitflag = hitflag_char+ hitflag_modifier? {{ value = makeSimpleIdentifier("A"); }}
     inline hitflag_char = "A"
                         | "M"
                         | "F"
