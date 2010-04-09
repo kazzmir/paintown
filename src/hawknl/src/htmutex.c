@@ -72,7 +72,7 @@ HL_EXP int HL_APIENTRY htMutexInit(HTmutex *mutex)
             return ENOMEM;
 	    }
         (void)pthread_mutexattr_init(&attr);
-#if defined MACOSX
+#if defined MACOSX || defined __FreeBSD__
         /* GUSI is not fully POSIX compliant, and does not
          * define PTHREAD_MUTEX_ERRORCHECK
          * http://lists.apple.com/archives/unix-porting/2005/May/msg00021.html

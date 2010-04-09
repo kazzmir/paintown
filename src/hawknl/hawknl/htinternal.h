@@ -27,7 +27,7 @@
 
 /* for malloc and free */
 #include <stdlib.h>
-#ifndef MACOSX
+#if !defined(MACOSX) && !defined(__FreeBSD__)
 #include <malloc.h>
 #endif
 #ifdef HL_WINDOWS_APP

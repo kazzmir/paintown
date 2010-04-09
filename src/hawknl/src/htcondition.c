@@ -37,6 +37,9 @@ struct ht_cond_t
 
 #else /* !HT_WIN_THREADS */
 
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#endif
 #include <sys/timeb.h>
 
 #ifdef HL_WINDOWS_APP
