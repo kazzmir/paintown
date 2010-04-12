@@ -28,7 +28,7 @@
 
 /* for malloc and free */
 #include <stdlib.h>
-#if !defined(MACOS) && !defined(__FreeBSD__)
+#if !defined(MACOSX) && !defined(__FreeBSD__)
 #include <malloc.h>
 #endif
 
