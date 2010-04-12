@@ -12,6 +12,7 @@ import com.rafkind.paintown.animator.DrawState;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.MaskedImage;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.Data;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
@@ -27,7 +28,7 @@ public class FrameEvent implements AnimationEvent {
 	}
 	
 	public void interact(final Animation animation){
-		String path = Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame;
+		String path = Data.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame;
 		try{
 			/*
 			animation.setImage( MaskedImage.load( path ) );
@@ -112,7 +113,7 @@ public class FrameEvent implements AnimationEvent {
 			public void actionPerformed(ActionEvent actionEvent){
 				frame = (String)framebox.getSelectedItem();
 				try{
-					area.setImage( MaskedImage.load( Animator.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame ) );
+					area.setImage( MaskedImage.load( Data.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame ) );
 					area.repaint();
 				} catch ( Exception e ){
 					System.out.println("Couldn't load file: " + frame );

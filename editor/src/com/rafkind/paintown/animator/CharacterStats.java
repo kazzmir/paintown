@@ -143,8 +143,8 @@ public class CharacterStats extends AnimatedObject {
 	private HashMap createRemap( int index ) throws IOException {
 		HashMap map = new HashMap();
 		if ( index >= 0 && index < getMaxMaps() ){
-			MaskedImage original = MaskedImage.load( Animator.getDataPath() + "/" + getOriginalMap() );
-			MaskedImage alt = MaskedImage.load( Animator.getDataPath() + "/" + getMap( index ) );
+			MaskedImage original = MaskedImage.load( Data.getDataPath() + "/" + getOriginalMap() );
+			MaskedImage alt = MaskedImage.load( Data.getDataPath() + "/" + getMap( index ) );
 			for ( int x = 0; x < original.getWidth(); x++ ){
 				for ( int y = 0; y < original.getHeight(); y++ ){
 					int pixel1 = original.getRGB( x, y );
