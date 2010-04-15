@@ -5,6 +5,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <string>
+#include <math.h>
 
 using namespace std;
 
@@ -93,12 +94,38 @@ static void test4(){
     }
 }
 
+static void test5_write(string file){
+    ofstream out(file.c_str());
+    out << "(relative-position -.5 -.5)";
+    out.close();
+}
+
+static void test5(){
+    string file = randomFile();
+    test5_write(file);
+    TokenReader reader(file);
+    Token * head = reader.readToken();
+    double n1 = 0, n2 = 0;
+    double epsilon = 0.00000001;
+    if (*head != "relative-position"){
+        throw Failure(5);
+    }
+    *head >> n1 >> n2;
+    if (fabs(n1 - (-0.5)) > epsilon){
+        throw Failure(5);
+    }
+    if (fabs(n2 - (-0.5)) > epsilon){
+        throw Failure(5);
+    }
+}
+
 int main(){
     try{
         test1();
         test2();
         test3();
         test4();
+        test5();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){
