@@ -34,10 +34,11 @@ void PopupBox::open(){
     // Set the fade stuff
     fadeState = FadeIn;
     board.position = position;
+    board.colors = colors;
     board.position.width = board.position.height = 0;
     board.position.x = position.x+(position.width/2);
     board.position.y = position.y+(position.height/2);
-    board.position.borderAlpha = board.position.bodyAlpha = 0;
+    board.colors.borderAlpha = board.colors.bodyAlpha = 0;
 }
 
 void PopupBox::close(){
@@ -72,20 +73,20 @@ void PopupBox::doFade(){
 		board.position.height = position.height;
 	    }
 	    
-	    if (board.position.borderAlpha < position.borderAlpha){
-                board.position.borderAlpha += (int)(fadeSpeed/2);
-                if (board.position.borderAlpha >= position.borderAlpha){
-                    board.position.borderAlpha = position.borderAlpha;
+	    if (board.colors.borderAlpha < colors.borderAlpha){
+                board.colors.borderAlpha += (int)(fadeSpeed/2);
+                if (board.colors.borderAlpha >= colors.borderAlpha){
+                    board.colors.borderAlpha = colors.borderAlpha;
                 }
             }
-            if (board.position.bodyAlpha < position.bodyAlpha){
-                board.position.bodyAlpha += (int)(fadeSpeed/2);
-                if (board.position.bodyAlpha >= position.bodyAlpha){
-                    board.position.bodyAlpha = position.bodyAlpha;
+            if (board.colors.bodyAlpha < colors.bodyAlpha){
+                board.colors.bodyAlpha += (int)(fadeSpeed/2);
+                if (board.colors.bodyAlpha >= colors.bodyAlpha){
+                    board.colors.bodyAlpha = colors.bodyAlpha;
                 }
             }
 
-	    if (board.position == position && board.position.bodyAlpha == position.bodyAlpha && board.position.borderAlpha == position.borderAlpha){
+	    if (board.position == position && board.colors.bodyAlpha == colors.bodyAlpha && board.colors.borderAlpha == colors.borderAlpha){
 		fadeState = Open;
 	    }
 
@@ -118,20 +119,20 @@ void PopupBox::doFade(){
 		board.position.height = 0;
 	    }
 
-	    if (board.position.borderAlpha > 0){
-                board.position.borderAlpha -= (int)(fadeSpeed/2);
-                if (board.position.borderAlpha <= 0){
-                    board.position.borderAlpha = 0;
+	    if (board.colors.borderAlpha > 0){
+                board.colors.borderAlpha -= (int)(fadeSpeed/2);
+                if (board.colors.borderAlpha <= 0){
+                    board.colors.borderAlpha = 0;
                 }
             }
-            if (board.position.bodyAlpha > 0){
-                board.position.bodyAlpha -= (int)(fadeSpeed/2);
-                if (board.position.bodyAlpha <= 0){
-                    board.position.bodyAlpha = 0;
+            if (board.colors.bodyAlpha > 0){
+                board.colors.bodyAlpha -= (int)(fadeSpeed/2);
+                if (board.colors.bodyAlpha <= 0){
+                    board.colors.bodyAlpha = 0;
                 }
             }
             
-            if (board.position.empty() && board.position.borderAlpha == 0 && board.position.bodyAlpha == 0){
+            if (board.position.empty() && board.colors.borderAlpha == 0 && board.colors.bodyAlpha == 0){
                 fadeState = Closed;
             }
 	    break;

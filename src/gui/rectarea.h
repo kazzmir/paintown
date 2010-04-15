@@ -21,10 +21,6 @@ struct RectArea{
 	int y;
 	int width; 
 	int height;
-	int body;
-	int bodyAlpha;
-	int border;
-	int borderAlpha;
 	int radius;
 };
 

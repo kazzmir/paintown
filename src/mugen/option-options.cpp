@@ -451,9 +451,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     optionArea.position.x = (DEFAULT_WIDTH/2) - (optionArea.position.width/2);
     optionArea.position.y = (DEFAULT_HEIGHT/2) - (optionArea.position.height/2);
     optionArea.position.radius = 5;
-    optionArea.position.body = Bitmap::makeColor(0,0,60);
-    optionArea.position.bodyAlpha = 150;
-    optionArea.position.border = Bitmap::makeColor(0,0,20);
+    optionArea.colors.body = Bitmap::makeColor(0,0,60);
+    optionArea.colors.bodyAlpha = 150;
+    optionArea.colors.border = Bitmap::makeColor(0,0,20);
     
     
     while (!done){

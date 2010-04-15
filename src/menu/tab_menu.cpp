@@ -71,8 +71,8 @@ fontColor(Bitmap::makeColor(255,255,255)),
 running(false){
     position.radius=15;
     context.position.radius = 15;
-    context.position.borderAlpha = 0;
-    context.position.bodyAlpha = 0;
+    context.colors.borderAlpha = 0;
+    context.colors.bodyAlpha = 0;
 }
 
 MenuBox::~MenuBox(){
@@ -85,17 +85,17 @@ bool MenuBox::checkVisible(const RectArea &area){
 	    && context.position.y + context.position.height > area.y);
 }
 
-void MenuBox::setColors (const RectArea &info, const int fontColor){
-    position.body = info.body;
-    position.bodyAlpha = info.bodyAlpha;
-    position.border = info.border;
-    position.borderAlpha = info.borderAlpha;
+void MenuBox::setColors (const Gui::ColorInfo &info, const int fontColor){
+    colors.body = info.body;
+    colors.bodyAlpha = info.bodyAlpha;
+    colors.border = info.border;
+    colors.borderAlpha = info.borderAlpha;
     this->fontColor = fontColor;
 }
 
 void MenuBox::setColors (const int bodyColor, const int borderColor, const int fontColor){
-    position.body = bodyColor;
-    position.border = borderColor;
+    colors.body = bodyColor;
+    colors.border = borderColor;
     this->fontColor = fontColor;
 }
 
@@ -128,42 +128,46 @@ void TabMenu::load(Token *token) throw (LoadException){
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
                 contentArea.setCoordinates(tok);
+            } else if ( *tok == "relative-position"){
+                contentArea.setCoordinates(tok);
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
                 contentArea.setColors(tok);
+                contextMenu.colors = contentArea.colors;
             } else if ( *tok == "position-border" ) {
                 // This handles the border color of the menu box
                 contentArea.setColors(tok);
+                contextMenu.colors = contentArea.colors;
             } else if ( *tok == "tab-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
-                *tok >> r >> g >> b >> tabInfo.bodyAlpha;
-                tabInfo.body = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> tabColors.bodyAlpha;
+                tabColors.body = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "tab-border" ) {
                 // This handles the border color of the menu box
                 int r,g,b;
-                *tok >> r >> g >> b >> tabInfo.borderAlpha;
-                tabInfo.border = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> tabColors.borderAlpha;
+                tabColors.border = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "selectedtab-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
-                *tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
-                selectedTabInfo.body = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> selectedTabColors.bodyAlpha;
+                selectedTabColors.body = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "selectedtab-border" ) {
                 // This handles the border color of the menu box
                 int r,g,b;
-                *tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
-                selectedTabInfo.border = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> selectedTabColors.borderAlpha;
+                selectedTabColors.border = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "runningtab-body" ) {
                 // This handles the body color of the menu box
                 int r,g,b;
-                *tok >> r >> g >> b >> selectedTabInfo.bodyAlpha;
-                runningTabInfo.body = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> selectedTabColors.bodyAlpha;
+                runningTabColors.body = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "runningtab-border" ) {
                 // This handles the border color of the menu box
                 int r,g,b;
-                *tok >> r >> g >> b >> selectedTabInfo.borderAlpha;
-                runningTabInfo.border = Bitmap::makeColor(r,g,b);
+                *tok >> r >> g >> b >> selectedTabColors.borderAlpha;
+                runningTabColors.border = Bitmap::makeColor(r,g,b);
             } else if ( *tok == "font-color" ) {
                 // This handles the font color of the menu box
                 int r,g,b;
@@ -327,8 +331,8 @@ void TabMenu::run(){
 
     // Color effects
     ColorBuffer fontBuffer(selectedFontColor,runningFontColor);
-    ColorBuffer borderBuffer(selectedTabInfo.border,runningTabInfo.border);
-    ColorBuffer backgroundBuffer(selectedTabInfo.body,runningTabInfo.body);
+    ColorBuffer borderBuffer(selectedTabColors.border,runningTabColors.border);
+    ColorBuffer backgroundBuffer(selectedTabColors.body,runningTabColors.body);
 
     currentTab = tabs.begin();
     location = 0;
@@ -337,9 +341,9 @@ void TabMenu::run(){
     // Set select color
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         if (i == currentTab){
-            (*i)->setColors(selectedTabInfo,selectedFontColor);
+            (*i)->setColors(selectedTabColors,selectedFontColor);
         } else {
-            (*i)->setColors(tabInfo,fontColor);
+            (*i)->setColors(tabColors,fontColor);
         }
     }
 
@@ -405,7 +409,7 @@ void TabMenu::run(){
                     if (inputState[Tab::Left]){
                         MenuGlobals::playSelectSound();
                         // Reset color
-                        (*currentTab)->setColors(tabInfo,fontColor);
+                        (*currentTab)->setColors(tabColors,fontColor);
                         if (currentTab > tabs.begin()){
                             currentTab--;
                             location--;
@@ -417,13 +421,13 @@ void TabMenu::run(){
                             //targetOffset = (location*backboard.position.width) * -1;
                             targetOffset = (location*contentArea.position.width) * -1;
                         }
-                        (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+                        (*currentTab)->setColors(selectedTabColors,selectedFontColor);
                     }
 
                     if (inputState[Tab::Right]){
                         MenuGlobals::playSelectSound();
                         // Reset color
-                        (*currentTab)->setColors(tabInfo,fontColor);
+                        (*currentTab)->setColors(tabColors,fontColor);
                         if (currentTab < tabs.begin()+tabs.size()-1){
                             currentTab++;
                             location++;
@@ -434,7 +438,7 @@ void TabMenu::run(){
                             location = 0;
                             targetOffset = 0;
                         }
-                        (*currentTab)->setColors(selectedTabInfo,selectedFontColor);
+                        (*currentTab)->setColors(selectedTabColors,selectedFontColor);
                     }
                     
                     if (inputState[Tab::Select]){
@@ -484,7 +488,7 @@ void TabMenu::run(){
                         (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
                     } catch (const ReturnException & re){
                         (*currentTab)->running = false;
-                        (*currentTab)->setColors(selectedTabInfo, selectedFontColor);
+                        (*currentTab)->setColors(selectedTabColors, selectedFontColor);
                         setMenuInfo(menuInfo);
                         closeInfoBoxes();
                     }

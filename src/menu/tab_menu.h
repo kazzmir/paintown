@@ -2,6 +2,7 @@
 #define _paintown_tab_menu_h
 
 #include "menu.h"
+#include "gui/widget.h"
 #include "gui/box.h"
 #include "gui/popup-box.h"
 #include "gui/context-box.h"
@@ -13,6 +14,7 @@ class Bitmap;
 class MenuOption;
 class Token;
 class MenuAnimation;
+class ColorInfo;
 
 // Provides a buffer for going between two colors
 class ColorBuffer{
@@ -35,8 +37,8 @@ class MenuBox : public Gui::Box{
     public:
 	MenuBox(int w, int h);
 	virtual ~MenuBox();
-	bool checkVisible(const Gui::RectArea &area);
-	void setColors(const Gui::RectArea &info, const int fontColor);
+	bool checkVisible(const Gui::RectArea &);
+	void setColors(const Gui::ColorInfo &, const int fontColor);
 	void setColors(const int bodyColor, const int borderColor, const int fontColor);
 	Menu menu;
 	int fontColor;
@@ -62,8 +64,11 @@ class TabMenu : public Menu
 	void run();
     private:
         Gui::RectArea tabInfo;
+        Gui::ColorInfo tabColors;
         Gui::RectArea selectedTabInfo;
+        Gui::ColorInfo selectedTabColors;
         Gui::RectArea runningTabInfo;
+        Gui::ColorInfo runningTabColors;
 	
 	int fontColor;
 	int selectedFontColor;

@@ -124,24 +124,24 @@ void LineEdit::render(const Bitmap & work){
 	checkWorkArea();
 	// Check if we are using a rounded box
 	if(position.radius>0) {
-		Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
-		roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.body );
+		Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
+		roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, colors.body );
 		workArea->drawTrans(position.x,position.y,work);
 		
 		workArea->fill(Bitmap::makeColor(255,0,255));
 		
-		Bitmap::transBlender( 0, 0, 0, position.borderAlpha );
-		roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, position.border );
+		Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
+		roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, colors.border );
 		workArea->drawTrans(position.x,position.y,work);
 	} else {
-		Bitmap::transBlender( 0, 0, 0, position.bodyAlpha );
-		workArea->rectangleFill( 0, 0, position.width-1, position.height-1, position.body );
+		Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
+		workArea->rectangleFill( 0, 0, position.width-1, position.height-1, colors.body );
 		workArea->drawTrans(position.x,position.y,work);
 		
 		workArea->fill(Bitmap::makeColor(255,0,255));
 		
-		Bitmap::transBlender( 0, 0, 0, position.borderAlpha );
-		workArea->rectangle( 0, 0, position.width-1, position.height-1, position.border );
+		Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
+		workArea->rectangle( 0, 0, position.width-1, position.height-1, colors.border );
 		workArea->drawTrans(position.x,position.y,work);
 	}
 

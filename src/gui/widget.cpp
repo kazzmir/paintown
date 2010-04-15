@@ -103,17 +103,11 @@ void Widget::setColors(Token * token){
         int r,g,b;
         *token >> r >> g >> b >> colors.bodyAlpha;
         colors.body = Bitmap::makeColor(r,g,b);
-        // Set rectarea to facilitate compatibility but will remove later
-        position.body = colors.body;
-        position.bodyAlpha = colors.bodyAlpha;
     } else if ( *token == "position-border" ) {
         // This handles the border color of the widget
         int r,g,b;
         *token >> r >> g >> b >> colors.borderAlpha;
         colors.border = Bitmap::makeColor(r,g,b);
-        // Set rectarea to facilitate compatibility but will remove later
-        position.border = colors.border;
-        position.borderAlpha = colors.borderAlpha;
     } 
 }
 

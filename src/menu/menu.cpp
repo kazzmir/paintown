@@ -132,6 +132,7 @@ void InfoBox::render(const Bitmap & bmp){
 void InfoBox::open(){
     state = Opening;
     popup.position = position;
+    popup.colors = colors;
     popup.open();
     fadeAlpha = 0;
 }
@@ -807,10 +808,10 @@ void Menu::setMenuInfo(const std::string & text){
     menuInfoBox.position.x = menuInfoLocation.x - (menuInfoBox.position.width / 2);
     menuInfoBox.position.y = menuInfoLocation.y - (menuInfoBox.position.height / 2);
     menuInfoBox.position.radius = contextMenu.position.radius;
-    menuInfoBox.position.body = Bitmap::makeColor(32,32,0);
-    menuInfoBox.position.bodyAlpha = contextMenu.position.bodyAlpha;
-    menuInfoBox.position.border = contextMenu.position.border;
-    menuInfoBox.position.borderAlpha = contextMenu.position.borderAlpha;
+    menuInfoBox.colors.body = Bitmap::makeColor(32,32,0);
+    menuInfoBox.colors.bodyAlpha = contextMenu.colors.bodyAlpha;
+    menuInfoBox.colors.border = contextMenu.colors.border;
+    menuInfoBox.colors.borderAlpha = contextMenu.colors.borderAlpha;
     menuInfoBox.open();
 }
 
@@ -827,10 +828,10 @@ void Menu::addInfoBox(const std::string & text){
     temp->position.x = optionInfoTextLocation.x - (temp->position.width / 2);
     temp->position.y = optionInfoTextLocation.y - (temp->position.height / 2);
     temp->position.radius = contextMenu.position.radius;
-    temp->position.body = Bitmap::makeColor(32,32,0);
-    temp->position.bodyAlpha = contextMenu.position.bodyAlpha;
-    temp->position.border = contextMenu.position.border;
-    temp->position.borderAlpha = contextMenu.position.borderAlpha;
+    temp->colors.body = Bitmap::makeColor(32,32,0);
+    temp->colors.bodyAlpha = contextMenu.colors.bodyAlpha;
+    temp->colors.border = contextMenu.colors.border;
+    temp->colors.borderAlpha = contextMenu.colors.borderAlpha;
     temp->open();
     optionInfoBoxes.push_back(temp);
 }

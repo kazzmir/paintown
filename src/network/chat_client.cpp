@@ -113,9 +113,9 @@ enterPressed( false ){
 	lineEdit->position.height = 30;
 	lineEdit->position.radius = 5;
 	
-	lineEdit->position.body = Bitmap::makeColor( 0, 0, 0 );
-	lineEdit->position.bodyAlpha = 128;
-	lineEdit->position.border = Bitmap::makeColor( 255, 255, 0 );
+	lineEdit->colors.body = Bitmap::makeColor( 0, 0, 0 );
+	lineEdit->colors.bodyAlpha = 128;
+	lineEdit->colors.border = Bitmap::makeColor( 255, 255, 0 );
 	lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
 	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
 	
@@ -305,12 +305,12 @@ bool ChatClient::logic( Keyboard & keyboard ){
 	switch ( focus ){
 		case INPUT_BOX : {
 			lineEdit->setFocused(true);
-			lineEdit->position.border = Bitmap::makeColor(255,255,0);
+			lineEdit->colors.border = Bitmap::makeColor(255,255,0);
 			handleInput( keyboard );
 			return false;
 		}
 		case QUIT : {
-			lineEdit->position.border = Bitmap::makeColor(255,255,255);
+			lineEdit->colors.border = Bitmap::makeColor(255,255,255);
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				return true;
 			}

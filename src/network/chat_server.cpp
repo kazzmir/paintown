@@ -300,9 +300,9 @@ enterPressed( false ){
 	lineEdit->position.height = 30;
 	lineEdit->position.radius = 5;
 	
-	lineEdit->position.body = Bitmap::makeColor( 0, 0, 0 );
-	lineEdit->position.bodyAlpha = 128;
-	lineEdit->position.border = Bitmap::makeColor( 255, 255, 0 );
+	lineEdit->colors.body = Bitmap::makeColor( 0, 0, 0 );
+	lineEdit->colors.bodyAlpha = 128;
+	lineEdit->colors.border = Bitmap::makeColor( 255, 255, 0 );
 	lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
 	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
 	
@@ -669,21 +669,21 @@ bool ChatServer::logic( Keyboard & keyboard ){
 			lineEdit->setFocused(true);
 			handleInput( keyboard );
 			// handleInput( keyboard );
-			lineEdit->position.border = Bitmap::makeColor(255,255,0);
+			lineEdit->colors.border = Bitmap::makeColor(255,255,0);
 			break;
 		}
 		case START_GAME : {
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				return true;
 			}
-			lineEdit->position.border = Bitmap::makeColor(255,255,255);
+			lineEdit->colors.border = Bitmap::makeColor(255,255,255);
 			break;
 		}
 		case QUIT : {
 			if ( keyboard[ Keyboard::Key_ENTER ] ){
 				return true;
 			}
-			lineEdit->position.border = Bitmap::makeColor(255,255,255);
+			lineEdit->colors.border = Bitmap::makeColor(255,255,255);
 			break;
 		}
 	}

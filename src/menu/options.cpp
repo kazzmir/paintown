@@ -814,10 +814,10 @@ void OptionJoystick::run(bool &endGame){
     dialog.position.width = vFont.textLength(message) + 10;
     dialog.position.height = vFont.getHeight() + 10;
     dialog.position.radius = 0;
-    dialog.position.body = Bitmap::makeColor(0,0,0);
-    dialog.position.bodyAlpha = 200;
-    dialog.position.border = Bitmap::makeColor(255,255,255);
-    dialog.position.borderAlpha = 255;
+    dialog.colors.body = Bitmap::makeColor(0,0,0);
+    dialog.colors.bodyAlpha = 200;
+    dialog.colors.border = Bitmap::makeColor(255,255,255);
+    dialog.colors.borderAlpha = 255;
     Bitmap temp = Bitmap::temporaryBitmap(width,height);
     dialog.render(temp);
     vFont.printf( 5, 5, Bitmap::makeColor(255,255,255), temp, message, -1);
