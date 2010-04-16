@@ -37,7 +37,7 @@ class MenuBox : public Gui::Box{
     public:
 	MenuBox(int w, int h);
 	virtual ~MenuBox();
-	bool checkVisible(const Gui::RectArea &);
+	bool checkVisible(const Gui::Coordinate &);
 	void setColors(const Gui::ColorInfo &, const int fontColor);
 	void setColors(const int bodyColor, const int borderColor, const int fontColor);
 	Menu menu;
@@ -63,11 +63,11 @@ class TabMenu : public Menu
 	/*! do logic, draw whatever */
 	void run();
     private:
-        Gui::RectArea tabInfo;
+        Gui::Coordinate tabInfo;
         Gui::ColorInfo tabColors;
-        Gui::RectArea selectedTabInfo;
+        Gui::Coordinate selectedTabInfo;
         Gui::ColorInfo selectedTabColors;
-        Gui::RectArea runningTabInfo;
+        Gui::Coordinate runningTabInfo;
         Gui::ColorInfo runningTabColors;
 	
 	int fontColor;

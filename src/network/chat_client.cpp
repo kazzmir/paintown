@@ -107,11 +107,9 @@ enterPressed( false ){
 	}
 
     lineEdit = new Gui::LineEdit();
-	lineEdit->position.x = 20;
-	lineEdit->position.y = 20 + messages.getHeight() + 5;
-	lineEdit->position.width = 400;
-	lineEdit->position.height = 30;
-	lineEdit->position.radius = 5;
+    lineEdit->location.setPosition(Gui::AbsolutePoint(20, 20 + messages.getHeight() + 5));
+    lineEdit->location.setDimensions(Gui::AbsolutePoint(400, 30));
+    lineEdit->location.setRadius(5);
 	
 	lineEdit->colors.body = Bitmap::makeColor( 0, 0, 0 );
 	lineEdit->colors.bodyAlpha = 128;

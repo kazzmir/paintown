@@ -25,13 +25,13 @@ static inline int Max(int x, int y){ return (((x) > (y)) ? (x) : (y)); }
 //! mid (borrowed from allegro)
 static inline int Mid(int x,int y,int z){ return (Max((x), Min((y), (z)))); }
 
-Widget::Widget() : position(0,0,0,0), workArea(0)
+Widget::Widget() : workArea(0)
 {
 	// Nothing yet
 }
 		
 Widget::Widget( const Widget & w ){
-	this->position = w.position;
+	this->location = w.location;
 	this->workArea = w.workArea;
 }
 
@@ -43,7 +43,7 @@ Widget::~Widget(){
 
 // copy
 Widget &Widget::operator=( const Widget &copy){
-	position = copy.position;
+	location = copy.location;
 	workArea = copy.workArea;
 	
 	return *this;
@@ -55,17 +55,14 @@ void Widget::setCoordinates(Token * token){
         *token >> x >> y >> width >> height;
         AbsolutePoint pos(x, y);
         AbsolutePoint dimensions(x + width, y + height);
-        location = Coordinate(pos, dimensions);
-        // Set rectarea to facilitate compatibility but will remove later
-        position = RectArea(x,y,width,height);
+        location.setPosition(pos);
+        location.setDimensions(dimensions);
     } else if ( *token == "relative-position" ){
         double x1, y1, x2, y2;
         *token >> x1 >> y1 >> x2 >> y2;
         RelativePoint pos(x1,y1);
         RelativePoint dimensions(x2,y2);
         location = Coordinate(pos, dimensions);
-        // Set rectarea to facilitate compatibility but will remove later
-        position = RectArea(location.getX(),location.getY(),location.getWidth(),location.getHeight());
     } else if ( *token == "coordinate" ){
         Token * tok;
         *token >> tok;
@@ -111,7 +108,7 @@ void Widget::setColors(Token * token){
     } 
 }
 
-void Widget::arc( Bitmap *work, int x, int y, double startAngle, int radius, int color )
+void Widget::arc( const Bitmap & work, int x, int y, double startAngle, int radius, int color )
 {
 	int q = 0;// for counters
 	double d_q = 0.0;// for percentage of loop completed
@@ -156,7 +153,7 @@ void Widget::arc( Bitmap *work, int x, int y, double startAngle, int radius, int
 			round_double(d_arc_point_x , arc_point_x);
 			round_double(d_arc_point_y , arc_point_y);
 
-			work->putPixel(arc_point_x,arc_point_y,color);
+			work.putPixel(arc_point_x,arc_point_y,color);
 		}
 	}
 	if (d_arc_distance_between_points > 1.0) {
@@ -181,21 +178,21 @@ void Widget::arc( Bitmap *work, int x, int y, double startAngle, int radius, int
 			round_double(d_arc_point2_x , arc_point2_x);
 			round_double(d_arc_point2_y , arc_point2_y);
 
-			work->line(arc_point_x,arc_point_y, arc_point2_x, arc_point2_y,color);
+			work.line(arc_point_x,arc_point_y, arc_point2_x, arc_point2_y,color);
 		}
 	}
 }
 
-void Widget::roundRect( Bitmap *work, int radius, int x1, int y1, int x2, int y2, int color )
+void Widget::roundRect( const Bitmap & work, int radius, int x1, int y1, int x2, int y2, int color )
 {
 	
 	const int width = x2 - x1;
 	const int height = y2 - y1;
 	radius = Mid(0, radius, Min((x1+width - x1)/2, (y1+height - y1)/2));
-	work->line(x1+radius, y1, x1+width-radius, y1, color);
-	work->line(x1+radius, y1+height, x1+width-radius,y1+height, color);
-	work->line(x1, y1+radius,x1, y1+height-radius, color);
-	work->line(x1+width, y1+radius,x1+width, y1+height-radius, color);
+	work.line(x1+radius, y1, x1+width-radius, y1, color);
+	work.line(x1+radius, y1+height, x1+width-radius,y1+height, color);
+	work.line(x1, y1+radius,x1, y1+height-radius, color);
+	work.line(x1+width, y1+radius,x1+width, y1+height-radius, color);
 	arc(work, x1+radius, y1+radius, S_PI-1.115, radius, color);
 	arc(work, x1+radius + (width - radius *2), y1+radius, -S_PI/2 +0.116, radius, color);
 	arc(work, x1+width-radius, y1+height-radius, -0.110, radius ,color);
@@ -203,30 +200,31 @@ void Widget::roundRect( Bitmap *work, int radius, int x1, int y1, int x2, int y2
 
 }
 
-void Widget::roundRectFill( Bitmap *work, int radius, int x1, int y1, int x2, int y2, int color )
+void Widget::roundRectFill( const Bitmap & work, int radius, int x1, int y1, int x2, int y2, int color )
 {
 	const int width = x2 - x1;
 	const int height = y2 - y1;
 	radius = Mid(0, radius, Min((x1+width - x1)/2, (y1+height - y1)/2));
-	work->circleFill(x1+radius, y1+radius, radius, color);
-	work->circleFill((x1+width)-radius, y1+radius, radius, color);
-	work->circleFill(x1+radius, (y1+height)-radius, radius, color);
-	work->circleFill((x1+width)-radius, (y1+height)-radius, radius, color);
-	work->rectangleFill( x1+radius, y1, x2-radius, y1+radius, color);
-	work->rectangleFill( x1, y1+radius, x2, y2-radius, color);
-	work->rectangleFill( x1+radius, y2-radius, x2-radius, y2, color);
+	work.circleFill(x1+radius, y1+radius, radius, color);
+	work.circleFill((x1+width)-radius, y1+radius, radius, color);
+	work.circleFill(x1+radius, (y1+height)-radius, radius, color);
+	work.circleFill((x1+width)-radius, (y1+height)-radius, radius, color);
+	work.rectangleFill( x1+radius, y1, x2-radius, y1+radius, color);
+	work.rectangleFill( x1, y1+radius, x2, y2-radius, color);
+	work.rectangleFill( x1+radius, y2-radius, x2-radius, y2, color);
 }
 
 void Widget::checkWorkArea()
 {
-	if ( ! workArea ){
-		workArea = new Bitmap(position.width,position.height);
-	} else if(position.width < workArea->getWidth() || position.height < workArea->getHeight()) {
+    
+    if ( ! workArea ){
+		workArea = new Bitmap(location.getWidth(),location.getHeight());
+	} else if(location.getWidth() < workArea->getWidth() || location.getHeight() < workArea->getHeight()) {
 		delete workArea;
-		workArea = new Bitmap(position.width,position.height);
-	} else if(position.width > workArea->getWidth() || position.height > workArea->getHeight()) {
+		workArea = new Bitmap(location.getWidth(), location.getHeight());
+	} else if(location.getWidth() > workArea->getWidth() || location.getHeight() > workArea->getHeight()) {
 		delete workArea;
-		workArea = new Bitmap(position.width,position.height);
+		workArea = new Bitmap(location.getWidth(),location.getHeight());
 	}
 	if ( workArea ){
 		workArea->fill(Bitmap::makeColor(255,0,255));

@@ -446,11 +446,11 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
     // Box
     Box optionArea;
-    optionArea.position.width = 200;
-    optionArea.position.height = 180;
-    optionArea.position.x = (DEFAULT_WIDTH/2) - (optionArea.position.width/2);
-    optionArea.position.y = (DEFAULT_HEIGHT/2) - (optionArea.position.height/2);
-    optionArea.position.radius = 5;
+    
+    optionArea.location.setDimensions(Gui::AbsolutePoint(260,210));
+    optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
+    
+    optionArea.location.setRadius(5);
     optionArea.colors.body = Bitmap::makeColor(0,0,60);
     optionArea.colors.bodyAlpha = 150;
     optionArea.colors.border = Bitmap::makeColor(0,0,20);
@@ -538,7 +538,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	    
 	    optionArea.render(workArea);
 	    
-	    doOptions(*font,optionArea.position.x,optionArea.position.y,workArea);
+	    doOptions(*font,optionArea.location.getX(),optionArea.location.getY(),workArea);
 	    
 	    // render Foregrounds
 	    background->renderForeground(0,0,workArea);

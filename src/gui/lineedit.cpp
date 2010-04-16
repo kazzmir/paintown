@@ -61,14 +61,13 @@ void LineEdit::act()
 		textSizeH = currentSetFont->getHeight();
 		if(autoResizable)
 		{
-			position.height = textSizeH+2;
-			position.width = currentSetFont->textLength(currentSetText.c_str())+4;
+            location.setDimensions(Gui::AbsolutePoint(textSizeH+2, currentSetFont->textLength(currentSetText.c_str())+4));
 		}
 		else
 		{
 			if(hAlignMod==T_Left)
 			{
-				if(currentSetFont->textLength(currentSetText.c_str())>position.width)
+				if(currentSetFont->textLength(currentSetText.c_str())>location.getWidth())
 				{
 					hAlignment=T_Right;
 				}
@@ -82,12 +81,12 @@ void LineEdit::act()
 				cursorX = textX + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
 				break;
 			case T_Middle:
-				textX = (position.width/2) - (currentSetFont->textLength(currentSetText.c_str())/2);
+				textX = (location.getWidth()/2) - (currentSetFont->textLength(currentSetText.c_str())/2);
 				cursorX = (textX) + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
 				break;
 			case T_Right:
-				textX = position.width - currentSetFont->textLength(currentSetText.c_str());//(position.width - 1)-2;
-				cursorX = position.width - currentSetFont->textLength(currentSetText.substr(0,currentSetText.length()-cursorIndex).c_str());
+				textX = location.getWidth() - currentSetFont->textLength(currentSetText.c_str());//(position.width - 1)-2;
+				cursorX = location.getWidth() - currentSetFont->textLength(currentSetText.substr(0,currentSetText.length()-cursorIndex).c_str());
 				break;
 			case T_Bottom:
 			case T_Top:
@@ -101,10 +100,10 @@ void LineEdit::act()
 				cursorY = 1;
 				break;
 			case T_Middle:
-				textY = cursorY = (position.height - textSizeH-(5))/2;
+				textY = cursorY = (location.getHeight() - textSizeH-(5))/2;
 				break;
 			case T_Bottom:
-				textY = (position.height - 1) - textSizeH - 1;
+				textY = (location.getHeight() - 1) - textSizeH - 1;
 				cursorY = textY - textSizeH;
 				break;
 			case T_Right:
@@ -123,26 +122,26 @@ void LineEdit::render(const Bitmap & work){
 
 	checkWorkArea();
 	// Check if we are using a rounded box
-	if(position.radius>0) {
+	if(location.getRadius()>0) {
 		Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
-		roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, colors.body );
-		workArea->drawTrans(position.x,position.y,work);
+		roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+		workArea->drawTrans(location.getX(),location.getY(),work);
 		
 		workArea->fill(Bitmap::makeColor(255,0,255));
 		
 		Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
-		roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, colors.border );
-		workArea->drawTrans(position.x,position.y,work);
+		roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
+		workArea->drawTrans(location.getX(),location.getY(),work);
 	} else {
 		Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
-		workArea->rectangleFill( 0, 0, position.width-1, position.height-1, colors.body );
-		workArea->drawTrans(position.x,position.y,work);
+		workArea->rectangleFill( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+		workArea->drawTrans(location.getX(),location.getY(),work);
 		
 		workArea->fill(Bitmap::makeColor(255,0,255));
 		
 		Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
-		workArea->rectangle( 0, 0, position.width-1, position.height-1, colors.border );
-		workArea->drawTrans(position.x,position.y,work);
+		workArea->rectangle( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
+		workArea->drawTrans(location.getX(),location.getY(),work);
 	}
 
 	work.drawingMode( Bitmap::MODE_SOLID );
@@ -159,7 +158,7 @@ void LineEdit::render(const Bitmap & work){
 		}
 	}
 	
-	workArea->draw(position.x,position.y,work);
+	workArea->draw(location.getX(),location.getY(),work);
 }
 
 // Keypresses

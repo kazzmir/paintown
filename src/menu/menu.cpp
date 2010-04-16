@@ -106,23 +106,23 @@ void InfoBox::render(const Bitmap & bmp){
     
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     
-    const int x1 = popup.getArea().x+(popup.getArea().radius/2);
-    const int y1 = popup.getArea().y+2;
-    const int x2 = popup.getArea().getX2()-(popup.getArea().radius/2);
+    const int x1 = popup.getArea().getX()+(int)(popup.getArea().getRadius()/2);
+    const int y1 = popup.getArea().getY()+2;
+    const int x2 = popup.getArea().getX2()-(int)(popup.getArea().getRadius()/2);
     const int y2 = popup.getArea().getY2()-2;
     bmp.setClipRect(x1, y1, x2, y2);
     
-    int sy = position.y - 5;
+    int sy = location.getY() - 5;
     static int white = Bitmap::makeColor(255,255,255);
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
         string & str = *it;
         if (fadeAlpha < 255){
             Bitmap::transBlender(0, 0, 0, fadeAlpha);
             Bitmap::drawingMode( Bitmap::MODE_TRANS );
-            vFont.printf(position.x + 5, sy, white, bmp, str, 0 );
+            vFont.printf(location.getX() + 5, sy, white, bmp, str, 0 );
             Bitmap::drawingMode(Bitmap::MODE_SOLID);
         } else {
-            vFont.printf(position.x + 5, sy, white, bmp, str, 0 );
+            vFont.printf(location.getX() + 5, sy, white, bmp, str, 0 );
         }
         sy += vFont.getHeight();
     }
@@ -131,7 +131,7 @@ void InfoBox::render(const Bitmap & bmp){
 
 void InfoBox::open(){
     state = Opening;
-    popup.position = position;
+    popup.location = location;
     popup.colors = colors;
     popup.open();
     fadeAlpha = 0;
@@ -167,8 +167,7 @@ void InfoBox::setText(const std::string & info){
         }
         height += vFont.getHeight();
     }
-    position.width = maxWidth;
-    position.height = height;
+    location.setDimensions(Gui::AbsolutePoint(maxWidth,height));
 }
 
 static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> & list){
@@ -361,7 +360,7 @@ void Menu::load(Token *token) throw (LoadException){
         throw LoadException("No name set, the menu should have a name!");
     }
 
-    if ( contextMenu.position.empty() ){
+    if ( contextMenu.location.empty() ){
         throw LoadException("The position for the menu '" + getName() + "' list must be set!");
     }
     // Omit menu if no options are available
@@ -381,8 +380,8 @@ void Menu::load(Token *token) throw (LoadException){
         setupOptions();
     }
     
-    // Make menus rounded
-    contextMenu.position.radius = 15;
+    // Make menus rounded (remove later
+    contextMenu.location.setRadius(15);
         
 }
 
@@ -525,11 +524,6 @@ void Menu::act(bool &endGame, bool reset){
 
     // Info boxes
     actInfoBoxes();
-}
-
-void Menu::draw(const Gui::RectArea & area, Bitmap *bmp){
-    contextMenu.position = area;
-    contextMenu.render(*bmp);
 }
 
 void Menu::run(){
@@ -805,9 +799,10 @@ void Menu::setMenuInfo(const std::string & text){
     // Setup menu info
     menuInfoBox.setFont(getFont(), getFontWidth(), getFontHeight());
     menuInfoBox.setText(text);
-    menuInfoBox.position.x = menuInfoLocation.x - (menuInfoBox.position.width / 2);
-    menuInfoBox.position.y = menuInfoLocation.y - (menuInfoBox.position.height / 2);
-    menuInfoBox.position.radius = contextMenu.position.radius;
+    //menuInfoBox.position.x = menuInfoLocation.x - (menuInfoBox.position.width / 2);
+    //menuInfoBox.position.y = menuInfoLocation.y - (menuInfoBox.position.height / 2);
+    menuInfoBox.location.setPosition(Gui::AbsolutePoint(menuInfoLocation.x - menuInfoBox.location.getWidth()/2, menuInfoLocation.y - menuInfoBox.location.getHeight()/2));
+    menuInfoBox.location.setRadius(contextMenu.location.getRadius());
     menuInfoBox.colors.body = Bitmap::makeColor(32,32,0);
     menuInfoBox.colors.bodyAlpha = contextMenu.colors.bodyAlpha;
     menuInfoBox.colors.border = contextMenu.colors.border;
@@ -825,9 +820,10 @@ void Menu::addInfoBox(const std::string & text){
     InfoBox * temp = new InfoBox();
     temp->setFont(getFont(),getFontWidth(),getFontHeight());
     temp->setText(text);
-    temp->position.x = optionInfoTextLocation.x - (temp->position.width / 2);
-    temp->position.y = optionInfoTextLocation.y - (temp->position.height / 2);
-    temp->position.radius = contextMenu.position.radius;
+    //temp->position.x = optionInfoTextLocation.x - (temp->position.width / 2);
+    //temp->position.y = optionInfoTextLocation.y - (temp->position.height / 2);
+    menuInfoBox.location.setPosition(Gui::AbsolutePoint(menuInfoLocation.x - menuInfoBox.location.getWidth()/2, menuInfoLocation.y - menuInfoBox.location.getHeight()/2));
+    temp->location.setRadius(contextMenu.location.getRadius());
     temp->colors.body = Bitmap::makeColor(32,32,0);
     temp->colors.bodyAlpha = contextMenu.colors.bodyAlpha;
     temp->colors.border = contextMenu.colors.border;

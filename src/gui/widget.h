@@ -29,9 +29,6 @@ class Widget{
         
         void setColors(Token * token);
         
-        //! position info
-        RectArea position;
-        
         //! New position data
         Coordinate location;
         
@@ -45,9 +42,9 @@ class Widget{
         virtual void render(const Bitmap &)=0;
     
     protected:
-        void arc( Bitmap *work, int x, int y, double startAngle, int radius, int color );
-        void roundRect( Bitmap *work, int radius, int x1, int y1, int x2, int y2, int color );
-        void roundRectFill( Bitmap *work, int radius, int x1, int y1, int x2, int y2, int color );
+        void arc( const Bitmap &, int x, int y, double startAngle, int radius, int color );
+        void roundRect( const Bitmap &, int radius, int x1, int y1, int x2, int y2, int color );
+        void roundRectFill( const Bitmap &, int radius, int x1, int y1, int x2, int y2, int color );
         
         void checkWorkArea();
         

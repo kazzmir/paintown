@@ -92,9 +92,6 @@ public:
     /*! Logic */
     virtual void act(bool &endGame, bool reset = true);
 
-    /*! Draw */
-    virtual void draw(const Gui::RectArea &, Bitmap *bmp);
-
     /*! run as it's own menu */
     virtual void run();
     
@@ -161,7 +158,7 @@ public:
 
     //! Set height of context menu
     virtual inline void setMenuHeight(int height){
-        this->contextMenu.position.height = height;
+        this->contextMenu.location.setDimensions(Gui::AbsolutePoint(this->contextMenu.location.getX2(), this->contextMenu.location.getY() + height));
     }
     
     //! Get context menu

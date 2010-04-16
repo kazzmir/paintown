@@ -69,8 +69,10 @@ void ColorBuffer::reset(){
 MenuBox::MenuBox(int w, int h):
 fontColor(Bitmap::makeColor(255,255,255)),
 running(false){
-    position.radius=15;
-    context.position.radius = 15;
+    //position.radius=15;
+    location.setRadius(15);
+    //context.position.radius = 15;
+    context.location.setRadius(15);
     context.colors.borderAlpha = 0;
     context.colors.bodyAlpha = 0;
 }
@@ -78,11 +80,11 @@ running(false){
 MenuBox::~MenuBox(){
 }
 
-bool MenuBox::checkVisible(const RectArea &area){
-    return (context.position.x < area.x + area.width
-	    && context.position.x + context.position.width > area.x
-	    && context.position.y < area.y + area.height
-	    && context.position.y + context.position.height > area.y);
+bool MenuBox::checkVisible(const Coordinate & area){
+    return (context.location.getX() < area.getX2()
+	    && context.location.getX2() > area.getX()
+	    && context.location.getY() < area.getY2()
+	    && context.location.getY2() > area.getY());
 }
 
 void MenuBox::setColors (const Gui::ColorInfo &info, const int fontColor){
@@ -192,7 +194,7 @@ void TabMenu::load(Token *token) throw (LoadException){
                 }
             } else if (*tok == "menu"){
                 //MenuBox *menu = new MenuBox(backboard.position.width, backboard.position.height);
-                MenuBox *menu = new MenuBox(contentArea.position.width, contentArea.position.height);
+                MenuBox *menu = new MenuBox(contentArea.location.getWidth(), contentArea.location.getHeight());
                 if (menu){
                     // To avoid issues
                     menu->menu.setAsOption(true);
@@ -212,12 +214,9 @@ void TabMenu::load(Token *token) throw (LoadException){
                         tabs.push_back(menu);
                         const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
                         // set info on the box itself
-                        menu->position.width = vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W;
-                        menu->position.height = vFont.getHeight() + TEXT_SPACING_H;
-                        menu->context.position.x = contentArea.position.x;
-                        menu->context.position.y = contentArea.position.y;
-                        menu->context.position.width = contentArea.position.width;
-                        menu->context.position.height = contentArea.position.height;
+                        menu->location.setDimensions(Gui::AbsolutePoint(vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W, vFont.getHeight() + TEXT_SPACING_H));
+                        menu->context.location.setPosition(contentArea.location.getPosition());
+                        menu->context.location.setDimensions(contentArea.location.getDimensions());
                         menu->context.setFont(getFont(),getFontWidth(),getFontHeight());
                         menu->context.setList(menu->menu.getContextList());
                         menu->context.setFadeSpeed(50);
@@ -268,7 +267,7 @@ void TabMenu::load(Token *token) throw (LoadException){
     calculateTabLines();
     
     // Set radius
-    contentArea.position.radius=15;
+    contentArea.location.setRadius(15);
 }
 
 /* FIXME: this method is a duplicate of Menu::load */
@@ -366,13 +365,10 @@ void TabMenu::run(){
         MenuBox *tab = *i;
         const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
         // set info on the box itself
-        tab->position.width = vFont.textLength(tab->menu.getName().c_str()) + TEXT_SPACING_W;
-        tab->position.height = vFont.getHeight() + TEXT_SPACING_H;
-                        
-        tab->context.position.x = contentArea.position.x;
-        tab->context.position.y = contentArea.position.y;
-        tab->context.position.width = contentArea.position.width;
-        tab->context.position.height = contentArea.position.height;
+        tab->location.setDimensions(Gui::AbsolutePoint(vFont.textLength(tab->menu.getName().c_str()) + TEXT_SPACING_W, vFont.getHeight() + TEXT_SPACING_H));
+        
+        tab->context.location.setPosition(contentArea.location.getPosition());
+        tab->context.location.setDimensions(contentArea.location.getDimensions());
         tab->context.setFont(getFont(),getFontWidth(),getFontHeight());
         tab->context.open();
         while(!tab->context.isActive()){
@@ -414,12 +410,12 @@ void TabMenu::run(){
                             currentTab--;
                             location--;
                             //targetOffset+=backboard.position.width;
-                            targetOffset+=contentArea.position.width;
+                            targetOffset+=contentArea.location.getWidth();
                         } else {
                             currentTab = tabs.end()-1;
                             location=tabs.size()-1;
                             //targetOffset = (location*backboard.position.width) * -1;
-                            targetOffset = (location*contentArea.position.width) * -1;
+                            targetOffset = (location*contentArea.location.getWidth()) * -1;
                         }
                         (*currentTab)->setColors(selectedTabColors,selectedFontColor);
                     }
@@ -432,7 +428,7 @@ void TabMenu::run(){
                             currentTab++;
                             location++;
                             //targetOffset-=backboard.position.width;
-                            targetOffset-=contentArea.position.width;
+                            targetOffset-=contentArea.location.getWidth();
                         } else {
                             currentTab = tabs.begin();
                             location = 0;
@@ -495,14 +491,12 @@ void TabMenu::run(){
                 }
 
                 /* act tabs */
-                const double incrementx = contentArea.position.width;
-                double startx = contentArea.position.x + totalOffset;
+                const double incrementx = contentArea.location.getWidth();
+                double startx = contentArea.location.getX() + totalOffset;
                 for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
                     MenuBox *tab = *i;
-                    tab->context.position.x = (int) startx;
-                    tab->context.position.y = contentArea.position.y;
-                    tab->context.position.width = contentArea.position.width;
-                    tab->context.position.height = contentArea.position.height;
+                    tab->context.location.setPosition(Gui::AbsolutePoint((int)startx, contentArea.location.getY()));
+                    tab->context.location.setDimensions(contentArea.location.getDimensions());
                     tab->context.setUseGradient(tab->running);
                     tab->context.act();
                     startx += incrementx;
@@ -577,7 +571,7 @@ void TabMenu::run(){
 }
 
 void TabMenu::drawMenus(Bitmap *bmp){
-    Gui::RectArea & backboard = contentArea.position;
+    Gui::Coordinate & backboard = contentArea.location;
     // Drawing menus
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
@@ -586,36 +580,35 @@ void TabMenu::drawMenus(Bitmap *bmp){
         }
     }
     const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
-    int tabstartx = backboard.x;
-    int tabstarty = backboard.y - ((vFont.getHeight() + TEXT_SPACING_H) * totalLines);
+    int tabstartx = backboard.getX();
+    int tabstarty = backboard.getY() - ((vFont.getHeight() + TEXT_SPACING_H) * totalLines);
     // Now draw tabs, has to be seperate from above since we need this to overlay the snaps
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
-        const int tabWidth = tab->position.width;
-        if ((tabstartx + tabWidth) > (backboard.x + backboard.width)){
-            tabstartx = backboard.x;
-            tabstarty += tab->position.height;
+        const int tabWidth = tab->location.getWidth();
+        if ((tabstartx + tabWidth) > (backboard.getX2())){
+            tabstartx = backboard.getX();
+            tabstarty += tab->location.getHeight();
         }
-        tab->position.x = tabstartx;
-        tab->position.y = tabstarty;
+        tab->location.setPosition(Gui::AbsolutePoint(tabstartx, tabstarty));
         tab->render(*bmp);
         // Draw text
         vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, tab->fontColor, *bmp, tab->menu.getName(), 0 );
-        tabstartx += tab->position.width;
+        tabstartx += tab->location.getWidth();
     }
 }
 
 // Calculate the amount of lines per tabs
 void TabMenu::calculateTabLines(){
-    int tabstartx = contentArea.position.x;//backboard.position.x;
+    int tabstartx = contentArea.location.getX();//backboard.position.x;
     for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         MenuBox *tab = *i;
-        const int tabWidth = tab->position.width;
-        if ((tabstartx + tabWidth) > (contentArea.position.x + contentArea.position.width)){//(backboard.position.x + backboard.position.width)){
-            tabstartx = contentArea.position.x;//backboard.position.x;
+        const int tabWidth = tab->location.getWidth();
+        if ((tabstartx + tabWidth) > (contentArea.location.getX2())){//(backboard.position.x + backboard.position.width)){
+            tabstartx = contentArea.location.getX();//backboard.position.x;
             totalLines++;
         }
-        tabstartx+=tab->position.width;
+        tabstartx+=tab->location.getWidth();
     }
 }
 

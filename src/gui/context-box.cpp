@@ -131,7 +131,8 @@ void ContextBox::adjustRight(){
 void ContextBox::open(){
     // Set the fade stuff
     fadeState = FadeIn;
-    board.position = position;
+    //board.position = position;
+    board.location = location;
     board.colors = colors;
     board.open();
     fadeAlpha = 0;
@@ -188,7 +189,7 @@ void ContextBox::calculateText(){
     
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     
-    cursorCenter = (position.y + (int)position.height/2) - vFont.getHeight()/2;
+    cursorCenter = (location.getY() + (int)location.getHeight()/2) - vFont.getHeight()/2;//(position.y + (int)position.height/2) - vFont.getHeight()/2;
     
     if (cursorLocation == cursorCenter){
 	    scrollWait = 4;
@@ -207,29 +208,29 @@ void ContextBox::drawText(const Bitmap & bmp){
         return;
     }
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    const int x1 = board.getArea().x+(board.getArea().radius/2);
-    const int y1 = board.getArea().y+2;//(board.getArea().radius/2);
-    const int x2 = board.getArea().getX2()-(board.getArea().radius/2);
+    const int x1 = board.getArea().getX()+(int)(board.getArea().getRadius()/2);
+    const int y1 = board.getArea().getY()+2;//(board.getArea().radius/2);
+    const int x2 = board.getArea().getX2()-(int)(board.getArea().getRadius()/2);
     const int y2 = board.getArea().getY2()-2;//(board.getArea().radius/2);
             
     bmp.setClipRect(x1, y1, x2, y2);
     int locationY = cursorLocation;
     int currentOption = current;
     int count = 0;
-    while (locationY < position.getX2() + vFont.getHeight()){
-        const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
+    while (locationY < location.getX2() + vFont.getHeight()){
+        const int startx = (location.getWidth()/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
         if (count == 0){
             Bitmap::transBlender(0, 0, 0, fadeAlpha);
             Bitmap::drawingMode( Bitmap::MODE_TRANS );
             const int color = useGradient ? selectedGradient.current() : selectedGradientStart();
-            vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+            vFont.printf(location.getX() + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
             if (context[currentOption]->isAdjustable()){
                 const int triangleSize = 10;
-                int cx = (position.x + startx) - 15;
+                int cx = (location.getX() + startx) - 15;
                 int cy = (int)(locationY + (vFont.getHeight()/FONT_SPACER) / 2 + 2);
                 bmp.triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getLeftColor() );
 
-                cx = (position.x+startx + vFont.textLength(context[currentOption]->getName().c_str()))+15;
+                cx = (location.getX()+startx + vFont.textLength(context[currentOption]->getName().c_str()))+15;
                 bmp.triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getRightColor() );
             }
             Bitmap::drawingMode(Bitmap::MODE_SOLID);
@@ -241,7 +242,7 @@ void ContextBox::drawText(const Bitmap & bmp){
             Bitmap::transBlender(0, 0, 0, textAlpha);
             Bitmap::drawingMode( Bitmap::MODE_TRANS );
             const int color = Bitmap::makeColor(255,255,255);
-            vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+            vFont.printf(location.getX() + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
             Bitmap::drawingMode( Bitmap::MODE_SOLID );
         }
         if (context.size() == 1){
@@ -262,11 +263,11 @@ void ContextBox::drawText(const Bitmap & bmp){
     currentOption = current;
     currentOption--;
     count = 0;
-    while (locationY > position.x - vFont.getHeight()){
+    while (locationY > location.getX() - vFont.getHeight()){
         if (currentOption < 0){
             currentOption = context.size()-1;
         }
-        const int startx = (position.width/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
+        const int startx = (location.getWidth()/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
         int textAlpha = fadeAlpha - (count * 35);
         if (textAlpha < 0){
             textAlpha = 0;
@@ -274,7 +275,7 @@ void ContextBox::drawText(const Bitmap & bmp){
         Bitmap::transBlender(0, 0, 0, textAlpha);
         Bitmap::drawingMode( Bitmap::MODE_TRANS );
         const int color = Bitmap::makeColor(255,255,255);
-        vFont.printf(position.x + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+        vFont.printf(location.getX() + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
         Bitmap::drawingMode( Bitmap::MODE_SOLID );
         currentOption--;
         locationY -= (int)(vFont.getHeight()/FONT_SPACER);

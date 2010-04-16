@@ -36,8 +36,8 @@ class PopupBox : public Widget{
             this->fadeSpeed = speed;
         }
         //! Get current box coordinates
-        virtual inline const RectArea & getArea(){
-            return this->board.position;
+        virtual inline const Coordinate & getArea(){
+            return this->board.location;
         }
     private:
 	

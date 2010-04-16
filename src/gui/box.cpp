@@ -12,7 +12,7 @@ Box::Box(){
 }
 
 Box::Box( const Box & b ){
-    this->position = b.position;
+    this->location = b.location;
     this->workArea = b.workArea;
 }
 
@@ -21,7 +21,7 @@ Box::~Box(){
 }
 
 Box &Box::operator=( const Box &copy){
-    position = copy.position;
+    location = copy.location;
     workArea = copy.workArea;
 
     return *this;
@@ -36,16 +36,16 @@ void Box::act(){
 void Box::render(const Bitmap & work){
     checkWorkArea();
     // Check if we are using a rounded box
-    if(position.radius>0){
-        roundRectFill( workArea, position.radius, 0, 0, position.width-1, position.height-1, colors.body );
-        roundRect( workArea, position.radius, 0, 0, position.width-1, position.height-1, colors.border );
+    if(location.getRadius() > 0){
+        roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+        roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     } else {
-        workArea->rectangleFill( 0, 0, position.width-1, position.height-1, colors.body );
-        workArea->rectangle( 0, 0, position.width-1, position.height-1, colors.border );
+        workArea->rectangleFill( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+        workArea->rectangle( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
     Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
     workArea->drawingMode( Bitmap::MODE_TRANS );
-    workArea->drawTrans(position.x,position.y,work);
+    workArea->drawTrans(location.getX(), location.getY(),work);
     work.drawingMode( Bitmap::MODE_SOLID );
 }
 
@@ -56,9 +56,8 @@ void Box::msgDialog(const Bitmap & bmp, const std::string & message, int radius)
     const int x = (bmp.getWidth()/2) - (width/2);
     const int y = (bmp.getHeight()/2) - (height/2);
     Box dialog;
-    dialog.position.width = width;
-    dialog.position.height = height;
-    dialog.position.radius = radius;
+    dialog.location.setDimensions(Gui::AbsolutePoint(width, height));
+    dialog.location.setRadius(radius);
     dialog.colors.body = Bitmap::makeColor(0,0,0);
     dialog.colors.bodyAlpha = 200;
     dialog.colors.border = Bitmap::makeColor(255,255,255);
