@@ -200,6 +200,9 @@ removeOption(false),
 background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
 option(false){
+    // Make menus rounded (remove later
+    contextMenu.location.setRadius(15);
+
 	optionInfoTextLocation.x = 320;
 	optionInfoTextLocation.y = 100;
 	menuInfoLocation.x = 320;
@@ -378,11 +381,7 @@ void Menu::load(Token *token) throw (LoadException){
     // First length
     if (hasOptions){
         setupOptions();
-    }
-    
-    // Make menus rounded (remove later
-    contextMenu.location.setRadius(15);
-        
+    }   
 }
 
 void Menu::setupOptions(){
@@ -799,9 +798,11 @@ void Menu::setMenuInfo(const std::string & text){
     // Setup menu info
     menuInfoBox.setFont(getFont(), getFontWidth(), getFontHeight());
     menuInfoBox.setText(text);
-    //menuInfoBox.position.x = menuInfoLocation.x - (menuInfoBox.position.width / 2);
-    //menuInfoBox.position.y = menuInfoLocation.y - (menuInfoBox.position.height / 2);
-    menuInfoBox.location.setPosition(Gui::AbsolutePoint(menuInfoLocation.x - menuInfoBox.location.getWidth()/2, menuInfoLocation.y - menuInfoBox.location.getHeight()/2));
+    const int width = menuInfoBox.location.getWidth();
+    const int height = menuInfoBox.location.getHeight();
+    menuInfoBox.location.setPosition(Gui::AbsolutePoint(menuInfoLocation.x - width/2, menuInfoLocation.y - height/2));
+    // have to pass the dimensions back in to correct proper placement
+    menuInfoBox.location.setDimensions(Gui::AbsolutePoint(menuInfoBox.location.getX() + width, menuInfoBox.location.getY() + height));
     menuInfoBox.location.setRadius(contextMenu.location.getRadius());
     menuInfoBox.colors.body = Bitmap::makeColor(32,32,0);
     menuInfoBox.colors.bodyAlpha = contextMenu.colors.bodyAlpha;
@@ -820,9 +821,11 @@ void Menu::addInfoBox(const std::string & text){
     InfoBox * temp = new InfoBox();
     temp->setFont(getFont(),getFontWidth(),getFontHeight());
     temp->setText(text);
-    //temp->position.x = optionInfoTextLocation.x - (temp->position.width / 2);
-    //temp->position.y = optionInfoTextLocation.y - (temp->position.height / 2);
-    menuInfoBox.location.setPosition(Gui::AbsolutePoint(menuInfoLocation.x - menuInfoBox.location.getWidth()/2, menuInfoLocation.y - menuInfoBox.location.getHeight()/2));
+    const int width = temp->location.getWidth();
+    const int height = temp->location.getHeight();
+    temp->location.setPosition(Gui::AbsolutePoint(optionInfoTextLocation.x - width/2, optionInfoTextLocation.y - height/2));
+    // have to pass the dimensions back in to correct proper placement
+    temp->location.setDimensions(Gui::AbsolutePoint(temp->location.getX() + width,temp->location.getY() + height));
     temp->location.setRadius(contextMenu.location.getRadius());
     temp->colors.body = Bitmap::makeColor(32,32,0);
     temp->colors.bodyAlpha = contextMenu.colors.bodyAlpha;
