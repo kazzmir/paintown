@@ -407,7 +407,7 @@ void OptionCredits::run( bool &endGame ){
     double min_y = GFX_Y;
 
     /* use Bitmap::temporaryBitmap here? */
-    Bitmap tmp(GFX_X, GFX_Y);
+    Bitmap tmp(Global::getScreenWidth(), Global::getScreenHeight());
     // Bitmap fireWork(GFX_X, GFX_Y);
     if (! music.empty()){
         MenuGlobals::setMusic(music);
@@ -559,7 +559,7 @@ bool OptionFullscreen::leftKey()
 	MenuGlobals::setFullscreen(!MenuGlobals::getFullscreen());
 	lblue = lgreen = 0;
 	int gfx = (MenuGlobals::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-	Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y );
+	Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
 	return true;
 }
 bool OptionFullscreen::rightKey()
@@ -567,7 +567,7 @@ bool OptionFullscreen::rightKey()
 	MenuGlobals::setFullscreen(!MenuGlobals::getFullscreen());
 	rblue = rgreen = 0;
 	int gfx = (MenuGlobals::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-	Bitmap::setGraphicsMode( gfx, GFX_X, GFX_Y );
+	Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
 	return true;
 }
 
