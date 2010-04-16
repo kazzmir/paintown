@@ -47,7 +47,7 @@ void PopupBox::close(){
 void PopupBox::doFade(){
     switch ( fadeState ){
 	case FadeIn: {
-        board.location.growTo(location, 0.005 * fadeSpeed);
+        board.location.growTo(location, 0.0025 * fadeSpeed);
 	    if (board.colors.borderAlpha < colors.borderAlpha){
             board.colors.borderAlpha += (int)(fadeSpeed/2);
             if (board.colors.borderAlpha >= colors.borderAlpha){
@@ -70,7 +70,7 @@ void PopupBox::doFade(){
 	case FadeOut: {
 	    Coordinate coord;
         coord.center(location);
-        board.location.growTo(coord, 0.005 * fadeSpeed);
+        board.location.growTo(coord, 0.0025 * fadeSpeed);
         
 	    if (board.colors.borderAlpha > 0){
             board.colors.borderAlpha -= (int)(fadeSpeed/2);
