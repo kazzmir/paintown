@@ -132,6 +132,8 @@ void TabMenu::load(Token *token) throw (LoadException){
                 contentArea.setCoordinates(tok);
             } else if ( *tok == "relative-position"){
                 contentArea.setCoordinates(tok);
+            } else if ( *tok == "coordinate"){
+                contentArea.setCoordinates(tok);
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
                 contentArea.setColors(tok);

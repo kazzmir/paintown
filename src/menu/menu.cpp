@@ -299,6 +299,8 @@ void Menu::load(Token *token) throw (LoadException){
                 contextMenu.setCoordinates(tok);
             } else if ( *tok == "relative-position"){
                 contextMenu.setCoordinates(tok);
+            } else if ( *tok == "coordinate"){
+                contextMenu.setCoordinates(tok);
             } else if ( *tok == "position-body" ) {
                 // This handles the body color of the menu box
                 contextMenu.setColors(tok);
