@@ -64,11 +64,9 @@ void Widget::setCoordinates(Token * token){
         RelativePoint dimensions(x2,y2);
         location = Coordinate(pos, dimensions);
     } else if ( *token == "coordinate" ){
-        Token * tok;
-        *token >> tok;
-        while (tok->hasTokens()){
+        while (token->hasTokens()){
             Token * coordToken;
-            *tok >> coordToken;
+            *token >> coordToken;
             if (*coordToken == "absolute"){
                 int x, y, width, height;
                 *coordToken >> x >> y >> width >> height;
