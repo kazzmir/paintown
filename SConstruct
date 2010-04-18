@@ -129,6 +129,7 @@ def checkAllegro(context):
           install_allegro(0, NULL, NULL);
           return 0;
         }
+        END_OF_MAIN()
     """, ".c")
 
     except OSError:
