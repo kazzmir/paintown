@@ -115,6 +115,31 @@ def checkRTTI(context):
     context.Result(foo)
     return foo
 
+def checkAllegro(context):
+    context.Message("Checking for Allegro... ")
+    tmp = context.env.Clone()
+    env = context.env
+
+    ok = 0
+    try:
+        env.ParseConfig('allegro-config --cflags --libs')
+        ok = context.TryLink("""
+        #include <allegro.h>
+        int main(int argc, char ** argv){
+          install_allegro(0, NULL, NULL);
+          return 0;
+        }
+    """, ".c")
+
+    except OSError:
+        ok = 1 
+
+    if not ok:
+        context.sconf.env = tmp
+
+    context.Result(ok)
+    return ok
+
 def checkOgg(context):
     context.Message("Checking for ogg and vorbis... ")
     tmp = context.env.Clone()
@@ -502,6 +527,7 @@ if enableProfiled():
 custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
                 "CheckRTTI" : checkRTTI,
+                "CheckAllegro" : checkAllegro,
                 "CheckOgg" : checkOgg}
 
 env['PAINTOWN_TESTS'] = custom_tests
@@ -565,11 +591,12 @@ else:
     
     config = env.Configure(custom_tests = custom_tests)
     try:
-        config.env.ParseConfig( 'allegro-config --libs --cflags' )
+        # config.env.ParseConfig( 'allegro-config --libs --cflags' )
+        config.CheckAllegro()
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
         config.env.ParseConfig( 'libpng-config --libs --cflags' )
         
-        staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
+        # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
         staticEnv.ParseConfig( 'freetype-config --cflags' )
         staticEnv.ParseConfig( 'libpng-config --cflags' )
     except OSError:
@@ -588,9 +615,9 @@ else:
     if not config.TryCompile("class a{public: a(){} }; int main(){ a * x = new a(); delete x; return 0; }\n", ".cpp" ):
         print "You need a C++ compiler such as g++ installed"
         Exit( 1 )
-    if not config.CheckHeader( 'allegro.h' ):
-        print "You need the header files for Allegro. Get it from http://alleg.sf.net"
-        Exit( 1 )
+    #if not config.CheckHeader( 'allegro.h' ):
+    #    print "You need the header files for Allegro. Get it from http://alleg.sf.net"
+    #    Exit( 1 )
     if not config.CheckHeader( 'ft2build.h' ):
         print "You need freetype. Install freetype and/or X11"
         Exit( 1 )
@@ -607,9 +634,11 @@ else:
 
     static_custom_tests = {"CheckPython" : checkPython,
                            "CheckRuby" : checkStaticRuby,
+                           "CheckAllegro" : checkAllegro,
                            "CheckRTTI" : checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
+    static_config.CheckAllegro()
     # static_config.CheckPython()
     #if static_config.HasRuby():
     #    static_config.CheckRuby()
