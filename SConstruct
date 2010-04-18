@@ -593,7 +593,9 @@ else:
     config = env.Configure(custom_tests = custom_tests)
     try:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
-        config.CheckAllegro()
+        if not config.CheckAllegro():
+            print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
+
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
         config.env.ParseConfig( 'libpng-config --libs --cflags' )
         
