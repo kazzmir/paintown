@@ -114,6 +114,8 @@ const int Keyboard::Key_EQUALS_PAD = ::KEY_EQUALS_PAD;
 const int Keyboard::Key_BACKQUOTE = ::KEY_BACKQUOTE;
 const int Keyboard::Key_SEMICOLON = ::KEY_SEMICOLON;
 const int Keyboard::Key_COMMAND = ::KEY_COMMAND;
+
+/*
 const int Keyboard::Key_UNKNOWN1 = ::KEY_UNKNOWN1;
 const int Keyboard::Key_UNKNOWN2 = ::KEY_UNKNOWN2;
 const int Keyboard::Key_UNKNOWN3 = ::KEY_UNKNOWN3;
@@ -122,6 +124,8 @@ const int Keyboard::Key_UNKNOWN5 = ::KEY_UNKNOWN5;
 const int Keyboard::Key_UNKNOWN6 = ::KEY_UNKNOWN6;
 const int Keyboard::Key_UNKNOWN7 = ::KEY_UNKNOWN7;
 const int Keyboard::Key_UNKNOWN8 = ::KEY_UNKNOWN8;
+*/
+
 const int Keyboard::Key_MODIFIERS = ::KEY_MODIFIERS;
 const int Keyboard::Key_LSHIFT = ::KEY_LSHIFT;
 const int Keyboard::Key_RSHIFT = ::KEY_RSHIFT;
@@ -299,6 +303,7 @@ void Keyboard::setAllDelay( const int delay ){
 	setDelay( Key_BACKQUOTE, delay );
 	setDelay( Key_SEMICOLON, delay );
 	setDelay( Key_COMMAND, delay );
+	/*
 	setDelay( Key_UNKNOWN1, delay );
 	setDelay( Key_UNKNOWN2, delay );
 	setDelay( Key_UNKNOWN3, delay );
@@ -307,6 +312,7 @@ void Keyboard::setAllDelay( const int delay ){
 	setDelay( Key_UNKNOWN6, delay );
 	setDelay( Key_UNKNOWN7, delay );
 	setDelay( Key_UNKNOWN8, delay );
+	*/
 	setDelay( Key_MODIFIERS, delay );
 	setDelay( Key_LSHIFT, delay );
 	setDelay( Key_RSHIFT, delay );
@@ -501,6 +507,7 @@ const char * Keyboard::keyToName( int key ){
 		case Keyboard::Key_BACKQUOTE : return "BACKQUOTE";
 		case Keyboard::Key_SEMICOLON : return "SEMICOLON";
 		case Keyboard::Key_COMMAND : return "COMMAND";
+		/*
 		case Keyboard::Key_UNKNOWN1 : return "UNKNOWN1";
 		case Keyboard::Key_UNKNOWN2 : return "UNKNOWN2";
 		case Keyboard::Key_UNKNOWN3 : return "UNKNOWN3";
@@ -509,6 +516,7 @@ const char * Keyboard::keyToName( int key ){
 		case Keyboard::Key_UNKNOWN6 : return "UNKNOWN6";
 		case Keyboard::Key_UNKNOWN7 : return "UNKNOWN7";
 		case Keyboard::Key_UNKNOWN8 : return "UNKNOWN8";
+		*/
 		// case Keyboard::Key_MODIFIERS : return "MODIFIERS";
 		case Keyboard::Key_LSHIFT : return "LSHIFT";
 		case Keyboard::Key_RSHIFT : return "RSHIFT";

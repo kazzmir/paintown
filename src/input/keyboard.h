@@ -166,6 +166,7 @@ public:
 	static KeyType Key_BACKQUOTE;
 	static KeyType Key_SEMICOLON;
 	static KeyType Key_COMMAND;
+	/*
 	static KeyType Key_UNKNOWN1;
 	static KeyType Key_UNKNOWN2;
 	static KeyType Key_UNKNOWN3;
@@ -174,6 +175,7 @@ public:
 	static KeyType Key_UNKNOWN6;
 	static KeyType Key_UNKNOWN7;
 	static KeyType Key_UNKNOWN8;
+	*/
 	static KeyType Key_MODIFIERS;
 	static KeyType Key_LSHIFT;
 	static KeyType Key_RSHIFT;
