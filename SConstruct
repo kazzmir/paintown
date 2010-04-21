@@ -122,7 +122,10 @@ def checkAllegro(context):
 
     ok = 0
     try:
+        def enableAllegro(env2):
+            env2.ParseConfig('allegro-config --cflags --libs')
         env.ParseConfig('allegro-config --cflags --libs')
+        env.enableAllegro = enableAllegro
         ok = context.TryLink("""
         #include <allegro.h>
         int main(int argc, char ** argv){
@@ -493,9 +496,19 @@ def buildDumb(where, env):
 def buildHawknl(where, env):
     return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
 
+def configEnvironment(env):
+    custom_tests = {"CheckAllegro" : checkAllegro}
+    config = env.Configure(custom_tests = custom_tests)
+    config.CheckAllegro()
+    return config.Finish()
+
+allegroEnvironment = configEnvironment(getEnvironment(debug))
+
 dumbEnv = getEnvironment(debug)
+allegroEnvironment.enableAllegro(dumbEnv)
 hawkEnv = getEnvironment(debug)
 dumbStaticEnv = getEnvironment(debug)
+allegroEnvironment.enableAllegro(dumbStaticEnv)
 hawkStaticEnv = getEnvironment(debug)
 
 # if you dont care about building a universal binary then disable this
