@@ -61,7 +61,7 @@ allegro/packfile.c
 # helpers/resamp2.inc
 # helpers/resamp3.inc
 
-env.Append( CPPPATH = ['include','include/internal'] )
+env.Prepend(CPPPATH = ['include','include/internal'])
 env.Append( CCFLAGS = ['-Wall','-W','-Wwrite-strings','-Wstrict-prototypes','-Wmissing-declarations', '-O2', '-ffast-math', '-fomit-frame-pointer', '-Wno-missing-declarations'] )
 
 env.Append( CPPDEFINES = 'DUMB_DECLARE_DEPRECATED' )
