@@ -125,7 +125,7 @@ def checkAllegro(context):
         def enableAllegro(env2):
             env2.ParseConfig('allegro-config --cflags --libs')
         env.ParseConfig('allegro-config --cflags --libs')
-        env.enableAllegro = enableAllegro
+        env['enableAllegro'] = enableAllegro
         ok = context.TryLink("""
         #include <allegro.h>
         int main(int argc, char ** argv){
@@ -505,10 +505,10 @@ def configEnvironment(env):
 allegroEnvironment = configEnvironment(getEnvironment(debug))
 
 dumbEnv = getEnvironment(debug)
-allegroEnvironment.enableAllegro(dumbEnv)
+allegroEnvironment['enableAllegro'](dumbEnv)
 hawkEnv = getEnvironment(debug)
 dumbStaticEnv = getEnvironment(debug)
-allegroEnvironment.enableAllegro(dumbStaticEnv)
+allegroEnvironment['enableAllegro'](dumbStaticEnv)
 hawkStaticEnv = getEnvironment(debug)
 
 # if you dont care about building a universal binary then disable this
