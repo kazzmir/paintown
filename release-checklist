@@ -22,6 +22,7 @@ Files to update version
  misc/make-osx-bundle
  misc/installer.nsi
  misc/send-to-sourceforge
+ misc/build-windows
  README
  website
  gui-installer

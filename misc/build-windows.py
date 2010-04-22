@@ -22,7 +22,7 @@ server_ip = '10.0.2.2'
 # server_ip = '192.168.90.2'
 quit_message = '**quit**'
 transfer_message = '**transfer**'
-paintown_version = '3.3.1'
+paintown_version = '3.4.0'
 
 # higher numbers of verbose output more stuff
 verbose = 1

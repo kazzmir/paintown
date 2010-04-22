@@ -44,7 +44,7 @@ bin(){
 echo "./install.sh -d <data> -b <bin>"
 echo "Install data to <data> and the executable script in <bin>"
 
-version=3.3.1
+version=3.4.0
 install_data=
 install_bin=
 

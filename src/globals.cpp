@@ -12,8 +12,8 @@
 using namespace std;
 
 static int major_version = 3;
-static int minor_version = 3;
-static int micro_version = 1;
+static int minor_version = 4;
+static int micro_version = 0;
 
 /*
 const int MIN_WORLD_Z = 160;
