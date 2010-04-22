@@ -497,10 +497,17 @@ def buildHawknl(where, env):
     return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
 
 def configEnvironment(env):
-    custom_tests = {"CheckAllegro" : checkAllegro}
-    config = env.Configure(custom_tests = custom_tests)
-    config.CheckAllegro()
-    return config.Finish()
+    if isWindows():
+        def nothing(env):
+            pass
+        env['enableAllegro'] = nothing
+        return env
+    else:
+        custom_tests = {"CheckAllegro" : checkAllegro}
+        config = env.Configure(custom_tests = custom_tests)
+        if not config.CheckAllegro():
+            Exit(1)
+        return config.Finish()
 
 allegroEnvironment = configEnvironment(getEnvironment(debug))
 
