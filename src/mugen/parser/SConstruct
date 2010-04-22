@@ -17,7 +17,7 @@ use.Append(BUILDERS = {'Peg' : peg_builder})
 all = []
 all.append(use.Peg('def.peg'))
 all.append(use.Peg('air.peg'))
-all.append(use.Peg('cns.peg'))
+#all.append(use.Peg('cns.peg'))
 all.append(use.Peg('cmd.peg'))
 
 for x in all:
