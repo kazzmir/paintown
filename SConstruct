@@ -126,6 +126,7 @@ def checkAllegro(context):
             env2.ParseConfig('allegro-config --cflags --libs')
         env.ParseConfig('allegro-config --cflags --libs')
         env['enableAllegro'] = enableAllegro
+        env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         ok = context.TryLink("""
         #include <allegro.h>
         int main(int argc, char ** argv){
@@ -491,10 +492,10 @@ env.Append( CCFLAGS = cflags,
             CPPDEFINES = cdefines )
 
 def buildDumb(where, env):
-    return SConscript( "src/dumb/SConscript", build_dir = '%s/dumb' % where, exports = 'env' )
+    return SConscript("src/dumb/SConscript", build_dir = '%s/dumb' % where, exports = 'env')
 
 def buildHawknl(where, env):
-    return SConscript( "src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env' )
+    return SConscript("src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env')
 
 def configEnvironment(env):
     if isWindows():
