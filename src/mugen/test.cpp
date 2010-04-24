@@ -271,7 +271,7 @@ void showCharacter(const string & ourFile){
 		    Font::getDefaultFont().printf( 15, 360, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
 		    Font::getDefaultFont().printf( 15, 370, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
 		   
-		    show_mouse(work.getBitmap());
+		    show_mouse(work.getData().getBitmap());
 
 		    work.BlitToScreen();
 		    Util::rest(1);
