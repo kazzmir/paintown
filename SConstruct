@@ -115,6 +115,34 @@ def checkRTTI(context):
     context.Result(foo)
     return foo
 
+def checkSDL(context):
+    context.Message("Checking for SDL... ")
+    tmp = context.env.Clone()
+    env = context.env
+
+    ok = 0
+    try:
+        def enableSDL(env2):
+            env2.ParseConfig('sdl-config --cflags --libs')
+        env.ParseConfig('sdl-config --cflags --libs')
+        env['enableSDL'] = enableSDL
+        env.Append(CPPDEFINES = ['USE_SDL'])
+        ok = context.TryLink("""
+        #include <SDL.h>
+        int main(int argc, char ** argv){
+          return SDL_Init(0);
+        }
+    """, ".c")
+
+    except OSError:
+        ok = 1 
+
+    if not ok:
+        context.sconf.env = tmp
+
+    context.Result(ok)
+    return ok
+
 def checkAllegro(context):
     context.Message("Checking for Allegro... ")
     tmp = context.env.Clone()
@@ -325,6 +353,9 @@ def checkRunRuby(context):
     (ok, stuff) = context.TryAction(Action("ruby -v"))
     context.Result(ok)
     return ok
+
+def useSDL():
+    return False
 
 def isCygwin():
     try:
@@ -550,6 +581,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckAllegro" : checkAllegro,
+                "CheckSDL" : checkSDL,
                 "CheckOgg" : checkOgg}
 
 env['PAINTOWN_TESTS'] = custom_tests
@@ -616,6 +648,9 @@ else:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
         if not config.CheckAllegro():
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
+
+        if useSDL():
+            config.CheckSDL()
 
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
         config.env.ParseConfig( 'libpng-config --libs --cflags' )
