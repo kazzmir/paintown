@@ -354,11 +354,14 @@ def checkRunRuby(context):
     context.Result(ok)
     return ok
 
-def useAllegro():
-    return True
-
 def useSDL():
-    return False
+    try:
+        return os.environ['SDL'] == '1'
+    except KeyError:
+        return False
+
+def useAllegro():
+    return not useSDL()
 
 def isCygwin():
     try:
