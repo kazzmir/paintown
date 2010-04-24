@@ -620,6 +620,9 @@ if isWindows():
     #     print "Can't find yacc"
     #     Exit(1)
     env = config.Finish()
+
+    env.Append(CPPDEFINES = ['USE_ALLEGRO'])
+    staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
     
     staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
     env.Append( LIBS = [dumb,hawknl] )
