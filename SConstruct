@@ -354,6 +354,9 @@ def checkRunRuby(context):
     context.Result(ok)
     return ok
 
+def useAllegro():
+    return True
+
 def useSDL():
     return False
 
@@ -533,21 +536,33 @@ def configEnvironment(env):
         def nothing(env):
             pass
         env['enableAllegro'] = nothing
+        env['enableSDL'] = nothing
         return env
     else:
-        custom_tests = {"CheckAllegro" : checkAllegro}
+        custom_tests = {"CheckAllegro" : checkAllegro,
+                        "CheckSDL" : checkSDL}
         config = env.Configure(custom_tests = custom_tests)
-        if not config.CheckAllegro():
-            Exit(1)
+        if useAllegro():
+            if not config.CheckAllegro():
+                Exit(1)
+        if useSDL():
+            if not config.CheckSDL():
+                Exit(1)
         return config.Finish()
 
 allegroEnvironment = configEnvironment(getEnvironment(debug))
 
 dumbEnv = getEnvironment(debug)
-allegroEnvironment['enableAllegro'](dumbEnv)
+if useAllegro():
+    allegroEnvironment['enableAllegro'](dumbEnv)
+if useSDL():
+    allegroEnvironment['enableSDL'](dumbEnv)
 hawkEnv = getEnvironment(debug)
 dumbStaticEnv = getEnvironment(debug)
-allegroEnvironment['enableAllegro'](dumbStaticEnv)
+if useAllegro():
+    allegroEnvironment['enableAllegro'](dumbStaticEnv)
+if useSDL():
+    allegroEnvironment['enableSDL'](dumbStaticEnv)
 hawkStaticEnv = getEnvironment(debug)
 
 # if you dont care about building a universal binary then disable this
@@ -631,10 +646,10 @@ else:
         if not getDebug():
             env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
 
-    try:
-        dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
-    except OSError:
-        pass
+    #try:
+    #    dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
+    #except OSError:
+    #    pass
 
     if isOSX():
         staticEnv[ 'CXX' ] = 'misc/g++'
@@ -646,7 +661,7 @@ else:
     config = env.Configure(custom_tests = custom_tests)
     try:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
-        if not config.CheckAllegro():
+        if useAllegro() and not config.CheckAllegro():
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
 
         if useSDL():
