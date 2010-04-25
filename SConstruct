@@ -729,7 +729,8 @@ else:
                            "CheckRTTI" : checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
-    static_config.CheckAllegro()
+    if useAllegro():
+        static_config.CheckAllegro()
     # static_config.CheckPython()
     #if static_config.HasRuby():
     #    static_config.CheckRuby()
