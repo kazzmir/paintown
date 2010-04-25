@@ -1,8 +1,8 @@
-#ifdef HAVE_OGG
+#if defined(HAVE_OGG) && defined(USE_ALLEGRO)
 
 #include <string.h>
-#include "allegro.h"
-#include "allegro/internal/aintern.h"
+#include <allegro.h>
+#include <allegro/internal/aintern.h>
 
 #include "logg.h"
 

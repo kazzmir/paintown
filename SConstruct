@@ -555,6 +555,17 @@ def configEnvironment(env):
 
 allegroEnvironment = configEnvironment(getEnvironment(debug))
 
+def buildType(dir):
+    properties = [dir]
+    if useSDL():
+        properties.append('sdl')
+    if getDebug():
+        properties.append('debug')
+    return '-'.join(properties)
+
+buildDir = buildType('build')
+buildDirStatic = buildType('build-static')
+
 dumbEnv = getEnvironment(debug)
 if useAllegro():
     allegroEnvironment['enableAllegro'](dumbEnv)
@@ -578,11 +589,11 @@ if isOSX():
     hawkStaticEnv.Append( CPPDEFINES = 'MACOSX' )
     hawkEnv.Append( CPPDEFINES = 'MACOSX' )
 
-hawknl = buildHawknl('build', hawkEnv)
-dumb = buildDumb( 'build', dumbEnv )
+hawknl = buildHawknl(buildDir, hawkEnv)
+dumb = buildDumb(buildDir, dumbEnv )
 
-hawknl_static = buildHawknl('build-static', hawkStaticEnv)
-dumb_static = buildDumb('build-static', dumbStaticEnv)
+hawknl_static = buildHawknl(buildDirStatic, hawkStaticEnv)
+dumb_static = buildDumb(buildDirStatic, dumbStaticEnv)
 
 #if getDebug():
 #    env.Append(LIBS = ['gcov'])
@@ -733,10 +744,10 @@ else:
 # staticEnv.Append(CCFLAGS = ['-Werror'])
 
 use = env
-shared = SConscript( 'src/SConstruct', build_dir='build', exports = ['use'] );
+shared = SConscript( 'src/SConstruct', build_dir = buildDir, exports = ['use'] );
 
 use = staticEnv
-static = SConscript( 'src/SConstruct', build_dir='build-static', exports = ['use'] )
+static = SConscript( 'src/SConstruct', build_dir = buildDirStatic, exports = ['use'] )
 
 scripts = Split("""
 src/script/modules/paintown.py

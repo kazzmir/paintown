@@ -1,6 +1,8 @@
 #ifndef LOGG_H
 #define LOGG_H
 
+#ifdef USE_ALLEGRO
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,6 +41,8 @@ extern int logg_restart_stream(LOGG_Stream* s);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // USE_ALLEGRO
 
 #endif
 

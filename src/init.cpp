@@ -1,9 +1,15 @@
+#ifdef USE_ALLEGRO
 #include <allegro.h>
 #ifdef ALLEGRO_WINDOWS
 #include <winalleg.h>
 #endif
+#endif
 
-#ifndef ALLEGRO_WINDOWS
+#ifdef USE_SDL
+#include <SDL.h>
+#endif
+
+#ifndef WINDOWS
 #include <signal.h>
 #include <string.h>
 #endif
@@ -52,22 +58,28 @@ static void inc_speed_counter(){
     /* probably put input polling here, InputManager::poll() */
     Global::speed_counter += 1;
 }
+#ifdef USE_ALLEGRO
 END_OF_FUNCTION( inc_speed_counter )
+#endif
 
 /* if you need to count seconds for some reason.. */
 static void inc_second_counter() {
     Global::second_counter += 1;
 }
+#ifdef USE_ALLEGRO
 END_OF_FUNCTION( inc_second_counter )
+#endif
 
-#ifndef ALLEGRO_WINDOWS
+#ifndef WINDOWS
 static void handleSigSegV(int i, siginfo_t * sig, void * data){
     const char * message = "Bug! Caught a memory violation. Shutting down..\n";
     int dont_care = write(1, message, 48);
     dont_care = dont_care;
     // Global::shutdown_message = "Bug! Caught a memory violation. Shutting down..";
     Bitmap::setGfxModeText();
+#ifdef USE_ALLEGRO
     allegro_exit();
+#endif
     /* write to a log file or something because sigsegv shouldn't
      * normally happen.
      */
@@ -77,7 +89,7 @@ static void handleSigSegV(int i, siginfo_t * sig, void * data){
 #endif
 
 /* catch a socket being closed prematurely on unix */
-#ifndef ALLEGRO_WINDOWS
+#ifndef WINDOWS
 static void handleSigPipe( int i, siginfo_t * sig, void * data ){
 }
 
@@ -89,7 +101,7 @@ static void handleSigUsr1( int i, siginfo_t * sig, void * data ){
 #endif
 
 static void registerSignals(){
-#ifndef ALLEGRO_WINDOWS
+#ifndef WINDOWS
 	struct sigaction action;
 	memset( &action, 0, sizeof(struct sigaction) );
 	action.sa_sigaction = handleSigPipe;
@@ -129,7 +141,9 @@ static void close_window(){
         close_paintown();
     }
 }
+#ifdef USE_ALLEGRO
 END_OF_FUNCTION(close_window)
+#endif
 
 bool Global::init( int gfx ){
 
@@ -138,6 +152,13 @@ bool Global::init( int gfx ){
     out << "Data path is " << Util::getDataPath2().path() << endl;
     out << "Paintown version " << Global::getVersionString() << endl;
     out << "Build date " << __DATE__ << " " << __TIME__ << endl;
+#ifdef USE_SDL
+    out << "SDL Init: " << SDL_Init(SDL_INIT_VIDEO |
+                                    SDL_INIT_AUDIO |
+                                    SDL_INIT_TIMER |
+                                    SDL_INIT_JOYSTICK);
+#endif
+#ifdef USE_ALLEGRO
     out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
     out << "Allegro init: " <<allegro_init()<<endl;
     out << "Install timer: " <<install_timer()<<endl;
@@ -147,6 +168,7 @@ bool Global::init( int gfx ){
     /* is calling this function a good idea? */
     set_volume_per_voice(0);
     out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
+#endif
 
     /* png */
     loadpng_init();
