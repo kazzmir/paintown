@@ -50,6 +50,13 @@ for i in filelist:
 # obj_files.append(parser('cmd'))
 # obj_files.append(parser('def'))
 
+def useSDL():
+    import os
+    try:
+        return os.environ['SDL'] == '1'
+    except KeyError:
+        return False
+
 def icon():
     if isWindows():
         return ['windows/game.res']
@@ -60,7 +67,8 @@ x = []
 x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
-x.append(use.Program('mugentest', obj_files + ['mugen/test.cpp']))
+if not useSDL():
+    x.append(use.Program('mugentest', obj_files + ['mugen/test.cpp']))
 # x.append( use.Program( 'mugentest2', obj_files + ['mugen/test2.cpp'] ) )
 
 SConscript('mugen/parser/SConstruct', exports = ['use']);

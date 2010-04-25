@@ -1,5 +1,7 @@
 #include <string>
+#ifdef USE_ALLEGRO
 #include <allegro.h>
+#endif
 #include <map>
 #include "util/font.h"
 #include "util/funcs.h"
@@ -55,7 +57,9 @@ Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int
 
 FontFactory::FontFactory(){
     // my_data = load_datafile(Filesystem::find(Filesystem::RelativePath("fonts.dat")).path().c_str());
+#ifdef USE_ALLEGRO
     font_mapper[ "bios" ] = new AllegroFont( ::font );
+#endif
 }
 
 FontFactory::~FontFactory(){
