@@ -4,13 +4,13 @@
 #include <ostream>
 
 #include "config.h"
-#include "mugen/sprite.h"
-#include "mugen/animation.h"
-#include "mugen/font.h"
-#include "mugen/sound.h"
-#include "mugen/stage.h"
+#include "sprite.h"
+#include "animation.h"
+#include "font.h"
+#include "sound.h"
+#include "stage.h"
 #include "character.h"
-#include "mugen/state.h"
+#include "state.h"
 
 #include "util/timedifference.h"
 #include "ast/all.h"
