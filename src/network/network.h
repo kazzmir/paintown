@@ -85,6 +85,7 @@ struct Message{
 
         /* time in microseconds
          * a 64-bit variable can hold
+         *                     us     ms     s    m    h    d
          *  years = 2**64.0 / (1000 * 1000 * 60 * 60 * 24 * 365)
          *  years = 584942.417355072
          * worth of microseconds
