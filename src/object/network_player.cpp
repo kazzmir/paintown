@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "animation.h"
 #include "factory/font_render.h"
 #include "globals.h"
@@ -8,7 +9,6 @@
 #include "object.h"
 #include "object_messages.h"
 #include <sstream>
-#include "util/bitmap.h"
 #include "util/font.h"
 #include "util/file-system.h"
 #include "util/funcs.h"

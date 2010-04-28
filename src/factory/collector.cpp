@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "collector.h"
 #include "heart_factory.h"
 #include "nameplacer.h"
@@ -6,7 +7,6 @@
 #include "object_factory.h"
 #include "resource.h"
 #include "shadow.h"
-#include "util/bitmap.h"
 #include <iostream>
 
 using namespace std;
