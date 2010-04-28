@@ -467,7 +467,7 @@ static string regexResult(const string & str, const string & regex){
 
 static list<Ast::Section*>* parseDef(const string & path){
     try{
-        return (list<Ast::Section*>*) Mugen::Def::main(path);
+        return (list<Ast::Section*>*) Mugen::Def::parse(path);
     } catch (const Mugen::Def::ParseException & p){
         throw MugenException(p.getReason());
     }
@@ -1379,7 +1379,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(defFile.path()));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(defFile.path()));
     return parsed.findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );

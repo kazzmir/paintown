@@ -894,7 +894,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
 
 list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
     try{
-        return (list<Ast::Section*>*) Mugen::Air::main(filename);
+        return (list<Ast::Section*>*) Mugen::Air::parse(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Air::ParseException & e){
@@ -906,7 +906,7 @@ list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
 
 list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
     try{
-        return (list<Ast::Section*>*) Mugen::Def::main(filename);
+        return (list<Ast::Section*>*) Mugen::Def::parse(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Def::ParseException & e){

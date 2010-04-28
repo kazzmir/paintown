@@ -7,7 +7,7 @@
 /* this is bad.. peg.py should just produce a .h file we can include */
 namespace Mugen{
     namespace Def{
-        extern const void * main(const std::string & filename, bool stats = false);
+        extern const void * parse(const std::string & filename, bool stats = false);
 
         class ParseException: std::exception {
         public:
@@ -17,7 +17,7 @@ namespace Mugen{
     }
 
     namespace Air{
-        extern const void * main(const std::string & filename, bool stats = false);
+        extern const void * parse(const std::string & filename, bool stats = false);
 
         class ParseException: std::exception {
         public:
@@ -27,7 +27,7 @@ namespace Mugen{
     }
     
     namespace Cmd{
-        extern const void * main(const std::string & filename, bool stats = false);
+        extern const void * parse(const std::string & filename, bool stats = false);
 
         class ParseException: std::exception {
         public:

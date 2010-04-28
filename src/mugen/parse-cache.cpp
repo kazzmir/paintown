@@ -43,7 +43,7 @@ ParseCache::~ParseCache(){
 }
 
 static list<Ast::Section*> * reallyParseCmd(const std::string & path){
-    return (list<Ast::Section*>*) Cmd::main(path);
+    return (list<Ast::Section*>*) Cmd::parse(path);
 }
 
 static list<Ast::Section*> * copy(list<Ast::Section*> * input){

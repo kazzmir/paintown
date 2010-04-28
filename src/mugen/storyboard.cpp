@@ -269,7 +269,7 @@ startscene(0){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Def::main(ourDefFile.path()));
+    Ast::AstParse parsed((list<Ast::Section*>*) Def::parse(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 

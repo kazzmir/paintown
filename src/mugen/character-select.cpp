@@ -1120,7 +1120,7 @@ void CharacterSelect::load(){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(systemFile.path()));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(systemFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
@@ -1651,7 +1651,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::main(file.path()));
+    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(file.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     
