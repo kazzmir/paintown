@@ -19,7 +19,7 @@ obj_files = []
 filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
 def gmeLibrary(env):
-    env.Append(CPPPATH = ['gme'])
+    gmeEnv = env.Clone()
     source = Split("""
 gme/Ay_Apu.cpp
 gme/Ay_Cpu.cpp
@@ -67,7 +67,7 @@ gme/Vgm_Emu_Impl.cpp
 gme/Ym2413_Emu.cpp
 gme/Ym2612_Emu.cpp
 """)
-    return env.StaticLibrary('gme', source)
+    return gmeEnv.StaticLibrary('gme', source)
 
 def unique(lst):
     m = []

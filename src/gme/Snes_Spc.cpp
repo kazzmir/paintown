@@ -241,7 +241,10 @@ int Snes_Spc::read( spc_addr_t addr )
 {
 	int result = mem.ram [addr];
 	
-	if ( (rom_addr <= addr && addr < 0xFFFC || addr >= 0xFFFE) && rom_enabled )
+        /* 4/28/2010: Jon added () around the && expression, but I'm not 100%
+         * thats right.
+         */
+	if ( ((rom_addr <= addr && addr < 0xFFFC) || addr >= 0xFFFE) && rom_enabled )
 		debug_printf( "Read from ROM: %04X -> %02X\n", addr, result );
 	
 	if ( unsigned (addr - 0xF0) < 0x10 )
