@@ -1,3 +1,5 @@
+#ifdef USE_ALLEGRO
+
 /* loadpng, Allegro wrapper routines for libpng
  * by Peter Wang (tjaden@users.sf.net).
  *
@@ -304,3 +306,5 @@ int save_png(AL_CONST char *filename, BITMAP *bmp, AL_CONST RGB *pal)
 
     return result;
 }
+
+#endif

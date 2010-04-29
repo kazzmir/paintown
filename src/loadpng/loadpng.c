@@ -1,3 +1,5 @@
+#ifdef USE_ALLEGRO
+
 /* loadpng, Allegro wrapper routines for libpng
  * by Peter Wang (tjaden@users.sf.net).
  *
@@ -398,3 +400,5 @@ BITMAP *load_memory_png(AL_CONST void *buffer, int bufsize, RGB *pal)
     
     return bmp;
 }
+
+#endif

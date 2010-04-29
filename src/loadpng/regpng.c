@@ -1,3 +1,5 @@
+#ifdef USE_ALLEGRO
+
 /* loadpng, Allegro wrapper routines for libpng
  * by Peter Wang (tjaden@users.sf.net).
  *
@@ -66,3 +68,5 @@ int loadpng_init(void)
     register_png_file_type();
     return 0;
 }
+
+#endif
