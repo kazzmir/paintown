@@ -589,6 +589,9 @@ if isOSX():
     hawkStaticEnv.Append( CPPDEFINES = 'MACOSX' )
     hawkEnv.Append( CPPDEFINES = 'MACOSX' )
 
+# 4/28/2010:
+# Is there a good reason that hawknl and dumb are built from here
+# instead of invoking the SConscripts from the src/SConscript file?
 hawknl = buildHawknl(buildDir, hawkEnv)
 dumb = buildDumb(buildDir, dumbEnv )
 
