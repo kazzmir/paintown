@@ -39,10 +39,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AL_KEYINPUT_H
 #define AL_KEYINPUT_H
 
+/*
 #include <allegro.h>
 #ifdef ALLEGRO_WINDOWS
 #include <winalleg.h>
 #endif
+*/
+
 #include "keyinput.h"
 
 class allegroKeyInput : public keyInput

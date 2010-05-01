@@ -38,6 +38,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef USE_ALLEGRO
 
+#include <allegro.h>
 #include "al_keyinput.h"
 
 // constructor

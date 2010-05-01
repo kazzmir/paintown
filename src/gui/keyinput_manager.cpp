@@ -46,102 +46,103 @@ static std::ostream & debug( int level ){
 	return Global::debug( level );
 }
 	
-	allegroKeyInput keyInputManager::input;
-	guiTimer keyInputManager::dTimer[keys::MAX];
-	unsigned int keyInputManager::delay[keys::MAX];
-	bool keyInputManager::keyHolder[keys::MAX];
-	bool keyInputManager::keyBlocker[keys::MAX];
-	sigslot::signal1<const keys &> keyInputManager::pressed;
-	sigslot::signal1<const keys &> keyInputManager::released;
-	
-	// Mouse Manager Constructor
-	keyInputManager::keyInputManager()
-	{
-		//dTimer.reset();
-		//delay = 0;
-		keyHolder[keys::SPACE]=false;
-		keyHolder[keys::TAB]=false;
-		keyHolder[keys::ENTER]=false;
-		keyBlocker[keys::SPACE]=false;
-		keyBlocker[keys::TAB]=false;
-		keyBlocker[keys::ENTER]=false;
-		for(int i=0;i<keys::MAX;++i)
-		{
-			dTimer[i].reset();
-			delay[i]=0;
-			keyHolder[i]=false;
-			keyBlocker[i]=false;
-		}
-	}
-	
-	// Mouse Manager Destructor
-	keyInputManager::~keyInputManager()
-	{
-		// nothing
-	}
-		
-	void keyInputManager::clear(){
-		input.clear();
-	}
-	
-	// Check mouse for changes and fire events
-	void keyInputManager::update()
-	{
-		//if(delay<=dTimer.msecs())dTimer.reset();
-		
-		// update the keyboard
-		input.update();
-		//if(dTimer.msecs()<=delay)
-		//{
-			// Do pressed queue
-			while(!input.pressedEmpty()){
-				keys k = input.checkNextPressed();
-				if(delay[k.getValue()]<=dTimer[k.getValue()].msecs())dTimer[k.getValue()].reset();
-				if(dTimer[k.getValue()].msecs()<=delay[k.getValue()])
-				{
-					input.dequeuePressed();
-					keyHolder[k.getValue()] = true;
-					debug( 5 ) << "Pressed key " << k.getValue() << std::endl;
-					pressed.emit(k);
-				}
-			}
-			
-			// Do released queue
-			while(!input.releasedEmpty())
-			{
-				keys k = input.dequeueReleased();
-				keyHolder[k.getValue()] = false;
-				released.emit(k);
-			}
-		//}
-	}
-	
-	// Key state
-	bool keyInputManager::keyState(int unicode, bool blocking)
-	{
-		//if(unicode>255 || unicode<0)return false;
-		
-		if(blocking)
-		{
-			
-			if(keyHolder[unicode] && !(keyBlocker[unicode]))
-			{
-				keyBlocker[unicode]=true;
-				return true;
-			}
-			else if(!keyHolder[unicode] && keyBlocker[unicode])
-			{
-				keyBlocker[unicode]=false;
-				return false;
-			}
-			return false;
-		}
-		return keyHolder[unicode];
-	}
-	
-	//! Set delay in milleseconds (doesn't effect the keyStates)
-	void keyInputManager::setDelay(unsigned int msecs, const keys::keyTypes key)
-	{
-		delay[key] = msecs;
-	}
+#ifdef USE_ALLEGRO
+allegroKeyInput keyInputManager::input;
+#endif
 
+guiTimer keyInputManager::dTimer[keys::MAX];
+unsigned int keyInputManager::delay[keys::MAX];
+bool keyInputManager::keyHolder[keys::MAX];
+bool keyInputManager::keyBlocker[keys::MAX];
+sigslot::signal1<const keys &> keyInputManager::pressed;
+sigslot::signal1<const keys &> keyInputManager::released;
+
+// Mouse Manager Constructor
+keyInputManager::keyInputManager(){
+    //dTimer.reset();
+    //delay = 0;
+    keyHolder[keys::SPACE]=false;
+    keyHolder[keys::TAB]=false;
+    keyHolder[keys::ENTER]=false;
+    keyBlocker[keys::SPACE]=false;
+    keyBlocker[keys::TAB]=false;
+    keyBlocker[keys::ENTER]=false;
+    for(int i=0;i<keys::MAX;++i)
+    {
+        dTimer[i].reset();
+        delay[i]=0;
+        keyHolder[i]=false;
+        keyBlocker[i]=false;
+    }
+}
+
+// Mouse Manager Destructor
+keyInputManager::~keyInputManager(){
+        // nothing
+}
+        
+void keyInputManager::clear(){
+#ifdef USE_ALLEGRO
+    input.clear();
+#endif
+}
+
+// Check mouse for changes and fire events
+void keyInputManager::update(){
+    //if(delay<=dTimer.msecs())dTimer.reset();
+
+#ifdef USE_ALLEGRO
+    // update the keyboard
+    input.update();
+    //if(dTimer.msecs()<=delay)
+    //{
+    // Do pressed queue
+    while(!input.pressedEmpty()){
+        keys k = input.checkNextPressed();
+        if(delay[k.getValue()]<=dTimer[k.getValue()].msecs())dTimer[k.getValue()].reset();
+        if(dTimer[k.getValue()].msecs()<=delay[k.getValue()])
+        {
+            input.dequeuePressed();
+            keyHolder[k.getValue()] = true;
+            debug( 5 ) << "Pressed key " << k.getValue() << std::endl;
+            pressed.emit(k);
+        }
+    }
+
+    // Do released queue
+    while(!input.releasedEmpty())
+    {
+        keys k = input.dequeueReleased();
+        keyHolder[k.getValue()] = false;
+        released.emit(k);
+    }
+    //}
+#endif
+}
+
+// Key state
+bool keyInputManager::keyState(int unicode, bool blocking){
+    //if(unicode>255 || unicode<0)return false;
+
+    if(blocking)
+    {
+
+        if(keyHolder[unicode] && !(keyBlocker[unicode]))
+        {
+            keyBlocker[unicode]=true;
+            return true;
+        }
+        else if(!keyHolder[unicode] && keyBlocker[unicode])
+        {
+            keyBlocker[unicode]=false;
+            return false;
+        }
+        return false;
+    }
+    return keyHolder[unicode];
+}
+
+//! Set delay in milleseconds (doesn't effect the keyStates)
+void keyInputManager::setDelay(unsigned int msecs, const keys::keyTypes key){
+    delay[key] = msecs;
+}
