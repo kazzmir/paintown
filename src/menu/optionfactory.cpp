@@ -7,7 +7,7 @@
 
 using namespace std;
 
-MenuOption * OptionFactory::getOption(Token *token) throw (LoadException) {
+MenuOption * OptionFactory::getOption(Token *token){
     Token * tok;
     *token >> tok;
     if ( *tok == "menu" ){

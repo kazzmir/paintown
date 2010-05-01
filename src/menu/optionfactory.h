@@ -7,7 +7,7 @@ class MenuOption;
 class Token;
 
 namespace OptionFactory{
-    MenuOption * getOption(Token *token) throw (LoadException);
+    MenuOption * getOption(Token *token);
 }
 
 #endif
