@@ -13,6 +13,10 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 
+/* FIXME!!!!!!!!!
+ * Get rid of the USE_ALLEGRO ifdef's in here.
+ */
+
 using namespace std;
 
 static Music * instance = NULL;
@@ -136,8 +140,10 @@ void Music::doPlay(){
                          break;
                      }
         }
-        if ( al_poll_duh( this->player ) != 0 ){
+#ifdef USE_ALLEGRO
+        if (al_poll_duh( this->player ) != 0){
         }
+#endif
     }
 }
 
@@ -249,7 +255,9 @@ bool Music::loadSong( const string & song ){
 
 void Music::_play(){
     if ( playing == false && this->player != NULL ){
+#ifdef USE_ALLEGRO
         al_resume_duh( this->player );
+#endif
         playing = true;
     }
 }
@@ -264,7 +272,9 @@ void Music::play(){
 void Music::_pause(){
     playing = false;
     if ( this->player != NULL ){
+#ifdef USE_ALLEGRO
         al_pause_duh( this->player );
+#endif
     }
 }
 
@@ -331,7 +341,9 @@ void Music::setVolume( double vol ){
 void Music::_setVolume( double vol ){
 
     if ( player ){
+#ifdef USE_ALLEGRO
         al_duh_set_volume( player, vol );
+#endif
     }
 
 }
@@ -340,7 +352,9 @@ Music::~Music(){
 
     LOCK;{
         if ( player ){
+#ifdef USE_ALLEGRO
             al_stop_duh( player );
+#endif
             unload_duh( music_file );
         }
 
@@ -388,7 +402,9 @@ bool Music::internal_loadSong( const char * path ){
     }
 
     if ( player != NULL ){
+#ifdef USE_ALLEGRO
         al_stop_duh( player );
+#endif
         unload_duh( music_file );
         player = NULL;
         music_file = NULL;
@@ -437,6 +453,7 @@ bool Music::internal_loadSong( const char * path ){
     }
 
     if (music_file){
+#ifdef USE_ALLEGRO
         int buf = 1 << 11;
         player = al_start_duh( music_file, 2, 0, volume, buf, 22050 );
         // cout << "Loaded music player " << player << endl;
@@ -453,6 +470,7 @@ bool Music::internal_loadSong( const char * path ){
         } else {
             Global::debug(0) << "*BUG* Could not create music player" << endl;
         }
+#endif
     } else {
         Global::debug( 0 )<<"Could not load "<<path<<endl;
         return false;
