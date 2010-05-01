@@ -7,10 +7,20 @@
 #endif
 */
 
+#ifdef USE_ALLEGRO
 #include "allegro/allegro-joystick.h"
+#endif
+#ifdef USE_SDL
+#include "sdl/joystick.h"
+#endif
 
 Joystick * Joystick::create(){
+#ifdef USE_ALLEGRO
     return new AllegroJoystick();
+#endif
+#ifdef USE_SDL
+    return new SDLJoystick();
+#endif
 /*
 #ifdef LINUX
     return new LinuxJoystick();

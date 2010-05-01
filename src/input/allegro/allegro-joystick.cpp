@@ -1,3 +1,5 @@
+#ifdef USE_ALLEGRO
+
 #include <allegro.h>
 #include "allegro-joystick.h"
 
@@ -52,3 +54,5 @@ AllegroJoystick::~AllegroJoystick(){
 
 AllegroJoystick::AllegroJoystick(){
 }
+
+#endif

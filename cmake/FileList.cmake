@@ -132,6 +132,7 @@ src/util/regex.cpp
 src/util/language-string.cpp
 src/input/joystick.cpp
 src/input/allegro/allegro-joystick.cpp
+src/input/sdl/joystick.cpp
 src/util/system.cpp
 src/util/compress.cpp
 src/util/message-queue.cpp
