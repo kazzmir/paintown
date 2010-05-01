@@ -17,6 +17,8 @@
  *                                                       \__/
  */
 
+#ifdef USE_ALLEGRO
+
 #include <stdlib.h>
 
 #include <allegro.h>
@@ -275,3 +277,5 @@ DUH_SIGRENDERER *al_duh_decompose_to_renderer(AL_DUH_PLAYER *dp)
 {
 	return al_duh_decompose_to_sigrenderer(dp);
 }
+
+#endif

@@ -152,6 +152,7 @@ def checkAllegro(context):
     try:
         def enableAllegro(env2):
             env2.ParseConfig('allegro-config --cflags --libs')
+            env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
         env.ParseConfig('allegro-config --cflags --libs')
         env['enableAllegro'] = enableAllegro
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
