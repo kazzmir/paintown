@@ -424,6 +424,7 @@ bool Music::internal_loadSong( const char * path ){
        }
        */
 
+#ifdef USE_ALLEGRO
     for ( int i = 0; i < 4; i++ ){
         /* the order of trying xm/s3m/it/mod matters because mod could be
          * confused with one of the other formats, so load it last.
@@ -453,7 +454,6 @@ bool Music::internal_loadSong( const char * path ){
     }
 
     if (music_file){
-#ifdef USE_ALLEGRO
         int buf = 1 << 11;
         player = al_start_duh( music_file, 2, 0, volume, buf, 22050 );
         // cout << "Loaded music player " << player << endl;
@@ -470,11 +470,12 @@ bool Music::internal_loadSong( const char * path ){
         } else {
             Global::debug(0) << "*BUG* Could not create music player" << endl;
         }
-#endif
     } else {
         Global::debug( 0 )<<"Could not load "<<path<<endl;
         return false;
     }
+#endif
+
     return true;
 
 }
