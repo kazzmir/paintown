@@ -124,9 +124,11 @@ def checkSDL(context):
     try:
         def enableSDL(env2):
             env2.ParseConfig('sdl-config --cflags --libs')
-        env.ParseConfig('sdl-config --cflags --libs')
+            env2.Append(LIBS = ['SDL_image'])
+            env2.Append(CPPDEFINES = ['USE_SDL'])
+
+        enableSDL(env)
         env['enableSDL'] = enableSDL
-        env.Append(CPPDEFINES = ['USE_SDL'])
         ok = context.TryLink("""
         #include <SDL.h>
         int main(int argc, char ** argv){
