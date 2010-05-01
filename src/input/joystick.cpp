@@ -7,7 +7,7 @@
 #endif
 */
 
-#include "allegro-joystick.h"
+#include "allegro/allegro-joystick.h"
 
 Joystick * Joystick::create(){
     return new AllegroJoystick();

@@ -1,8 +1,7 @@
 #ifndef _paintown_allegro_joystick_h
 #define _paintown_allegro_joystick_h
 
-#include <allegro.h>
-#include "joystick.h"
+#include "../joystick.h"
 
 class AllegroJoystick: public Joystick {
 public:
