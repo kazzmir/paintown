@@ -36,6 +36,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef USE_ALLEGRO
+
 #include "al_keyinput.h"
 
 // constructor
@@ -304,3 +306,5 @@ THE POSSIBILITY OF SUCH DAMAGE.
 		}
 		deleteList.clear();
 	}
+
+#endif
