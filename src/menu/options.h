@@ -16,14 +16,14 @@ class OptionAdventure : public MenuOption{
         // endGame will be set true if it is a terminating option
         virtual void run(bool &endGame);
 
-        OptionAdventure(Token *token)throw( LoadException );
+        OptionAdventure(Token *token);
 
         virtual ~OptionAdventure();
 };
 
 class OptionAdventureCpu : public MenuOption{
 public:
-	OptionAdventureCpu(Token *token) throw( LoadException );
+	OptionAdventureCpu(Token *token);
 
 	// Do logic before run part
 	virtual void logic();
@@ -38,7 +38,7 @@ public:
 /* Change game mod */
 class OptionChangeMod: public MenuOption {
 public:
-    OptionChangeMod(Token *token) throw (LoadException);
+    OptionChangeMod(Token *token);
     virtual ~OptionChangeMod();
     virtual void logic();
     virtual void run(bool &endGame);
@@ -58,7 +58,7 @@ public:
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionCredits(Token *token)throw( LoadException );
+		OptionCredits(Token *token);
 	
 		virtual ~OptionCredits();
 	private:
@@ -72,8 +72,8 @@ public:
 /*! Dummy option, to allow place fillers in menus */
 class OptionDummy : public MenuOption{
 public:
-	OptionDummy( Token *token ) throw( LoadException );
-	OptionDummy( const std::string &name ) throw( LoadException );
+	OptionDummy( Token *token );
+	OptionDummy( const std::string &name );
 
 	// Do logic before run part
 	virtual void logic();
@@ -101,7 +101,7 @@ public:
     virtual bool leftKey();
     virtual bool rightKey();
 
-    OptionFullscreen(Token *token)throw( LoadException );
+    OptionFullscreen(Token *token);
 
     virtual ~OptionFullscreen();
 private:
@@ -127,7 +127,7 @@ class OptionInvincible : public MenuOption
     
                 virtual std::string getText();
 		
-		OptionInvincible(Token *token)throw( LoadException );
+		OptionInvincible(Token *token);
 	
 		virtual ~OptionInvincible();
 	private:
@@ -145,7 +145,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(bool &endGame);
 
-    OptionJoystick(Token *token)throw( LoadException );
+    OptionJoystick(Token *token);
 
     virtual ~OptionJoystick();
 
@@ -185,7 +185,7 @@ class OptionKey : public MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionKey(Token *token)throw( LoadException );
+		OptionKey(Token *token);
 	
 		virtual ~OptionKey();
 		
@@ -219,7 +219,7 @@ class OptionKey : public MenuOption
 /*! Handles key reconfiguration */
 class OptionLevel : public MenuOption {
 public:
-	OptionLevel(Token *token, int * set, int value) throw (LoadException);
+	OptionLevel(Token *token, int * set, int value);
 
 	// Do logic before run part
 	virtual void logic();
@@ -253,7 +253,7 @@ public:
     
     virtual std::string getText();
 
-    OptionLives(Token *token)throw( LoadException );
+    OptionLives(Token *token);
 
     virtual ~OptionLives();
 private:
@@ -272,7 +272,7 @@ class OptionMenu : public MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionMenu(Token *token)throw( LoadException );
+		OptionMenu(Token *token);
 		
 		virtual  void setParent(Menu *menu);
 	
@@ -292,7 +292,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(bool &endGame);
 
-    OptionMugenMenu(Token *token)throw( LoadException );
+    OptionMugenMenu(Token *token);
 
     virtual ~OptionMugenMenu();
 
@@ -303,7 +303,7 @@ private:
 /*! Handles key reconfiguration */
 class OptionNetworkHost : public MenuOption{
 public:
-	OptionNetworkHost(Token *token)throw( LoadException );
+	OptionNetworkHost(Token *token);
 
 	// Do logic before run part
 	virtual void logic();
@@ -318,7 +318,7 @@ public:
 /*! Handles key reconfiguration */
 class OptionNetworkJoin : public MenuOption{
 public:
-	OptionNetworkJoin(Token *token)throw( LoadException );
+	OptionNetworkJoin(Token *token);
 
 	// Do logic before run part
 	virtual void logic();
@@ -333,7 +333,7 @@ public:
 /*! Handles key reconfiguration */
 class OptionNpcBuddies : public MenuOption {
 public:
-	OptionNpcBuddies( Token *token ) throw( LoadException );
+	OptionNpcBuddies( Token *token );
 
 	// Do logic before run part
 	virtual void logic();
@@ -357,7 +357,7 @@ private:
 /*! Handles key reconfiguration */
 class OptionPlayMode : public MenuOption {
 public:
-    OptionPlayMode(Token *token) throw (LoadException);
+    OptionPlayMode(Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -386,8 +386,8 @@ private:
 /*! Handles key reconfiguration */
 class OptionQuit : public MenuOption{
 public:
-	OptionQuit( Token *token ) throw( LoadException );
-	OptionQuit( const std::string &name ) throw( LoadException );
+	OptionQuit( Token *token );
+	OptionQuit( const std::string &name );
 
 	// Do logic before run part
 	virtual void logic();
@@ -407,7 +407,7 @@ struct ScreenSize{
 /*! Handles key reconfiguration */
 class OptionScreenSize : public MenuOption {
 public:
-    OptionScreenSize(Token *token) throw (LoadException);
+    OptionScreenSize(Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -439,7 +439,7 @@ private:
 /*! Handles font selection */
 class OptionSelectFont : public MenuOption {
 public:
-    OptionSelectFont(Token *token) throw (LoadException);
+    OptionSelectFont(Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -493,7 +493,7 @@ class OptionSpeed : public MenuOption
 
                 virtual std::string getText();
 		
-		OptionSpeed(Token *token)throw( LoadException );
+		OptionSpeed(Token *token);
 	
 		virtual ~OptionSpeed();
 	private:
@@ -517,7 +517,7 @@ class OptionTabMenu : public MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionTabMenu(Token *token)throw( LoadException );
+		OptionTabMenu(Token *token);
 	
 		virtual ~OptionTabMenu();
 		
@@ -536,7 +536,7 @@ class OptionVersus : public MenuOption
 		// endGame will be set true if it is a terminating option
 		virtual void run(bool &endGame);
 		
-		OptionVersus(Token *token)throw( LoadException );
+		OptionVersus(Token *token);
 	
 		virtual ~OptionVersus();
 		

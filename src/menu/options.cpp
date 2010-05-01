@@ -43,7 +43,7 @@
 using namespace std;
 using namespace Gui;
 
-OptionAdventure::OptionAdventure(Token *token) throw( LoadException ):
+OptionAdventure::OptionAdventure(Token *token):
 MenuOption(token, Event){
     if ( *token != "adventure" ){
         throw LoadException("Not an adventure");
@@ -95,7 +95,7 @@ void OptionAdventure::run(bool &endGame){
     }
 }
 
-OptionAdventureCpu::OptionAdventureCpu(Token *token) throw( LoadException ):
+OptionAdventureCpu::OptionAdventureCpu(Token *token):
 MenuOption(token, Event){
     if (*token != "adventure-cpu"){
         throw LoadException("Not an adventure");
@@ -151,7 +151,7 @@ void OptionAdventureCpu::run(bool &endGame){
     }
 }
 
-OptionChangeMod::OptionChangeMod(Token *token) throw (LoadException):
+OptionChangeMod::OptionChangeMod(Token *token):
 MenuOption(token, Event){
     if ( *token != "change-mod" ){
         throw LoadException("Not a change mod");
@@ -290,7 +290,7 @@ static bool miguelBirthday(){
     return todaysDate(8, 11, 0);
 }
 
-OptionCredits::OptionCredits( Token * token ) throw( LoadException ):
+OptionCredits::OptionCredits( Token * token ):
 MenuOption(token, Event),
 background(0),
 music(""),
@@ -486,7 +486,7 @@ void OptionCredits::run( bool &endGame ){
     InputManager::waitForRelease(input, Exit);
 }
 
-OptionDummy::OptionDummy(Token *token) throw( LoadException ):
+OptionDummy::OptionDummy(Token *token):
 MenuOption(token, Event){
     if ( *token != "dummy" ){
         throw LoadException("Not dummy option");
@@ -499,7 +499,7 @@ MenuOption(token, Event){
     }
 }
 
-OptionDummy::OptionDummy( const std::string &name ) throw( LoadException ):
+OptionDummy::OptionDummy( const std::string &name ):
 MenuOption(0, Event){
     if (name.empty()){
 	throw LoadException("No name given to dummy");
@@ -516,7 +516,7 @@ void OptionDummy::logic(){
 void OptionDummy::run(bool &endGame){
 }
 
-OptionFullscreen::OptionFullscreen(Token *token) throw (LoadException):
+OptionFullscreen::OptionFullscreen(Token *token):
 MenuOption(token, AdjustableOption),
 lblue(255),
 lgreen(255),
@@ -571,7 +571,7 @@ bool OptionFullscreen::rightKey()
 	return true;
 }
 
-OptionInvincible::OptionInvincible(Token *token) throw (LoadException):
+OptionInvincible::OptionInvincible(Token *token):
 MenuOption(token, AdjustableOption),
 lblue(255),
 lgreen(255),
@@ -742,7 +742,7 @@ static Configuration::JoystickInput readJoystick(){
     return Joystick::Up;
 }
 
-OptionJoystick::OptionJoystick(Token *token) throw (LoadException):
+OptionJoystick::OptionJoystick(Token *token):
 MenuOption(token, Event),
 name(""),
 player(-1),
@@ -938,7 +938,7 @@ static int readKey( Keyboard & key ){
 	return k;
 }
 
-OptionKey::OptionKey(Token *token) throw (LoadException): MenuOption(token, Event), name(""), player(-1), type(invalidkey), keyCode(0)
+OptionKey::OptionKey(Token *token): MenuOption(token, Event), name(""), player(-1), type(invalidkey), keyCode(0)
 {
 	if ( *token != "key" )
 		throw LoadException("Not key option");
@@ -1012,7 +1012,7 @@ void OptionKey::run(bool &endGame){
 	setKey(player,type, keyCode);
 }
 
-OptionLevel::OptionLevel(Token *token, int * set, int value) throw( LoadException ):
+OptionLevel::OptionLevel(Token *token, int * set, int value):
 MenuOption(token, Event),
 set(set),
 value(value){
@@ -1031,7 +1031,7 @@ void OptionLevel::run(bool &endGame){
     *set = value;
 }
 
-OptionLives::OptionLives( Token * token ) throw( LoadException ):
+OptionLives::OptionLives( Token * token ):
 MenuOption(token, AdjustableOption),
 lblue(255),
 lgreen(255),
@@ -1096,7 +1096,7 @@ bool OptionLives::rightKey(){
 	return false;
 }
 
-OptionMenu::OptionMenu(Token *token) throw (LoadException):
+OptionMenu::OptionMenu(Token *token):
 MenuOption(token, Event),
 menu(0){
     // Check whether we have a menu or tabmenu
@@ -1150,7 +1150,7 @@ void OptionMenu::setParent(Menu *menu){
     this->menu->setParent(menu);
 }
 
-OptionMugenMenu::OptionMugenMenu(Token *token) throw (LoadException):
+OptionMugenMenu::OptionMugenMenu(Token *token):
 MenuOption(token, Event){
     if ( *token != "mugen" ){
         throw LoadException("Not a mugen motif menu");
@@ -1214,7 +1214,7 @@ void OptionMugenMenu::run(bool &endGame){
     Mugen::run();
 }
 
-OptionNetworkHost::OptionNetworkHost(Token *token) throw( LoadException ):
+OptionNetworkHost::OptionNetworkHost(Token *token):
 MenuOption(token, Event){
     if ( *token != "network-host" ){
         throw LoadException("Not a network-host");
@@ -1241,7 +1241,7 @@ void OptionNetworkHost::run(bool &endGame){
 	key.wait();
 }
 
-OptionNetworkJoin::OptionNetworkJoin(Token *token) throw( LoadException ):
+OptionNetworkJoin::OptionNetworkJoin(Token *token):
 MenuOption(token, Event){
     if ( *token != "network-join" ){
         throw LoadException("Not a network-join");
@@ -1271,7 +1271,7 @@ void OptionNetworkJoin::run(bool &endGame){
 	key.wait();
 }
 
-OptionNpcBuddies::OptionNpcBuddies( Token * token ) throw( LoadException ):
+OptionNpcBuddies::OptionNpcBuddies( Token * token ):
 MenuOption(token, AdjustableOption),
 lblue(255),
 lgreen(255),
@@ -1337,7 +1337,7 @@ bool OptionNpcBuddies::rightKey(){
 	return false;
 }
 
-OptionPlayMode::OptionPlayMode(Token *token) throw (LoadException):
+OptionPlayMode::OptionPlayMode(Token *token):
 MenuOption(token, AdjustableOption),
 lblue(255),
 lgreen(255),
@@ -1416,7 +1416,7 @@ bool OptionPlayMode::rightKey(){
     return true;
 }
 
-OptionQuit::OptionQuit(Token *token) throw( LoadException ):
+OptionQuit::OptionQuit(Token *token):
 MenuOption(token, Event){
     if ( *token != "quit" ){
         throw LoadException("Not quit option");
@@ -1425,7 +1425,7 @@ MenuOption(token, Event){
     readName(token);
 }
 
-OptionQuit::OptionQuit( const std::string &name ) throw( LoadException ):
+OptionQuit::OptionQuit( const std::string &name ):
 MenuOption(0, Event){
     if (name.empty()){
 	throw LoadException("No name given to quit");
@@ -1514,7 +1514,7 @@ static vector<ScreenSize> sortResolutions(const vector<ScreenSize> & modes){
     return copy;
 }
 
-OptionScreenSize::OptionScreenSize(Token *token) throw (LoadException):
+OptionScreenSize::OptionScreenSize(Token *token):
 MenuOption(token, AdjustableOption),
 name(""),
 lblue(255),
@@ -1643,7 +1643,7 @@ static string join(const vector<string> & strings, const string & middle){
     return out.str();
 }
 
-OptionSelectFont::OptionSelectFont(Token *token) throw (LoadException):
+OptionSelectFont::OptionSelectFont(Token *token):
 MenuOption(token, AdjustableOption),
 typeAdjust(fontName),
 lblue(255),
@@ -1814,7 +1814,7 @@ void OptionSelectFont::nextIndex(bool forward){
     Menu::setFontName(fonts[index]);
 }
 
-OptionSpeed::OptionSpeed(Token *token) throw (LoadException): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
+OptionSpeed::OptionSpeed(Token *token): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
     setRunnable(false);
 
@@ -1871,7 +1871,7 @@ bool OptionSpeed::rightKey()
 	return false;
 }
 
-OptionTabMenu::OptionTabMenu(Token *token) throw (LoadException):
+OptionTabMenu::OptionTabMenu(Token *token):
 MenuOption(token, Event),
 _menu(0){
     // Check whether we have a menu or tabmenu
@@ -1920,7 +1920,7 @@ void OptionTabMenu::run(bool &endGame){
 	_menu->run();
 }
 
-OptionVersus::OptionVersus( Token *token ) throw( LoadException ):
+OptionVersus::OptionVersus( Token *token ):
 MenuOption(token, Event), human(false){
     if ( *token != "versus" ){
         throw LoadException("Not versus");

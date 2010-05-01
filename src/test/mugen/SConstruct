@@ -34,7 +34,8 @@ test/network/network.cpp
 test/input/input-manager.cpp
 test/input/keyboard.cpp
 test/input/joystick.cpp
-test/input/allegro-joystick.cpp
+test/input/allegro/allegro-joystick.cpp
+test/input/sdl/joystick.cpp
 test/globals.cpp
 test/configuration.cpp
 test/util/bitmap.cpp
