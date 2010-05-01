@@ -122,7 +122,9 @@ static void registerSignals(){
 static void close_paintown(){
     Music::pause();
     Bitmap::setGfxModeText();
+#ifdef USE_ALLEGRO
     allegro_exit();
+#endif
     exit(0);
 }
 
@@ -168,18 +170,9 @@ bool Global::init( int gfx ){
     /* is calling this function a good idea? */
     set_volume_per_voice(0);
     out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
-#endif
 
     /* png */
     loadpng_init();
-
-    Bitmap::SCALE_X = GFX_X;
-    Bitmap::SCALE_Y = GFX_Y;
-
-    Configuration::loadConfigurations();
-
-    const int sx = Configuration::getScreenWidth();
-    const int sy = Configuration::getScreenHeight();
 
     out<<"Install keyboard: "<<install_keyboard()<<endl;
     /* do we need the mouse?? */
@@ -188,9 +181,19 @@ bool Global::init( int gfx ){
     /* 16 bit color depth */
     set_color_depth(16);
 
+#endif
+
+    Bitmap::SCALE_X = GFX_X;
+    Bitmap::SCALE_Y = GFX_Y;
+
+    Configuration::loadConfigurations();
+    const int sx = Configuration::getScreenWidth();
+    const int sy = Configuration::getScreenHeight();
+    
     /* set up the screen */
     out<<"Set gfx mode: " << Bitmap::setGraphicsMode( gfx, sx, sy ) <<endl;
 
+#ifdef USE_ALLEGRO
     LOCK_VARIABLE( speed_counter );
     LOCK_VARIABLE( second_counter );
     LOCK_FUNCTION( (void *)inc_speed_counter );
@@ -198,9 +201,6 @@ bool Global::init( int gfx ){
     /* set up the timers */
     out<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
     out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
-    out << "Initialize random number generator" << endl;
-    /* initialize random number generator */
-    srand( time( NULL ) );
 
     /* keep running in the background */
     set_display_switch_mode(SWITCH_BACKGROUND);
@@ -209,10 +209,16 @@ bool Global::init( int gfx ){
     LOCK_FUNCTION(close_window);
     set_close_button_callback(close_window);
 
+    dumb_register_packfiles();
+#endif
+    
     /* music */
     atexit( &dumb_exit );
     atexit( Network::closeAll );
-    dumb_register_packfiles();
+
+    out << "Initialize random number generator" << endl;
+    /* initialize random number generator */
+    srand(time(NULL));
 
     registerSignals();
 
