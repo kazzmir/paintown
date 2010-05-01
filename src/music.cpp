@@ -91,7 +91,7 @@ static void * playMusic( void * _music ){
             music->doPlay();
         }
         UNLOCK;
-        rest( 10 );
+        Util::rest( 10 );
 
         // Util::YIELD();
         // pthread_yield();
