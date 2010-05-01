@@ -147,21 +147,8 @@ static void close_window(){
 END_OF_FUNCTION(close_window)
 #endif
 
-bool Global::init( int gfx ){
-
-    ostream & out = Global::debug( 0 );
-    out << "-- BEGIN init --" << endl;
-    out << "Data path is " << Util::getDataPath2().path() << endl;
-    out << "Paintown version " << Global::getVersionString() << endl;
-    out << "Build date " << __DATE__ << " " << __TIME__ << endl;
-#ifdef USE_SDL
-    out << "SDL Init: " << SDL_Init(SDL_INIT_VIDEO |
-                                    SDL_INIT_AUDIO |
-                                    SDL_INIT_TIMER |
-                                    SDL_INIT_JOYSTICK)
-                        << endl;
-#endif
 #ifdef USE_ALLEGRO
+static void initSystem(ostream & out){
     out << "Allegro version: " << ALLEGRO_VERSION_STR << endl;
     out << "Allegro init: " <<allegro_init()<<endl;
     out << "Install timer: " <<install_timer()<<endl;
@@ -182,7 +169,46 @@ bool Global::init( int gfx ){
     /* 16 bit color depth */
     set_color_depth(16);
 
+    LOCK_VARIABLE( speed_counter );
+    LOCK_VARIABLE( second_counter );
+    LOCK_FUNCTION( (void *)inc_speed_counter );
+    LOCK_FUNCTION( (void *)inc_second_counter );
+    /* set up the timers */
+    out<<"Install game timer: "<< install_int_ex(inc_speed_counter, BPS_TO_TIMER(Global::TICS_PER_SECOND))<<endl;
+    out<<"Install second timer: "<<install_int_ex(inc_second_counter, BPS_TO_TIMER(1))<<endl;
+
+    /* keep running in the background */
+    set_display_switch_mode(SWITCH_BACKGROUND);
+
+    /* close window when the X is pressed */
+    LOCK_FUNCTION(close_window);
+    set_close_button_callback(close_window);
+
+    dumb_register_packfiles();
+}
 #endif
+#ifdef USE_SDL
+static void initSystem(ostream & out){
+    out << "SDL Init: " << SDL_Init(SDL_INIT_VIDEO |
+                                    SDL_INIT_AUDIO |
+                                    SDL_INIT_TIMER |
+                                    SDL_INIT_JOYSTICK)
+                        << endl;
+
+    atexit(SDL_Quit);
+}
+#endif
+
+bool Global::init( int gfx ){
+
+    ostream & out = Global::debug( 0 );
+    out << "-- BEGIN init --" << endl;
+    out << "Data path is " << Util::getDataPath2().path() << endl;
+    out << "Paintown version " << Global::getVersionString() << endl;
+    out << "Build date " << __DATE__ << " " << __TIME__ << endl;
+
+    /* do implementation specific setup */
+    initSystem(out);
 
     Bitmap::SCALE_X = GFX_X;
     Bitmap::SCALE_Y = GFX_Y;
@@ -193,25 +219,6 @@ bool Global::init( int gfx ){
     
     /* set up the screen */
     out<<"Set gfx mode: " << Bitmap::setGraphicsMode(gfx, sx, sy) << endl;
-
-#ifdef USE_ALLEGRO
-    LOCK_VARIABLE( speed_counter );
-    LOCK_VARIABLE( second_counter );
-    LOCK_FUNCTION( (void *)inc_speed_counter );
-    LOCK_FUNCTION( (void *)inc_second_counter );
-    /* set up the timers */
-    out<<"Install game timer: "<<install_int_ex( inc_speed_counter, BPS_TO_TIMER( TICS_PER_SECOND ) )<<endl;
-    out<<"Install second timer: "<<install_int_ex( inc_second_counter, BPS_TO_TIMER( 1 ) )<<endl;
-
-    /* keep running in the background */
-    set_display_switch_mode(SWITCH_BACKGROUND);
-
-    /* close window when the X is pressed */
-    LOCK_FUNCTION(close_window);
-    set_close_button_callback(close_window);
-
-    dumb_register_packfiles();
-#endif
     
     /* music */
     atexit( &dumb_exit );
