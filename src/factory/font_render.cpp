@@ -1,9 +1,9 @@
+#include "util/bitmap.h"
 #include <string>
 #include <vector>
 #include <stdarg.h>
-#include <allegro.h>
 #include "util/font.h"
-#include "util/bitmap.h"
+#include "util/funcs.h"
 #include "font_render.h"
 #include "font_factory.h"
 
@@ -83,7 +83,7 @@ void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const
 	va_list ap;
 
 	va_start(ap, str);
-	uvszprintf(buf, sizeof(buf), str, ap);
+        Util::limitPrintf(buf, sizeof(buf), str, ap);
 	va_end(ap);
 	string mm( buf );
 	addMessage( f, x, y, fg, bg, -1, mm );
