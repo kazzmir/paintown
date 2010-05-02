@@ -691,7 +691,8 @@ else:
             config.CheckSDL()
 
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
-        config.env.ParseConfig( 'libpng-config --libs --cflags' )
+        if not useSDL():
+            config.env.ParseConfig( 'libpng-config --libs --cflags' )
         
         # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
         staticEnv.ParseConfig( 'freetype-config --cflags' )
@@ -718,9 +719,10 @@ else:
     if not config.CheckHeader( 'ft2build.h' ):
         print "You need freetype. Install freetype and/or X11"
         Exit( 1 )
-    if not config.CheckHeader( 'png.h' ):
-        print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
-        Exit( 1 )
+    if not useSDL():
+        if not config.CheckHeader( 'png.h' ):
+            print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
+            Exit(1)
     config.CheckRTTI()
     # config.CheckPython()
     config.CheckOgg()
