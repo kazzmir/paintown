@@ -198,6 +198,8 @@ static void * do_timer(void * arg){
     TimerInfo info = *(TimerInfo *) arg;
     uint32_t delay = (uint32_t)(1000.0 / (double) info.frequency);
     uint32_t ticks = SDL_GetTicks();
+
+    /* TODO: pass in some variable that tells this loop to quit */
     while (true){
         int now = SDL_GetTicks();
         while (now - ticks > delay){
@@ -207,6 +209,8 @@ static void * do_timer(void * arg){
         }
         SDL_Delay(1);
     }
+
+    return NULL;
 }
 
 static pthread_t start_timer(void (*func)(), int frequency){
