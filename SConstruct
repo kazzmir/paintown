@@ -120,7 +120,7 @@ def checkSDL(context):
     tmp = context.env.Clone()
     env = context.env
 
-    ok = 0
+    ok = 1
     try:
         def enableSDL(env2):
             env2.ParseConfig('sdl-config --cflags --libs')
@@ -137,7 +137,7 @@ def checkSDL(context):
     """, ".c")
 
     except OSError:
-        ok = 1 
+        ok = 0 
 
     if not ok:
         context.sconf.env = tmp
@@ -150,7 +150,7 @@ def checkAllegro(context):
     tmp = context.env.Clone()
     env = context.env
 
-    ok = 0
+    ok = 1
     try:
         def enableAllegro(env2):
             env2.ParseConfig('allegro-config --cflags --libs')
@@ -168,7 +168,7 @@ def checkAllegro(context):
     """, ".c")
 
     except OSError:
-        ok = 1 
+        ok = 0 
 
     if not ok:
         context.sconf.env = tmp
@@ -469,6 +469,7 @@ def getEnvironment(debug):
             # for gcov:
             # ['-fprofile-arcs', '-ftest-coverage']
             cflags.append( ['-g3','-ggdb', '-Werror'])
+            # cflags.append( ['-g3','-ggdb'])
         else:
             cflags.append( '-O2' )
 
