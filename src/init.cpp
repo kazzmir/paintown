@@ -188,12 +188,45 @@ static void initSystem(ostream & out){
 }
 #endif
 #ifdef USE_SDL
+
+struct TimerInfo{
+    void (*tick)();
+    int frequency;
+};
+
+static void * do_timer(void * arg){
+    TimerInfo info = *(TimerInfo *) arg;
+    uint32_t delay = (uint32_t)(1000.0 / (double) info.frequency);
+    uint32_t ticks = SDL_GetTicks();
+    while (true){
+        int now = SDL_GetTicks();
+        while (now - ticks > delay){
+            // Global::debug(0) << "Tick!" << endl;
+            info.tick();
+            ticks += delay;
+        }
+        SDL_Delay(1);
+    }
+}
+
+static pthread_t start_timer(void (*func)(), int frequency){
+    TimerInfo speed;
+    speed.tick = func;
+    speed.frequency = frequency;
+    pthread_t thread;
+    pthread_create(&thread, NULL, do_timer, (void*) &speed);
+    return thread;
+}
+
 static void initSystem(ostream & out){
     out << "SDL Init: " << SDL_Init(SDL_INIT_VIDEO |
                                     SDL_INIT_AUDIO |
                                     SDL_INIT_TIMER |
                                     SDL_INIT_JOYSTICK)
                         << endl;
+
+    start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
+    start_timer(inc_second_counter, 1);
 
     atexit(SDL_Quit);
 }

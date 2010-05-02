@@ -790,7 +790,7 @@ void Menu::checkTextLength(MenuOption *opt){
 void Menu::drawBackground(Bitmap *bmp){
     Bitmap *temp = getBackground();
     if ( !temp ){
-	    bmp->fill(clearColor);
+        bmp->fill(clearColor);
     } else {
 	temp->Stretch(*bmp);
     }
