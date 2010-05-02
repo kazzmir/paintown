@@ -1,3 +1,5 @@
+#ifdef USE_ALLEGRO
+
 /* loadpng.h */
 /* This file is hereby placed in the public domain. */
 #ifndef _included_loadpng_h_
@@ -73,3 +75,5 @@ extern int loadpng_init(void);
 #endif
 
 #endif /* _included_loadpng_h */
+
+#endif

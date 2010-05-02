@@ -24,7 +24,9 @@
 
 #include <ostream>
 #include "dumb/include/dumb.h"
+#ifdef USE_ALLEGRO
 #include "dumb/include/aldumb.h"
+#endif
 #include "loadpng/loadpng.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
@@ -50,8 +52,14 @@ const int Global::TICS_PER_SECOND = 40;
 const double Global::LOGIC_MULTIPLIER = (double) 90 / (double) Global::TICS_PER_SECOND;
         
 
+#ifdef USE_ALLEGRO
 const int Global::WINDOWED = GFX_AUTODETECT_WINDOWED;
 const int Global::FULLSCREEN = GFX_AUTODETECT_FULLSCREEN;
+#else
+/* FIXME: use enums here or something */
+const int Global::WINDOWED = 0;
+const int Global::FULLSCREEN = 1;
+#endif
 
 /* game counter, controls FPS */
 static void inc_speed_counter(){
@@ -194,6 +202,9 @@ static void moreInitSystem(){
 #ifdef USE_SDL
 
 struct TimerInfo{
+    TimerInfo(void (*x)(), int y):
+        tick(x), frequency(y){}
+
     void (*tick)();
     int frequency;
 };
@@ -219,15 +230,19 @@ static void * do_timer(void * arg){
         SDL_Delay(1);
     }
 
+    delete (TimerInfo *) arg;
+
     return NULL;
 }
 
 static pthread_t start_timer(void (*func)(), int frequency){
-    TimerInfo speed;
+    TimerInfo * speed = new TimerInfo(func, frequency);
+	/*
     speed.tick = func;
     speed.frequency = frequency;
+*/
     pthread_t thread;
-    pthread_create(&thread, NULL, do_timer, (void*) &speed);
+    pthread_create(&thread, NULL, do_timer, (void*) speed);
     return thread;
 }
 
