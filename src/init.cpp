@@ -186,6 +186,10 @@ static void initSystem(ostream & out){
 
     dumb_register_packfiles();
 }
+
+static void moreInitSystem(){
+}
+
 #endif
 #ifdef USE_SDL
 
@@ -197,6 +201,11 @@ struct TimerInfo{
 static void * do_timer(void * arg){
     TimerInfo info = *(TimerInfo *) arg;
     uint32_t delay = (uint32_t)(1000.0 / (double) info.frequency);
+
+    /* assuming SDL_GetTicks() starts at 0, this should last for about 50 days
+     * before overflowing.
+     * what happens when overflow occurs?
+     */
     uint32_t ticks = SDL_GetTicks();
 
     /* TODO: pass in some variable that tells this loop to quit */
@@ -222,17 +231,44 @@ static pthread_t start_timer(void (*func)(), int frequency){
     return thread;
 }
 
+static void * handleEvents(void * arg){
+    while (true){
+        SDL_Event event;
+        int ok = SDL_WaitEvent(&event);
+        if (ok){
+            switch (event.type){
+                case SDL_QUIT : {
+                    close_window();
+                    break;
+                }
+                default : {
+                    // Global::debug(0) << "Ignoring SDL event " << event.type << endl;
+                    break;
+                }
+            }
+        }
+    }
+    return NULL;
+}
+    
 static void initSystem(ostream & out){
     out << "SDL Init: " << SDL_Init(SDL_INIT_VIDEO |
                                     SDL_INIT_AUDIO |
                                     SDL_INIT_TIMER |
-                                    SDL_INIT_JOYSTICK)
+                                    SDL_INIT_JOYSTICK |
+                                    SDL_INIT_NOPARACHUTE |
+                                    SDL_INIT_EVENTTHREAD)
                         << endl;
 
     start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
     start_timer(inc_second_counter, 1);
 
     atexit(SDL_Quit);
+}
+
+static void moreInitSystem(){
+    pthread_t events;
+    pthread_create(&events, NULL, handleEvents, NULL);
 }
 #endif
 
@@ -272,6 +308,8 @@ bool Global::init( int gfx ){
 
     /* this mutex is used to show the loading screen while the game loads */
     pthread_mutex_init( &Loader::loading_screen_mutex, NULL );
+
+    moreInitSystem();
 
     out<<"-- END init --"<<endl;
 

@@ -132,6 +132,7 @@ def checkSDL(context):
         ok = context.TryLink("""
         #include <SDL.h>
         int main(int argc, char ** argv){
+          int ok = SDL_INIT_EVENTTHREAD;
           return SDL_Init(0);
         }
     """, ".c")
