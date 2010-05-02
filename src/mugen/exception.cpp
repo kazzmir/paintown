@@ -1,12 +1,12 @@
 #include <exception>
 #include <string>
 #include <sstream>
-#include "mugen/exception.h"
+#include "exception.h"
 	
 MugenException::MugenException():
 std::exception(),
 reason("unspecified"),
-where(0),
+where("?"),
 line(0){
 }
 
