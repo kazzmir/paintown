@@ -18,6 +18,14 @@ obj_files = []
 
 filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
+def sdlStretchLibrary(env):
+    sdl = env.Clone()
+    source = Split("""
+util/sdl/stretch/sdlscreen.c
+util/sdl/stretch/sdlstretch.c
+""")
+    return sdl.StaticLibrary('sdl-stretch', source)
+
 def gmeLibrary(env):
     gmeEnv = env.Clone()
     source = Split("""
@@ -115,6 +123,8 @@ def icon():
         return []
 
 use.Append(LIBS = [gmeLibrary(use)])
+if useSDL():
+    use.Append(LIBS = [sdlStretchLibrary(use)])
 
 x = []
 x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))
