@@ -78,7 +78,7 @@ void Widget::setCoordinates(Token * token){
                 *coordToken >> x1 >> y1 >> x2 >> y2;
                 RelativePoint pos(x1,y1);
                 RelativePoint dimensions(x2,y2);
-                location = Coordinate(pos, dimensions);                
+                location = Coordinate(pos, dimensions);
             } else if (*coordToken == "radius"){
                 double radius;
                 *coordToken >> radius;
