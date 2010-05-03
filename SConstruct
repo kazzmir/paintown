@@ -116,7 +116,7 @@ def checkRTTI(context):
     return foo
 
 def checkSDL(context):
-    context.Message("Checking for SDL... ")
+    context.Message("Checking for SDL (SDL, SDL_image, SDL_gfx) ... ")
     tmp = context.env.Clone()
     env = context.env
 
