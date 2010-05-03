@@ -545,7 +545,10 @@ def configEnvironment(env):
     if isWindows():
         def nothing(env):
             pass
-        env['enableAllegro'] = nothing
+        # dumb on windows has to have USE_ALLEGRO defined
+        def doAllegro(env2):
+            env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
+        env['enableAllegro'] = doAllegro
         env['enableSDL'] = nothing
         return env
     else:
