@@ -247,12 +247,14 @@ static pthread_t start_timer(void (*func)(), int frequency){
 }
 
 static void * handleEvents(void * arg){
-    while (true){
+    bool done = false;
+    while (!done){
         SDL_Event event;
         int ok = SDL_WaitEvent(&event);
         if (ok){
             switch (event.type){
                 case SDL_QUIT : {
+                    done = true;
                     close_window();
                     break;
                 }
