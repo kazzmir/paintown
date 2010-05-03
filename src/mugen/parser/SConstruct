@@ -11,7 +11,7 @@ def peg_to_cpp(target, source, env):
     fout.write('\n')
     fout.close()
 
-peg_builder = Builder(action = Action(peg_to_cpp, 'Creating peg parser $TARGET'), suffix = '.cpp', src_suffix = '.peg')
+peg_builder = Builder(action = Action(peg_to_cpp, use['PEG_MAKE']), suffix = '.cpp', src_suffix = '.peg')
 use.Append(BUILDERS = {'Peg' : peg_builder})
 
 all = []

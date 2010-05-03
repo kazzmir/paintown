@@ -128,7 +128,7 @@ def checkSDL(context):
             env2.Append(CPPDEFINES = ['USE_SDL'])
 
         enableSDL(env)
-        env['enableSDL'] = enableSDL
+        env['paintown_enableSDL'] = enableSDL
         ok = context.TryLink("""
         #include <SDL.h>
         #include <SDL_gfxPrimitives.h>
@@ -159,7 +159,7 @@ def checkAllegro(context):
             env2.ParseConfig('allegro-config --cflags --libs')
             env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
         env.ParseConfig('allegro-config --cflags --libs')
-        env['enableAllegro'] = enableAllegro
+        env['paintown_enableAllegro'] = enableAllegro
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         ok = context.TryLink("""
         #include <allegro.h>
@@ -429,6 +429,7 @@ def less_verbose(env):
     link_color = 'light-red'
     ar_color = 'yellow'
     ranlib_color = 'light-purple'
+    peg_color = 'light-cyan'
     env['CCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
     env['SHCCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
     env['CXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
@@ -437,6 +438,7 @@ def less_verbose(env):
     env['SHLINKCOMSTR'] = "%s %s" % (colorize('Linking', link_color), colorize('$TARGET', 'light-blue'))
     env['ARCOMSTR'] = "%s %s" % (colorize('Building library', ar_color), colorize('$TARGET', 'light-blue'))
     env['RANLIBCOMSTR'] = "%s %s" % (colorize('Indexing library', ranlib_color), colorize('$TARGET', 'light-blue'))
+    env['PEG_MAKE'] = "%s %s" % (colorize('Creating peg parser', peg_color), colorize('$TARGET', 'light-blue'))
     return env
 
 def getEnvironment(debug):
@@ -494,10 +496,13 @@ def getEnvironment(debug):
                 return llvm(Environment(ENV = os.environ, CCFLAGS = cflags))
             else:
                 return Environment(ENV = os.environ, CCFLAGS = cflags)
+    def add_peg(env):
+        env['PEG_MAKE'] = 'Creating peg parser $TARGET'
+        return env
     if not debug:
         return less_verbose(raw())
     else:
-        return raw()
+        return add_peg(raw())
         
 if isWindows():
     print "Try 'scons env=mingw' if you want to use mingw's gcc instead of visual studio or borland"
@@ -548,8 +553,8 @@ def configEnvironment(env):
         # dumb on windows has to have USE_ALLEGRO defined
         def doAllegro(env2):
             env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
-        env['enableAllegro'] = doAllegro
-        env['enableSDL'] = nothing
+        env['paintown_enableAllegro'] = doAllegro
+        env['paintown_enableSDL'] = nothing
         return env
     else:
         custom_tests = {"CheckAllegro" : checkAllegro,
@@ -578,15 +583,15 @@ buildDirStatic = buildType('build-static')
 
 dumbEnv = getEnvironment(debug)
 if useAllegro():
-    allegroEnvironment['enableAllegro'](dumbEnv)
+    allegroEnvironment['paintown_enableAllegro'](dumbEnv)
 if useSDL():
-    allegroEnvironment['enableSDL'](dumbEnv)
+    allegroEnvironment['paintown_enableSDL'](dumbEnv)
 hawkEnv = getEnvironment(debug)
 dumbStaticEnv = getEnvironment(debug)
 if useAllegro():
-    allegroEnvironment['enableAllegro'](dumbStaticEnv)
+    allegroEnvironment['paintown_enableAllegro'](dumbStaticEnv)
 if useSDL():
-    allegroEnvironment['enableSDL'](dumbStaticEnv)
+    allegroEnvironment['paintown_enableSDL'](dumbStaticEnv)
 hawkStaticEnv = getEnvironment(debug)
 
 # if you dont care about building a universal binary then disable this
