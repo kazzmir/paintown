@@ -181,35 +181,32 @@ void Widget::arc( const Bitmap & work, int x, int y, double startAngle, int radi
 	}
 }
 
-void Widget::roundRect( const Bitmap & work, int radius, int x1, int y1, int x2, int y2, int color )
-{
-	
-	const int width = x2 - x1;
-	const int height = y2 - y1;
-	radius = Mid(0, radius, Min((x1+width - x1)/2, (y1+height - y1)/2));
-	work.line(x1+radius, y1, x1+width-radius, y1, color);
-	work.line(x1+radius, y1+height, x1+width-radius,y1+height, color);
-	work.line(x1, y1+radius,x1, y1+height-radius, color);
-	work.line(x1+width, y1+radius,x1+width, y1+height-radius, color);
-	arc(work, x1+radius, y1+radius, S_PI-1.115, radius, color);
-	arc(work, x1+radius + (width - radius *2), y1+radius, -S_PI/2 +0.116, radius, color);
-	arc(work, x1+width-radius, y1+height-radius, -0.110, radius ,color);
-	arc(work, x1+radius, y1+height-radius, S_PI/2-0.119, radius, color);
+void Widget::roundRect( const Bitmap & work, int radius, int x1, int y1, int x2, int y2, int color ){
+    const int width = x2 - x1;
+    const int height = y2 - y1;
+    radius = Mid(0, radius, Min((x1+width - x1)/2, (y1+height - y1)/2));
+    work.line(x1+radius, y1, x1+width-radius, y1, color);
+    work.line(x1+radius, y1+height, x1+width-radius,y1+height, color);
+    work.line(x1, y1+radius,x1, y1+height-radius, color);
+    work.line(x1+width, y1+radius,x1+width, y1+height-radius, color);
+    arc(work, x1+radius, y1+radius, S_PI-1.115, radius, color);
+    arc(work, x1+radius + (width - radius *2), y1+radius, -S_PI/2 +0.116, radius, color);
+    arc(work, x1+width-radius, y1+height-radius, -0.110, radius ,color);
+    arc(work, x1+radius, y1+height-radius, S_PI/2-0.119, radius, color);
 
 }
 
-void Widget::roundRectFill( const Bitmap & work, int radius, int x1, int y1, int x2, int y2, int color )
-{
-	const int width = x2 - x1;
-	const int height = y2 - y1;
-	radius = Mid(0, radius, Min((x1+width - x1)/2, (y1+height - y1)/2));
-	work.circleFill(x1+radius, y1+radius, radius, color);
-	work.circleFill((x1+width)-radius, y1+radius, radius, color);
-	work.circleFill(x1+radius, (y1+height)-radius, radius, color);
-	work.circleFill((x1+width)-radius, (y1+height)-radius, radius, color);
-	work.rectangleFill( x1+radius, y1, x2-radius, y1+radius, color);
-	work.rectangleFill( x1, y1+radius, x2, y2-radius, color);
-	work.rectangleFill( x1+radius, y2-radius, x2-radius, y2, color);
+void Widget::roundRectFill( const Bitmap & work, int radius, int x1, int y1, int x2, int y2, int color ){
+    const int width = x2 - x1;
+    const int height = y2 - y1;
+    radius = Mid(0, radius, Min((x1+width - x1)/2, (y1+height - y1)/2));
+    work.circleFill(x1+radius, y1+radius, radius, color);
+    work.circleFill((x1+width)-radius, y1+radius, radius, color);
+    work.circleFill(x1+radius, (y1+height)-radius, radius, color);
+    work.circleFill((x1+width)-radius, (y1+height)-radius, radius, color);
+    work.rectangleFill( x1+radius, y1, x2-radius, y1+radius, color);
+    work.rectangleFill( x1, y1+radius, x2, y2-radius, color);
+    work.rectangleFill( x1+radius, y2-radius, x2-radius, y2, color);
 }
 
 void Widget::checkWorkArea()

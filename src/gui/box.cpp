@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "gui/box.h"
+#include "box.h"
 
 #include "menu/menu.h"
 
@@ -36,7 +36,7 @@ void Box::act(){
 void Box::render(const Bitmap & work){
     checkWorkArea();
     // Check if we are using a rounded box
-    if(location.getRadius() > 0){
+    if (location.getRadius() > 0){
         roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
         roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     } else {
