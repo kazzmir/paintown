@@ -278,6 +278,8 @@ static void initSystem(ostream & out){
     start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
     start_timer(inc_second_counter, 1);
 
+    SDL_WM_SetCaption("Paintown", NULL);
+
     atexit(SDL_Quit);
 }
 
