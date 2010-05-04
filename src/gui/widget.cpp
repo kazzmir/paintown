@@ -189,11 +189,11 @@ void Widget::roundRect( const Bitmap & work, int radius, int x1, int y1, int x2,
     work.line(x1+radius, y1+height, x1+width-radius,y1+height, color);
     work.line(x1, y1+radius,x1, y1+height-radius, color);
     work.line(x1+width, y1+radius,x1+width, y1+height-radius, color);
+
     arc(work, x1+radius, y1+radius, S_PI-1.115, radius, color);
     arc(work, x1+radius + (width - radius *2), y1+radius, -S_PI/2 +0.116, radius, color);
     arc(work, x1+width-radius, y1+height-radius, -0.110, radius ,color);
     arc(work, x1+radius, y1+height-radius, S_PI/2-0.119, radius, color);
-
 }
 
 void Widget::roundRectFill( const Bitmap & work, int radius, int x1, int y1, int x2, int y2, int color ){
