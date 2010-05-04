@@ -81,6 +81,12 @@ mark_as_advanced(CLEAR PNG_LIBRARY)
 # -------------------------------------------------------
 option(DEBUG "Compile paintown with debug information?" OFF)
 
+if($ENV{DEBUG})
+    set(DEBUG ON)
+elseif(NOT $ENV{DEBUG})
+    set(DEBUG OFF)
+endif($ENV{DEBUG})
+
 if(DEBUG)
     add_definitions(-DDEBUG)
     set(CMAKE_CXX_FLAGS "-Wall -funroll-loops -fexpensive-optimizations -Woverloaded-virtual -g3 -ggdb")
@@ -91,6 +97,12 @@ else(DEBUG)
 endif(DEBUG)
 
 option(USE_SDL "Compile paintown with SDL instead of Allegro?" OFF)
+
+if($ENV{USE_SDL})
+    set(USE_SDL ON)
+elseif(NOT $ENV{USE_SDL})
+    set(USE_SDL OFF)
+endif($ENV{USE_SDL})
 
 if(USE_SDL)
     # packages
