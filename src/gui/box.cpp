@@ -44,9 +44,9 @@ void Box::render(const Bitmap & work){
         workArea->rectangle( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
     Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
-    workArea->drawingMode( Bitmap::MODE_TRANS );
+    // workArea->drawingMode( Bitmap::MODE_TRANS );
     workArea->drawTrans(location.getX(), location.getY(), work);
-    work.drawingMode( Bitmap::MODE_SOLID );
+    // work.drawingMode( Bitmap::MODE_SOLID );
 }
 
 void Box::msgDialog(const Bitmap & bmp, const std::string & message, int radius){

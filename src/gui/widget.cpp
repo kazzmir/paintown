@@ -209,19 +209,17 @@ void Widget::roundRectFill( const Bitmap & work, int radius, int x1, int y1, int
     work.rectangleFill( x1+radius, y2-radius, x2-radius, y2, color);
 }
 
-void Widget::checkWorkArea()
-{
-    
+void Widget::checkWorkArea(){
     if ( ! workArea ){
-		workArea = new Bitmap(location.getWidth(),location.getHeight());
-	} else if(location.getWidth() < workArea->getWidth() || location.getHeight() < workArea->getHeight()) {
-		delete workArea;
-		workArea = new Bitmap(location.getWidth(), location.getHeight());
-	} else if(location.getWidth() > workArea->getWidth() || location.getHeight() > workArea->getHeight()) {
-		delete workArea;
-		workArea = new Bitmap(location.getWidth(),location.getHeight());
-	}
-	if ( workArea ){
-		workArea->fill(Bitmap::makeColor(255,0,255));
-	}
+        workArea = new Bitmap(location.getWidth(),location.getHeight());
+    } else if(location.getWidth() < workArea->getWidth() || location.getHeight() < workArea->getHeight()) {
+        delete workArea;
+        workArea = new Bitmap(location.getWidth(), location.getHeight());
+    } else if(location.getWidth() > workArea->getWidth() || location.getHeight() > workArea->getHeight()) {
+        delete workArea;
+        workArea = new Bitmap(location.getWidth(),location.getHeight());
+    }
+    if ( workArea ){
+        workArea->fill(Bitmap::makeColor(255,0,255));
+    }
 }
