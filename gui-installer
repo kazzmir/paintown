@@ -76,7 +76,7 @@ def setDataFileInfo(location, widget, emitter):
     emitter(lambda: widget.moveCursor(QTextCursor.Start))
 
 # Copy Data
-def copyData(currentRoot, widget, emitter):
+def copyData(currentRoot, binDirectory, widget, emitter):
     def updateGui(str):
         emitter(lambda: widget.append(str))
 
@@ -88,17 +88,28 @@ def copyData(currentRoot, widget, emitter):
                     continue
                 yield (root, tmpFile)
 
-    for paths in getFiles('data'):
-        root, tmpFile = paths
-        try:
-            updateGui('Copying %s...' % tmpFile)
-            # Create directory and copy
-            # Use str to convert from QString to plain python string
-            createDirectory(str(currentRoot + '/' + root))
-            shutil.copy(str(tmpFile), str(currentRoot + '/' + tmpFile))
-        except Exception, e:
-            updateGui("Could not copy '%s' because %s" % (tmpFile, e))
-            print "Could not copy '%s' because %s!" % (tmpFile, e)
+    def copyAllFiles():
+        for paths in getFiles('data'):
+            root, tmpFile = paths
+            try:
+                updateGui('Copying %s...' % tmpFile)
+                # Create directory and copy
+                # Use str to convert from QString to plain python string
+                createDirectory(str(currentRoot + '/' + root))
+                shutil.copy(str(tmpFile), str(currentRoot + '/' + tmpFile))
+            except Exception, e:
+                updateGui("Could not copy '%s' because %s" % (tmpFile, e))
+                print "Could not copy '%s' because %s!" % (tmpFile, e)
+
+    def createRunScript(script, binary):
+        out = open(script, 'w')
+        data = """#!/bin/sh
+%s -d %s
+""" % (binary, currentRoot)
+        out.write(data)
+        os.chmod(script, stat.S_IRWXU)
+
+    # copyAllFiles()
    
     # Copy paintown to paintown-bin
     updateGui('Copying the paintown binary...')
@@ -110,11 +121,9 @@ def copyData(currentRoot, widget, emitter):
         print 'Could not copy the paintown binary!'
         print e
 
+    updateGui('Creating run script in %s/%s' % (str(binDirectory), 'paintown'))
+    createRunScript('%s/paintown' % str(binDirectory), '%s/paintown-bin' % str(currentRoot))
     updateGui('Done!')
-
-    # FIXME: Create script to invoke paintown
-    # echo "$data_dir/paintown-bin -d $data_dir/data" >> $bin_dir/paintown
-    # chmod +x $bin_dir/paintown
 
 # Load Interface
 widget = uic.loadUi("installer/installer.ui")
@@ -253,7 +262,7 @@ def forwardButton():
         widget.next.setEnabled(False)
         allowExit[0] = False
         widget.stackedWidget.setCurrentIndex(currentPage[0])
-        doBackground(lambda emitter: copyData(dataLocation[0], widget.installOutput, emitter))
+        doBackground(lambda emitter: copyData(dataLocation[0], binLocation[0], widget.installOutput, emitter))
         widget.next.setEnabled(True)
         widget.installLabel.setText('Complete.')
         allowExit[0] = True
