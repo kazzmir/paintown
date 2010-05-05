@@ -644,7 +644,11 @@ void  sys_assert  (const char *filename, unsigned line_number);
 #   define NAMEFOLD     FALSE
 #   define MSDOS_FILESYSTEM             /*  MS-DOS derivative                */
 #else
-#   error "No definitions for PATH constants"
+/* default to unix */
+#   define PATHSEP      ":"
+#   define PATHEND      '/'
+#   define PATHFOLD     FALSE
+#   define NAMEFOLD     FALSE
 #endif
 
 
@@ -665,7 +669,8 @@ void  sys_assert  (const char *filename, unsigned line_number);
 #   undef  DOES_SOCKETS
 #endif
 
-#if (defined (__UNIX__) || defined (__VMS__) || defined (__OS2__))
+/* #if (defined (__UNIX__) || defined (__VMS__) || defined (__OS2__)) */
+#if (!defined(WINDOWS))
 #   define DOES_UID                     /*  System supports uid functions    */
 #else
 #   undef  DOES_UID
