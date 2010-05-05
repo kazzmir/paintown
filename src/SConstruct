@@ -26,6 +26,10 @@ util/sdl/stretch/sdlstretch.c
 """)
     return sdl.StaticLibrary('sdl-stretch', source)
 
+def sflLibrary(env):
+    use = env
+    return SConscript('sfl/SConscript', exports = ['use'])
+
 def gmeLibrary(env):
     gmeEnv = env.Clone()
     source = Split("""
@@ -122,7 +126,7 @@ def icon():
     else:
         return []
 
-use.Append(LIBS = [gmeLibrary(use)])
+use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
     use.Append(LIBS = [sdlStretchLibrary(use)])
 
