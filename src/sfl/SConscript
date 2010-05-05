@@ -37,7 +37,6 @@ sflmysql.c
 sflnode.c
 sflprint.c
 sflslot.c
-sflsock.c
 sflstr.c
 sflsymb.c
 sflsyst.c
@@ -52,6 +51,7 @@ ignored = Split("""
 sflcvst.c
 sflxmll.c
 sflproc.c
+sflsock.c
 """)
 
 x = use.StaticLibrary('sfl', source)
