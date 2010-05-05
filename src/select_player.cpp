@@ -21,6 +21,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 #include <map>
 
 #include "configuration.h"
@@ -419,6 +420,11 @@ Object * Game::selectPlayer(bool invincibile, const string & message, const Leve
 
     try{
         int current = 0;
+        if (players.size() == 0){
+            ostringstream out;
+            out << "No players found in '" << info.getPlayerPath() << "'";
+            throw LoadException(out.str());
+        }
         /* only run the selection screen if there is more than 1 player to choose */
         if (players.size() > 1){
             current = choosePlayer(players, message);

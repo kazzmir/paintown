@@ -189,7 +189,7 @@
 #elif (defined (linux))
 #   define __UTYPE_LINUX
 #   define __UNIX__
-#   define __NO_CTYPE                   /*  Suppress warnings on tolower()   */
+/* #   define __NO_CTYPE */                  /*  Suppress warnings on tolower()   */
 #elif (defined (Mips))
 #   define __UTYPE_MIPS
 #   define __UNIX__
@@ -233,7 +233,7 @@
 /*- Standard ANSI include files ---------------------------------------------*/
 
 #ifdef __cplusplus
-#include <iostream.h>                   /*  A bit of support for C++         */
+#include <iostream>                   /*  A bit of support for C++         */
 #endif
 
 #include <ctype.h>

@@ -43,13 +43,13 @@ sfltree.c
 sfltron.c
 sfluid.c
 sflxml.c
+sfldate.c
 """)
 
 ignored = Split("""
 sflcvst.c
 sflxmll.c
 sflproc.c
-sfldate.c
 sflsock.c
 sflmysql.c
 """)
