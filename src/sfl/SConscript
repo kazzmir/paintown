@@ -15,7 +15,6 @@ sflcvsd.c
 sflcvsn.c
 sflcvtp.c
 sflcvts.c
-sfldate.c
 sfldbio.c
 sfldir.c
 sflenv.c
@@ -51,6 +50,7 @@ ignored = Split("""
 sflcvst.c
 sflxmll.c
 sflproc.c
+sfldate.c
 sflsock.c
 """)
 
