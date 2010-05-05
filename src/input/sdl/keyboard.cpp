@@ -14,12 +14,28 @@ void Keyboard::wait(){
 }
 
 bool Keyboard::keypressed(){
-    /* TODO */
+    int keys = 0;
+    Uint8 * state = SDL_GetKeyState(&keys);
+    for (int i = 0; i < keys; i++){
+        if (state[i] == 1){
+            return true;
+        }
+    }
+
     return false;
 }
 	
-void Keyboard::readKeys( std::vector< int > & all_keys ){
-    /* TODO */
+void Keyboard::readKeys( std::vector<int> & all_keys ){
+    int keys = 0;
+    Uint8 * state = SDL_GetKeyState(&keys);
+    /* FIXME: the mapping between SDLK_* and our keyboard values are not 1-1 so
+     * use a function here that returns the right mapping.
+     */
+    for (int i = 0; i < keys; i++){
+        if (state[i] == 1){
+            all_keys.push_back(i);
+        }
+    }
 }
 
 int Keyboard::readKey(){
@@ -39,7 +55,6 @@ void Keyboard::setAllDelay( const int delay ){
     /* TODO */
 }
 
-/* TODO: fix the keys */
 Keyboard::KeyType Keyboard::Key_A = SDLK_a;
 Keyboard::KeyType Keyboard::Key_B = SDLK_b;
 Keyboard::KeyType Keyboard::Key_C = SDLK_c;
