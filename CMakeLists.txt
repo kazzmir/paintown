@@ -98,11 +98,11 @@ endif(DEBUG)
 
 option(USE_SDL "Compile paintown with SDL instead of Allegro?" OFF)
 
-if($ENV{USE_SDL})
+if($ENV{SDL})
     set(USE_SDL ON)
-elseif(NOT $ENV{USE_SDL})
+elseif(NOT $ENV{SDL})
     set(USE_SDL OFF)
-endif($ENV{USE_SDL})
+endif($ENV{SDL})
 
 if(USE_SDL)
     # packages
