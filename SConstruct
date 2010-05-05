@@ -473,8 +473,8 @@ def getEnvironment(debug):
         if debug:
             # for gcov:
             # ['-fprofile-arcs', '-ftest-coverage']
-            cflags.append( ['-g3','-ggdb', '-Werror'])
-            # cflags.append( ['-g3','-ggdb'])
+            # cflags.append( ['-g3','-ggdb', '-Werror'])
+            cflags.append( ['-g3','-ggdb'])
         else:
             cflags.append( '-O2' )
 
