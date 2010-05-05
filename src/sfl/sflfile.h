@@ -52,7 +52,14 @@
 #   define FOPEN_APPEND_TEXT    "at"
 #   define FOPEN_APPEND_BINARY  "ab"
 #else
-#   error "No definitions for FOPEN constants"
+/* assume unix conventions */
+#   define FOPEN_READ_TEXT      "rt"    /*  Under UNIX we can be explict     */
+#   define FOPEN_READ_BINARY    "rb"    /*    and use 't' or 'b' in fopen    */
+#   define FOPEN_WRITE_TEXT     "wt"
+#   define FOPEN_WRITE_BINARY   "wb"
+#   define FOPEN_APPEND_TEXT    "at"
+#   define FOPEN_APPEND_BINARY  "ab"
+
 #endif
 
 

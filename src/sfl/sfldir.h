@@ -138,6 +138,11 @@ typedef struct
 
 #elif (defined (__VMS__))               /*  OpenVMS V5.x and lower           */
     long   _dir_handle;                 /*    lib$find_file context          */
+#else
+    /* assume unix conventions */
+    DIR    *_dir_handle;                /*    a directory handle             */
+    struct Dirent                       /*    and a file desc. structure,    */
+           *_dir_entry;                 /*    both transient blocks          */
 #endif
 
     /*  Public fields                                                        */
