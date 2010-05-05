@@ -32,7 +32,6 @@ sflmath.c
 sflmem.c
 sflmesg.c
 sflmime.c
-sflmysql.c
 sflnode.c
 sflprint.c
 sflslot.c
@@ -52,6 +51,7 @@ sflxmll.c
 sflproc.c
 sfldate.c
 sflsock.c
+sflmysql.c
 """)
 
 x = use.StaticLibrary('sfl', source)
