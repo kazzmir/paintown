@@ -7,8 +7,9 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "font_factory.h"
+#include "globals.h"
 
-#include "fonts.h"
+// #include "fonts.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ void FontFactory::destroy(){
 }
 	
 Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int x, const int y ){
+    try{
     if (font_mapper.find(path.path()) == font_mapper.end()){
         font_mapper[path.path()] = new FreeTypeFont(Filesystem::find(path));
         /*
@@ -52,6 +54,10 @@ Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int
     f->setSize(x, y);
 
     return f;
+    } catch (const Filesystem::NotFound & e){
+        Global::debug(0) << "Warning: could not find font " << path.path() << ": " << e.getReason() << endl;
+        return &nullFont;
+    }
     // return font_mapper[ str ];
 }
 

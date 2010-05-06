@@ -20,6 +20,7 @@
 #include "input/input-manager.h"
 #include "draw-glow-effect.h"
 #include "draw-countdown-effect.h"
+#include <math.h>
 
 // how many ticks to wait before the key cache is cleared.
 // this can probably be user defined in the future

@@ -10,6 +10,7 @@
 #include "buddy_player.h"
 #include "util/file-system.h"
 #include "factory/font_render.h"
+#include <math.h>
 
 using namespace std;
 

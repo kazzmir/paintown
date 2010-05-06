@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include "util/file-system.h"
+#include "util/font.h"
 
 struct DATAFILE;
 class Font;
@@ -28,6 +29,7 @@ private:
 
     // DATAFILE * my_data;
     std::map<std::string, Font *> font_mapper;
+    NullFont nullFont;
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "util/bitmap.h"
-#include "menu/tab_menu.h"
-#include "menu/menu_global.h"
-#include "menu/menu_option.h"
+#include "tab_menu.h"
+#include "menu_global.h"
+#include "menu_option.h"
 #include "util/funcs.h"
 #include "util/sound.h"
 #include "util/font.h"
@@ -13,6 +13,7 @@
 #include "init.h"
 #include "configuration.h"
 #include "music.h"
+#include <math.h>
 
 #include "menu/optionfactory.h"
 #include "menu/actionfactory.h"

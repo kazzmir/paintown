@@ -16,6 +16,7 @@
 #include "util/file-system.h"
 #include "object.h"
 #include "world.h"
+#include <math.h>
 
 using namespace std;
 
