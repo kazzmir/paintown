@@ -820,10 +820,11 @@ date_is_past (long date, long time)
     the timezone, returns "+0000".
     ---------------------------------------------------------------------[>]-*/
 
+#if 0
 char *
 timezone_string (void)
 {
-#if (defined (TIMEZONE))
+#xif (defined (TIMEZONE))
     static char
         formatted_string [10];          /*  -nnnn plus null                  */
     int
@@ -835,10 +836,11 @@ timezone_string (void)
     if (*formatted_string == '0')
         *formatted_string = '+';
     return  (formatted_string);
-#else
+#xelse
     return ("+0000");
-#endif
+#xendif
 }
+#endif
 
 
 /*  ---------------------------------------------------------------------[<]-
@@ -868,6 +870,7 @@ local_to_gmt (long date, long time, long *gmt_date, long *gmt_time)
     is out of range, returns 00:00 on 1 January, 1970 (19700101).
     ---------------------------------------------------------------------[>]-*/
 
+#if 0
 void
 gmt_to_local (long gmt_date, long gmt_time, long *date, long *time)
 {
@@ -894,6 +897,7 @@ gmt_to_local (long gmt_date, long gmt_time, long *date, long *time)
                        time_struct-> tm_sec,
                        0);
 }
+#endif
 
 
 /*  ---------------------------------------------------------------------[<]-

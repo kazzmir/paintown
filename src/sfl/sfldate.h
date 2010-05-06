@@ -106,9 +106,9 @@ Bool   valid_date         (long date);
 Bool   valid_time         (long time);
 Bool   date_is_future     (long date, long time);
 Bool   date_is_past       (long date, long time);
-char  *timezone_string    (void);
+// char  *timezone_string    (void);
 void   local_to_gmt       (long date, long time, long *gmdate, long *gmtime);
-void   gmt_to_local       (long gmdate, long gmtime, long *date, long *time);
+// void   gmt_to_local       (long gmdate, long gmtime, long *date, long *time);
 struct tm *safe_localtime (const time_t *time_secs);
 struct tm *safe_gmtime    (const time_t *time_secs);
 
