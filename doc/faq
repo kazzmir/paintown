@@ -21,3 +21,4 @@ A. Compiled with
   [linux] icpc (ICC) 11.1 20090827
   [windows xp] mingw
   [osx 10.4] gcc (powerpc-apple-darwin8-gcc-4.0.1)
+  [freebsd 8]
