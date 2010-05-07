@@ -200,6 +200,8 @@ static void moreInitSystem(){
 
 #endif
 #ifdef USE_SDL
+    
+static pthread_t events;
 
 struct TimerInfo{
     TimerInfo(void (*x)(), int y):
@@ -267,6 +269,15 @@ static void * handleEvents(void * arg){
     }
     return NULL;
 }
+
+static void doSDLQuit(){
+    SDL_Event quit;
+    quit.type = SDL_QUIT;
+    SDL_PushEvent(&quit);
+    Global::debug(0) << "Waiting for SDL event handler to finish" << endl;
+    pthread_join(events, NULL);
+    SDL_Quit();
+}
     
 static void initSystem(ostream & out){
     out << "SDL Init: " << SDL_Init(SDL_INIT_VIDEO |
@@ -282,11 +293,10 @@ static void initSystem(ostream & out){
 
     SDL_WM_SetCaption("Paintown", NULL);
 
-    atexit(SDL_Quit);
+    atexit(doSDLQuit);
 }
 
 static void moreInitSystem(){
-    pthread_t events;
     pthread_create(&events, NULL, handleEvents, NULL);
 }
 #endif
