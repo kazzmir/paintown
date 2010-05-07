@@ -156,7 +156,7 @@
 /*  unix                SunOS at least                                       */
 /*  __unix__            gcc                                                  */
 /*  _POSIX_SOURCE is various UNIX systems, maybe also VAX/VMS                */
-#if (defined (unix) || defined (__unix__) || defined (_POSIX_SOURCE))
+#if (defined (unix) || defined (__unix__) || defined (_POSIX_SOURCE) || !defined(WINDOWS))
 #   if (!defined (__VMS__))
 #       undef __UNIX__
 #       define __UNIX__
