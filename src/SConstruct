@@ -23,6 +23,7 @@ def sdlStretchLibrary(env):
     source = Split("""
 util/sdl/stretch/sdlscreen.c
 util/sdl/stretch/sdlstretch.c
+util/sdl/stretch/sdlstretchcode.c
 """)
     return sdl.StaticLibrary('sdl-stretch', source)
 
