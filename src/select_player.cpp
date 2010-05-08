@@ -136,7 +136,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     Bitmap temp( 120, 120 );
     Bitmap preview( GFX_X / 2, GFX_Y / 2 );
     Bitmap reflection( GFX_X / 2, GFX_Y / 2 );
-
+                    
     // const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
     // const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
 
@@ -176,7 +176,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     Sound beep(Filesystem::find(Filesystem::RelativePath("sounds/beep1.wav")).path());
     pthread_t loadingThread;
 
-    pthread_create(&loadingThread, NULL, characterLoader, &loader );
+    if (pthread_create(&loadingThread, NULL, characterLoader, &loader ) != 0){
+        throw LoadException("Could not create loading thread");
+    }
 
     bool done = false;
                         
@@ -303,8 +305,10 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     preview.drawVFlip( 0, 0, reflection );
 
                     Bitmap::transBlender( 0, 0, 0, 255 );
-                    LitBitmap s2( reflection );
+
+                    LitBitmap s2(reflection);
                     s2.draw( 0, preview.getHeight() - stand - stand, preview );
+
                     Bitmap::transBlender( 0, 0, 0, 128 );
                     reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
                     copy.draw( &preview, 0, 0 );
@@ -314,7 +318,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
 
                     // preview.draw( 60, 0, work );
-                    preview.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
+                    
+                    preview.drawStretched(-GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work);
+                    // preview.draw( 60, 0, work );
 
                     for (int c = 1; c >= 0; c--){
                         int color = 255 - c * 190;
