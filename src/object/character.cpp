@@ -588,7 +588,7 @@ void Character::setInvincibility(const int x){
 }
 
 Animation * Character::getCurrentMovement() const {
-	return this->animation_current;
+    return this->animation_current;
 }
 	
 void Character::setMovement( Animation * animation, const string & name ){
