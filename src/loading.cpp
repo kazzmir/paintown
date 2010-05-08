@@ -108,7 +108,7 @@ void * loadingScreen( void * arg ){
     Bitmap infoWork(infobox_width, infobox_height);
     Bitmap infoBackground(infobox_width, infobox_height);
 
-    letters.fill( Bitmap::MaskColor );
+    letters.fill( Bitmap::MaskColor() );
     myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, levelInfo.loadingMessage().c_str(), 0 ); 
 
     vector< ppair > pairs;
@@ -116,7 +116,7 @@ void * loadingScreen( void * arg ){
     for ( int x = 0; x < letters.getWidth(); x++ ){
         for ( int y = 0; y < letters.getHeight(); y++ ){
             int pixel = letters.getPixel( x, y );
-            if ( pixel != Bitmap::MaskColor ){
+            if ( pixel != Bitmap::MaskColor() ){
                 ppair p;
                 p.x = x;
                 p.y = y;

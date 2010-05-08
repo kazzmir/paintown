@@ -236,7 +236,7 @@ void MugenFont::changeBank(int bank){
         int g = newpal[i+1];
         int b = newpal[i+2];
         int col = Bitmap::makeColor(r,g,b);
-        if (col == Bitmap::MaskColor){
+        if (col == Bitmap::MaskColor()){
             int oldCol = col;
             while (oldCol == col){
                 r -= 1;

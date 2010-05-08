@@ -420,7 +420,7 @@ static int nonMaskingPixels( Bitmap * bitmap ){
 	int total = 0;
 	for ( int x = 0; x < bitmap->getWidth(); x++ ){
 		for ( int y = 0; y < bitmap->getHeight(); y++ ){
-			if ( bitmap->getPixel( x, y ) != Bitmap::MaskColor ){
+			if ( bitmap->getPixel( x, y ) != Bitmap::MaskColor() ){
 				total += 1;
 			}
 		}
@@ -450,7 +450,7 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
             bitmap->Blit(x, y, 0, 0, *sub);
 
             for (int num = 0; num < 2; num++){
-                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::MaskColor);
+                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::MaskColor());
                 sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::makeColor(255,0,0));
             }
 
@@ -1642,7 +1642,7 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
         for (int h = 0; h < shade.getHeight(); ++h){
             for (int w = 0; w < shade.getWidth(); ++w){
                 int pix = shade.getPixel(w,h);
-                if (pix != Bitmap::MaskColor){
+                if (pix != Bitmap::MaskColor()){
                     shade.putPixel(w,h, Bitmap::makeColor(0,0,0));
                 }
             }

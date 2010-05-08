@@ -296,8 +296,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     copy.setX( preview.getWidth() / 2 );
                     copy.setY( 0 );
                     copy.setZ( preview.getHeight() - stand );
-                    preview.fill( Bitmap::MaskColor );
-                    reflection.fill( Bitmap::MaskColor );
+                    preview.fill( Bitmap::MaskColor() );
+                    reflection.fill( Bitmap::MaskColor() );
                     // preview.fill( 0 );
                     // reflection.fill( 0 );
 
@@ -722,7 +722,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
             copy1.setX( preview1.getWidth() / 2 );
             copy1.setY( 0 );
             copy1.setZ( preview1.getHeight() - 20 );
-            preview1.fill( Bitmap::MaskColor );
+            preview1.fill( Bitmap::MaskColor() );
 
             copy1.draw( &preview1, 0, 0 );
             preview1.drawStretched( -GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work );
@@ -736,7 +736,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
             copy2.setX( preview2.getWidth() / 2 );
             copy2.setY( 0 );
             copy2.setZ( preview2.getHeight() - 20 );
-            preview2.fill( Bitmap::MaskColor );
+            preview2.fill( Bitmap::MaskColor() );
 
             copy2.draw( &preview2, 0, 0 );
             preview2.drawStretched( 200, 0, GFX_X, GFX_Y, work );

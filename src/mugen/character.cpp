@@ -2608,7 +2608,7 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
 	} else if (flip == -1){
 	    // temp bitmap to flip and crap
 	    Bitmap temp = Bitmap::temporaryBitmap(bitmap->getWidth(), bitmap->getHeight());
-	    temp.fill(Bitmap::MaskColor);
+	    temp.fill(Bitmap::MaskColor());
 	    bitmap->drawHFlip(0,0,temp);
 	    temp.drawStretched(x-width,y, width, height, *bmp);
 	}
