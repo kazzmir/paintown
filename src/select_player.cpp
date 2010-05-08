@@ -288,7 +288,12 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 background.Blit( work.getWidth() + backgroundX, 0, work );
                 const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
-                if (ch->isLoaded()){
+                if (
+                        /* FIXME */
+#ifdef USE_SDL
+                        false &&
+#endif
+                        ch->isLoaded()){
                     const int stand = 50;
                     ch->setFacing( Object::FACING_RIGHT );
                     Character copy( *ch );
