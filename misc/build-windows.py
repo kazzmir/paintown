@@ -145,6 +145,14 @@ def server_side(make_commands):
         connection.sendall(command)
         connection.sendall("\n\n")
 
+    def compute_md5(file):
+        import hashlib
+        f = open(file)
+        m = hashlib.md5()
+        m.update(f.read())
+        f.close()
+        return m.hexdigest()
+
     def do_receive_file(transfer, path):
         (client, ignore_address) = transfer.accept()
         size = 4096
@@ -156,6 +164,8 @@ def server_side(make_commands):
         file.close()
         client.close()
         transfer.close()
+
+        print "%s %s [server]" % (compute_md5(path), path)
 
     # gets the text output from sending commands
     def send_build_commands(connection):
