@@ -27,6 +27,19 @@ util/sdl/stretch/sdlstretchcode.c
 """)
     return sdl.StaticLibrary('sdl-stretch', source)
 
+def sprigLibrary(env):
+    sprig = env.Clone()
+    source = Split("""
+util/sdl/sprig/SPG_extended.c
+util/sdl/sprig/SPG_misc.c
+util/sdl/sprig/SPG_polygon.c
+util/sdl/sprig/SPG_primitives.c
+util/sdl/sprig/SPG_rotation.c
+util/sdl/sprig/SPG_surface.c
+""")
+
+    return sprig.StaticLibrary('sprig', source)
+
 def sflLibrary(env):
     use = env
     return SConscript('sfl/SConscript', exports = ['use'])
@@ -130,6 +143,7 @@ def icon():
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
     use.Append(LIBS = [sdlStretchLibrary(use)])
+    use.Append(LIBS = [sprigLibrary(use)])
 
 x = []
 x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))
