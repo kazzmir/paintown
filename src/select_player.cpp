@@ -291,7 +291,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 if (
                         /* FIXME */
 #ifdef USE_SDL
-                        false &&
+                        // false &&
 #endif
                         ch->isLoaded()){
                     const int stand = 50;
