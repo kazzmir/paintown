@@ -56,7 +56,7 @@ void Box::msgDialog(const Bitmap & bmp, const std::string & message, int radius)
     const int x = (bmp.getWidth()/2) - (width/2);
     const int y = (bmp.getHeight()/2) - (height/2);
     Box dialog;
-    dialog.location.setDimensions(Gui::AbsolutePoint(width, height));
+    dialog.location.setDimensions(width, height);
     dialog.location.setRadius(radius);
     dialog.colors.body = Bitmap::makeColor(0,0,0);
     dialog.colors.bodyAlpha = 200;

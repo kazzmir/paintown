@@ -810,7 +810,7 @@ void OptionJoystick::run(bool &endGame){
     const int y = (getParent()->getWork()->getHeight()/2) - (height/2);
     Box dialog;
     dialog.location.setPosition(Gui::AbsolutePoint(0,0));
-    dialog.location.setDimensions(Gui::AbsolutePoint(vFont.textLength(message) + 10, vFont.getHeight() + 10));
+    dialog.location.setDimensions(vFont.textLength(message) + 10, vFont.getHeight() + 10);
     dialog.location.setRadius(0);
     dialog.colors.body = Bitmap::makeColor(0,0,0);
     dialog.colors.bodyAlpha = 200;

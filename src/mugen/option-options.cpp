@@ -447,7 +447,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     // Box
     Box optionArea;
     
-    optionArea.location.setDimensions(Gui::AbsolutePoint(260,210));
+    optionArea.location.setDimensions(260,210);
     optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
     
     optionArea.location.setRadius(5);

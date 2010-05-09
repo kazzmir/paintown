@@ -10,7 +10,7 @@ namespace Gui {
 class AbsolutePoint {
     public:
         AbsolutePoint();
-        AbsolutePoint(int x, int y);
+        explicit AbsolutePoint(int x, int y);
         AbsolutePoint(const AbsolutePoint &);
         virtual ~AbsolutePoint();
         
@@ -18,11 +18,11 @@ class AbsolutePoint {
         virtual inline void setX(int x){
             this->x = x;
         }
-        virtual int getX();
+        virtual int getX() const;
         virtual inline void setY(int y){
             this->y = y;
         }
-        virtual int getY();
+        virtual int getY() const;
     private:
         int x;
         int y;
@@ -31,9 +31,9 @@ class AbsolutePoint {
 class RelativePoint {
     public:
         RelativePoint();
-        RelativePoint(double x, double y);
+        explicit RelativePoint(double x, double y);
         RelativePoint(const RelativePoint &);
-        RelativePoint(AbsolutePoint &);
+        RelativePoint(const AbsolutePoint &);
         virtual ~RelativePoint();
         
         const RelativePoint & operator=(const RelativePoint &);
@@ -130,22 +130,32 @@ class Coordinate {
         bool operator!=( const Bitmap &);
 
         virtual void setPosition(const RelativePoint &);
-        virtual void setPosition(AbsolutePoint);
+        virtual void setPosition(const AbsolutePoint &);
+        virtual void setPosition2(const RelativePoint &);
+        virtual void setPosition2(const AbsolutePoint &);
+
+        virtual void setDimensions(int width, int height);
+
+        /*
         virtual void setDimensions(const RelativePoint &);
         virtual void setDimensions(AbsolutePoint);
+        */
         
         virtual inline RelativePoint & getPosition(){
             return this->position;
         }
-        virtual inline RelativePoint & getDimensions(){
+
+        virtual inline RelativePoint & getPosition2(){
             return this->dimensions;
         }
         
         virtual inline bool empty(){
-            return (dimensions.getRelativeX() == -1 && dimensions.getRelativeY() == -1);
+            return (getWidth() == 0 && getHeight() == 0);
         }
         
     private:
+        void checkDimensions();
+
         RelativePoint position;
         RelativePoint dimensions;
         double z;

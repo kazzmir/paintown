@@ -217,9 +217,9 @@ void TabMenu::load(Token *token) throw (LoadException){
                         tabs.push_back(menu);
                         const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
                         // set info on the box itself
-                        menu->location.setDimensions(Gui::AbsolutePoint(vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W, vFont.getHeight() + TEXT_SPACING_H));
+                        menu->location.setDimensions(vFont.textLength(menu->menu.getName().c_str()) + TEXT_SPACING_W, vFont.getHeight() + TEXT_SPACING_H);
                         menu->context.location.setPosition(contentArea.location.getPosition());
-                        menu->context.location.setDimensions(contentArea.location.getDimensions());
+                        menu->context.location.setPosition2(contentArea.location.getPosition2());
                         menu->context.setFont(getFont(),getFontWidth(),getFontHeight());
                         menu->context.setList(menu->menu.getContextList());
                         menu->context.setFadeSpeed(50);
@@ -368,10 +368,10 @@ void TabMenu::run(){
         MenuBox *tab = *i;
         const Font & vFont = Font::getFont(getFont(), FONT_W, FONT_H);
         // set info on the box itself
-        tab->location.setDimensions(Gui::AbsolutePoint(vFont.textLength(tab->menu.getName().c_str()) + TEXT_SPACING_W, vFont.getHeight() + TEXT_SPACING_H));
+        tab->location.setDimensions(vFont.textLength(tab->menu.getName().c_str()) + TEXT_SPACING_W, vFont.getHeight() + TEXT_SPACING_H);
         
         tab->context.location.setPosition(contentArea.location.getPosition());
-        tab->context.location.setDimensions(contentArea.location.getDimensions());
+        tab->context.location.setPosition2(contentArea.location.getPosition2());
         tab->context.setFont(getFont(),getFontWidth(),getFontHeight());
         tab->context.open();
         while(!tab->context.isActive()){
@@ -499,7 +499,7 @@ void TabMenu::run(){
                 for (std::vector<MenuBox *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
                     MenuBox *tab = *i;
                     tab->context.location.setPosition(Gui::AbsolutePoint((int)startx, contentArea.location.getY()));
-                    tab->context.location.setDimensions(contentArea.location.getDimensions());
+                    tab->context.location.setPosition2(contentArea.location.getPosition2());
                     tab->context.setUseGradient(tab->running);
                     tab->context.act();
                     startx += incrementx;

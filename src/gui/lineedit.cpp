@@ -53,70 +53,61 @@ void LineEdit::fontChange()
 }
 
 // Update
-void LineEdit::act()
-{
-	if((blinkRate*2)<=cursorTime.msecs())cursorTime.reset();
-	if(changed_)
-	{
-		textSizeH = currentSetFont->getHeight();
-		if(autoResizable)
-		{
-            location.setDimensions(Gui::AbsolutePoint(textSizeH+2, currentSetFont->textLength(currentSetText.c_str())+4));
-		}
-		else
-		{
-			if(hAlignMod==T_Left)
-			{
-				if(currentSetFont->textLength(currentSetText.c_str())>location.getWidth())
-				{
-					hAlignment=T_Right;
-				}
-				else hAlignment=T_Left;
-			}
-		}
-		switch(hAlignment)
-		{
-			case T_Left:
-				textX = 2;
-				cursorX = textX + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
-				break;
-			case T_Middle:
-				textX = (location.getWidth()/2) - (currentSetFont->textLength(currentSetText.c_str())/2);
-				cursorX = (textX) + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
-				break;
-			case T_Right:
-				textX = location.getWidth() - currentSetFont->textLength(currentSetText.c_str());//(position.width - 1)-2;
-				cursorX = location.getWidth() - currentSetFont->textLength(currentSetText.substr(0,currentSetText.length()-cursorIndex).c_str());
-				break;
-			case T_Bottom:
-			case T_Top:
-				break;
-		}
-		
-		switch(vAlignment)
-		{
-			case T_Top:
-				textY = 1;
-				cursorY = 1;
-				break;
-			case T_Middle:
-				textY = cursorY = (location.getHeight() - textSizeH-(5))/2;
-				break;
-			case T_Bottom:
-				textY = (location.getHeight() - 1) - textSizeH - 1;
-				cursorY = textY - textSizeH;
-				break;
-			case T_Right:
-			case T_Left:
-				break;
-		}
-			
-		//textY++;
-		//textX++;
-		stable();
-	}
+void LineEdit::act(){
+    if((blinkRate*2)<=cursorTime.msecs())cursorTime.reset();
+    if(changed_){
+        textSizeH = currentSetFont->getHeight();
+        if(autoResizable) {
+            location.setDimensions(textSizeH+2, currentSetFont->textLength(currentSetText.c_str())+4);
+        } else {
+            if(hAlignMod==T_Left) {
+                if(currentSetFont->textLength(currentSetText.c_str())>location.getWidth()) {
+                    hAlignment=T_Right;
+                }
+                else hAlignment=T_Left;
+            }
+        }
+        switch(hAlignment) {
+            case T_Left:
+                textX = 2;
+                cursorX = textX + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
+                break;
+            case T_Middle:
+                textX = (location.getWidth()/2) - (currentSetFont->textLength(currentSetText.c_str())/2);
+                cursorX = (textX) + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
+                break;
+            case T_Right:
+                textX = location.getWidth() - currentSetFont->textLength(currentSetText.c_str());//(position.width - 1)-2;
+                cursorX = location.getWidth() - currentSetFont->textLength(currentSetText.substr(0,currentSetText.length()-cursorIndex).c_str());
+                break;
+            case T_Bottom:
+            case T_Top:
+                break;
+        }
+
+        switch(vAlignment) {
+            case T_Top:
+                textY = 1;
+                cursorY = 1;
+                break;
+            case T_Middle:
+                textY = cursorY = (location.getHeight() - textSizeH-(5))/2;
+                break;
+            case T_Bottom:
+                textY = (location.getHeight() - 1) - textSizeH - 1;
+                cursorY = textY - textSizeH;
+                break;
+            case T_Right:
+            case T_Left:
+                break;
+        }
+
+        //textY++;
+        //textX++;
+        stable();
+    }
 }
-		
+
 // Draw
 void LineEdit::render(const Bitmap & work){
 

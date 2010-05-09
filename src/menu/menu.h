@@ -158,7 +158,7 @@ public:
 
     //! Set height of context menu
     virtual inline void setMenuHeight(int height){
-        this->contextMenu.location.setDimensions(Gui::AbsolutePoint(this->contextMenu.location.getX2(), this->contextMenu.location.getY() + height));
+        this->contextMenu.location.setPosition2(Gui::AbsolutePoint(this->contextMenu.location.getX2(), this->contextMenu.location.getY() + height));
     }
     
     //! Get context menu

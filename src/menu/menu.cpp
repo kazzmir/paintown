@@ -57,7 +57,6 @@ fontWidth(sharedFontWidth),
 fontHeight(sharedFontHeight),
 fadeAlpha(0){
     popup.setFadeSpeed(20);
-
 }
 
 InfoBox::~InfoBox(){
@@ -167,7 +166,8 @@ void InfoBox::setText(const std::string & info){
         }
         height += vFont.getHeight();
     }
-    location.setDimensions(Gui::AbsolutePoint(maxWidth,height));
+
+    location.setDimensions(maxWidth, height);
 }
 
 static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> & list){
@@ -804,7 +804,7 @@ void Menu::setMenuInfo(const std::string & text){
     const int height = menuInfoBox.location.getHeight();
     menuInfoBox.location.setPosition(Gui::AbsolutePoint(menuInfoLocation.x - width/2, menuInfoLocation.y - height/2));
     // have to pass the dimensions back in to correct proper placement
-    menuInfoBox.location.setDimensions(Gui::AbsolutePoint(menuInfoBox.location.getX() + width, menuInfoBox.location.getY() + height));
+    menuInfoBox.location.setPosition2(Gui::AbsolutePoint(menuInfoBox.location.getX() + width, menuInfoBox.location.getY() + height));
     menuInfoBox.location.setRadius(contextMenu.location.getRadius());
     menuInfoBox.colors.body = Bitmap::makeColor(32,32,0);
     menuInfoBox.colors.bodyAlpha = contextMenu.colors.bodyAlpha;
@@ -827,7 +827,7 @@ void Menu::addInfoBox(const std::string & text){
     const int height = temp->location.getHeight();
     temp->location.setPosition(Gui::AbsolutePoint(optionInfoTextLocation.x - width/2, optionInfoTextLocation.y - height/2));
     // have to pass the dimensions back in to correct proper placement
-    temp->location.setDimensions(Gui::AbsolutePoint(temp->location.getX() + width,temp->location.getY() + height));
+    temp->location.setPosition2(Gui::AbsolutePoint(temp->location.getX() + width,temp->location.getY() + height));
     temp->location.setRadius(contextMenu.location.getRadius());
     temp->colors.body = Bitmap::makeColor(32,32,0);
     temp->colors.bodyAlpha = contextMenu.colors.bodyAlpha;

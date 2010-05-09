@@ -1,8 +1,8 @@
 #include "util/bitmap.h"
-
-#include "gui/coordinate.h"
-
+#include "coordinate.h"
 #include "globals.h"
+#include "util/load_exception.h"
+#include <sstream>
 
 using namespace Gui;
 
@@ -35,18 +35,19 @@ const AbsolutePoint & AbsolutePoint::operator=(const AbsolutePoint & copy){
     return *this;
 }
 
-int AbsolutePoint::getX(){
+int AbsolutePoint::getX() const {
     return x;
 }
-int AbsolutePoint::getY(){
+
+int AbsolutePoint::getY() const {
     return y;
 }
-
 
 RelativePoint::RelativePoint():
 x(-1),
 y(-1){
 }
+
 RelativePoint::RelativePoint(double x, double y):
 x(x),
 y(y){
@@ -57,9 +58,9 @@ x(copy.x),
 y(copy.y){
 }
 
-RelativePoint::RelativePoint(AbsolutePoint & point):
-x(absoluteToRelative(point.getX(),Global::getScreenWidth()/2)),
-y(absoluteToRelative(point.getY(),Global::getScreenHeight()/2)){
+RelativePoint::RelativePoint(const AbsolutePoint & point):
+x(absoluteToRelative(point.getX(), Global::getScreenWidth()/2)),
+y(absoluteToRelative(point.getY(), Global::getScreenHeight()/2)){
 }
 
 RelativePoint::~RelativePoint(){
@@ -83,17 +84,21 @@ bool RelativePoint::operator!=(const RelativePoint & point){
 }
 
 int RelativePoint::getX() const{
-    return relativeToAbsolute(x,Global::getScreenWidth()/2);
+    return relativeToAbsolute(x, Global::getScreenWidth()/2);
 }
+
 int RelativePoint::getY() const{
-    return relativeToAbsolute(y,Global::getScreenHeight()/2);
+    return relativeToAbsolute(y, Global::getScreenHeight()/2);
 }
+
 AbsolutePoint RelativePoint::getAbsolute(){
     return AbsolutePoint(relativeToAbsolute(x,Global::getScreenWidth()/2), relativeToAbsolute(y,Global::getScreenHeight()/2));
 }
+
 double RelativePoint::getRelativeX() const{
     return x;
 }
+
 double RelativePoint::getRelativeY() const{
     return y;
 }
@@ -226,25 +231,38 @@ bool Coordinate::operator!=( const Coordinate & coord){
 }
 
 bool Coordinate::operator==( const Bitmap & bmp){
-    return ( (dimensions.getX() == bmp.getWidth()) &&
-            (dimensions.getY() == bmp.getHeight()));
+    return ( (getWidth() == bmp.getWidth()) &&
+            (getHeight() == bmp.getHeight()));
 }
 
 bool Coordinate::operator!=( const Bitmap & bmp){
-    return ( !(dimensions.getX() == bmp.getWidth()) ||
-            !(dimensions.getY() == bmp.getHeight()));
+    return !(*this == bmp);
 }
 
 void Coordinate::setPosition(const RelativePoint & point){
     position = point;
 }
-void Coordinate::setPosition(AbsolutePoint point){
+
+void Coordinate::setPosition(const AbsolutePoint & point){
     position = RelativePoint(point);
 }
-void Coordinate::setDimensions(const RelativePoint & point){
+
+void Coordinate::setPosition2(const RelativePoint & point){
     dimensions = point;
 }
-void Coordinate::setDimensions(AbsolutePoint point){
+
+void Coordinate::setPosition2(const AbsolutePoint & point){
     dimensions = RelativePoint(point);
 }
 
+void Coordinate::checkDimensions(){
+    if (getWidth() < 0 || getHeight() < 0){
+        std::ostringstream out;
+        out << "Cannot have a negative coordinate dimension " << getWidth() << ", " << getHeight();
+        throw LoadException();
+    }
+}
+
+void Coordinate::setDimensions(int width, int height){
+    dimensions = RelativePoint(AbsolutePoint(getX() + width, getY() + height));
+}

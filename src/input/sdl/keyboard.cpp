@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include "../keyboard.h"
+#include "util/funcs.h"
 
 Keyboard::Keyboard(){
     /* TODO */
@@ -10,7 +11,9 @@ void Keyboard::poll(){
 }
 
 void Keyboard::wait(){
-    /* TODO */
+    while (keypressed()){
+        Util::rest( 1 );
+    }
 }
 
 bool Keyboard::keypressed(){
@@ -44,14 +47,6 @@ int Keyboard::readKey(){
 }
 
 void Keyboard::clear(){
-    /* TODO */
-}
-
-void Keyboard::setDelay( const int key, const int delay ){
-    /* TODO */
-}
-
-void Keyboard::setAllDelay( const int delay ){
     /* TODO */
 }
 
