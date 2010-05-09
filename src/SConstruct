@@ -142,7 +142,7 @@ def icon():
 
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
-    use.Append(LIBS = [sdlStretchLibrary(use)])
+    # use.Append(LIBS = [sdlStretchLibrary(use)])
     use.Append(LIBS = [sprigLibrary(use)])
 
 x = []
