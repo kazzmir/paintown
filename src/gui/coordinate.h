@@ -97,31 +97,31 @@ class Coordinate {
             return this->position.getRelativeX();
         }
         virtual inline double getRelativeX2() const{
-            return this->dimensions.getRelativeX();
+            return this->position2.getRelativeX();
         }
         virtual inline double getRelativeY1() const{
             return this->position.getRelativeY();
         }
         virtual inline double getRelativeY2() const{
-            return this->dimensions.getRelativeY();
+            return this->position2.getRelativeY();
         }
         virtual inline void set(double x1, double y1, double x2, double y2){
             this->position.setX(x1);
             this->position.setY(y1);
-            this->dimensions.setX(x2);
-            this->dimensions.setY(y2);
+            this->position2.setX(x2);
+            this->position2.setY(y2);
         }
         virtual inline void setX1(double x){
             this->position.setX(x);
         }
         virtual inline void setX2(double x){
-            this->dimensions.setX(x);
+            this->position2.setX(x);
         }
         virtual inline void setY1(double y){
             this->position.setY(y);
         }
         virtual inline void setY2(double y){
-            this->dimensions.setY(y);
+            this->position2.setY(y);
         }
 
         bool operator==( const Coordinate &);
@@ -136,17 +136,12 @@ class Coordinate {
 
         virtual void setDimensions(int width, int height);
 
-        /*
-        virtual void setDimensions(const RelativePoint &);
-        virtual void setDimensions(AbsolutePoint);
-        */
-        
         virtual inline RelativePoint & getPosition(){
             return this->position;
         }
 
         virtual inline RelativePoint & getPosition2(){
-            return this->dimensions;
+            return this->position2;
         }
         
         virtual inline bool empty(){
@@ -157,7 +152,7 @@ class Coordinate {
         void checkDimensions();
 
         RelativePoint position;
-        RelativePoint dimensions;
+        RelativePoint position2;
         double z;
         double radius;
 };

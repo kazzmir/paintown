@@ -107,21 +107,21 @@ Coordinate::Coordinate():
 z(0),
 radius(0){
 }
-Coordinate::Coordinate(AbsolutePoint & position, AbsolutePoint & dimensions):
+Coordinate::Coordinate(AbsolutePoint & position, AbsolutePoint & position2):
 position(position),
-dimensions(dimensions),
+position2(position2),
 z(0),
 radius(0){
 }
-Coordinate::Coordinate(const RelativePoint & position, const RelativePoint & dimensions):
+Coordinate::Coordinate(const RelativePoint & position, const RelativePoint & position2):
 position(position),
-dimensions(dimensions),
+position2(position2),
 z(0),
 radius(0){
 }
 Coordinate::Coordinate(const Coordinate & copy):
 position(copy.position),
-dimensions(copy.dimensions),
+position2(copy.position2),
 z(copy.z),
 radius(copy.radius){
 }
@@ -130,7 +130,7 @@ Coordinate::~Coordinate(){
 
 const Coordinate & Coordinate::operator=(const Coordinate & copy){
     this->position = copy.position;
-    this->dimensions = copy.dimensions;
+    this->position2 = copy.position2;
     this->z = copy.z;
     this->radius = copy.radius;
     
@@ -144,26 +144,26 @@ int Coordinate::getY() const{
     return position.getY();
 }
 int Coordinate::getWidth() const{
-    return dimensions.getX() - position.getX();
+    return position2.getX() - position.getX();
 }
 int Coordinate::getHeight() const{
-    return dimensions.getY() - position.getY();
+    return position2.getY() - position.getY();
 }
 int Coordinate::getX2() const{
-    return dimensions.getX();
+    return position2.getX();
 }
 int Coordinate::getY2() const{
-    return dimensions.getY();
+    return position2.getY();
 }
 
 void Coordinate::growHorizontal(double by){
     position.setX(position.getRelativeX() - by);
-    dimensions.setX(dimensions.getRelativeX() + by);
+    position2.setX(position2.getRelativeX() + by);
 }
 
 void Coordinate::growVertical(double by){
     position.setY(position.getRelativeY() - by);
-    dimensions.setY(dimensions.getRelativeY() + by);
+    position2.setY(position2.getRelativeY() + by);
 }
 
 void Coordinate::growTo(const Coordinate & coord, double percent){
@@ -189,26 +189,26 @@ void Coordinate::growTo(const Coordinate & coord, double percent){
             position.setY(coord.position.getRelativeY());
         }
 	}
-    if (dimensions.getRelativeX() > coord.dimensions.getRelativeX()){
-		dimensions.setX(dimensions.getRelativeX() - percent);
-        if (dimensions.getRelativeX() < coord.dimensions.getRelativeX()){
-            dimensions.setX(coord.dimensions.getRelativeX());
+    if (position2.getRelativeX() > coord.position2.getRelativeX()){
+		position2.setX(position2.getRelativeX() - percent);
+        if (position2.getRelativeX() < coord.position2.getRelativeX()){
+            position2.setX(coord.position2.getRelativeX());
         }
-    } else if (dimensions.getRelativeX() < coord.dimensions.getRelativeX()){
-		dimensions.setX(dimensions.getRelativeX() + percent);
-        if (dimensions.getRelativeX() > coord.dimensions.getRelativeX()){
-            dimensions.setX(coord.dimensions.getRelativeX());
+    } else if (position2.getRelativeX() < coord.position2.getRelativeX()){
+		position2.setX(position2.getRelativeX() + percent);
+        if (position2.getRelativeX() > coord.position2.getRelativeX()){
+            position2.setX(coord.position2.getRelativeX());
         }
 	}
-    if (dimensions.getRelativeY() > coord.dimensions.getRelativeY()){
-		dimensions.setY(dimensions.getRelativeY() - percent);
-        if (dimensions.getRelativeY() < coord.dimensions.getRelativeY()){
-            dimensions.setY(coord.dimensions.getRelativeY());
+    if (position2.getRelativeY() > coord.position2.getRelativeY()){
+		position2.setY(position2.getRelativeY() - percent);
+        if (position2.getRelativeY() < coord.position2.getRelativeY()){
+            position2.setY(coord.position2.getRelativeY());
         }
-    } else if (dimensions.getRelativeY() < coord.dimensions.getRelativeY()){
-		dimensions.setY(dimensions.getRelativeY() + percent);
-        if (dimensions.getRelativeY() > coord.dimensions.getRelativeY()){
-            dimensions.setY(coord.dimensions.getRelativeY());
+    } else if (position2.getRelativeY() < coord.position2.getRelativeY()){
+		position2.setY(position2.getRelativeY() + percent);
+        if (position2.getRelativeY() > coord.position2.getRelativeY()){
+            position2.setY(coord.position2.getRelativeY());
         }
 	}
 }
@@ -222,12 +222,12 @@ void Coordinate::center(const Coordinate & coord){
 
 bool Coordinate::operator==( const Coordinate & coord){
     return ( (position == coord.position) &&
-            (dimensions == coord.dimensions));
+            (position2 == coord.position2));
 }
 
 bool Coordinate::operator!=( const Coordinate & coord){
     return ( !(position == coord.position) ||
-            !(dimensions == coord.dimensions));
+            !(position2 == coord.position2));
 }
 
 bool Coordinate::operator==( const Bitmap & bmp){
@@ -248,11 +248,11 @@ void Coordinate::setPosition(const AbsolutePoint & point){
 }
 
 void Coordinate::setPosition2(const RelativePoint & point){
-    dimensions = point;
+    position2 = point;
 }
 
 void Coordinate::setPosition2(const AbsolutePoint & point){
-    dimensions = RelativePoint(point);
+    position2 = RelativePoint(point);
 }
 
 void Coordinate::checkDimensions(){
@@ -264,5 +264,5 @@ void Coordinate::checkDimensions(){
 }
 
 void Coordinate::setDimensions(int width, int height){
-    dimensions = RelativePoint(AbsolutePoint(getX() + width, getY() + height));
+    position2 = RelativePoint(AbsolutePoint(getX() + width, getY() + height));
 }
