@@ -746,11 +746,14 @@ else:
     static_custom_tests = {"CheckPython" : checkPython,
                            "CheckRuby" : checkStaticRuby,
                            "CheckAllegro" : checkAllegro,
+                           "CheckSDL" : checkSDL,
                            "CheckRTTI" : checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
     if useAllegro():
         static_config.CheckAllegro()
+    if useSDL():
+        static_config.CheckSDL()
     # static_config.CheckPython()
     #if static_config.HasRuby():
     #    static_config.CheckRuby()
