@@ -288,12 +288,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 background.Blit( work.getWidth() + backgroundX, 0, work );
                 const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
-                if (
-                        /* FIXME */
-#ifdef USE_SDL
-                        // false &&
-#endif
-                        ch->isLoaded()){
+                if (ch->isLoaded()){
                     const int stand = 50;
                     ch->setFacing( Object::FACING_RIGHT );
                     Character copy( *ch );
@@ -325,6 +320,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     // preview.draw( 60, 0, work );
                     
                     preview.drawStretched(-GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work);
+                    // preview.drawStretched(-320, 0, GFX_X, GFX_Y, work);
+                    
                     // preview.draw( 60, 0, work );
 
                     for (int c = 1; c >= 0; c--){
