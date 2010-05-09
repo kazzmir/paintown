@@ -17,6 +17,8 @@
  *                                                       \__/
  */
 
+#ifdef USE_ALLEGRO
+
 #include <allegro.h>
 
 #include "aldumb.h"
@@ -28,4 +30,6 @@ void _dat_unload_duh(void *duh)
 {
 	unload_duh(duh);
 }
+
+#endif
 

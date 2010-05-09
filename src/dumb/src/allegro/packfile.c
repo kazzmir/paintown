@@ -17,6 +17,8 @@
  * then use dumbfile_open_packfile().                    \__/
  */
 
+#ifdef USE_ALLEGRO
+
 #include <allegro.h>
 
 #include "aldumb.h"
@@ -96,3 +98,5 @@ DUMBFILE *dumbfile_from_packfile(PACKFILE *p)
 {
 	return p ? dumbfile_open_ex(p, &packfile_dfs) : NULL;
 }
+
+#endif

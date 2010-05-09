@@ -3,7 +3,9 @@
 #include <iostream>
 #include "globals.h"
 // #include "defs.h"
+#ifdef USE_ALLEGRO
 #include "dumb/include/aldumb.h"
+#endif
 
 #ifdef _WIN32
 #include <winalleg.h>
@@ -354,8 +356,8 @@ Music::~Music(){
         if ( player ){
 #ifdef USE_ALLEGRO
             al_stop_duh( player );
-#endif
             unload_duh( music_file );
+#endif
         }
 
         alive = false;
@@ -404,8 +406,8 @@ bool Music::internal_loadSong( const char * path ){
     if ( player != NULL ){
 #ifdef USE_ALLEGRO
         al_stop_duh( player );
-#endif
         unload_duh( music_file );
+#endif
         player = NULL;
         music_file = NULL;
     }

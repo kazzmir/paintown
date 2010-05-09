@@ -17,6 +17,8 @@
  *                                                       \__/
  */
 
+#ifdef USE_ALLEGRO
+
 #include <allegro.h>
 
 #include "aldumb.h"
@@ -60,3 +62,4 @@ void dumb_register_dat_it(long type)
 	);
 }
 
+#endif
