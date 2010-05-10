@@ -497,10 +497,10 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             work.Stretch( screen_buffer );
             screen_buffer.BlitToScreen();
             snapshot.play();
-            Util::rest(1500);
+            Util::restSeconds(1.5);
         }
         if (world.getScreenshots().size() > 0){
-            Util::rest(2000);
+            Util::restSeconds(2);
         }
     }
 
