@@ -71,6 +71,28 @@ static void setupBackground(const Bitmap & background, int load_x, int load_y, i
     background.Blit(infobox_x, infobox_y, infoWidth, infoHeight, 0, 0, infoBackground);
 }
 
+static vector<ppair> generateFontPixels(const Font & myFont, const string & message, int width, int height){
+    Bitmap letters(width, height);
+    letters.fill( Bitmap::MaskColor() );
+    myFont.printf( 0, 0, Bitmap::makeColor(255, 255, 255), letters, message.c_str(), 0 ); 
+
+    vector< ppair > pairs;
+    /* store every pixel we need to draw */
+    for ( int x = 0; x < letters.getWidth(); x++ ){
+        for ( int y = 0; y < letters.getHeight(); y++ ){
+            int pixel = letters.getPixel(x, y);
+            if (pixel != Bitmap::MaskColor()){
+                ppair p;
+                p.x = x;
+                p.y = y;
+                pairs.push_back( p );
+            }
+        }
+    }
+
+    return pairs;
+}
+
 void * loadingScreen( void * arg ){
     int load_x = 80;
     int load_y = 220;
@@ -102,28 +124,12 @@ void * loadingScreen( void * arg ){
     Global::debug( 2 ) << "loading screen" << endl;
 
     Bitmap work( load_width, load_height );
-    Bitmap letters( load_width, load_height );
+
+    vector<ppair> pairs = generateFontPixels(myFont, levelInfo.loadingMessage(), load_width, load_height);
 
     Messages infobox(infobox_width, infobox_height);
     Bitmap infoWork(infobox_width, infobox_height);
     Bitmap infoBackground(infobox_width, infobox_height);
-
-    letters.fill( Bitmap::MaskColor() );
-    myFont.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), letters, levelInfo.loadingMessage().c_str(), 0 ); 
-
-    vector< ppair > pairs;
-    /* store every pixel we need to draw */
-    for ( int x = 0; x < letters.getWidth(); x++ ){
-        for ( int y = 0; y < letters.getHeight(); y++ ){
-            int pixel = letters.getPixel( x, y );
-            if ( pixel != Bitmap::MaskColor() ){
-                ppair p;
-                p.x = x;
-                p.y = y;
-                pairs.push_back( p );
-            }
-        }
-    }
 
     const int MAX_COLOR = 200;
 
@@ -140,14 +146,6 @@ void * loadingScreen( void * arg ){
         setupBackground(*levelInfo.getBackground(), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
     } else {
         setupBackground(Bitmap(levelInfo.loadingBackground().path()), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
-        /*
-        Bitmap background(levelInfo.loadingBackground());
-        background.Blit(load_x, load_y, load_width, load_height, 0, 0, work);
-        Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2 - Font::getDefaultFont().getHeight(), Bitmap::makeColor( 192, 192, 192 ), background, "Paintown version %s", 0, Global::getVersionString().c_str());
-        Font::getDefaultFont().printf( 400, 480 - Font::getDefaultFont().getHeight() * 5 / 2, Bitmap::makeColor( 192, 192, 192 ), background, "Made by Jon Rafkind", 0 );
-        background.BlitToScreen();
-        background.Blit(infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), 0, 0, infoBackground);
-        */
     }
     bool quit = false;
 
