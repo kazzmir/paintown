@@ -233,6 +233,10 @@ option(false){
     input.set(Joystick::Button2, 0, true, Exit);
 }
 
+void Menu::waitForSelect(){
+    InputManager::waitForRelease(input, Select);
+}
+
 void Menu::load(Token *token) throw (LoadException){
     if ( *token != "menu" ){
         throw LoadException("Not a menu");

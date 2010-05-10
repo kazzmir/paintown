@@ -12,7 +12,7 @@ void Keyboard::poll(){
 
 void Keyboard::wait(){
     while (keypressed()){
-        Util::rest( 1 );
+        Util::rest(1);
     }
 }
 

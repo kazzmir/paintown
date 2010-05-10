@@ -153,6 +153,9 @@ public:
         return hasOptions;
     }
 
+    /* wait for the select key to be released */
+    virtual void waitForSelect();
+
     /* finish initializing stuff for options */
     void setupOptions();
 

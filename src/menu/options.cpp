@@ -60,7 +60,6 @@ void OptionAdventure::logic(){
 }
 
 void OptionAdventure::run(bool &endGame){
-    Keyboard key;
     Object * player = NULL;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
@@ -72,8 +71,12 @@ void OptionAdventure::run(bool &endGame){
             throw an error or something
             return;
         */
-        key.wait();
+        // key.wait();
+        if (parent != NULL){
+            parent->waitForSelect();
+        }
 
+        Global::debug(1) << "Selecting players" << endl;
         player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
         player->setObjectId(-1);
         ((Player *)player)->setLives( MenuGlobals::getLives() );
@@ -86,7 +89,6 @@ void OptionAdventure::run(bool &endGame){
         /* Game::selectPlayer can throw ReturnException, he will wait
          * for the keypress to be released, so we don't have to do it
          */
-        // key.wait();
     }
 
     /* player will be null if an exception occurred before selectPlayer was called */
@@ -119,7 +121,9 @@ void OptionAdventureCpu::run(bool &endGame){
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
         Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels",parent);
-        key.wait();
+        if (parent != NULL){
+            parent->waitForSelect();
+        }
         player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
         player->setObjectId(-1);
         ((Player *)player)->setLives( MenuGlobals::getLives() );
@@ -141,6 +145,11 @@ void OptionAdventureCpu::run(bool &endGame){
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
     } catch ( const ReturnException & r ){
+        /* replace this with parent->waitAll() or something. we only care that
+         * the player doesn't accidentally press some menu key, like esc or enter.
+         * but they can press other keys that were useful in game because those
+         * keys don't have any effect on the menu.
+         */
         key.wait();
     }
     if ( player != NULL ){
