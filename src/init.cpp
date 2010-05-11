@@ -31,6 +31,7 @@
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/font.h"
 #include "configuration.h"
 #include "script/script.h"
 #include "music.h"
@@ -341,6 +342,12 @@ bool Global::init( int gfx ){
     moreInitSystem();
 
     out<<"-- END init --"<<endl;
+
+    const Font & font = Font::getDefaultFont();
+    // font.setSize(30, 30);
+    Bitmap temp(font.textLength("Loading") + 1, font.getHeight("Loading") + 1);
+    font.printf(0, 0, Bitmap::makeColor(255, 255, 255), temp, "Loading", 0);
+    temp.BlitToScreen(sx / 2, sy / 2);
 
     return true;
 }
