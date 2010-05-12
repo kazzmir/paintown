@@ -209,7 +209,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/hawknl)
 
 #SFL
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
+if (USE_SDL)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
+    set(SFL_MOD sfl_module)
+elseif (USE_SDL)
+    set(SFL_MOD "")
+endif (USE_SDL)
 
 #Source modules
 add_library(base_module ${BASE_SRC})
@@ -245,7 +250,7 @@ add_library(trigger_module ${TRIGGER_SRC})
 #paintown executable
 add_executable (paintown src/xmain.cpp)
 target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module sfl_module ${SPRIG_MOD} gme_module ${GROUP_END} ${REQUIRED_LIBS})
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${SFL_MOD} ${SPRIG_MOD} gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
