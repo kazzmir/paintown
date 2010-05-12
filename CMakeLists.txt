@@ -122,7 +122,7 @@ if(USE_SDL)
         message(FATAL_ERROR "Couldn't find SDL_gfx module.")
     endif(NOT SDLGFX_FOUND)
     # Set graphic libs and includes
-    set(GRAPHICS_LIBRARIES ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY} ${SDLGFX_LIBRARY})
+    set(GRAPHICS_LIBRARIES ${SDLGFX_LIBRARY} ${SDLIMAGE_LIBRARY} ${SDL_LIBRARY})
     set(GRAPHICS_INCLUDES ${SDL_INCLUDE_DIR} ${SDLIMAGE_INCLUDE_DIR} ${SDLGFX_INCLUDE_DIR})
 else(USE_SDL)
     #packages
@@ -208,6 +208,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/hawknl)
 
+#SFL
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
+
 #Source modules
 add_library(base_module ${BASE_SRC})
 add_library(level_module ${LEVEL_SRC})
@@ -220,12 +223,12 @@ add_library(env_module ${ENV_SRC})
 add_library(network_module ${NETWORK_SRC})
 add_library(gui_module ${GUI_SRC})
 
-# SDL Stretch library
+# SDL Sprig library
 if (USE_SDL)
-    add_library(stretch_module src/util/sdl/stretch/sdlscreen.c src/util/sdl/stretch/sdlstretch.c)
-    set(STRETCH_MOD stretch_module)
+    add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
+    set(SPRIG_MOD sprig_module)
 else (USE_SDL)
-    set(STRETCH_MOD "")
+    set(SPRIG_MOD "")
 endif (USE_SDL)
 
 # GME Library
@@ -242,7 +245,7 @@ add_library(trigger_module ${TRIGGER_SRC})
 #paintown executable
 add_executable (paintown src/xmain.cpp)
 target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${STRETCH_MOD} gme_module ${GROUP_END} ${REQUIRED_LIBS})
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module sfl_module ${SPRIG_MOD} gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})

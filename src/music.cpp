@@ -5,10 +5,11 @@
 // #include "defs.h"
 #ifdef USE_ALLEGRO
 #include "dumb/include/aldumb.h"
-#endif
 
 #ifdef _WIN32
 #include <winalleg.h>
+#endif
+
 #endif
 
 #include <pthread.h>

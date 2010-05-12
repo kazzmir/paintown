@@ -61,10 +61,13 @@
 /*  For now, I assume that DOES_UID defines the stat types correctly.        */
 /*  Note that prelude.h already defines uid_t and gid_t.                     */
 
-#if (!defined (DOES_UID) && !defined (__DJGPP__))
+#if (!defined (DOES_UID) && !defined (__DJGPP__) && !defined(__GNUC__))
 typedef unsigned short      mode_t;
-typedef unsigned short      nlink_t;
 typedef long                off_t;
+#endif
+
+#if (!defined (DOES_UID) && !defined (__DJGPP__))
+typedef unsigned short      nlink_t;
 #endif
 
 /*  Microsoft tends to use _stat instead of stat.                            */
