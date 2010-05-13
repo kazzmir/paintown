@@ -9,6 +9,10 @@
 class Bitmap;
 class Animation;
 
+namespace Filesystem{
+    class AbsolutePath;
+}
+
 class Actor: public ObjectNonAttack {
 public:
 	Actor( const Filesystem::AbsolutePath & filename ) throw( LoadException );

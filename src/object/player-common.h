@@ -4,6 +4,10 @@
 #include "character.h"
 #include "util/load_exception.h"
 
+namespace Filesystem{
+    class AbsolutePath;
+}
+
 class PlayerCommon: public Character {
 public:
     PlayerCommon(const Character& chr) throw (LoadException);
