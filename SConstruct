@@ -116,7 +116,7 @@ def checkRTTI(context):
     return foo
 
 def checkSDL(context):
-    context.Message("Checking for SDL (SDL, SDL_image, SDL_gfx) ... ")
+    context.Message("Checking for SDL (SDL, SDL_image) ... ")
     tmp = context.env.Clone()
     env = context.env
 
@@ -124,17 +124,15 @@ def checkSDL(context):
     try:
         def enableSDL(env2):
             env2.ParseConfig('sdl-config --cflags --libs')
-            env2.Append(LIBS = ['SDL_image', 'SDL_gfx'])
+            env2.Append(LIBS = ['SDL_image'])
             env2.Append(CPPDEFINES = ['USE_SDL'])
 
         enableSDL(env)
         env['paintown_enableSDL'] = enableSDL
         ok = context.TryLink("""
         #include <SDL.h>
-        #include <SDL_gfxPrimitives.h>
         int main(int argc, char ** argv){
           int ok = SDL_INIT_EVENTTHREAD;
-          rectangleColor(0, 0, 0, 0, 0, 0);
           return SDL_Init(0);
         }
     """, ".c")
