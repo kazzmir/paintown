@@ -18,15 +18,6 @@ obj_files = []
 
 filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
 
-def sdlStretchLibrary(env):
-    sdl = env.Clone()
-    source = Split("""
-util/sdl/stretch/sdlscreen.c
-util/sdl/stretch/sdlstretch.c
-util/sdl/stretch/sdlstretchcode.c
-""")
-    return sdl.StaticLibrary('sdl-stretch', source)
-
 def sprigLibrary(env):
     sprig = env.Clone()
     source = Split("""
@@ -39,6 +30,29 @@ util/sdl/sprig/SPG_surface.c
 """)
 
     return sprig.StaticLibrary('sprig', source)
+
+def sdlImageLibrary(env):
+    image = env.Clone()
+    source = Split("""
+util/sdl/image/IMG.c
+util/sdl/image/IMG_jpg.c
+util/sdl/image/IMG_pnm.c
+util/sdl/image/IMG_xpm.c
+util/sdl/image/IMG_ImageIO.c
+util/sdl/image/IMG_lbm.c
+util/sdl/image/IMG_tga.c
+util/sdl/image/IMG_xv.c
+util/sdl/image/IMG_bmp.c
+util/sdl/image/IMG_pcx.c
+util/sdl/image/IMG_tif.c
+util/sdl/image/IMG_xxx.c
+util/sdl/image/IMG_gif.c
+util/sdl/image/IMG_png.c
+util/sdl/image/IMG_xcf.c
+util/sdl/image/showimage.c    
+""")
+
+    return image.StaticLibrary('image',source)
 
 def sflLibrary(env):
     use = env
@@ -142,8 +156,7 @@ def icon():
 
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
-    # use.Append(LIBS = [sdlStretchLibrary(use)])
-    use.Append(LIBS = [sprigLibrary(use)])
+    use.Append(LIBS = [sdlImageLibrary(use), sprigLibrary(use)])
 
 x = []
 x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))

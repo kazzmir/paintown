@@ -107,23 +107,15 @@ endif($ENV{SDL})
 if(USE_SDL)
     # packages
     find_package(SDL)
-    find_package(SDL_image)
-    find_package(SDL_gfx)
 
     # sdl
     add_definitions(-DUSE_SDL)
     if(NOT SDL_FOUND)
         message(FATAL_ERROR "Couldn't find SDL.")
     endif(NOT SDL_FOUND)
-    if(NOT SDLIMAGE_FOUND)
-        message(FATAL_ERROR "Couldn't find SDL_image module.")
-    endif(NOT SDLIMAGE_FOUND)
-    if(NOT SDLGFX_FOUND)
-        message(FATAL_ERROR "Couldn't find SDL_gfx module.")
-    endif(NOT SDLGFX_FOUND)
-    # Set graphic libs and includes
-    set(GRAPHICS_LIBRARIES ${SDLGFX_LIBRARY} ${SDLIMAGE_LIBRARY} ${SDL_LIBRARY})
-    set(GRAPHICS_INCLUDES ${SDL_INCLUDE_DIR} ${SDLIMAGE_INCLUDE_DIR} ${SDLGFX_INCLUDE_DIR})
+    
+    set(GRAPHICS_LIBRARIES sfl_module sprig_module image_module ${SDL_LIBRARY})
+    set(GRAPHICS_INCLUDES ${SDL_INCLUDE_DIR})
 else(USE_SDL)
     #packages
     find_package(ALLEGRO) 
@@ -183,19 +175,15 @@ else(APPLE)
 endif(APPLE)
 
 # -------------------------------------------------------
+# Include directory
+# -------------------------------------------------------
+include_directories(src src/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${GNUREGEX_INCLUDE_DIR})
+
+# -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
 set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${GNUREGEX_LIBRARIES} ${WIN_LIB} ${WINSOCK})
 
-#set(ALL_SRC ${LEVEL_SRC} ${FACTORY_SRC} ${OBJECT_SRC} ${UTIL_SRC}
-#${LOADPNG_SRC} ${MENU_SRC} ${ENV_SRC} ${NETWORK_SRC} ${GUI_SRC} ${SCRIPT_SRC}
-#${GAME_SRC} ${MUGEN_SRC} ${OGG_SRC} ${TRIGGER_SRC})
-
-# -------------------------------------------------------
-# Include directory
-# -------------------------------------------------------
-# include_directories(src ${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/level ${CMAKE_BINARY_DIR}/src/factory ${CMAKE_BINARY_DIR}/src/object ${CMAKE_BINARY_DIR}/src/util ${CMAKE_BINARY_DIR}/src/loadpng ${CMAKE_BINARY_DIR}/src/gui ${CMAKE_BINARY_DIR}/src/modules src/hawknl ${FREETYPE_INCLUDE_DIR})
-include_directories(src src/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${GNUREGEX_INCLUDE_DIR})
 
 # -------------------------------------------------------
 # Paintown and test
@@ -207,14 +195,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
 
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/hawknl)
-
-#SFL
-if (USE_SDL)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
-    set(SFL_MOD sfl_module)
-elseif (USE_SDL)
-    set(SFL_MOD "")
-endif (USE_SDL)
 
 #Source modules
 add_library(base_module ${BASE_SRC})
@@ -228,14 +208,6 @@ add_library(env_module ${ENV_SRC})
 add_library(network_module ${NETWORK_SRC})
 add_library(gui_module ${GUI_SRC})
 
-# SDL Sprig library
-if (USE_SDL)
-    add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
-    set(SPRIG_MOD sprig_module)
-else (USE_SDL)
-    set(SPRIG_MOD "")
-endif (USE_SDL)
-
 # GME Library
 add_library(gme_module src/gme/Ay_Apu.cpp src/gme/Ay_Cpu.cpp src/gme/Ay_Emu.cpp src/gme/Blip_Buffer.cpp src/gme/Classic_Emu.cpp src/gme/Data_Reader.cpp src/gme/Dual_Resampler.cpp src/gme/Effects_Buffer.cpp src/gme/Fir_Resampler.cpp src/gme/Gb_Apu.cpp src/gme/Gb_Cpu.cpp src/gme/Gb_Oscs.cpp src/gme/Gbs_Emu.cpp src/gme/gme.cpp src/gme/Gme_File.cpp src/gme/Gym_Emu.cpp src/gme/Hes_Apu.cpp src/gme/Hes_Cpu.cpp src/gme/Hes_Emu.cpp src/gme/Kss_Cpu.cpp src/gme/Kss_Emu.cpp src/gme/Kss_Scc_Apu.cpp src/gme/M3u_Playlist.cpp src/gme/Multi_Buffer.cpp src/gme/Music_Emu.cpp src/gme/Nes_Apu.cpp src/gme/Nes_Cpu.cpp src/gme/Nes_Fme7_Apu.cpp src/gme/Nes_Namco_Apu.cpp src/gme/Nes_Oscs.cpp src/gme/Nes_Vrc6_Apu.cpp src/gme/Nsfe_Emu.cpp src/gme/Nsf_Emu.cpp src/gme/Sap_Apu.cpp src/gme/Sap_Cpu.cpp src/gme/Sap_Emu.cpp src/gme/Sms_Apu.cpp src/gme/Snes_Spc.cpp src/gme/Spc_Cpu.cpp src/gme/Spc_Dsp.cpp src/gme/Spc_Emu.cpp src/gme/Vgm_Emu.cpp src/gme/Vgm_Emu_Impl.cpp src/gme/Ym2413_Emu.cpp src/gme/Ym2612_Emu.cpp)
 
@@ -247,10 +219,19 @@ add_library(mugen_module ${MUGEN_SRC})
 add_library(ogg_module ${OGG_SRC})
 add_library(trigger_module ${TRIGGER_SRC})
 
+if (USE_SDL)
+    # IMAGE
+    add_library(image_module src/util/sdl/image/IMG.c src/util/sdl/image/IMG_jpg.c src/util/sdl/image/IMG_pnm.c src/util/sdl/image/IMG_xpm.c src/util/sdl/image/IMG_ImageIO.c src/util/sdl/image/IMG_lbm.c src/util/sdl/image/IMG_tga.c src/util/sdl/image/IMG_xv.c src/util/sdl/image/IMG_bmp.c src/util/sdl/image/IMG_pcx.c src/util/sdl/image/IMG_tif.c src/util/sdl/image/IMG_xxx.c src/util/sdl/image/IMG_gif.c src/util/sdl/image/IMG_png.c src/util/sdl/image/IMG_xcf.c src/util/sdl/image/showimage.c)
+    # SFL
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
+    # SPRIG
+    add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
+endif (USE_SDL)
+
 #paintown executable
 add_executable (paintown src/xmain.cpp)
 target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module ${SFL_MOD} ${SPRIG_MOD} gme_module ${GROUP_END} ${REQUIRED_LIBS})
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})

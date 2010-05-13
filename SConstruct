@@ -116,7 +116,7 @@ def checkRTTI(context):
     return foo
 
 def checkSDL(context):
-    context.Message("Checking for SDL (SDL, SDL_image) ... ")
+    context.Message("Checking for SDL (SDL) ... ")
     tmp = context.env.Clone()
     env = context.env
 
@@ -124,7 +124,6 @@ def checkSDL(context):
     try:
         def enableSDL(env2):
             env2.ParseConfig('sdl-config --cflags --libs')
-            env2.Append(LIBS = ['SDL_image'])
             env2.Append(CPPDEFINES = ['USE_SDL'])
 
         enableSDL(env)
@@ -551,8 +550,10 @@ def configEnvironment(env):
         # dumb on windows has to have USE_ALLEGRO defined
         def doAllegro(env2):
             env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
+        def doSDL(env2):
+            env2.Append(CPPDEFINES = ['USE_SDL'])
         env['paintown_enableAllegro'] = doAllegro
-        env['paintown_enableSDL'] = nothing
+        env['paintown_enableSDL'] = doSDL
         return env
     else:
         custom_tests = {"CheckAllegro" : checkAllegro,
@@ -648,22 +649,33 @@ if isWindows():
     #     Exit(1)
     env = config.Finish()
 
-    env.Append(CPPDEFINES = ['USE_ALLEGRO'])
-    staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
+    if useAllegro():
+        env.Append(CPPDEFINES = ['USE_ALLEGRO'])
+        staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
+        env.Append( LIBS = [dumb,hawknl] )
+        env.Append( LIBS = ['alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
     
-    staticEnv.Append( LIBS = [hawknl_static, dumb_static] )
-    env.Append( LIBS = [dumb,hawknl] )
+    elif useSDL():
+        env.Append(CPPDEFINES = ['USE_SDL'])
+        staticEnv.Append(CPPDEFINES = ['USE_SDL'])
+        env.Append( LIBS = ['SDL', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        staticEnv.Append( LIBS = [hawknl_static] )
     
-    env.Append( LIBS = ['alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     env.Append( CPPDEFINES = 'WINDOWS' )
+
     if getDebug():
         env.Append( CCFLAGS = ['-mthreads'] )
         env.Append( LINKFLAGS = ['-mthreads'] )
     else:
         env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
         env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
-
-    staticEnv.Append(LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+    
+    if useSDL():
+        staticEnv.Append(LIBS = [ 'SDL', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+    elif useAllegro():
+        staticEnv.Append(LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+    
     staticEnv.Append(CPPDEFINES = 'WINDOWS')
 else:
     staticEnv = env.Clone()
