@@ -706,15 +706,20 @@ else:
         
         # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
         staticEnv.ParseConfig( 'freetype-config --cflags' )
-        staticEnv.ParseConfig( 'libpng-config --cflags' )
+        if not useSDL():
+            staticEnv.ParseConfig( 'libpng-config --cflags' )
     except OSError:
         pass
 
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
-    png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
+    if useAllegro():
+        png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
+        staticEnv.Append(LIBS = [png])
+
     freetype = staticEnv.Install( 'misc', readExec( 'freetype-config --prefix' ) + '/lib/libfreetype.a' )
-    staticEnv.Append( LIBS = [png,'z','m'] )
+
+    staticEnv.Append( LIBS = ['z','m'] )
     staticEnv.Append( LIBS = freetype )
 
     if not config.TryCompile("int main(){ return 0; }\n", ".c"):
