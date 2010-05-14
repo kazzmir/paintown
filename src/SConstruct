@@ -154,7 +154,12 @@ def icon():
     else:
         return []
 
-use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
+def dumbLibrary(env):
+    dumbEnv = env.Clone()
+    env = dumbEnv
+    return use.SConscript('dumb/SConscript', exports = ['env'])
+
+use.Append(LIBS = [gmeLibrary(use), sflLibrary(use), dumbLibrary(use)])
 if useSDL():
     use.Append(LIBS = [sdlImageLibrary(use), sprigLibrary(use)])
 
