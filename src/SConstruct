@@ -1,5 +1,10 @@
 Import('use');
 
+def isOSX():
+    import re
+    import sys
+    return "darwin" in sys.platform
+
 def isWindows():
     import re
     import sys
@@ -159,7 +164,14 @@ def dumbLibrary(env):
     env = dumbEnv
     return use.SConscript('dumb/SConscript', exports = ['env'])
 
-use.Prepend(LIBS = [dumbLibrary(use)])
+def hawknlLibrary(env):
+    hawkEnv = env.Clone()
+    env = hawkEnv
+    if isOSX():
+        env.Append(CPPDEFINES = 'MACOSX')
+    return env.SConscript('hawknl/SConscript', exports = ['env'])
+
+use.Prepend(LIBS = [dumbLibrary(use), hawknlLibrary(use)])
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
     use.Append(LIBS = [sdlImageLibrary(use), sprigLibrary(use)])

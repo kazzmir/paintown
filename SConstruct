@@ -532,13 +532,10 @@ cdefines = ['DATA_PATH=\\\"%s\\\"' % dataPath]
 env['LEX'] = 'flex'
 
 # env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
-env.Append( CCFLAGS = cflags,
-            CXXFLAGS = cppflags,
-            CPPPATH = [ "#src", '#src/hawknl' ],
-            CPPDEFINES = cdefines )
-
-#def buildDumb(where, env):
-#    return SConscript("src/dumb/SConscript", build_dir = '%s/dumb' % where, exports = 'env')
+env.Append(CCFLAGS = cflags,
+           CXXFLAGS = cppflags,
+           CPPPATH = [ "#src", '#src/hawknl' ],
+           CPPDEFINES = cdefines)
 
 def buildHawknl(where, env):
     return SConscript("src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env')
@@ -580,37 +577,22 @@ def buildType(dir):
 buildDir = buildType('build')
 buildDirStatic = buildType('build-static')
 
-#dumbEnv = getEnvironment(debug)
-#if useAllegro():
-#    allegroEnvironment['paintown_enableAllegro'](dumbEnv)
-#if useSDL():
-#    allegroEnvironment['paintown_enableSDL'](dumbEnv)
-hawkEnv = getEnvironment(debug)
-#dumbStaticEnv = getEnvironment(debug)
-#if useAllegro():
-#    allegroEnvironment['paintown_enableAllegro'](dumbStaticEnv)
-#if useSDL():
-#    allegroEnvironment['paintown_enableSDL'](dumbStaticEnv)
-hawkStaticEnv = getEnvironment(debug)
+# hawkEnv = getEnvironment(debug)
+# hawkStaticEnv = getEnvironment(debug)
 
 # if you dont care about building a universal binary then disable this
 # block of code
-if isOSX():
-    #dumbStaticEnv[ 'CXX' ] = 'misc/g++'
-    #dumbStaticEnv[ 'CC' ] = 'misc/gcc'
-    hawkStaticEnv[ 'CXX' ] = 'misc/g++'
-    hawkStaticEnv[ 'CC' ] = 'misc/gcc'
-    hawkStaticEnv.Append( CPPDEFINES = 'MACOSX' )
-    hawkEnv.Append( CPPDEFINES = 'MACOSX' )
+#if isOSX():
+#    hawkStaticEnv[ 'CXX' ] = 'misc/g++'
+#    hawkStaticEnv[ 'CC' ] = 'misc/gcc'
+#    hawkStaticEnv.Append( CPPDEFINES = 'MACOSX' )
+#    hawkEnv.Append( CPPDEFINES = 'MACOSX' )
 
 # 4/28/2010:
 # Is there a good reason that hawknl and dumb are built from here
 # instead of invoking the SConscripts from the src/SConscript file?
-hawknl = buildHawknl(buildDir, hawkEnv)
-# dumb = buildDumb(buildDir, dumbEnv )
-
-hawknl_static = buildHawknl(buildDirStatic, hawkStaticEnv)
-# dumb_static = buildDumb(buildDirStatic, dumbStaticEnv)
+#hawknl = buildHawknl(buildDir, hawkEnv)
+#hawknl_static = buildHawknl(buildDirStatic, hawkStaticEnv)
 
 #if getDebug():
 #    env.Append(LIBS = ['gcov'])
@@ -619,9 +601,6 @@ hawknl_static = buildHawknl(buildDirStatic, hawkStaticEnv)
 if enableProfiled():
     env.Append(CCFLAGS = '-pg')
     env.Append(LINKFLAGS = '-pg')
-
-
-# env.Append( LIBS = [ 'aldmb', 'dumb' ] );
 
 custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
@@ -652,15 +631,12 @@ if isWindows():
     if useAllegro():
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
-        env.Append( LIBS = [hawknl] )
         env.Append( LIBS = ['alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
-        staticEnv.Append( LIBS = [hawknl_static] )
     
     elif useSDL():
         env.Append(CPPDEFINES = ['USE_SDL'])
         staticEnv.Append(CPPDEFINES = ['USE_SDL'])
         env.Append( LIBS = ['SDL', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
-        staticEnv.Append( LIBS = [hawknl_static] )
     
     env.Append( CPPDEFINES = 'WINDOWS' )
 
@@ -691,14 +667,10 @@ else:
         if not getDebug():
             env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
 
-    #try:
-    #    dumbStaticEnv.ParseConfig( 'allegro-config --cflags' )
-    #except OSError:
-    #    pass
-
     if isOSX():
-        staticEnv[ 'CXX' ] = 'misc/g++'
-        staticEnv[ 'CC' ] = 'misc/gcc'
+        # Build a universal binary
+        staticEnv['CXX'] = 'misc/g++'
+        staticEnv['CC'] = 'misc/gcc'
     elif isLinux():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
@@ -775,8 +747,6 @@ else:
     static_config.CheckRTTI()
     staticEnv = static_config.Finish()
 
-    staticEnv.Prepend( LIBS = [hawknl_static] )
-    env.Append( LIBS = [hawknl] )
 
 # if not isWindows():
 #    env.Append(CCFLAGS = ['-Werror'])
