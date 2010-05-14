@@ -178,11 +178,11 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
     return contextItems;
 }
 
-Menu::Menu(const Filesystem::AbsolutePath & str) throw (LoadException){
+Menu::Menu(const Filesystem::AbsolutePath & str){
     load(str);
 }
 
-Menu::Menu(Token * token) throw (LoadException){
+Menu::Menu(Token * token){
     load(token);
 }
 
@@ -237,7 +237,7 @@ void Menu::waitForSelect(){
     InputManager::waitForRelease(input, Select);
 }
 
-void Menu::load(Token *token) throw (LoadException){
+void Menu::load(Token *token){
     if ( *token != "menu" ){
         throw LoadException("Not a menu");
     } else if (!token->hasTokens()){
@@ -422,7 +422,7 @@ std::vector<Gui::ContextItem *> Menu::getContextList(){
     return toContextList(menuOptions);
 }
 
-void Menu::load(const Filesystem::AbsolutePath & filename) throw (LoadException){
+void Menu::load(const Filesystem::AbsolutePath & filename){
     // Must check for initial token, menu
     try{
         Global::debug(1) << "Loading menu " << filename.path() << endl;

@@ -38,6 +38,7 @@ util/sdl/sprig/SPG_surface.c
 
 def sdlImageLibrary(env):
     image = env.Clone()
+    image.Append(CPPDEFINES = ['LOAD_PNG'])
     source = Split("""
 util/sdl/image/IMG.c
 util/sdl/image/IMG_jpg.c

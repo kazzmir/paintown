@@ -443,6 +443,7 @@ def getEnvironment(debug):
         env['CC'] = 'icc'
         env['CXX'] = 'icpc'
         # '-Werror-all', '-Weffc++'
+        # TODO: replace these flags with descriptive names
         env.Append(CCFLAGS = ['-wd981', '-wd2259'],
                    CXXFLAGS = ['-wd981', '-wd271',
                                '-wd383', '-wd869',
@@ -662,22 +663,18 @@ else:
             config.CheckSDL()
 
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
-        if not useSDL():
-            config.env.ParseConfig( 'libpng-config --libs --cflags' )
+        config.env.ParseConfig( 'libpng-config --libs --cflags' )
         
         # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
         staticEnv.ParseConfig( 'freetype-config --cflags' )
-        if not useSDL():
-            staticEnv.ParseConfig( 'libpng-config --cflags' )
+        staticEnv.ParseConfig( 'libpng-config --cflags' )
     except OSError:
         pass
 
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
-    if useAllegro():
-        png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
-        staticEnv.Append(LIBS = [png])
-
+    png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
+    staticEnv.Append(LIBS = [png])
     freetype = staticEnv.Install( 'misc', readExec( 'freetype-config --prefix' ) + '/lib/libfreetype.a' )
 
     staticEnv.Append( LIBS = ['z','m'] )
@@ -695,10 +692,9 @@ else:
     if not config.CheckHeader( 'ft2build.h' ):
         print "You need freetype. Install freetype and/or X11"
         Exit( 1 )
-    if not useSDL():
-        if not config.CheckHeader( 'png.h' ):
-            print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
-            Exit(1)
+    if not config.CheckHeader( 'png.h' ):
+        print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
+        Exit(1)
     config.CheckRTTI()
     # config.CheckPython()
     config.CheckOgg()

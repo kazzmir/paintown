@@ -79,15 +79,15 @@ class Menu{
 public:
     /*! ctor dtor */
     Menu();
-    Menu(const Filesystem::AbsolutePath & str) throw (LoadException);
-    Menu(Token * token) throw (LoadException);
+    Menu(const Filesystem::AbsolutePath & str);
+    Menu(Token * token);
     virtual ~Menu();
 
     /*! load */
-    virtual void load(const Filesystem::AbsolutePath & filename) throw (LoadException);
+    virtual void load(const Filesystem::AbsolutePath & filename);
 
     /*! load */
-    virtual void load(Token *token) throw (LoadException);
+    virtual void load(Token *token);
 
     /*! Logic */
     virtual void act(bool &endGame, bool reset = true);
