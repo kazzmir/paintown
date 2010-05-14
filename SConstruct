@@ -529,16 +529,10 @@ cdefines = ['DATA_PATH=\\\"%s\\\"' % dataPath]
 # env.Append( CCFLAGS = '-m32' )
 # env.Append( LINKFLAGS = '-m32' )
 
-env['LEX'] = 'flex'
-
-# env.Append( CCFLAGS = cflags, CXXFLAGS = cppflags, CPPPATH = [ ".", 'sockets' ] )
 env.Append(CCFLAGS = cflags,
            CXXFLAGS = cppflags,
            CPPPATH = [ "#src", '#src/hawknl' ],
            CPPDEFINES = cdefines)
-
-def buildHawknl(where, env):
-    return SConscript("src/hawknl/SConscript", build_dir = '%s/hawknl' % where, exports = 'env')
 
 def configEnvironment(env):
     if isWindows():
@@ -576,23 +570,6 @@ def buildType(dir):
 
 buildDir = buildType('build')
 buildDirStatic = buildType('build-static')
-
-# hawkEnv = getEnvironment(debug)
-# hawkStaticEnv = getEnvironment(debug)
-
-# if you dont care about building a universal binary then disable this
-# block of code
-#if isOSX():
-#    hawkStaticEnv[ 'CXX' ] = 'misc/g++'
-#    hawkStaticEnv[ 'CC' ] = 'misc/gcc'
-#    hawkStaticEnv.Append( CPPDEFINES = 'MACOSX' )
-#    hawkEnv.Append( CPPDEFINES = 'MACOSX' )
-
-# 4/28/2010:
-# Is there a good reason that hawknl and dumb are built from here
-# instead of invoking the SConscripts from the src/SConscript file?
-#hawknl = buildHawknl(buildDir, hawkEnv)
-#hawknl_static = buildHawknl(buildDirStatic, hawkStaticEnv)
 
 #if getDebug():
 #    env.Append(LIBS = ['gcov'])
