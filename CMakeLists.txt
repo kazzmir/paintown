@@ -221,7 +221,7 @@ add_library(trigger_module ${TRIGGER_SRC})
 
 if (USE_SDL)
     # IMAGE
-    add_library(image_module src/util/sdl/image/IMG.c src/util/sdl/image/IMG_jpg.c src/util/sdl/image/IMG_pnm.c src/util/sdl/image/IMG_xpm.c src/util/sdl/image/IMG_ImageIO.c src/util/sdl/image/IMG_lbm.c src/util/sdl/image/IMG_tga.c src/util/sdl/image/IMG_xv.c src/util/sdl/image/IMG_bmp.c src/util/sdl/image/IMG_pcx.c src/util/sdl/image/IMG_tif.c src/util/sdl/image/IMG_xxx.c src/util/sdl/image/IMG_gif.c src/util/sdl/image/IMG_png.c src/util/sdl/image/IMG_xcf.c src/util/sdl/image/showimage.c)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sdl/image)
     # SFL
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
     # SPRIG
