@@ -281,13 +281,19 @@ static void doSDLQuit(){
 }
     
 static void initSystem(ostream & out){
-    out << "SDL Init: " << SDL_Init(SDL_INIT_VIDEO |
-                                    SDL_INIT_AUDIO |
-                                    SDL_INIT_TIMER |
-                                    SDL_INIT_JOYSTICK |
-                                    SDL_INIT_NOPARACHUTE |
-                                    SDL_INIT_EVENTTHREAD)
-                        << endl;
+    out << "SDL Init: ";
+    int ok = SDL_Init(SDL_INIT_VIDEO |
+                      SDL_INIT_AUDIO |
+                      SDL_INIT_TIMER |
+                      SDL_INIT_JOYSTICK |
+                      SDL_INIT_NOPARACHUTE |
+                      SDL_INIT_EVENTTHREAD);
+    if (ok == 0){
+        out << "Ok" << endl;
+    } else {
+	out << "Failed (" << ok << ") - " << SDL_GetError() << endl;
+	exit(ok);
+    }
 
     start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
     start_timer(inc_second_counter, 1);
