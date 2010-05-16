@@ -141,11 +141,7 @@ for i in filelist:
     else:
         addFiles(filelist[i])
 
-# obj_files.append(parser('air'))
-# obj_files.append(parser('cns'))
-# obj_files.append(parser('cmd'))
-# obj_files.append(parser('def'))
-
+# FIXME: somehow get this information from the scons env
 def useSDL():
     import os
     def byEnv():

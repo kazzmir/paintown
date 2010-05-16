@@ -28,6 +28,7 @@ define_config(game_speed, "game-speed");
 define_config(invincible, "invincible");
 define_config(jump, "jump");
 define_config(keyboard_configuration, "keyboard-configuration");
+define_config(input, "input");
 define_config(joystick_configuration, "joystick-configuration");
 define_config(left, "left");
 define_config(lives, "lives");
@@ -42,6 +43,8 @@ define_config(screen_size, "screen-size");
 define_config(sound, "sound");
 define_config(music, "music");
 define_config(up, "up");
+/* version of the game: 3.3, 3.4, 4.24 */
+define_config(version, "version");
 #undef def_config
 
 using namespace std;
@@ -721,6 +724,8 @@ void Configuration::saveConfiguration(){
     Token * screen = new Token();
     *screen << config_screen_size << Configuration::getScreenWidth() << Configuration::getScreenHeight();
     head.addToken(screen);
+
+    *(head.newToken()) << config_version << Global::getVersionString();
 
     if (Configuration::getMenuFont() != ""){
         Token * font = new Token();
