@@ -10,8 +10,16 @@
 #include <sstream>
 #include <fstream>
 #include <stdlib.h>
+#include <string>
 
 #include <map>
+
+#ifdef USE_SDL
+static const std::string INPUT_TYPE = "SDL";
+#endif
+#ifdef USE_ALLEGRO
+static const std::string INPUT_TYPE = "Allegro";
+#endif
 
 /* text that appears in the config file */
 #define define_config(n,str) static const char * config_##n = str
@@ -634,10 +642,9 @@ Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
     Token * config = new Token();
 
     config->addToken( new Token(config_keyboard_configuration, false ) );
-    Token * number = new Token();
-    *number << config_number;
-    config->addToken( number );
-    *number << num;
+
+    *config->newToken() << config_number << num;
+    *config->newToken() << config_input << INPUT_TYPE;
 
     const char * func_names[] = {config_left, config_right,
                                  config_up, config_down,
@@ -664,10 +671,16 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
     Token * config = new Token();
 
     config->addToken( new Token(config_joystick_configuration, false ) );
+
+    /*
     Token * number = new Token();
     *number << config_number;
     config->addToken( number );
     *number << num;
+    */
+    
+    *config->newToken() << config_number << num;
+    *config->newToken() << config_input << INPUT_TYPE;
 
     const char * func_names[] = {config_left, config_right,
                                  config_up, config_down,
