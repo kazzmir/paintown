@@ -97,14 +97,14 @@ void CursorHandler::act(){
 void CursorHandler::renderCursor(int x, int y, const Bitmap & bmp){
     if (cursor.visible){
 	Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	Bitmap::transBlender(0,0,0,cursor.alpha);
+	Bitmap::transBlender(0, 0, 0, cursor.alpha);
 	bmp.rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Bitmap::makeColor(255,255,255));
 	Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
 
 void CursorHandler::renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> & fonts, const Bitmap & bmp){
-    if(active){
+    if (active){
 	renderCursor(x, y, bmp);
 	fonts[activeFont.index-1]->render(x, y, activeFont.position, activeFont.bank, bmp, text);
     } else {
@@ -664,7 +664,8 @@ void MugenMenu::run(){
 	
 	    if ( draw ){
 		// backgrounds
-		background->renderBackground(0,0,workArea);
+		background->renderBackground(0, 0, workArea);
+
 		// Draw any misc stuff in the background of the menu of selected object 
 		(*currentOption)->drawBelow(work);
 		// Draw text
@@ -803,11 +804,12 @@ void MugenMenu::renderText(Bitmap *bmp){
     const int top = position.y - windowMargin.x;
     // Pretty accurate tested with 5 different screen packs and different settings
     const int bottom = position.y + ((windowVisibleItems-1) * fontSpacing.y) + windowMargin.y;
-    
+
     /* FIXME: avoid using clip rect */
     bmp->setClipRect(0, top, bmp->getWidth(), bottom);
-    //bmp->rectangle(0,top,bmp->getWidth(),bottom,Bitmap::makeColor(255,255,255));
+    // bmp->rectangle(0, top, bmp->getWidth() - 1, bottom - 1, Bitmap::makeColor(255,255,255));
     
+
     int xplacement = position.x;
     // Displace by the offset
     int yplacement = currentMenuPosition;
@@ -845,6 +847,7 @@ void run(){
     } catch (const ReturnException & re){
         // Say what?
         // Do not quit game
+        Loader::stopLoading(loading);
     } catch (const MugenException & ex){
         string m("Problem with loading MUGEN menu: ");
         m += ex.getFullReason();

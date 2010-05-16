@@ -1775,6 +1775,7 @@ void Background::act(){
 	controller->act();
     }
 }
+
 void Background::renderBackground(int x, int y, const Bitmap &bmp){
     if ( clearColor != -1){
 	bmp.fill(clearColor);
@@ -1783,11 +1784,13 @@ void Background::renderBackground(int x, int y, const Bitmap &bmp){
     if ( debug ){
 	bmp.fill( Bitmap::makeColor(255,0,255) );
     }
+
     for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	BackgroundElement *element = *i;
 	element->render(x, y, bmp);
     }
 }
+
 void Background::renderForeground(int x, int y, const Bitmap &bmp){
     for( vector< BackgroundElement *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	BackgroundElement *element = *i;
