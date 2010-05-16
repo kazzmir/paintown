@@ -17,6 +17,7 @@ test:
 buildbot: buildbot_normal buildbot_static buildbot_editor buildbot_cmake
 buildbot_normal:
 	@scons -j `python misc/cores.py` gch=0 colors=0
+	@scons -j `python misc/cores.py` gch=0 colors=0 sdl=1
 buildbot_static:
 	@scons static -j `python misc/cores.py` gch=0 colors=0
 buildbot_editor:

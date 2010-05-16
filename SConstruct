@@ -358,10 +358,20 @@ def checkRunRuby(context):
     return ok
 
 def useSDL():
-    try:
-        return os.environ['SDL'] == '1'
-    except KeyError:
-        return False
+    def byEnv():
+        try:
+            return os.environ['SDL'] == '1'
+        except KeyError:
+            return False
+
+    def byArgument():
+        try:
+            return int(ARGUMENTS['sdl']) == 1
+        except KeyError:
+            return False
+
+    return byEnv() or byArgument()
+
 
 def useAllegro():
     return not useSDL()
