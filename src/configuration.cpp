@@ -483,12 +483,15 @@ void Configuration::loadConfigurations(){
                     attack2, attack3, jump;
                 right = left = down = up = attack1 = attack2
                       = attack3 = jump = InvalidKey;
+                std::string input = INPUT_TYPE;
 
                 while ( n->hasTokens() ){
                     Token * thing;
                     *n >> thing;
                     if ( *thing == config_number){
                         *thing >> number;
+                    } else if (*thing == config_input){
+                        *thing >> input;
                     } else if ( *thing == config_left){
                         *thing >> left;
                     } else if ( *thing == config_right){
@@ -511,21 +514,24 @@ void Configuration::loadConfigurations(){
                     /* should use config_number here */
                     throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
                 }
-                Configuration & myconfig = config(number);
-                myconfig.setRight(right);
-                myconfig.setLeft(left);
-                myconfig.setUp(up);
-                myconfig.setDown(down);
-                myconfig.setAttack1(attack1);
-                myconfig.setAttack2(attack2);
-                myconfig.setAttack3(attack3);
-                myconfig.setJump(jump);
+                if (input != INPUT_TYPE){
+                    Configuration & myconfig = config(number);
+                    myconfig.setRight(right);
+                    myconfig.setLeft(left);
+                    myconfig.setUp(up);
+                    myconfig.setDown(down);
+                    myconfig.setAttack1(attack1);
+                    myconfig.setAttack2(attack2);
+                    myconfig.setAttack3(attack3);
+                    myconfig.setJump(jump);
+                }
             } else if ( *n == config_joystick_configuration ){
                 int number = -1;
                 JoystickInput right, left, down, up, attack1,
                     attack2, attack3, jump;
                 right = left = down = up = attack1 = attack2
                       = attack3 = jump = InvalidJoystick;
+                std::string input = INPUT_TYPE;
 
                 while ( n->hasTokens() ){
                     int temp;
@@ -533,6 +539,8 @@ void Configuration::loadConfigurations(){
                     *n >> thing;
                     if ( *thing == config_number){
                         *thing >> number;
+                    } else if (*thing == config_input){
+                        *thing >> input;
                     } else if ( *thing == config_left){
                         *thing >> temp;
                         left = intToJoystick(temp);
@@ -563,15 +571,18 @@ void Configuration::loadConfigurations(){
                     /* should use config_number here */
                     throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
                 }
-                Configuration & myconfig = config(number);
-                myconfig.setJoystickRight(right);
-                myconfig.setJoystickLeft(left);
-                myconfig.setJoystickUp(up);
-                myconfig.setJoystickDown(down);
-                myconfig.setJoystickAttack1(attack1);
-                myconfig.setJoystickAttack2(attack2);
-                myconfig.setJoystickAttack3(attack3);
-                myconfig.setJoystickJump(jump);
+
+                if (input != INPUT_TYPE){
+                    Configuration & myconfig = config(number);
+                    myconfig.setJoystickRight(right);
+                    myconfig.setJoystickLeft(left);
+                    myconfig.setJoystickUp(up);
+                    myconfig.setJoystickDown(down);
+                    myconfig.setJoystickAttack1(attack1);
+                    myconfig.setJoystickAttack2(attack2);
+                    myconfig.setJoystickAttack3(attack3);
+                    myconfig.setJoystickJump(jump);
+                }
             } else if ( *n == config_game_speed){
                 *n >> gamespeed;
             } else if ( *n == config_invincible){
@@ -672,13 +683,6 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
 
     config->addToken( new Token(config_joystick_configuration, false ) );
 
-    /*
-    Token * number = new Token();
-    *number << config_number;
-    config->addToken( number );
-    *number << num;
-    */
-    
     *config->newToken() << config_number << num;
     *config->newToken() << config_input << INPUT_TYPE;
 
