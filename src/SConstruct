@@ -55,7 +55,6 @@ util/sdl/image/IMG_xxx.c
 util/sdl/image/IMG_gif.c
 util/sdl/image/IMG_png.c
 util/sdl/image/IMG_xcf.c
-util/sdl/image/showimage.c    
 """)
 
     return image.StaticLibrary('image',source)
