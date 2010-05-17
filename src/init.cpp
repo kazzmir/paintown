@@ -32,6 +32,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/font.h"
+#include "util/sound.h"
 #include "configuration.h"
 #include "script/script.h"
 #include "music.h"
@@ -162,11 +163,7 @@ static void initSystem(ostream & out){
     out << "Allegro init: " <<allegro_init()<<endl;
     out << "Install timer: " <<install_timer()<<endl;
 
-    /* default for alsa is 8, so reserve a few more */
-    reserve_voices(16, -1);
-    /* is calling this function a good idea? */
-    set_volume_per_voice(0);
-    out<<"Install sound: "<<install_sound( DIGI_AUTODETECT, MIDI_NONE, "" )<<endl;
+    Sound::initialize();
 
     /* png */
     loadpng_init();
