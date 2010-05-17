@@ -59,6 +59,17 @@ util/sdl/image/IMG_xcf.c
 
     return image.StaticLibrary('image',source)
 
+def sdlMixerLibrary(env):
+    mixer = env.Clone()
+
+    source = Split("""
+music.c
+mixer.c
+effect_position.c
+""")
+
+    return mixer.StaticLibrary('sdl-mixer', map(lambda a: "util/sdl/mixer/%s" % a, source))
+
 def sflLibrary(env):
     use = env
     return SConscript('sfl/SConscript', exports = ['use'])
@@ -179,7 +190,7 @@ def hawknlLibrary(env):
 use.Prepend(LIBS = [dumbLibrary(use), hawknlLibrary(use)])
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
-    use.Append(LIBS = [sdlImageLibrary(use), sprigLibrary(use)])
+    use.Append(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use)])
 
 x = []
 x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))
