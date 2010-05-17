@@ -163,8 +163,6 @@ static void initSystem(ostream & out){
     out << "Allegro init: " <<allegro_init()<<endl;
     out << "Install timer: " <<install_timer()<<endl;
 
-    Sound::initialize();
-
     /* png */
     loadpng_init();
 
@@ -315,6 +313,8 @@ bool Global::init( int gfx ){
 
     /* do implementation specific setup */
     initSystem(out);
+    
+    Sound::initialize();
 
     Bitmap::SCALE_X = GFX_X;
     Bitmap::SCALE_Y = GFX_Y;

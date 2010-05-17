@@ -70,6 +70,7 @@ effects_internal.c
 effect_stereoreverse.c
 load_voc.c
 load_aiff.c
+wavestream.c
 """)
 
     return mixer.StaticLibrary('sdl-mixer', map(lambda a: "util/sdl/mixer/%s" % a, source))
