@@ -66,6 +66,8 @@ def sdlMixerLibrary(env):
 music.c
 mixer.c
 effect_position.c
+effects_internal.c
+effect_stereoreverse.c
 """)
 
     return mixer.StaticLibrary('sdl-mixer', map(lambda a: "util/sdl/mixer/%s" % a, source))
@@ -141,7 +143,7 @@ for i in filelist:
         # config = env.Configure()
         # Ugly way to pass the custom tests in
         config = env.Configure(custom_tests = env['PAINTOWN_TESTS'])
-        config.CheckRuby()
+        # config.CheckRuby()
         config.CheckPython()
         env = config.Finish()
         use.Append(LIBS = env['LIBS'])
