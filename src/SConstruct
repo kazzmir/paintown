@@ -36,20 +36,6 @@ util/sdl/sprig/SPG_surface.c
 
     return sprig.StaticLibrary('sprig', source)
 
-def sdlSoundLibrary(env):
-    sound = env.Clone()
-    
-    sound.Append(CPPDEFINES = ['SOUND_SUPPORTS_WAV'])
-    sound.Append(CPPPATH = ['util/sdl/sound'])
-
-    source = Split("""
-SDL_sound.c
-extra_rwops.c
-decoders/wav.c
-""")
-
-    return sound.StaticLibrary('sdl-sound', map(lambda a: "util/sdl/sound/%s" % a, source))
-
 def sdlImageLibrary(env):
     image = env.Clone()
     image.Append(CPPDEFINES = ['LOAD_PNG', 'LOAD_PCX'])
@@ -193,7 +179,7 @@ def hawknlLibrary(env):
 use.Prepend(LIBS = [dumbLibrary(use), hawknlLibrary(use)])
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
-    use.Append(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlSoundLibrary(use)])
+    use.Append(LIBS = [sdlImageLibrary(use), sprigLibrary(use)])
 
 x = []
 x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))
