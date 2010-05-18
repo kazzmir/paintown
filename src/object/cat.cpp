@@ -219,15 +219,18 @@ void Cat::act( vector< Object * > * others, World * world, vector< Object * > * 
 }
 
 void Cat::draw( Bitmap * work, int rel_x, int rel_y ){
-	if ( getFacing() == Object::FACING_RIGHT ){
-		current_animation->Draw( getRX() - rel_x, getRY(), work );
-	} else {
-		current_animation->DrawFlipped( getRX() - rel_x, getRY(), work ); 
-	}
+    if ( getFacing() == Object::FACING_RIGHT ){
+        current_animation->Draw( getRX() - rel_x, getRY(), work );
+    } else {
+        current_animation->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+    }
 
-	if ( Util::rnd( 2000 ) == 0 ){
-		meow.play( (int)(255 - fabs((double)getRX() - rel_x) / 50), 128 + (getRX() - rel_x) / 50 );
-	}
+    if (Util::rnd(2000) == 0){
+        int distance = 1000 - fabs((double)getRX() - rel_x) / 2;
+        double volume = distance < 0 ? 0.1 : (double) distance / 1000.0;
+        int pan = 128 + (getRX() - rel_x) / 50;
+        meow.play(volume, pan);
+    }
 }
 	
 Network::Message Cat::getCreateMessage(){
