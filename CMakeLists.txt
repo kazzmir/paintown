@@ -114,7 +114,7 @@ if(USE_SDL)
         message(FATAL_ERROR "Couldn't find SDL.")
     endif(NOT SDL_FOUND)
     
-    set(GRAPHICS_LIBRARIES sfl_module sprig_module image_module ${SDL_LIBRARY})
+    set(GRAPHICS_LIBRARIES sfl_module sprig_module image_module mixer_module ${SDL_LIBRARY})
     set(GRAPHICS_INCLUDES ${SDL_INCLUDE_DIR})
 else(USE_SDL)
     #packages
@@ -226,6 +226,8 @@ if (USE_SDL)
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
     # SPRIG
     add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
+    # Image
+    add_library(mixer_module src/util/sdl/mixer/music.c src/util/sdl/mixer/mixer.c src/util/sdl/mixer/effect_position.c src/util/sdl/mixer/effects_internal.c src/util/sdl/mixer/effect_stereoreverse.c src/util/sdl/mixer/load_voc.c src/util/sdl/mixer/load_aiff.c src/util/sdl/mixer/wavestream.c)
 endif (USE_SDL)
 
 #paintown executable
