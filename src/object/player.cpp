@@ -286,7 +286,7 @@ void Player::drawFront( Bitmap * work, int rel_x ){
 	// cout << "Draw name at " << y1 * 2 << endl;
 	// player_font.printf( (hasIcon + x1) * 2, y1, Bitmap::makeColor(255,255,255), *work, getName() );
 	// drawLifeBar( hasIcon + x1, y1 + player_font.getHeight() / 2, show_life, work );
-	drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
+	drawLifeBar( hasIcon + x1, y1 + nameHeight + 1, work );
 	// cout << "Y1: " << y1 << " Height: " << player_font.getHeight() << " new y1: " << (y1 + player_font.getHeight() / 2) << endl;
 	// work->printf( hasIcon + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
         if (!ignoringLives()){

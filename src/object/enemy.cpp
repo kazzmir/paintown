@@ -109,7 +109,7 @@ void Enemy::drawFront( Bitmap * work, int rel_x ){
 		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Bitmap::makeColor(255,255,255), -1, name );
 
 
-		drawLifeBar( icon_x + x + 1, y + height, work );
+		drawLifeBar( icon_x + x + 1, y + height + 1, work );
 	}
 }
 

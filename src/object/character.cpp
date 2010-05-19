@@ -1376,11 +1376,11 @@ void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
 	work->rectangleFill( x, y, x + max, y + health_height, Bitmap::makeColor( 192, 32, 32 ) );
 	Bitmap::transBlender( 0, 0, 0, 64 );
 
-	int colors[ 5 ] = { Bitmap::makeColor( 16, 162, 246 ),
-			     Bitmap::makeColor( 214, 184, 48 ),
-			     Bitmap::makeColor( 244, 16, 12 ),
-			     Bitmap::makeColor( 237, 173, 71 ),
-			     Bitmap::makeColor( 183, 217, 180 ) };
+	int colors[ 5 ] = { Bitmap::makeColor(16, 162, 246),
+			     Bitmap::makeColor(214, 184, 48),
+			     Bitmap::makeColor(244, 16, 12),
+			     Bitmap::makeColor(237, 173, 71),
+			     Bitmap::makeColor(183, 217, 180)};
 
 	int color = 0;
 	for ( int s = 0; s < health; s += 100 ){
@@ -1393,6 +1393,9 @@ void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
 			color = 4;
 		}
 	}
+
+        Bitmap border(*work, x, y, max+1, health_height);
+        border.border(0, 1, Bitmap::makeColor(255, 255, 255));
 
 	Bitmap::drawingMode( Bitmap::MODE_SOLID );
 }
