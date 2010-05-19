@@ -1,0 +1,91 @@
+import os
+
+includes = "./include"
+
+libs = ['user32', 'gdi32', 'winmm']
+
+defines = ['_REENTRANT', 'SDL_THREAD_WIN32', '_GNU_SOURCE=1', 'main=SDL_main']
+
+env = Environment(CPPDEFINES = defines, CPPPATH = includes, tools = ['mingw'])
+
+mainSource = Split("""
+SDL.c
+SDL_fatal.h
+SDL_error.c
+SDL_error_c.h
+SDL_fatal.c
+audio/SDL_audio.c
+audio/SDL_mixer.c
+audio/SDL_mixer_m68k.c
+audio/SDL_audiocvt.c
+audio/SDL_mixer_MMX.c
+audio/SDL_wave.c
+audio/SDL_audiodev.c
+audio/SDL_mixer_MMX_VC.c
+cdrom/SDL_cdrom.c
+cpuinfo/SDL_cpuinfo.c
+events/SDL_active.c
+events/SDL_keyboard.c
+events/SDL_resize.c
+events/SDL_events.c
+events/SDL_mouse.c
+events/SDL_expose.c
+events/SDL_quit.c
+file/SDL_rwops.c
+joystick/SDL_joystick.c
+stdlib/SDL_getenv.c
+stdlib/SDL_malloc.c
+stdlib/SDL_stdlib.c
+stdlib/SDL_iconv.c
+stdlib/SDL_qsort.c
+stdlib/SDL_string.c
+thread/SDL_thread.c
+timer/SDL_timer.c
+video/SDL_RLEaccel.c
+video/SDL_bmp.c
+video/SDL_video.c
+video/SDL_blit.c
+video/SDL_cursor.c
+video/SDL_yuv.c
+video/SDL_blit_0.c
+video/SDL_gamma.c
+video/SDL_yuv_mmx.c
+video/SDL_blit_1.c
+video/SDL_pixels.c
+video/SDL_yuv_sw.c
+video/SDL_blit_A.c
+video/SDL_stretch.c
+video/SDL_blit_N.c
+video/SDL_surface.c
+""")
+
+#joystick/win32/SDL_mmjoystick.c
+#cdrom/win32/SDL_syscdrom.c
+
+windowsSource = Split("""
+audio/windib/SDL_dibaudio.c
+video/wincommon/SDL_sysevents.c
+video/wincommon/SDL_syswm.c
+video/wincommon/SDL_sysmouse.c
+video/wincommon/SDL_wingl.c
+video/windib/SDL_dibevents.c
+video/windib/SDL_dibvideo.c
+video/windx5/SDL_dx5video.c
+video/windx5/SDL_dx5events.c
+video/windx5/SDL_dx5yuv.c
+thread/win32/SDL_sysmutex.c
+thread/win32/SDL_systhread.c
+thread/win32/SDL_syssem.c
+thread/generic/SDL_syscond.c
+timer/win32/SDL_systimer.c
+loadso/win32/SDL_sysloadso.c
+main/win32/version.rc
+""")
+
+windowsMain = Split("""
+main/win32/SDL_win32_main.c
+""")
+
+env.BuildDir('build', 'src')
+env.StaticLibrary('SDL',  map(lambda a: "build/%s" % a, mainSource + windowsSource))
+env.StaticLibrary('SDLmain', map(lambda a: "build/%s" % a, windowsMain))
