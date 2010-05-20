@@ -483,7 +483,11 @@ void Configuration::loadConfigurations(){
                     attack2, attack3, jump;
                 right = left = down = up = attack1 = attack2
                       = attack3 = jump = InvalidKey;
-                std::string input = INPUT_TYPE;
+
+                /* before the 'version' key was added all backends were
+                 * Allegro so that is the default.
+                 */
+                std::string input = "Allegro";
 
                 while ( n->hasTokens() ){
                     Token * thing;
@@ -531,7 +535,8 @@ void Configuration::loadConfigurations(){
                     attack2, attack3, jump;
                 right = left = down = up = attack1 = attack2
                       = attack3 = jump = InvalidJoystick;
-                std::string input = INPUT_TYPE;
+                /* see above */
+                std::string input = "Allegro";
 
                 while ( n->hasTokens() ){
                     int temp;
