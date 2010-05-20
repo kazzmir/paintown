@@ -518,7 +518,8 @@ void Configuration::loadConfigurations(){
                     /* should use config_number here */
                     throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
                 }
-                if (input != INPUT_TYPE){
+
+                if (input == INPUT_TYPE){
                     Configuration & myconfig = config(number);
                     myconfig.setRight(right);
                     myconfig.setLeft(left);
@@ -577,7 +578,7 @@ void Configuration::loadConfigurations(){
                     throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
                 }
 
-                if (input != INPUT_TYPE){
+                if (input == INPUT_TYPE){
                     Configuration & myconfig = config(number);
                     myconfig.setJoystickRight(right);
                     myconfig.setJoystickLeft(left);
