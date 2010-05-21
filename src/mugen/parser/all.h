@@ -9,7 +9,7 @@ namespace Mugen{
     namespace Def{
         extern const void * parse(const std::string & filename, bool stats = false);
 
-        class ParseException: std::exception {
+        class ParseException: public std::exception {
         public:
             std::string getReason() const;
             virtual ~ParseException() throw();
@@ -19,7 +19,7 @@ namespace Mugen{
     namespace Air{
         extern const void * parse(const std::string & filename, bool stats = false);
 
-        class ParseException: std::exception {
+        class ParseException: public std::exception {
         public:
             std::string getReason() const;
             virtual ~ParseException() throw();
@@ -29,7 +29,7 @@ namespace Mugen{
     namespace Cmd{
         extern const void * parse(const std::string & filename, bool stats = false);
 
-        class ParseException: std::exception {
+        class ParseException: public std::exception {
         public:
             std::string getReason() const;
             virtual ~ParseException() throw();

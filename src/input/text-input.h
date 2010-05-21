@@ -23,7 +23,7 @@ struct Callback{
     void * data;
 };
 
-class TextInput: InputMap<unsigned char> {
+class TextInput: public InputMap<unsigned char> {
 public:
     TextInput();
 
