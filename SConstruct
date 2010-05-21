@@ -357,6 +357,36 @@ def checkRunRuby(context):
     context.Result(ok)
     return ok
 
+# find freetype in windows since we dont have freetype-config
+def checkWindowsFreeType(context):
+    context.Message("Checking for Freetype... ")
+    def build():
+        return context.TryCompile("""
+#include <ft2build.h>
+#include FT_FREETYPE_H
+int main(int argc, char ** argv){
+    ruby_init();
+    return 0;
+}
+""", ".c")
+    if not build():
+        if useMingw():
+            import os
+            tmp = context.env.Clone()
+            mingw = os.environ['MINGDIR']
+            context.env.Append(CPPPATH = ["%s/include/freetype2" % mingw])
+            if not build():
+                context.env = tmp
+                context.Result(0)
+                return 0
+        else:
+            context.Message("don't know how to find freetype for a non-mingw compiler")
+            context.Result(0)
+            return 0
+
+    context.Result(1)
+    return 1
+
 def useSDL():
     def byEnv():
         try:
@@ -602,7 +632,9 @@ env['PAINTOWN_TESTS'] = custom_tests
 if isWindows():
     staticEnv = env.Clone()
 
-    config = env.Configure(custom_tests = custom_tests)
+    windows_tests = {"CheckWindowsFreeType" : checkWindowsFreeType}
+    config = env.Configure(custom_tests = windows_tests)
+    config.CheckWindowsFreeType()
     # config.CheckPython()
     #if config.HasRuby():
     #    config.CheckRuby()
@@ -623,8 +655,10 @@ if isWindows():
     
     elif useSDL():
         env.Append(CPPDEFINES = ['USE_SDL'])
+        # TODO: move this to a configure check
+        # env.Append(CPPPATH = ['c:/mingw/include/SDL'])
         staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-        env.Append( LIBS = ['SDL', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        env.Append( LIBS = ['SDL', 'pthreadGC2', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
     env.Append( CPPDEFINES = 'WINDOWS' )
 
@@ -636,7 +670,7 @@ if isWindows():
         env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
     if useSDL():
-        staticEnv.Append(LIBS = [ 'SDL', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        staticEnv.Append(LIBS = ['SDL', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     elif useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
