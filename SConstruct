@@ -365,7 +365,7 @@ def checkWindowsFreeType(context):
 #include <ft2build.h>
 #include FT_FREETYPE_H
 int main(int argc, char ** argv){
-    ruby_init();
+    int major = FREETYPE_MAJOR; 
     return 0;
 }
 """, ".c")
