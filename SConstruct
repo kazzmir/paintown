@@ -651,16 +651,17 @@ if isWindows():
     if useAllegro():
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
-        env.Append( LIBS = ['alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
     elif useSDL():
         env.Append(CPPDEFINES = ['USE_SDL'])
         # TODO: move this to a configure check
         # env.Append(CPPPATH = ['c:/mingw/include/SDL'])
         staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-        env.Append( LIBS = ['SDL', 'pthreadGC2', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
     env.Append( CPPDEFINES = 'WINDOWS' )
+    env.Append(LINKFLAGS = ['-static-libstdc++'])
 
     if getDebug():
         env.Append( CCFLAGS = ['-mthreads'] )
@@ -670,9 +671,9 @@ if isWindows():
         env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
     if useSDL():
-        staticEnv.Append(LIBS = ['SDL', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     elif useAllegro():
-        staticEnv.Append(LIBS = [ 'alleg', 'pthreadGC2', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
     staticEnv.Append(CPPDEFINES = 'WINDOWS')
 else:
