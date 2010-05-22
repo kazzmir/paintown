@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "menu.h"
 #include "menu_global.h"
 #include "menu_option.h"
@@ -117,9 +118,9 @@ void InfoBox::render(const Bitmap & bmp){
         string & str = *it;
         if (fadeAlpha < 255){
             Bitmap::transBlender(0, 0, 0, fadeAlpha);
-            Bitmap::drawingMode( Bitmap::MODE_TRANS );
-            vFont.printf(location.getX() + 5, sy, white, bmp, str, 0 );
-            Bitmap::drawingMode(Bitmap::MODE_SOLID);
+            // Bitmap::drawingMode( Bitmap::MODE_TRANS );
+            vFont.printf(location.getX() + 5, sy, white, bmp.translucent(), str, 0 );
+            // Bitmap::drawingMode(Bitmap::MODE_SOLID);
         } else {
             vFont.printf(location.getX() + 5, sy, white, bmp, str, 0 );
         }
