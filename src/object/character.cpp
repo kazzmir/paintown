@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -1369,35 +1370,37 @@ void Character::drawLifeBar( int x, int y, Bitmap * work ){
 	
 /* draw a nifty translucent life bar */
 void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
-	Bitmap::drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	const int health_height = 7;
-	int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
-	work->rectangleFill( x, y, x + max, y + health_height, Bitmap::makeColor( 192, 32, 32 ) );
-	Bitmap::transBlender( 0, 0, 0, 64 );
+    TranslucentBitmap translucent(*work);
+    // Bitmap::drawingMode( Bitmap::MODE_TRANS );
+    Bitmap::transBlender( 0, 0, 0, 128 );
+    const int health_height = 7;
+    const int maxHealthWidth = 100;
+    int max = getMaxHealth() < maxHealthWidth ? getMaxHealth() : maxHealthWidth;
+    translucent.rectangleFill( x, y, x + max, y + health_height, Bitmap::makeColor( 192, 32, 32 ) );
+    Bitmap::transBlender( 0, 0, 0, 64 );
 
-	int colors[ 5 ] = { Bitmap::makeColor(16, 162, 246),
-			     Bitmap::makeColor(214, 184, 48),
-			     Bitmap::makeColor(244, 16, 12),
-			     Bitmap::makeColor(237, 173, 71),
-			     Bitmap::makeColor(183, 217, 180)};
+    int colors[ 5 ] = { Bitmap::makeColor(16, 162, 246),
+        Bitmap::makeColor(214, 184, 48),
+        Bitmap::makeColor(244, 16, 12),
+        Bitmap::makeColor(237, 173, 71),
+        Bitmap::makeColor(183, 217, 180)};
 
-	int color = 0;
-	for ( int s = 0; s < health; s += 100 ){
-		int e = s + 100 < health ? s + 100 : health;
-		for ( int y1 = y; y1 <= y+health_height; y1++ ){
-			work->rectangleFill( x, y, x + e - s, y1, colors[ color ] );
-		}
-		color += 1;
-		if ( color > 4 ){
-			color = 4;
-		}
-	}
+    int color = 0;
+    for ( int s = 0; s < health; s += maxHealthWidth ){
+        int e = s + maxHealthWidth < health ? s + maxHealthWidth : health;
+        for ( int y1 = y; y1 <= y+health_height; y1++ ){
+            translucent.rectangleFill( x, y, x + e - s, y1, colors[ color ] );
+        }
+        color += 1;
+        if ( color > 4 ){
+            color = 4;
+        }
+    }
 
-        Bitmap border(*work, x, y, max+1, health_height);
-        border.border(0, 1, Bitmap::makeColor(255, 255, 255));
+    TranslucentBitmap border(Bitmap(*work, x, y, max+1, health_height));
+    border.border(0, 1, Bitmap::makeColor(255, 255, 255));
 
-	Bitmap::drawingMode( Bitmap::MODE_SOLID );
+    // Bitmap::drawingMode( Bitmap::MODE_SOLID );
 }
 
 int Character::getShadowX(){

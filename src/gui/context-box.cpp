@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 
 #include "gui/context-box.h"
 #include "util/font.h"
@@ -221,29 +222,30 @@ void ContextBox::drawText(const Bitmap & bmp){
         const int startx = (location.getWidth()/2)-(vFont.textLength(context[currentOption]->getName().c_str())/2);
         if (count == 0){
             Bitmap::transBlender(0, 0, 0, fadeAlpha);
-            Bitmap::drawingMode( Bitmap::MODE_TRANS );
+            TranslucentBitmap translucent(bmp);
+            // Bitmap::drawingMode( Bitmap::MODE_TRANS );
             const int color = useGradient ? selectedGradient.current() : selectedGradientStart();
-            vFont.printf(location.getX() + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
+            vFont.printf(location.getX() + startx, locationY, color, translucent, context[currentOption]->getName(), 0 );
             if (context[currentOption]->isAdjustable()){
                 const int triangleSize = 10;
                 int cx = (location.getX() + startx) - 15;
                 int cy = (int)(locationY + (vFont.getHeight()/FONT_SPACER) / 2 + 2);
-                bmp.triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getLeftColor() );
+                translucent.triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getLeftColor() );
 
                 cx = (location.getX()+startx + vFont.textLength(context[currentOption]->getName().c_str()))+15;
-                bmp.triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getRightColor() );
+                translucent.triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getRightColor() );
             }
-            Bitmap::drawingMode(Bitmap::MODE_SOLID);
+            // Bitmap::drawingMode(Bitmap::MODE_SOLID);
         } else {
             int textAlpha = fadeAlpha - (count * 35);
             if (textAlpha < 0){
                 textAlpha = 0;
             }
             Bitmap::transBlender(0, 0, 0, textAlpha);
-            Bitmap::drawingMode( Bitmap::MODE_TRANS );
+            // Bitmap::drawingMode( Bitmap::MODE_TRANS );
             const int color = Bitmap::makeColor(255,255,255);
-            vFont.printf(location.getX() + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
-            Bitmap::drawingMode( Bitmap::MODE_SOLID );
+            vFont.printf(location.getX() + startx, locationY, color, bmp.translucent(), context[currentOption]->getName(), 0 );
+            // Bitmap::drawingMode( Bitmap::MODE_SOLID );
         }
         if (context.size() == 1){
             bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
@@ -273,10 +275,10 @@ void ContextBox::drawText(const Bitmap & bmp){
             textAlpha = 0;
         }
         Bitmap::transBlender(0, 0, 0, textAlpha);
-        Bitmap::drawingMode( Bitmap::MODE_TRANS );
+        // Bitmap::drawingMode( Bitmap::MODE_TRANS );
         const int color = Bitmap::makeColor(255,255,255);
-        vFont.printf(location.getX() + startx, locationY, color, bmp, context[currentOption]->getName(), 0 );
-        Bitmap::drawingMode( Bitmap::MODE_SOLID );
+        vFont.printf(location.getX() + startx, locationY, color, bmp.translucent(), context[currentOption]->getName(), 0 );
+        // Bitmap::drawingMode( Bitmap::MODE_SOLID );
         currentOption--;
         locationY -= (int)(vFont.getHeight()/FONT_SPACER);
         count++;
