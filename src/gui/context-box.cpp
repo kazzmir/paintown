@@ -227,13 +227,26 @@ void ContextBox::drawText(const Bitmap & bmp){
             const int color = useGradient ? selectedGradient.current() : selectedGradientStart();
             vFont.printf(location.getX() + startx, locationY, color, translucent, context[currentOption]->getName(), 0 );
             if (context[currentOption]->isAdjustable()){
-                const int triangleSize = 10;
+                const int triangleSize = 14;
                 int cx = (location.getX() + startx) - 15;
                 int cy = (int)(locationY + (vFont.getHeight()/FONT_SPACER) / 2 + 2);
-                translucent.triangle( cx + triangleSize / 2, cy - triangleSize / 2, cx - triangleSize, cy, cx + triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getLeftColor() );
+
+                /*
+                int cx1 = cx + triangleSize / 2;
+                int cy1 = cy - triangleSize / 2;
+                int cx2 = cx - triangleSize;
+                int cy2 = cy;
+                int cx3 = cx + triangleSize / 2;
+                int cy3 = cy + triangleSize / 2;
+                */
+
+                /* do the triangles need to be translucent? */
+                // translucent.triangle(cx1, cy1, cx2, cy2, cx3, cy3, context[currentOption]->getLeftColor());
+                translucent.equilateralTriangle(cx, cy, 180, triangleSize, context[currentOption]->getLeftColor());
 
                 cx = (location.getX()+startx + vFont.textLength(context[currentOption]->getName().c_str()))+15;
-                translucent.triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getRightColor() );
+                translucent.equilateralTriangle(cx, cy, 0, triangleSize, context[currentOption]->getLeftColor());
+                // translucent.triangle( cx - triangleSize / 2, cy - triangleSize / 2, cx + triangleSize, cy, cx - triangleSize / 2, cy + triangleSize / 2, context[currentOption]->getRightColor() );
             }
             // Bitmap::drawingMode(Bitmap::MODE_SOLID);
         } else {
