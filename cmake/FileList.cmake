@@ -33,6 +33,7 @@ src/level/block.cpp
 src/level/blockobject.cpp
 src/level/cacher.cpp
 src/level/scene.cpp
+src/level/random-scene.cpp
 src/level/utils.cpp)
 
 set(NETWORK_SRC

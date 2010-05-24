@@ -1,0 +1,23 @@
+#ifndef _paintown_random_scene_h
+#define _paintown_random_scene_h
+
+#include <vector>
+#include "scene.h"
+
+class BlockObject;
+
+class RandomScene: public Scene {
+public:
+    RandomScene(const char * filename, const Level::Cacher & cacher);
+	
+    virtual void advanceBlocks( int n );
+
+    virtual ~RandomScene();
+
+protected:
+    std::vector<BlockObject *> collectObjects();
+
+    std::vector<BlockObject *> objects;
+};
+
+#endif

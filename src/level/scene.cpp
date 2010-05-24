@@ -23,29 +23,29 @@
 using namespace std;
 
 Panel::Panel( Bitmap * _pic, Bitmap * _neon, Bitmap * _my_screen ){
-	pic = _pic;
-	neon = _neon;
-	screen_overlay = _my_screen;
+    pic = _pic;
+    neon = _neon;
+    screen_overlay = _my_screen;
 }
 
 Panel::~Panel(){
-	if ( pic ) delete pic;
-	if ( neon ) delete neon;
-	if ( screen_overlay ) delete screen_overlay;
+    if ( pic ) delete pic;
+    if ( neon ) delete neon;
+    if ( screen_overlay ) delete screen_overlay;
 }
 
 Scene::Scene(const char * filename, const Level::Cacher & cacher):
-background( NULL ),
-block_length( 0 ),
-minimum_z( 0 ),
-maximum_z( 0 ),
-current_block( NULL ),
-blockNumber( 1 ),
-backgroundParallax( 5 ),
-foregroundParallax( 1.2 ),
+background(NULL),
+block_length(0),
+minimum_z(0),
+maximum_z(0),
+current_block(NULL),
+blockNumber(1),
+backgroundParallax(5),
+foregroundParallax(1.2),
 frontBuffer(NULL){
 
-    TokenReader tr( filename );
+    TokenReader tr(filename);
 
     // Token * current = tr.readToken();
     Token * current;
@@ -191,7 +191,6 @@ frontBuffer(NULL){
         blength += (*it)->getLength();
     }
     Global::debug( 1 ) <<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
-
 }
         
 int Scene::totalLength() const {
@@ -203,16 +202,16 @@ int Scene::totalLength() const {
 }
 
 void Scene::calculateLength(){
-	scene_length = 0;
-	for ( unsigned int q = 0; q < order.size(); q++ ){
-		Panel *& cur = panels[ order[q] ];
-		if ( cur == NULL ){
-			continue;
-		}
-		Bitmap * normal = cur->pic;
-		// normal->draw( fx-x, 0, *work );
-		scene_length += normal->getWidth();
-	}
+    scene_length = 0;
+    for ( unsigned int q = 0; q < order.size(); q++ ){
+        Panel *& cur = panels[ order[q] ];
+        if ( cur == NULL ){
+            continue;
+        }
+        Bitmap * normal = cur->pic;
+        // normal->draw( fx-x, 0, *work );
+        scene_length += normal->getWidth();
+    }
 }
 
 /* returns the farthest point the player can go */
@@ -258,7 +257,8 @@ void Scene::advanceBlocks( int n ){
 }
 
 bool Scene::canContinue( int x ){
-	return (current_block->isContinuous() && x >= getLimit() - 320) || (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
+	return (current_block->isContinuous() && x >= getLimit() - 320) ||
+               (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
 }
 
 /* put the enemy into a vector so that it can be added into the game objects
@@ -294,6 +294,7 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
     doTriggers();
 
     if (objects != 0){
+        Global::debug(0) << "Creating new objects" << endl;
         vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
         hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
         objects->insert(objects->end(), added_objects.begin(), added_objects.end());
@@ -308,29 +309,29 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
 
 /* draw the background */
 void Scene::drawBack( int x, Bitmap * work ){
-	if ( background ){
-		int y = 0;
-		background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
-		background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
-	}
-		
-	int fx = 0;
-	for ( unsigned int q = 0; q < order.size(); q++ ){
-		Panel *& cur = panels[ order[q] ];
-		if ( cur == NULL ){
-			continue;
-		}
-		Bitmap * normal = cur->pic;
-		normal->draw( fx-x, 0, *work );
-		fx += normal->getWidth();
-	}
+    if ( background ){
+        int y = 0;
+        background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
+        background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
+    }
 
-        for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
-            Atmosphere * atmosphere = *it;
-            atmosphere->drawBackground(work, x);
+    int fx = 0;
+    for ( unsigned int q = 0; q < order.size(); q++ ){
+        Panel *& cur = panels[ order[q] ];
+        if ( cur == NULL ){
+            continue;
         }
+        Bitmap * normal = cur->pic;
+        normal->draw( fx-x, 0, *work );
+        fx += normal->getWidth();
+    }
 
-        arrow_blink = (arrow_blink + 1) % 10;
+    for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
+        Atmosphere * atmosphere = *it;
+        atmosphere->drawBackground(work, x);
+    }
+
+    arrow_blink = (arrow_blink + 1) % 10;
 }
 
 /* draw the foreground */
@@ -414,30 +415,30 @@ void Scene::Draw( int x, Bitmap * work ){
 */
 
 Scene::~Scene(){
-	delete current_block;
-	for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
-		delete *it;
-	}
-        for (vector<Block*>::iterator it = old_level_blocks.begin(); it != old_level_blocks.end(); it++){
-            delete *it;
-        }
+    delete current_block;
+    for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
+        delete *it;
+    }
+    for (vector<Block*>::iterator it = old_level_blocks.begin(); it != old_level_blocks.end(); it++){
+        delete *it;
+    }
 
-        if (frontBuffer){
-            delete frontBuffer;
-        }
+    if (frontBuffer){
+        delete frontBuffer;
+    }
 
-	if ( background )
-		delete background;
+    if ( background )
+        delete background;
 
-	if ( arrow )
-		delete arrow;
+    if ( arrow )
+        delete arrow;
 
-	for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
-		delete *it;
-	}
-	for ( map< int, Panel * >::iterator it = panels.begin(); it != panels.end(); it++ ){
-		delete (*it).second;
-	}
+    for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
+        delete *it;
+    }
+    for ( map< int, Panel * >::iterator it = panels.begin(); it != panels.end(); it++ ){
+        delete (*it).second;
+    }
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
@@ -449,10 +450,10 @@ Scene::~Scene(){
         delete trigger;
     }
 
-	/*
-	for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); it++ ){
-		delete *it;
-	}
-	*/
+    /*
+       for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); it++ ){
+       delete *it;
+       }
+       */
     Script::newEngine("none", Filesystem::RelativePath("none"));
 }

@@ -60,7 +60,7 @@ public:
 
     void addEnemy(Enemy * const obj);
 
-	void advanceBlocks( int n );
+    virtual void advanceBlocks( int n );
 
     inline const std::vector<Atmosphere*> & getAtmospheres() const {
         return atmospheres;
