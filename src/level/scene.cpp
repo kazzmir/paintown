@@ -294,7 +294,7 @@ void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
     doTriggers();
 
     if (objects != 0){
-        Global::debug(0) << "Creating new objects" << endl;
+        // Global::debug(0) << "Creating new objects" << endl;
         vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
         hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
         objects->insert(objects->end(), added_objects.begin(), added_objects.end());
