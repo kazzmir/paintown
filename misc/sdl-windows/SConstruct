@@ -59,11 +59,11 @@ video/SDL_blit_N.c
 video/SDL_surface.c
 """)
 
-#joystick/win32/SDL_mmjoystick.c
-#cdrom/win32/SDL_syscdrom.c
-
 windowsSource = Split("""
+joystick/win32/SDL_mmjoystick.c
 audio/windib/SDL_dibaudio.c
+audio/windx5/SDL_dx5audio.c
+cdrom/win32/SDL_syscdrom.c
 video/wincommon/SDL_sysevents.c
 video/wincommon/SDL_syswm.c
 video/wincommon/SDL_sysmouse.c
