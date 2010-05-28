@@ -5,13 +5,14 @@
 #include "network/network.h"
 #include <vector>
 
-struct Point{
-	Point( int x, int y, int life ):x(x), y(y), life(life){}
-	int x, y;
-	int life;
-};
 
 class Gib: public ObjectNonAttack{
+public:
+	struct Point{
+		Point( int x, int y, int life ):x(x), y(y), life(life){}
+		int x, y;
+		int life;
+	};
 public:
 	Gib( const int x, const int y, const int z, double dx, double dy, double dz, Bitmap * image );
 	Gib( const Gib & g );
