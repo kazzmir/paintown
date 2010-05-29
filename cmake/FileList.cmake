@@ -122,6 +122,7 @@ src/util/sound.cpp
 src/util/timer.cpp
 src/input/keyboard.cpp
 src/util/bitmap.cpp
+src/util/events.cpp
 src/util/font.cpp
 src/util/fire.cpp
 src/util/ftalleg.cpp

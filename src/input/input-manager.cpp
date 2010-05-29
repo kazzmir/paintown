@@ -2,6 +2,7 @@
 #include "configuration.h"
 #include "object/object.h"
 #include "input/joystick.h"
+#include "util/events.h"
 #include "globals.h"
 #include <stdlib.h>
 #include <vector>
@@ -109,6 +110,10 @@ void InputManager::poll(){
 }
 
 void InputManager::_poll(){
+    /* FIXME: not sure if its a good idea to put the event manager here */
+    Util::EventManager eventManager;
+    eventManager.run();
+
     keyboard.poll();
     if (joystick != NULL){
         joystick->poll();

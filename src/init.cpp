@@ -266,6 +266,7 @@ static void * handleEvents(void * arg){
     return NULL;
 }
 
+/*
 static void doSDLQuit(){
     SDL_Event quit;
     quit.type = SDL_QUIT;
@@ -274,6 +275,7 @@ static void doSDLQuit(){
     pthread_join(events, NULL);
     SDL_Quit();
 }
+*/
     
 static void initSystem(ostream & out){
     out << "SDL Init: ";
@@ -281,8 +283,7 @@ static void initSystem(ostream & out){
                       SDL_INIT_AUDIO |
                       SDL_INIT_TIMER |
                       SDL_INIT_JOYSTICK |
-                      SDL_INIT_NOPARACHUTE |
-                      SDL_INIT_EVENTTHREAD);
+                      SDL_INIT_NOPARACHUTE);
     if (ok == 0){
         out << "Ok" << endl;
     } else {
@@ -295,11 +296,11 @@ static void initSystem(ostream & out){
 
     SDL_WM_SetCaption("Paintown", NULL);
 
-    atexit(doSDLQuit);
+    // atexit(doSDLQuit);
 }
 
 static void moreInitSystem(){
-    pthread_create(&events, NULL, handleEvents, NULL);
+    // pthread_create(&events, NULL, handleEvents, NULL);
 }
 #endif
 

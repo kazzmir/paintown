@@ -20,6 +20,7 @@
 #include "script/script.h"
 #include "shutdown_exception.h"
 #include "util/file-system.h"
+#include "util/events.h"
 #include "menu/menu_global.h"
 #include "loading.h"
 #include "network/network.h"
@@ -261,20 +262,25 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
     bool helped = false;
     bool force_quit = false;
 
+    Util::EventManager eventManager;
+
     unsigned int second_counter = Global::second_counter;
     /* don't put anything after these variables and before the while loop */
     Global::speed_counter = 0;
     // Global::second_counter = 0;
     double runCounter = 0;
+    /* Main Loop! */
     while ( ! done ){
 
         bool draw = false;
         bool takeScreenshot = false;
         // key.poll();
 
+        /*
         if (Global::shutdown()){
             throw ShutdownException();
         }
+        */
 
         if ( Global::speed_counter > 0 ){
             if ( ! paused ){
@@ -282,6 +288,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
 
                 while ( runCounter >= 1.0 ){
                     InputManager::poll();
+                    eventManager.run();
                     draw = true;
                     world.act();
                     console.act();
@@ -470,6 +477,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             Util::rest( 1 );
             // key.poll();
             InputManager::poll();
+            eventManager.run();
         }
     }
 
