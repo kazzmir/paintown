@@ -16,6 +16,8 @@
 #include "adventure_world.h"
 #include "network/network.h"
 #include "level/cacher.h"
+#include "util/thread.h"
+#include "util/events.h"
 
 #include <iostream>
 #include <string>
@@ -61,7 +63,7 @@ descriptionGradient(new Effects::Gradient(100, Bitmap::makeColor(255, 255, 255),
 		this->players.push_back( t );
 	}
 
-	loadLevel(path);
+	threadedLoadLevel(path);
 
         /* 1.3333 is the aspect ratio of screen_width/screen_height when the res is any standard of
          * 640,480 800,600, 1024,768
@@ -151,6 +153,32 @@ void AdventureWorld::pause(){
 
 void AdventureWorld::unpause(){
     is_paused = false;
+}
+
+struct LoadLevelInfo{
+    LoadLevelInfo(AdventureWorld * who, const Filesystem::AbsolutePath & path):
+        who(who), path(path){}
+
+    AdventureWorld * who;
+    const Filesystem::AbsolutePath & path;
+};
+
+void * AdventureWorld::do_load_level(void * arg){
+    LoadLevelInfo * info = (LoadLevelInfo *) arg;
+    AdventureWorld * world = info->who;
+    world->loadLevel(info->path);
+    return NULL;
+}
+
+void AdventureWorld::threadedLoadLevel(const Filesystem::AbsolutePath & path){
+    /* this looks dangerous, passing a temporary to a thread but in theory
+     * the temporary should live past the end of the thread life
+     * so the memory will stick around.
+     */
+    LoadLevelInfo info(this, path);
+    Util::Thread thread(do_load_level, &info);
+    Util::EventManager manager;
+    manager.waitForThread(thread);
 }
 	
 void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){

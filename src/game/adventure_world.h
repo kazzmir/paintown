@@ -102,6 +102,7 @@ protected:
 
 	Network::Message deleteMessage( unsigned int id );
 	void loadLevel( const Filesystem::AbsolutePath & path );
+	void threadedLoadLevel( const Filesystem::AbsolutePath & path );
 
 	void drawWorld( const PlayerTracker & tracker, Bitmap * where, const std::map< int, std::vector< Object * > > & object_z );
 
@@ -120,6 +121,8 @@ protected:
     }
 
     virtual void doTakeScreenshot(Bitmap * work);
+
+    static void * do_load_level(void * arg);
 
 protected:
     std::vector< PlayerTracker > players;
