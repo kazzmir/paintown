@@ -656,7 +656,7 @@ if isWindows():
     elif useSDL():
         env.Append(CPPDEFINES = ['USE_SDL'])
         # TODO: move this to a configure check
-        # env.Append(CPPPATH = ['c:/mingw/include/SDL'])
+        env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
         staticEnv.Append(CPPDEFINES = ['USE_SDL'])
         env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
