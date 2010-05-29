@@ -325,7 +325,13 @@ bool Global::init( int gfx ){
     const int sy = Configuration::getScreenHeight();
     
     /* set up the screen */
-    out<<"Set gfx mode: " << Bitmap::setGraphicsMode(gfx, sx, sy) << endl;
+    int gfxCode = Bitmap::setGraphicsMode(gfx, sx, sy);
+    if (gfxCode == 0){
+        out << "Set graphics mode: Ok" << endl;
+    } else {
+        out << "Set graphics mode: Failed! (" << gfxCode << ")" << endl;
+        return false;
+    }
     
     /* music */
     atexit( &dumb_exit );

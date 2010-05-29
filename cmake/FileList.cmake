@@ -132,6 +132,7 @@ src/util/gradient.cpp
 src/util/ebox.cpp
 src/util/regex.cpp
 src/util/language-string.cpp
+src/util/thread.cpp
 src/input/joystick.cpp
 src/input/allegro/allegro-joystick.cpp
 src/input/sdl/joystick.cpp
