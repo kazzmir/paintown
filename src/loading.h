@@ -5,7 +5,7 @@
 
 namespace Loader{
 
-extern bool done_loading;
+extern volatile bool done_loading;
 extern pthread_mutex_t loading_screen_mutex;
 
 void startLoading(pthread_t * thread, void * arg = 0);

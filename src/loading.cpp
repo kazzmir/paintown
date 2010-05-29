@@ -19,7 +19,7 @@ using namespace std;
 namespace Loader{
 
 pthread_mutex_t loading_screen_mutex;
-bool done_loading = false;
+volatile bool done_loading = false;
 
 typedef struct pair{
 	int x, y;
