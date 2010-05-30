@@ -691,7 +691,7 @@ void  sys_assert  (const char *filename, unsigned line_number);
 #elif (defined (__UTYPE_LINUX))
 #   define DOES_SNPRINTF
 #else
-#   undef DOES_SNPRINTF
+#   define DOES_SNPRINTF
 #endif
 
 /*  SunOS 5 (Solaris) does not support BSD-style signal handling             */
