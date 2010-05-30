@@ -9,6 +9,7 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/gradient.h"
+#include "util/thread.h"
 #include "globals.h"
 #include <vector>
 #include <pthread.h>
@@ -134,16 +135,7 @@ void * loadingScreen( void * arg ){
 
     const int MAX_COLOR = 200;
 
-    /*
-    int colors[ MAX_COLOR ];
-    int c1 = Bitmap::makeColor( 16, 16, 16 );
-    int c2 = Bitmap::makeColor( 192, 8, 8 );
-    */
     /* blend from dark grey to light red */
-    /*
-    Util::blend_palette( colors, MAX_COLOR / 2, c1, c2 );
-    Util::blend_palette( colors + MAX_COLOR / 2, MAX_COLOR / 2, c2, c1 );
-    */
     Effects::Gradient gradient(MAX_COLOR, Bitmap::makeColor(16, 16, 16), Bitmap::makeColor(192, 8, 8));
 
     Global::speed_counter = 0;
@@ -153,13 +145,12 @@ void * loadingScreen( void * arg ){
     } else {
         setupBackground(Bitmap(levelInfo.loadingBackground().path()), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
     }
-    bool quit = false;
 
-    /* keeps the colors moving */
-    // static unsigned mover = 0;
+    Util::ThreadBoolean quit(done_loading, loading_screen_mutex);
+
     bool firstDraw = true;
 
-    while ( ! quit ){
+    while ( ! quit.get() ){
 
         bool draw = false;
         bool drawInfo = firstDraw;
@@ -171,7 +162,6 @@ void * loadingScreen( void * arg ){
 
             while ( think > 0 ){
                 gradient.backward();
-                // mover = (mover + 1) % MAX_COLOR;
                 think -= 1;
             }
             drawInfo = info.transferMessages(infobox);
@@ -181,9 +171,8 @@ void * loadingScreen( void * arg ){
 
         if ( draw ){
             for ( vector< ppair >::iterator it = pairs.begin(); it != pairs.end(); it++ ){
-                // int color = colors[ (it->x - mover + MAX_COLOR) % MAX_COLOR ];
                 int color = gradient.current(it->x);
-                work.putPixel( it->x, it->y, color );
+                work.putPixel(it->x, it->y, color);
             }
 
             if (drawInfo){
@@ -199,12 +188,14 @@ void * loadingScreen( void * arg ){
             }
             /* work already contains the correct background */
             // work.Blit( load_x, load_y, *Bitmap::Screen );
-            work.BlitAreaToScreen( load_x, load_y );
+            work.BlitAreaToScreen(load_x, load_y);
         }
 
+        /*
         pthread_mutex_lock( &loading_screen_mutex );
         quit = done_loading;
         pthread_mutex_unlock( &loading_screen_mutex );
+        */
     }
 
     return NULL;
