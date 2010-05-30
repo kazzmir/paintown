@@ -145,6 +145,32 @@ def checkSDL(context):
     context.Result(ok)
     return ok
 
+def checkStaticSDL(context):
+    context.Message("Checking for static SDL... ")
+    env = context.env
+    sdl = env.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
+    env.Append(LIBS = [sdl])
+    env.ParseConfig('sdl-config --cflags')
+    env.Append(CPPDEFINES = ['USE_SDL'])
+    if isOSX():
+        def framework(x):
+            return "-framework %s" % x
+        frameworks = Split("""
+Cocoa
+Carbon
+IOKit
+System
+CoreAudio
+AudioUnit
+AudioToolbox
+QuickTime
+OpenGL
+""")
+        # env.Append(LINKFLAGS = map(framework, frameworks))
+        env.Append(FRAMEWORKS = frameworks)
+    context.Result(1)
+    return 1
+
 def checkAllegro(context):
     context.Message("Checking for Allegro... ")
     tmp = context.env.Clone()
@@ -722,6 +748,13 @@ else:
     staticEnv.Append(LIBS = [png])
     freetype = staticEnv.Install( 'misc', readExec( 'freetype-config --prefix' ) + '/lib/libfreetype.a' )
 
+    #if useSDL():
+    #    sdl = staticEnv.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
+    #    sdlmain = staticEnv.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDLmain.a')
+    #    staticEnv.Append(LIBS = [sdl, sdlmain])
+    #    staticEnv.ParseConfig('sdl-config --cflags')
+    #    staticEnv.Append(CPPDEFINES = ['USE_SDL'])
+
     staticEnv.Append( LIBS = ['z','m'] )
     staticEnv.Append( LIBS = freetype )
 
@@ -751,7 +784,7 @@ else:
     static_custom_tests = {"CheckPython" : checkPython,
                            "CheckRuby" : checkStaticRuby,
                            "CheckAllegro" : checkAllegro,
-                           "CheckSDL" : checkSDL,
+                           "CheckSDL" : checkStaticSDL,
                            "CheckRTTI" : checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
