@@ -394,6 +394,7 @@ bool Music::internal_loadSong( const char * path ){
     
     if (isDumbFile(path)){
         musicPlayer = new Util::DumbPlayer(path);
+        musicPlayer->play();
         playing = true;
     } else {
         return false;
