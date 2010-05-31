@@ -148,14 +148,19 @@ def checkSDL(context):
 def checkStaticSDL(context):
     context.Message("Checking for static SDL... ")
     env = context.env
-    sdl = env.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
-    env.Append(LIBS = [sdl])
-    env.ParseConfig('sdl-config --cflags')
+
+    env.ParseConfig('sdl-config --static-libs --cflags')
     env.Append(CPPDEFINES = ['USE_SDL'])
-    if isOSX():
-        def framework(x):
-            return "-framework %s" % x
-        frameworks = Split("""
+
+    if False:
+        sdl = env.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
+        env.Append(LIBS = [sdl])
+        env.ParseConfig('sdl-config --cflags')
+        env.Append(CPPDEFINES = ['USE_SDL'])
+        if isOSX():
+            def framework(x):
+                return "-framework %s" % x
+            frameworks = Split("""
 Cocoa
 Carbon
 IOKit
@@ -166,8 +171,8 @@ AudioToolbox
 QuickTime
 OpenGL
 """)
-        # env.Append(LINKFLAGS = map(framework, frameworks))
-        env.Append(FRAMEWORKS = frameworks)
+            # env.Append(LINKFLAGS = map(framework, frameworks))
+            env.Append(FRAMEWORKS = frameworks)
     context.Result(1)
     return 1
 
