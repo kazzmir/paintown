@@ -737,7 +737,7 @@ void Configuration::saveConfiguration(){
     head.addToken(sound);
     
     Token * music = new Token();
-    *music << config_sound << Configuration::getMusicVolume();
+    *music << config_music << Configuration::getMusicVolume();
     head.addToken(music);
 
     Token * fullscreen = new Token();
@@ -816,8 +816,8 @@ int Configuration::screen_height = 480;
 std::string Configuration::menuFont = "";
 int Configuration::menuFontWidth = 24;
 int Configuration::menuFontHeight = 24;
-int Configuration::soundVolume = 100;
-int Configuration::musicVolume = 100;
+int Configuration::soundVolume = 80;
+int Configuration::musicVolume = 80;
 std::string Configuration::currentGameDir = "paintown";
 std::map<std::string, std::string> Configuration::properties;
 // std::string Configuration::menuFont = "fonts/arial.ttf";

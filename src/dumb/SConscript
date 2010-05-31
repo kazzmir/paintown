@@ -43,6 +43,10 @@ helpers/clickrem.c
 helpers/silence.c
 helpers/memfile.c
 helpers/resample.c
+allegro/alplay.c
+""");
+
+unused = Split("""
 allegro/datit.c
 allegro/datxm.c
 allegro/datduh.c
@@ -53,9 +57,8 @@ allegro/datxmq.c
 allegro/datmodq.c
 allegro/dats3mq.c
 allegro/datunld.c
-allegro/alplay.c
 allegro/packfile.c
-""");
+""")
 
 # helpers/resample.inc
 # helpers/resamp2.inc

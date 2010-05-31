@@ -188,7 +188,7 @@ static void initSystem(ostream & out){
     LOCK_FUNCTION(close_window);
     set_close_button_callback(close_window);
 
-    dumb_register_packfiles();
+    dumb_register_stdfiles();
 }
 
 static void moreInitSystem(){
