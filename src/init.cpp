@@ -187,8 +187,6 @@ static void initSystem(ostream & out){
     /* close window when the X is pressed */
     LOCK_FUNCTION(close_window);
     set_close_button_callback(close_window);
-
-    dumb_register_stdfiles();
 }
 
 static void moreInitSystem(){
@@ -314,6 +312,8 @@ bool Global::init( int gfx ){
 
     /* do implementation specific setup */
     initSystem(out);
+
+    dumb_register_stdfiles();
     
     Sound::initialize();
 

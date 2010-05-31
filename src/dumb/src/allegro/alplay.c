@@ -161,7 +161,6 @@ int al_poll_duh(AL_DUH_PLAYER *dp)
 		return 0;
 
 	n = duh_render(dp->sigrenderer, 16, 1, dp->volume, 65536.0 / dp->freq, dp->bufsize, sptr);
-
 	if (n == 0) {
 		if (++dp->silentcount >= 2) {
 			duh_end_sigrenderer(dp->sigrenderer);

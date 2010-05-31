@@ -9,10 +9,6 @@
 #include "util/file-system.h"
 #include "util/music-player.h"
 
-/* FIXME!!!!!!!!!
- * Get rid of the USE_ALLEGRO ifdef's in here.
- */
-
 using namespace std;
 
 static Music * instance = NULL;
