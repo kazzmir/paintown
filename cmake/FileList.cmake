@@ -129,6 +129,7 @@ src/util/ftalleg.cpp
 src/util/funcs.cpp
 src/util/file-system.cpp
 src/util/gradient.cpp
+src/util/music-player.cpp
 src/util/ebox.cpp
 src/util/regex.cpp
 src/util/language-string.cpp

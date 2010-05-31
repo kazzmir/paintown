@@ -3,18 +3,11 @@
 #include <iostream>
 #include "globals.h"
 // #include "defs.h"
-#ifdef USE_ALLEGRO
-#include "dumb/include/aldumb.h"
-
-#ifdef _WIN32
-#include <winalleg.h>
-#endif
-
-#endif
 
 #include <pthread.h>
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/music-player.h"
 
 /* FIXME!!!!!!!!!
  * Get rid of the USE_ALLEGRO ifdef's in here.
@@ -49,10 +42,9 @@ static void * bogus_thread( void * x){
 }
 
 Music::Music( bool on ):
-playing( false ),
-fading( 0 ),
-player( NULL ),
-music_file( NULL ),
+playing(false),
+fading(0),
+musicPlayer(NULL),
 currentSong(""){
 
 	if ( instance != NULL ){
@@ -143,10 +135,7 @@ void Music::doPlay(){
                          break;
                      }
         }
-#ifdef USE_ALLEGRO
-        if (al_poll_duh( this->player ) != 0){
-        }
-#endif
+        musicPlayer->poll();
     }
 }
 
@@ -257,10 +246,8 @@ bool Music::loadSong( const string & song ){
 }
 
 void Music::_play(){
-    if ( playing == false && this->player != NULL ){
-#ifdef USE_ALLEGRO
-        al_resume_duh( this->player );
-#endif
+    if ( playing == false && musicPlayer != NULL ){
+        musicPlayer->play();
         playing = true;
     }
 }
@@ -274,10 +261,8 @@ void Music::play(){
 
 void Music::_pause(){
     playing = false;
-    if ( this->player != NULL ){
-#ifdef USE_ALLEGRO
-        al_pause_duh( this->player );
-#endif
+    if (musicPlayer != NULL){
+        musicPlayer->pause();
     }
 }
 
@@ -342,23 +327,16 @@ void Music::setVolume( double vol ){
 }
 
 void Music::_setVolume( double vol ){
-
-    if ( player ){
-#ifdef USE_ALLEGRO
-        al_duh_set_volume( player, vol );
-#endif
+    if (musicPlayer){
+        musicPlayer->setVolume(vol);
     }
-
 }
 	
 Music::~Music(){
 
     LOCK;{
-        if ( player ){
-#ifdef USE_ALLEGRO
-            al_stop_duh( player );
-            unload_duh( music_file );
-#endif
+        if (musicPlayer){
+            delete musicPlayer;
         }
 
         alive = false;
@@ -383,14 +361,9 @@ void Music::resume(){
 }
 */
 
-static const char * typeToExtension( int i ){
-    switch (i){
-        case 0 : return ".xm";
-        case 1 : return ".s3m";
-        case 2 : return ".it";
-        case 3 : return ".mod";
-        default : return "";
-    }
+/* true if the file extension is something DUMB will probably recognize */
+static bool isDumbFile(const char * path){
+    return true;
 }
 
 bool Music::internal_loadSong( const char * path ){
@@ -404,13 +377,9 @@ bool Music::internal_loadSong( const char * path ){
         currentSong = std::string(path);
     }
 
-    if ( player != NULL ){
-#ifdef USE_ALLEGRO
-        al_stop_duh( player );
-        unload_duh( music_file );
-#endif
-        player = NULL;
-        music_file = NULL;
+    if (musicPlayer != NULL){
+        delete musicPlayer;
+        musicPlayer = NULL;
     }
 
     // music_file = dumb_load_mod( path );
@@ -426,7 +395,15 @@ bool Music::internal_loadSong( const char * path ){
        music_file = dumb_load_it( path );
        }
        */
+    
+    if (isDumbFile(path)){
+        musicPlayer = new Util::DumbPlayer(path);
+        playing = true;
+    } else {
+        return false;
+    }
 
+#if 0
 #ifdef USE_ALLEGRO
     for ( int i = 0; i < 4; i++ ){
         /* the order of trying xm/s3m/it/mod matters because mod could be
@@ -455,10 +432,11 @@ bool Music::internal_loadSong( const char * path ){
             break;
         }
     }
+        
 
     if (music_file){
-        int buf = 1 << 11;
-        player = al_start_duh( music_file, 2, 0, volume, buf, 22050 );
+        // int buf = 1 << 11;
+        // player = al_start_duh( music_file, 2, 0, volume, buf, 22050 );
         // cout << "Loaded music player " << player << endl;
 
         /*
@@ -477,6 +455,7 @@ bool Music::internal_loadSong( const char * path ){
         Global::debug( 0 )<<"Could not load "<<path<<endl;
         return false;
     }
+#endif
 #endif
 
     return true;

@@ -7,13 +7,17 @@
 struct AL_DUH_PLAYER;
 struct DUH;
 
+namespace Util{
+    class MusicPlayer;
+}
+
 /* The music class. Dont be late or youll get an F!
  */
 class Music{
 public:
 	Music( bool on );
 
-	~Music();
+	virtual ~Music();
 
 	static bool loadSong( const char * song );
 	static bool loadSong( const std::string & song );
@@ -52,8 +56,8 @@ protected:
 
 	bool internal_loadSong( const char * path );
 
-	AL_DUH_PLAYER * player;
-	DUH * music_file;
+
+        Util::MusicPlayer * musicPlayer;
 	
 	std::string currentSong;
 };
