@@ -345,20 +345,9 @@ Music::~Music(){
 
 }
 
-/*
-void Music::pause(){
-	al_pause_duh( player );
-}
-*/
-
-/*
-void Music::resume(){
-	al_resume_duh( player );
-}
-*/
-
 /* true if the file extension is something DUMB will probably recognize */
 static bool isDumbFile(const char * path){
+    /* FIXME */
     return true;
 }
 
@@ -377,20 +366,6 @@ bool Music::internal_loadSong( const char * path ){
         delete musicPlayer;
         musicPlayer = NULL;
     }
-
-    // music_file = dumb_load_mod( path );
-    /*
-       music_file = dumb_load_mod( path );
-       if ( !music_file ){
-       music_file = dumb_load_xm( path );
-       }
-       if ( !music_file ){
-       music_file = dumb_load_s3m( path );
-       }
-       if ( !music_file ){
-       music_file = dumb_load_it( path );
-       }
-       */
     
     if (isDumbFile(path)){
         musicPlayer = new Util::DumbPlayer(path);
@@ -400,63 +375,7 @@ bool Music::internal_loadSong( const char * path ){
         return false;
     }
 
-#if 0
-#ifdef USE_ALLEGRO
-    for ( int i = 0; i < 4; i++ ){
-        /* the order of trying xm/s3m/it/mod matters because mod could be
-         * confused with one of the other formats, so load it last.
-         */
-        switch (i){
-            case 0 : {
-                         music_file = dumb_load_xm_quick( path );
-                         break;
-                     }
-            case 1 : {
-                         music_file = dumb_load_s3m_quick( path );
-                         break;
-                     }
-            case 2 : {
-                         music_file = dumb_load_it_quick( path );
-                         break;
-                     }
-            case 3 : {
-                         music_file = dumb_load_mod_quick( path );
-                         break;
-                     }
-        }
-        if ( music_file != NULL ){
-            Global::debug(0) << "Loaded " << path << " type " << typeToExtension( i ) << "(" << i << ")" << endl;
-            break;
-        }
-    }
-        
-
-    if (music_file){
-        // int buf = 1 << 11;
-        // player = al_start_duh( music_file, 2, 0, volume, buf, 22050 );
-        // cout << "Loaded music player " << player << endl;
-
-        /*
-           while ( 1 ){
-           al_poll_duh( player );
-           rest( 1 );
-           }
-           */
-
-        if (player != NULL){
-            playing = true;
-        } else {
-            Global::debug(0) << "*BUG* Could not create music player" << endl;
-        }
-    } else {
-        Global::debug( 0 )<<"Could not load "<<path<<endl;
-        return false;
-    }
-#endif
-#endif
-
     return true;
-
 }
 
 void Music::changeSong(){
