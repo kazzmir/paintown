@@ -364,7 +364,9 @@ static bool isDumbFile(const char * path){
 
 static bool isGMEFile(const char * path){
     string extension = getExtension(path);
-    return extension == "nsf";
+    return extension == "nsf" ||
+           extension == "spc" ||
+           extension == "gym";
 }
 
 bool Music::internal_loadSong( const char * path ){
