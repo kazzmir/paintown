@@ -345,10 +345,26 @@ Music::~Music(){
 
 }
 
+static string getExtension(const char * path_){
+    string path(path_);
+    if (path.rfind('.') != string::npos){
+        return path.substr(path.rfind('.') + 1);
+    }
+    return "";
+}
+
 /* true if the file extension is something DUMB will probably recognize */
 static bool isDumbFile(const char * path){
-    /* FIXME */
-    return true;
+    string extension = getExtension(path);
+    return extension == "mod" ||
+           extension == "s3m" ||
+           extension == "it" ||
+           extension == "xm";
+}
+
+static bool isGMEFile(const char * path){
+    string extension = getExtension(path);
+    return extension == "nsf";
 }
 
 bool Music::internal_loadSong( const char * path ){
@@ -369,6 +385,10 @@ bool Music::internal_loadSong( const char * path ){
     
     if (isDumbFile(path)){
         musicPlayer = new Util::DumbPlayer(path);
+        musicPlayer->play();
+        playing = true;
+    } else if (isGMEFile(path)){
+        musicPlayer = new Util::GMEPlayer(path);
         musicPlayer->play();
         playing = true;
     } else {
