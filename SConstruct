@@ -115,6 +115,20 @@ def checkRTTI(context):
     context.Result(foo)
     return foo
 
+def checkAllegro5(context):
+    context.Message("Checking for Allegro 5 ... ")
+    tmp = context.env.Clone()
+    env = context.env
+    try:
+        env.ParseConfig('pkg-config allegro-4.9 --cflags --libs')
+        env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+        context.Result(1)
+        return 1
+    except:
+        context.sconf.env = tmp
+    context.Result(0)
+    return 0
+
 def checkSDL(context):
     context.Message("Checking for SDL ... ")
     tmp = context.env.Clone()
@@ -433,9 +447,23 @@ def useSDL():
 
     return byEnv() or byArgument()
 
+def useAllegro5():
+    def byEnv():
+        try:
+            return os.environ['ALLEGRO5'] == '1'
+        except KeyError:
+            return False
+
+    def byArgument():
+        try:
+            return int(ARGUMENTS['allegro5']) == 1
+        except KeyError:
+            return False
+
+    return byEnv() or byArgument()
 
 def useAllegro():
-    return not useSDL()
+    return not useSDL() and not useAllegro5()
 
 def isCygwin():
     try:
@@ -620,10 +648,14 @@ def configEnvironment(env):
         return env
     else:
         custom_tests = {"CheckAllegro" : checkAllegro,
+                        "CheckAllegro5" : checkAllegro5,
                         "CheckSDL" : checkSDL}
         config = env.Configure(custom_tests = custom_tests)
         if useAllegro():
             if not config.CheckAllegro():
+                Exit(1)
+        if useAllegro5():
+            if not config.CheckAllegro5():
                 Exit(1)
         if useSDL():
             if not config.CheckSDL():
@@ -636,6 +668,8 @@ def buildType(dir):
     properties = [dir]
     if useSDL():
         properties.append('sdl')
+    if useAllegro5():
+        properties.append('allegro5')
     if getDebug():
         properties.append('debug')
     return '-'.join(properties)
