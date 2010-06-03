@@ -24,7 +24,10 @@ Section "Paintown (required)"
 	File "..\misc\run_level_editor.bat"
 	File "..\misc\run_animator_editor.bat"
 	File "..\misc\zlib.pyd"
+    # WARNING: its easier to include both allegro and SDL rather than
+    # figure out what type of build we made. Maybe fix this in the future.
 	File "..\misc\dlls\alleg42.dll"
+	File "..\misc\dlls\SDL.dll"
 	File "..\misc\dlls\libpthread-2.dll"
 	File "..\misc\dlls\freetype6.dll"
 	File "..\misc\dlls\zlib1.dll"
