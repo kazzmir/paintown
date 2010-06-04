@@ -152,7 +152,10 @@ void * loadingScreen( void * arg ){
 
     while ( ! quit.get() ){
 
+        /* true if a logic loop has passed */
         bool draw = false;
+
+        /* will be true if any new info messages appeared */
         bool drawInfo = firstDraw;
         firstDraw = false;
         if ( Global::speed_counter > 0 ){
@@ -164,17 +167,22 @@ void * loadingScreen( void * arg ){
                 gradient.backward();
                 think -= 1;
             }
+
+            /* if no new messages appeared this will be false */
             drawInfo = info.transferMessages(infobox);
         } else {
             Util::rest( 1 );
         }
 
-        if ( draw ){
+        if (draw){
             for ( vector< ppair >::iterator it = pairs.begin(); it != pairs.end(); it++ ){
                 int color = gradient.current(it->x);
                 work.putPixel(it->x, it->y, color);
             }
 
+            /* we might not have to draw the whole info box again if no new
+             * messages appeared.
+             */
             if (drawInfo){
                 infoBackground.Blit(infoWork);
 
