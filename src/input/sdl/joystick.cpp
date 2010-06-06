@@ -1,5 +1,6 @@
 #ifdef USE_SDL
 
+#include <SDL.h>
 #include "joystick.h"
 
 void SDLJoystick::poll(){
@@ -12,17 +13,17 @@ JoystickInput SDLJoystick::readAll(){
     return ok;
 }
 
-bool SDLJoystick::pressed(){
-    /* TODO */
-    return false;
-}
-
 SDLJoystick::~SDLJoystick(){
-    /* TODO */
+    if (joystick){
+        SDL_JoystickClose(joystick);
+    }
 }
 
-SDLJoystick::SDLJoystick(){
-    /* TODO */
+SDLJoystick::SDLJoystick():
+joystick(NULL){
+    if (SDL_NumJoysticks() > 0){
+        joystick = SDL_JoystickOpen(0);
+    }
 }
 
 #endif

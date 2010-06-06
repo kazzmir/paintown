@@ -103,12 +103,10 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     DisplayCharacterLoader loader(getCharacters(players));
     InputMap<Select::Input> input;
 
-    // Keyboard key;
-
     // Bitmap work( GFX_X / 2, GFX_Y / 2 );
     Bitmap work( GFX_X, GFX_Y );
 
-    /* the background should be configurable */
+    /* TODO: the background should be configurable */
     Bitmap background(Global::titleScreen().path());
 
     /* currently selected character */

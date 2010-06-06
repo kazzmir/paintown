@@ -40,7 +40,7 @@ class Joystick{
 public:
     virtual void poll() = 0;
     virtual JoystickInput readAll() = 0;
-    virtual bool pressed() = 0;
+    virtual bool pressed();
     virtual ~Joystick();
 
     static Joystick * create();

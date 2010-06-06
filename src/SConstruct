@@ -81,7 +81,9 @@ def sflLibrary(env):
 
 def gmeLibrary(env):
     gmeEnv = env.Clone()
-    gmeEnv.Append(CPPDEFINES = Split("""
+    # These things are defined by gme_types.h
+    if False:
+        gmeEnv.Append(CPPDEFINES = Split("""
 USE_GME_NSF
 USE_GME_NSFE
 USE_GME_KSS
@@ -93,6 +95,7 @@ USE_GME_SAP
 USE_GME_SPC
 USE_GME_VGM
 """))
+
     source = Split("""
 gme/Ay_Apu.cpp
 gme/Ay_Cpu.cpp

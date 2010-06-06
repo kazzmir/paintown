@@ -189,9 +189,6 @@ static void initSystem(ostream & out){
     set_close_button_callback(close_window);
 }
 
-static void moreInitSystem(){
-}
-
 #endif
 #ifdef USE_SDL
     
@@ -294,11 +291,9 @@ static void initSystem(ostream & out){
 
     SDL_WM_SetCaption("Paintown", NULL);
 
-    // atexit(doSDLQuit);
-}
+    SDL_JoystickEventState(1);
 
-static void moreInitSystem(){
-    // pthread_create(&events, NULL, handleEvents, NULL);
+    // atexit(doSDLQuit);
 }
 #endif
 
@@ -348,8 +343,6 @@ bool Global::init( int gfx ){
 
     /* this mutex is used to show the loading screen while the game loads */
     pthread_mutex_init( &Loader::loading_screen_mutex, NULL );
-
-    moreInitSystem();
 
     out<<"-- END init --"<<endl;
 

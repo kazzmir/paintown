@@ -43,12 +43,6 @@ JoystickInput AllegroJoystick::readAll(){
     return input;
 }
 
-bool AllegroJoystick::pressed(){
-    JoystickInput input = readAll();
-    return input.up || input.down || input.left || input.right ||
-           input.button1 || input.button2 || input.button3 || input.button4; 
-}
-
 AllegroJoystick::~AllegroJoystick(){
 }
 
