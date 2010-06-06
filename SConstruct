@@ -221,11 +221,12 @@ def checkAllegro(context):
     context.Result(ok)
     return ok
 
-def checkOgg(context):
+def checkNativeOgg(context):
     context.Message("Checking for ogg and vorbis... ")
     tmp = context.env.Clone()
     env = context.env
-    env.Append(CPPDEFINES = ['HAVE_OGG'])
+    env['HAVE_OGG'] = True
+    # env.Append(CPPDEFINES = ['HAVE_OGG'])
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         try:
@@ -690,7 +691,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckRTTI" : checkRTTI,
                 "CheckAllegro" : checkAllegro,
                 "CheckSDL" : checkSDL,
-                "CheckOgg" : checkOgg}
+                "CheckOgg" : checkNativeOgg}
 
 env['PAINTOWN_TESTS'] = custom_tests
 

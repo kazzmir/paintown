@@ -62,13 +62,24 @@ util/sdl/image/IMG_xcf.c
 def sdlMixerLibrary(env):
     mixer = env.Clone()
 
+    try:
+        if mixer['HAVE_OGG']:
+            mixer.Append(CPPDEFINES = ['OGG_MUSIC'])
+    except KeyError:
+        pass
+
     source = Split("""
 music.c
 mixer.c
+music_ogg.c
+music_flac.c
+music_mad.c
+dynamic_ogg.c
 effect_position.c
 effects_internal.c
 effect_stereoreverse.c
 load_voc.c
+load_ogg.c
 load_aiff.c
 wavestream.c
 """)
