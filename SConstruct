@@ -226,7 +226,7 @@ def checkNativeOgg(context):
     tmp = context.env.Clone()
     env = context.env
     env['HAVE_OGG'] = True
-    # env.Append(CPPDEFINES = ['HAVE_OGG'])
+    env.Append(CPPDEFINES = ['HAVE_OGG'])
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         try:

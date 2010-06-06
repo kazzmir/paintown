@@ -348,7 +348,7 @@ Music::~Music(){
 static string getExtension(const char * path_){
     string path(path_);
     if (path.rfind('.') != string::npos){
-        return path.substr(path.rfind('.') + 1);
+        return Util::lowerCaseAll(path.substr(path.rfind('.') + 1));
     }
     return "";
 }
@@ -368,6 +368,12 @@ static bool isGMEFile(const char * path){
            extension == "spc" ||
            extension == "gym";
 }
+
+static bool isOggFile(const char * path){
+    string extension = getExtension(path);
+    return extension == "ogg";
+}
+
 
 bool Music::internal_loadSong( const char * path ){
 
@@ -393,6 +399,12 @@ bool Music::internal_loadSong( const char * path ){
         musicPlayer = new Util::GMEPlayer(path);
         musicPlayer->play();
         playing = true;
+#ifdef HAVE_OGG
+    } else if (isOggFile(path)){
+        musicPlayer = new Util::OggPlayer(path);
+        musicPlayer->play();
+        playing = true;
+#endif
     } else {
         return false;
     }
