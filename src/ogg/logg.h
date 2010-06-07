@@ -1,7 +1,7 @@
 #ifndef LOGG_H
 #define LOGG_H
 
-#ifdef USE_ALLEGRO
+#if defined(USE_ALLEGRO) && defined(HAVE_OGG)
 
 #ifdef __cplusplus
 extern "C" {
