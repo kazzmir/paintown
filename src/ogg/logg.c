@@ -82,7 +82,7 @@ void logg_set_buffer_size(int size)
 	logg_bufsize = size;
 }
 
-static int logg_open_file_for_streaming(LOGG_Stream* s)
+static int logg_open_file_for_streaming(struct LOGG_Stream* s)
 {
 	FILE* file;
 	vorbis_info* vi;
@@ -109,7 +109,7 @@ static int logg_open_file_for_streaming(LOGG_Stream* s)
 	return 0;
 }
 
-static int read_ogg_data(LOGG_Stream* s)
+static int read_ogg_data(struct LOGG_Stream* s)
 {
 	int read = 0;
 	int bitstream;
@@ -141,7 +141,7 @@ static int read_ogg_data(LOGG_Stream* s)
 	return read;
 }
 
-static int logg_play_stream(LOGG_Stream* s)
+static int logg_play_stream(struct LOGG_Stream* s)
 {
 	int len;
 	int i;
@@ -174,9 +174,9 @@ static int logg_play_stream(LOGG_Stream* s)
 	return 0;
 }
 
-LOGG_Stream* logg_get_stream(const char* filename, int volume, int pan, int loop)
+struct LOGG_Stream* logg_get_stream(const char* filename, int volume, int pan, int loop)
 {
-	LOGG_Stream* s = calloc(1, sizeof(LOGG_Stream));
+	struct LOGG_Stream* s = calloc(1, sizeof(struct LOGG_Stream));
 	if (!s) {
 		return 0;
 	}
@@ -205,7 +205,7 @@ LOGG_Stream* logg_get_stream(const char* filename, int volume, int pan, int loop
 	return s;
 }
 
-int logg_update_stream(LOGG_Stream* s)
+int logg_update_stream(struct LOGG_Stream* s)
 {
 	unsigned char* data = get_audio_stream_buffer(s->audio_stream);
 
@@ -233,7 +233,7 @@ int logg_update_stream(LOGG_Stream* s)
 	return 1;
 }
 
-void logg_stop_stream(LOGG_Stream* s)
+void logg_stop_stream(struct LOGG_Stream* s)
 {
 	int i;
 
@@ -244,12 +244,12 @@ void logg_stop_stream(LOGG_Stream* s)
 	}
 }
 
-int logg_restart_stream(LOGG_Stream* s)
+int logg_restart_stream(struct LOGG_Stream* s)
 {
 	return logg_play_stream(s);
 }
 
-void logg_destroy_stream(LOGG_Stream* s)
+void logg_destroy_stream(struct LOGG_Stream* s)
 {
 	int i;
 
