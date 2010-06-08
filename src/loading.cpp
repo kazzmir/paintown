@@ -95,6 +95,30 @@ static vector<ppair> generateFontPixels(const Font & myFont, const string & mess
     return pairs;
 }
 
+/* shows time elapsed */
+class TimeCounter{
+public:
+    TimeCounter():
+    work(200, 40){
+        start = Global::second_counter;
+        last = 0;
+    }
+
+    void draw(int x, int y){
+        const Font & font = Font::getDefaultFont(24, 24);
+        if (Global::second_counter != last){
+            work.clear();
+            last = Global::second_counter;
+            font.printf(0, 0, Bitmap::makeColor(192, 192, 192), work, "Waiting.. %d", 0, last - start);
+            work.BlitAreaToScreen(x, y);
+        }
+    }
+
+    Bitmap work;
+    unsigned int start;
+    unsigned int last;
+};
+
 void * loadingScreen( void * arg ){
     int load_x = 80;
     int load_y = 220;
@@ -148,12 +172,14 @@ void * loadingScreen( void * arg ){
 
     Util::ThreadBoolean quit(done_loading, loading_screen_mutex);
 
+    TimeCounter counter;
+
     bool firstDraw = true;
 
     while ( ! quit.get() ){
 
         /* true if a logic loop has passed */
-        bool draw = false;
+        bool draw = firstDraw;
 
         /* will be true if any new info messages appeared */
         bool drawInfo = firstDraw;
@@ -179,6 +205,8 @@ void * loadingScreen( void * arg ){
                 int color = gradient.current(it->x);
                 work.putPixel(it->x, it->y, color);
             }
+
+            // counter.draw(200, 100);
 
             /* we might not have to draw the whole info box again if no new
              * messages appeared.
