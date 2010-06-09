@@ -18,6 +18,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "game/console.h"
 #include "object/animation.h"
 #include "object/object.h"
@@ -1062,10 +1063,10 @@ void MugenStage::render(Bitmap *work){
     /* darken the background */
     if (superPause.time > 0){
         /* FIXME: this should be faded I think */
-        Bitmap::drawingMode(Bitmap::MODE_TRANS);
+        // Bitmap::drawingMode(Bitmap::MODE_TRANS);
         Bitmap::transBlender(0, 0, 0, 128);
-        board->rectangleFill(0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor(0, 0, 0));
-        Bitmap::drawingMode(Bitmap::MODE_SOLID);
+        board->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor(0, 0, 0));
+        // Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 
     //! Render layer 0 HUD
@@ -1722,10 +1723,10 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
             background->renderBackground(0, 0, *board);
         
             // do darkened background
-            Bitmap::drawingMode(Bitmap::MODE_TRANS);
+            // Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	    Bitmap::transBlender(0,0,0,150);
-	    board->rectangleFill(0, 0, board->getWidth(), board->getHeight(), Bitmap::makeColor(0,0,0));
-	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Bitmap::makeColor(0,0,0));
+	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
             
             // Render character
             if (reflectionIntensity > 0){

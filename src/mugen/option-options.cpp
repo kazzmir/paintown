@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "options.h"
 #include "game.h"
 #include "menu.h"
@@ -64,10 +65,10 @@ void Option::render(MugenFont & font, int x, int y, const Bitmap & bmp){
 	    alpha = 128;
 	    alphaMod = -6;
 	}
-	Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	Bitmap::transBlender(0,0,0,alpha);
-	bmp.rectangleFill(x+2, y-10, rightX+2, y+2,Bitmap::makeColor(255,255,255));
-	Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	bmp.translucent().rectangleFill(x+2, y-10, rightX+2, y+2,Bitmap::makeColor(255,255,255));
+	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
 

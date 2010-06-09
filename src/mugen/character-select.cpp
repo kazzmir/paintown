@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "character-select.h"
 
 #include <fstream>
@@ -346,10 +347,10 @@ void Cell::render(const Bitmap & bmp){
 	}
     }
     if (flash){
-	Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
-	bmp.rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Bitmap::makeColor(255,255,255));
-	Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Bitmap::makeColor(255,255,255));
+	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
 

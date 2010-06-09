@@ -1,5 +1,6 @@
 #include "mugen/fadetool.h"
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 
 using namespace Mugen;
 
@@ -60,16 +61,16 @@ void FadeTool::act(){
 void FadeTool::draw(const Bitmap &bmp){
     switch (currentState){
 	case FadeIn:
-	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	    // Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	    Bitmap::transBlender(0,0,0,fader);
-	    bmp.rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeInColor);
-	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	    bmp.translucent().rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeInColor);
+	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    break;
 	case FadeOut:
-	    Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	    // Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	    Bitmap::transBlender(0,0,0,fader);
-	    bmp.rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeOutColor);
-	    Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	    bmp.translucent().rectangleFill(0, 0, bmp.getWidth(),bmp.getHeight(),fadeOutColor);
+	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    break;
 	case NoFade:
 	case RunFade:

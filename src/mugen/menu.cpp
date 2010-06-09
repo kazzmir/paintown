@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "menu.h"
 
 #include <fstream>
@@ -96,10 +97,10 @@ void CursorHandler::act(){
 
 void CursorHandler::renderCursor(int x, int y, const Bitmap & bmp){
     if (cursor.visible){
-	Bitmap::drawingMode(Bitmap::MODE_TRANS);
+	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
 	Bitmap::transBlender(0, 0, 0, cursor.alpha);
-	bmp.rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Bitmap::makeColor(255,255,255));
-	Bitmap::drawingMode(Bitmap::MODE_SOLID);
+	bmp.translucent().rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Bitmap::makeColor(255,255,255));
+	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
 

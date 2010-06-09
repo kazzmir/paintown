@@ -33,6 +33,12 @@ def useIntel():
     except KeyError:
         return False
 
+def useWii():
+    try:
+        return int(os.environ['wii'])
+    except KeyError:
+        return False
+
 def useLLVM():
     try:
         return int(os.environ['llvm'])
@@ -549,6 +555,25 @@ def getEnvironment(debug):
                                '-wd383', '-wd869',
                                '-wd1599'])
         return env
+    # use the devkitpro stuff for wii/gamecube
+    def wii(env):
+        bin_path = "%s/bin" % os.environ['DEVKITPPC']
+        prefix = 'powerpc-eabi-'
+        def setup(x):
+            return '%s%s' % (prefix, x)
+        env['CC'] = setup('gcc')
+        env['LD'] = setup('ld')
+        env['CXX'] = setup('g++')
+        env['AS'] = setup('as')
+        env['AR'] = setup('ar')
+        env['OBJCOPY'] = setup('objcopy')
+        env.Append(CPPPATH = ["%s/libogc/include" % os.environ['DEVKITPRO']])
+        env.Append(CPPDEFINES = ['GEKKO'])
+        env.Append(CCFLAGS = ['-mrvl', '-mcpu=750', '-meabi', '-mhard-float'])
+        env.Append(CXXFLAGS = ['-mrvl', '-mcpu=750', '-meabi', '-mhard-float'])
+        env.Prepend(LIBS = ['wiiuse', 'bte', 'ogc', 'm'])
+        os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
+        return env
     def llvm(env):
         env['CC'] = 'llvm-gcc'
         env['CXX'] = 'llvm-g++'
@@ -590,6 +615,8 @@ def getEnvironment(debug):
             if useIntel():
                 print "Using the intel compiler"
                 return intel(Environment(ENV = os.environ, CCFLAGS = cflags))
+            elif useWii():
+                return wii(Environment(ENV = os.environ, CCFLAGS = cflags))
             elif useLLVM():
                 return llvm(Environment(ENV = os.environ, CCFLAGS = cflags))
             else:
