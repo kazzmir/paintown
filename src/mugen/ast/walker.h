@@ -9,6 +9,7 @@ class AttributeKeyword;
 class AttributeArray;
 class Attribute;
 class Value;
+class CompiledValue;
 class Range;
 class ValueList;
 class KeySingle;
@@ -29,6 +30,9 @@ public:
     }
 
     virtual void onValue(const Value & value){
+    }
+    
+    virtual void onCompiledValue(const Value & value){
     }
 
     virtual void onRange(const Range & range){
