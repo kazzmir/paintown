@@ -64,6 +64,7 @@ find_package(PNG)
 find_package(FREETYPE)
 find_package(Threads)
 find_package(GNUREGEX)
+find_package(VORBIS)
 find_package(OGG)
 
 # -------------------------------------------------------
@@ -107,8 +108,8 @@ endif($ENV{SDL})
 
 if(OGG_FOUND)
     add_definitions(-DHAVE_OGG)
-    set(OGG_LIBS ${OGG_LIBRARY})
-    set(OGG_INCLUDES ${OGG_INCLUDE_DIR})
+    set(OGG_LIBS ${OGG_LIBRARY} ${VORBIS_LIBRARIES})
+    set(OGG_INCLUDES ${OGG_INCLUDE_DIR} ${VORBIS_INCLUDE_DIR})
 else(OGG_FOUND)
     set(OGG_LIBS "")
     set(OGG_INCLUDES "")
