@@ -138,14 +138,14 @@ def checkAllegro5(context):
 def checkSDL(context):
     context.Message("Checking for SDL ... ")
 
-    def build():
+    def build(x):
         return context.TryLink("""
         #include <SDL.h>
         int main(int argc, char ** argv){
-          int ok = SDL_INIT_VIDEO;
+          int %sok = SDL_INIT_VIDEO;
           return SDL_Init(0);
         }
-    """, ".c")
+    """ % x, ".c")
 
     def tryNormal():
         tmp = context.env.Clone()
@@ -153,7 +153,7 @@ def checkSDL(context):
         try:
             env.ParseConfig('sdl-config --cflags --libs')
             env.Append(CPPDEFINES = ['USE_SDL'])
-            if build():
+            if build('a'):
                 return True
             else:
                 raise Exception()
@@ -171,11 +171,13 @@ def checkSDL(context):
             env.ParseConfig('sdl-config --cflags --libs')
             env.Append(LIBS = libs)
             env.Append(CPPDEFINES = ['USE_SDL'])
-            if build():
+            m = build('b')
+            if m:
                 return True
             else:
-                raise Exception()
-        except Exception:
+                raise Exception("Couldn't build it")
+        except Exception, e:
+            print "Moving libraries failed! because '%s'" % e
             context.sconf.env = tmp
             return False
 
@@ -578,7 +580,7 @@ def getEnvironment(debug):
         bin_path = "%s/bin" % os.environ['DEVKITPPC']
         prefix = 'powerpc-eabi-'
         def setup(x):
-            return '%s/%s%s' % (bin_path, prefix, x)
+            return '%s%s' % (prefix, x)
         env['CC'] = setup('gcc')
         env['LD'] = setup('ld')
         env['CXX'] = setup('g++')
@@ -586,7 +588,7 @@ def getEnvironment(debug):
         env['AR'] = setup('ar')
         env['OBJCOPY'] = setup('objcopy')
         env.Append(CPPPATH = ["%s/libogc/include" % os.environ['DEVKITPRO']])
-        env.Append(CPPDEFINES = ['GEKKO'])
+        env.Append(CPPDEFINES = ['GEKKO', 'WII'])
         flags = ['-mrvl', '-mcpu=750', '-meabi', '-mhard-float']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
@@ -594,6 +596,7 @@ def getEnvironment(debug):
         # env['LINKCOM'] = '$CC $SOURCES --start-group $_LIBDIRFLAGS $_LIBFLAGS --end-group -o $TARGET'
         env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'bte', 'ogc', 'm'])
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
+        env.PrependENVPath('PATH', bin_path)
         return env
     def llvm(env):
         env['CC'] = 'llvm-gcc'
@@ -711,7 +714,7 @@ def configEnvironment(env):
                 Exit(1)
         return config.Finish()
 
-allegroEnvironment = configEnvironment(getEnvironment(debug))
+# allegroEnvironment = configEnvironment(getEnvironment(debug))
 
 def buildType(dir):
     properties = [dir]
@@ -792,8 +795,6 @@ if isWindows():
     staticEnv.Append(CPPDEFINES = 'WINDOWS')
 else:
     staticEnv = env.Clone()
-    env.Append( LIBS = [ 'pthread' ] )
-    staticEnv.Append( LIBS = [ 'pthread' ] )
 
     import sys
     # find the system tool path by attaching SCons/Tool to everything
@@ -829,6 +830,10 @@ else:
         staticEnv.ParseConfig( 'libpng-config --cflags' )
     except OSError:
         pass
+
+    if not useWii():
+        env.Append(LIBS = [ 'pthread' ])
+        staticEnv.Append(LIBS = [ 'pthread' ])
 
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib

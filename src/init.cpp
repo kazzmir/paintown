@@ -80,7 +80,7 @@ static void inc_second_counter() {
 END_OF_FUNCTION( inc_second_counter )
 #endif
 
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(WII)
 static void handleSigSegV(int i, siginfo_t * sig, void * data){
     const char * message = "Bug! Caught a memory violation. Shutting down..\n";
     int dont_care = write(1, message, 48);
@@ -99,7 +99,7 @@ static void handleSigSegV(int i, siginfo_t * sig, void * data){
 #endif
 
 /* catch a socket being closed prematurely on unix */
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(WII)
 static void handleSigPipe( int i, siginfo_t * sig, void * data ){
 }
 
@@ -111,7 +111,7 @@ static void handleSigUsr1( int i, siginfo_t * sig, void * data ){
 #endif
 
 static void registerSignals(){
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(WII)
 	struct sigaction action;
 	memset( &action, 0, sizeof(struct sigaction) );
 	action.sa_sigaction = handleSigPipe;
