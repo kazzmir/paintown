@@ -100,9 +100,23 @@ dontMove(0){
     moves["holdback"].points -= 10;
     moves["holdback"].minimumDistance = 999999;
     moves["holdback"].maximumDistance = 0;
+
+    /* this is just to give the AI a starting move that does nothing, this is
+     * basically a noop. eventualy the AI will learn other moves to do.
+     */
     moves["not-possible+#$*(@#$"].points = 5;
 }
 
+/* the command with the most points will be chosen. points are tallied by
+ * adding all the quantities associated with that move thus far. right now they are:
+ *  - starting points is the number of times the move hit successfully
+ *  - add points if the move is within range, where range is determined by the last
+ *     successful hit for that command
+ *  - add a random number of points to shake things up
+ *  - subtract points if the move is out of range
+ *  - subtract points based on the number of times the move has been tried
+ *  - subtract points if the move has been done recently
+ */
 string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*> & commands){
     Move * currentMove = NULL;
     string what = "";
@@ -164,6 +178,7 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
 
     vector<string> out;
 
+    /* maybe attack */
     if (PaintownUtil::rnd(200) < difficulty * 2){
         const Character * enemy = stage.getEnemy(owner);
         int xDistance = (int) fabs(owner->getX() - enemy->getX());
@@ -172,6 +187,7 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
         lastCommand = command;
         lastDistance = xDistance;
     } else {
+        /* otherwise move around */
         dontMove += 1;
         if (direction == Forward){
             out.push_back("holdfwd");
@@ -196,7 +212,8 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
 
     return out;
 }
-    
+
+/* hit succeeded, reinforce learning behavior for that move */
 void LearningAIBehavior::hit(Character * enemy){
     Move & move = moves[lastCommand];
     move.points += 1;

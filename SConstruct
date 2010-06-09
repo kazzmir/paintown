@@ -137,31 +137,49 @@ def checkAllegro5(context):
 
 def checkSDL(context):
     context.Message("Checking for SDL ... ")
-    tmp = context.env.Clone()
-    env = context.env
 
-    ok = 1
-    try:
-        def enableSDL(env2):
-            env2.ParseConfig('sdl-config --cflags --libs')
-            env2.Append(CPPDEFINES = ['USE_SDL'])
-
-        enableSDL(env)
-        env['paintown_enableSDL'] = enableSDL
-        ok = context.TryLink("""
+    def build():
+        return context.TryLink("""
         #include <SDL.h>
         int main(int argc, char ** argv){
-          int ok = SDL_INIT_EVENTTHREAD;
+          int ok = SDL_INIT_VIDEO;
           return SDL_Init(0);
         }
     """, ".c")
 
-    except OSError:
-        ok = 0 
+    def tryNormal():
+        tmp = context.env.Clone()
+        env = context.env
+        try:
+            env.ParseConfig('sdl-config --cflags --libs')
+            env.Append(CPPDEFINES = ['USE_SDL'])
+            if build():
+                return True
+            else:
+                raise Exception()
+        except Exception:
+            context.sconf.env = tmp
+            return False
 
-    if not ok:
-        context.sconf.env = tmp
+    # Put any system libraries after SDL
+    def tryMoveLibs():
+        tmp = context.env.Clone()
+        env = context.env
+        try:
+            libs = env['LIBS']
+            env.Replace(LIBS = [])
+            env.ParseConfig('sdl-config --cflags --libs')
+            env.Append(LIBS = libs)
+            env.Append(CPPDEFINES = ['USE_SDL'])
+            if build():
+                return True
+            else:
+                raise Exception()
+        except Exception:
+            context.sconf.env = tmp
+            return False
 
+    ok = int(tryNormal() or tryMoveLibs())
     context.Result(ok)
     return ok
 
@@ -560,7 +578,7 @@ def getEnvironment(debug):
         bin_path = "%s/bin" % os.environ['DEVKITPPC']
         prefix = 'powerpc-eabi-'
         def setup(x):
-            return '%s%s' % (prefix, x)
+            return '%s/%s%s' % (bin_path, prefix, x)
         env['CC'] = setup('gcc')
         env['LD'] = setup('ld')
         env['CXX'] = setup('g++')
@@ -569,9 +587,12 @@ def getEnvironment(debug):
         env['OBJCOPY'] = setup('objcopy')
         env.Append(CPPPATH = ["%s/libogc/include" % os.environ['DEVKITPRO']])
         env.Append(CPPDEFINES = ['GEKKO'])
-        env.Append(CCFLAGS = ['-mrvl', '-mcpu=750', '-meabi', '-mhard-float'])
-        env.Append(CXXFLAGS = ['-mrvl', '-mcpu=750', '-meabi', '-mhard-float'])
-        env.Prepend(LIBS = ['wiiuse', 'bte', 'ogc', 'm'])
+        flags = ['-mrvl', '-mcpu=750', '-meabi', '-mhard-float']
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env.Append(LINKFLAGS = flags)
+        # env['LINKCOM'] = '$CC $SOURCES --start-group $_LIBDIRFLAGS $_LIBFLAGS --end-group -o $TARGET'
+        env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'bte', 'ogc', 'm'])
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         return env
     def llvm(env):

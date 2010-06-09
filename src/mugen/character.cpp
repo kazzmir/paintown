@@ -1039,7 +1039,6 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
-            /* this should really be head = Mugen::Util::fixCase(head) */
             head = Util::fixCase(head);
 
             if (head == "command"){
@@ -1220,7 +1219,6 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
-            /* this should really be head = Mugen::Util::fixCase(head) */
             head = Util::fixCase(head);
             if (false && !isStateDefSection(head)){
                 /* I dont think this is the right way to do it */
@@ -1551,7 +1549,6 @@ void Character::parseStateDefinition(Ast::Section * section){
 
 void Character::parseState(Ast::Section * section){
     std::string head = section->getName();
-    /* this should really be head = Mugen::Util::fixCase(head) */
     head = Util::fixCase(head);
 
     int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
