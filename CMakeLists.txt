@@ -64,6 +64,7 @@ find_package(PNG)
 find_package(FREETYPE)
 find_package(Threads)
 find_package(GNUREGEX)
+find_package(OGG)
 
 # -------------------------------------------------------
 # Include Source
@@ -104,6 +105,15 @@ elseif(NOT $ENV{SDL})
     set(USE_SDL OFF)
 endif($ENV{SDL})
 
+if(OGG_FOUND)
+    add_definitions(-DHAVE_OGG)
+    set(OGG_LIBS ${OGG_LIBRARY})
+    set(OGG_INCLUDES ${OGG_INCLUDE_DIR})
+else(OGG_FOUND)
+    set(OGG_LIBS "")
+    set(OGG_INCLUDES "")
+endif(OGG_FOUND)
+
 if(USE_SDL)
     # packages
     find_package(SDL)
@@ -116,6 +126,9 @@ if(USE_SDL)
     
     set(GRAPHICS_LIBRARIES sfl_module sprig_module image_module mixer_module ${SDL_LIBRARY})
     set(GRAPHICS_INCLUDES ${SDL_INCLUDE_DIR})
+    if (OGG_FOUND)
+        add_definitions(-DUSE_OGG)
+    endif (OGG_FOUND)
 else(USE_SDL)
     #packages
     find_package(ALLEGRO) 
@@ -177,12 +190,12 @@ endif(APPLE)
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src src/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${GNUREGEX_INCLUDE_DIR})
+include_directories(src src/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${OGG_INCLUDES} ${GNUREGEX_INCLUDE_DIR})
 
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${GNUREGEX_LIBRARIES} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${OGG_LIBS} ${GNUREGEX_LIBRARIES} ${WIN_LIB} ${WINSOCK})
 
 
 # -------------------------------------------------------
