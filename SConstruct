@@ -731,6 +731,8 @@ def buildType(dir):
     properties = [dir]
     if useSDL():
         properties.append('sdl')
+    if useWii():
+        properties.append('wii')
     if useAllegro5():
         properties.append('allegro5')
     if getDebug():
