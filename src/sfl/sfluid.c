@@ -12,7 +12,7 @@
                 in the file LICENSE.TXT.  This software is distributed in
                 the hope that it will be useful, but without any warranty.
  ------------------------------------------------------------------</Prolog>-*/
-#ifndef WII
+#if !defined(WII) && !defined(MINPSPW)
 
 #include "prelude.h"                    /*  Universal header file            */
 #include "sflstr.h"                     /*  String functions                 */

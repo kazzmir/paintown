@@ -593,12 +593,13 @@ def getEnvironment(debug):
         env['AR'] = setup('ar')
         env['OBJCOPY'] = setup('objcopy')
         env.Append(CPPPATH = ["/pspsdk/psp/include","/pspsdk/psp/include/SDL","/pspsdk/psp/include/freetype2","/pspsdk/psp/sdk/include"])
-        env.Append(CPPDEFINES = ['MINPSPW'])
+        env.Append(CPPDEFINES = ['MINPSPW','_PSP_FW_VERSION=150'])
+        env.Append(LIBPATH = ['/pspsdk/psp/lib', '/pspsdk/psp/sdk/lib'])
         flags = ['']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
-        env.Append(LIBS = ['pthread-psp', 'm'])
+        env.Append(LIBS = ['SDL_mixer', 'SDL_image', 'SDL', 'vorbisfile', 'vorbis', 'ogg', 'jpeg','png', 'freetype', 'z','GL','GLU', 'psplibc','pspdebug', 'pspdisplay' ,'pspge', 'pspgu', 'psphprm','pspaudio', 'pspctrl', 'pspsdk', 'pspnet', 'pspnet_inet', 'pspnet_apctl', 'pspnet_resolver', 'psputility', 'pspkernel', 'psppower', 'pspvfpu', 'psppower_driver','pthread-psp', 'm', 'c', 'stdc++', 'psplibc', 'pspuser'])
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
@@ -822,7 +823,6 @@ if isWindows():
         elif useMinpspw():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-            env.Append( LIBS = ['SDL_image','SDL_mixer','SDL', 'pthread-psp', 'png', 'freetype', 'z'] )
     
     if not useMinpspw():
         env.Append( CPPDEFINES = 'WINDOWS' )
@@ -837,8 +837,6 @@ if isWindows():
     if useSDL():
         if not useMinpspw():
             staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
-        elif useMinpspw():
-            staticEnv.Append(LIBS = ['SDL', 'pthread-psp', 'png', 'freetype', 'z'] )
     elif useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
