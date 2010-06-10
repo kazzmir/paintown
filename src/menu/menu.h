@@ -99,7 +99,7 @@ class Menu{
         std::vector <MenuOption *> options;
 
         /*! Context Menu */
-        ContextBox contextMenu;
+        Gui::ContextBox contextMenu;
 
         /*! Tokenized data */
         std::map<std::string, Token *> data;

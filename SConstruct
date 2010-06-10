@@ -694,7 +694,7 @@ if isWindows():
         print "Cygwin detected"
     
 env = getEnvironment(getDebug())
-if not useWii() or not useMinpspw():
+if not useWii() and not useMinpspw():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
