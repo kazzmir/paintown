@@ -593,12 +593,12 @@ def getEnvironment(debug):
         env['AS'] = setup('as')
         env['AR'] = setup('ar')
         env['OBJCOPY'] = setup('objcopy')
-        env.Append(CPPPATH = ["/pspsdk/bin/psp/include"])
+        env.Append(CPPPATH = ["/pspsdk/psp/include","/pspsdk/psp/include/SDL","/pspsdk/psp/include/freetype2"])
         flags = ['']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
-        env.Append(LIBS = ['pthreadlite', 'fat', 'm'])
+        env.Append(LIBS = ['pthread-psp', 'fat', 'm'])
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
@@ -813,11 +813,16 @@ if isWindows():
         env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
     elif useSDL():
-        env.Append(CPPDEFINES = ['USE_SDL'])
-        # TODO: move this to a configure check
-        env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
-        staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-        env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        if not useMinpspw():
+            env.Append(CPPDEFINES = ['USE_SDL'])
+            # TODO: move this to a configure check
+            env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
+            staticEnv.Append(CPPDEFINES = ['USE_SDL'])
+            env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        elif useMinpspw():
+            env.Append(CPPDEFINES = ['USE_SDL'])
+            staticEnv.Append(CPPDEFINES = ['USE_SDL'])
+            env.Append( LIBS = ['SDL', 'pthread-psp', 'png', 'freetype', 'z'] )
     
     env.Append( CPPDEFINES = 'WINDOWS' )
     env.Append(LINKFLAGS = ['-static-libstdc++'])
@@ -831,7 +836,10 @@ if isWindows():
             env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
     if useSDL():
-        staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        if not useMinpspw():
+            staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        elif useMinpspw():
+            staticEnv.Append(LIBS = ['SDL', 'pthread-psp', 'png', 'freetype', 'z'] )
     elif useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
