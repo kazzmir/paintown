@@ -671,7 +671,7 @@ def getEnvironment(debug):
                 return intel(Environment(ENV = os.environ, CCFLAGS = cflags))
             elif useWii():
                 return wii(Environment(ENV = os.environ, CCFLAGS = cflags))
-            elif useMinpspw:
+            elif useMinpspw():
                 return minpspw(Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw']))
             elif useLLVM():
                 return llvm(Environment(ENV = os.environ, CCFLAGS = cflags))
