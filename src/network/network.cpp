@@ -1,4 +1,6 @@
+#ifdef HAVE_NETWORKING
 #include "hawknl/nl.h"
+#endif
 #include "network.h"
 #include "globals.h"
 #include <string>

@@ -51,7 +51,6 @@ def useLLVM():
     except KeyError:
         return False
 
-# todo: read from an environment variable or something
 def enableProfiled():
     try:
         return int(os.environ[ 'PROFILE' ])
