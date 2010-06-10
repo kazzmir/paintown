@@ -596,7 +596,7 @@ def getEnvironment(debug):
         env.Append(LINKFLAGS = flags)
         env.Append(CPPPATH = ['#src/wii'])
         # env['LINKCOM'] = '$CC $SOURCES --start-group $_LIBDIRFLAGS $_LIBFLAGS --end-group -o $TARGET'
-        env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'iberty', 'bte', 'ogc', 'm'])
+        env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'iberty', 'bte', 'fat', 'ogc', 'm'])
         os.environ['PATH'] = "%s:%s:%s" % (bin_path, ogc_bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', ogc_bin_path)
