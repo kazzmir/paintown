@@ -578,6 +578,7 @@ def getEnvironment(debug):
     # use the devkitpro stuff for wii/gamecube
     def wii(env):
         bin_path = "%s/bin" % os.environ['DEVKITPPC']
+        ogc_bin_path = "%s/libogc/bin" % os.environ['DEVKITPRO']
         prefix = 'powerpc-eabi-'
         def setup(x):
             return '%s%s' % (prefix, x)
@@ -593,10 +594,12 @@ def getEnvironment(debug):
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
+        env.Append(CPPPATH = ['#src/wii'])
         # env['LINKCOM'] = '$CC $SOURCES --start-group $_LIBDIRFLAGS $_LIBFLAGS --end-group -o $TARGET'
-        env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'bte', 'ogc', 'm'])
-        os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
+        env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'iberty', 'bte', 'ogc', 'm'])
+        os.environ['PATH'] = "%s:%s:%s" % (bin_path, ogc_bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
+        env.PrependENVPath('PATH', ogc_bin_path)
         return env
     def llvm(env):
         env['CC'] = 'llvm-gcc'
@@ -662,6 +665,11 @@ if isWindows():
         print "Cygwin detected"
     
 env = getEnvironment(getDebug())
+if not useWii():
+    env['PAINTOWN_NETWORKING'] = True
+    env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
+else:
+    env['PAINTOWN_NETWORKING'] = False
 
 def getDataPath():
     try:
@@ -683,8 +691,11 @@ cdefines = ['DATA_PATH=\\\"%s\\\"' % dataPath]
 
 env.Append(CCFLAGS = cflags,
            CXXFLAGS = cppflags,
-           CPPPATH = [ "#src", '#src/hawknl' ],
+           CPPPATH = ["#src"],
            CPPDEFINES = cdefines)
+
+if env['PAINTOWN_NETWORKING']:
+    env.Append(CPPPATH = ['#src/hawknl'])
 
 def configEnvironment(env):
     if isWindows():
@@ -809,7 +820,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux():
+    elif isLinux() and not useWii():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     

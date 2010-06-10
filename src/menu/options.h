@@ -300,6 +300,7 @@ private:
     // MugenMenu *_menu;
 };
 
+#ifdef HAVE_NETWORKING
 /*! Handles key reconfiguration */
 class OptionNetworkHost : public MenuOption{
 public:
@@ -329,6 +330,7 @@ public:
 	
 	virtual ~OptionNetworkJoin();
 };
+#endif
 
 /*! Handles key reconfiguration */
 class OptionNpcBuddies : public MenuOption {

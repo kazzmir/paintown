@@ -3,6 +3,7 @@
 #include "globals.h"
 #include <string>
 #include <sstream>
+#include <string.h>
 #include "util/system.h"
 #include "util/compress.h"
 
@@ -56,6 +57,7 @@ Message & Message::operator=( const Message & m ){
 }
 
 Message::Message(Socket socket){
+#ifdef HAVE_NETWORKING
     position = data;
     id = read32( socket );
     readBytes( socket, data, DATA_SIZE );
@@ -71,6 +73,7 @@ Message::Message(Socket socket){
     }
     timestamp = System::currentMicroseconds();
     readFrom = socket;
+#endif
 }
 
 uint8_t * Message::dump( uint8_t * buffer ) const {
@@ -153,6 +156,7 @@ static void dump(const std::vector<M> & messages, uint8_t * buffer ){
     }
 }
 
+#ifdef HAVE_NETWORKING
 template <class M>
 static void doSendAllMessages(const vector<M> & messages, Socket socket){
     int length = totalSize<M>(messages);
@@ -170,6 +174,7 @@ void sendAllMessages(const vector<Message> & messages, Socket socket){
 void sendAllMessages(const vector<Message*> & messages, Socket socket){
     doSendAllMessages<Message*>(messages, socket);
 }
+#endif
 
 void Message::send( Socket socket ) const {
 	/*
@@ -182,10 +187,12 @@ void Message::send( Socket socket ) const {
 		send16( socket, -1 );
 	}
 	*/
+#ifdef HAVE_NETWORKING
 	uint8_t * buffer = new uint8_t[ size() ];
 	dump( buffer );
 	sendBytes( socket, buffer, size() );
 	delete[] buffer;
+#endif
 }
 	
 void Message::reset(){
@@ -242,6 +249,8 @@ int Message::size() const {
     return sizeof(id) + DATA_SIZE + 
            (path != "" ? sizeof(uint16_t) + path.length() + 1 : sizeof(uint16_t));
 }
+
+#ifdef HAVE_NETWORKING
 
 static string getHawkError(){
 	return string(" HawkNL error: '") +
@@ -431,5 +440,7 @@ Socket accept( Socket s ) throw( NetworkException ){
 void shutdown(){
 	nlShutdown();
 }
+
+#endif
 
 }

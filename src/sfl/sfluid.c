@@ -12,6 +12,7 @@
                 in the file LICENSE.TXT.  This software is distributed in
                 the hope that it will be useful, but without any warranty.
  ------------------------------------------------------------------</Prolog>-*/
+#ifndef WII
 
 #include "prelude.h"                    /*  Universal header file            */
 #include "sflstr.h"                     /*  String functions                 */
@@ -422,3 +423,5 @@ get_login (void)
     return (getlogin ());
 #endif
 }
+
+#endif

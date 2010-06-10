@@ -1,3 +1,5 @@
+#ifdef HAVE_NETWORKING
+
 #include "util/bitmap.h"
 #include "client.h"
 #include "input/keyboard.h"
@@ -480,3 +482,5 @@ void networkClient(){
 }
 
 }
+
+#endif

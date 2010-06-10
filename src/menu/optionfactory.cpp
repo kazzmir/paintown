@@ -34,12 +34,14 @@ MenuOption * OptionFactory::getOption(Token *token){
     } else if ( *tok == "versus" ){
         // Versus mode
         return new OptionVersus(tok);
+#ifdef HAVE_NETWORKING
     } else if ( *tok == "network-host" ){
         return new OptionNetworkHost(tok);
-    } else if (*tok == "change-mod"){
-        return new OptionChangeMod(tok);
     } else if ( *tok == "network-join" ){
         return new OptionNetworkJoin(tok);
+#endif
+    } else if (*tok == "change-mod"){
+        return new OptionChangeMod(tok);
     } else if (*tok == "screen-size"){
         return new OptionScreenSize(tok);
     } else if ( *tok == "npc" ){

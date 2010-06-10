@@ -1,3 +1,5 @@
+#ifdef HAVE_NETWORKING
+
 #include "util/bitmap.h"
 #include "network.h"
 #include "chat_server.h"
@@ -835,3 +837,5 @@ ChatServer::~ChatServer(){
 	}
 	delete lineEdit;
 }
+
+#endif

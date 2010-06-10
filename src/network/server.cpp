@@ -1,3 +1,5 @@
+#ifdef HAVE_NETWORKING
+
 #include "util/bitmap.h"
 
 #include "chat_server.h"
@@ -852,3 +854,5 @@ void networkServer(Menu * menu){
 }
 
 }
+
+#endif

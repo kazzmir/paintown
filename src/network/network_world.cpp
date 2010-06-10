@@ -1,3 +1,5 @@
+#ifdef HAVE_NETWORKING
+
 #include "util/bitmap.h"
 #include "object/object.h"
 #include "object/character.h"
@@ -445,3 +447,5 @@ void NetworkWorld::act(){
 
     flushOutgoing();
 }
+
+#endif

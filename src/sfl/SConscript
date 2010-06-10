@@ -41,8 +41,8 @@ sflsyst.c
 sfltok.c
 sfltree.c
 sfltron.c
-sfluid.c
 sflxml.c
+sfluid.c
 sfldate.c
 """)
 

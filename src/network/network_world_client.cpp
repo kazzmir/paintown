@@ -1,3 +1,5 @@
+#ifdef HAVE_NETWORKING
+
 #include "util/bitmap.h"
 #include "game/adventure_world.h"
 #include "network_world_client.h"
@@ -663,3 +665,5 @@ void NetworkWorldClient::act(){
     }
     objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
 }
+
+#endif

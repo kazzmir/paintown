@@ -200,6 +200,13 @@ def useSDL():
 
     return byEnv() or byArgument()
 
+def useWii():
+    import os
+    try:
+        return int(os.environ['wii'])
+    except KeyError:
+        return False
+
 def icon():
     if isWindows():
         return ['windows/game.res']
@@ -218,13 +225,22 @@ def hawknlLibrary(env):
         env.Append(CPPDEFINES = 'MACOSX')
     return env.SConscript('hawknl/SConscript', exports = ['env'])
 
-use.Prepend(LIBS = [dumbLibrary(use), hawknlLibrary(use)])
+def main():
+    if not useWii():
+        return ['xmain.cpp']
+    else:
+        return []
+
+use.Prepend(LIBS = [dumbLibrary(use)])
+if use['PAINTOWN_NETWORKING']:
+    use.Prepend(LIBS = [hawknlLibrary(use)])
+
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
 if useSDL():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use)])
 
 x = []
-x.append(use.Program('paintown', obj_files + ['xmain.cpp'] + icon()))
+x.append(use.Program('paintown', obj_files + main() + icon()))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
 if not useSDL():

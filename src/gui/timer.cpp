@@ -37,6 +37,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "timer.h"
+#include "util/funcs.h"
 
 	guiTimer::guiTimer()
 	{
@@ -114,6 +115,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 	// Provides a method to sleep
 	void guiTimer::sleep(int msecs)
 	{
+            Util::rest(msecs);
+            /*
 #if defined (_WIN32)
 		Sleep(msecs);
 #else
@@ -122,6 +125,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 		timeOut.tv_nsec = (msecs * 1000000);
 		nanosleep(&timeOut, NULL);
 #endif
+*/
 
 	}
 

@@ -2,14 +2,20 @@
 #define _paintown_network_h
 
 #include <stdint.h>
+#ifdef HAVE_NETWORKING
 #include "hawknl/nl.h"
+#endif
 #include <string>
 #include <vector>
 #include <exception>
 
 namespace Network{
 
+#ifdef HAVE_NETWORKING
 typedef NLsocket Socket;
+#else
+typedef int Socket;
+#endif
 
 const int NO_CONNECTIONS_PENDING = 1;
 const int NETWORK_ERROR = 2;
@@ -102,6 +108,7 @@ template <class M>
 void dump(const std::vector<M> & messages, uint8_t * buffer );
 */
 
+#ifdef HAVE_NETWORKING
 void sendAllMessages(const std::vector<Message> & messages, Socket socket);
 void sendAllMessages(const std::vector<Message*> & messages, Socket socket);
 
@@ -125,6 +132,7 @@ void close( Socket );
 void closeAll();
 
 static std::vector< Socket > open_sockets;
+#endif
 
 }
 

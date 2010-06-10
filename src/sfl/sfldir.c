@@ -252,9 +252,11 @@ populate_entry (DIRST *dir)
     dir-> file_mode  = stat_buf.st_mode;    /*  UNIX-ish permissions         */
     dir-> file_nlink = stat_buf.st_nlink;   /*  Number of links to file      */
 
+#ifndef WII
     /*  Get owner and group names                                            */
     dir-> owner = get_uid_name (stat_buf.st_uid);
     dir-> group = get_gid_name (stat_buf.st_gid);
+#endif
 #endif
 
     /*  Prepare DOS-ish permission bits                                      */

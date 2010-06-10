@@ -1,6 +1,8 @@
 #ifndef _paintown_network_world_client_h
 #define _paintown_network_world_client_h
 
+#ifdef HAVE_NETWORKING
+
 #include <pthread.h>
 #include "game/adventure_world.h"
 #include "network.h"
@@ -92,5 +94,7 @@ private:
         std::map<Object::networkid_t, std::string> clientNames;
         unsigned int pingCounter;
 };
+
+#endif
 
 #endif

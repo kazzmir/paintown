@@ -58,7 +58,7 @@ time_now (void)
 #elif (defined (__UTYPE_FREEBSD__))
     return (timer_to_time (time (NULL)));
 
-#elif (defined (__UNIX__) || defined (__VMS_XOPEN))
+#elif (defined (__UNIX__) || defined (__VMS_XOPEN)) && !defined(WII)
     /*  The BSD gettimeofday function returns seconds and microseconds       */
     struct timeval
         time_struct;

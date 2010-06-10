@@ -261,7 +261,7 @@
 
 /*  These include files are for non-PC systems                               */
 
-#if (defined (__UNIX__))
+#if (defined (__UNIX__)) && !defined(WII)
 #   if defined (__GNUC__) && (__GNUC__ >= 2)
 #       define __STRICT_ANSI__
 #   endif
@@ -290,6 +290,11 @@
 #   if (defined (__UTYPE_IBMAIX) || defined(__UTYPE_QNX))
 #       include <sys/select.h>
 #   endif
+#endif
+
+#if defined(WII)
+#define AF_INET 1
+#include <dirent.h>
 #endif
 
 #if (defined (__VMS__))

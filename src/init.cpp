@@ -330,7 +330,6 @@ bool Global::init( int gfx ){
     
     /* music */
     atexit( &dumb_exit );
-    atexit( Network::closeAll );
 
     out << "Initialize random number generator" << endl;
     /* initialize random number generator */
@@ -338,8 +337,11 @@ bool Global::init( int gfx ){
 
     registerSignals();
 
+#ifdef HAVE_NETWORKING
     out << "Initialize network" << endl;
     Network::init();
+    atexit( Network::closeAll );
+#endif
 
     /* this mutex is used to show the loading screen while the game loads */
     pthread_mutex_init( &Loader::loading_screen_mutex, NULL );

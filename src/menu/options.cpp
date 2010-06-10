@@ -1223,6 +1223,7 @@ void OptionMugenMenu::run(bool &endGame){
     Mugen::run();
 }
 
+#ifdef HAVE_NETWORKING
 OptionNetworkHost::OptionNetworkHost(Token *token):
 MenuOption(token, Event){
     if ( *token != "network-host" ){
@@ -1279,6 +1280,7 @@ void OptionNetworkJoin::run(bool &endGame){
 	key.poll();
 	key.wait();
 }
+#endif
 
 OptionNpcBuddies::OptionNpcBuddies( Token * token ):
 MenuOption(token, AdjustableOption),

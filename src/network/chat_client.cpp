@@ -1,3 +1,5 @@
+#ifdef HAVE_NETWORKING
+
 #include "util/bitmap.h"
 #include "network.h"
 #include "chat_client.h"
@@ -459,3 +461,5 @@ ChatClient::~ChatClient(){
     delete background;
     delete lineEdit;
 }
+
+#endif
