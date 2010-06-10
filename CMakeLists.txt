@@ -97,6 +97,9 @@ else(DEBUG)
     set(CMAKE_CXX_FLAGS "-O2 -Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -fexpensive-optimizations -Woverloaded-virtual")
     set(CMAKE_C_FLAGS "-O2 -Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -fexpensive-optimizations")
 endif(DEBUG)
+    
+# FIXME: not sure if this is in the right place
+add_definitions(-DHAVE_NETWORKING)
 
 option(USE_SDL "Compile paintown with SDL instead of Allegro?" OFF)
 
