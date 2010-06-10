@@ -33,6 +33,12 @@ def useIntel():
     except KeyError:
         return False
 
+def useMinpspw():
+    try:
+        return int(os.environ['minpspw'])
+    except KeyError:
+        return False
+
 def useWii():
     try:
         return int(os.environ['wii'])
@@ -575,6 +581,27 @@ def getEnvironment(debug):
                                '-wd383', '-wd869',
                                '-wd1599'])
         return env
+    # minpspw for psp dev environment on windows
+    def minpspw(env):
+        bin_path = '/pspsdk/bin/'
+        prefix = 'psp-'
+        def setup(x):
+            return '%s%s' % (prefix, x)
+        env['CC'] = setup('gcc')
+        env['LD'] = setup('ld')
+        env['CXX'] = setup('g++')
+        env['AS'] = setup('as')
+        env['AR'] = setup('ar')
+        env['OBJCOPY'] = setup('objcopy')
+        env.Append(CPPPATH = ["/pspsdk/bin/psp/include"])
+        flags = ['']
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env.Append(LINKFLAGS = flags)
+        env.Append(LIBS = ['pthreadlite', 'fat', 'm'])
+        os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
+        env.PrependENVPath('PATH', bin_path)
+        return env
     # use the devkitpro stuff for wii/gamecube
     def wii(env):
         bin_path = "%s/bin" % os.environ['DEVKITPPC']
@@ -644,6 +671,8 @@ def getEnvironment(debug):
                 return intel(Environment(ENV = os.environ, CCFLAGS = cflags))
             elif useWii():
                 return wii(Environment(ENV = os.environ, CCFLAGS = cflags))
+            elif useMinpspw:
+                return minpspw(Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw']))
             elif useLLVM():
                 return llvm(Environment(ENV = os.environ, CCFLAGS = cflags))
             else:
@@ -665,7 +694,7 @@ if isWindows():
         print "Cygwin detected"
     
 env = getEnvironment(getDebug())
-if not useWii():
+if not useWii() or not useMinpspw():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -792,13 +821,14 @@ if isWindows():
     
     env.Append( CPPDEFINES = 'WINDOWS' )
     env.Append(LINKFLAGS = ['-static-libstdc++'])
-
-    if getDebug():
-        env.Append( CCFLAGS = ['-mthreads'] )
-        env.Append( LINKFLAGS = ['-mthreads'] )
-    else:
-        env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
-        env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
+    
+    if not useMinpspw():
+        if getDebug():
+            env.Append( CCFLAGS = ['-mthreads'] )
+            env.Append( LINKFLAGS = ['-mthreads'] )
+        else:
+            env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
+            env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
     if useSDL():
         staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )

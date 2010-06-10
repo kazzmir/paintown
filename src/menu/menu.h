@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 #include "util/load_exception.h"
 #include "util/file-system.h"
@@ -24,7 +25,7 @@ class Bitmap;
 class MenuOption;
 class Token;
 class MenuAnimation;
-
+namespace _Menu{
 class Point{
     public:
     int x;
@@ -75,6 +76,40 @@ class InfoBox: public Gui::Widget {
         std::vector<std::string> text;
 };
 
+/*! New Menu class */
+
+class Menu{
+    public:
+        Menu();
+        Menu(const Filesystem::AbsolutePath & str);
+        Menu(Token * token);
+        virtual ~Menu();
+
+        /*! Run Menu */
+        virtual void run();
+
+        /*! Logic */
+        virtual void act();
+
+        /*! render - renders only actual context menu excluding other elements (animations etc) */
+        virtual void render(int x, int y, const Bitmap &);
+
+    protected:
+        /*! Option List */
+        std::vector <MenuOption *> options;
+
+        /*! Context Menu */
+        ContextBox contextMenu;
+
+        /*! Tokenized data */
+        std::map<std::string, Token *> data;
+
+    private:
+};
+
+}
+
+/* Keep old menu class for backwards compatibility until everything has been moved over */
 class Menu{
 public:
     /*! ctor dtor */
@@ -210,7 +245,7 @@ protected:
     void setMenuInfo(const std::string &);
     
     //! Menu info box
-    InfoBox menuInfoBox;
+    _Menu::InfoBox menuInfoBox;
     
     //! Add Info box
     void addInfoBox (const std::string &);
@@ -228,7 +263,7 @@ protected:
     std::string menuInfo;
 
     //! menu info location
-    Point menuInfoLocation;
+    _Menu::Point menuInfoLocation;
 
     //! parent menu
     Menu *parent;
@@ -258,10 +293,10 @@ private:
     bool option;
 
     //! This is the location of the option info text
-    Point optionInfoTextLocation;
+    _Menu::Point optionInfoTextLocation;
     
     //! Info boxes
-    std::vector<InfoBox *> optionInfoBoxes;
+    std::vector<_Menu::InfoBox *> optionInfoBoxes;
 
     enum MenuInput{
         Up,

@@ -38,20 +38,20 @@ static int sharedFontHeight = 24;
 
 static const int GradientMax = 50;
 
-Point::Point():
+_Menu::Point::Point():
 x(0),
 y(0){
 }
 
-Point::Point(int x, int y):
+_Menu::Point::Point(int x, int y):
 x(x),
 y(y){
 }
 
-Point::~Point(){
+_Menu::Point::~Point(){
 }
 
-InfoBox::InfoBox():
+_Menu::InfoBox::InfoBox():
 state(NotActive),
 font(Filesystem::RelativePath(sharedFont)),
 fontWidth(sharedFontWidth),
@@ -60,10 +60,10 @@ fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
 
-InfoBox::~InfoBox(){
+_Menu::InfoBox::~InfoBox(){
 }
  
-void InfoBox::act(){
+void _Menu::InfoBox::act(){
     popup.act();
     
     int speed = 9;
@@ -101,7 +101,7 @@ void InfoBox::act(){
     }
 }
 
-void InfoBox::render(const Bitmap & bmp){
+void _Menu::InfoBox::render(const Bitmap & bmp){
     popup.render(bmp);
     
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
@@ -129,7 +129,7 @@ void InfoBox::render(const Bitmap & bmp){
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
 
-void InfoBox::open(){
+void _Menu::InfoBox::open(){
     state = Opening;
     popup.location = location;
     popup.colors = colors;
@@ -137,12 +137,12 @@ void InfoBox::open(){
     fadeAlpha = 0;
 }
 
-void InfoBox::close(){
+void _Menu::InfoBox::close(){
     state = Closing;
     popup.close();
 }
 
-void InfoBox::setText(const std::string & info){
+void _Menu::InfoBox::setText(const std::string & info){
     if (info.empty()){
         return;
     }
@@ -825,7 +825,7 @@ void Menu::addInfoBox(const std::string & text){
     if (!optionInfoBoxes.empty()){
         optionInfoBoxes.back()->close();
     }
-    InfoBox * temp = new InfoBox();
+    _Menu::InfoBox * temp = new _Menu::InfoBox();
     temp->setFont(getFont(),getFontWidth(),getFontHeight());
     temp->setText(text);
     const int width = temp->location.getWidth();
@@ -845,8 +845,8 @@ void Menu::addInfoBox(const std::string & text){
 //! Update info boxes
 void Menu::actInfoBoxes(){
     // Global::debug(0) << "Info boxes " << optionInfoBoxes.size() << endl;
-    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
-        InfoBox *box = *i;
+    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
+        _Menu::InfoBox *box = *i;
         box->act();
         if (!box->isActive()){
             delete box;
@@ -859,15 +859,15 @@ void Menu::actInfoBoxes(){
 
 //! Render info boxes
 void Menu::renderInfoBoxes(const Bitmap &){
-    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        InfoBox *box = *i;
+    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        _Menu::InfoBox *box = *i;
         box->render(*work);
     }
 }
 
 void Menu::closeInfoBoxes(){
-    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        InfoBox *box = *i;
+    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        _Menu::InfoBox *box = *i;
         box->close();
     }
 }
@@ -879,8 +879,8 @@ Menu::~Menu(){
         delete work;
     }
 
-    for (std::vector<InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        InfoBox *box = *i;
+    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        _Menu::InfoBox *box = *i;
         if (box){
             delete box;
         }
