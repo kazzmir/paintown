@@ -592,12 +592,13 @@ def getEnvironment(debug):
         env['AS'] = setup('as')
         env['AR'] = setup('ar')
         env['OBJCOPY'] = setup('objcopy')
-        env.Append(CPPPATH = ["/pspsdk/psp/include","/pspsdk/psp/include/SDL","/pspsdk/psp/include/freetype2"])
+        env.Append(CPPPATH = ["/pspsdk/psp/include","/pspsdk/psp/include/SDL","/pspsdk/psp/include/freetype2","/pspsdk/psp/sdk/include"])
+        env.Append(CPPDEFINES = ['MINPSPW'])
         flags = ['']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
-        env.Append(LIBS = ['pthread-psp', 'fat', 'm'])
+        env.Append(LIBS = ['pthread-psp', 'm'])
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
@@ -821,12 +822,11 @@ if isWindows():
         elif useMinpspw():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-            env.Append( LIBS = ['SDL', 'pthread-psp', 'png', 'freetype', 'z'] )
-    
-    env.Append( CPPDEFINES = 'WINDOWS' )
-    env.Append(LINKFLAGS = ['-static-libstdc++'])
+            env.Append( LIBS = ['SDL_image','SDL_mixer','SDL', 'pthread-psp', 'png', 'freetype', 'z'] )
     
     if not useMinpspw():
+        env.Append( CPPDEFINES = 'WINDOWS' )
+        env.Append(LINKFLAGS = ['-static-libstdc++'])
         if getDebug():
             env.Append( CCFLAGS = ['-mthreads'] )
             env.Append( LINKFLAGS = ['-mthreads'] )

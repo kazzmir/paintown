@@ -276,7 +276,7 @@
 
 /*  These include files are for non-PC systems                               */
 
-#if (defined (__UNIX__)) && !defined(WII)
+#if (defined (__UNIX__)) && !defined(WII) && !defined(MINPSPW)
 #   if defined (__GNUC__) && (__GNUC__ >= 2)
 #       define __STRICT_ANSI__
 #   endif
@@ -307,7 +307,7 @@
 #   endif
 #endif
 
-#if defined(WII)
+#if defined(WII) && defined(MINPSPW)
 #define AF_INET 1
 #include <dirent.h>
 #endif
@@ -598,7 +598,7 @@ void  sys_assert  (const char *filename, unsigned line_number);
                                         { sizeof (value) - 1, 14, 1, value }
 #endif
 
-#if (defined (__UNIX__) || defined (__VMS__) || defined (__DJGPP__)) && !defined(WII)
+#if (defined (__UNIX__) || defined (__VMS__) || defined (__DJGPP__)) && !defined(WII) && !defined(MINPSPW)
     extern char **environ;              /*  Not defined in include files     */
 #endif
 
@@ -2661,7 +2661,7 @@ typedef struct
 {
     Bool    _fixed;                     /*  TRUE if processed by fix_dir()   */
 
-#if (defined (__UNIX__) || defined (__VMS_XOPEN) || defined (__OS2__))
+#if (defined (__UNIX__) || defined (__VMS_XOPEN) || defined (__OS2__)) && !defined(MINPSPW)
     DIR    *_dir_handle;                /*    a directory handle             */
     struct Dirent                       /*    and a file desc. structure,    */
            *_dir_entry;                 /*    both transient blocks          */

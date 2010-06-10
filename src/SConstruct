@@ -200,6 +200,13 @@ def useSDL():
 
     return byEnv() or byArgument()
 
+def useMinpspw():
+    import os
+    try:
+        return int(os.environ['minpspw'])
+    except KeyError:
+        return False
+
 def useWii():
     import os
     try:
@@ -208,7 +215,7 @@ def useWii():
         return False
 
 def icon():
-    if isWindows():
+    if isWindows() and not useMinpspw():
         return ['windows/game.res']
     else:
         return []
@@ -233,8 +240,10 @@ if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
 
 use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
-if useSDL():
+if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use)])
+elif useMinpspw():
+    use.Prepend(LIBS = [sprigLibrary(use)])
 
 x = []
 x.append(use.Program('paintown', obj_files + main() + icon()))

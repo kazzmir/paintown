@@ -307,6 +307,8 @@ extern int
 extern "C" {
 #endif
 
+#ifndef MINPSPW
+
 int    sock_init            (void);
 int    sock_term            (void);
 sock_t passive_TCP          (const char *service, int queue);
@@ -357,6 +359,8 @@ int    get_name_server      (struct sockaddr_in *ns_address, int ns_max);
 
 #if (defined (__WINDOWS__))
 int    winsock_last_error   (void);
+#endif
+
 #endif
 
 #ifdef __cplusplus
