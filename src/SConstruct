@@ -226,10 +226,7 @@ def hawknlLibrary(env):
     return env.SConscript('hawknl/SConscript', exports = ['env'])
 
 def main():
-    if not useWii():
-        return ['xmain.cpp']
-    else:
-        return []
+    return ['xmain.cpp']
 
 use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:

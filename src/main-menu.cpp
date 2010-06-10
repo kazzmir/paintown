@@ -89,7 +89,9 @@ static void showOptions(){
 	Global::debug(0) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
 	Global::debug(0) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
         Global::debug(0) << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
+#ifdef HAVE_NETWORKING
 	Global::debug(0) << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
+#endif
 	Global::debug(0) << endl;
 }
 
@@ -133,7 +135,9 @@ int paintown_main( int argc, char ** argv ){
     ADD_ARGS(DEBUG_ARG);
     ADD_ARGS(MUSIC_ARG);
     ADD_ARGS(MUGEN_ARG);
+#ifdef HAVE_NETWORKING
     ADD_ARGS(NETWORK_SERVER_ARG);
+#endif
 #undef ADD_ARGS
 
     for ( int q = 1; q < argc; q++ ){
@@ -156,8 +160,10 @@ int paintown_main( int argc, char ** argv ){
                 i >> f;
                 Global::setDebug( f );
             }
+#ifdef HAVE_NETWORKING
         } else if (isArg(argv[q], NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG))){
             just_network_server = true;
+#endif
         } else {
             const char * arg = argv[q];
             const char * closest = closestMatch(arg, all_args);
@@ -208,7 +214,9 @@ int paintown_main( int argc, char ** argv ){
             Menu game;
             game.load(mainMenuPath());
             if (just_network_server){
+#ifdef HAVE_NETWORKING
                 Network::networkServer(&game);
+#endif
             } else if (mugen){
                 Mugen::run();
             } else {
