@@ -766,6 +766,8 @@ def buildType(dir):
         properties.append('sdl')
     if useWii():
         properties.append('wii')
+    if useMinpspw():
+        properties.append('psp')
     if useAllegro5():
         properties.append('allegro5')
     if getDebug():
@@ -837,9 +839,8 @@ if isWindows():
             env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
             env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
-    if useSDL():
-        if not useMinpspw():
-            staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+    if useSDL() and not useMinpspw():
+        staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     elif useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
@@ -885,7 +886,7 @@ else:
     except OSError:
         pass
 
-    if not useWii():
+    if not useWii() and not useMinpspw():
         env.Append(LIBS = [ 'pthread' ])
         staticEnv.Append(LIBS = [ 'pthread' ])
 
