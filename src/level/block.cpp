@@ -19,7 +19,7 @@ static const string dataPath( const string & str ){
 }
 */
 	
-Block::Block(Token * tok, const Level::Cacher & cacher) throw ( LoadException ):
+Block::Block(Token * tok, const Level::Cacher & cacher):
 id(-1),
 finished( -1 ),
 continuous( false ){
@@ -79,6 +79,16 @@ continuous( false ){
         }
     }
 
+}
+    
+Block::Block():
+id(-1),
+finished(-1),
+continuous(false){
+}
+    
+void Block::addBlockObject(BlockObject * object){
+    objects.push_back(object);
 }
 	
 bool Block::empty(){

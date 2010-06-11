@@ -1,7 +1,6 @@
-#ifndef _block_h
-#define _block_h
+#ifndef _paintown_block_h
+#define _paintown_block_h
 
-#include "util/load_exception.h"
 #include <vector>
 
 class BlockObject;
@@ -15,7 +14,8 @@ namespace Level{
 
 class Block{
 public:
-    Block(Token * tok, const Level::Cacher & cacher) throw( LoadException );
+    Block(Token * tok, const Level::Cacher & cacher);
+    Block();
 
     inline void setLength( const int l ){
         length = l;
@@ -52,11 +52,17 @@ public:
         finished = f;
     }
 
+    void addBlockObject(BlockObject * object);
+
     bool empty();
 
     std::vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, std::vector< Object * > * list );
 
     virtual ~Block();
+
+    const std::vector<BlockObject*> & getObjects() const {
+        return objects;
+    }
 
 protected:
     int length;
