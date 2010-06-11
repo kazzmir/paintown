@@ -607,7 +607,7 @@ def getEnvironment(debug):
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
-        env.Append(LIBS = ['SDL_mixer', 'SDL_image', 'SDL', 'vorbisfile', 'vorbis', 'ogg', 'jpeg','png', 'freetype', 'z','GL','GLU', 'psplibc','pspdebug', 'pspdisplay' ,'pspge', 'pspgu', 'psphprm','pspaudio', 'pspctrl', 'pspsdk', 'pspnet', 'pspnet_inet', 'pspnet_apctl', 'pspnet_resolver', 'psputility', 'pspkernel', 'psppower', 'pspvfpu', 'psppower_driver','pthread-psp', 'm', 'c', 'stdc++', 'psplibc', 'pspuser'])
+        env.Append(LIBS = ['pthread-psp','SDL_mixer', 'SDL_image', 'SDL', 'vorbisfile', 'vorbis', 'ogg', 'jpeg','png', 'freetype', 'z','GLU','GL', 'pspdisplay' ,'pspge', 'pspgu','psphprm','pspaudio', 'pspctrl', 'pspsdk', 'pspnet', 'psputility', 'psppower', 'pspfpu', 'pspvfpu', 'psppower_driver', 'pspuser', 'm', 'c', 'stdc++'])
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
