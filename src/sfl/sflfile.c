@@ -2374,6 +2374,7 @@ get_tmp_file_name (const char *path, qbyte *index, const char *ext)
     redirection later.  Returns -1 if there were errors.
     ---------------------------------------------------------------------[>]-*/
 
+#ifndef MINPSPW
 int
 file_fhredirect (int source, int dest)
 {
@@ -2413,6 +2414,7 @@ file_fhrestore (int source, int dest)
            close (source);
       }
 }
+#endif
 
 /*  -------------------------------------------------------------------------
     This list holds all temporary file references, used by ftmp_close() to

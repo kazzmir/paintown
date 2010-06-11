@@ -603,11 +603,11 @@ def getEnvironment(debug):
         env.Append(CPPPATH = [setup(path, "/psp/include"), setup(path,"/psp/include/SDL"),setup(path,"/psp/include/freetype2"),setup(path,"/psp/sdk/include")])
         env.Append(CPPDEFINES = ['MINPSPW','_PSP_FW_VERSION=150'])
         env.Append(LIBPATH = [setup(path, '/psp/lib'), setup(path, '/psp/sdk/lib')])
-        flags = ['']
+        flags = ['-G0', '-fexceptions']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
-        env.Append(LIBS = ['pthread-psp','SDL_mixer', 'SDL_image', 'SDL', 'vorbisfile', 'vorbis', 'ogg', 'jpeg','png', 'freetype', 'z','GLU','GL', 'pspdisplay' ,'pspge', 'pspgu','psphprm','pspaudio', 'pspctrl', 'pspsdk', 'pspnet', 'psputility', 'psppower', 'pspfpu', 'pspvfpu', 'psppower_driver', 'pspuser', 'm', 'c', 'stdc++'])
+        env.Append(LIBS = ['c', 'pthread-psp','SDL_mixer', 'SDL_image', 'SDL', 'vorbisfile', 'vorbis', 'ogg', 'jpeg','png', 'freetype', 'z','GLU','GL', 'pspdisplay' ,'pspge', 'pspgu','psphprm','pspaudio', 'pspctrl', 'pspsdk', 'pspnet', 'psputility', 'psppower', 'pspfpu', 'pspvfpu', 'psppower_driver', 'pspuser', 'm', 'c', 'stdc++', 'pspkernel'])
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
