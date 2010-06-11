@@ -580,11 +580,14 @@ def getEnvironment(debug):
                                '-wd383', '-wd869',
                                '-wd1599'])
         return env
-    # minpspw for psp dev environment on windows
+    # minpspw for psp dev environment on windows (and linux?)
     def minpspw(env):
-        path = os.environ['MINPSPWDIR']
-        if path == None:
-            path = '/pspsdk/'
+        # on linux, symlink the pspsdk to /opt/pspsdk, or just put it there
+        path = '/opt/pspsdk'
+        try:
+            path = os.environ['MINPSPWDIR']
+        except KeyError:
+            pass
         bin_path = path + '/bin/'
         prefix = 'psp-'
         def setup(pre, x):
@@ -594,10 +597,12 @@ def getEnvironment(debug):
         env['CXX'] = setup(prefix, 'g++')
         env['AS'] = setup(prefix, 'as')
         env['AR'] = setup(prefix, 'ar')
-        env['OBJCOPY'] = setup('objcopy')
+        env['OBJCOPY'] = setup(prefix, 'objcopy')
+        # FIXME: try to use freetype-config and sdl-config to find these paths
+        # instead of hard coding them
         env.Append(CPPPATH = [setup(path, "/psp/include"), setup(path,"/psp/include/SDL"),setup(path,"/psp/include/freetype2"),setup(path,"/psp/sdk/include")])
         env.Append(CPPDEFINES = ['MINPSPW','_PSP_FW_VERSION=150'])
-        env.Append(LIBPATH = [setup(path,'/psp/lib'), setup(path,'/psp/sdk/lib')])
+        env.Append(LIBPATH = [setup(path, '/psp/lib'), setup(path, '/psp/sdk/lib')])
         flags = ['']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)

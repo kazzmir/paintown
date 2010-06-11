@@ -3265,8 +3265,10 @@ int    read_UDP             (sock_t handle, void *buffer, size_t length,
 int    write_UDP            (sock_t handle, const void *buffer, size_t length,
                              const struct sockaddr_in *sin);
 int    close_socket         (sock_t handle);
+#ifndef MINPSPW
 int    sock_select          (int nfds, fd_set *readfds, fd_set *writefds,
                              fd_set *errorfds, struct timeval *timeout);
+#endif
 char  *get_hostname         (void);
 qbyte  get_hostaddr         (void);
 qbyte *get_hostaddrs        (void);
