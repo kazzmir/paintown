@@ -767,12 +767,16 @@ def configEnvironment(env):
 
 def buildType(dir):
     properties = [dir]
-    if useSDL():
-        properties.append('sdl')
+    # Problem with command line too long under windows
+    if isWindows() and useMinpspw():
+        properties.append('psp')
+    else:
+        if useSDL():
+            properties.append('sdl')
+        if useMinpspw():
+            properties.append('psp')
     if useWii():
         properties.append('wii')
-    if useMinpspw():
-        properties.append('psp')
     if useAllegro5():
         properties.append('allegro5')
     if getDebug():
