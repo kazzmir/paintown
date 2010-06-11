@@ -606,8 +606,38 @@ def getEnvironment(debug):
         flags = ['-G0', '-fexceptions']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
+        env['LINKCOM'] = '$CC $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LINKFLAGS = flags)
-        env.Append(LIBS = ['c', 'pthread-psp','SDL_mixer', 'SDL_image', 'SDL', 'vorbisfile', 'vorbis', 'ogg', 'jpeg','png', 'freetype', 'z','GLU','GL', 'pspdisplay' ,'pspge', 'pspgu','psphprm','pspaudio', 'pspctrl', 'pspsdk', 'pspnet', 'psputility', 'psppower', 'pspfpu', 'pspvfpu', 'psppower_driver', 'pspuser', 'm', 'c', 'stdc++', 'pspkernel'])
+        all = Split("""
+pthread-psp
+SDL
+SDL_image
+SDL_mixer
+ogg
+vorbis
+vorbisfile
+GL
+stdc++
+pspctrl
+pspvfpu
+pspdisplay
+psphprm
+pspaudio
+pspgu
+pspge
+psprtc
+pspsdk
+c
+pspuser
+pspkernel
+pspnet_inet
+m
+freetype
+png
+z
+jpeg
+""")
+        env.Append(LIBS = all)
         os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
