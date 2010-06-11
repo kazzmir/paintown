@@ -582,19 +582,22 @@ def getEnvironment(debug):
         return env
     # minpspw for psp dev environment on windows
     def minpspw(env):
-        bin_path = '/pspsdk/bin/'
+        path = os.environ['MINPSPWDIR']
+        if path == None:
+            path = '/pspsdk/'
+        bin_path = path + '/bin/'
         prefix = 'psp-'
-        def setup(x):
-            return '%s%s' % (prefix, x)
-        env['CC'] = setup('gcc')
-        env['LD'] = setup('ld')
-        env['CXX'] = setup('g++')
-        env['AS'] = setup('as')
-        env['AR'] = setup('ar')
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        env['CC'] = setup(prefix, 'gcc')
+        env['LD'] = setup(prefix, 'ld')
+        env['CXX'] = setup(prefix, 'g++')
+        env['AS'] = setup(prefix, 'as')
+        env['AR'] = setup(prefix, 'ar')
         env['OBJCOPY'] = setup('objcopy')
-        env.Append(CPPPATH = ["/pspsdk/psp/include","/pspsdk/psp/include/SDL","/pspsdk/psp/include/freetype2","/pspsdk/psp/sdk/include"])
+        env.Append(CPPPATH = [setup(path, "/psp/include"), setup(path,"/psp/include/SDL"),setup(path,"/psp/include/freetype2"),setup(path,"/psp/sdk/include")])
         env.Append(CPPDEFINES = ['MINPSPW','_PSP_FW_VERSION=150'])
-        env.Append(LIBPATH = ['/pspsdk/psp/lib', '/pspsdk/psp/sdk/lib'])
+        env.Append(LIBPATH = [setup(path,'/psp/lib'), setup(path,'/psp/sdk/lib')])
         flags = ['']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
@@ -857,7 +860,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii():
+    elif isLinux() and not useWii() and not useMinpspw():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
@@ -867,8 +870,11 @@ else:
         if useAllegro() and not config.CheckAllegro():
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
 
-        if useSDL():
+        if useSDL() and not useMinpspw():
             config.CheckSDL()
+        elif useMinpspw():
+            env.Append(CPPDEFINES = ['USE_SDL'])
+            staticEnv.Append(CPPDEFINES = ['USE_SDL'])
 
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
         config.env.ParseConfig( 'libpng-config --libs --cflags' )
