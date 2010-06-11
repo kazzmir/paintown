@@ -638,7 +638,7 @@ z
 jpeg
 """)
         env.Append(LIBS = all)
-        os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
+        # os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
     # use the devkitpro stuff for wii/gamecube
