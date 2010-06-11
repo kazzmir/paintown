@@ -307,7 +307,7 @@
 #   endif
 #endif
 
-#if defined(WII) && defined(MINPSPW)
+#if defined(WII) || defined(MINPSPW)
 #define AF_INET 1
 #include <dirent.h>
 #endif
