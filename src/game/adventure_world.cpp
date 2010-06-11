@@ -167,6 +167,7 @@ void * AdventureWorld::do_load_level(void * arg){
     LoadLevelInfo * info = (LoadLevelInfo *) arg;
     AdventureWorld * world = info->who;
     world->loadLevel(info->path);
+    delete info;
     return NULL;
 }
 
@@ -175,8 +176,8 @@ void AdventureWorld::threadedLoadLevel(const Filesystem::AbsolutePath & path){
      * the temporary should live past the end of the thread life
      * so the memory will stick around.
      */
-    LoadLevelInfo info(this, path);
-    Util::Thread thread(do_load_level, &info);
+    LoadLevelInfo * info = new LoadLevelInfo(this, path);
+    Util::Thread thread(do_load_level, info);
     Util::EventManager manager;
     manager.waitForThread(thread);
 }
