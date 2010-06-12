@@ -2,6 +2,7 @@ Import('use')
 
 all = []
 all.extend(SConscript('token/SConstruct', exports = ['use']))
+all.extend(SConscript('regex/SConstruct', exports = ['use']))
 all.extend(SConscript('mugen/SConstruct', exports = ['use']))
 
 Alias('test-all', all)

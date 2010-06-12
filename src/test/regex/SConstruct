@@ -1,0 +1,11 @@
+Import('use')
+
+source = Split("""
+test.cpp
+../../util/regex.cpp
+../../util/trex/trex.c
+""")
+
+x = []
+x.append(use.Program('test', source))
+Return('x')

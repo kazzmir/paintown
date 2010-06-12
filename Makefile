@@ -10,6 +10,7 @@ test:
 	@echo
 	@echo Running tests
 	build/test/token/test
+	build/test/regex/test
 	@-rm /tmp/token*
 
 # usually only be executed by the buildbot script
