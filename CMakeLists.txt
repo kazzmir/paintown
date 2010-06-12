@@ -235,7 +235,7 @@ add_library(game_module ${GAME_SRC})
 add_library(mugen_module ${MUGEN_SRC})
 add_library(ogg_module ${OGG_SRC})
 add_library(trigger_module ${TRIGGER_SRC})
-add_library(pcre_module src/util/pcre/pcre_chartables.c src/util/pcre/pcre_compile.c src/util/pcre/pcre_config.c src/util/pcre/pcre_dfa_exec.c src/util/pcre/pcre_exec.c src/util/pcre/pcre_fullinfo.c src/util/pcre/pcre_get.c src/util/pcre/pcre_globals.c src/util/pcre/pcregrep.c src/util/pcre/pcre_info.c src/util/pcre/pcre_maketables.c src/util/pcre/pcre_newline.c src/util/pcre/pcre_ord2utf8.c src/util/pcre/pcreposix.c src/util/pcre/pcre_refcount.c src/util/pcre/pcre_study.c src/util/pcre/pcre_tables.c src/util/pcre/pcre_try_flipped.c src/util/pcre/pcre_ucd.c src/util/pcre/pcre_valid_utf8.c src/util/pcre/pcre_version.c src/util/pcre/pcre_xclass.c)
+add_library(pcre_module src/util/pcre/pcre_chartables.c src/util/pcre/pcre_compile.c src/util/pcre/pcre_config.c src/util/pcre/pcre_dfa_exec.c src/util/pcre/pcre_exec.c src/util/pcre/pcre_fullinfo.c src/util/pcre/pcre_get.c src/util/pcre/pcre_globals.c src/util/pcre/pcre_info.c src/util/pcre/pcre_maketables.c src/util/pcre/pcre_newline.c src/util/pcre/pcre_ord2utf8.c src/util/pcre/pcreposix.c src/util/pcre/pcre_refcount.c src/util/pcre/pcre_study.c src/util/pcre/pcre_tables.c src/util/pcre/pcre_try_flipped.c src/util/pcre/pcre_ucd.c src/util/pcre/pcre_valid_utf8.c src/util/pcre/pcre_version.c src/util/pcre/pcre_xclass.c)
 
 if (USE_SDL)
     # IMAGE
