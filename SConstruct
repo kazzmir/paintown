@@ -582,6 +582,7 @@ def getEnvironment(debug):
         return env
     # minpspw for psp dev environment on windows (and linux?)
     def minpspw(env):
+        print "Environment is minpspw (psp development)"
         # on linux, symlink the pspsdk to /opt/pspsdk, or just put it there
         path = '/opt/pspsdk'
         try:
@@ -663,7 +664,7 @@ jpeg
         env.Append(CPPPATH = ['#src/wii'])
         # env['LINKCOM'] = '$CC $SOURCES --start-group $_LIBDIRFLAGS $_LIBFLAGS --end-group -o $TARGET'
         env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'iberty', 'bte', 'fat', 'ogc', 'm'])
-        os.environ['PATH'] = "%s:%s:%s" % (bin_path, ogc_bin_path, os.environ['PATH'])
+        # os.environ['PATH'] = "%s:%s:%s" % (bin_path, ogc_bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', ogc_bin_path)
         return env
