@@ -63,7 +63,7 @@ find_package(ZLIB)
 find_package(PNG)
 find_package(FREETYPE)
 find_package(Threads)
-find_package(GNUREGEX)
+#find_package(GNUREGEX)
 find_package(VORBIS)
 find_package(OGG)
 
@@ -148,9 +148,9 @@ if(NOT FREETYPE_FOUND)
 endif(NOT FREETYPE_FOUND)
 
 # regex
-if(NOT GNUREGEX_FOUND)
-	message(FATAL_ERROR "Couldn't find GNU Regex")
-endif(NOT GNUREGEX_FOUND)
+#if(NOT GNUREGEX_FOUND)
+#	message(FATAL_ERROR "Couldn't find GNU Regex")
+#endif(NOT GNUREGEX_FOUND)
 
 # -------------------------------------------------------
 # Paths and system setup
@@ -194,12 +194,12 @@ endif(APPLE)
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src src/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${OGG_INCLUDES} ${GNUREGEX_INCLUDE_DIR})
+include_directories(src src/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${OGG_INCLUDES})
 
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${OGG_LIBS} ${GNUREGEX_LIBRARIES} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${OGG_LIBS} ${WIN_LIB} ${WINSOCK})
 
 
 # -------------------------------------------------------
@@ -235,6 +235,7 @@ add_library(game_module ${GAME_SRC})
 add_library(mugen_module ${MUGEN_SRC})
 add_library(ogg_module ${OGG_SRC})
 add_library(trigger_module ${TRIGGER_SRC})
+add_library(pcre_module src/util/pcre/pcre_chartables.c src/util/pcre/pcre_compile.c src/util/pcre/pcre_config.c src/util/pcre/pcre_dfa_exec.c src/util/pcre/pcre_exec.c src/util/pcre/pcre_fullinfo.c src/util/pcre/pcre_get.c src/util/pcre/pcre_globals.c src/util/pcre/pcregrep.c src/util/pcre/pcre_info.c src/util/pcre/pcre_maketables.c src/util/pcre/pcre_newline.c src/util/pcre/pcre_ord2utf8.c src/util/pcre/pcreposix.c src/util/pcre/pcre_refcount.c src/util/pcre/pcre_study.c src/util/pcre/pcre_tables.c src/util/pcre/pcre_try_flipped.c src/util/pcre/pcre_ucd.c src/util/pcre/pcre_valid_utf8.c src/util/pcre/pcre_version.c src/util/pcre/pcre_xclass.c)
 
 if (USE_SDL)
     # IMAGE
@@ -250,7 +251,7 @@ endif (USE_SDL)
 #paintown executable
 add_executable (paintown src/xmain.cpp)
 target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
@@ -261,7 +262,7 @@ target_link_libraries(paintown ${GROUP_START} base_module level_module factory_m
 if (NOT USE_SDL)
     add_executable (mugentest src/mugen/test.cpp)
     target_link_libraries(mugentest ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 endif (NOT USE_SDL)
 
 # Copy scripts and setup lex files
