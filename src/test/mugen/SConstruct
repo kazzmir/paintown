@@ -41,7 +41,6 @@ test/configuration.cpp
 test/util/events.cpp
 test/util/thread.cpp
 test/util/bitmap.cpp
-test/util/trex/trex.c
 test/util/timedifference.cpp
 test/util/funcs.cpp
 test/util/font.cpp

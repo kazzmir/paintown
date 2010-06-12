@@ -141,7 +141,6 @@ src/util/system.cpp
 src/util/compress.cpp
 src/util/message-queue.cpp
 src/input/linux_joystick.cpp
-src/util/trex/trex.c
 src/util/load_exception.cpp
 src/windows/funcs.cpp
 src/windows/system.cpp)
