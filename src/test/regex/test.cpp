@@ -38,6 +38,9 @@ void test1(){
     if (matchRegex("nogga", "lopster")){
         throw Failure(1);
     }
+    if (!matchRegex("titlebg 1", ".*titlebg .*")){
+        throw Failure(1);
+    }
 }
 
 void test2(){

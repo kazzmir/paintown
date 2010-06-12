@@ -332,7 +332,7 @@ void MugenMenu::loadData(){
                         } else if (simple == "fight"){
                             simple >> menu.fightFile;
                             Global::debug(1) << "Got Fight File: '" << menu.fightFile << "'" << endl;
-                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
                             string temp;
                             simple >> temp;
                             menu.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
@@ -340,7 +340,7 @@ void MugenMenu::loadData(){
 
                         } else {
                             //throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
-                            Global::debug(0) << "Unhandled option in Files Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
+                            Global::debug(0) << "Unhandled option in Files Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
                         }
                     }
             };

@@ -1597,7 +1597,7 @@ clearColor(-1){
             SceneDefWalker walker(*this,sprites);
             section->walk(walker);
         } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "def.*")){
-	    class BackgroundDefWalker: public Ast::Walker{
+	    class BackgroundDefWalker: public Ast::Walker {
 		public:
 		    BackgroundDefWalker(Background & self, Mugen::SpriteMap & sprites):
 			self(self),
@@ -1634,7 +1634,7 @@ clearColor(-1){
             section->walk(walker);
 	// This our background data definitions
         /* probably need a better regex here */
-	} else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " ")){
+	} else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " .*")){
 	    BackgroundElement * element = getElement(*section_it, sprites, animations);
 
             if (element != NULL){

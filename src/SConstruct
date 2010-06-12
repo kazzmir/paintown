@@ -220,6 +220,11 @@ def icon():
     else:
         return []
 
+def pcreLibrary(env):
+    pcreEnv = env.Clone()
+    env = pcreEnv
+    return use.SConscript('util/pcre/SConstruct', exports = ['env'])
+
 def dumbLibrary(env):
     dumbEnv = env.Clone()
     env = dumbEnv
@@ -239,7 +244,7 @@ use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
 
-use.Append(LIBS = [gmeLibrary(use), sflLibrary(use)])
+use.Append(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
 if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use)])
 elif useMinpspw():
