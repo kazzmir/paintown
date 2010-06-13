@@ -10,7 +10,7 @@ Scene(filename, cacher){
     objects = collectObjects();
 }
 
-static Block * createRandomBlock(const vector<BlockObject*> & objects){
+static Block * createRandomBlock(int minZ, int maxZ, const vector<BlockObject*> & objects){
     Block * block = new Block();
     int limit = 2 + Util::rnd(10);
     for (int i = 0; i < limit; i++){
@@ -20,7 +20,7 @@ static Block * createRandomBlock(const vector<BlockObject*> & objects){
         } else {
             x = -320 - Util::rnd(1000);
         }
-        int z = Util::rnd(300);
+        int z = minZ + Util::rnd(maxZ - minZ);
         BlockObject * use = new BlockObject(*objects[Util::rnd(objects.size())]);
         use->setCoords(x, z);
         block->addBlockObject(use);
@@ -31,7 +31,7 @@ static Block * createRandomBlock(const vector<BlockObject*> & objects){
 
 /* I don't think I really care about `blocks' here */
 void RandomScene::advanceBlocks(int blocks){
-    current_block = createRandomBlock(objects);
+    current_block = createRandomBlock(getMinimumZ(), getMaximumZ(), objects);
 }
 
 static vector<BlockObject*> collect(Block * block){

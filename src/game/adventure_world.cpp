@@ -184,7 +184,8 @@ void AdventureWorld::threadedLoadLevel(const Filesystem::AbsolutePath & path){
 }
 
 bool AdventureWorld::randomLevel() const {
-    return true;
+    /* FIXME: let the user decide to make this true or not */
+    return false;
 }
 
 void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
