@@ -445,17 +445,17 @@ void networkClient(){
 			const int inputBoxLength = font.textLength( "a" ) * 30;
 			const int min_y = 140;
 
-			font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Name", 0 );
+			font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Your name", 0 );
 			Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
 			Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
 			nameBox.Blit( copyNameBox );
 
-			font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Host", 0 );
+			font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
 			Bitmap hostBox( work, 20, min_y, inputBoxLength, font.getHeight() );
 			Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
 			hostBox.Blit( copyHostBox );
 
-			font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Port", 0 );
+			font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
 			Bitmap portBox( work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight() );
 			Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
 			portBox.Blit( copyPortBox );

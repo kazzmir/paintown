@@ -12,6 +12,7 @@
 #include "object/effect.h"
 #include "object/enemy.h"
 #include "level/scene.h"
+#include "level/random-scene.h"
 #include "world.h"
 #include "adventure_world.h"
 #include "network/network.h"
@@ -181,7 +182,11 @@ void AdventureWorld::threadedLoadLevel(const Filesystem::AbsolutePath & path){
     Util::EventManager manager;
     manager.waitForThread(thread);
 }
-	
+
+bool AdventureWorld::randomLevel() const {
+    return true;
+}
+
 void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	/*
 	if ( scene ){
@@ -194,7 +199,12 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	}
 	*/
 
-	Scene * s = new Scene(path.path().c_str(), *cacher);
+	Scene * s = NULL;
+        if (randomLevel()){
+            s = new RandomScene(path.path().c_str(), *cacher);
+        } else {
+            s = new Scene(path.path().c_str(), *cacher);
+        }
 	if ( scene != NULL ){
 		delete scene;
 	}

@@ -108,6 +108,8 @@ protected:
 
 	virtual void deleteObjects( std::vector< Object * > * objects );
 
+        bool randomLevel() const;
+
 	virtual void doLogic();
 
 	virtual bool isPlayer( Object * o ) const;

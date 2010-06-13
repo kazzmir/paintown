@@ -14,8 +14,18 @@ static Block * createRandomBlock(const vector<BlockObject*> & objects){
     Block * block = new Block();
     int limit = 2 + Util::rnd(10);
     for (int i = 0; i < limit; i++){
-        block->addBlockObject(new BlockObject(*objects[Util::rnd(objects.size())]));
+        int x = 0;
+        if (Util::rnd(2) == 0){
+            x = 400 + Util::rnd(1000);
+        } else {
+            x = -320 - Util::rnd(1000);
+        }
+        int z = Util::rnd(300);
+        BlockObject * use = new BlockObject(*objects[Util::rnd(objects.size())]);
+        use->setCoords(x, z);
+        block->addBlockObject(use);
     }
+    block->setLength(320 + Util::rnd(1000));
     return block;
 }
 
