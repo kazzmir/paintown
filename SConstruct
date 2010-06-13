@@ -619,6 +619,12 @@ vorbis
 vorbisfile
 GL
 stdc++
+m
+freetype
+png
+z
+jpeg
+c
 pspctrl
 pspvfpu
 pspdisplay
@@ -628,15 +634,9 @@ pspgu
 pspge
 psprtc
 pspsdk
-c
 pspuser
 pspkernel
 pspnet_inet
-m
-freetype
-png
-z
-jpeg
 """)
         env.Append(LIBS = all)
         # os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])

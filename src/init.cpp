@@ -286,8 +286,10 @@ static void initSystem(ostream & out){
 	exit(ok);
     }
 
+    out << "Starting timers" << endl;
     start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
     start_timer(inc_second_counter, 1);
+    out << "Timers started" << endl;
 
     SDL_WM_SetCaption("Paintown", NULL);
 

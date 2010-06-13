@@ -8,6 +8,13 @@ int main( int argc, char ** argv ){
 END_OF_MAIN()
 #endif
 
+#ifdef MINPSPW
+#include <pspkernel.h>
+PSP_MODULE_INFO("Paintown", 0, 1, 1);
+PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
+PSP_HEAP_SIZE_MAX();
+#endif
+
 #ifdef USE_SDL
 #include "main.h"
 

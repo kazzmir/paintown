@@ -244,7 +244,7 @@ use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
 
-use.Append(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
+use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
 if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use)])
 elif useMinpspw():
