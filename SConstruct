@@ -669,8 +669,12 @@ pspnet_inet
         env.PrependENVPath('PATH', ogc_bin_path)
         return env
     def llvm(env):
-        env['CC'] = 'llvm-gcc'
-        env['CXX'] = 'llvm-g++'
+        #env['CC'] = 'llvm-gcc'
+        #env['CXX'] = 'llvm-g++'
+        # Use these eventually
+        env['CXX'] = 'clang++'
+        env['CC'] = 'clang'
+
         # <nicholas> ah. don't replace AR or LD or RANLIB.
         # <jonrafkind> dont use llvm-ar and llvm-ld?
         # <nicholas> that's correct.

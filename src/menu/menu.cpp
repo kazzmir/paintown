@@ -187,7 +187,7 @@ Menu::Menu(Token * token){
     load(token);
 }
 
-Menu::Menu():
+Menu::Menu(bool fade, int fadeColor):
 music(""),
 selectSound(""),
 longestTextLength(0),
@@ -201,6 +201,12 @@ removeOption(false),
 background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
 option(false){
+
+    if (fade){
+        this->fade.fade = 255;
+        this->fade.color = fadeColor;
+    }
+
     // Make menus rounded (remove later
     contextMenu.location.setRadius(15);
 
@@ -532,6 +538,20 @@ void Menu::act(bool &endGame, bool reset){
     actInfoBoxes();
 }
 
+bool Menu::isFading(){
+    return fade.fade > 0;
+}
+
+void Menu::doFade(Bitmap * work){
+    Bitmap::transBlender(0, 0, 0, fade.fade);
+    work->translucent().fill(fade.color);
+    // fade.fade -= 8;
+    fade.fade *= 0.8;
+    if (fade.fade < 4){
+        fade.fade = 0;
+    }
+}
+
 void Menu::run(){
     bool done = false;
     bool endGame = false;
@@ -622,6 +642,11 @@ void Menu::run(){
                 }
                 // Draw any misc stuff in the foreground of the menu of selected object 
                 selectedOption->drawAbove(work);
+
+                if (isFading()){
+                    doFade(work);
+                }
+
                 // Finally render to screen
                 work->BlitToScreen();
             }

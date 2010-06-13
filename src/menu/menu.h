@@ -113,7 +113,7 @@ class Menu{
 class Menu{
 public:
     /*! ctor dtor */
-    Menu();
+    Menu(bool fadein = false, int fadeColor = 0);
     Menu(const Filesystem::AbsolutePath & str);
     Menu(Token * token);
     virtual ~Menu();
@@ -243,6 +243,9 @@ protected:
     void drawBackground(Bitmap *work);
     
     void setMenuInfo(const std::string &);
+
+    bool isFading();
+    void doFade(Bitmap * work);
     
     //! Menu info box
     _Menu::InfoBox menuInfoBox;
@@ -285,6 +288,16 @@ private:
 
     //! Set background for this menu
     Bitmap *background;
+
+    struct Fade {
+        Fade():
+            fade(0),
+            color(0){
+        }
+
+        int fade;
+        int color;
+    } fade;
 
     //! Clear color only used if no background is set this is for every existant menu
     int clearColor;

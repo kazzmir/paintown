@@ -352,11 +352,16 @@ bool Global::init( int gfx ){
 
     out<<"-- END init --"<<endl;
 
+    /*
     const Font & font = Font::getDefaultFont();
     // font.setSize(30, 30);
     Bitmap temp(font.textLength("Loading") + 1, font.getHeight("Loading") + 1);
     font.printf(0, 0, Bitmap::makeColor(255, 255, 255), temp, "Loading", 0);
     temp.BlitToScreen(sx / 2, sy / 2);
+    */
+    Bitmap white(sx, sy);
+    white.fill(Bitmap::makeColor(255, 255, 255));
+    white.BlitToScreen();
 
     return true;
 }

@@ -1,4 +1,5 @@
 #include <sstream>
+#include "util/bitmap.h"
 
 #include "factory/collector.h"
 #include "network/network.h"
@@ -211,7 +212,8 @@ int paintown_main( int argc, char ** argv ){
     Music music(music_on);
     while (true){
         try{
-            Menu game;
+            /* fadein from white */
+            Menu game(true, Bitmap::makeColor(255, 255, 255));
             game.load(mainMenuPath());
             if (just_network_server){
 #ifdef HAVE_NETWORKING
