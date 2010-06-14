@@ -157,10 +157,17 @@ void NightAtmosphere::act(const Scene & level){
         } else {
             lightning = false;
         }
+        if (thunderPause == 0){
+            thunder->play();
+            thunderPause -= 1;
+        } else if (thunderPause > 0){
+            thunderPause -= 1;
+        }
     } else if (Util::rnd(300) == 0){
         lightning = true;
         lightningFade = 255;
-        thunder->play();
+        thunderPause = 2 + Util::rnd(6);
+        // thunder->play();
     }
 }
 

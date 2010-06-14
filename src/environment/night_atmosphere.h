@@ -51,6 +51,7 @@ protected:
     Sound * thunder;
     bool lightning;
     int lightningFade;
+    int thunderPause;
 };
 
 #endif
