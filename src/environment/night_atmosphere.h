@@ -36,8 +36,10 @@ public:
 
 protected:
 
-    void drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const int black, const int black_alpha, const int light, const int light_alpha);
-    void processLight(Token * token) throw (TokenException);
+    void drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const int black, const int black_alpha, const int light, const int light_alpha, bool draw_light);
+    void processLight(Token * token);
+    int getSkyColor() const;
+    int getSkyDarkness() const;
 
     std::vector<Light*> lights;
 
@@ -45,6 +47,8 @@ protected:
     int darkness;
 
     Bitmap * lamp;
+    bool lightning;
+    int lightningFade;
 };
 
 #endif
