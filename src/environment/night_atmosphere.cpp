@@ -23,7 +23,9 @@ static int screenY(){
 NightAtmosphere::NightAtmosphere():
 Atmosphere(),
 darkness(128),
-lightning(false){
+lightning(false),
+thunder(NULL),
+thunderPause(-1){
 
     lamp = new Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/lamp.png")).path());
     thunder = Resource::getSound("sounds/thunder.wav");
@@ -157,17 +159,18 @@ void NightAtmosphere::act(const Scene & level){
         } else {
             lightning = false;
         }
-        if (thunderPause == 0){
-            thunder->play();
-            thunderPause -= 1;
-        } else if (thunderPause > 0){
-            thunderPause -= 1;
-        }
     } else if (Util::rnd(300) == 0){
         lightning = true;
         lightningFade = 255;
-        thunderPause = 2 + Util::rnd(6);
+        thunderPause = 20 + Util::rnd(4);
         // thunder->play();
+    }
+
+    if (thunderPause == 0){
+        thunder->play();
+        thunderPause -= 1;
+    } else if (thunderPause > 0){
+        thunderPause -= 1;
     }
 }
 
