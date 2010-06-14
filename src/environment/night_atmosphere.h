@@ -8,6 +8,7 @@ class Bitmap;
 #include <vector>
 
 class Token;
+class Sound;
 
 struct Light{
     Light(const int x, const int y, const int lower_width, const int upper_width, const int color, const int alpha):
@@ -47,6 +48,7 @@ protected:
     int darkness;
 
     Bitmap * lamp;
+    Sound * thunder;
     bool lightning;
     int lightningFade;
 };

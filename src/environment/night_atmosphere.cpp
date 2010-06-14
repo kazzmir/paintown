@@ -3,6 +3,8 @@
 #include "night_atmosphere.h"
 #include "util/file-system.h"
 #include "util/token.h"
+#include "resource.h"
+#include "util/sound.h"
 #include "globals.h"
 #include <vector>
 
@@ -24,6 +26,7 @@ darkness(128),
 lightning(false){
 
     lamp = new Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/lamp.png")).path());
+    thunder = Resource::getSound("sounds/thunder.wav");
     /*
     addLight(500, 30, 50, 30, Bitmap::makeColor(32,32,0), 0);
     addLight(300, 30, 70, 30, Bitmap::makeColor(0,32,192), 128);
@@ -157,6 +160,7 @@ void NightAtmosphere::act(const Scene & level){
     } else if (Util::rnd(300) == 0){
         lightning = true;
         lightningFade = 255;
+        thunder->play();
     }
 }
 
