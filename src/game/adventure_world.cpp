@@ -178,7 +178,7 @@ void AdventureWorld::threadedLoadLevel(const Filesystem::AbsolutePath & path){
      * so the memory will stick around.
      */
     LoadLevelInfo * info = new LoadLevelInfo(this, path);
-    Util::Thread thread(do_load_level, info);
+    Util::WaitThread thread(do_load_level, info);
     Util::EventManager manager;
     manager.waitForThread(thread);
 }
