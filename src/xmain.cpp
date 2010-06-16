@@ -1,6 +1,7 @@
+#include "main.h"
+
 #ifdef USE_ALLEGRO
 #include <allegro.h>
-#include "main.h"
 
 int main( int argc, char ** argv ){
     return paintown_main(argc, argv);
@@ -15,10 +16,7 @@ PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 PSP_HEAP_SIZE_MAX();
 #endif
 
-#ifdef USE_SDL
-#include "main.h"
-
-#ifdef WII
+#ifdef USE_SDL_MAIN
 extern "C" int SDL_main(int argc, char ** argv){
     return paintown_main(argc, argv);
 }
@@ -26,6 +24,4 @@ extern "C" int SDL_main(int argc, char ** argv){
 int main( int argc, char ** argv ){
     return paintown_main(argc, argv);
 }
-#endif
-
 #endif

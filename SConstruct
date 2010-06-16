@@ -190,6 +190,25 @@ def checkSDL(context):
     context.Result(ok)
     return ok
 
+def checkSDLMain(context):
+    context.Message("Checking for SDL main... ")
+    tmp = context.env.Clone()
+    env = context.env
+
+    ok = context.TryLink("""
+#include <SDL.h>
+int SDL_main(int argc, char ** argv){
+    return 0;
+}
+""", ".c")
+    if not ok:
+        context.sconf.env = tmp
+    else:
+        env.Append(CPPDEFINES = ['USE_SDL_MAIN'])
+    
+    context.Result(ok)
+    return ok
+
 def checkStaticSDL(context):
     context.Message("Checking for static SDL... ")
     env = context.env
@@ -770,6 +789,7 @@ env.Append(CCFLAGS = cflags,
 if env['PAINTOWN_NETWORKING']:
     env.Append(CPPPATH = ['#src/hawknl'])
 
+# deprecated
 def configEnvironment(env):
     if isWindows():
         def nothing(env):
@@ -785,7 +805,8 @@ def configEnvironment(env):
     else:
         custom_tests = {"CheckAllegro" : checkAllegro,
                         "CheckAllegro5" : checkAllegro5,
-                        "CheckSDL" : checkSDL}
+                        "CheckSDL" : checkSDL,
+                        "CheckSDLMain" : checkSDLMain}
         config = env.Configure(custom_tests = custom_tests)
         if useAllegro():
             if not config.CheckAllegro():
@@ -796,6 +817,7 @@ def configEnvironment(env):
         if useSDL():
             if not config.CheckSDL():
                 Exit(1)
+            config.CheckSDLMain()
         return config.Finish()
 
 # allegroEnvironment = configEnvironment(getEnvironment(debug))
@@ -834,6 +856,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckRTTI" : checkRTTI,
                 "CheckAllegro" : checkAllegro,
                 "CheckSDL" : checkSDL,
+                "CheckSDLMain" : checkSDLMain,
                 "CheckOgg" : checkNativeOgg}
 
 env['PAINTOWN_TESTS'] = custom_tests
@@ -917,9 +940,10 @@ else:
 
         if useSDL() and not useMinpspw():
             config.CheckSDL()
+            config.CheckSDLMain()
         elif useMinpspw():
-            env.Append(CPPDEFINES = ['USE_SDL'])
-            staticEnv.Append(CPPDEFINES = ['USE_SDL'])
+            env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
+            staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
 
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
         config.env.ParseConfig( 'libpng-config --libs --cflags' )
@@ -977,6 +1001,7 @@ else:
                            "CheckRuby" : checkStaticRuby,
                            "CheckAllegro" : checkAllegro,
                            "CheckSDL" : checkStaticSDL,
+                           "CheckSDLMain" : checkSDLMain,
                            "CheckRTTI" : checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
@@ -984,6 +1009,7 @@ else:
         static_config.CheckAllegro()
     if useSDL():
         static_config.CheckSDL()
+        static_config.CheckSDLMain()
     # static_config.CheckPython()
     #if static_config.HasRuby():
     #    static_config.CheckRuby()
