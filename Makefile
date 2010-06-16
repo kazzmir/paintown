@@ -44,8 +44,12 @@ win_clean:
 
 # use to build on windows with mingw
 win:
-	@echo Building windows..
+	@echo Building windows (Allegro)..
 	@scons env=mingw
+
+winsdl:
+	@echo Building windows (SDL)..
+	@scons env=mingw sdl=1
 
 nsis:
 	makensis misc/installer.nsi
