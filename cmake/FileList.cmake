@@ -143,7 +143,8 @@ src/util/message-queue.cpp
 src/input/linux_joystick.cpp
 src/util/load_exception.cpp
 src/windows/funcs.cpp
-src/windows/system.cpp)
+src/windows/system.cpp
+src/exceptions/exception.cpp)
 
 set(LOADPNG_SRC
 src/loadpng/loadpng.c
