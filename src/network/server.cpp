@@ -156,85 +156,87 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 
 static int getServerPort(){
     Bitmap background(Global::titleScreen().path());
-	const int drawY = 250;
-	{
-		// background.BlitToScreen();
-		const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-		Bitmap black( 300, font.getHeight() * 4 );
-		black.clear();
-		black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
-		Bitmap::transBlender( 0, 0, 0, 92 );
-		black.drawTrans( 20, drawY - font.getHeight() - 20, background );
-		font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
-		font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
-	}
+    const int drawY = 250;
+    {
+        // background.BlitToScreen();
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+        Bitmap black( 300, font.getHeight() * 4 );
+        black.clear();
+        black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
+        Bitmap::transBlender( 0, 0, 0, 92 );
+        black.drawTrans( 20, drawY - font.getHeight() - 20, background );
+        font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
+        font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
+    }
 
-	Keyboard key;
-	key.setAllDelay( 150 );
-	key.setDelay( Keyboard::Key_BACKSPACE, 30 );
-	key.setDelay( Keyboard::Key_ESC, 0 );
+    /* FIXME: replace with input manager */
 
-	Bitmap work( 200, 25 );
+    Keyboard key;
+    key.setAllDelay( 150 );
+    key.setDelay( Keyboard::Key_BACKSPACE, 30 );
+    key.setDelay( Keyboard::Key_ESC, 0 );
 
-	char buffer[ 10 ];
-	unsigned int index = 0;
-	Global::speed_counter = 0;
-	bool done = false;
-	vector< int > pressed;
-	pressed.push_back( Keyboard::Key_7 );
-	pressed.push_back( Keyboard::Key_8 );
-	pressed.push_back( Keyboard::Key_8 );
-	pressed.push_back( Keyboard::Key_7 );
-	while ( ! done ){
+    Bitmap work( 200, 25 );
 
-		while ( Global::speed_counter > 0 ){
-			Global::speed_counter -= 1;
-			key.readKeys( pressed );
-			if ( key[ Keyboard::Key_ESC ] ){
-				throw ReturnException();
-			}
-		}
+    char buffer[ 10 ];
+    unsigned int index = 0;
+    Global::speed_counter = 0;
+    bool done = false;
+    vector< int > pressed;
+    pressed.push_back( Keyboard::Key_7 );
+    pressed.push_back( Keyboard::Key_8 );
+    pressed.push_back( Keyboard::Key_8 );
+    pressed.push_back( Keyboard::Key_7 );
+    while ( ! done ){
 
-		if ( pressed.size() > 0 ){
-			for ( vector< int >::iterator it = pressed.begin(); it != pressed.end(); it++ ){
-				int xkey = *it;
-				// Global::debug( 0 ) << "Pressed " << Keyboard::keyToName( key ) << endl;
-				if ( xkey == Keyboard::Key_BACKSPACE ){
-					if ( index > 0 ){
-						index -= 1;
-					}
-					buffer[ index ] = 0;
-			   } else if ( xkey == Keyboard::Key_ENTER ){
-					done = true;
-					key.wait();
-				} else if ( Keyboard::isNumber( xkey ) ){
-					const char * name = Keyboard::keyToName( xkey );
-					buffer[ index ] = name[ 0 ];
-					index += 1;
-					if ( index > sizeof(buffer) / sizeof(char) - 1 ){
-						index = sizeof(buffer) / sizeof(char) - 1;
-					}
-					buffer[ index ] = 0;
-				}
-			}
-			pressed.clear();
-			work.clear();
-			const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-			font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
-			work.Blit( 100, drawY, background );
-                        background.BlitToScreen();
-		}
+        while ( Global::speed_counter > 0 ){
+            Global::speed_counter -= 1;
+            key.readKeys( pressed );
+            if ( key[ Keyboard::Key_ESC ] ){
+                throw ReturnException();
+            }
+        }
 
-		while ( Global::speed_counter == 0 ){
-			Util::rest( 1 );
-			key.poll();
-		}
-	}
+        if ( pressed.size() > 0 ){
+            for ( vector< int >::iterator it = pressed.begin(); it != pressed.end(); it++ ){
+                int xkey = *it;
+                // Global::debug( 0 ) << "Pressed " << Keyboard::keyToName( key ) << endl;
+                if ( xkey == Keyboard::Key_BACKSPACE ){
+                    if ( index > 0 ){
+                        index -= 1;
+                    }
+                    buffer[ index ] = 0;
+                } else if ( xkey == Keyboard::Key_ENTER ){
+                    done = true;
+                    key.wait();
+                } else if ( Keyboard::isNumber( xkey ) ){
+                    const char * name = Keyboard::keyToName( xkey );
+                    buffer[ index ] = name[ 0 ];
+                    index += 1;
+                    if ( index > sizeof(buffer) / sizeof(char) - 1 ){
+                        index = sizeof(buffer) / sizeof(char) - 1;
+                    }
+                    buffer[ index ] = 0;
+                }
+            }
+            pressed.clear();
+            work.clear();
+            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+            font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
+            work.Blit( 100, drawY, background );
+            background.BlitToScreen();
+        }
 
-	istringstream str( buffer );
-	int i;
-	str >> i;
-	return i;
+        while ( Global::speed_counter == 0 ){
+            Util::rest( 1 );
+            key.poll();
+        }
+    }
+
+    istringstream str( buffer );
+    int i;
+    str >> i;
+    return i;
 }
 
 #if 0
