@@ -324,7 +324,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 	selector.run("Test", Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
-    } catch (const ReturnException &e){
+    } catch (const Exception::Return &e){
 	return;
     }
     selector.setNextArcadeMatch();
