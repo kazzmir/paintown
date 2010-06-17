@@ -14,7 +14,7 @@
 #include "init.h"
 #include "configuration.h"
 #include "music.h"
-#include "shutdown_exception.h"
+#include "exceptions/shutdown_exception.h"
 
 #include "optionfactory.h"
 #include "actionfactory.h"

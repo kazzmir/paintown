@@ -12,7 +12,7 @@
 #include "menu/menu-exception.h"
 #include "input/input-manager.h"
 #include "game/mod.h"
-#include "shutdown_exception.h"
+#include "exceptions/shutdown_exception.h"
 #include "util/timedifference.h"
 #include "util/funcs.h"
 #include "util/ftalleg.h"

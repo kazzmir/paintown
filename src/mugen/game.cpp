@@ -14,7 +14,7 @@
 #include "input/input-map.h"
 #include "util/funcs.h"
 #include "factory/font_render.h"
-#include "shutdown_exception.h"
+#include "exceptions/shutdown_exception.h"
 #include "loading.h"
 
 #include "character.h"

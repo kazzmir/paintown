@@ -6,7 +6,7 @@
 #include "object/player.h"
 #include "globals.h"
 #include "object/display_character.h"
-#include "shutdown_exception.h"
+#include "exceptions/shutdown_exception.h"
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"

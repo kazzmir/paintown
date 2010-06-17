@@ -18,7 +18,7 @@
 #include "script/script.h"
 #include "trigger/trigger.h"
 #include "cacher.h"
-#include "shutdown_exception.h"
+#include "exceptions/shutdown_exception.h"
 
 using namespace std;
 

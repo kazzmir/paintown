@@ -716,7 +716,7 @@ pspnet_inet
             # cflags.append( ['-g3','-ggdb', '-Werror'])
             cflags.append( ['-g3','-ggdb'])
         else:
-            cflags.append( '-O2' )
+            cflags.append(['-O2'])
 
         if isCygwin():
             import SCons.Tool.zip

@@ -18,7 +18,7 @@
 #include "input/keyboard.h"
 #include "globals.h"
 #include "script/script.h"
-#include "shutdown_exception.h"
+#include "exceptions/shutdown_exception.h"
 #include "util/file-system.h"
 #include "util/events.h"
 #include "menu/menu_global.h"

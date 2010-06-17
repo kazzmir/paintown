@@ -28,7 +28,7 @@
 #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
-#include "shutdown_exception.h"
+#include "exceptions/shutdown_exception.h"
 
 #include "menu/menu_option.h"
 #include "menu/menu_global.h"
