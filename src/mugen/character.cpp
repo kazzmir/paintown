@@ -1824,18 +1824,29 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "damage"){
                     try{
                         const Ast::Value * container = simple.getValue();
+                        /*
                         container->reset();
                         Ast::Value * value;
                         *container >> value;
                         controller->getHit().damage.damage = (Ast::Value*) value->copy();
+                        */
 
                         /* has guard */
                         if (container->hasMultiple()){
+                            container->reset();
+                            Ast::Value * value;
                             *container >> value;
-                            controller->getHit().damage.guardDamage = (Ast::Value*) value->copy();;
+                            controller->getHit().damage.damage = (Ast::Value*) value->copy();
+                            *container >> value;
+                            controller->getHit().damage.guardDamage = (Ast::Value*) value->copy();
+                        } else {
+                            /* otherwise its a single expression */
+                            controller->getHit().damage.damage = (Ast::Value*) container->copy();
                         }
                     } catch (const Ast::Exception & e){
-                        Global::debug(0) << "Could not read damage: " << e.getReason() << endl;
+                        ostringstream out;
+                        out << "Could not read `damage' from '" << simple.toString() << "': " << e.getReason();
+                        throw MugenException(out.str());
                     }
                 } else if (simple == "pausetime"){
                     try{

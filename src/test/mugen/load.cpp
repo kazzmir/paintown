@@ -17,7 +17,7 @@ static void load(const char * path){
         Mugen::Character kfm(Filesystem::find(Filesystem::RelativePath(path)));
         kfm.load();
         diff.endTime();
-        Global::debug(0, "test") << "Success! Took " << diff.printTime() << endl;
+        Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
     } catch (const MugenException & e){
         Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
     } catch (const Filesystem::NotFound & e){
