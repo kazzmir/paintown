@@ -27,7 +27,7 @@ stimulation( stimulation ){
 		head = tr.readToken();
 
 		if ( *head != "item" ){
-			throw LoadException( "Item does not begin with 'item'" );
+			throw LoadException(__FILE__, __LINE__, "Item does not begin with 'item'" );
 		}
 
 		while ( head->hasTokens() ){
@@ -44,7 +44,7 @@ stimulation( stimulation ){
 		}
 	} catch (const TokenException & ex){
             Global::debug(0) << "Could not read "<<filename.path()<< ": "<<ex.getReason()<<endl;
-            throw LoadException("Could not open item file");
+            throw LoadException(__FILE__, __LINE__, "Could not open item file");
 	}
 
 	collide = new ECollide( picture );

@@ -247,7 +247,7 @@ void Menu::waitForSelect(){
 
 void Menu::load(Token *token){
     if ( *token != "menu" ){
-        throw LoadException("Not a menu");
+        throw LoadException(__FILE__, __LINE__, "Not a menu");
     } else if (!token->hasTokens()){
         return;
     }
@@ -364,21 +364,21 @@ void Menu::load(Token *token){
             // delete current;
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__, m);
         } catch (const LoadException & ex){
             // delete current;
             throw ex;
         } catch (const Filesystem::NotFound & ex){
-            throw LoadException(ex.getReason());
+            throw LoadException(__FILE__, __LINE__, ex.getReason());
         }
     }
 
     if ( _name.empty() ){
-        throw LoadException("No name set, the menu should have a name!");
+        throw LoadException(__FILE__, __LINE__, "No name set, the menu should have a name!");
     }
 
     if ( contextMenu.location.empty() ){
-        throw LoadException("The position for the menu '" + getName() + "' list must be set!");
+        throw LoadException(__FILE__, __LINE__, "The position for the menu '" + getName() + "' list must be set!");
     }
     // Omit menu if no options are available
     if (! hasOptions) {
@@ -438,7 +438,7 @@ void Menu::load(const Filesystem::AbsolutePath & filename){
         Token * token = tr.readToken();
         load(token);
     } catch (const TokenException & e){
-        throw LoadException(e.getReason());
+        throw LoadException(__FILE__, __LINE__, e.getReason());
     }
 }
 

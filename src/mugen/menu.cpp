@@ -854,7 +854,7 @@ void run(){
         string m("Problem with loading MUGEN menu: ");
         m += ex.getFullReason();
         Loader::stopLoading(loading);
-        throw LoadException(m);
+        throw LoadException(__FILE__, __LINE__, m);
     }
 }
 

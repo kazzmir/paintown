@@ -259,7 +259,7 @@ void Coordinate::checkDimensions(){
     if (getWidth() < 0 || getHeight() < 0){
         std::ostringstream out;
         out << "Cannot have a negative coordinate dimension " << getWidth() << ", " << getHeight();
-        throw LoadException();
+        throw LoadException(__FILE__, __LINE__, out.str());
     }
 }
 

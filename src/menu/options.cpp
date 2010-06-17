@@ -46,7 +46,7 @@ using namespace Gui;
 OptionAdventure::OptionAdventure(Token *token):
 MenuOption(token, Event){
     if ( *token != "adventure" ){
-        throw LoadException("Not an adventure");
+        throw LoadException(__FILE__, __LINE__, "Not an adventure");
     }
 
     readName(token);
@@ -100,7 +100,7 @@ void OptionAdventure::run(bool &endGame){
 OptionAdventureCpu::OptionAdventureCpu(Token *token):
 MenuOption(token, Event){
     if (*token != "adventure-cpu"){
-        throw LoadException("Not an adventure");
+        throw LoadException(__FILE__, __LINE__, "Not an adventure");
     }
 
     readName(token);
@@ -163,7 +163,7 @@ void OptionAdventureCpu::run(bool &endGame){
 OptionChangeMod::OptionChangeMod(Token *token):
 MenuOption(token, Event){
     if ( *token != "change-mod" ){
-        throw LoadException("Not a change mod");
+        throw LoadException(__FILE__, __LINE__, "Not a change mod");
     }
 
     /* TODO: fix */
@@ -342,7 +342,7 @@ title(Bitmap::makeColor(0,255,255)){
 	credits.push_back("");
 	
 	if ( *token != "credits" )
-		throw LoadException("Not a credit menu");
+		throw LoadException(__FILE__, __LINE__, "Not a credit menu");
 
         readName(token);
 	
@@ -388,7 +388,7 @@ title(Bitmap::makeColor(0,255,255)){
 		} catch ( const TokenException & ex ) {
 			string m( "Menu parse error: " );
 			m += ex.getReason();
-			throw LoadException( m );
+			throw LoadException(__FILE__, __LINE__,  m );
 		} catch ( const LoadException & ex ) {
 			throw ex;
 		}
@@ -498,7 +498,7 @@ void OptionCredits::run( bool &endGame ){
 OptionDummy::OptionDummy(Token *token):
 MenuOption(token, Event){
     if ( *token != "dummy" ){
-        throw LoadException("Not dummy option");
+        throw LoadException(__FILE__, __LINE__, "Not dummy option");
     }
 
     readName(token);
@@ -511,7 +511,7 @@ MenuOption(token, Event){
 OptionDummy::OptionDummy( const std::string &name ):
 MenuOption(0, Event){
     if (name.empty()){
-	throw LoadException("No name given to dummy");
+	throw LoadException(__FILE__, __LINE__, "No name given to dummy");
     }
     this->setText(name);
 }
@@ -534,7 +534,7 @@ rgreen(255){
 	setRunnable(false);
 	
 	if ( *token != "fullscreen" )
-		throw LoadException("Not fullscreen option");
+		throw LoadException(__FILE__, __LINE__, "Not fullscreen option");
 
         readName(token);
 }
@@ -589,7 +589,7 @@ rgreen(255){
 	setRunnable(false);
 	
 	if ( *token != "invincible" )
-		throw LoadException("Not invincible option");
+		throw LoadException(__FILE__, __LINE__, "Not invincible option");
 
         readName(token);
 }
@@ -758,7 +758,7 @@ player(-1),
 type(Invalidkey),
 keyCode(0){
     if (*token != "joystick"){
-        throw LoadException("Not joystick option");
+        throw LoadException(__FILE__, __LINE__, "Not joystick option");
     }
 
     while ( token->hasTokens() ){
@@ -781,16 +781,16 @@ keyCode(0){
             // delete current;
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__,  m );
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;
         }
     }
 
-    if(name.empty())throw LoadException("No name set, this option should have a name!");
-    if(type == Invalidkey)throw LoadException("Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
-    if(player == -1)throw LoadException("Player not specified in key configuration");
+    if(name.empty())throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
+    if(type == Invalidkey)throw LoadException(__FILE__, __LINE__, "Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
+    if(player == -1)throw LoadException(__FILE__, __LINE__, "Player not specified in key configuration");
 
     ostringstream out;
     out << name << ": " << Joystick::keyToName(getKey(player, type));
@@ -950,7 +950,7 @@ static int readKey( Keyboard & key ){
 OptionKey::OptionKey(Token *token): MenuOption(token, Event), name(""), player(-1), type(invalidkey), keyCode(0)
 {
 	if ( *token != "key" )
-		throw LoadException("Not key option");
+		throw LoadException(__FILE__, __LINE__, "Not key option");
 	
 	while ( token->hasTokens() )
 	{
@@ -983,7 +983,7 @@ OptionKey::OptionKey(Token *token): MenuOption(token, Event), name(""), player(-
 			// delete current;
 			string m( "Menu parse error: " );
 			m += ex.getReason();
-			throw LoadException( m );
+			throw LoadException(__FILE__, __LINE__,  m );
 		} 
 		catch ( const LoadException & ex )
 		{
@@ -992,9 +992,9 @@ OptionKey::OptionKey(Token *token): MenuOption(token, Event), name(""), player(-
 		}
 	}
 	
-	if(name.empty())throw LoadException("No name set, this option should have a name!");
-	if(type == invalidkey)throw LoadException("Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
-	if(player == -1)throw LoadException("Player not specified in key configuration");
+	if(name.empty())throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
+	if(type == invalidkey)throw LoadException(__FILE__, __LINE__, "Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
+	if(player == -1)throw LoadException(__FILE__, __LINE__, "Player not specified in key configuration");
 	
         char temp[255];
 	sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
@@ -1049,7 +1049,7 @@ rgreen(255){
 	setRunnable(false);
 	
 	if ( *token != "lives" ){
-		throw LoadException( "Not lives option" );
+		throw LoadException(__FILE__, __LINE__,  "Not lives option" );
 	}
 
         readName(token);
@@ -1112,7 +1112,7 @@ menu(0){
     if ( *token == "menu" ){
 	menu = new Menu();
     } else {
-	throw LoadException("Not a menu");
+	throw LoadException(__FILE__, __LINE__, "Not a menu");
     }
     // Set this menu as an option
     menu->setAsOption(true);
@@ -1162,7 +1162,7 @@ void OptionMenu::setParent(Menu *menu){
 OptionMugenMenu::OptionMugenMenu(Token *token):
 MenuOption(token, Event){
     if ( *token != "mugen" ){
-        throw LoadException("Not a mugen motif menu");
+        throw LoadException(__FILE__, __LINE__, "Not a mugen motif menu");
     }
     
     while ( token->hasTokens() ){
@@ -1191,7 +1191,7 @@ MenuOption(token, Event){
             // delete current;
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__,  m );
         } 
     }
 
@@ -1227,7 +1227,7 @@ void OptionMugenMenu::run(bool &endGame){
 OptionNetworkHost::OptionNetworkHost(Token *token):
 MenuOption(token, Event){
     if ( *token != "network-host" ){
-        throw LoadException("Not a network-host");
+        throw LoadException(__FILE__, __LINE__, "Not a network-host");
     }
 
     readName(token);
@@ -1254,7 +1254,7 @@ void OptionNetworkHost::run(bool &endGame){
 OptionNetworkJoin::OptionNetworkJoin(Token *token):
 MenuOption(token, Event){
     if ( *token != "network-join" ){
-        throw LoadException("Not a network-join");
+        throw LoadException(__FILE__, __LINE__, "Not a network-join");
     }
 
     readName(token);
@@ -1291,7 +1291,7 @@ rgreen(255){
     setRunnable(false);
 
     if ( *token != "npc" ){
-        throw LoadException( "Not npc option" );
+        throw LoadException(__FILE__, __LINE__,  "Not npc option" );
     }
 
     readName(token);
@@ -1357,7 +1357,7 @@ rgreen(255){
     setRunnable(false);
 
     if ( *token != "play-mode" ){
-        throw LoadException("Not a play-mode");
+        throw LoadException(__FILE__, __LINE__, "Not a play-mode");
     }
 
     readName(token);
@@ -1430,7 +1430,7 @@ bool OptionPlayMode::rightKey(){
 OptionQuit::OptionQuit(Token *token):
 MenuOption(token, Event){
     if ( *token != "quit" ){
-        throw LoadException("Not quit option");
+        throw LoadException(__FILE__, __LINE__, "Not quit option");
     }
 
     readName(token);
@@ -1439,7 +1439,7 @@ MenuOption(token, Event){
 OptionQuit::OptionQuit( const std::string &name ):
 MenuOption(0, Event){
     if (name.empty()){
-	throw LoadException("No name given to quit");
+	throw LoadException(__FILE__, __LINE__, "No name given to quit");
     }
     this->setText(name);
 }
@@ -1544,7 +1544,7 @@ rgreen(255){
     }
 
     if ( *token != "screen-size" ){
-        throw LoadException("Not a screen-size");
+        throw LoadException(__FILE__, __LINE__, "Not a screen-size");
     }
 
     readName(token);
@@ -1664,7 +1664,7 @@ rgreen(255){
     setRunnable(false);
 
     if ( *token != "font-select" ){
-        throw LoadException("Not a font selector");
+        throw LoadException(__FILE__, __LINE__, "Not a font selector");
     }
 
     while (token->hasTokens()){
@@ -1677,7 +1677,7 @@ rgreen(255){
                 if ( temp == "name" ) typeAdjust = fontName;
                 else if ( temp == "width" ) typeAdjust = fontWidth;
                 else if ( temp == "height" ) typeAdjust = fontHeight;
-                else throw LoadException("Incorrect value \"" + temp + "\" in font-select");
+                else throw LoadException(__FILE__, __LINE__, "Incorrect value \"" + temp + "\" in font-select");
             } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -1688,7 +1688,7 @@ rgreen(255){
             // delete current;
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__,  m );
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;
@@ -1712,7 +1712,7 @@ rgreen(255){
                 name = Filesystem::cleanse(Filesystem::AbsolutePath(name)).path();
             }
         } catch (const Filesystem::NotFound & e){
-            throw LoadException("Could not load font: " + e.getReason());
+            throw LoadException(__FILE__, __LINE__, "Could not load font: " + e.getReason());
         }
     }
 }
@@ -1830,7 +1830,7 @@ OptionSpeed::OptionSpeed(Token *token): MenuOption(token, AdjustableOption), nam
     setRunnable(false);
 
     if ( *token != "speed" )
-        throw LoadException("Not speed option");
+        throw LoadException(__FILE__, __LINE__, "Not speed option");
 
     readName(token);
 }
@@ -1889,7 +1889,7 @@ _menu(0){
     if (*token == "tabmenu"){
 	_menu = new TabMenu();
     } else {
-	throw LoadException("Not a tabbed menu");
+	throw LoadException(__FILE__, __LINE__, "Not a tabbed menu");
     }
     // Set this menu as an option
     _menu->setAsOption(true);
@@ -1934,7 +1934,7 @@ void OptionTabMenu::run(bool &endGame){
 OptionVersus::OptionVersus( Token *token ):
 MenuOption(token, Event), human(false){
     if ( *token != "versus" ){
-        throw LoadException("Not versus");
+        throw LoadException(__FILE__, __LINE__, "Not versus");
     }
 
     readName(token);
@@ -1957,7 +1957,7 @@ MenuOption(token, Event), human(false){
             // delete current;
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__,  m );
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;
@@ -2022,7 +2022,7 @@ void OptionVersus::run(bool &endGame){
 			player = temp[0];
 			enemy = temp[1];
 			if ( ! player || !enemy ){
-				throw LoadException("Null player");
+				throw LoadException(__FILE__, __LINE__, "Null player");
 			}
 
 			//player = selectPlayer( false );
@@ -2073,7 +2073,7 @@ rgreen(255){
     setRunnable(false);
 
     if (*token != "sound" ){
-        throw LoadException("Not a sound option");
+        throw LoadException(__FILE__, __LINE__, "Not a sound option");
     }
 
     readName(token);
@@ -2147,7 +2147,7 @@ rgreen(255){
     setRunnable(false);
 
     if (*token != "music" ){
-        throw LoadException("Not a music option");
+        throw LoadException(__FILE__, __LINE__, "Not a music option");
     }
 
     readName(token);

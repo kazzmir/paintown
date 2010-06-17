@@ -11,10 +11,10 @@ class Base: public std::exception {
 public:
     Base(const std::string & file, int line);
     Base(const std::string & file, int line, const Base & nested);
+    Base(const Base & copy);
 
     virtual ~Base() throw ();
 protected:
-    Base(const Base & copy);
 
     virtual Base * copy() const;
 

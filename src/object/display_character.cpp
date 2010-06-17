@@ -43,7 +43,7 @@ void DisplayCharacter::load() throw (LoadException) {
     try{
         Token * head = reader.readToken();
         if ( *head != "character" ){
-            throw LoadException( "First token is not 'character' in " + path );
+            throw LoadException(__FILE__, __LINE__, "First token is not 'character' in " + path );
         }
 
         map<string, Filesystem::AbsolutePath> remaps;
@@ -91,13 +91,13 @@ void DisplayCharacter::load() throw (LoadException) {
         }
     } catch (const TokenException & ex){
         Global::debug(0) << "Could not read " << path << " : " << ex.getReason() << endl;
-        throw LoadException( "Could not open character file: " + path );
+        throw LoadException(__FILE__, __LINE__, "Could not open character file: " + path );
     } catch (const Filesystem::NotFound & ex){
-        throw LoadException("Could not load character " + path + " because " + ex.getReason());
+        throw LoadException(__FILE__, __LINE__, "Could not load character " + path + " because " + ex.getReason());
     }
 
     if ( getMovement( "idle" ) == NULL ){
-        throw LoadException( "No 'idle' animation given for " + path );
+        throw LoadException(__FILE__, __LINE__, "No 'idle' animation given for " + path );
     }
 
     animation_current = getMovement( "idle" );

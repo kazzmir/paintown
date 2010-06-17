@@ -126,7 +126,7 @@ contact( NULL ){
 
 	if ( *tok != "anim" && *tok != "animation" ){
 		Global::debug( 0 ) <<"Not an animation"<<endl;
-		throw LoadException("Not an animation");
+		throw LoadException(__FILE__, __LINE__, "Not an animation");
 	}
 
 	TimeDifference diff;
@@ -392,7 +392,7 @@ contact( NULL ){
 					frames[full.path()] = f;
 					if ( pic->getError() ){
 						Global::debug( 0 ) <<"Pic error"<<endl;
-						throw LoadException("Could not load picture");
+						throw LoadException(__FILE__, __LINE__, "Could not load picture");
 					}
 				}
 				AnimationEvent * ani = new AnimationEventFrame(full.path());
@@ -408,7 +408,7 @@ contact( NULL ){
 
 			current1->print(" ");
 
-			throw LoadException( m );
+			throw LoadException(__FILE__, __LINE__, m);
 		}
 	}
 
@@ -421,7 +421,7 @@ contact( NULL ){
 	if ( frames.empty() ){
 		Global::debug( 0 )<<"No frames given"<<endl;
 		// throw exception();
-		throw LoadException("No frames given");
+		throw LoadException(__FILE__, __LINE__, "No frames given");
 	}
 
 	delay_counter = 0;

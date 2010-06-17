@@ -259,7 +259,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     } catch( const TokenException & ex ){
         // cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
         // delete head;
-        throw LoadException(string("Could not open character file: ") + filename.path() + " because " + ex.getReason());
+        throw LoadException(__FILE__, __LINE__, string("Could not open character file: ") + filename.path() + " because " + ex.getReason());
     }
     string xls = "Load time for ";
     xls += filename.path();
@@ -267,7 +267,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     if ( *head != "character" ){
         // cout<<filename<< " is not a character"<<endl;
         // delete head;
-        throw LoadException(string("File is not a character: ") + filename.path());
+        throw LoadException(__FILE__, __LINE__, string("File is not a character: ") + filename.path());
     }
 
     current_map = 0;
@@ -349,15 +349,15 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
         squish_sound = new Sound(Filesystem::find(Filesystem::RelativePath("sounds/squish.wav")).path());
 
         if ( getMovement( "idle" ) == NULL ){
-            throw LoadException("No 'idle' movement");
+            throw LoadException(__FILE__, __LINE__, "No 'idle' movement");
         }
 
         if ( getMovement( "pain" ) == NULL ){
-            throw LoadException("No 'pain' movement");
+            throw LoadException(__FILE__, __LINE__, "No 'pain' movement");
         }
 
         if ( getMovement( "rise" ) == NULL ){
-            throw LoadException("No 'rise' movement");
+            throw LoadException(__FILE__, __LINE__, "No 'rise' movement");
         }
         /*
            if ( movements[ "grab" ] == NULL ){
@@ -366,13 +366,13 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
            */
 
         if ( getMovement( "fall" ) == NULL ){
-            throw LoadException("No 'fall' movement");
+            throw LoadException(__FILE__, __LINE__, "No 'fall' movement");
         }
 
     } catch (const Filesystem::NotFound & ex){
         ostringstream ss;
         ss << "Could not load character " << filename.path() << " because " << ex.getReason();
-        throw LoadException(ss.str());
+        throw LoadException(__FILE__, __LINE__, ss.str());
     } catch( const TokenException & tex ){
         cout<< "TokenException: " << tex.getReason() << endl;
         n->print(" ");
@@ -380,11 +380,11 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
         head->print("*");
         // delete head;
 
-        throw LoadException("Error parsing character");
+        throw LoadException(__FILE__, __LINE__, "Error parsing character");
     } catch (const LoadException & lex){
         ostringstream ss;
         ss << "Could not load character " << filename.path() << " because " << lex.getReason();
-        throw LoadException(ss.str());
+        throw LoadException(__FILE__, __LINE__, ss.str());
     }
 
     // delete head;

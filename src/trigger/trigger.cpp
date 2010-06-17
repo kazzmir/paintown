@@ -11,7 +11,7 @@ public:
     TriggerEnvironment(Token * token){
         message = token->findToken("trigger/message");
         if (message == NULL){
-            throw LoadException("Expected trigger/message token");
+            throw LoadException(__FILE__, __LINE__, "Expected trigger/message token");
         }
         message = message->copy();
     }
@@ -45,7 +45,7 @@ Trigger * Trigger::parse(Token * token) throw (TokenException) {
     if (type == "environment"){
         return new TriggerEnvironment(token);
     }
-    throw LoadException("Unknown trigger type " + type);
+    throw LoadException(__FILE__, __LINE__, "Unknown trigger type " + type);
 }
     
 Trigger::Trigger(){

@@ -468,7 +468,7 @@ void Configuration::loadConfigurations(){
         TokenReader tr(file.path());
         Token * head = tr.readToken();
         if (*head != config_configuration){
-            throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not use the configuration format" );
+            throw LoadException(__FILE__, __LINE__, string("Config file ") + Filesystem::configFile().path() + " does not use the configuration format" );
         }
         while ( head->hasTokens() ){
             Token * n;
@@ -516,7 +516,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
+                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
                 }
 
                 if (input == INPUT_TYPE){
@@ -575,7 +575,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException( string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
+                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
                 }
 
                 if (input == INPUT_TYPE){

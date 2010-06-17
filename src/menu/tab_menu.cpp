@@ -116,7 +116,7 @@ totalLines(1){
 
 void TabMenu::load(Token *token) throw (LoadException){
     if ( *token != "tabmenu" )
-        throw LoadException("Not a tabbed menu");
+        throw LoadException(__FILE__, __LINE__, "Not a tabbed menu");
     else if ( ! token->hasTokens() )
         return;
 
@@ -232,7 +232,7 @@ void TabMenu::load(Token *token) throw (LoadException){
                         delete menu;
                     }
                 } else {
-                    throw LoadException("Problem reading menu");
+                    throw LoadException(__FILE__, __LINE__, "Problem reading menu");
                 }
             } else if( *tok == "menuinfo" ){
                 *tok >> menuInfo;
@@ -250,7 +250,7 @@ void TabMenu::load(Token *token) throw (LoadException){
             // delete current;
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__,  m );
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;
@@ -258,12 +258,12 @@ void TabMenu::load(Token *token) throw (LoadException){
     }
 
     if ( getName().empty() ){
-        throw LoadException("No name set, the menu should have a name!");
+        throw LoadException(__FILE__, __LINE__, "No name set, the menu should have a name!");
     }
 
     if (!menuInfo.empty()){
         if (! menuInfoLocation.x || ! menuInfoLocation.y){
-            throw LoadException("The position for the menu info box in \"" + getName() + "\" must be set since there menuinfo is set!"); 
+            throw LoadException(__FILE__, __LINE__, "The position for the menu info box in \"" + getName() + "\" must be set since there menuinfo is set!"); 
         }
     }
 
@@ -282,7 +282,7 @@ void TabMenu::load(const Filesystem::AbsolutePath & filename) throw (LoadExcepti
         Token * token = tr.readToken();
         load(token);
     } catch (const TokenException & e){
-        throw LoadException(e.getReason());
+        throw LoadException(__FILE__, __LINE__, e.getReason());
     }
 }
 

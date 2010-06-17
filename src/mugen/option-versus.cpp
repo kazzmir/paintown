@@ -9,7 +9,7 @@ using namespace Mugen;
 
 OptionVersus::OptionVersus( const std::string &name ) throw( LoadException ){
     if (name.empty()){
-	throw LoadException("No name given to versus");
+	throw LoadException(__FILE__, __LINE__, "No name given to versus");
     }
     this->setText(name);
 }

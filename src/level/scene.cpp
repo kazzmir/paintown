@@ -59,7 +59,7 @@ frontBuffer(NULL){
         current = tr.readToken();
 
         if ( *current != "level" )
-            throw LoadException("Not a level");
+            throw LoadException(__FILE__, __LINE__, "Not a level");
 
         while ( current->hasTokens() ){
             /* stop loading if a shutdown occurs */
@@ -165,14 +165,14 @@ frontBuffer(NULL){
         // delete current;
         string m( "Level parse error: " );
         m += ex.getReason();
-        throw LoadException( m );
+        throw LoadException(__FILE__, __LINE__, m);
     } catch ( const LoadException & ex ){
         // delete current;
         throw ex;
     }
 
     if ( level_blocks.empty() )
-        throw LoadException("No level blocks defined");
+        throw LoadException(__FILE__, __LINE__, "No level blocks defined");
 
     current_block = level_blocks.front();
     level_blocks.pop_front();

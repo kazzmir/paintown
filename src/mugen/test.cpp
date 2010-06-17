@@ -20,6 +20,7 @@
 #include "configuration.h"
 #include "music.h"
 
+#include "exceptions/exception.h"
 #include "mugen/config.h"
 #include "mugen/reader.h"
 #include "mugen/section.h"

@@ -97,7 +97,7 @@ void Widget::setCoordinates(Token * token){
         std::ostringstream out;
         out << "Invalid location dimension (cannot have a negative size). Width " << location.getWidth() << " Height " << location.getHeight() << ". From token: ";
         token->toString(out, "");
-        throw LoadException(out.str());
+        throw LoadException(__FILE__, __LINE__, out.str());
     }
 }
 

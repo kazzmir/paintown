@@ -175,7 +175,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     pthread_t loadingThread;
 
     if (pthread_create(&loadingThread, NULL, characterLoader, &loader ) != 0){
-        throw LoadException("Could not create loading thread");
+        throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
 
     bool done = false;
@@ -429,7 +429,7 @@ Object * Game::selectPlayer(bool invincibile, const string & message, const Leve
         if (players.size() == 0){
             ostringstream out;
             out << "No players found in '" << info.getPlayerPath() << "'";
-            throw LoadException(out.str());
+            throw LoadException(__FILE__, __LINE__,out.str());
         }
         /* only run the selection screen if there is more than 1 player to choose */
         if (players.size() > 1){

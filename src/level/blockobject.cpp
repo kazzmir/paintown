@@ -38,7 +38,7 @@ stimulationType(copy.stimulationType),
 stimulationValue(copy.stimulationValue){
 }
 
-BlockObject::BlockObject( Token * tok ) throw ( LoadException ):
+BlockObject::BlockObject( Token * tok ) throw (LoadException):
 type(ObjectFactory::NoneType),
 aggression( -1 ),
 map( 0 ),
@@ -66,7 +66,7 @@ stimulationValue( 0 ){
 					type = ObjectFactory::CatType;
 				} else {
 					tok->print(" ");
-					throw LoadException("Not a valid type");
+					throw LoadException(__FILE__, __LINE__, "Not a valid type");
 				}
 			} else if ( *current == "stimulation" ){
 				string type;
@@ -123,7 +123,8 @@ stimulationValue( 0 ){
 			}
 
 		} catch ( const TokenException & te ){
-			throw LoadException("Blockobject parse exception: " + te.getReason() );
+                    /* FIXME: pass te to LoadException */
+			throw LoadException(__FILE__, __LINE__, "Blockobject parse exception: " + te.getReason());
 		}
 	}
 
@@ -143,7 +144,7 @@ stimulationValue( 0 ){
             tok->print(" ");
             string str("No path given for ");
             str += getName();
-            throw LoadException(str);
+            throw LoadException(__FILE__, __LINE__, str);
 	}
 }
 

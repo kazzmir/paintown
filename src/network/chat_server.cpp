@@ -371,21 +371,21 @@ void ChatServer::addConnection( Network::Socket s ){
         if (type != HELLO){
             ostringstream out;
             out << "Client sent something other than a HELLO: " << type;
-            throw LoadException(out.str());
+            throw LoadException(__FILE__, __LINE__, out.str());
         }
         unsigned int magic;
         hello >> magic;
         if (magic != Global::MagicId){
             ostringstream out;
             out << "Invalid magic id: " << magic;
-            throw LoadException(out.str());
+            throw LoadException(__FILE__, __LINE__, out.str());
         }
         int version;
         hello >> version;
         if (! Util::checkVersion(version)){
             ostringstream out;
             out << "Invalid version: " << version;
-            throw LoadException(out.str());
+            throw LoadException(__FILE__, __LINE__, out.str());
         }
         string name;
         name = hello.path;

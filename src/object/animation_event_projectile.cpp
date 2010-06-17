@@ -19,7 +19,7 @@ dx( 0 ),
 dy( 0 ),
 life( 0 ){
 	if ( *token != "projectile" ){
-		throw LoadException( "Token starts with " + token->getName() + " instead of 'projectile'." );
+		throw LoadException(__FILE__, __LINE__, "Token starts with " + token->getName() + " instead of 'projectile'." );
 	}
 
 	while ( token->hasTokens() ){
@@ -40,7 +40,7 @@ life( 0 ){
 			} catch ( const TokenException & ex ){
 				cerr<< "Could not read " << full.path() <<" : " << ex.getReason() << endl;
 				// delete head;
-				throw LoadException("Could not open projectile file: " + full.path());
+				throw LoadException(__FILE__, __LINE__, "Could not open projectile file: " + full.path());
 			}
 		} else if ( *current == "life" ){
 			int life;
@@ -55,11 +55,11 @@ life( 0 ){
 	}
 
 	if ( projectile == NULL ){
-		throw LoadException( "No 'path' token given for projectile" );	
+		throw LoadException(__FILE__, __LINE__, "No 'path' token given for projectile" );	
 	}
 
 	if ( life == 0 ){
-		throw LoadException( "No 'life' token given for projectile" );
+		throw LoadException(__FILE__, __LINE__, "No 'life' token given for projectile" );
 	}
 }
 

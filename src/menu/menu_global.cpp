@@ -144,7 +144,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
     
     vector<Level::LevelInfo> & possible = Paintown::Mod::getCurrentMod()->getLevels();
     if (possible.size() == 0){
-        throw LoadException("No level sets defined!");
+        throw LoadException(__FILE__, __LINE__, "No level sets defined!");
     }
 
     if (possible.size() == 1){
@@ -176,9 +176,9 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
         return possible[index];
     } catch (const TokenException & ex){
         Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
-        throw LoadException("Could not load levels " + ex.getReason());
+        throw LoadException(__FILE__, __LINE__, "Could not load levels " + ex.getReason());
     }
-    throw LoadException("No level chosen!");
+    throw LoadException(__FILE__, __LINE__, "No level chosen!");
 
     /*
     // Now lets get the level or return

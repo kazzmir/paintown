@@ -302,7 +302,7 @@ public:
 
 OptionOptions::OptionOptions( const std::string &name ) throw( LoadException ){
     if (name.empty()){
-	throw LoadException("No name given to Options");
+	throw LoadException(__FILE__, __LINE__, "No name given to Options");
     }
     this->setText(name);
     

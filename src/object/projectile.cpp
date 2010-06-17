@@ -21,7 +21,7 @@ dy( 0 ),
 life( 0 ){
 
 	if ( *token != "projectile" ){
-		throw LoadException( "Token does not start with 'projectile'. Instead it starts with " + token->getName() );
+		throw LoadException(__FILE__, __LINE__, "Token does not start with 'projectile'. Instead it starts with " + token->getName() );
 	}
 
 	Token * current;
@@ -40,12 +40,12 @@ life( 0 ){
 				}
 			}
 		} catch ( const TokenException & e ){
-			throw LoadException( "Could not load projectile because " + e.getReason() );
+			throw LoadException(__FILE__, __LINE__, "Could not load projectile because " + e.getReason() );
 		}
 	}
 
 	if ( main == NULL ){
-		throw LoadException( "No 'main' animation given" );
+		throw LoadException(__FILE__, __LINE__, "No 'main' animation given" );
 	}
 	
 	currentAnimation = main;

@@ -27,7 +27,7 @@ state( IDLE1 ){
 		Token * head;
 		head = tr.readToken();
 		if ( *head != "cat" ){
-			throw LoadException( "File does not begin with 'Cat'" );
+			throw LoadException(__FILE__, __LINE__, "File does not begin with 'Cat'" );
 		}
 
 		while ( head->hasTokens() ){
@@ -38,11 +38,11 @@ state( IDLE1 ){
 			}
 		}
 		if ( animations.size() == 0 ){
-			throw LoadException( "No animation given" );
+			throw LoadException(__FILE__, __LINE__, "No animation given" );
 		}
         } catch (const TokenException & ex){
             Global::debug(0) << "Could not read "<< filename.path() <<": "<< ex.getReason()<<endl;
-            throw LoadException("Could not open file " + filename.path());
+            throw LoadException(__FILE__, __LINE__, "Could not open file " + filename.path());
         }
 	current_animation = animations[ "idle1" ];
 

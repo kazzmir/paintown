@@ -53,7 +53,7 @@ forRemoval(false){
 	      // delete current;
 	      string m( "Menu parse error: " );
 	      m += ex.getReason();
-	      throw LoadException( m );
+	      throw LoadException(__FILE__, __LINE__, m);
 	  } catch ( const LoadException & ex ) {
 	      // delete current;
 	      throw ex;
@@ -92,12 +92,12 @@ void MenuOption::readName(Token * token){
         this->setText(name);
 
         if (getText().empty()){
-            throw LoadException("No name set, this option should have a name!");
+            throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
         }
     } catch (const TokenException & ex){
         string m( "Menu parse error: " );
         m += ex.getReason();
-        throw LoadException(m);
+        throw LoadException(__FILE__, __LINE__, m);
     }
 }
 
@@ -122,7 +122,7 @@ void MenuOption::readInfo(Token * token){
     } catch (const TokenException & ex){
         string m( "Menu parse error: " );
         m += ex.getReason();
-        throw LoadException(m);
+        throw LoadException(__FILE__, __LINE__, m);
     }
 }
 

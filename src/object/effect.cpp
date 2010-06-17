@@ -37,13 +37,13 @@ image( NULL ){
 	try{ 
 		head = tr.readToken();
 	} catch ( const TokenException * te ){
-		throw LoadException("Could not load effect");
+		throw LoadException(__FILE__, __LINE__, "Could not load effect");
 	}
 
 	if ( *head != "effect" ){
 		cout<<_filename<< " is not an effect"<<endl;
 		// delete head;
-		throw LoadException("Not an effect");
+		throw LoadException(__FILE__, __LINE__, "Not an effect");
 	}
 	
 	while ( head->hasTokens() ) {
@@ -60,7 +60,7 @@ image( NULL ){
 
 				if ( image ){
 					cout<<"Mulitple animations specified"<<endl;
-					throw LoadException("Multiple animations specified");
+					throw LoadException(__FILE__, __LINE__, "Multiple animations specified");
 				}
 
 				image = new Animation( n, NULL );
@@ -83,7 +83,7 @@ image( NULL ){
 				cout<<"Something bad happened in character"<<endl;
 			throw ex;
 			*/
-			throw LoadException("Effect parse error");
+			throw LoadException(__FILE__, __LINE__, "Effect parse error");
 		}
 
 	}

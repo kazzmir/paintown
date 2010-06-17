@@ -25,7 +25,7 @@ finished( -1 ),
 continuous( false ){
 
     if ( *tok != "block" ){
-        throw LoadException("Not a scene block");
+        throw LoadException(__FILE__, __LINE__, "Not a scene block");
     }
 
     while ( tok->hasTokens() ){
@@ -59,7 +59,7 @@ continuous( false ){
                     if ( tmp == NULL ){
                         current->print(" ");
                         delete so;
-                        throw LoadException( "Could not cache object" );
+                        throw LoadException(__FILE__, __LINE__, "Could not cache object" );
                     } else {
                         /* clean up! */
 
@@ -72,7 +72,7 @@ continuous( false ){
                 }
             }
         } catch( const TokenException & te ){
-            throw LoadException("Block parse exception: " + te.getReason());
+            throw LoadException(__FILE__, __LINE__, "Block parse exception: " + te.getReason());
         } catch( const LoadException & le ){
             cout<<"Ignoring error: "<<le.getReason()<<endl;
             // throw le;

@@ -48,7 +48,7 @@ horizontalFlip(false),
 verticalFlip(false),
 alpha(255){
     if ( *the_token != "frame" ){
-        throw LoadException("Not an frame");
+        throw LoadException(__FILE__, __LINE__, "Not an frame");
     }
     Token tok(*the_token);
     /* The usual setup of an animation frame is
@@ -89,7 +89,7 @@ alpha(255){
         } catch ( const TokenException & ex ) {
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__, m);
         } catch ( const LoadException & ex ) {
             throw ex;
         }
@@ -159,7 +159,7 @@ allowReset(true){
     images[-1] = 0;
     std::string basedir = "";
     if ( *the_token != "anim" ){
-        throw LoadException("Not an animation");
+        throw LoadException(__FILE__, __LINE__, "Not an animation");
     }
     /* The usual setup of an animation is
 	The images must be listed prior to listing any frames, basedir can be used to set the directory where the images are located
@@ -232,7 +232,7 @@ allowReset(true){
         } catch ( const TokenException & ex ) {
             string m( "Menu parse error: " );
             m += ex.getReason();
-            throw LoadException( m );
+            throw LoadException(__FILE__, __LINE__, m);
         } catch ( const LoadException & ex ) {
             throw ex;
         }
@@ -240,7 +240,7 @@ allowReset(true){
     if (loop >= frames.size()){
         ostringstream out;
         out << "Loop location is larger than the number of frames. Loop: " << loop << " Frames: " << frames.size();
-        throw LoadException(out.str());
+        throw LoadException(__FILE__, __LINE__, out.str());
     }
 }
 

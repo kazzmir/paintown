@@ -19,7 +19,7 @@ ObjectNonAttack( 0, 0 ){
 		Token * head;
 		head = tr.readToken();
 		if ( *head != "actor" ){
-			throw LoadException( "File does not begin with 'actor'" );
+			throw LoadException(__FILE__, __LINE__, "File does not begin with 'actor'" );
 		}
 
 		while ( head->hasTokens() ){
@@ -30,11 +30,11 @@ ObjectNonAttack( 0, 0 ){
 			}
 		}
 		if ( animations.size() == 0 ){
-			throw LoadException( "No animation given" );
+			throw LoadException(__FILE__, __LINE__, "No animation given" );
 		}
 	} catch( const TokenException & ex ){
             Global::debug(0) << "Could not read "<<filename.path()<<" : "<<ex.getReason()<<endl;
-		throw LoadException( "Could not open file" );
+		throw LoadException(__FILE__, __LINE__, "Could not open file" );
 	}
 	current_animation = animations[ 0 ];
 }

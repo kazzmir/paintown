@@ -21,7 +21,7 @@ Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
         Token * name = head->findToken("game/name");
         Token * token_menu = head->findToken("game/menu");
         if (token_menu == NULL){
-            throw LoadException("No game/menu token found. Add (menu some/path) to the mod file.");
+            throw LoadException(__FILE__, __LINE__, "No game/menu token found. Add (menu some/path) to the mod file.");
         }
         *token_menu >> menu;
 
