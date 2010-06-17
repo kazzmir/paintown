@@ -10,7 +10,7 @@
 #include "util/font.h"
 #include "util/file-system.h"
 #include "util/load_exception.h"
-#include "return_exception.h"
+#include "exceptions/return_exception.h"
 #include "globals.h"
 #include "init.h"
 #include "gui/lineedit.h"

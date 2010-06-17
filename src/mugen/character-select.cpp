@@ -51,7 +51,7 @@
 
 #include "input/input-manager.h"
 
-#include "return_exception.h"
+#include "exceptions/return_exception.h"
 
 namespace PaintownUtil = ::Util;
 

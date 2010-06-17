@@ -18,7 +18,7 @@
 #include "object/network_player.h"
 #include "object/object.h"
 #include "object/player.h"
-#include "return_exception.h"
+#include "exceptions/return_exception.h"
 #include "menu/menu_global.h"
 #include "menu/menu.h"
 #include "server.h"

@@ -6,7 +6,7 @@
 #include "gui/box.h"
 #include "util/load_exception.h"
 #include "util/language-string.h"
-#include "return_exception.h"
+#include "exceptions/return_exception.h"
 #include "gui/context-box.h"
 
 class Bitmap;

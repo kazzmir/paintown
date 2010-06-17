@@ -10,8 +10,6 @@
 #include "gui/rectarea.h"
 #include "ast/all.h"
 
-#include "return_exception.h"
-
 class Bitmap;
 
 namespace Mugen{

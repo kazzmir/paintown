@@ -13,7 +13,6 @@
 #include "input/input-map.h"
 
 #include "util.h"
-#include "return_exception.h"
 
 #include "ast/all.h"
 

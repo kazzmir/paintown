@@ -20,7 +20,7 @@
 #include "object/network_player.h"
 #include "network_world_client.h"
 #include "game.h"
-#include "return_exception.h"
+#include "exceptions/return_exception.h"
 #include "loading.h"
 #include "chat_client.h"
 #include "network.h"

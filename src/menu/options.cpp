@@ -24,7 +24,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "globals.h"
-#include "return_exception.h"
+#include "exceptions/return_exception.h"
 #include "network/server.h"
 #include "network/client.h"
 #include "util/font.h"

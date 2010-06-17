@@ -11,7 +11,7 @@
 #include "menu/menu_option.h"
 
 #include "util.h"
-#include "return_exception.h"
+#include "exceptions/return_exception.h"
 
 /*
  * We already have a setup for menus, might as well as utilize it to accomodate mugen
