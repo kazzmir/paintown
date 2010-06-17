@@ -18,7 +18,7 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "input/input-manager.h"
-#include "exceptions/return_exception.h"
+#include "exceptions/exception.h"
 
 #include "gui/box.h"
 

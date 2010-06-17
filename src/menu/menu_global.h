@@ -3,9 +3,7 @@
 
 #include <string>
 #include <queue>
-#include "util/load_exception.h"
 #include "util/file-system.h"
-#include "exceptions/return_exception.h"
 #include "level/utils.h"
 
 class Sound;
@@ -27,7 +25,7 @@ class MenuGlobals{
 	static const std::string currentSelectSound();
 	
 	/*! play current select sound */
-	static void playSelectSound() throw (LoadException);
+	static void playSelectSound();
 	
 	/*! pop select sound */
 	static void popSelectSound();

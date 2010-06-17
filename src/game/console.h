@@ -7,7 +7,6 @@
 #include <map>
 #include "input/input-map.h"
 #include "util/file-system.h"
-#include "exceptions/return_exception.h"
 
 class Bitmap;
 

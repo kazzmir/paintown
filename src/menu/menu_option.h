@@ -6,7 +6,6 @@
 #include "gui/box.h"
 #include "util/load_exception.h"
 #include "util/language-string.h"
-#include "exceptions/return_exception.h"
 #include "gui/context-box.h"
 
 class Bitmap;
@@ -15,7 +14,7 @@ class Menu;
 class MenuAnimation;
 class Point;
 
-class MenuOption : public Gui::ContextItem{
+class MenuOption : public Gui::ContextItem {
 public:
     // Do logic before run part
     virtual void logic()=0;

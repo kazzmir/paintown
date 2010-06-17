@@ -13,6 +13,7 @@
 #include "input/input-manager.h"
 #include "game/mod.h"
 #include "exceptions/shutdown_exception.h"
+#include "exceptions/exception.h"
 #include "util/timedifference.h"
 #include "util/funcs.h"
 #include "util/ftalleg.h"

@@ -8,7 +8,6 @@
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "input/input-map.h"
-#include "exceptions/return_exception.h"
 #include "gui/box.h"
 #include "gui/context-box.h"
 #include "gui/popup-box.h"

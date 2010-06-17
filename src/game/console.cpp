@@ -3,6 +3,7 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "exceptions/exception.h"
 #include "input/input-manager.h"
 #include "input/input-map.h"
 #include "globals.h"

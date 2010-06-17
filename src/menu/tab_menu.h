@@ -6,7 +6,6 @@
 #include "gui/box.h"
 #include "gui/popup-box.h"
 #include "gui/context-box.h"
-#include "exceptions/return_exception.h"
 #include "input/input-map.h"
 
 class Font;

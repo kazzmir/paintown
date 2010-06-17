@@ -47,7 +47,7 @@ const std::string MenuGlobals::currentSelectSound(){
 	else return std::string();
 }
 
-void MenuGlobals::playSelectSound() throw (LoadException){
+void MenuGlobals::playSelectSound(){
 	if (!selectSound.empty()){
 	      try{
                   Sound * select = Resource::getSound(selectSound.top());
