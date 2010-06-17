@@ -454,7 +454,7 @@ void TabMenu::run(){
                         /* is there a reason to set done = true ? */
                         done = true;
                         InputManager::waitForRelease(input, Tab::Exit);
-                        throw ReturnException();
+                        throw Exception::Return(__FILE__, __LINE__);
                     }
                 } else {
                     try{
@@ -481,11 +481,11 @@ void TabMenu::run(){
                         if (inputState[Tab::Exit]){
                             /* is there a reason to set done = true ? */
                             InputManager::waitForRelease(input, Tab::Exit);
-                            throw ReturnException();
+                            throw Exception::Return(__FILE__, __LINE__);
                         }
                         (*currentTab)->context.act();
                         (*currentTab)->setColors(backgroundBuffer.update(),borderBuffer.update(),fontBuffer.update());
-                    } catch (const ReturnException & re){
+                    } catch (const Exception::Return & re){
                         (*currentTab)->running = false;
                         (*currentTab)->setColors(selectedTabColors, selectedFontColor);
                         setMenuInfo(menuInfo);

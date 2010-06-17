@@ -22,26 +22,32 @@ Base::~Base() throw (){
     }
 }
 
-Base::Base(const Base & copy){
-    file = copy.file;
-    line = copy.line;
+Base::Base(const Base & copy):
+file(copy.file),
+line(copy.line),
+nested(NULL){
     if (copy.nested != NULL){
         nested = copy.nested->copy();
     }
 }
 
-Base::Base(const std::string & file, int line, Base * nested):
-file(file),
-line(line),
-nested(nested){
+Base * Base::copy() const {
+    return new Base(*this);
 }
 
-Base * Base::copy() const {
-    if (nested != NULL){
-        return new Base(file, line, nested->copy());
-    } else {
-        return new Base(file, line);
-    }
+Return::Return(const std::string & file, int line):
+Base(file, line){
+}
+
+Return::Return(const std::string & file, int line, const Base & nested):
+Base(file, line, nested){
+}
+
+Return::~Return() throw(){
+}
+
+Base * Return::copy() const {
+    return new Return(*this);
 }
 
 }

@@ -691,7 +691,7 @@ void MugenMenu::run(){
 	if ((*currentOption)->getState() == MenuOption::Run){
 	    try{
 		(*currentOption)->executeOption(selectingPlayer, endGame);
-	    } catch ( const ReturnException & re ){
+	    } catch ( const Exception::Return & re ){
 	    }
 	    // Reset it's state
 	    (*currentOption)->setState(MenuOption::Selected);
@@ -702,7 +702,7 @@ void MugenMenu::run(){
 	    (*currentOption)->setState(MenuOption::Deselected);
 	}
     }
-    throw ReturnException();
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
 void MugenMenu::addMenuOption(Mugen::ItemOption * option){
@@ -845,7 +845,7 @@ void run(){
         menu.loadData();
         Loader::stopLoading(loading);
         menu.run();
-    } catch (const ReturnException & re){
+    } catch (const Exception::Return & re){
         // Say what?
         // Do not quit game
         Loader::stopLoading(loading);

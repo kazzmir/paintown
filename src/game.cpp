@@ -392,7 +392,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             force_quit |= inputState[Game::Quit];
             try{
                 console.doInput();
-            } catch (const ReturnException & r){
+            } catch (const Exception::Return & r){
                 force_quit = true;
             }
 
@@ -831,7 +831,7 @@ void playVersusMode( Character * player1, Character * player2, int round ){
 			}
 
 			if ( key[ Keyboard::Key_ESC ] ){
-				throw ReturnException();
+				throw Exception::Return(__FILE__, __LINE__);
 			}
 
 			if ( key[ Keyboard::Key_P ] ){

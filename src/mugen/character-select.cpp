@@ -51,7 +51,7 @@
 
 #include "input/input-manager.h"
 
-#include "exceptions/return_exception.h"
+#include "exceptions/exception.h"
 
 namespace PaintownUtil = ::Util;
 
@@ -1027,7 +1027,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     
     // **FIXME Hack figure something out
     if (escaped){
-	throw ReturnException();
+	throw Exception::Return(__FILE__, __LINE__);
     }
 }
 
@@ -2000,7 +2000,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     
     // **FIXME Hack figure something out
     if (escaped){
-	throw ReturnException();
+	throw Exception::Return(__FILE__, __LINE__);
     }
 }
 

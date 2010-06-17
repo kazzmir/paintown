@@ -10,7 +10,7 @@
 #include "util/font.h"
 #include "util/file-system.h"
 #include "util/load_exception.h"
-#include "exceptions/return_exception.h"
+#include "exceptions/exception.h"
 #include "globals.h"
 #include "init.h"
 #include "gui/lineedit.h"
@@ -803,7 +803,7 @@ void ChatServer::run(){
 				stopAccepting();
 				killAllClients();
 				done = true;
-				throw ReturnException();
+				throw Exception::Return(__FILE__, __LINE__);
 			} else if ( done && focus == START_GAME ){
 				stopAccepting();
 				debug( 1 ) << "Shut down client threads" << endl;

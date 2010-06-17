@@ -24,7 +24,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "globals.h"
-#include "exceptions/return_exception.h"
+#include "exceptions/exception.h"
 #include "network/server.h"
 #include "network/client.h"
 #include "util/font.h"
@@ -85,7 +85,7 @@ void OptionAdventure::run(bool &endGame){
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
-    } catch ( const ReturnException & r ){
+    } catch ( const Exception::Return & r ){
         /* Game::selectPlayer can throw ReturnException, he will wait
          * for the keypress to be released, so we don't have to do it
          */
@@ -144,7 +144,7 @@ void OptionAdventureCpu::run(bool &endGame){
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
-    } catch ( const ReturnException & r ){
+    } catch ( const Exception::Return & r ){
         /* replace this with parent->waitAll() or something. we only care that
          * the player doesn't accidentally press some menu key, like esc or enter.
          * but they can press other keys that were useful in game because those
@@ -744,7 +744,7 @@ static Configuration::JoystickInput readJoystick(){
         }
         if (output[Joystick::Invalid]){
             InputManager::waitForRelease(input, Joystick::Invalid);
-            throw ReturnException();
+            throw Exception::Return(__FILE__, __LINE__);
         }
         Util::rest(1);
     }
@@ -1244,7 +1244,7 @@ void OptionNetworkHost::run(bool &endGame){
 	Keyboard key;
         try{
             Network::networkServer(parent);
-        } catch (const ReturnException &e){
+        } catch (const Exception::Return &e){
         }
 	key.clear();
 	key.poll();
@@ -1273,7 +1273,7 @@ void OptionNetworkJoin::run(bool &endGame){
 	key.wait();
         try{
             Network::networkClient();
-        } catch (const ReturnException &r){
+        } catch (const Exception::Return &r){
         }
 
 	key.clear();
@@ -2052,7 +2052,7 @@ void OptionVersus::run(bool &endGame){
 		key.wait();
 	} catch ( const LoadException & le ){
 		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
-	} catch ( const ReturnException & r ){
+	} catch ( const Exception::Return & r ){
 		key.wait();
 	}
 

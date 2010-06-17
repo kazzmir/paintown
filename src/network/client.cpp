@@ -20,7 +20,7 @@
 #include "object/network_player.h"
 #include "network_world_client.h"
 #include "game.h"
-#include "exceptions/return_exception.h"
+#include "exceptions/exception.h"
 #include "loading.h"
 #include "chat_client.h"
 #include "network.h"
@@ -182,7 +182,7 @@ static void playGame( Socket socket ){
                             /* then wait for a barrier */
                             waitForServer(socket);
                         }
-                    } catch ( const ReturnException & e ){
+                    } catch ( const Exception::Return & e ){
                         /* do we need to close the socket here?
                          * when this function returns the socket will be
                          * close anyway.
@@ -368,7 +368,7 @@ void networkClient(){
             }
 
 			if ( keyboard[ Keyboard::Key_ESC ] ){
-				throw ReturnException();
+				throw Exception::Return(__FILE__, __LINE__);
 			}
 
 			if ( keyboard[ Keyboard::Key_ENTER ] ){

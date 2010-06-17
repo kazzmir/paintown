@@ -308,7 +308,7 @@ void Game::doTraining(const Bitmap & bmp){
             } catch (const QuitGameException & e){
             }
         }
-    } catch (const ReturnException & e){
+    } catch (const Exception::Return & e){
     }
     Mugen::Data::getInstance().setTime(time);
 }
@@ -331,7 +331,7 @@ void Game::doWatch(const Bitmap & bmp){
             MugenStage *stage = select.getStage();
             stage->reset();
             runMatch(stage, bmp);
-        } catch (const ReturnException & e){
+        } catch (const Exception::Return & e){
 	    quit = true;
 	} catch (const QuitGameException & e){
         }

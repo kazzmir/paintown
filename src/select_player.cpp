@@ -17,7 +17,7 @@
 #include "level/utils.h"
 #include "util/file-system.h"
 #include "world.h"
-#include "exceptions/return_exception.h"
+#include "exceptions/exception.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -241,7 +241,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         loader.stop();
                         pthread_join(loadingThread, NULL);
                         InputManager::waitForRelease(input, Select::Quit);
-                        throw ReturnException();
+                        throw Exception::Return(__FILE__, __LINE__);
                     }
 
                     if ( current < 0 ){
@@ -456,7 +456,7 @@ Object * Game::selectPlayer(bool invincibile, const string & message, const Leve
          */
         player->testAnimation();
         return player;
-    } catch (const ReturnException & r){
+    } catch (const Exception::Return & r){
         for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
             delete it->guy;
         }
@@ -696,7 +696,7 @@ vector<Object *> Game::versusSelect( bool invincible ){
                     for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
                         delete it->guy;
                     }
-                    throw ReturnException();
+                    throw Exception::Return(__FILE__, __LINE__);
                 }
 
                 runCounter -= 1;

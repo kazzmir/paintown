@@ -169,7 +169,7 @@ bool Console::doInput() {
 
     if (inputState[Esc]){
         InputManager::releaseInput(input);
-        throw ReturnException();
+        throw Exception::Return(__FILE__, __LINE__);
     }
 
     if (inputState[Backspace]){

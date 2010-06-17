@@ -18,7 +18,7 @@
 #include "object/network_player.h"
 #include "object/object.h"
 #include "object/player.h"
-#include "exceptions/return_exception.h"
+#include "exceptions/exception.h"
 #include "menu/menu_global.h"
 #include "menu/menu.h"
 #include "server.h"
@@ -193,7 +193,7 @@ static int getServerPort(){
             Global::speed_counter -= 1;
             key.readKeys( pressed );
             if ( key[ Keyboard::Key_ESC ] ){
-                throw ReturnException();
+                throw Exception::Return(__FILE__, __LINE__);
             }
         }
 
@@ -707,7 +707,7 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
 
     } catch ( const LoadException & le ){
         debug( 0 ) << "Load exception: " + le.getReason() << endl;
-    } catch ( const ReturnException & re ){
+    } catch ( const Exception::Return & re ){
     } catch ( const NetworkException & ne ){
         debug( 0 ) << "Network excetion: " + ne.getMessage() << endl;
     }

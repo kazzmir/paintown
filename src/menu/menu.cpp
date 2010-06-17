@@ -15,6 +15,7 @@
 #include "configuration.h"
 #include "music.h"
 #include "exceptions/shutdown_exception.h"
+#include "exceptions/exception.h"
 
 #include "optionfactory.h"
 #include "actionfactory.h"
@@ -497,7 +498,7 @@ void Menu::act(bool &endGame, bool reset){
         selectedOption->setState(MenuOption::Deselected);
         InputManager::waitForRelease(input, Exit);
         
-        throw ReturnException();
+        throw Exception::Return(__FILE__, __LINE__);
     }
 
     if (inputState[Select]){
@@ -608,7 +609,7 @@ void Menu::run(){
                     InputManager::poll();
                     try{
                         act(endGame);
-                    } catch (const ReturnException &ex){
+                    } catch (const Exception::Return &ex){
                         done = requestsReturn = true;
                     }
                     if (selectedOption->getState() == MenuOption::Run){
@@ -660,7 +661,7 @@ void Menu::run(){
         }
         // Check if requesting return
         if (requestsReturn){
-            throw ReturnException();
+            throw Exception::Return(__FILE__, __LINE__);
         }
         // lets run it
         runOption(endGame);
@@ -685,7 +686,7 @@ void Menu::runOption(bool &endGame){
         // lets run it
         try{
             selectedOption->run(endGame);
-        } catch (const ReturnException & re){
+        } catch (const Exception::Return & re){
             tryPlaySound(backSound);
         }
         selectedOption->setState(MenuOption::Selected);
@@ -704,7 +705,7 @@ void Menu::runOption(unsigned int index){
     try{
         bool endGame = false;
         menuOptions[index]->run(endGame);
-    } catch (const ReturnException & re){
+    } catch (const Exception::Return & re){
         tryPlaySound(backSound);
     }
 }

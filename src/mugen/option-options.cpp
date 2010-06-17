@@ -296,7 +296,7 @@ public:
 
     void enter(){
         // **FIXME Hack figure something out
-        throw ReturnException();
+        throw Exception::Return(__FILE__, __LINE__);
     }
 };
 
@@ -573,7 +573,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
     // **FIXME Hack figure something out
     if (escaped){
-	throw ReturnException();
+	throw Exception::Return(__FILE__, __LINE__);
     }
 }
 

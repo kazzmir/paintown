@@ -232,7 +232,7 @@ int paintown_main( int argc, char ** argv ){
         } catch (const LoadException & ex){
             Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
             return -1;
-        } catch (const ReturnException & ex){
+        } catch (const Exception::Return & ex){
         } catch (const ShutdownException & shutdown){
             Global::debug(1) << "Forced a shutdown. Cya!" << endl;
         } catch (const MugenException & m){
@@ -242,6 +242,9 @@ int paintown_main( int argc, char ** argv ){
             continue;
         } catch (const ftalleg::Exception & ex){
             Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
+        } catch (const Exception::Base & base){
+            /* FIXME: print base.tostring */
+            // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
         } catch (...){
             Global::debug(0) << "Uncaught exception!" << endl;
         }
