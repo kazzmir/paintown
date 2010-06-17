@@ -38,7 +38,7 @@ protected:
 Trigger * Trigger::parse(Token * token) throw (TokenException) {
     Token * token_type = token->findToken("trigger/type");
     if (token_type == NULL){
-        throw TokenException("Expected to find trigger/type");
+        throw TokenException(__FILE__, __LINE__, "Expected to find trigger/type");
     }
     string type;
     *token_type >> type;

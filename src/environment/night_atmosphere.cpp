@@ -23,8 +23,8 @@ static int screenY(){
 NightAtmosphere::NightAtmosphere():
 Atmosphere(),
 darkness(128),
-lightning(false),
 thunder(NULL),
+lightning(false),
 thunderPause(-1){
 
     lamp = new Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/lamp.png")).path());
