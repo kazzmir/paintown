@@ -95,7 +95,7 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName( const Filesystem::Absol
 		// break;
 	    }
 	}
-        throw Filesystem::NotFound(str);
+        throw Filesystem::NotFound(__FILE__, __LINE__, str);
 	// Global::debug(2) << "Corrected file: " << returnString << endl;
 	// return returnString;
     }
