@@ -259,7 +259,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     } catch( const TokenException & ex ){
         // cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
         // delete head;
-        throw LoadException(__FILE__, __LINE__, string("Could not open character file: ") + filename.path() + " because " + ex.getReason());
+        throw LoadException(__FILE__, __LINE__, ex, string("Could not open character file: ") + filename.path() + " because " + ex.getReason());
     }
     string xls = "Load time for ";
     xls += filename.path();
@@ -380,11 +380,11 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
         head->print("*");
         // delete head;
 
-        throw LoadException(__FILE__, __LINE__, "Error parsing character");
+        throw LoadException(__FILE__, __LINE__, tex, "Error parsing character");
     } catch (const LoadException & lex){
         ostringstream ss;
         ss << "Could not load character " << filename.path() << " because " << lex.getReason();
-        throw LoadException(__FILE__, __LINE__, ss.str());
+        throw LoadException(__FILE__, __LINE__, lex, ss.str());
     }
 
     // delete head;

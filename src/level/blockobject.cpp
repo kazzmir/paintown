@@ -123,8 +123,7 @@ stimulationValue( 0 ){
 			}
 
 		} catch ( const TokenException & te ){
-                    /* FIXME: pass te to LoadException */
-			throw LoadException(__FILE__, __LINE__, "Blockobject parse exception: " + te.getReason());
+                    throw LoadException(__FILE__, __LINE__, te, "Blockobject parse exception: " + te.getReason());
 		}
 	}
 

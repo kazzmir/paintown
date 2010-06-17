@@ -408,7 +408,7 @@ contact( NULL ){
 
 			current1->print(" ");
 
-			throw LoadException(__FILE__, __LINE__, m);
+			throw LoadException(__FILE__, __LINE__, te, m);
 		}
 	}
 

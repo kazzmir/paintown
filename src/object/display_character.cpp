@@ -91,9 +91,9 @@ void DisplayCharacter::load() throw (LoadException) {
         }
     } catch (const TokenException & ex){
         Global::debug(0) << "Could not read " << path << " : " << ex.getReason() << endl;
-        throw LoadException(__FILE__, __LINE__, "Could not open character file: " + path );
+        throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path );
     } catch (const Filesystem::NotFound & ex){
-        throw LoadException(__FILE__, __LINE__, "Could not load character " + path + " because " + ex.getReason());
+        throw LoadException(__FILE__, __LINE__, ex, "Could not load character " + path + " because " + ex.getReason());
     }
 
     if ( getMovement( "idle" ) == NULL ){

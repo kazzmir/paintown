@@ -40,7 +40,7 @@ life( 0 ){
 				}
 			}
 		} catch ( const TokenException & e ){
-			throw LoadException(__FILE__, __LINE__, "Could not load projectile because " + e.getReason() );
+			throw LoadException(__FILE__, __LINE__, e, "Could not load projectile because " + e.getReason() );
 		}
 	}
 

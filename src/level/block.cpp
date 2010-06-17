@@ -72,7 +72,7 @@ continuous( false ){
                 }
             }
         } catch( const TokenException & te ){
-            throw LoadException(__FILE__, __LINE__, "Block parse exception: " + te.getReason());
+            throw LoadException(__FILE__, __LINE__, te, "Block parse exception: " + te.getReason());
         } catch( const LoadException & le ){
             cout<<"Ignoring error: "<<le.getReason()<<endl;
             // throw le;
