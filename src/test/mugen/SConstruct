@@ -52,6 +52,7 @@ test/util/message-queue.cpp
 test/util/token.cpp
 test/util/tokenreader.cpp
 test/util/token_exception.cpp
+test/exceptions/exception.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
 test/windows/system.cpp

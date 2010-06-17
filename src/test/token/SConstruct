@@ -5,6 +5,7 @@ test.cpp
 ../../util/token.cpp
 ../../util/tokenreader.cpp
 ../../util/token_exception.cpp
+../../exceptions/exception.cpp
 """)
 
 x = []
