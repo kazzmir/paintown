@@ -203,6 +203,8 @@ background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
 option(false){
 
+    work->updateOnResize();
+
     if (fade){
         this->fade.fade = 255;
         this->fade.color = fadeColor;
