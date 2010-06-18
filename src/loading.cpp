@@ -12,7 +12,7 @@
 #include "util/thread.h"
 #include "globals.h"
 #include <vector>
-#include <pthread.h>
+#include "util/thread.h"
 #include "util/message-queue.h"
 #include "init.h"
 
@@ -20,7 +20,7 @@ using namespace std;
 
 namespace Loader{
 
-pthread_mutex_t loading_screen_mutex;
+Util::Thread::Lock loading_screen_mutex;
 volatile bool done_loading = false;
 
 typedef struct pair{
@@ -51,18 +51,18 @@ private:
     MessageQueue messages;
 };
 
-void startLoading(pthread_t * thread, void * arg){
-    pthread_mutex_lock( &loading_screen_mutex );
+void startLoading(Util::Thread::Id * thread, void * arg){
+    Util::Thread::acquireLock(&loading_screen_mutex);
     done_loading = false;
-    pthread_mutex_unlock( &loading_screen_mutex );
-    pthread_create(thread, NULL, loadingScreen, arg);
+    Util::Thread::releaseLock(&loading_screen_mutex);
+    Util::Thread::createThread(thread, NULL, loadingScreen, arg);
 }
 
-void stopLoading(pthread_t thread){
-    pthread_mutex_lock( &loading_screen_mutex );
+void stopLoading(Util::Thread::Id thread){
+    Util::Thread::acquireLock( &loading_screen_mutex );
     done_loading = true;
-    pthread_mutex_unlock( &loading_screen_mutex );
-    pthread_join(thread, NULL );
+    Util::Thread::releaseLock( &loading_screen_mutex );
+    Util::Thread::joinThread(thread);
 }
 
 static void setupBackground(const Bitmap & background, int load_x, int load_y, int load_width, int load_height, int infobox_x, int infobox_y, int infoWidth, int infoHeight, const Bitmap & infoBackground, const Bitmap & work){

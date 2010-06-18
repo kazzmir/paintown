@@ -4,7 +4,7 @@
 #include "globals.h"
 // #include "defs.h"
 
-#include <pthread.h>
+#include "util/thread.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/music-player.h"
@@ -15,16 +15,16 @@ static Music * instance = NULL;
 
 static double volume = 1.0;
 // static bool muted = false;
-static pthread_t musicThread;
-static pthread_mutex_t musicMutex;
+static Util::Thread::Id musicThread;
+static Util::Thread::Lock musicMutex;
 static bool alive = true;
 
 static void * playMusic( void * );
 
-#define synchronized for( int __l( ! pthread_mutex_lock( &musicMutex ) ); __l; __l = 0, pthread_mutex_unlock( &musicMutex ) )
+#define synchronized for( int __l( ! Util::Thread::acquireLock(&musicMutex)); __l; __l = 0, Util::Thread::releaseLock(&musicMutex) )
 
-#define LOCK pthread_mutex_lock( &musicMutex );
-#define UNLOCK pthread_mutex_unlock( &musicMutex );
+#define LOCK Util::Thread::acquireLock(&musicMutex);
+#define UNLOCK Util::Thread::releaseLock(&musicMutex);
 
 /*
 #undef LOCK
@@ -43,19 +43,20 @@ fading(0),
 musicPlayer(NULL),
 currentSong(""){
 
-	if ( instance != NULL ){
-		cerr << "Trying to instantiate music object twice!" << endl;
-		return;
-	}
+    if ( instance != NULL ){
+        cerr << "Trying to instantiate music object twice!" << endl;
+        return;
+    }
 
-	instance = this;
+    instance = this;
 
-	pthread_mutex_init( &musicMutex, NULL );
-	if ( on ){
-		pthread_create( &musicThread, NULL, playMusic, (void *)instance );
-	} else {
-		pthread_create( &musicThread, NULL, bogus_thread, NULL );
-	}
+    Util::Thread::initializeLock(&musicMutex);
+    if (on){
+        Util::Thread::createThread(&musicThread, NULL, playMusic, (void *)instance);
+    } else {
+        /* FIXME: just don't create a thread at all.. */
+        Util::Thread::createThread(&musicThread, NULL, bogus_thread, NULL);
+    }
 }
 
 /*
@@ -341,7 +342,7 @@ Music::~Music(){
     UNLOCK;
 
     Global::debug( 1 ) << "Waiting for music thread to die" << endl;
-    pthread_join( musicThread, NULL );
+    Util::Thread::joinThread(musicThread);
 
 }
 

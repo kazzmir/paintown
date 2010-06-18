@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "object/display_character.h"
 #include "exceptions/shutdown_exception.h"
+#include "util/thread.h"
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"
@@ -172,9 +173,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     double runCounter = 0;
     double gameSpeed = 1;
     Sound beep(Filesystem::find(Filesystem::RelativePath("sounds/beep1.wav")).path());
-    pthread_t loadingThread;
+    Util::Thread::Id loadingThread;
 
-    if (pthread_create(&loadingThread, NULL, characterLoader, &loader ) != 0){
+    if (Util::Thread::createThread(&loadingThread, NULL, characterLoader, &loader ) != 0){
         throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
 
@@ -200,7 +201,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     InputMap<Select::Input>::Output inputState = InputManager::getMap(input);
                     if (Global::shutdown()){
                         loader.stop();
-                        pthread_join(loadingThread, NULL);
+                        Util::Thread::joinThread(loadingThread);
                         throw ShutdownException();
                     }
 
@@ -239,7 +240,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
                     if (inputState[Select::Quit]){
                         loader.stop();
-                        pthread_join(loadingThread, NULL);
+                        Util::Thread::joinThread(loadingThread);
                         InputManager::waitForRelease(input, Select::Quit);
                         throw Exception::Return(__FILE__, __LINE__);
                     }
@@ -415,7 +416,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
         Global::debug(0, DEBUG_CONTEXT) << "Error during select player screen: " << ex.getReason() << endl;
     }
     loader.stop();
-    pthread_join(loadingThread, NULL);
+    Util::Thread::joinThread(loadingThread);
 
     return current;
 }

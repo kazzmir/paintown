@@ -19,8 +19,8 @@
 
 #include "globals.h"
 #include "init.h"
-#include <pthread.h>
 #include "network/network.h"
+#include "util/thread.h"
 
 #include <ostream>
 #include "dumb/include/dumb.h"
@@ -192,7 +192,7 @@ static void initSystem(ostream & out){
 #endif
 #ifdef USE_SDL
     
-static pthread_t events;
+// static pthread_t events;
 
 struct TimerInfo{
     TimerInfo(void (*x)(), int y):
@@ -228,17 +228,18 @@ static void * do_timer(void * arg){
     return NULL;
 }
 
-static pthread_t start_timer(void (*func)(), int frequency){
+static Util::Thread::Id start_timer(void (*func)(), int frequency){
     TimerInfo * speed = new TimerInfo(func, frequency);
 	/*
     speed.tick = func;
     speed.frequency = frequency;
 */
-    pthread_t thread;
-    pthread_create(&thread, NULL, do_timer, (void*) speed);
+    Util::Thread::Id thread;
+    Util::Thread::createThread(&thread, NULL, do_timer, (void*) speed);
     return thread;
 }
 
+#if 0
 static void * handleEvents(void * arg){
     bool done = false;
     while (!done){
@@ -260,6 +261,7 @@ static void * handleEvents(void * arg){
     }
     return NULL;
 }
+#endif
 
 /*
 static void doSDLQuit(){
@@ -286,9 +288,11 @@ static void initSystem(ostream & out){
 	exit(ok);
     }
 
+    /* Just do SDL thread init
 #ifdef MINPSPW
     pthread_init();
 #endif
+*/
 
     start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
     start_timer(inc_second_counter, 1);
@@ -348,7 +352,7 @@ bool Global::init( int gfx ){
 #endif
 
     /* this mutex is used to show the loading screen while the game loads */
-    pthread_mutex_init( &Loader::loading_screen_mutex, NULL );
+    Util::Thread::initializeLock(&Loader::loading_screen_mutex);
 
     out<<"-- END init --"<<endl;
 
