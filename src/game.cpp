@@ -32,6 +32,7 @@
 #include "input/input-map.h"
 #include "versus_world.h"
 #include "init.h"
+#include "util/thread.h"
 #include <iostream>
 #include <math.h>
 #include <string.h>
@@ -54,14 +55,14 @@ static double startingGameSpeed(){
 	return 1.0;
 }
 
-static void stopLoading( pthread_t thread ){
-    if ( show_loading_screen ){
+static void stopLoading(Util::Thread::Id thread){
+    if (show_loading_screen){
         Loader::stopLoading(thread);
     }
 }
 
-static void startLoading(pthread_t * thread, const Level::LevelInfo & info ){
-    if ( show_loading_screen ){
+static void startLoading(Util::Thread::Id * thread, const Level::LevelInfo & info ){
+    if (show_loading_screen){
         Loader::startLoading(thread, (void*) &info);
     }
 }
@@ -551,7 +552,7 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
 
     int showHelp = 800;
     for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
-        pthread_t loading_screen_thread;
+        Util::Thread::Id loading_screen_thread;
         startLoading( &loading_screen_thread, levelInfo );
 
         bool gameState = false;

@@ -226,12 +226,6 @@ void * loadingScreen( void * arg ){
             // work.Blit( load_x, load_y, *Bitmap::Screen );
             work.BlitAreaToScreen(load_x, load_y);
         }
-
-        /*
-        pthread_mutex_lock( &loading_screen_mutex );
-        quit = done_loading;
-        pthread_mutex_unlock( &loading_screen_mutex );
-        */
     }
 
     return NULL;

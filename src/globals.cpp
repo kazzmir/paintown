@@ -5,7 +5,6 @@
 #include "util/file-system.h"
 #include "util/message-queue.h"
 #include "loading.h"
-#include <pthread.h>
 #include <iostream>
 #include <sstream>
 

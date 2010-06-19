@@ -3,9 +3,9 @@
 
 #include "character.h"
 #include "util/load_exception.h"
-#include <pthread.h>
 #include <string>
 #include <vector>
+#include "util/thread.h"
 
 /* loads some parts of the character to be displayed in
  * the character selection screen. this is faster than
@@ -27,7 +27,7 @@ protected:
 private:
         const std::string path;
         bool loaded;
-        pthread_mutex_t load_lock;
+        Util::Thread::Lock load_lock;
 };
 
 /* loads display characters asynchronously */
@@ -53,7 +53,7 @@ protected:
     DisplayCharacter * nextCharacter();
 
     std::vector<DisplayCharacter*> characters;
-    pthread_mutex_t data_lock;
+    Util::Thread::Lock data_lock;
     bool forceQuit;
 };
 

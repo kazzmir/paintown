@@ -2,6 +2,7 @@
 #include "character.h"
 #include "display_character.h"
 #include "draw-normal-effect.h"
+#include "util/thread.h"
 #include "util/load_exception.h"
 #include "util/token.h"
 #include "util/token_exception.h"
@@ -33,7 +34,7 @@ path(path),
 loaded(false){
     setName(Filesystem::removeExtension(Filesystem::stripDir(path)));
     /* throws load-exception if the file can't be read */
-    pthread_mutex_init(&load_lock, NULL );
+    Util::Thread::initializeLock(&load_lock);
     TokenReader reader(path);
 }
 
@@ -104,16 +105,16 @@ void DisplayCharacter::load() throw (LoadException) {
 
     effects.push_back(new DrawNormalEffect(this));
 
-    pthread_mutex_lock(&load_lock);
+    Util::Thread::acquireLock(&load_lock);
     loaded = true;
-    pthread_mutex_unlock(&load_lock);
+    Util::Thread::releaseLock(&load_lock);
 }
         
 bool DisplayCharacter::isLoaded(){
     bool ok = false;
-    pthread_mutex_lock(&load_lock);
+    Util::Thread::acquireLock(&load_lock);
     ok = loaded;
-    pthread_mutex_unlock(&load_lock);
+    Util::Thread::releaseLock(&load_lock);
     return ok;
 }
 
@@ -123,7 +124,7 @@ DisplayCharacter::~DisplayCharacter(){
 DisplayCharacterLoader::DisplayCharacterLoader(const vector<DisplayCharacter*> & characters):
 forceQuit(false){
     this->characters = characters;
-    pthread_mutex_init(&data_lock, NULL );
+    Util::Thread::initializeLock(&data_lock);
 }
 
 void DisplayCharacterLoader::load(){
@@ -141,30 +142,30 @@ void DisplayCharacterLoader::load(){
 
 bool DisplayCharacterLoader::done(){
     bool result = false;
-    pthread_mutex_lock(&data_lock);
+    Util::Thread::acquireLock(&data_lock);
     result = forceQuit || (characters.size() == 0);
-    pthread_mutex_unlock(&data_lock);
+    Util::Thread::releaseLock(&data_lock);
     return result;
 }
 
 void DisplayCharacterLoader::stop(){
-    pthread_mutex_lock(&data_lock);
+    Util::Thread::acquireLock(&data_lock);
     forceQuit = true;
-    pthread_mutex_unlock(&data_lock);
+    Util::Thread::releaseLock(&data_lock);
 }
 
 DisplayCharacter * DisplayCharacterLoader::nextCharacter(){
     DisplayCharacter * result = NULL;
-    pthread_mutex_lock(&data_lock);
+    Util::Thread::acquireLock(&data_lock);
     result = characters.front();
     characters.erase(characters.begin());
-    pthread_mutex_unlock(&data_lock);
+    Util::Thread::releaseLock(&data_lock);
     return result;
 }
 
 /* put the character in the front of the list if it has yet to be loaded */
 void DisplayCharacterLoader::update(DisplayCharacter* character){
-    pthread_mutex_lock(&data_lock);
+    Util::Thread::acquireLock(&data_lock);
     bool found = false;
     for (vector<DisplayCharacter*>::iterator it = characters.begin(); it != characters.end(); ){
         DisplayCharacter * who = *it;
@@ -179,7 +180,7 @@ void DisplayCharacterLoader::update(DisplayCharacter* character){
     if (found){
         characters.insert(characters.begin(), character);
     }
-    pthread_mutex_unlock(&data_lock);
+    Util::Thread::releaseLock(&data_lock);
 }
 
 DisplayCharacterLoader::~DisplayCharacterLoader(){

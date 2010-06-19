@@ -19,6 +19,7 @@
 #include "init.h"
 #include "resource.h"
 #include "util/funcs.h"
+#include "util/thread.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "game/console.h"
@@ -837,7 +838,7 @@ void run(){
     // Load er up and throw up a load box to inform the user
     // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
     MugenMenu menu(Mugen::Data::getInstance().getMotif());
-    pthread_t loading;
+    PaintownUtil::Thread::Id loading;
     Level::LevelInfo info;
     info.setLoadingMessage("Loading M.U.G.E.N");
     Loader::startLoading(&loading, (void*) &info);

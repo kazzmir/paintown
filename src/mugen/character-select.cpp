@@ -20,6 +20,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"
+#include "util/thread.h"
 #include "game/console.h"
 #include "object/animation.h"
 #include "object/object.h"
@@ -949,7 +950,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 		
 		// Logic
 		if (ticker >= time){
-		    pthread_t loader;
+                    PaintownUtil::Thread::Id loader;
 		    try{
 			Level::LevelInfo info;
 			info.setBackground(&bmp);
