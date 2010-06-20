@@ -600,6 +600,7 @@ struct HitState{
     HitState():
         shakeTime(0),
         hitTime(-1),
+        hits(0),
         slideTime(0),
         yAcceleration(0),
         yVelocity(0),
@@ -609,6 +610,11 @@ struct HitState{
     void update(MugenStage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
     int shakeTime;
     int hitTime;
+    
+    /* FIXME: handle hits somehow. corresponds to hitcount
+     * hitcount: Returns the number of hits taken by the player in current combo. (int)
+     */
+    int hits;
     int slideTime;
     double yAcceleration;
     double yVelocity;

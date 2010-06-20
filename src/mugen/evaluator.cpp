@@ -237,6 +237,11 @@ public:
             return RuntimeValue(environment.getCharacter().getMoveType());
         }
 
+        if (identifier == "p2movetype"){
+            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+            return RuntimeValue(enemy->getMoveType());
+        }
+
         if (identifier == "random"){
             /* Returns a random number between 0 and 999, inclusive. */
             return RuntimeValue(PaintownUtil::rnd(1000));
@@ -260,15 +265,29 @@ public:
         }
 
         if (identifier == "p2stateno"){
-            /* FIXME */
-            return RuntimeValue(0);
+            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+            return RuntimeValue(enemy->getCurrentState());
         }
 
         if (identifier == "hitcount"){
             return RuntimeValue(environment.getCharacter().getHitCount());
         }
 
+        if (identifier == "uniqhitcount"){
+            /* FIXME */
+            return RuntimeValue(environment.getCharacter().getHitCount());
+        }
+
         if (identifier == "p2statetype"){
+            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+            return RuntimeValue(enemy->getStateType());
+        }
+
+        if (identifier == "wintime"){
+            return RuntimeValue(0);
+        }
+
+        if (identifier == "win"){
             /* FIXME */
             return RuntimeValue(0);
         }
@@ -317,6 +336,11 @@ public:
 
         if (identifier == "projhit"){
             /* FIXME */
+            return RuntimeValue(0);
+        }
+
+        if (identifier == "numexplod"){
+            /* FIXME: return total number of "explode" objects owned by the player */
             return RuntimeValue(0);
         }
         
@@ -400,6 +424,10 @@ public:
 
         if (identifier == "velocity.run.fwd.x"){
             return RuntimeValue(environment.getCharacter().getRunForwardX());
+        }
+        
+        if (identifier == "velocity.run.fwd.y"){
+            return RuntimeValue(environment.getCharacter().getRunForwardY());
         }
         
         if (identifier == "velocity.jump.neu.x"){
@@ -556,6 +584,7 @@ public:
                 return RuntimeValue(state.groundType);
             } else if (var == "damage"){
             } else if (var == "hitcount"){
+                return RuntimeValue(state.hits);
             } else if (var == "fallcount"){
             } else if (var == "hitshaketime"){
             } else if (var == "hittime"){
