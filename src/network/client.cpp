@@ -73,7 +73,7 @@ static void sendQuit(Socket socket){
 }
 
 static void playGame( Socket socket ){
-    pthread_t loadingThread;
+    Util::Thread::Id loadingThread;
     try{
         /* TODO: get the info from the server */
         Level::LevelInfo info;

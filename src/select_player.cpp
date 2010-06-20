@@ -175,7 +175,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     Sound beep(Filesystem::find(Filesystem::RelativePath("sounds/beep1.wav")).path());
     Util::Thread::Id loadingThread;
 
-    if (!Util::Thread::createThread(&loadingThread, NULL, characterLoader, &loader )){
+    if (!Util::Thread::createThread(&loadingThread, NULL, (Util::Thread::ThreadFunction) characterLoader, &loader )){
         throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
 

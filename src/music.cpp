@@ -52,10 +52,10 @@ currentSong(""){
 
     Util::Thread::initializeLock(&musicMutex);
     if (on){
-        Util::Thread::createThread(&musicThread, NULL, playMusic, (void *)instance);
+        Util::Thread::createThread(&musicThread, NULL, (Util::Thread::ThreadFunction) playMusic, (void *)instance);
     } else {
         /* FIXME: just don't create a thread at all.. */
-        Util::Thread::createThread(&musicThread, NULL, bogus_thread, NULL);
+        Util::Thread::createThread(&musicThread, NULL, (Util::Thread::ThreadFunction) bogus_thread, NULL);
     }
 }
 

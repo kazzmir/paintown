@@ -55,7 +55,7 @@ void startLoading(Util::Thread::Id * thread, void * arg){
     Util::Thread::acquireLock(&loading_screen_mutex);
     done_loading = false;
     Util::Thread::releaseLock(&loading_screen_mutex);
-    Util::Thread::createThread(thread, NULL, loadingScreen, arg);
+    Util::Thread::createThread(thread, NULL, (Util::Thread::ThreadFunction) loadingScreen, arg);
 }
 
 void stopLoading(Util::Thread::Id thread){
@@ -119,7 +119,7 @@ public:
     unsigned int last;
 };
 
-void * loadingScreen( void * arg ){
+void * loadingScreen(void * arg){
     int load_x = 80;
     int load_y = 220;
     const int infobox_width = 300;

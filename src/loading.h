@@ -11,7 +11,7 @@ extern Util::Thread::Lock loading_screen_mutex;
 void startLoading(Util::Thread::Id * thread, void * arg = 0);
 void stopLoading(Util::Thread::Id thread);
 
-void * loadingScreen( void * arg );
+void * loadingScreen(void *);
 
 }
 

@@ -495,7 +495,7 @@ static void sendAllOk(const vector<Socket> & sockets){
 
 static void playGame(vector<Client*> & clients, Menu * menuParent){
     vector< Object * > players;
-    pthread_t loading_screen_thread;
+    Util::Thread::Id loading_screen_thread;
     try{
         /* first the user selects his own player */
         Level::LevelInfo info;

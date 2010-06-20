@@ -235,7 +235,7 @@ static Util::Thread::Id start_timer(void (*func)(), int frequency){
     speed.frequency = frequency;
 */
     Util::Thread::Id thread;
-    Util::Thread::createThread(&thread, NULL, do_timer, (void*) speed);
+    Util::Thread::createThread(&thread, NULL, (Util::Thread::ThreadFunction) do_timer, (void*) speed);
     return thread;
 }
 
