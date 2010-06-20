@@ -21,6 +21,7 @@
 #include "init.h"
 #include "network/network.h"
 #include "util/thread.h"
+#include <time.h>
 
 #include <ostream>
 #include "dumb/include/dumb.h"

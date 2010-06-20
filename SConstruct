@@ -548,7 +548,7 @@ def useMingw():
 
 def readExec( program ):
     try:
-        return os.popen( program ).readline().replace("\n",'')
+        return os.popen(program).readline().replace("\n",'')
     except OSError:
         return ""
 
@@ -646,11 +646,13 @@ def getEnvironment(debug):
         env.Append(CXXFLAGS = flags)
         env['LINKCOM'] = '$CC $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LINKFLAGS = flags)
+# pthread-psp
         all = Split("""
-pthread-psp
 SDL
 SDL_image
 SDL_mixer
+SDLmain
+pspdebug
 ogg
 vorbis
 vorbisfile
@@ -967,8 +969,11 @@ else:
             config.CheckSDL()
             config.CheckSDLMain()
         elif useMinpspw():
-            env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
-            staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
+            env.Append(CPPDEFINES = ['USE_SDL'])
+            staticEnv.Append(CPPDEFINES = ['USE_SDL'])
+            config.CheckSDLMain()
+            #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
+            #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
 
         config.env.ParseConfig( 'freetype-config --libs --cflags' )
         config.env.ParseConfig( 'libpng-config --libs --cflags' )
@@ -984,7 +989,6 @@ else:
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
     png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
     staticEnv.Append(LIBS = [png])
-    freetype = staticEnv.Install( 'misc', readExec( 'freetype-config --prefix' ) + '/lib/libfreetype.a' )
 
     #if useSDL():
     #    sdl = staticEnv.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
@@ -994,7 +998,8 @@ else:
     #    staticEnv.Append(CPPDEFINES = ['USE_SDL'])
 
     staticEnv.Append( LIBS = ['z','m'] )
-    staticEnv.Append( LIBS = freetype )
+    freetype = staticEnv.Install( 'misc', readExec('freetype-config --prefix') + '/lib/libfreetype.a' )
+    staticEnv.Append(LIBS = freetype)
 
     if not config.TryCompile("int main(){ return 0; }\n", ".c"):
         print "You need a C compiler such as gcc installed"
@@ -1030,7 +1035,7 @@ else:
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
     if useAllegro():
         static_config.CheckAllegro()
-    if useSDL():
+    if useSDL() and not useMinpspw():
         static_config.CheckSDL()
         static_config.CheckSDLMain()
 
