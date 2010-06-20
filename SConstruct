@@ -1065,8 +1065,16 @@ src/script/modules/paintown.rb
 
 Default(Install('data/scripts', scripts))
 
+def eboot(target, source, env):
+    print "Make eboot from %s to %s" % (source[0].name, target[0].name)
+    # TODO
+    return 0
+
 for i in shared:
-    Default(env.Install( '.', i ))
+    safe = env.Install('.', i)
+    if useMinpspw():
+        env.AddPostAction(safe, eboot)
+    Default(safe)
 
 for i in static:
-    Alias('static',env.InstallAs( i[0].name + '-static', i ))
+    Alias('static', env.InstallAs( i[0].name + '-static', i ))
