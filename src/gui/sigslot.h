@@ -124,6 +124,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #include <list>
 #include <algorithm>
 
+#define SIGSLOT_PURE_ISO 1
+
 #if defined(SIGSLOT_PURE_ISO) || (!defined(WIN32) && !defined(__GNUG__) && !defined(SIGSLOT_USE_POSIX_THREADS))
 #	define _SIGSLOT_SINGLE_THREADED
 #elif defined(WIN32)
