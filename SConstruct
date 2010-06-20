@@ -271,6 +271,24 @@ def checkAllegro(context):
     context.Result(ok)
     return ok
 
+def checkPthreads(context):
+    context.Message("Checking for threads... ")
+    if useAllegro():
+        env = context.env
+        env.Append(LIBS = ['pthread'])
+        context.Message(" pthreads")
+        context.Result(1)
+        return 1
+    if useSDL():
+        context.Message(" SDL threads")
+        context.Result(1)
+        return 1
+    context.Message(" defaulting to pthreads")
+    context.Result(1)
+    return 1
+        #if not useWii() and not useMinpspw():
+        #    env.Append(LIBS = [ 'pthread' ])
+
 def checkNativeOgg(context):
     context.Message("Checking for ogg and vorbis... ")
     tmp = context.env.Clone()
@@ -855,6 +873,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckAllegro" : checkAllegro,
+                "CheckPthreads" : checkPthreads,
                 "CheckSDL" : checkSDL,
                 "CheckSDLMain" : checkSDLMain,
                 "CheckOgg" : checkNativeOgg}
@@ -938,6 +957,12 @@ else:
         if useAllegro() and not config.CheckAllegro():
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
 
+        config.CheckPthreads()
+
+        #if not useWii() and not useMinpspw():
+        #    env.Append(LIBS = [ 'pthread' ])
+        #    staticEnv.Append(LIBS = [ 'pthread' ])
+
         if useSDL() and not useMinpspw():
             config.CheckSDL()
             config.CheckSDLMain()
@@ -954,10 +979,7 @@ else:
     except OSError:
         pass
 
-    if not useWii() and not useMinpspw():
-        env.Append(LIBS = [ 'pthread' ])
-        staticEnv.Append(LIBS = [ 'pthread' ])
-
+    
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
     png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
@@ -1002,6 +1024,7 @@ else:
                            "CheckAllegro" : checkAllegro,
                            "CheckSDL" : checkStaticSDL,
                            "CheckSDLMain" : checkSDLMain,
+                           "CheckPthreads" : checkPthreads,
                            "CheckRTTI" : checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
@@ -1010,6 +1033,9 @@ else:
     if useSDL():
         static_config.CheckSDL()
         static_config.CheckSDLMain()
+
+    static_config.CheckPthreads()
+
     # static_config.CheckPython()
     #if static_config.HasRuby():
     #    static_config.CheckRuby()
