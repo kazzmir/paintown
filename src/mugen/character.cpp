@@ -83,6 +83,8 @@ namespace PaintownUtil = ::Util;
 HitDefinition::~HitDefinition(){
     delete player1Facing;
     delete player2Facing;
+    delete player1State;
+    delete player2State;
 }
 
 HitDefinition::Damage::~Damage(){
@@ -2010,9 +2012,9 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "player2Facing"){
                     simple >> controller->getHit().player2Facing;
                 } else if (simple == "p1stateno"){
-                    simple >> controller->getHit().player1State;
+                    controller->getHit().player1State = (Ast::Value*) simple.getValue()->copy();
                 } else if (simple == "p2stateno"){
-                    simple >> controller->getHit().player2State;
+                    controller->getHit().player2State = (Ast::Value*) simple.getValue()->copy();
                 } else if (simple == "p2getp1state"){
                     simple >> controller->getHit().player2GetPlayer1State;
                 } else if (simple == "forcestand"){

@@ -157,7 +157,9 @@ struct HitDefinition{
     guardVelocity(0),
     airJuggle(0),
     player1Facing(NULL),
-    player2Facing(NULL)
+    player2Facing(NULL),
+    player1State(NULL),
+    player2State(NULL)
     {}
 
     ~HitDefinition();
@@ -476,12 +478,12 @@ struct HitDefinition{
     /* p1stateno = state_no (int)
     * This is the number of the state to set P1 to if the hit is successful. The state must be an attack state (movetype = A) for at least 1 tick. Used mainly for throws. Defaults to -1, no change.
     */
-    int player1State;
+    Ast::Value * player1State;
 
     /* p2stateno = state_no (int)
     * This is the number of the state to set P2 to if the hit is successful. P2 will get P1's state and animation data. P2 will retain P1's states and animation data until P2 is hit, or a SelfState controller is used to return P2 to his own states. The state must be a get-hit state (movetype = H) for at least 1 tick. Used mainly for throws; can also be used for custom hit reactions. Defaults to -1, no change.
     */
-    int player2State;
+    Ast::Value * player2State;
 
     /* p2getp1state = bvalue (boolean)
     * Set to 0 to prevent P2 from getting P1's state and animation data, in case you do not want that default behaviour of the "p2stateno" parameter. Defaults to 1 if the "p2stateno" parameter is used. Ignored otherwise.
