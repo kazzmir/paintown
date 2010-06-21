@@ -28,5 +28,6 @@ Collector::~Collector(){
 	FontFactory::destroy();
 	FontRender::destroy();
         Bitmap::cleanupTemporaryBitmaps();
+        Bitmap::shutdown();
         delete resource;
 }
