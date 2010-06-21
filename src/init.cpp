@@ -302,6 +302,7 @@ static void initSystem(ostream & out){
 
     SDL_JoystickEventState(1);
 
+    atexit(SDL_Quit);
     // atexit(doSDLQuit);
 }
 #endif
