@@ -51,6 +51,7 @@ currentSong(""){
     instance = this;
 
     Util::Thread::initializeLock(&musicMutex);
+    Global::debug(1) << "Creating music thread" << endl;
     if (on){
         Util::Thread::createThread(&musicThread, NULL, (Util::Thread::ThreadFunction) playMusic, (void *)instance);
     } else {
@@ -72,7 +73,7 @@ static bool isAlive(){
 static void * playMusic( void * _music ){
     Music * music = (Music *) _music;
 
-    Global::debug( 1 ) << "Playing music" << endl;
+    Global::debug(1) << "Playing music" << endl;
 
     /*
        unsigned int tick = 0;

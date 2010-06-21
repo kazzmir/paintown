@@ -1711,6 +1711,9 @@ rgreen(255){
                 string & name = *it;
                 name = Filesystem::cleanse(Filesystem::AbsolutePath(name)).path();
             }
+
+            /* use for debugging */
+            // fonts.push_back("fonts/arial.ttf");
         } catch (const Filesystem::NotFound & e){
             throw LoadException(__FILE__, __LINE__, "Could not load font: " + e.getReason());
         }

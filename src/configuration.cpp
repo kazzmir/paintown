@@ -649,7 +649,7 @@ void Configuration::loadConfigurations(){
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Could not load configuration file " << Filesystem::configFile().path() << ": " << le.getReason() << endl;
     } catch ( const TokenException & t ){
-        Global::debug( 0 ) << "Error loading configuration file '" << Filesystem::configFile().path() << "': " << t.getReason() << endl;
+        Global::debug( 0 ) << "Notice: could not open configuration file '" << Filesystem::configFile().path() << "': " << t.getReason() << endl;
     }
 }
 
@@ -811,8 +811,15 @@ bool Configuration::fullscreen = false;
 int Configuration::lives = 4;
 int Configuration::npc_buddies = 1;
 Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
+
+#ifdef MINPSPW
+/* default resolution for the psp is 480x272 */
+int Configuration::screen_width = 480;
+int Configuration::screen_height = 272;
+#else
 int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
+#endif
 std::string Configuration::menuFont = "";
 int Configuration::menuFontWidth = 24;
 int Configuration::menuFontHeight = 24;

@@ -2661,7 +2661,7 @@ typedef struct
 {
     Bool    _fixed;                     /*  TRUE if processed by fix_dir()   */
 
-#if (defined (__UNIX__) || defined (__VMS_XOPEN) || defined (__OS2__)) && !defined(MINPSPW)
+#if (defined (__UNIX__) || defined (__VMS_XOPEN) || defined (__OS2__))
     DIR    *_dir_handle;                /*    a directory handle             */
     struct Dirent                       /*    and a file desc. structure,    */
            *_dir_entry;                 /*    both transient blocks          */

@@ -606,6 +606,10 @@ void Menu::run(){
             if ( Global::speed_counter > 0 ){
                 draw = true;
                 runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+                /* Added to make the psp update more frequently. */
+                if (runCounter > 3){
+                    runCounter = 3;
+                }
                 while ( runCounter >= 1.0 ){
                     runCounter -= 1;
                     InputManager::poll();

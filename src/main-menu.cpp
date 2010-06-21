@@ -121,6 +121,15 @@ static Filesystem::AbsolutePath mainMenuPath() throw (TokenException, LoadExcept
     */
 }
 
+/*
+static void hack(){
+    Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
+    Global::debug(1, "hack") << "Font directory " << fontsDirectory.path() << endl;
+    vector<string> ttfFonts = Util::getFiles(fontsDirectory, "*.ttf");
+    Global::debug(1, "hack") << "Fonts: " << ttfFonts.size() << endl;
+}
+*/
+
 int paintown_main( int argc, char ** argv ){
 
     bool music_on = true;
@@ -128,7 +137,7 @@ int paintown_main( int argc, char ** argv ){
     bool just_network_server = false;
     Collector janitor;
 
-    Global::setDebug( 0 );
+    Global::setDebug(0);
     vector<const char *> all_args;
 
 #define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
