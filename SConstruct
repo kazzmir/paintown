@@ -1068,7 +1068,7 @@ Default(Install('data/scripts', scripts))
 def eboot(target, source, env):
     print "Make eboot from %s to %s" % (source[0].name, target[0].name)
     # TODO
-"""
+    commands = """
 psp-fixup-imports paintown-psp
 psp-strip paintown-psp
 mksfo 'Paintown' PARAM.SFO
