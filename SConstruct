@@ -1067,13 +1067,11 @@ Default(Install('data/scripts', scripts))
 
 def eboot(target, source, env):
     print "Make eboot from %s to %s" % (source[0].name, target[0].name)
-    # TODO
-    commands = """
-psp-fixup-imports paintown-psp
-psp-strip paintown-psp
-mksfo 'Paintown' PARAM.SFO
-pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL paintown-psp NULL
-"""
+    file = source[0].name
+    env.Execute('psp-fixup-imports %s' % file)
+    env.Execute('psp-strip %s' % file)
+    env.Execute("mksfo 'Paintown' PARAM.SFO")
+    env.Execute("pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL %s NULL" % file)
     return 0
 
 for i in shared:
