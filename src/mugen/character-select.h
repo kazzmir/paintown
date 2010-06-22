@@ -6,7 +6,7 @@
 #include <queue>
 
 #include "exception.h"
-#include "fadetool.h"
+#include "gui/fadetool.h"
 
 #include "menu/menu.h"
 
@@ -871,7 +871,7 @@ class VersusScreen {
 	    this->time = time;
 	}
 	
-	virtual inline Mugen::FadeTool & getFadeTool(){
+	virtual inline Gui::FadeTool & getFadeTool(){
 	    return this->fader;
 	}
 	
@@ -914,7 +914,7 @@ class VersusScreen {
 	//! Time to display
 	int time;
 	//! Fade tool
-        Mugen::FadeTool fader;
+        Gui::FadeTool fader;
 	//! Player 1 portrait
 	Mugen::Point player1Position;
 	//! Player 1 effects (facing, scale)
@@ -1013,7 +1013,7 @@ class CharacterSelect {
 	std::vector<MugenFont *>fonts;
 	
 	//! Fade tool
-        Mugen::FadeTool fader;
+        Gui::FadeTool fader;
 	
 	//! Grid (Cell container)
 	Grid grid;

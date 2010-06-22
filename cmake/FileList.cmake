@@ -170,6 +170,7 @@ src/gui/box.cpp
 src/gui/container.cpp
 src/gui/context-box.cpp
 src/gui/coordinate.cpp
+src/gui/fadetool.cpp
 src/gui/keys.cpp
 src/gui/keyinput.cpp
 src/gui/keyinput_manager.cpp
@@ -194,7 +195,6 @@ src/mugen/storyboard.cpp
 src/mugen/state.cpp
 src/mugen/animation.cpp
 src/mugen/exception.cpp
-src/mugen/fadetool.cpp
 src/mugen/font.cpp
 src/mugen/item.cpp
 src/mugen/item-content.cpp

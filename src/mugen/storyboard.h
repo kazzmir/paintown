@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 #include "mugen/exception.h"
-#include "mugen/fadetool.h"
+#include "gui/fadetool.h"
 #include "mugen/util.h"
 
 #include "input/input-map.h"
@@ -72,7 +72,7 @@ class Scene {
 	
 	virtual void reset();
 	
-	virtual inline const Mugen::FadeTool & getFadeTool() const {
+	virtual inline const Gui::FadeTool & getFadeTool() const {
 	    return this->fader;
 	}
 	
@@ -111,7 +111,7 @@ class Scene {
     private:
 	
         //! fade tool
-        Mugen::FadeTool fader;
+        Gui::FadeTool fader;
 	
         //! Clear color for the scene
 	int clearColor;

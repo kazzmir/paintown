@@ -6,7 +6,7 @@
 
 #include "mugen/util.h"
 #include "mugen/exception.h"
-#include "mugen/fadetool.h"
+#include "gui/fadetool.h"
 #include "mugen/character.h"
 #include "mugen/behavior.h"
 
@@ -685,7 +685,7 @@ class Round{
 	int ticker;
         
         // Fadebetween states
-        Mugen::FadeTool fader;
+        Gui::FadeTool fader;
 
         //! Player behaviors
         Behavior * player1Behavior;

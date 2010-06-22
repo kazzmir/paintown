@@ -772,7 +772,7 @@ player2Behavior(0){
     win2.setLayer(Element::Top);
     draw.setLayer(Element::Top);
     // Setup fade tool
-    fader.setState(Mugen::FadeTool::FadeIn);
+    fader.setState(Gui::FadeTool::FadeIn);
     fader.setFadeInTime(15);
     fader.setFadeOutTime(10);
 }
@@ -803,7 +803,7 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 	    Global::debug(1) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
 	    break;
 	case WaitForRound:
-	    if (ticker >= roundDisplayTime && fader.getState() != Mugen::FadeTool::FadeIn){
+	    if (ticker >= roundDisplayTime && fader.getState() != Gui::FadeTool::FadeIn){
 		setState(DisplayRound,stage,player1,player2);
 	    }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | Wait for round: " << roundDisplayTime << endl;
@@ -1001,8 +1001,8 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 		}
 	    // End round
 	    if (ticker >= overTime){
-		if (fader.getState() != Mugen::FadeTool::FadeOut){
-		    fader.setState(Mugen::FadeTool::FadeOut);
+		if (fader.getState() != Gui::FadeTool::FadeOut){
+		    fader.setState(Gui::FadeTool::FadeOut);
 		} else if (ticker >= overTime + fader.getFadeOutTime()) {
 		    currentRound++;
 		    stage.reset();
@@ -1110,7 +1110,7 @@ void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Charact
     win.reset();
     win2.reset();
     draw.reset();
-    fader.setState(Mugen::FadeTool::FadeIn);
+    fader.setState(Gui::FadeTool::FadeIn);
     overByKO = false;
 }
 

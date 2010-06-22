@@ -5,7 +5,7 @@
 #include <map>
 
 #include "exception.h"
-#include "fadetool.h"
+#include "gui/fadetool.h"
 
 #include "menu/menu.h"
 #include "menu/menu_option.h"
@@ -142,7 +142,7 @@ class MugenMenu : public Menu {
 	std::vector<MugenFont *>fonts;
 	
 	/*! Fade tool */
-	Mugen::FadeTool fader;
+	Gui::FadeTool fader;
 	
 	/*! Menu Position */
 	Mugen::Point position;

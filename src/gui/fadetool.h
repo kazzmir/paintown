@@ -1,11 +1,11 @@
-#ifndef mugen_fadetool_h
-#define mugen_fadetool_h
+#ifndef gui_fadetool_h
+#define gui_fadetool_h
 
 /*! FADE UTILITY */
 
 class Bitmap;
 
-namespace Mugen{
+namespace Gui{
 
 class FadeTool{
 public:
@@ -59,7 +59,7 @@ private:
 	
 	State currentState;
 	State lastState;
-	int fader;
+	int fadeTime;
 	int fadeInTime;
 	int fadeOutTime;
 	int fadeInColor;

@@ -137,7 +137,7 @@ int paintown_main( int argc, char ** argv ){
     bool just_network_server = false;
     Collector janitor;
 
-    Global::setDebug(0);
+    Global::setDebug(1);
     vector<const char *> all_args;
 
 #define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
