@@ -32,8 +32,8 @@ class RelativePoint {
     public:
         RelativePoint();
         explicit RelativePoint(double x, double y);
-        explicit RelativePoint(const RelativePoint &);
-        explicit RelativePoint(const AbsolutePoint &);
+        RelativePoint(const RelativePoint &);
+        RelativePoint(const AbsolutePoint &);
         virtual ~RelativePoint();
         
         const RelativePoint & operator=(const RelativePoint &);
