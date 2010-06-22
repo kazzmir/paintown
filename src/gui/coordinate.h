@@ -32,12 +32,12 @@ class RelativePoint {
     public:
         RelativePoint();
         explicit RelativePoint(double x, double y);
-        RelativePoint(const RelativePoint &);
-        RelativePoint(const AbsolutePoint &);
+        explicit RelativePoint(const RelativePoint &);
+        explicit RelativePoint(const AbsolutePoint &);
         virtual ~RelativePoint();
         
         const RelativePoint & operator=(const RelativePoint &);
-        const RelativePoint & operator=(AbsolutePoint &);
+        const RelativePoint & operator=(const AbsolutePoint &);
         bool operator==(const RelativePoint &);
         bool operator!=(const RelativePoint &);
         virtual inline void setX(double x){

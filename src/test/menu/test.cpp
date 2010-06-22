@@ -3,6 +3,7 @@
 #include "util/token_exception.h"
 #include "util/file-system.h"
 #include "loadpng/loadpng.h"
+#include "util/bitmap.h"
 #include "factory/collector.h"
 #include "menu/menu.h"
 
@@ -30,6 +31,7 @@ int main(int argc, char ** argv){
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
+    Bitmap::setFakeGraphicsMode(640, 480);
     loadpng_init();
     return paintown_main(argc, argv);
 }

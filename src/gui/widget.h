@@ -1,8 +1,8 @@
 #ifndef _paintown_gui_widget_h
 #define _paintown_gui_widget_h
 
-#include "gui/rectarea.h"
-#include "gui/coordinate.h"
+#include "rectarea.h"
+#include "coordinate.h"
 
 class Bitmap;
 class Token;

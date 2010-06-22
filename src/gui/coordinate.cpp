@@ -71,7 +71,7 @@ const RelativePoint & RelativePoint::operator=(const RelativePoint & copy){
     this->y = copy.y;
     return *this;
 }
-const RelativePoint & RelativePoint::operator=(AbsolutePoint & point){
+const RelativePoint & RelativePoint::operator=(const AbsolutePoint & point){
     this->x = absoluteToRelative(point.getX(), Global::getScreenWidth()/2);
     this->y = absoluteToRelative(point.getY(), Global::getScreenHeight()/2);
     return *this;
@@ -107,24 +107,28 @@ Coordinate::Coordinate():
 z(0),
 radius(0){
 }
+
 Coordinate::Coordinate(AbsolutePoint & position, AbsolutePoint & position2):
 position(position),
 position2(position2),
 z(0),
 radius(0){
 }
+
 Coordinate::Coordinate(const RelativePoint & position, const RelativePoint & position2):
 position(position),
 position2(position2),
 z(0),
 radius(0){
 }
+
 Coordinate::Coordinate(const Coordinate & copy):
 position(copy.position),
 position2(copy.position2),
 z(copy.z),
 radius(copy.radius){
 }
+
 Coordinate::~Coordinate(){
 }
 
@@ -143,12 +147,15 @@ int Coordinate::getX() const{
 int Coordinate::getY() const{
     return position.getY();
 }
+
 int Coordinate::getWidth() const{
     return position2.getX() - position.getX();
 }
+
 int Coordinate::getHeight() const{
     return position2.getY() - position.getY();
 }
+
 int Coordinate::getX2() const{
     return position2.getX();
 }
