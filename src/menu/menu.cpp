@@ -180,6 +180,41 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
     return contextItems;
 }
 
+/* New Menu */
+_Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
+    // Load up tokenizer
+    try{
+        Global::debug(1) << "Loading menu " << filename.path() << endl;
+        TokenReader tr(filename.path());
+        Token * token = tr.readToken();
+        load(token);
+    } catch (const TokenException & e){
+        throw LoadException(__FILE__, __LINE__, e.getReason());
+    }
+}
+
+_Menu::Menu::Menu(Token * token){
+    load(token);
+}
+
+_Menu::Menu::~Menu(){
+}
+
+void _Menu::Menu::load(Token * token){
+}
+
+void _Menu::Menu::run(){
+}
+
+void _Menu::Menu::act(){
+}
+
+void _Menu::Menu::render(int x, int y, const Bitmap & bmp){
+}
+
+
+
+/* Old Menu */
 Menu::Menu(const Filesystem::AbsolutePath & str){
     load(str);
 }

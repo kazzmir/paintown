@@ -80,7 +80,7 @@ class InfoBox: public Gui::Widget {
 class Menu{
     public:
         Menu();
-        Menu(const Filesystem::AbsolutePath & str);
+        Menu(const Filesystem::AbsolutePath & filename);
         Menu(Token * token);
         virtual ~Menu();
 
@@ -94,14 +94,16 @@ class Menu{
         virtual void render(int x, int y, const Bitmap &);
 
     protected:
+        /*! load token */
+        void load(Token * token);
+
         /*! Option List */
         std::vector <MenuOption *> options;
 
         /*! Context Menu */
         Gui::ContextBox contextMenu;
 
-        /*! Tokenized data */
-        std::map<std::string, Token *> data;
+        /*! Need to come up with a method of storing data without having 10,000 variables for different aspects of the menu */
 
     private:
 };
