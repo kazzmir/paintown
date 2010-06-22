@@ -111,7 +111,9 @@ class Menu{
 /* Keep old menu class for backwards compatibility until everything has been moved over */
 class Menu{
 public:
-    /*! ctor dtor */
+    /* TODO: make the fadein stuff part of the configuration file for
+     * the menu (menu.txt)
+     */
     Menu(bool fadein = false, int fadeColor = 0);
     Menu(const Filesystem::AbsolutePath & str);
     Menu(Token * token);
