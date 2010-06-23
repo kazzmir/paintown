@@ -21,6 +21,13 @@ def noColors():
     except KeyError:
         return False
 
+def isVerbose():
+    import os
+    try:
+        return int(ARGUMENTS['verbose']) == 1
+    except KeyError:
+        return False
+
 def useGch():
     try:
         return int(ARGUMENTS['gch']) == 1
@@ -763,7 +770,7 @@ pspnet_inet
     def add_peg(env):
         env['PEG_MAKE'] = 'Creating peg parser $TARGET'
         return env
-    if not debug:
+    if not debug and not isVerbose():
         return less_verbose(raw())
     else:
         return add_peg(raw())

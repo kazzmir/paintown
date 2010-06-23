@@ -164,7 +164,7 @@ test/util/timer.cpp
 test/mugen/game.cpp
 test/mugen/behavior.cpp
 test/mugen/storyboard.cpp
-test/mugen/fadetool.cpp
+test/gui/fadetool.cpp
 test/mugen/character-select.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
