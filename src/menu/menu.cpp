@@ -201,6 +201,134 @@ _Menu::Menu::~Menu(){
 }
 
 void _Menu::Menu::load(Token * token){
+    if ( *token != "menu" ){
+        throw LoadException(__FILE__, __LINE__, "Not a menu");
+    } else if (!token->hasTokens()){
+        return;
+    }
+    
+    while ( token->hasTokens() ){
+        try{
+            Token * tok;
+            *token >> tok;
+            if ( *tok == "name" ){
+                // Set menu name
+                //*tok >> _name;
+            } else if ( *tok == "music" ) {
+                // Set music and push onto the stack
+                //*tok >> music;
+            } else if( *tok == "select-sound" ) {
+                //*tok >> selectSound;
+            } else if (*tok == "back-sound"){
+                //*tok >> backSound;
+                try{
+                    /* try to load it */
+                    //Resource::getSound(backSound);
+                } catch (const LoadException & le){
+                    //Global::debug(0) << "Could not load sound " << backSound << " because " << le.getReason() << endl;
+                    /* we failed, so set the backSound to nothing */
+                    //backSound = "";
+                }
+            } else if (*tok == "ok-sound"){
+                //*tok >> okSound;
+                try{
+                    /* try to load it */
+                    //Resource::getSound(okSound);
+                } catch (const LoadException & le){
+                    //Global::debug(0) << "Could not load sound " << okSound << " because " << le.getReason() << endl;
+                    /* we failed, so set the backSound to nothing */
+                    //okSound = "";
+                }
+            } else if ( *tok == "background" ) {
+                /*std::string temp;
+                *tok >> temp;
+                if ( background ){
+                    delete background;
+                }
+                Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(temp));
+                background = new Bitmap(full.path());
+                if ( background->getError() ){
+                    Global::debug(0) << "Problem loading Bitmap: " << full.path() << endl;
+                    delete background;
+                    background = 0;
+                }*/
+            } else if ( *tok == "clear-color" ) {
+                /* This is the clear color of the background if there is no background image specified within the menu
+                 * Although if this is a submenu, and parent has a background that will be used instead...*/
+                //int r=0,g=0,b=0;
+                //*tok >> r >> g >> b;
+                //clearColor = Bitmap::makeColor(r,g,b);
+            } else if ( *tok == "position" ) {
+                // This handles the placement of the menu list and surrounding box
+                //contextMenu.setCoordinates(tok);
+            } else if ( *tok == "relative-position"){
+                //contextMenu.setCoordinates(tok);
+            } else if ( *tok == "coordinate"){
+                //contextMenu.setCoordinates(tok);
+            } else if ( *tok == "position-body" ) {
+                // This handles the body color of the menu box
+                //contextMenu.setColors(tok);
+            } else if ( *tok == "position-border" ) {
+                // This handles the border color of the menu box
+                //contextMenu.setColors(tok);
+            } else if ( *tok == "fade-speed" ) {
+                // Menu fade in speed
+                //int speed;
+                //*tok >> speed;
+                //contextMenu.setFadeSpeed(speed);
+            } else if ( *tok == "font" ) {
+                //string str;
+                //*tok >> str >> sharedFontWidth >> sharedFontHeight; 
+                /* FIXME: make sharedFont an AbsolutePath */
+                //sharedFont = Filesystem::find(Filesystem::RelativePath(str)).path();
+            } else if( *tok == "option" ) {
+                try{
+                    MenuOption *temp = OptionFactory::getOption(tok);
+                    if (temp){
+                        //addOption(temp);
+                        //temp->setParent(this);
+                        //hasOptions = true;
+                        options.push_back(temp);
+                    }
+                } catch (const LoadException & le){
+                    Global::debug(0) << "Could not read option: " << le.getReason() << endl;
+                    tok->print(" ");
+                }
+            } else if (*tok == "action"){
+                //ActionAct(tok);
+            } else if (*tok == "info-position"){
+                //*tok >> optionInfoTextLocation.x >> optionInfoTextLocation.y;
+            } else if (*tok == "menuinfo"){
+                //*tok >> menuInfo;
+            } else if (*tok == "menuinfo-position"){
+                //*tok >> menuInfoLocation.x >> menuInfoLocation.y;
+            } else if (*tok == "anim"){
+                /*
+                MenuAnimation *animation = new MenuAnimation(tok);
+                if (animation->getLocation() == 0){
+                    backgroundAnimations.push_back(animation);
+                } else if (animation->getLocation() == 1){
+                    foregroundAnimations.push_back(animation);
+                }
+                */
+            } else {
+                Global::debug(3) <<"Unhandled menu attribute: "<<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
+        } catch ( const TokenException & ex ) {
+            // delete current;
+            string m( "Menu parse error: " );
+            m += ex.getReason();
+            throw LoadException(__FILE__, __LINE__, m);
+        } catch (const LoadException & ex){
+            // delete current;
+            throw ex;
+        } catch (const Filesystem::NotFound & ex){
+            throw LoadException(__FILE__, __LINE__, ex.getReason());
+        }
+    }
 }
 
 void _Menu::Menu::run(){

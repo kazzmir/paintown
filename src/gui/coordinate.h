@@ -52,6 +52,9 @@ class RelativePoint {
             this->x = x;
             this->y = y;
         }
+        virtual void resizeX(double percent);
+        virtual void resizeY(double percent);
+        virtual void resizeBy(double x, double y);
         virtual AbsolutePoint getAbsolute();
         virtual double getRelativeX() const;
         virtual double getRelativeY() const;

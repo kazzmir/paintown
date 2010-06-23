@@ -91,6 +91,19 @@ int RelativePoint::getY() const{
     return relativeToAbsolute(y, Global::getScreenHeight()/2);
 }
 
+void RelativePoint::resizeX(double percent){
+    x+=percent;
+}
+
+void RelativePoint::resizeY(double percent){
+    y+=percent;
+}
+
+void RelativePoint::resizeBy(double x, double y){
+    resizeX(x);
+    resizeY(y);
+}
+
 AbsolutePoint RelativePoint::getAbsolute(){
     return AbsolutePoint(relativeToAbsolute(x,Global::getScreenWidth()/2), relativeToAbsolute(y,Global::getScreenHeight()/2));
 }
@@ -164,56 +177,56 @@ int Coordinate::getY2() const{
 }
 
 void Coordinate::growHorizontal(double by){
-    position.setX(position.getRelativeX() - by);
-    position2.setX(position2.getRelativeX() + by);
+    position.resizeX(-(by));
+    position2.resizeX(by);
 }
 
 void Coordinate::growVertical(double by){
-    position.setY(position.getRelativeY() - by);
-    position2.setY(position2.getRelativeY() + by);
+    position.resizeY(-(by));
+    position2.setY(by);
 }
 
 void Coordinate::growTo(const Coordinate & coord, double percent){
     if (position.getRelativeX() > coord.position.getRelativeX()){
-		position.setX(position.getRelativeX() - percent);
+		position.resizeX(-(percent));
         if (position.getRelativeX() < coord.position.getRelativeX()){
             position.setX(coord.position.getRelativeX());
         }
     } else if (position.getRelativeX() < coord.position.getRelativeX()){
-		position.setX(position.getRelativeX() + percent);
+		position.resizeX(percent);
         if (position.getRelativeX() > coord.position.getRelativeX()){
             position.setX(coord.position.getRelativeX());
         }
 	}
     if (position.getRelativeY() > coord.position.getRelativeY()){
-		position.setY(position.getRelativeY() - percent);
+		position.resizeY(-(percent));
         if (position.getRelativeY() < coord.position.getRelativeY()){
             position.setY(coord.position.getRelativeY());
         }
     } else if (position.getRelativeY() < coord.position.getRelativeY()){
-		position.setY(position.getRelativeY() + percent);
+		position.resizeY(percent);
         if (position.getRelativeY() > coord.position.getRelativeY()){
             position.setY(coord.position.getRelativeY());
         }
 	}
     if (position2.getRelativeX() > coord.position2.getRelativeX()){
-		position2.setX(position2.getRelativeX() - percent);
+		position2.resizeX(-(percent));
         if (position2.getRelativeX() < coord.position2.getRelativeX()){
             position2.setX(coord.position2.getRelativeX());
         }
     } else if (position2.getRelativeX() < coord.position2.getRelativeX()){
-		position2.setX(position2.getRelativeX() + percent);
+		position2.resizeX(percent);
         if (position2.getRelativeX() > coord.position2.getRelativeX()){
             position2.setX(coord.position2.getRelativeX());
         }
 	}
     if (position2.getRelativeY() > coord.position2.getRelativeY()){
-		position2.setY(position2.getRelativeY() - percent);
+		position2.resizeY(-(percent));
         if (position2.getRelativeY() < coord.position2.getRelativeY()){
             position2.setY(coord.position2.getRelativeY());
         }
     } else if (position2.getRelativeY() < coord.position2.getRelativeY()){
-		position2.setY(position2.getRelativeY() + percent);
+		position2.resizeY(percent);
         if (position2.getRelativeY() > coord.position2.getRelativeY()){
             position2.setY(coord.position2.getRelativeY());
         }
