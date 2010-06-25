@@ -356,7 +356,8 @@ music(""),
 selectSound(""),
 longestTextLength(0),
 currentDrawState( NoFade ),
-work(new Bitmap(Global::getScreenWidth(), Global::getScreenHeight())),
+// work(new Bitmap(Global::getScreenWidth(), Global::getScreenHeight())),
+work(new Bitmap(640, 480)),
 menuInfo(""),
 parent(0),
 _name(""),
@@ -366,7 +367,7 @@ background(0),
 clearColor(Bitmap::makeColor(0,0,0)),
 option(false){
 
-    work->updateOnResize();
+    // work->updateOnResize();
 
     if (fade){
         this->fade.fade = 255;

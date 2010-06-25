@@ -14,6 +14,24 @@ static double absoluteToRelative(int x, int center){
     return (double)(x-center)/center;
 }
 
+static double relativeToAbsoluteX(double x){
+    // return relativeToAbsolute(x, Global::getScreenWidth() / 2);
+    return relativeToAbsolute(x, 640 / 2);
+}
+
+static double relativeToAbsoluteY(double y){
+    // return relativeToAbsolute(y, Global::getScreenHeight() / 2);
+    return relativeToAbsolute(y, 480 / 2);
+}
+
+static double absoluteToRelativeX(int x){
+    return absoluteToRelative(x, 640/2);
+}
+
+static double absoluteToRelativeY(int y){
+    return absoluteToRelative(y, 480/2);
+}
+
 AbsolutePoint::AbsolutePoint():
 x(0),
 y(0){
@@ -59,8 +77,8 @@ y(copy.y){
 }
 
 RelativePoint::RelativePoint(const AbsolutePoint & point):
-x(absoluteToRelative(point.getX(), Global::getScreenWidth()/2)),
-y(absoluteToRelative(point.getY(), Global::getScreenHeight()/2)){
+x(absoluteToRelativeX(point.getX())),
+y(absoluteToRelativeY(point.getY())){
 }
 
 RelativePoint::~RelativePoint(){
@@ -72,8 +90,8 @@ const RelativePoint & RelativePoint::operator=(const RelativePoint & copy){
     return *this;
 }
 const RelativePoint & RelativePoint::operator=(const AbsolutePoint & point){
-    this->x = absoluteToRelative(point.getX(), Global::getScreenWidth()/2);
-    this->y = absoluteToRelative(point.getY(), Global::getScreenHeight()/2);
+    this->x = absoluteToRelativeX(point.getX());
+    this->y = absoluteToRelativeY(point.getY());
     return *this;
 }
 bool RelativePoint::operator==(const RelativePoint & point){
@@ -84,11 +102,11 @@ bool RelativePoint::operator!=(const RelativePoint & point){
 }
 
 int RelativePoint::getX() const{
-    return relativeToAbsolute(x, Global::getScreenWidth()/2);
+    return relativeToAbsoluteX(x);
 }
 
 int RelativePoint::getY() const{
-    return relativeToAbsolute(y, Global::getScreenHeight()/2);
+    return relativeToAbsoluteY(y);
 }
 
 void RelativePoint::resizeX(double percent){
@@ -105,7 +123,7 @@ void RelativePoint::resizeBy(double x, double y){
 }
 
 AbsolutePoint RelativePoint::getAbsolute(){
-    return AbsolutePoint(relativeToAbsolute(x,Global::getScreenWidth()/2), relativeToAbsolute(y,Global::getScreenHeight()/2));
+    return AbsolutePoint(relativeToAbsoluteX(x), relativeToAbsoluteY(y));
 }
 
 double RelativePoint::getRelativeX() const{
@@ -161,11 +179,11 @@ int Coordinate::getY() const{
     return position.getY();
 }
 
-int Coordinate::getWidth() const{
+int Coordinate::getWidth() const {
     return position2.getX() - position.getX();
 }
 
-int Coordinate::getHeight() const{
+int Coordinate::getHeight() const {
     return position2.getY() - position.getY();
 }
 
