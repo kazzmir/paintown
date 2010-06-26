@@ -10,19 +10,21 @@ namespace Space{
 class Space;
 /* a 2-d point */
 class Point{
-private:
-    Point();
 public:
     Point(double x, double y, const Space & space);
-    Point(const Point & point, Space & space);
+    Point(const Point & point, const Space & space);
     Point(const Point & point);
 
-    Point & operator+(const Point &);
+    Point operator+(const Point &);
+    Point & operator+=(const Point &);
+    Point & operator=(const Point &);
 
     /* convert to physical space */
-    int physicalX();
-    int physicalY();
+    int physicalX() const;
+    int physicalY() const;
 
+    double x;
+    double y;
     const Space & space;
 private:
     /* true if points use the same space system */
@@ -34,6 +36,17 @@ class Space{
 public:
     Space(double minX, double minY, double maxX, double maxY);
     Point fromPhysical(int x, int y);
+
+    bool operator==(const Space & space) const;
+
+    double sizeX() const;
+    double sizeY() const;
+    double centerX() const;
+    double centerY() const;
+    double getLocalX(int physicalX) const;
+    double getLocalY(int physicalY) const;
+private:
+    double minX, minY, maxX, maxY;
 };
 
 }

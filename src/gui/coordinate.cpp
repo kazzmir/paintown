@@ -6,6 +6,113 @@
 
 using namespace Gui;
 
+namespace Gui{
+namespace Space{
+
+Point::Point(double x, double y, const Space & space):
+x(x),
+y(y),
+space(space){
+}
+
+Point::Point(const Point & point, const Space & space):
+space(space){
+    x = space.getLocalX(point.physicalX());
+    y = space.getLocalY(point.physicalY());
+}
+
+Point::Point(const Point & point):
+x(point.x),
+y(point.y),
+space(point.space){
+}
+    
+Point & Point::operator=(const Point & point){
+    if (!sameSpace(point)){
+        /* FIXME: throw an error */
+    }
+
+    this->x = point.x;
+    this->y = point.y;
+    return *this;
+}
+
+Point & Point::operator+=(const Point & point){
+    *this = *this + point;
+    return *this;
+}
+    
+Point Point::operator+(const Point & point){
+    if (sameSpace(point)){
+        x += point.x;
+        y += point.y;
+        return *this;
+    } else {
+        return *this + Point(point, space);
+    }
+}
+
+bool Point::sameSpace(const Point & point){
+    return space == point.space;
+}
+
+int Point::physicalX() const {
+    return (x * space.sizeX() / 2) + space.centerX();
+}
+
+int Point::physicalY() const {
+    return (y * space.sizeY() / 2) + space.centerY();
+}
+
+Space::Space(double minX, double minY, double maxX, double maxY):
+minX(minX),
+minY(minY),
+maxX(maxX),
+maxY(maxY){
+}
+    
+bool Space::operator==(const Space & space) const {
+    if (this == &space){
+        return true;
+    }
+
+    return minX == space.minX &&
+           minY == space.minY &&
+           maxX == space.maxX &&
+           maxY == space.maxY;
+}
+
+Point Space::fromPhysical(int x, int y){
+    return Point(getLocalX(x), getLocalY(y), *this);
+}
+
+double Space::sizeX() const {
+    return maxX - minX;
+}
+
+double Space::sizeY() const {
+    return maxY - minY;
+}
+
+double Space::centerX() const {
+    return (maxX - minX) / 2;
+}
+
+double Space::centerY() const {
+    return (maxY - minY) / 2;
+}
+
+double Space::getLocalX(int physicalX) const {
+    return (physicalX - centerX()) / sizeX();
+}
+
+double Space::getLocalY(int physicalY) const {
+    return (physicalY - centerY()) / sizeY();
+}
+
+}
+}
+
 static int relativeToAbsolute(double x, int center){
     return (int)(center + (center * x));
 }
