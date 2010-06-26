@@ -206,7 +206,7 @@ void _Menu::Menu::load(Token * token){
     } else if (!token->hasTokens()){
         return;
     }
-    
+
     while ( token->hasTokens() ){
         try{
             Token * tok;
@@ -411,6 +411,12 @@ void Menu::waitForSelect(){
     InputManager::waitForRelease(input, Select);
 }
 
+static map<string, Gui::Space::Space*> parseSpaces(const vector<Token*> & tokens){
+    map<string, Gui::Space::Space*> spaces;
+    Global::debug(2) << "Have " << tokens.size() << " spaces to parse" << endl;
+    return spaces;
+}
+
 void Menu::load(Token *token){
     if ( *token != "menu" ){
         throw LoadException(__FILE__, __LINE__, "Not a menu");
@@ -420,6 +426,8 @@ void Menu::load(Token *token){
 
     sharedFontWidth = Configuration::getMenuFontWidth();
     sharedFontHeight = Configuration::getMenuFontHeight();
+    
+    coordinateSpaces = parseSpaces(token->findTokens("menu/space"));
 
     while ( token->hasTokens() ){
         try{

@@ -15,7 +15,7 @@
 
 #ifdef _MSC_VER
 #ifndef uint32_t
-	typedef unsigned __int32 uint32_t;
+typedef unsigned __int32 uint32_t;
 #endif
 #endif
 
@@ -217,6 +217,7 @@ protected:
 
     //! Context box
     Gui::ContextBox contextMenu;
+    std::map<std::string, Gui::Space::Space *> coordinateSpaces;
 
     std::vector <MenuOption *> menuOptions;
 public:
