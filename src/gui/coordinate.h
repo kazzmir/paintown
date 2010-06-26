@@ -5,6 +5,39 @@ class Bitmap;
 
 namespace Gui {
 
+namespace Space{
+
+class Space;
+/* a 2-d point */
+class Point{
+private:
+    Point();
+public:
+    Point(double x, double y, const Space & space);
+    Point(const Point & point, Space & space);
+    Point(const Point & point);
+
+    Point & operator+(const Point &);
+
+    /* convert to physical space */
+    int physicalX();
+    int physicalY();
+
+    const Space & space;
+private:
+    /* true if points use the same space system */
+    bool sameSpace(const Point & point);
+};
+
+/* mapping from coordinate space to physical space */
+class Space{
+public:
+    Space(double minX, double minY, double maxX, double maxY);
+    Point fromPhysical(int x, int y);
+};
+
+}
+
 /* Coordinate system for handling scalable graphics */
 
 class AbsolutePoint {
