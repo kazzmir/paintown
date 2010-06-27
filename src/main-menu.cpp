@@ -103,7 +103,7 @@ static void addArgs(vector<const char *> & args, const char * strings[], int num
     }
 }
 
-static Filesystem::AbsolutePath mainMenuPath() throw (TokenException, LoadException, Filesystem::NotFound){
+static Filesystem::AbsolutePath mainMenuPath(){
     string menu = Paintown::Mod::getCurrentMod()->getMenu();
     return Filesystem::find(Filesystem::RelativePath(menu));
     /*

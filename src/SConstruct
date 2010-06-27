@@ -240,6 +240,13 @@ def hawknlLibrary(env):
 def main():
     return ['xmain.cpp']
 
+def psp_prx(env):
+    if env['PAINTOWN_USE_PRX']:
+        # FIXME: Use the pspsdk path from the top level SConstruct
+        return ['/opt/pspsdk/psp/sdk/lib/prxexports.o']
+    else:
+        return []
+
 use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
@@ -251,7 +258,8 @@ elif useMinpspw():
     use.Prepend(LIBS = [sprigLibrary(use)])
 
 x = []
-x.append(use.Program('paintown', obj_files + main() + icon()))
+# FIXME: adding psp_prx here is ugly, find a better way
+x.append(use.Program('paintown', psp_prx(use) + obj_files + main() + icon()))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
 if not useSDL():

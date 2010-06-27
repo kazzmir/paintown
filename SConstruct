@@ -1,19 +1,17 @@
 import os
 
-def isWindows():
-    import re
+def isPlatform(platform):
     import sys
-    return "win32" in sys.platform
+    return platform in sys.platform
+
+def isWindows():
+    return isPlatform("win32")
 
 def isOSX():
-    import re
-    import sys
-    return "darwin" in sys.platform
+    return isPlatform("darwin")
 
 def isLinux():
-    import re
-    import sys
-    return "linux" in sys.platform
+    return isPlatform("linux")
 
 def noColors():
     try:
@@ -28,11 +26,22 @@ def isVerbose():
     except KeyError:
         return False
 
+def makeUse(key, default):
+    def use():
+        import os
+        try:
+            return int(os.environ[key]) == 1
+        except KeyError:
+            return default
+    return use
+
 def useGch():
     try:
         return int(ARGUMENTS['gch']) == 1
     except KeyError:
         return True
+
+usePrx = makeUse('prx', False)
 
 def useIntel():
     try:
@@ -645,13 +654,20 @@ def getEnvironment(debug):
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         # FIXME: try to use freetype-config and sdl-config to find these paths
         # instead of hard coding them
-        env.Append(CPPPATH = [setup(path, "/psp/include"), setup(path,"/psp/include/SDL"),setup(path,"/psp/include/freetype2"),setup(path,"/psp/sdk/include")])
+        env.Append(CPPPATH = [setup(path, "/psp/include"),
+                              setup(path, "/psp/include/SDL"),
+                              setup(path, "/psp/include/freetype2"),
+                              setup(path, "/psp/sdk/include")])
         env.Append(CPPDEFINES = ['MINPSPW','_PSP_FW_VERSION=150'])
-        env.Append(LIBPATH = [setup(path, '/psp/lib'), setup(path, '/psp/sdk/lib')])
+        env.Append(LIBPATH = [setup(path, '/psp/lib'),
+                              setup(path, '/psp/sdk/lib')])
+        if usePrx():
+            env.Append(LINKFLAGS = ['-specs=%s/psp/sdk/lib/prxspecs' % path,
+                                    '-Wl,-q,-T%s/psp/sdk/lib/linkfile.prx' % path])
         flags = ['-G0', '-fexceptions']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
-        env['LINKCOM'] = '$CC $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LINKFLAGS = flags)
 # pthread-psp
         all = Split("""
@@ -784,6 +800,7 @@ if isWindows():
         print "Cygwin detected"
     
 env = getEnvironment(getDebug())
+env['PAINTOWN_USE_PRX'] = usePrx()
 if not useWii() and not useMinpspw():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
@@ -1072,19 +1089,24 @@ src/script/modules/paintown.rb
 
 Default(Install('data/scripts', scripts))
 
-def eboot(target, source, env):
+def psp_eboot(target, source, env):
     print "Make eboot from %s to %s" % (source[0].name, target[0].name)
     file = source[0].name
-    env.Execute('psp-fixup-imports %s' % file)
-    env.Execute('psp-strip %s' % file)
     env.Execute("mksfo 'Paintown' PARAM.SFO")
-    env.Execute("pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL %s NULL" % file)
+    env.Execute('psp-fixup-imports %s' % file)
+    if usePrx():
+        prx = '%s.prx' % file
+        env.Execute('psp-prxgen %s %s' % (file, prx))
+        env.Execute("pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL %s NULL" % prx)
+    else:
+        env.Execute('psp-strip %s' % file)
+        env.Execute("pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL %s NULL" % file)
     return 0
 
 for i in shared:
     safe = env.Install('.', i)
     if useMinpspw():
-        env.AddPostAction(safe, eboot)
+        env.AddPostAction(safe, psp_eboot)
     Default(safe)
 
 for i in static:
