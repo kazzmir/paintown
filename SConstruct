@@ -19,14 +19,7 @@ def noColors():
     except KeyError:
         return False
 
-def isVerbose():
-    import os
-    try:
-        return int(ARGUMENTS['verbose']) == 1
-    except KeyError:
-        return False
-
-def makeUse(key, default):
+def makeUseEnvironment(key, default):
     def use():
         import os
         try:
@@ -35,43 +28,28 @@ def makeUse(key, default):
             return default
     return use
 
-def useGch():
-    try:
-        return int(ARGUMENTS['gch']) == 1
-    except KeyError:
-        return True
+def makeUseArgument(key, default):
+    def use():
+        try:
+            return int(ARGUMENTS[key]) == 1
+        except KeyError:
+            return default
+    return use
 
-usePrx = makeUse('prx', False)
-
-def useIntel():
-    try:
-        return int(os.environ['intel'])
-    except KeyError:
-        return False
-
-def useMinpspw():
-    try:
-        return int(os.environ['minpspw'])
-    except KeyError:
-        return False
-
-def useWii():
-    try:
-        return int(os.environ['wii'])
-    except KeyError:
-        return False
-
-def useLLVM():
-    try:
-        return int(os.environ['llvm'])
-    except KeyError:
-        return False
-
-def enableProfiled():
-    try:
-        return int(os.environ[ 'PROFILE' ])
-    except KeyError:
-        return 0
+# Functions made with `makeUseArgument' should be set by command line arguments
+# to scons:
+# $ scons gch=1
+# If `makeUseEnvironment' is used instead then a shell variable should be set:
+# $ export prx=1
+# $ scons
+useGch = makeUseArgument('gch', True)
+usePrx = makeUseEnvironment('prx', False)
+isVerbose = makeUseArgument('verbose', False)
+useIntel = makeUseEnvironment('intel', False)
+useMinpspw = makeUseEnvironment('minpspw', False)
+useWii = makeUseEnvironment('wii', False)
+useLLVM = makeUseEnvironment('llvm', False)
+enableProfiled = makeUseEnvironment('PROFILE', False)
 
 def checkLex(context):
     context.Message("Checking for flex... ")
