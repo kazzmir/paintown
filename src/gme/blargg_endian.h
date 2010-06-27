@@ -51,6 +51,13 @@
 	#undef BLARGG_BIG_ENDIAN
 #endif
 
+/* force little endian for the psp */
+#ifdef MINPSPW
+#undef BLARGG_LITTLE_ENDIAN
+#undef BLARGG_BIG_ENDIAN
+#define BLARGG_LITTLE_ENDIAN 1
+#endif
+
 inline void blargg_verify_byte_order()
 {
 	#ifndef NDEBUG
