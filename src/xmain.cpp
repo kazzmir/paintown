@@ -11,7 +11,10 @@ END_OF_MAIN()
 
 #ifdef MINPSPW
 #include <pspkernel.h>
-// PSP_MODULE_INFO("Paintown", 0, 1, 1);
+// Define only on windows because main is redefined as SDL_main (from SDL_psp_main.c comments)
+#ifdef INCLUDE_SCE_MODULE_INFO
+PSP_MODULE_INFO("Paintown", 0, 1, 1);
+#endif 
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 PSP_HEAP_SIZE_MAX();
 #endif

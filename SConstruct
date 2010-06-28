@@ -642,6 +642,9 @@ def getEnvironment(debug):
         if usePrx():
             env.Append(LINKFLAGS = ['-specs=%s/psp/sdk/lib/prxspecs' % path,
                                     '-Wl,-q,-T%s/psp/sdk/lib/linkfile.prx' % path])
+        # So that xmain.cpp can pick up on windows requirement
+        if isWindows():
+            env.Append(CPPDEFINES = ['INCLUDE_SCE_MODULE_INFO'])
         flags = ['-G0', '-fexceptions']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
@@ -1078,7 +1081,7 @@ def psp_eboot(target, source, env):
         env.Execute("pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL %s NULL" % prx)
     else:
         env.Execute('psp-strip %s' % file)
-        env.Execute("pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL %s NULL" % file)
+        env.Execute("pack-pbp EBOOT.PBP PARAM.SFO data/menu/paintown.png NULL data/menu/paintown.png data/menu/paintown.png NULL %s NULL" % file)
     return 0
 
 for i in shared:
