@@ -2421,7 +2421,7 @@ class Peg:
     def generate_ruby(self):
 
         use_rules = self.rules
-        rule_numbers = '\n'.join(["RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
+        rule_numbers = '\n'.join(["RULE_%s = %d" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
         data = """
 %s
@@ -2442,7 +2442,7 @@ end
     def generate_python(self):
         # use_rules = [rule for rule in self.rules if not rule.isInline()]
         use_rules = self.rules
-        rule_numbers = '\n'.join(["RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
+        rule_numbers = '\n'.join(["RULE_%s = %d" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
         top_code = ""
         if self.include_code != None:

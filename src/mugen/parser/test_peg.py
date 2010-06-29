@@ -110,12 +110,12 @@ using namespace std;
 
 namespace Parser{
     struct Value;
-    const void * main(const std::string & filename, bool stats = false);
+    const void * parse(const std::string & filename, bool stats = false);
 }
 
 int main(int argc, char ** argv){
     if (argc >= 2){
-        const void * result = Parser::main(argv[1]);
+        const void * result = Parser::parse(argv[1]);
         cout << (int) result << endl << endl;
         return 0;
     } else {
