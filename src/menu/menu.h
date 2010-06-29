@@ -23,7 +23,9 @@ class Font;
 class Bitmap;
 class MenuOption;
 class Token;
-class MenuAnimation;
+namespace Gui{
+    class Animation;
+}
 namespace _Menu{
 class Point{
     public:
@@ -225,8 +227,8 @@ public:
     MenuOption * selectedOption;
 protected:
     //! Animations
-    std::vector <MenuAnimation *>backgroundAnimations;
-    std::vector <MenuAnimation *>foregroundAnimations;
+    std::vector <Gui::Animation *>backgroundAnimations;
+    std::vector <Gui::Animation *>foregroundAnimations;
 
     //! Draw states
     enum menuDrawState

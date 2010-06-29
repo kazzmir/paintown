@@ -11,8 +11,11 @@
 class Bitmap;
 class Token;
 class Menu;
-class MenuAnimation;
 class Point;
+
+namespace Gui{
+    class Animation;
+}
 
 class MenuOption : public Gui::ContextItem {
 public:
@@ -76,8 +79,8 @@ private:
     bool forRemoval;
 
     // Image resource for use in individual options
-    std::vector<MenuAnimation *>backgroundAnimations;
-    std::vector<MenuAnimation *>foregroundAnimations;
+    std::vector<Gui::Animation *>backgroundAnimations;
+    std::vector<Gui::Animation *>foregroundAnimations;
 public:
 
     inline void setState(const state s) { currentState = s; }

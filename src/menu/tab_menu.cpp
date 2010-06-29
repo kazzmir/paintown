@@ -19,7 +19,7 @@
 #include "menu/optionfactory.h"
 #include "menu/actionfactory.h"
 #include "menu/menu_global.h"
-#include "menu/menu_animation.h"
+#include "gui/animation.h"
 
 #include "input/input-manager.h"
 #include "input/input-map.h"
@@ -190,7 +190,7 @@ void TabMenu::load(Token *token) throw (LoadException){
                 *tok >> r >> g >> b;
                 runningFontColor = Bitmap::makeColor(r,g,b);
             } else if( *tok == "anim" ) {
-                MenuAnimation *animation = new MenuAnimation(tok);
+                Gui::Animation *animation = new Gui::Animation(tok);
                 if (animation->getLocation() == 0){
                     backgroundAnimations.push_back(animation);
                 } else if (animation->getLocation() == 1){
@@ -354,10 +354,10 @@ void TabMenu::run(){
     //resetFadeInfo();
 
     // Reset animations
-    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
         (*i)->reset();
     }
-    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
         (*i)->reset();
     }
 
@@ -507,10 +507,10 @@ void TabMenu::run(){
                 }
 
                 // Animations
-                for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+                for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
                     (*i)->act();
                 }
-                for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+                for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
                     (*i)->act();
                 }
 
@@ -541,8 +541,8 @@ void TabMenu::run(){
             drawBackground(work);
 
             // Do background animations
-            for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-                (*i)->draw(work);
+            for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+                (*i)->draw(*work);
             }
 
             // Draw menu area
@@ -559,8 +559,8 @@ void TabMenu::run(){
             renderInfoBoxes(*work);
 
             // Draw foreground animations
-            for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-                (*i)->draw(work);
+            for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+                (*i)->draw(*work);
             }
 
             // Finally render to screen

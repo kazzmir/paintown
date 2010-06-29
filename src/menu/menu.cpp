@@ -20,7 +20,7 @@
 #include "optionfactory.h"
 #include "actionfactory.h"
 #include "menu_global.h"
-#include "menu_animation.h"
+#include "gui/animation.h"
 
 #include "input/input-manager.h"
 #include "input/input-map.h"
@@ -522,7 +522,7 @@ void Menu::load(Token *token){
             } else if (*tok == "menuinfo-position"){
                 *tok >> menuInfoLocation.x >> menuInfoLocation.y;
             } else if (*tok == "anim"){
-                MenuAnimation *animation = new MenuAnimation(tok);
+                Gui::Animation *animation = new Gui::Animation(tok);
                 if (animation->getLocation() == 0){
                     backgroundAnimations.push_back(animation);
                 } else if (animation->getLocation() == 1){
@@ -691,10 +691,10 @@ void Menu::act(bool &endGame, bool reset){
     selectedOption->updateAnimations();
 
     // Animations
-    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
         (*i)->act();
     }
-    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
         (*i)->act();
     }
     
@@ -744,10 +744,10 @@ void Menu::run(){
         Global::speed_counter = 0;
         
         // Reset animations
-        for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+        for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
             (*i)->reset();
         }
-        for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+        for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
             (*i)->reset();
         }
 
@@ -804,8 +804,8 @@ void Menu::run(){
                 // Do the background
                 drawBackground(work);
                 // Do background animations
-                for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-                    (*i)->draw(work);
+                for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+                    (*i)->draw(*work);
                 }
                 // Draw any misc stuff in the background of the menu of selected object 
                 selectedOption->drawBelow(work);
@@ -816,8 +816,8 @@ void Menu::run(){
                 // Draw menu info text
                 menuInfoBox.render(*work);
                 // Draw foreground animations
-                for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-                    (*i)->draw(work);
+                for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+                    (*i)->draw(*work);
                 }
                 // Draw any misc stuff in the foreground of the menu of selected object 
                 selectedOption->drawAbove(work);
@@ -1099,12 +1099,12 @@ Menu::~Menu(){
 
     if( background )delete background;
 
-    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
         if (*i){
             delete *i;
         }
     }
-    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
         if (*i){
             delete *i;
         }

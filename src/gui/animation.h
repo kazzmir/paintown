@@ -1,5 +1,5 @@
-#ifndef _paintown_menu_animation_h
-#define _paintown_menu_animation_h
+#ifndef _paintown_gui_animation_h
+#define _paintown_gui_animation_h
 
 #include <vector>
 #include <map>
@@ -9,45 +9,47 @@
 class Token;
 class Bitmap;
 
+namespace Gui{
+
 // To hold images by number easier to access and reuse
 typedef std::map< int, Bitmap *> imageMap;
 
-struct MenuPoint{
-    MenuPoint();
+struct AnimationPoint{
+    AnimationPoint();
     double x;
     double y;
 };
 
-struct MenuArea{
-    MenuArea();
+struct AnimationArea{
+    AnimationArea();
     int x1;
     int y1;
     int x2;
     int y2;
 };
 
-class MenuFrame{
+class Frame{
     public:
-	MenuFrame(Token *token, imageMap &images) throw (LoadException);
-	virtual ~MenuFrame();
+	Frame(Token *token, imageMap &images) throw (LoadException);
+	virtual ~Frame();
 	virtual void act(const double xvel, const double yvel);
-	virtual void draw(const int xaxis, const int yaxis, Bitmap *work);
+	virtual void draw(const int xaxis, const int yaxis, const Bitmap &);
 	Bitmap *bmp;
-	MenuPoint offset;
-	MenuPoint scrollOffset;
+	AnimationPoint offset;
+	AnimationPoint scrollOffset;
 	int time;
 	bool horizontalFlip;
 	bool verticalFlip;
 	int alpha;
 };
 
-class MenuAnimation{
+class Animation{
 public:
-	MenuAnimation(Token *token) throw (LoadException);
-	virtual ~MenuAnimation();
+	Animation(Token *token) throw (LoadException);
+	virtual ~Animation();
 	// Logic
 	virtual void act();
-	virtual void draw(Bitmap *work);
+	virtual void draw(const Bitmap &);
 	virtual void forwardFrame();
 	virtual void backFrame();
 	
@@ -62,12 +64,12 @@ private:
 	unsigned int currentFrame;
 	unsigned int loop;
 	bool allowReset;
-	MenuPoint axis;
+	AnimationPoint axis;
 	// This allows the frames to scroll in place
-	MenuPoint velocity;
-	MenuArea window;
-	std::vector<MenuFrame *> frames;
+	AnimationPoint velocity;
+	AnimationArea window;
+	std::vector<Frame *> frames;
 	imageMap images;
 };
-
+}
 #endif

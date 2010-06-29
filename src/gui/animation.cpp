@@ -1,4 +1,4 @@
-#include "menu/menu_animation.h"
+#include "gui/animation.h"
 
 #include <vector>
 #include <math.h>
@@ -10,38 +10,39 @@
 #include "util/file-system.h"
 
 using namespace std;
+using namespace Gui;
 
 // Temporary solution
-static void renderSprite(const Bitmap *bmp, const int x, const int y, const int alpha, const bool hflip, const bool vflip, Bitmap *work){
+static void renderSprite(const Bitmap & bmp, const int x, const int y, const int alpha, const bool hflip, const bool vflip, const Bitmap & work){
     if (alpha != 255){
-	Bitmap::transBlender( 0, 0, 0, alpha );
-	if (hflip && !vflip){
-	    bmp->drawTransHFlip(x,y, *work);
-	} else if (!hflip && vflip){
-	    bmp->drawTransVFlip(x,y, *work);
-	} else if (hflip && vflip){
-	    bmp->drawTransHVFlip(x,y, *work);
-	} else if (!hflip && !vflip){
-	    bmp->drawTrans(x,y, *work);
-	}
+	    Bitmap::transBlender( 0, 0, 0, alpha );
+	    if (hflip && !vflip){
+	        bmp.drawTransHFlip(x,y, work);
+	    } else if (!hflip && vflip){
+	        bmp.drawTransVFlip(x,y, work);
+	    } else if (hflip && vflip){
+	        bmp.drawTransHVFlip(x,y, work);
+	    } else if (!hflip && !vflip){
+	        bmp.drawTrans(x,y, work);
+	    }
     }
     else {
-	if (hflip && !vflip){
-	    bmp->drawHFlip(x,y, *work);
-	} else if (!hflip && vflip){
-	    bmp->drawVFlip(x,y, *work);
-	} else if (hflip && vflip){
-	    bmp->drawHVFlip(x,y, *work);
-	} else if (!hflip && !vflip){
-	    bmp->draw(x,y, *work);
-	}
+	    if (hflip && !vflip){
+	        bmp.drawHFlip(x,y, work);
+	    } else if (!hflip && vflip){
+	        bmp.drawVFlip(x,y, work);
+	    } else if (hflip && vflip){
+	        bmp.drawHVFlip(x,y, work);
+	    } else if (!hflip && !vflip){
+	        bmp.draw(x,y, work);
+	    }
     }
 }
 
-MenuPoint::MenuPoint():x(0),y(0){}
-MenuArea::MenuArea():x1(0),y1(0),x2(0),y2(0){}
+AnimationPoint::AnimationPoint():x(0),y(0){}
+AnimationArea::AnimationArea():x1(0),y1(0),x2(0),y2(0){}
 
-MenuFrame::MenuFrame(Token *the_token, imageMap &images) throw (LoadException):
+Frame::Frame(Token *the_token, imageMap &images) throw (LoadException):
 bmp(0),
 time(0),
 horizontalFlip(false),
@@ -96,21 +97,21 @@ alpha(255){
     }
 }
 
-MenuFrame::~MenuFrame(){
+Frame::~Frame(){
 }
 
-void MenuFrame::act(const double xvel, const double yvel){
+void Frame::act(const double xvel, const double yvel){
     scrollOffset.x +=xvel;
     scrollOffset.y +=yvel;
     if (scrollOffset.x >=bmp->getWidth()){
-	scrollOffset.x = 0;
+	    scrollOffset.x = 0;
     } else if (scrollOffset.x <= -(bmp->getWidth())){
-	scrollOffset.x = 0;
+	    scrollOffset.x = 0;
     }
     if (scrollOffset.y >=bmp->getHeight()){
-	scrollOffset.y = 0;
+	    scrollOffset.y = 0;
     } else if (scrollOffset.y <= -(bmp->getHeight())){
-	scrollOffset.y = 0;
+	    scrollOffset.y = 0;
     }
 }
 
@@ -119,14 +120,16 @@ static bool closeFloat(double a, double b){
     return fabs(a-b) < epsilon;
 }
 
-void MenuFrame::draw(const int xaxis, const int yaxis, Bitmap *work){
-    if (!bmp)return;
+void Frame::draw(const int xaxis, const int yaxis, const Bitmap & work){
+    if (!bmp){
+        return;
+    }
 
     if (!closeFloat(scrollOffset.x, 0) || !closeFloat(scrollOffset.y, 0)){
 
         // Lets do some scrolling
         Bitmap temp = Bitmap::temporaryBitmap(bmp->getWidth(), bmp->getHeight());
-        MenuPoint loc;
+        AnimationPoint loc;
         if (scrollOffset.x < 0){
             loc.x = scrollOffset.x + bmp->getWidth();
         } else if (scrollOffset.x > 0){
@@ -142,14 +145,14 @@ void MenuFrame::draw(const int xaxis, const int yaxis, Bitmap *work){
         bmp->Blit((int) loc.x, (int) scrollOffset.y, temp);
         bmp->Blit((int) loc.x, (int) loc.y, temp);
 
-        renderSprite(&temp, (int)(xaxis+offset.x), (int)(yaxis+offset.y), alpha, horizontalFlip, verticalFlip, work);
+        renderSprite(temp, (int)(xaxis+offset.x), (int)(yaxis+offset.y), alpha, horizontalFlip, verticalFlip, work);
 
     } else {
-        renderSprite(bmp, (int)(xaxis+offset.x), (int)(yaxis+offset.y), alpha, horizontalFlip, verticalFlip, work);
+        renderSprite(*bmp, (int)(xaxis+offset.x), (int)(yaxis+offset.y), alpha, horizontalFlip, verticalFlip, work);
     }
 }
 
-MenuAnimation::MenuAnimation(Token *the_token) throw (LoadException):
+Animation::Animation(Token *the_token) throw (LoadException):
 id(0),
 location(0),
 ticks(0),
@@ -215,7 +218,7 @@ allowReset(true){
                 *token >> velocity.x >> velocity.y;
             } else if (*token == "frame"){
                 // new frame
-                MenuFrame *frame = new MenuFrame(token,images);
+                Frame *frame = new Frame(token,images);
                 frames.push_back(frame);
             } else if (*token == "loop"){
                 // start loop here
@@ -244,51 +247,51 @@ allowReset(true){
     }
 }
 
-MenuAnimation::~MenuAnimation(){
-    for (std::vector<MenuFrame *>::iterator i = frames.begin(); i != frames.end(); ++i){
-	if (*i){
-	    delete *i;
-	}
+Animation::~Animation(){
+    for (std::vector<Frame *>::iterator i = frames.begin(); i != frames.end(); ++i){
+	    if (*i){
+	        delete *i;
+	    }
     }
     for (imageMap::iterator i = images.begin(); i != images.end(); ++i){
-	if (i->second){
-	    delete i->second;
-	}
+	    if (i->second){
+	        delete i->second;
+	    }
     }
 }
-void MenuAnimation::act(){
+void Animation::act(){
     // Used for scrolling
-    for (std::vector<MenuFrame *>::iterator i = frames.begin(); i != frames.end(); ++i){
-	(*i)->act(velocity.x, velocity.y);
+    for (std::vector<Frame *>::iterator i = frames.begin(); i != frames.end(); ++i){
+	    (*i)->act(velocity.x, velocity.y);
     }
     if( frames[currentFrame]->time != -1 ){
-	ticks++;
-	if(ticks >= frames[currentFrame]->time){
-		ticks = 0;
-		forwardFrame();
-	}
+	    ticks++;
+	    if(ticks >= frames[currentFrame]->time){
+		    ticks = 0;
+		    forwardFrame();
+	    }
     }
 }
-void MenuAnimation::draw(Bitmap *work){
+void Animation::draw(const Bitmap & work){
     /* should use sub-bitmaps here */
      // Set clip from the axis default is 0,0,bitmap width, bitmap height
-    work->setClipRect(window.x1,window.y1,work->getWidth() + window.x2,work->getHeight() + window.y2);
+    work.setClipRect(window.x1,window.y1,work.getWidth() + window.x2,work.getHeight() + window.y2);
     frames[currentFrame]->draw((int) axis.x, (int) axis.y,work);
-    work->setClipRect(0,0,work->getWidth(),work->getHeight());
+    work.setClipRect(0,0,work.getWidth(),work.getHeight());
 }
 
-void MenuAnimation::forwardFrame(){
+void Animation::forwardFrame(){
     if (currentFrame < frames.size() -1){
         currentFrame++;
     } else {
         currentFrame = loop;
     }
 }
-void MenuAnimation::backFrame(){
+void Animation::backFrame(){
     if (currentFrame > loop){
-	currentFrame--;
+	    currentFrame--;
     } else {
-	currentFrame = frames.size() - 1;
+	    currentFrame = frames.size() - 1;
     }
 }
 

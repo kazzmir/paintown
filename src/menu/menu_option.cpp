@@ -4,7 +4,7 @@
 #include "util/funcs.h"
 #include "util/language-string.h"
 #include "globals.h"
-#include "menu/menu_animation.h"
+#include "gui/animation.h"
 
 using namespace std;
 
@@ -36,7 +36,7 @@ forRemoval(false){
 		  setInfoText(temp);
                   */
 	      } else if( *token == "option-anim" ) {
-		  MenuAnimation *animation = new MenuAnimation(token);
+		  Gui::Animation *animation = new Gui::Animation(token);
 		  if (animation->getLocation() == 0){
 		    backgroundAnimations.push_back(animation);
 		} else if (animation->getLocation() == 1){
@@ -128,12 +128,12 @@ void MenuOption::readInfo(Token * token){
 
 MenuOption::~MenuOption(){
     // Kill all animations
-    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
 	if (*i){
 	    delete *i;
 	}
     }
-    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 	if (*i){
 	    delete *i;
 	}
@@ -141,17 +141,17 @@ MenuOption::~MenuOption(){
 }
 
 void MenuOption::drawBelow(Bitmap *work){
-    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
 	if (*i){
-	    (*i)->draw(work);
+	    (*i)->draw(*work);
 	}
     }
 }
 
 void MenuOption::drawAbove(Bitmap *work){
-    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 	if (*i){
-	    (*i)->draw(work);
+	    (*i)->draw(*work);
 	}
     }
 }
@@ -166,12 +166,12 @@ bool MenuOption::rightKey(){
 }
 
 void MenuOption::resetAnimations(){
-    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
 	if (*i){
 	    (*i)->reset();
 	}
     }
-    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 	if (*i){
 	    (*i)->reset();
 	}
@@ -179,12 +179,12 @@ void MenuOption::resetAnimations(){
 }
 
 void MenuOption::updateAnimations(){
-    for (std::vector<MenuAnimation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
 	if (*i){
 	    (*i)->act();
 	}
     }
-    for (std::vector<MenuAnimation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
+    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
 	if (*i){
 	    (*i)->act();
 	}
