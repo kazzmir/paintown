@@ -501,8 +501,8 @@ void Menu::load(Token *token){
             } else if ( *tok == "font" ) {
                 string str;
                 *tok >> str >> sharedFontWidth >> sharedFontHeight; 
-                /* FIXME: make sharedFont an AbsolutePath */
-                sharedFont = Filesystem::find(Filesystem::RelativePath(str)).path();
+                /* FIXME: make sharedFont a RelativePath */
+                sharedFont = Filesystem::RelativePath(str).path();
             } else if( *tok == "option" ) {
                 try{
                     MenuOption *temp = OptionFactory::getOption(tok);
