@@ -215,7 +215,7 @@ def useWii():
         return False
 
 def icon():
-    if isWindows() and not useMinpspw():
+    if isWindows() and not useMinpspw() and not useWii():
         return ['windows/game.res']
     else:
         return []

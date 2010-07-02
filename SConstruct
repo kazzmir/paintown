@@ -698,7 +698,16 @@ pspnet_inet
         env['AS'] = setup('as')
         env['AR'] = setup('ar')
         env['OBJCOPY'] = setup('objcopy')
-        env.Append(CPPPATH = ["%s/libogc/include" % os.environ['DEVKITPRO']])
+        if isWindows():
+            env.Append(CPPDEFINES = ['USE_SDL_MAIN'])
+            env.Append(CPPPATH = ["%s/libogc/include" % os.environ['DEVKITPRO'],
+                "%s/libogc/include/SDL" % os.environ['DEVKITPRO'],
+                "%s/libogc/include/freetype2" % os.environ['DEVKITPRO']])
+            env.Append(LIBPATH = ["%s/libogc/lib" % os.environ['DEVKITPRO'],
+                "%s/libogc/lib/wii" % os.environ['DEVKITPRO']])
+            env.Append(LIBS = ['SDL', 'SDL_image', 'SDL_mixer', 'png', 'freetype', 'z'])
+        else:
+            env.Append(CPPPATH = ["%s/libogc/include" % os.environ['DEVKITPRO']])
         env.Append(CPPDEFINES = ['GEKKO', 'WII'])
         flags = ['-mrvl', '-mcpu=750', '-meabi', '-mhard-float']
         env.Append(CCFLAGS = flags)
@@ -757,6 +766,8 @@ pspnet_inet
                 print "Using the intel compiler"
                 return intel(Environment(ENV = os.environ, CCFLAGS = cflags))
             elif useWii():
+                if isWindows():
+                    return wii(Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw']))
                 return wii(Environment(ENV = os.environ, CCFLAGS = cflags))
             elif useMinpspw():
                 return minpspw(Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw']))
@@ -912,17 +923,17 @@ if isWindows():
         env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
     elif useSDL():
-        if not useMinpspw():
+        if not useMinpspw() and not useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             # TODO: move this to a configure check
             env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
-        elif useMinpspw():
+        elif useMinpspw() or useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
     
-    if not useMinpspw():
+    if not useMinpspw() and not useWii():
         env.Append( CPPDEFINES = 'WINDOWS' )
         env.Append(LINKFLAGS = ['-static-libstdc++'])
         if getDebug():
@@ -932,7 +943,7 @@ if isWindows():
             env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
             env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
-    if useSDL() and not useMinpspw():
+    if useSDL() and not useMinpspw() or not useWii():
         staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     elif useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
@@ -970,10 +981,10 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw():
+        if useSDL() and not useMinpspw() and not useWii():
             config.CheckSDL()
             config.CheckSDLMain()
-        elif useMinpspw():
+        elif useMinpspw() or useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             config.CheckSDLMain()
@@ -1040,7 +1051,7 @@ else:
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
     if useAllegro():
         static_config.CheckAllegro()
-    if useSDL() and not useMinpspw():
+    if useSDL() and not useMinpspw() or not useWii():
         static_config.CheckSDL()
         static_config.CheckSDLMain()
 
