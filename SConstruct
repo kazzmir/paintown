@@ -1051,7 +1051,7 @@ else:
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
     if useAllegro():
         static_config.CheckAllegro()
-    if useSDL() and not useMinpspw() or not useWii():
+    if useSDL() and not useMinpspw():
         static_config.CheckSDL()
         static_config.CheckSDLMain()
 
