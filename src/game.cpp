@@ -544,7 +544,7 @@ static string funnyGo(){
     }
 }
 
-void realGame(const vector< Object * > & players, const Level::LevelInfo & levelInfo){
+void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
 
     // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 
@@ -570,6 +570,12 @@ void realGame(const vector< Object * > & players, const Level::LevelInfo & level
                */
 
             Global::info("Setting up world");
+            vector<Object*> players;
+            for (vector<Util::Future<Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
+                Util::Future<Object*> * future = *fit;
+                players.push_back(future->get());
+            }
+
             AdventureWorld world(players, Filesystem::find(Filesystem::RelativePath(*it)));
             Global::info("World setup");
             Global::info(funnyGo());

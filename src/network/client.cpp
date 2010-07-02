@@ -73,6 +73,8 @@ static void sendQuit(Socket socket){
 }
 
 static void playGame( Socket socket ){
+    /* FIXME */
+#if 0
     Util::Thread::Id loadingThread;
     try{
         /* TODO: get the info from the server */
@@ -207,6 +209,7 @@ static void playGame( Socket socket ){
     }
 
     Loader::stopLoading(loadingThread);
+#endif
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){

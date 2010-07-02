@@ -421,7 +421,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     return current;
 }
 
-Object * Game::selectPlayer(bool invincibile, const string & message, const Level::LevelInfo & info){
+Filesystem::AbsolutePath Game::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
     /* hm, it would be nice to cache this I suppose */
     PlayerVector players = loadPlayers(info.getPlayerPath());
 
@@ -436,27 +436,35 @@ Object * Game::selectPlayer(bool invincibile, const string & message, const Leve
         if (players.size() > 1){
             current = choosePlayer(players, message);
         }
-        int remap = players[current].guy->getCurrentMap();
+
+        /* set the map */
+        remap = players[current].guy->getCurrentMap();
 
         /* delete all the preview characters. its ok to delete them
          * before looking up the selected player in the map
          * because 'delete' doesn't affect the map, it just changes
          * memory around.
          */
+        Filesystem::AbsolutePath path = players[current].path;
         for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
             delete it->guy;
         }
 
-        Global::debug(1, DEBUG_CONTEXT) << "Selected " << players[current].path.path() << ". Loading.." << endl;
+        Global::debug(1, DEBUG_CONTEXT) << "Selected " << path.path() << ". Loading.." << endl;
+        /*
         Player * player = new Player(players[current].path);
         player->setInvincible(invincibile);
         player->setMap(remap);
+        */
 
         /* is this necessary? I dont think so.. if it is provide an
          * explanation here.
          */
+        /*
         player->testAnimation();
         return player;
+        */
+        return path;
     } catch (const Exception::Return & r){
         for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
             delete it->guy;

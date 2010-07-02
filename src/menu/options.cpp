@@ -29,6 +29,7 @@
 #include "network/client.h"
 #include "util/font.h"
 #include "gui/box.h"
+#include "util/thread.h"
 
 #include "util/fire.h"
 #include "input/input-map.h"
@@ -77,11 +78,46 @@ void OptionAdventure::run(bool &endGame){
         }
 
         Global::debug(1) << "Selecting players" << endl;
-        player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
+        int remap;
+        Filesystem::AbsolutePath path = Game::selectPlayer("Pick a player", info, remap);
+        // player = Game::selectPlayer("Pick a player", info, remap);
+        class PlayerFuture: public Util::Future<Object*> {
+        public:
+            PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int remap):
+            path(path),
+            invincible(invincible),
+            remap(remap){
+                start();
+            }
+
+            virtual ~PlayerFuture(){
+                delete get();
+            }
+
+        protected:
+            virtual void compute(){
+                Player * player = new Player(path);
+                player->setInvincible(invincible);
+                player->setMap(remap);
+                player->setObjectId(-1);
+                player->setLives(MenuGlobals::getLives());
+                set(player);
+            }
+
+            const Filesystem::AbsolutePath & path;
+            bool invincible;
+            int remap;
+        };
+
+        PlayerFuture future(path, MenuGlobals::getInvincible(), remap);
+
+        /*
         player->setObjectId(-1);
         ((Player *)player)->setLives( MenuGlobals::getLives() );
-        vector< Object * > players;
-        players.push_back( player );
+        */
+        vector<Util::Future<Object *> *> players;
+        players.push_back(&future);
+        // players.push_back( player );
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
@@ -92,9 +128,11 @@ void OptionAdventure::run(bool &endGame){
     }
 
     /* player will be null if an exception occurred before selectPlayer was called */
+    /*
     if ( player != NULL ){
         delete player;
     }
+    */
 }
 
 OptionAdventureCpu::OptionAdventureCpu(Token *token):
@@ -112,9 +150,30 @@ OptionAdventureCpu::~OptionAdventureCpu(){
 void OptionAdventureCpu::logic(){
 }
 
+static string nthWord(int i){
+    switch (i){
+        case 1 : return "first";
+        case 2 : return "second";
+        case 3 : return "third";
+        case 4 : return "fourth";
+        case 5 : return "fifth";
+        case 6 : return "sixth";
+        case 7 : return "seventh";
+        case 8 : return "eigth";
+        case 9 : return "ninth";
+        case 10 : return "tenth";
+        default : {
+            ostringstream out;
+            out << i;
+            return out.str();
+        }
+    }
+}
+
 void OptionAdventureCpu::run(bool &endGame){
     int max_buddies = MenuGlobals::getNpcBuddies();
 
+#if 0
     Keyboard key;
     Object * player = NULL;
     vector< Object * > buddies;
@@ -132,7 +191,7 @@ void OptionAdventureCpu::run(bool &endGame){
 
         for ( int i = 0; i < max_buddies; i++ ){
             ostringstream out;
-            out << "Pick buddy " << i+1;
+            out << "Pick buddy " << nthWord(i+1);
             Object * b = Game::selectPlayer(false, out.str(), info);
             buddies.push_back( b );
             Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
@@ -158,6 +217,7 @@ void OptionAdventureCpu::run(bool &endGame){
     for ( vector< Object * >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
         delete *it;
     }
+#endif
 }
 
 OptionChangeMod::OptionChangeMod(Token *token):
@@ -1975,6 +2035,7 @@ void OptionVersus::logic(){
 }
 
 void OptionVersus::run(bool &endGame){
+#if 0
 	/*
 	Keyboard key;
 	Object * player = NULL;
@@ -2041,16 +2102,16 @@ void OptionVersus::run(bool &endGame){
 			}
 		} else {
                     Level::LevelInfo info;
-			player = Game::selectPlayer( false, "Pick your player", info);
-			enemy = Game::selectPlayer( false, "Pick enemy", info);
-			enemy->setAlliance( ALLIANCE_ENEMY );
+                    player = Game::selectPlayer( false, "Pick your player", info);
+                    enemy = Game::selectPlayer( false, "Pick enemy", info);
+                    enemy->setAlliance( ALLIANCE_ENEMY );
 
-			for ( int i = 0; i < 3; i += 1 ){
-				VersusEnemy en( *(Player *) enemy );
-				VersusPlayer pl( *(Player *) player );
-                                pl.setConfig(0);
-				Game::playVersusMode( &pl, &en, i + 1 );
-			}
+                    for ( int i = 0; i < 3; i += 1 ){
+                        VersusEnemy en( *(Player *) enemy );
+                        VersusPlayer pl( *(Player *) player );
+                        pl.setConfig(0);
+                        Game::playVersusMode( &pl, &en, i + 1 );
+                    }
 		}
 		key.wait();
 	} catch ( const LoadException & le ){
@@ -2065,6 +2126,7 @@ void OptionVersus::run(bool &endGame){
 	if ( enemy != NULL ){
 		delete enemy;
 	}
+#endif
 }
 
 OptionSound::OptionSound(Token *token):

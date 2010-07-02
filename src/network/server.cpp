@@ -494,6 +494,8 @@ static void sendAllOk(const vector<Socket> & sockets){
 }
 
 static void playGame(vector<Client*> & clients, Menu * menuParent){
+    /* FIXME */
+#if 0
     vector< Object * > players;
     Util::Thread::Id loading_screen_thread;
     try{
@@ -721,6 +723,7 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
     }
 
     Loader::stopLoading(loading_screen_thread);
+#endif
 }
 
 static void popup( const Font & font, const string & message ){
