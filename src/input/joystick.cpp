@@ -11,7 +11,11 @@
 #include "allegro/allegro-joystick.h"
 #endif
 #ifdef USE_SDL
+#ifdef WII
+#include "wii/joystick.h"
+#else
 #include "sdl/joystick.h"
+#endif
 #endif
 
 Joystick * Joystick::create(){
@@ -19,7 +23,11 @@ Joystick * Joystick::create(){
     return new AllegroJoystick();
 #endif
 #ifdef USE_SDL
+#ifdef WII
+    return new WiiJoystick();
+#else
     return new SDLJoystick();
+#endif
 #endif
 /*
 #ifdef LINUX
