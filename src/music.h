@@ -51,11 +51,11 @@ protected:
 	void _fadeOut();
 
 	bool playing;
+        bool enabled;
 
 	int fading;
 
 	bool internal_loadSong( const char * path );
-
 
         Util::MusicPlayer * musicPlayer;
 	

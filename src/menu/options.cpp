@@ -173,9 +173,9 @@ static string nthWord(int i){
 void OptionAdventureCpu::run(bool &endGame){
     int max_buddies = MenuGlobals::getNpcBuddies();
 
-#if 0
     Keyboard key;
     Object * player = NULL;
+    vector<Util::Future<Object*>* > futures;
     vector< Object * > buddies;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
@@ -183,13 +183,49 @@ void OptionAdventureCpu::run(bool &endGame){
         if (parent != NULL){
             parent->waitForSelect();
         }
+
+        /*
         player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
         player->setObjectId(-1);
         ((Player *)player)->setLives( MenuGlobals::getLives() );
         vector< Object * > players;
         players.push_back( player );
+        */
+
+        class PlayerFuture: public Util::Future<Object*> {
+        public:
+            PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int remap):
+            path(path),
+            invincible(invincible),
+            remap(remap){
+                start();
+            }
+
+            virtual ~PlayerFuture(){
+                delete get();
+            }
+
+        protected:
+            virtual void compute(){
+                Player * player = new Player(path);
+                player->setInvincible(invincible);
+                player->setMap(remap);
+                player->setObjectId(-1);
+                player->setLives(MenuGlobals::getLives());
+                set(player);
+            }
+
+            const Filesystem::AbsolutePath & path;
+            bool invincible;
+            int remap;
+        };
+        
+        int remap;
+        Filesystem::AbsolutePath path = Game::selectPlayer("Pick a player", info, remap);
+        futures.push_back(new PlayerFuture(path, MenuGlobals::getInvincible(), remap));
 
         for ( int i = 0; i < max_buddies; i++ ){
+#if 0
             ostringstream out;
             out << "Pick buddy " << nthWord(i+1);
             Object * b = Game::selectPlayer(false, out.str(), info);
@@ -199,8 +235,10 @@ void OptionAdventureCpu::run(bool &endGame){
             buddy->setObjectId(-(i + 2));
             buddies.push_back( buddy );
             players.push_back( buddy );
+#endif
         }
-        Game::realGame(players, info);
+
+        Game::realGame(futures, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
     } catch ( const Exception::Return & r ){
@@ -209,15 +247,20 @@ void OptionAdventureCpu::run(bool &endGame){
          * but they can press other keys that were useful in game because those
          * keys don't have any effect on the menu.
          */
-        key.wait();
     }
+
+    /*
     if ( player != NULL ){
         delete player;
     }
     for ( vector< Object * >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
         delete *it;
     }
-#endif
+    */
+    
+    for (vector<Util::Future<Object*>*>::iterator it = futures.begin(); it != futures.end(); it++){
+        delete *it;
+    }
 }
 
 OptionChangeMod::OptionChangeMod(Token *token):

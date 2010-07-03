@@ -981,10 +981,10 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw() and not useWii():
+        if useSDL() and not useMinpspw():
             config.CheckSDL()
             config.CheckSDLMain()
-        elif useMinpspw() or useWii():
+        elif useMinpspw():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             config.CheckSDLMain()

@@ -39,6 +39,7 @@ static void * bogus_thread( void * x){
 
 Music::Music( bool on ):
 playing(false),
+enabled(on),
 fading(0),
 musicPlayer(NULL),
 currentSong(""){
@@ -378,6 +379,9 @@ static bool isOggFile(const char * path){
 
 
 bool Music::internal_loadSong( const char * path ){
+    if (!enabled){
+        return false;
+    }
 
     // cout << "Trying to load '" << path << "'" << endl;
 
