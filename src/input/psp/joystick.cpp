@@ -9,8 +9,6 @@ void PSPJoystick::poll(){
 JoystickInput PSPJoystick::readAll(){
     JoystickInput input;
     if(joystick.Buttons != 0){ 
-
-        // WIIMOTE for now, we can add in nunchuck and classic later
         if(joystick.Buttons & PSP_CTRL_START){
             //input.button7 = true;
         } else if(joystick.Buttons & PSP_CTRL_SELECT){
