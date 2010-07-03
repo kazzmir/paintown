@@ -13,6 +13,8 @@
 #ifdef USE_SDL
 #ifdef WII
 #include "wii/joystick.h"
+#elif MINPSPW
+#include "psp/joystick.h"
 #else
 #include "sdl/joystick.h"
 #endif
@@ -25,6 +27,8 @@ Joystick * Joystick::create(){
 #ifdef USE_SDL
 #ifdef WII
     return new WiiJoystick();
+#elif MINPSPW
+    return new PSPJoystick();
 #else
     return new SDLJoystick();
 #endif
