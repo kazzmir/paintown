@@ -110,6 +110,7 @@ void OptionAdventure::run(bool &endGame){
         };
 
         PlayerFuture future(path, MenuGlobals::getInvincible(), remap);
+        // Global::debug(0) << "From future got " << future.get() << endl;
 
         /*
         player->setObjectId(-1);
