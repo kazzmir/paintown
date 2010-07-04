@@ -259,11 +259,11 @@ target_link_libraries(paintown ${GROUP_START} base_module level_module factory_m
 #add_executable (menutest src/menu/menutest.cpp)
 #target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
 
-if (NOT USE_SDL)
-    add_executable (mugentest src/mugen/test.cpp)
-    target_link_libraries(mugentest ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
-endif (NOT USE_SDL)
+#if (NOT USE_SDL)
+#    add_executable (mugentest src/mugen/test.cpp)
+#    target_link_libraries(mugentest ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
+#        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+#endif (NOT USE_SDL)
 
 # Copy scripts and setup lex files
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
