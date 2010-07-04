@@ -28,6 +28,12 @@
 #include <string.h>
 #include <vector>
 
+/* hack */
+#include "util/thread.h"
+#include "object/object.h"
+#include "object/player.h"
+#include "game.h"
+
 using namespace std;
 
 static int gfx = Global::WINDOWED;
@@ -220,6 +226,7 @@ int paintown_main( int argc, char ** argv ){
 
     InputManager input;
     Music music(music_on);
+
     while (true){
         try{
             /* fadein from white */

@@ -74,7 +74,10 @@ void NightAtmosphere::drawLight(Bitmap * original, Bitmap * work, const int x, c
         right = lower_width * 2;
     }
 
-    Bitmap save(*original, where_x, 0, total, work->getWidth());
+    // Bitmap save(*original, where_x, 0, total, work->getWidth());
+    // Bitmap save(*original, where_x, 0, total, original->getHeight());
+    Bitmap save(*original, where_x, 0, total, original->getHeight());
+    
     int top = y;
 
     if (draw_light){
@@ -139,6 +142,17 @@ void NightAtmosphere::addLight(const int x, const int y, const int lower_width, 
 
 void NightAtmosphere::drawForeground(Bitmap * work, int x){
     const int sky = getSkyColor();
+    Bitmap::transBlender(0, 0, 0, getSkyDarkness());
+    work->applyTrans(sky);
+
+    /* FIXME: lights are broken in sdl, valgrind spits out some error:
+     * == Invalid read of size 2
+     * ==6497==    at 0x836E601: SPG_RectFilledBlend (SPG_primitives.c:2543)
+     * ==6497==    by 0x8369D56: spg_linehblend (SPG_primitives.c:907)
+     * ==6497==    by 0x8360DB4: SPG_TrigonFilledBlend (SPG_polygon.c:786)
+     * ==6497==    by 0x8343265: Bitmap::triangle(int, int, int, int, int, int, int) const (bitmap.cpp:884)
+     * ==6497==    by 0x815134B: NightAtmosphere::drawLight(Bitmap*, Bitmap*, int, int, int, int, int, int, int, int, bool) (night_atmosphere.cpp:96)
+     *
     Bitmap save = Bitmap::temporaryBitmap(work->getWidth(), work->getHeight());
     work->Blit(save);
     Bitmap::transBlender(0, 0, 0, getSkyDarkness());
@@ -150,6 +164,7 @@ void NightAtmosphere::drawForeground(Bitmap * work, int x){
         int my_y = light->y;
         drawLight(&save, work, my_x, my_y, light->lower_width, light->upper_width, sky, darkness, light->color, light->alpha, ! lightning);
     }
+    */
 }
 
 void NightAtmosphere::act(const Scene & level){
