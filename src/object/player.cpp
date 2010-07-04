@@ -958,5 +958,6 @@ void PlayerFuture::compute(){
     player->setMap(remap);
     player->setObjectId(-1);
     player->setLives(lives);
+    Global::info("Loaded " + Filesystem::cleanse(path).path());
     set(player);
 }
