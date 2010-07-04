@@ -177,26 +177,41 @@ namespace Game{
     };
 }
 
-bool playLevel( World & world, const vector< Object * > & players, double helpTime){
-    // Keyboard key;
-    InputMap<Game::Input> input;
+static void doTakeScreenshot(const Bitmap & work){
+    string file = findNextFile("paintown-screenshot.bmp");
+    Global::debug(2) << "Saved screenshot to " << file << endl;
+    work.save(file);
+}
 
-    /*
-    key.setDelay( Keyboard::Key_F2, 100 );
-    key.setDelay( Keyboard::Key_F12, 50 );
-    */
+/* returns false if players cannot be respawned due to running out of lives */
+static bool respawnPlayers(const vector<Object*> & players, World & world){
+    for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+        Character * player = (Character *) *it;
+        if ( player->getHealth() <= 0 ){
+            if ( player->spawnTime() == 0 ){
+                player->deathReset();
+                if ( player->getLives() == 0 ){
+                    return false;
+                }
+                world.addMessage( removeMessage( player->getId() ) );
+                world.addObject( player );
+                world.addMessage( player->getCreateMessage() );
+                world.addMessage( player->movedMessage() );
+                world.addMessage( player->animationMessage() );
+            }
+        }
+    }
+    return true;
+}
+
+bool playLevel( World & world, const vector< Object * > & players, double helpTime){
+    InputMap<Game::Input> input;
 
     if (Global::getDebug() > 0){
         input.set(Keyboard::Key_MINUS_PAD, 2, false, Game::Slowdown);
         input.set(Keyboard::Key_PLUS_PAD, 2, false, Game::Speedup);
         input.set(Keyboard::Key_F4, 0, true, Game::ReloadLevel);
         input.set(Keyboard::Key_F8, 200, false, Game::KillAllHumans);
-        /*
-        key.setDelay(Keyboard::Key_MINUS_PAD, 2);
-        key.setDelay(Keyboard::Key_PLUS_PAD, 2);
-        key.setDelay(Keyboard::Key_F4, 200);
-        key.setDelay(Keyboard::Key_F8, 300);
-        */
     }
 
     input.set(Keyboard::Key_P, 10, false, Game::Pause);
@@ -207,16 +222,10 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
     input.set(Keyboard::Key_F9, 20, false, Game::ShowFps);
     input.set(Keyboard::Key_F12, 10, false, Game::Screenshot);
 
-    /*
-    key.setDelay( Keyboard::Key_P, 100 );
-    key.setDelay( Keyboard::Key_TAB, 300 );
-    */
-
     /* the game graphics are meant for 320x240 and will be stretched
      * to fit the screen
      */
     Bitmap work( 320, 240 );
-    // Bitmap work( GFX_X, GFX_Y );
     Bitmap screen_buffer( GFX_X, GFX_Y );
 
     /* 150 pixel tall console */
@@ -277,50 +286,28 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
 
         bool draw = false;
         bool takeScreenshot = false;
-        // key.poll();
-
-        /*
-        if (Global::shutdown()){
-            throw ShutdownException();
-        }
-        */
 
         if ( Global::speed_counter > 0 ){
-            if ( ! paused ){
-                runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
+            runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
 
-                while ( runCounter >= 1.0 ){
-                    InputManager::poll();
-                    eventManager.run();
-                    draw = true;
-                    world.act();
-                    console.act();
-                    runCounter -= 1.0;
+            while ( runCounter >= 1.0 ){
+                InputManager::poll();
+                eventManager.run();
+                draw = true;
+                world.act();
+                console.act();
+                runCounter -= 1.0;
 
-                    for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-                        Character * player = (Character *) *it;
-                        if ( player->getHealth() <= 0 ){
-                            if ( player->spawnTime() == 0 ){
-                                player->deathReset();
-                                if ( player->getLives() == 0 ){
-                                    fadeOut( screen_buffer, "You lose" );
-                                    return false;
-                                }
-                                world.addMessage( removeMessage( player->getId() ) );
-                                world.addObject( player );
-                                world.addMessage( player->getCreateMessage() );
-                                world.addMessage( player->movedMessage() );
-                                world.addMessage( player->animationMessage() );
-                            }
-                        }
-                    }
+                if (!respawnPlayers(players, world)){
+                    fadeOut(screen_buffer, "You lose");
+                    return false;
+                }
 
-                    if (helpTime > 0){
-                        if (helped){
-                            helpTime -= 2;
-                        } else {
-                            helpTime -= 0.5;
-                        }
+                if (helpTime > 0){
+                    if (helped){
+                        helpTime -= 2;
+                    } else {
+                        helpTime -= 0.5;
                     }
                 }
             }
@@ -443,6 +430,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 screen_buffer.drawingMode( Bitmap::MODE_SOLID );
             }
 
+            /*
             if ( paused ){
                 screen_buffer.transBlender( 0, 0, 0, 128 );
                 screen_buffer.drawingMode( Bitmap::MODE_TRANS );
@@ -450,6 +438,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 screen_buffer.drawingMode( Bitmap::MODE_SOLID );
                 font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
             }
+            */
 
             /*
             double real_fps = 0;
@@ -468,9 +457,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             screen_buffer.BlitToScreen( world.getX(), world.getY() );
 
             if (takeScreenshot){
-                string file = findNextFile( "scr.bmp" );
-                Global::debug( 2 ) << "Saved screenshot to " << file << endl;
-                work.save( file );
+                doTakeScreenshot(work);
             }
 
             work.clear();

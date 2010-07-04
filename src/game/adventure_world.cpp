@@ -1,5 +1,6 @@
 #include "util/funcs.h"
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "script/script.h"
 #include "object/object.h"
 #include "object/object_attack.h"
@@ -671,11 +672,9 @@ void AdventureWorld::draw( Bitmap * work ){
     }
 
     if (is_paused){
-        const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
         work->transBlender( 0, 0, 0, 128 );
-        work->drawingMode( Bitmap::MODE_TRANS );
-        work->rectangleFill( 0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-        work->drawingMode( Bitmap::MODE_SOLID );
+        work->translucent().fill(Bitmap::makeColor(0, 0, 0));
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
         font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
     }
 
