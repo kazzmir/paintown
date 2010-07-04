@@ -55,7 +55,7 @@ Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int
 
     return f;
     } catch (const Filesystem::NotFound & e){
-        Global::debug(0) << "Warning: could not find font " << path.path() << ": " << e.getReason() << endl;
+        Global::debug(0) << "Warning: could not find font " << path.path() << ": " << e.getTrace() << endl;
         return &nullFont;
     }
     // return font_mapper[ str ];

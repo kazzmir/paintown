@@ -214,7 +214,7 @@ int paintown_main( int argc, char ** argv ){
     try{
         Paintown::Mod::loadMod(Configuration::getCurrentGame());
     } catch (const Filesystem::NotFound & e){
-        Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << ": " << e.getReason() << endl;
+        Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << ": " << e.getTrace() << endl;
         Paintown::Mod::loadDefaultMod();
     }
 
@@ -236,12 +236,12 @@ int paintown_main( int argc, char ** argv ){
                 game.run();
             }
         } catch (const Filesystem::Exception & ex){
-            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
         } catch (const TokenException & ex){
-            Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
+            Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getTrace() << endl;
             return -1;
         } catch (const LoadException & ex){
-            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getReason() << endl;
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
             return -1;
         } catch (const Exception::Return & ex){
         } catch (const ShutdownException & shutdown){

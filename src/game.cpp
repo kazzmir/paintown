@@ -105,7 +105,7 @@ static vector< Background > readBackgrounds( const Filesystem::AbsolutePath & pa
         }
 
     } catch ( const TokenException & ex ){
-        Global::debug( 0 ) << "Could not load " + path.path() + "/bgs.txt because " << ex.getReason() << endl;
+        Global::debug( 0 ) << "Could not load " + path.path() + "/bgs.txt because " << ex.getTrace() << endl;
     }
 
     /*
@@ -386,7 +386,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                         world.reloadLevel();
                         draw = true;
                     } catch ( const LoadException & le ){
-                        Global::debug( 0 ) << "Could not reload world: " << le.getReason() << endl;
+                        Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
                     }
                 }
             }
@@ -601,7 +601,7 @@ void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Leve
             gameState = playLevel( world, players, showHelp );
             showHelp = 0;
         } catch ( const LoadException & le ){
-            Global::debug( 0 ) << "Could not load " << *it << " because " << le.getReason() << endl;
+            Global::debug( 0 ) << "Could not load " << *it << " because " << le.getTrace() << endl;
             /* if the level couldn't be loaded turn off
              * the loading screen
              */

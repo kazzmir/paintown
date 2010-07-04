@@ -88,9 +88,7 @@ alpha(255){
                 }
             }
         } catch ( const TokenException & ex ) {
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__, m);
+            throw LoadException(__FILE__, __LINE__, ex, "Menu animation parse error");
         } catch ( const LoadException & ex ) {
             throw ex;
         }
@@ -233,9 +231,7 @@ allowReset(true){
                 }
             }
         } catch ( const TokenException & ex ) {
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__, m);
+            throw LoadException(__FILE__, __LINE__, ex, "Menu animation parse error");
         } catch ( const LoadException & ex ) {
             throw ex;
         }

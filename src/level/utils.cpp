@@ -106,7 +106,7 @@ LevelInfo readLevel(Token * level){
         }
 
     } catch (const TokenException & e){
-        Global::debug( 0 ) << "Error while reading level set: " << e.getReason() << endl;
+        Global::debug( 0 ) << "Error while reading level set: " << e.getTrace() << endl;
     }
 
     return info;

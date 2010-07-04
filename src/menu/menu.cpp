@@ -189,7 +189,7 @@ _Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
         Token * token = tr.readToken();
         load(token);
     } catch (const TokenException & e){
-        throw LoadException(__FILE__, __LINE__, e.getReason());
+        throw LoadException(__FILE__, __LINE__, e, "Error loading menu");
     }
 }
 
@@ -291,7 +291,7 @@ void _Menu::Menu::load(Token * token){
                         options.push_back(temp);
                     }
                 } catch (const LoadException & le){
-                    Global::debug(0) << "Could not read option: " << le.getReason() << endl;
+                    Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
                     tok->print(" ");
                 }
             } else if (*tok == "action"){
@@ -318,15 +318,11 @@ void _Menu::Menu::load(Token * token){
                 }
             }
         } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__, m);
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         } catch (const LoadException & ex){
-            // delete current;
             throw ex;
         } catch (const Filesystem::NotFound & ex){
-            throw LoadException(__FILE__, __LINE__, ex.getReason());
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         }
     }
 }
@@ -447,7 +443,7 @@ void Menu::load(Token *token){
                     /* try to load it */
                     Resource::getSound(backSound);
                 } catch (const LoadException & le){
-                    Global::debug(0) << "Could not load sound " << backSound << " because " << le.getReason() << endl;
+                    Global::debug(0) << "Could not load sound " << backSound << " because " << le.getTrace() << endl;
                     /* we failed, so set the backSound to nothing */
                     backSound = "";
                 }
@@ -457,7 +453,7 @@ void Menu::load(Token *token){
                     /* try to load it */
                     Resource::getSound(okSound);
                 } catch (const LoadException & le){
-                    Global::debug(0) << "Could not load sound " << okSound << " because " << le.getReason() << endl;
+                    Global::debug(0) << "Could not load sound " << okSound << " because " << le.getTrace() << endl;
                     /* we failed, so set the backSound to nothing */
                     okSound = "";
                 }
@@ -510,7 +506,7 @@ void Menu::load(Token *token){
                         addOption(temp);
                     }
                 } catch (const LoadException & le){
-                    Global::debug(0) << "Could not read option: " << le.getReason() << endl;
+                    Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
                     tok->print(" ");
                 }
             } else if (*tok == "action"){
@@ -535,15 +531,11 @@ void Menu::load(Token *token){
                 }
             }
         } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__, m);
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         } catch (const LoadException & ex){
-            // delete current;
             throw ex;
         } catch (const Filesystem::NotFound & ex){
-            throw LoadException(__FILE__, __LINE__, ex.getReason());
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         }
     }
 
@@ -612,7 +604,7 @@ void Menu::load(const Filesystem::AbsolutePath & filename){
         Token * token = tr.readToken();
         load(token);
     } catch (const TokenException & e){
-        throw LoadException(__FILE__, __LINE__, e.getReason());
+        throw LoadException(__FILE__, __LINE__, e, "Menu parse error");
     }
 }
 

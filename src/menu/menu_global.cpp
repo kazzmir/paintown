@@ -175,8 +175,8 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
         temp.run();
         return possible[index];
     } catch (const TokenException & ex){
-        Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
-        throw LoadException(__FILE__, __LINE__, "Could not load levels " + ex.getReason());
+        // Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
+        throw LoadException(__FILE__, __LINE__, ex, "Could not load levels");
     }
     throw LoadException(__FILE__, __LINE__, "No level chosen!");
 

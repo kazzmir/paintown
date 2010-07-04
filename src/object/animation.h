@@ -50,8 +50,8 @@ struct Frame{
 class Animation{
 public:
 	
-	Animation( Token * tok, Character * const owner ) throw( LoadException );
-	Animation( const Animation & animation, Character * const owner ) throw( LoadException );
+	Animation( Token * tok, Character * const owner );
+	Animation( const Animation & animation, Character * const owner );
 
 	virtual ~Animation();
 

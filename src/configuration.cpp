@@ -647,9 +647,9 @@ void Configuration::loadConfigurations(){
             }
         }
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Could not load configuration file " << Filesystem::configFile().path() << ": " << le.getReason() << endl;
+        Global::debug( 0 ) << "Notice: Could not load configuration file " << Filesystem::configFile().path() << ": " << le.getTrace() << endl;
     } catch ( const TokenException & t ){
-        Global::debug( 0 ) << "Notice: could not open configuration file '" << Filesystem::configFile().path() << "': " << t.getReason() << endl;
+        Global::debug( 0 ) << "Notice: could not open configuration file '" << Filesystem::configFile().path() << "': " << t.getTrace() << endl;
     }
 }
 

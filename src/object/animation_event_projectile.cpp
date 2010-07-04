@@ -38,9 +38,9 @@ life( 0 ){
 			try{
 				projectile = new Projectile(reader.readToken());
 			} catch ( const TokenException & ex ){
-				cerr<< "Could not read " << full.path() <<" : " << ex.getReason() << endl;
+				// cerr<< "Could not read " << full.path() <<" : " << ex.getReason() << endl;
 				// delete head;
-				throw LoadException(__FILE__, __LINE__, "Could not open projectile file: " + full.path());
+				throw LoadException(__FILE__, __LINE__, ex, "Could not open projectile file: " + full.path());
 			}
 		} else if ( *current == "life" ){
 			int life;

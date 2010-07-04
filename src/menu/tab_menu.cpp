@@ -248,9 +248,7 @@ void TabMenu::load(Token *token) throw (LoadException){
             }
         } catch ( const TokenException & ex ) {
             // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__,  m );
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;
@@ -282,7 +280,7 @@ void TabMenu::load(const Filesystem::AbsolutePath & filename) throw (LoadExcepti
         Token * token = tr.readToken();
         load(token);
     } catch (const TokenException & e){
-        throw LoadException(__FILE__, __LINE__, e.getReason());
+        throw LoadException(__FILE__, __LINE__, e, "Menu parse error");
     }
 }
 

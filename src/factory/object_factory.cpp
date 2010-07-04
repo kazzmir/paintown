@@ -201,7 +201,7 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
             }
         }
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Could not load " << block->getPath().path() << " because " << le.getReason() << endl;
+        Global::debug( 0 ) << "Could not load " << block->getPath().path() << " because " << le.getTrace() << endl;
     }
 
     return NULL;

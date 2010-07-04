@@ -95,7 +95,7 @@ void OptionAdventure::run(bool &endGame){
         // players.push_back( player );
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Error while loading: " << le.getReason() << endl;
+        Global::debug( 0 ) << "Error while loading: " << le.getTrace() << endl;
     } catch ( const Exception::Return & r ){
         /* Game::selectPlayer can throw ReturnException, he will wait
          * for the keypress to be released, so we don't have to do it
@@ -215,7 +215,7 @@ void OptionAdventureCpu::run(bool &endGame){
 
         Game::realGame(futures, info);
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
+        Global::debug( 0 ) << "Could not load player: " << le.getTrace() << endl;
     } catch ( const Exception::Return & r ){
         /* replace this with parent->waitAll() or something. we only care that
          * the player doesn't accidentally press some menu key, like esc or enter.
@@ -352,9 +352,9 @@ void OptionChangeMod::run(bool &endGame){
         throw ReloadMenuException();
 
     } catch (const LoadException & le){
-        Global::debug(0) << "Could not load menu/change-mod.txt: " << le.getReason() << endl;
+        Global::debug(0) << "Could not load menu/change-mod.txt: " << le.getTrace() << endl;
     } catch (const Filesystem::NotFound & e){
-        Global::debug(0) << "Could not load menu/change-mod.txt: " << e.getReason() << endl;
+        Global::debug(0) << "Could not load menu/change-mod.txt: " << e.getTrace() << endl;
     }
 }
 
@@ -464,9 +464,7 @@ title(Bitmap::makeColor(0,255,255)){
                                 }
 			}
 		} catch ( const TokenException & ex ) {
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException(__FILE__, __LINE__,  m );
+			throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
 		} catch ( const LoadException & ex ) {
 			throw ex;
 		}
@@ -856,10 +854,7 @@ keyCode(0){
                 tok->print(" ");
             }
         } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__,  m );
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;
@@ -1055,16 +1050,9 @@ OptionKey::OptionKey(Token *token): MenuOption(token, Event), name(""), player(-
 				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
 				tok->print(" ");
 			}
-		} 
-		catch ( const TokenException & ex )
-		{
-			// delete current;
-			string m( "Menu parse error: " );
-			m += ex.getReason();
-			throw LoadException(__FILE__, __LINE__,  m );
-		} 
-		catch ( const LoadException & ex )
-		{
+		} catch ( const TokenException & ex ){
+			throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+		} catch ( const LoadException & ex ) {
 			// delete current;
 			throw ex;
 		}
@@ -1266,10 +1254,7 @@ MenuOption(token, Event){
                 }
             }
         } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__,  m );
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         } 
     }
 
@@ -1763,10 +1748,7 @@ rgreen(255){
                 }
             }
         } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__,  m );
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;
@@ -1793,7 +1775,7 @@ rgreen(255){
             /* use for debugging */
             // fonts.push_back("fonts/arial.ttf");
         } catch (const Filesystem::NotFound & e){
-            throw LoadException(__FILE__, __LINE__, "Could not load font: " + e.getReason());
+            throw LoadException(__FILE__, __LINE__, e, "Could not load font");
         }
     }
 }
@@ -2035,10 +2017,7 @@ MenuOption(token, Event), human(false){
                 }
             }
         } catch ( const TokenException & ex ) {
-            // delete current;
-            string m( "Menu parse error: " );
-            m += ex.getReason();
-            throw LoadException(__FILE__, __LINE__,  m );
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
         } catch ( const LoadException & ex ) {
             // delete current;
             throw ex;

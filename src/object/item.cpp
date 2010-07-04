@@ -43,8 +43,8 @@ stimulation( stimulation ){
 			}
 		}
 	} catch (const TokenException & ex){
-            Global::debug(0) << "Could not read "<<filename.path()<< ": "<<ex.getReason()<<endl;
-            throw LoadException(__FILE__, __LINE__, "Could not open item file");
+            // Global::debug(0) << "Could not read "<<filename.path()<< ": "<<ex.getReason()<<endl;
+            throw LoadException(__FILE__, __LINE__, ex, "Could not open item file");
 	}
 
 	collide = new ECollide( picture );

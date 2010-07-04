@@ -50,12 +50,8 @@ forRemoval(false){
 		  }
 	      }
 	  } catch ( const TokenException & ex ) {
-	      // delete current;
-	      string m( "Menu parse error: " );
-	      m += ex.getReason();
-	      throw LoadException(__FILE__, __LINE__, m);
+	      throw LoadException(__FILE__, __LINE__, ex, "Menu option parse error");
 	  } catch ( const LoadException & ex ) {
-	      // delete current;
 	      throw ex;
 	  }
       }
@@ -95,9 +91,7 @@ void MenuOption::readName(Token * token){
             throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
         }
     } catch (const TokenException & ex){
-        string m( "Menu parse error: " );
-        m += ex.getReason();
-        throw LoadException(__FILE__, __LINE__, m);
+        throw LoadException(__FILE__, __LINE__, ex, "Menu option parse error");
     }
 }
 
@@ -120,9 +114,7 @@ void MenuOption::readInfo(Token * token){
 
         this->setInfoText(name);
     } catch (const TokenException & ex){
-        string m( "Menu parse error: " );
-        m += ex.getReason();
-        throw LoadException(__FILE__, __LINE__, m);
+        throw LoadException(__FILE__, __LINE__, ex, "Menu option parse error");
     }
 }
 

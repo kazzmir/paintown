@@ -1,6 +1,7 @@
 #include "exception.h"
 #include <string>
 #include <exception>
+#include <sstream>
 
 namespace Exception{
 
@@ -21,6 +22,20 @@ Base::~Base() throw (){
         delete nested;
     }
 }
+    
+const std::string Base::getReason() const { 
+    return "reason not given";
+}
+    
+const std::string Base::getTrace() const {
+    std::ostringstream out;
+    out << file << ":" << line << " " << getReason();
+    if (nested != NULL){
+        out << "\n";
+        out << nested->getTrace();
+    }
+    return out.str();
+}
 
 Base::Base(const Base & copy):
 file(copy.file),
@@ -29,6 +44,10 @@ nested(NULL){
     if (copy.nested != NULL){
         nested = copy.nested->copy();
     }
+}
+
+void Base::set(const Base & him){
+    nested = him.copy();
 }
 
 Base * Base::copy() const {

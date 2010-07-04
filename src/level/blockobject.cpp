@@ -123,7 +123,7 @@ stimulationValue( 0 ){
 			}
 
 		} catch ( const TokenException & te ){
-                    throw LoadException(__FILE__, __LINE__, te, "Blockobject parse exception: " + te.getReason());
+                    throw LoadException(__FILE__, __LINE__, te, "Blockobject parse exception: ");
 		}
 	}
 

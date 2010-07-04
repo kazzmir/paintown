@@ -163,9 +163,7 @@ frontBuffer(NULL){
 
     } catch ( const TokenException & ex ){
         // delete current;
-        string m( "Level parse error: " );
-        m += ex.getReason();
-        throw LoadException(__FILE__, __LINE__, ex, m);
+        throw LoadException(__FILE__, __LINE__, ex, "Level parse error");
     } catch ( const LoadException & ex ){
         // delete current;
         throw ex;

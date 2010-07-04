@@ -204,7 +204,7 @@ void NightAtmosphere::interpret(Token * message){
             try{
                 processLight(token);
             } catch (const TokenException & e){
-                Global::debug(0) << "Could not add light to night atmosphere: " << e.getReason() << endl;
+                Global::debug(0) << "Could not add light to night atmosphere: " << e.getTrace() << endl;
             }
         }
     }

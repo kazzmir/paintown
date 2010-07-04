@@ -257,16 +257,12 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     try{
         head = tr.readToken();
     } catch( const TokenException & ex ){
-        // cerr<< "Could not read "<<filename<<" : "<<ex.getReason()<<endl;
-        // delete head;
-        throw LoadException(__FILE__, __LINE__, ex, string("Could not open character file: ") + filename.path() + " because " + ex.getReason());
+        throw LoadException(__FILE__, __LINE__, ex, string("Could not open character file: ") + filename.path());
     }
     string xls = "Load time for ";
     xls += filename.path();
 
     if ( *head != "character" ){
-        // cout<<filename<< " is not a character"<<endl;
-        // delete head;
         throw LoadException(__FILE__, __LINE__, string("File is not a character: ") + filename.path());
     }
 
@@ -371,10 +367,10 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
 
     } catch (const Filesystem::NotFound & ex){
         ostringstream ss;
-        ss << "Could not load character " << filename.path() << " because " << ex.getReason();
-        throw LoadException(__FILE__, __LINE__, ss.str());
+        ss << "Could not load character " << filename.path();
+        throw LoadException(__FILE__, __LINE__, ex, ss.str());
     } catch( const TokenException & tex ){
-        cout<< "TokenException: " << tex.getReason() << endl;
+        cout<< "TokenException: " << tex.getTrace() << endl;
         n->print(" ");
         cout<<"* Dumping character"<<endl;
         head->print("*");
@@ -383,7 +379,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
         throw LoadException(__FILE__, __LINE__, tex, "Error parsing character");
     } catch (const LoadException & lex){
         ostringstream ss;
-        ss << "Could not load character " << filename.path() << " because " << lex.getReason();
+        ss << "Could not load character " << filename.path();
         throw LoadException(__FILE__, __LINE__, lex, ss.str());
     }
 

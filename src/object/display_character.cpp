@@ -91,10 +91,10 @@ void DisplayCharacter::load() throw (LoadException) {
             reMap(alter.path(), x1, getMapper().size() );
         }
     } catch (const TokenException & ex){
-        Global::debug(0) << "Could not read " << path << " : " << ex.getReason() << endl;
+        // Global::debug(0) << "Could not read " << path << " : " << ex.getReason() << endl;
         throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path );
     } catch (const Filesystem::NotFound & ex){
-        throw LoadException(__FILE__, __LINE__, ex, "Could not load character " + path + " because " + ex.getReason());
+        throw LoadException(__FILE__, __LINE__, ex, "Could not load character " + path);
     }
 
     if ( getMovement( "idle" ) == NULL ){
@@ -134,7 +134,7 @@ void DisplayCharacterLoader::load(){
         try{
             character->load();
         } catch (const LoadException & le){
-            Global::debug(0) << "Problem loading character: " << le.getReason() << endl;
+            Global::debug(0) << "Problem loading character: " << le.getTrace() << endl;
         }
     }
     Global::debug(1) << "Character display loader done" << endl;

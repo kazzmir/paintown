@@ -55,7 +55,7 @@ static PlayerVector loadPlayers( const string & path ){
             try{
                 players.push_back(playerInfo(new DisplayCharacter(file), Filesystem::AbsolutePath(file)));
             } catch (const LoadException & le){
-                Global::debug(0, DEBUG_CONTEXT) << "Could not load " << file << " because " << le.getReason() << endl;
+                Global::debug(0, DEBUG_CONTEXT) << "Could not load " << file << " because " << le.getTrace() << endl;
             }
         }
     }
@@ -413,7 +413,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
             }
         }
     } catch (const Filesystem::NotFound & ex){
-        Global::debug(0, DEBUG_CONTEXT) << "Error during select player screen: " << ex.getReason() << endl;
+        Global::debug(0, DEBUG_CONTEXT) << "Error during select player screen: " << ex.getTrace() << endl;
     }
     loader.stop();
     Util::Thread::joinThread(loadingThread);

@@ -13,8 +13,15 @@ public:
     Base(const std::string & file, int line, const Base & nested);
     Base(const Base & copy);
 
+    /* if we use operator= then we get a bunch of warnings from gcc */
+    virtual void set(const Base & nested);
+
+    const std::string getTrace() const;
+
     virtual ~Base() throw ();
 protected:
+
+    virtual const std::string getReason() const;
 
     virtual Base * copy() const;
 

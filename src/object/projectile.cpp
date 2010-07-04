@@ -20,37 +20,37 @@ dx( 0 ),
 dy( 0 ),
 life( 0 ){
 
-	if ( *token != "projectile" ){
-		throw LoadException(__FILE__, __LINE__, "Token does not start with 'projectile'. Instead it starts with " + token->getName() );
-	}
+    if ( *token != "projectile" ){
+        throw LoadException(__FILE__, __LINE__, "Token does not start with 'projectile'. Instead it starts with " + token->getName() );
+    }
 
-	Token * current;
-	while ( token->hasTokens() ){
-		try{
-			*token >> current;
-			if ( *current == "anim" ){
-				Animation * animation = new Animation( current, NULL );
-				if ( animation->getName() == "main" ){
-					main = animation;
-				} else if ( animation->getName() == "death" ){
-					death = animation;
-				} else {
-					cout << "Unknown animation for projectile: " + animation->getName() + ". Must be either 'main' or 'death'." << endl;
-					delete animation;
-				}
-			}
-		} catch ( const TokenException & e ){
-			throw LoadException(__FILE__, __LINE__, e, "Could not load projectile because " + e.getReason() );
-		}
-	}
+    Token * current;
+    while ( token->hasTokens() ){
+        try{
+            *token >> current;
+            if ( *current == "anim" ){
+                Animation * animation = new Animation( current, NULL );
+                if ( animation->getName() == "main" ){
+                    main = animation;
+                } else if ( animation->getName() == "death" ){
+                    death = animation;
+                } else {
+                    cout << "Unknown animation for projectile: " + animation->getName() + ". Must be either 'main' or 'death'." << endl;
+                    delete animation;
+                }
+            }
+        } catch ( const TokenException & e ){
+            throw LoadException(__FILE__, __LINE__, e, "Could not load projectile");
+        }
+    }
 
-	if ( main == NULL ){
-		throw LoadException(__FILE__, __LINE__, "No 'main' animation given" );
-	}
-	
-	currentAnimation = main;
+    if ( main == NULL ){
+        throw LoadException(__FILE__, __LINE__, "No 'main' animation given" );
+    }
 
-	// nextTicket();
+    currentAnimation = main;
+
+    // nextTicket();
 }
 	
 Projectile::Projectile( const Projectile * const projectile ):

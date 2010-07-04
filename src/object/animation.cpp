@@ -94,7 +94,7 @@ static string join(const char * names[], const int max, const string & sep){
     return out.str();
 }
 
-Animation::Animation( Token * tok, Character * const owner ) throw( LoadException ):
+Animation::Animation( Token * tok, Character * const owner ):
 parent( owner ),
 current_frame( NULL ),
 attack_collide( NULL ),
@@ -185,7 +185,7 @@ contact( NULL ){
 					AnimationEventMove * em = new AnimationEventMove( x, y, z );
 					events.push_back( em );
 				} catch( const TokenException & te ){
-					Global::debug( 0 ) << "Could not read move event: " << te.getReason() << endl;
+					Global::debug( 0 ) << "Could not read move event: " << te.getTrace() << endl;
 					/* ignore token exceptions here */
 				}
 			} else if ( current == "blast" ){
@@ -403,12 +403,8 @@ contact( NULL ){
 			}
 
 		} catch ( const TokenException & te ){
-			string m( "Animation parse error: ");
-			m += te.getReason();
-
 			current1->print(" ");
-
-			throw LoadException(__FILE__, __LINE__, te, m);
+			throw LoadException(__FILE__, __LINE__, te, "Animation parse error");
 		}
 	}
 
@@ -451,7 +447,7 @@ contact( NULL ){
 
 }
 	
-Animation::Animation( const Animation & animation, Character * const owner ) throw( LoadException ):
+Animation::Animation( const Animation & animation, Character * const owner ):
 parent( owner ),
 attack_collide( NULL ),
 commision( true ){

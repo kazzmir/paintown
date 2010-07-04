@@ -395,7 +395,7 @@ void ChatServer::addConnection( Network::Socket s ){
         throw e;
     } catch (const LoadException & e){
         delete client;
-        Global::debug(0) << "Dropping connection: " << e.getReason() << endl;
+        Global::debug(0) << "Dropping connection: " << e.getTrace() << endl;
         return;
     }
 

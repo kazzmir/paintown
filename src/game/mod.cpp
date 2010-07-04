@@ -33,7 +33,7 @@ Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
         }
 
     } catch (const TokenException & e){
-        Global::debug(0) << "Error while reading mod " << path.path() << ":" << e.getReason() << endl;
+        Global::debug(0) << "Error while reading mod " << path.path() << ":" << e.getTrace() << endl;
     }
 }
 
