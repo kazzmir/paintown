@@ -130,7 +130,7 @@ public:
 protected:
     virtual void compute();
 
-    const Filesystem::AbsolutePath & path;
+    const Filesystem::AbsolutePath path;
     bool invincible;
     int lives;
     int remap;

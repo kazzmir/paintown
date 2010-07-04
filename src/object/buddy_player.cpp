@@ -8,6 +8,7 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "buddy_player.h"
+#include "player.h"
 #include "util/file-system.h"
 #include "factory/font_render.h"
 #include <math.h>
@@ -235,7 +236,30 @@ void BuddyPlayer::takeDamage( World * world, ObjectAttack * obj, int x ){
 */
 	
 void BuddyPlayer::hurt( int x ){
-	if ( ! isInvincible() ){
-		Character::hurt( x );
-	}
+    if ( ! isInvincible() ){
+        Character::hurt( x );
+    }
+}
+
+BuddyFuture::BuddyFuture(const Filesystem::AbsolutePath & path, Util::Future<Object*> * playerFuture, int remap, int id):
+path(path),
+playerFuture(playerFuture),
+remap(remap),
+id(id),
+base(NULL){
+    start();
+}
+
+BuddyFuture::~BuddyFuture(){
+    delete get();
+    delete base;
+}
+
+void BuddyFuture::compute(){
+    base = new Player(path);
+    base->setMap(remap);
+    Character * player = (Character*) playerFuture->get();
+    Object * buddy = new BuddyPlayer(player, *base);
+    buddy->setObjectId(id);
+    set(buddy);
 }

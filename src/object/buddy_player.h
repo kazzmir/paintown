@@ -6,65 +6,86 @@
 #include <deque>
 #include "util/load_exception.h"
 #include <vector>
+#include "util/thread.h"
 
 class Animation;
 class World;
+class Player;
 
 class BuddyPlayer: public PlayerCommon {
 public:
 
-	BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException );
-	
-	/* drawing */
-	virtual void draw( Bitmap * work, int rel_x, int rel_y );
+    BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException );
 
-	using Character::drawLifeBar;
-	virtual void drawLifeBar( int x, int y, Bitmap * work );
-	
-	virtual Object * copy();
-	
-	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	
-	// virtual void takeDamage( World & world, ObjectAttack * obj, int x );
-	
-	virtual void hurt( int x );
+    /* drawing */
+    virtual void draw( Bitmap * work, int rel_x, int rel_y );
 
-	virtual inline void setExplode( bool b ){
-		/* */
-	}
+    using Character::drawLifeBar;
+    virtual void drawLifeBar( int x, int y, Bitmap * work );
 
-	virtual bool getExplode(){
-		return false;
-	}
-	
-	virtual int spawnTime();
+    virtual Object * copy();
 
-	virtual void deathReset();
+    virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
-	inline void setInvincible( const bool b ){
-		this->invincible = b;
-	}
+    // virtual void takeDamage( World & world, ObjectAttack * obj, int x );
 
-	inline bool isInvincible() const {
-		return this->invincible;
-	}
+    virtual void hurt( int x );
+
+    virtual inline void setExplode( bool b ){
+        /* */
+    }
+
+    virtual bool getExplode(){
+        return false;
+    }
+
+    virtual int spawnTime();
+
+    virtual void deathReset();
+
+    inline void setInvincible( const bool b ){
+        this->invincible = b;
+    }
+
+    inline bool isInvincible() const {
+        return this->invincible;
+    }
 
 protected:
-	bool canGrab( Object * enemy );
-	void grabEnemy( Object * enemy );
+    bool canGrab( Object * enemy );
+    void grabEnemy( Object * enemy );
 
-	const Object * findClosest( const std::vector< Object * > & enemies );
-	
+    const Object * findClosest( const std::vector< Object * > & enemies );
+
 protected:
 
-	/* store key presses in a stack with two ends*/
-	int acts;
-	int show_life;
-	int name_id;
-	bool invincible;
-	int want_x, want_z;
-	int spawn_time;
-	const Character * leader;
+    /* store key presses in a stack with two ends*/
+    int acts;
+    int show_life;
+    int name_id;
+    bool invincible;
+    int want_x, want_z;
+    int spawn_time;
+    const Character * leader;
 };
+
+class BuddyFuture: public Util::Future<Object*> {
+public:
+    BuddyFuture(const Filesystem::AbsolutePath & path, Util::Future<Object*> * playerFuture, int remap, int id);
+
+    typedef Util::Future<Object*> super;
+
+    virtual ~BuddyFuture();
+
+protected:
+    virtual void compute();
+
+    const Filesystem::AbsolutePath path;
+    Util::Future<Object*> * playerFuture;
+    int remap;
+    int id;
+    Player * base;
+};
+
 
 #endif

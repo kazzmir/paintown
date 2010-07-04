@@ -166,51 +166,29 @@ void OptionAdventureCpu::run(bool &endGame){
         vector< Object * > players;
         players.push_back( player );
         */
-
-        class PlayerFuture: public Util::Future<Object*> {
-        public:
-            PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int remap):
-            path(path),
-            invincible(invincible),
-            remap(remap){
-                start();
-            }
-
-            virtual ~PlayerFuture(){
-                delete get();
-            }
-
-        protected:
-            virtual void compute(){
-                Player * player = new Player(path);
-                player->setInvincible(invincible);
-                player->setMap(remap);
-                player->setObjectId(-1);
-                player->setLives(MenuGlobals::getLives());
-                set(player);
-            }
-
-            const Filesystem::AbsolutePath & path;
-            bool invincible;
-            int remap;
-        };
         
         int remap;
         Filesystem::AbsolutePath path = Game::selectPlayer("Pick a player", info, remap);
-        futures.push_back(new PlayerFuture(path, MenuGlobals::getInvincible(), remap));
+        Util::Future<Object*> * player = new PlayerFuture(path, MenuGlobals::getInvincible(), MenuGlobals::getLives(), remap);
+        futures.push_back(player);
 
         for ( int i = 0; i < max_buddies; i++ ){
-#if 0
             ostringstream out;
             out << "Pick buddy " << nthWord(i+1);
+            int remap;
+            Filesystem::AbsolutePath path = Game::selectPlayer(out.str(), info, remap);
+            futures.push_back(new BuddyFuture(path, player, remap, -(i+2)));
+            /*
             Object * b = Game::selectPlayer(false, out.str(), info);
-            buddies.push_back( b );
+            // buddies.push_back( b );
             Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
-            /* buddies start at -2 and go down */
+            / * buddies start at -2 and go down * /
             buddy->setObjectId(-(i + 2));
+            / *
             buddies.push_back( buddy );
             players.push_back( buddy );
-#endif
+            * /
+            */
         }
 
         Game::realGame(futures, info);
