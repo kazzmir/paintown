@@ -1092,7 +1092,7 @@ def psp_eboot(target, source, env):
         env.Execute("pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL %s NULL" % prx)
     else:
         env.Execute('psp-strip %s' % file)
-        env.Execute("pack-pbp EBOOT.PBP PARAM.SFO data/menu/psp/icon0.png NULL NULL data/menu/psp/pic1.png NULL %s NULL" % file)
+        env.Execute("pack-pbp EBOOT.PBP PARAM.SFO data/psp/icon0.png NULL NULL data/psp/pic1.png NULL %s NULL" % file)
     return 0
 
 for i in shared:
