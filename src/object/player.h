@@ -8,6 +8,7 @@
 #include "network/network.h"
 #include "input/input.h"
 #include "game/adventure_world.h"
+#include "util/thread.h"
 
 class Animation;
 class World;
@@ -116,6 +117,23 @@ protected:
     bool ignore_lives;
 
     // int last_key;
+};
+
+class PlayerFuture: public Util::Future<Object*> {
+public:
+    PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap);
+
+    typedef Util::Future<Object*> super;
+
+    virtual ~PlayerFuture();
+
+protected:
+    virtual void compute();
+
+    const Filesystem::AbsolutePath & path;
+    bool invincible;
+    int lives;
+    int remap;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+
 #include "options.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
@@ -81,35 +82,8 @@ void OptionAdventure::run(bool &endGame){
         int remap;
         Filesystem::AbsolutePath path = Game::selectPlayer("Pick a player", info, remap);
         // player = Game::selectPlayer("Pick a player", info, remap);
-        class PlayerFuture: public Util::Future<Object*> {
-        public:
-            PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int remap):
-            path(path),
-            invincible(invincible),
-            remap(remap){
-                start();
-            }
-
-            virtual ~PlayerFuture(){
-                delete get();
-            }
-
-        protected:
-            virtual void compute(){
-                Player * player = new Player(path);
-                player->setInvincible(invincible);
-                player->setMap(remap);
-                player->setObjectId(-1);
-                player->setLives(MenuGlobals::getLives());
-                set(player);
-            }
-
-            const Filesystem::AbsolutePath & path;
-            bool invincible;
-            int remap;
-        };
-
-        PlayerFuture future(path, MenuGlobals::getInvincible(), remap);
+        
+        PlayerFuture future(path, MenuGlobals::getInvincible(), MenuGlobals::getLives(), remap);
         // Global::debug(0) << "From future got " << future.get() << endl;
 
         /*

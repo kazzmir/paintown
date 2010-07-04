@@ -938,3 +938,25 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		}
 	}
 }
+
+PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap):
+super(),
+path(path),
+invincible(invincible),
+lives(lives),
+remap(remap){
+    start();
+}
+
+PlayerFuture::~PlayerFuture(){
+    delete get();
+}
+
+void PlayerFuture::compute(){
+    Player * player = new Player(path);
+    player->setInvincible(invincible);
+    player->setMap(remap);
+    player->setObjectId(-1);
+    player->setLives(lives);
+    set(player);
+}
