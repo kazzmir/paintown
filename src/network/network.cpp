@@ -263,9 +263,9 @@ static string getHawkError(){
 
 template<typename X>
 static X readX(Socket socket){
-	uint8_t data[ sizeof(X) ];
-	readBytes( socket, data, sizeof(X) ); 
-	return *(X *)data;
+    X data;
+    readBytes(socket, (uint8_t*) &data, sizeof(X)); 
+    return data;
 }
 
 int16_t read16( Socket socket ){
