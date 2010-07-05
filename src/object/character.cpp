@@ -39,6 +39,83 @@
 
 using namespace std;
 
+Remap::Remap():
+needRemap(false),
+original(NULL){
+}
+
+Remap::Remap(const std::string & from, const std::string & to, Remap * original):
+needRemap(true),
+original(original),
+remapFrom(from),
+remapTo(to){
+}
+
+Remap::Remap(const Remap & copy, Character * parent):
+needRemap(copy.needRemap),
+original(copy.original),
+remapFrom(copy.remapFrom),
+remapTo(copy.remapTo){
+    for (map<string, Animation*>::const_iterator it = copy.mapper.begin(); it != copy.mapper.end(); it++){
+        string name = (*it).first;
+        Animation * animation = (*it).second;
+        mapper[name] = new Animation(*animation, parent);
+    }
+}
+
+void Remap::setAnimation(const std::string & name, Animation * animation){
+    if (mapper[name] != NULL){
+        delete mapper[name];
+    }
+
+    mapper[name] = animation;
+}
+
+Animation * Remap::getAnimation(const std::string & name){
+    return mapper[name];
+}
+
+Remap::~Remap(){
+    for ( map<string,Animation*>::iterator it = mapper.begin(); it != mapper.end(); it++ ){
+        Animation * animation = (*it).second;
+        delete animation;
+    }
+}
+
+void Remap::use(Character * from){
+    if (needRemap && original != NULL){
+        doRemap(from);
+        needRemap = false;
+    }
+}
+
+void Remap::doRemap(Character * from){
+    Bitmap b_from(remapFrom);
+    Bitmap b_to(remapTo);
+
+    map< int, int > remap_colors;
+
+    for ( int x1 = 0; x1 < b_from.getWidth(); x1++ ){
+        for ( int y1 = 0; y1 < b_from.getHeight(); y1++ ){
+            int from_col = b_from.getPixel( x1, y1 );
+            int to_col = b_to.getPixel( x1, y1 );
+            if ( to_col != -1 && from_col != to_col ){
+                remap_colors[ from_col ] = to_col;
+            }
+        }
+    }
+
+    const map<string, Animation *> & old_map = original->getAnimations();
+    for ( map<string,Animation*>::const_iterator it = old_map.begin(); it != old_map.end(); it++ ){
+        const string & name = (*it).first;
+        const Animation * old = (*it).second;
+
+        Animation * newAnimation = new Animation(*old, from);
+        newAnimation->reMap(remap_colors);
+        setAnimation(name, newAnimation);
+    }
+}
+
 Character::Character( int alliance ):
 ObjectAttack( alliance ),
 shadow( 0 ),
@@ -66,6 +143,7 @@ draw_shadow( true ),
 trail_generator(0),
 trail_counter(0),
 trail_life(0){
+    mapper[current_map] = new Remap();
 }
 
 Character::Character(const Filesystem::AbsolutePath & filename, int alliance) throw( LoadException ):
@@ -150,82 +228,86 @@ trail_generator(chr.trail_generator),
 trail_counter(chr.trail_counter),
 trail_life(chr.trail_life){
 
-	/* these are set in object.cpp */
-	// setHealth( chr.getHealth() );
-	// setMaxHealth( chr.getMaxHealth() );
-	// setFacing( chr.getFacing() );
-	// setX( chr.getX() );
-	// setY( chr.getY() );
-	// setZ( chr.getZ() );
+    /* these are set in object.cpp */
+    // setHealth( chr.getHealth() );
+    // setMaxHealth( chr.getMaxHealth() );
+    // setFacing( chr.getFacing() );
+    // setX( chr.getX() );
+    // setY( chr.getY() );
+    // setZ( chr.getZ() );
 
-	name = chr.getName();
-	lives = chr.lives;
-	type = chr.type;
-	shadow = chr.shadow;
-	icon = chr.icon;
-	setSpeed( chr.getSpeed() );
+    name = chr.getName();
+    lives = chr.lives;
+    type = chr.type;
+    shadow = chr.shadow;
+    icon = chr.icon;
+    setSpeed( chr.getSpeed() );
 
-	path = chr.getPath();
+    path = chr.getPath();
 
-	linked = NULL;
-	setYVelocity( 0 );
-	setXVelocity( 0 );
-	setZVelocity( 0 );
+    linked = NULL;
+    setYVelocity( 0 );
+    setXVelocity( 0 );
+    setZVelocity( 0 );
 
-	body_parts = chr.body_parts;
+    body_parts = chr.body_parts;
 
-	setJumpingYVelocity( chr.getMaxJumpingVelocity() );
-	setShadow( chr.getShadow() );
-	status = chr.getStatus();
-	invincibility = chr.invincibility;
-	toughness = chr.getToughness();
+    setJumpingYVelocity( chr.getMaxJumpingVelocity() );
+    setShadow( chr.getShadow() );
+    status = chr.getStatus();
+    invincibility = chr.invincibility;
+    toughness = chr.getToughness();
 
-        for (vector<DrawEffect*>::const_iterator it = chr.effects.begin(); it != chr.effects.end(); it++){
-            DrawEffect * effect = *it;
-            addEffect(effect->copy(this));
+    for (vector<DrawEffect*>::const_iterator it = chr.effects.begin(); it != chr.effects.end(); it++){
+        DrawEffect * effect = *it;
+        addEffect(effect->copy(this));
+    }
+
+    if ( chr.die_sound != NULL ) 
+        die_sound = new Sound( *(chr.die_sound) );
+
+    if ( chr.landed_sound != NULL ){
+        landed_sound = new Sound( *(chr.landed_sound) );
+    }
+
+    if ( chr.squish_sound != NULL ){
+        squish_sound = new Sound( *(chr.squish_sound) );
+    }
+
+    /*
+       for ( map<string,Animation*>::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
+       const Animation * const & ani_copy = (*it).second;
+       movements[ ani_copy->getName() ] = new Animation( *ani_copy, this );
+       }
+
+       animation_current = movements[ "idle" ];
+       */
+
+    /* Copy the movements */
+    const map<int, Remap*> & his_mapper = chr.getMapper();
+    for (map<int, Remap*>::const_iterator it = his_mapper.begin(); it != his_mapper.end(); it++ ){
+        int id = (*it).first;
+        Remap * remap = (*it).second;
+        mapper[id] = new Remap(*remap, this);
+
+        /*
+           const map<string,Animation*> & his = (*it).second;
+           map< string, Animation * > & mine = mapper[ id ];
+
+           for ( map<string,Animation*>::const_iterator m_it = his.begin(); m_it != his.end(); m_it++ ){
+           if ( (*m_it).second != NULL ){
+           const Animation * const & ani_copy = (*m_it).second;
+        // Animation * ani_copy = (*m_it).second;
+
+        mine[ ani_copy->getName() ] = new Animation( *ani_copy, this );
         }
+        }
+        */
+    }
 
-	if ( chr.die_sound != NULL ) 
-		die_sound = new Sound( *(chr.die_sound) );
+    animation_current = getMovement( "idle" );
 
-	if ( chr.landed_sound != NULL ){
-		landed_sound = new Sound( *(chr.landed_sound) );
-	}
-
-	if ( chr.squish_sound != NULL ){
-		squish_sound = new Sound( *(chr.squish_sound) );
-	}
-
-	/*
-	for ( map<string,Animation*>::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
-		const Animation * const & ani_copy = (*it).second;
-		movements[ ani_copy->getName() ] = new Animation( *ani_copy, this );
-	}
-
-	animation_current = movements[ "idle" ];
-	*/
-
-	/* Copy the movements */
-	const map<int, map<string,Animation * > > & his_mapper = chr.getMapper();
-	for ( map<int,map<string,Animation*> >::const_iterator it = his_mapper.begin(); it != his_mapper.end(); it++ ){
-		int id = (*it).first;
-		const map<string,Animation*> & his = (*it).second;
-		map< string, Animation * > & mine = mapper[ id ];
-	
-		for ( map<string,Animation*>::const_iterator m_it = his.begin(); m_it != his.end(); m_it++ ){
-			if ( (*m_it).second != NULL ){
-				const Animation * const & ani_copy = (*m_it).second;
-				// Animation * ani_copy = (*m_it).second;
-
-				mine[ ani_copy->getName() ] = new Animation( *ani_copy, this );
-			}
-		}
-
-	}
-
-	animation_current = getMovement( "idle" );
-	
-	setMap( chr.getCurrentMap() );
+    setMap(chr.getCurrentMap());
 }
 	
 Network::Message Character::getCreateMessage(){
@@ -267,6 +349,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     }
 
     current_map = 0;
+    mapper[current_map] = new Remap();
 
     map<string, Filesystem::AbsolutePath> remaps;
 
@@ -290,12 +373,14 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                    movements[ ani->getName() ] = ani;
                    */
 
-                map< string, Animation * > & cur = mapper[ current_map ];
+                Remap* remap = mapper[ current_map ];
+                remap->setAnimation(ani->getName(), ani);
+                /*
                 if ( cur[ ani->getName() ] != 0 ){
                     delete cur[ ani->getName() ];
                 }
                 cur[ ani->getName() ] = ani;
-
+                */
             } else if ( *n == "health" ){
                 int h;
                 *n >> h;
@@ -388,7 +473,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     for ( map<string, Filesystem::AbsolutePath>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
         const string & x1 = (*it).first;
         const Filesystem::AbsolutePath & alter = (*it).second;
-        reMap(alter.path(), x1, getMapper().size() );
+        reMap(alter.path(), x1, getMapper().size());
     }
 
     if (getMovement("walk") != NULL){
@@ -459,6 +544,7 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
         }
     }
 
+    /* TODO: cache this in a static list of bitmaps */
     const char * more[] = {"misc/body/arm.png",
         "misc/body/bone.png",
         "misc/body/hand.png",
@@ -500,16 +586,18 @@ int Character::getNextMap( unsigned int x ) const {
 }
 	
 void Character::setMap( const unsigned int x ){
-	current_map = x;
-	if ( current_map >= mapper.size() ){
-		current_map = mapper.size() - 1;
-	}
+    current_map = x;
+    if ( current_map >= mapper.size() ){
+        current_map = mapper.size() - 1;
+    }
+
+    mapper[current_map]->use(this);
 
     /*
-    if ( current_map < 0 ){
-        current_map = 0;
-    }
-    */
+       if ( current_map < 0 ){
+       current_map = 0;
+       }
+       */
 
     if (animation_current != NULL){
         animation_current = getMovement( animation_current->getName() );
@@ -522,6 +610,9 @@ void Character::reMap( const string & from, const string & to, int id ){
 	if ( mapper.find( id ) != mapper.end() )
 		return;
 	
+    mapper[id] = new Remap(from, to, mapper[0]);
+
+    /*
 	Bitmap b_from( from );
 	Bitmap b_to( to );
 
@@ -549,6 +640,7 @@ void Character::reMap( const string & from, const string & to, int id ){
 
 		new_map[ name ] = new_ani;
 	}
+        */
 }
 	
 bool Character::isCollidable( Object * obj ){
@@ -589,17 +681,16 @@ Animation * Character::getCurrentMovement() const {
 }
 	
 void Character::setMovement( Animation * animation, const string & name ){
-	map< string, Animation * > & xmap = mapper[ current_map ];
-	xmap[ name ] = animation;
+    Remap * remap = mapper[current_map];
+    remap->setAnimation(name, animation);
 }
 	
-Animation * Character::getMovement( const string & str ){
-	// cout<<getName()<<" map = "<<current_map<<endl;
-	map< string, Animation * > & xmap = mapper[ current_map ];
-	// map< string, Animation * > & xmap = getMovements();
-	return xmap[ str ];
+Animation * Character::getMovement(const string & name){
+    Remap * remap = mapper[current_map];
+    return remap->getAnimation(name);
 }
 
+/*
 Animation * Character::getMovement( const unsigned int x ){
 	// cout<<"Current map = "<<current_map<<endl;
 	map< string, Animation * > & xmap = mapper[ current_map ];
@@ -620,6 +711,7 @@ Animation * Character::getMovement( const unsigned int x ){
 
 	return ret;
 }
+*/
 
 bool Character::testAnimation(){
     /*
@@ -648,8 +740,11 @@ void Character::testAnimation( string name ){
 }
 
 void Character::testAnimation( unsigned int x ){
-	animation_current = getMovement( x );
-	animation_current->reset();
+    /*
+    animation_current = getMovement(x);
+    animation_current->reset();
+    */
+
 	/*
 	if ( x < movements.size() ){
 		int q = 0;
@@ -1198,8 +1293,8 @@ void Character::getAttackCoords( int & x, int & y){
 	}
 }
 	
-const map<string,Animation*> & Character::getMovements() {
-	return mapper[ current_map ];
+const map<string, Animation*> & Character::getMovements() {
+    return mapper[current_map]->getAnimations();
 }
 	
 void Character::attacked( World * world, Object * something, vector< Object * > & objects ){
@@ -1724,47 +1819,42 @@ void Character::print() const{
 }
 
 Character::~Character(){
-	if (own_stuff){
-            if (icon != NULL){
-                delete icon;
-            }
-            for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
-                BodyPart & b = *it;
-                delete b.image;
-            }
-	}
-
-	for ( map< int, map<string,Animation*> >::iterator it = mapper.begin(); it != mapper.end(); it++ ){
-		map< string, Animation * > & use = (*it).second;
-		for ( map<string,Animation*>::iterator m_it = use.begin(); m_it != use.end(); m_it++ ){
-			Animation* & aa = (*m_it).second;
-			if (aa != NULL){
-				delete aa;
-			}
-		}
-	}
-
-        for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
-            delete (*it);
+    if (own_stuff){
+        if (icon != NULL){
+            delete icon;
         }
-
-        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
-            delete (*it);
+        for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
+            BodyPart & b = *it;
+            delete b.image;
         }
+    }
 
-	delete die_sound;
-	delete landed_sound;
-	delete squish_sound;
+    for ( map< int, Remap*>::iterator it = mapper.begin(); it != mapper.end(); it++ ){
+        Remap * remap = (*it).second;
+        delete remap;
+    }
 
-	/*
-	for ( map<string,Animation*>::iterator it = movements.begin(); it != movements.end(); it++ ){
-		Animation *& aa = (*it).second;
-		delete aa;
-	}
-	*/
+    for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
+        delete (*it);
+    }
 
-	/*
-	for ( vector< Animation * >::iterator it = animation_attacks.begin(); it != animation_attacks.end(); it++ )
-		delete *it;
-	*/
+    for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
+        delete (*it);
+    }
+
+    delete die_sound;
+    delete landed_sound;
+    delete squish_sound;
+
+    /*
+       for ( map<string,Animation*>::iterator it = movements.begin(); it != movements.end(); it++ ){
+       Animation *& aa = (*it).second;
+       delete aa;
+       }
+       */
+
+    /*
+       for ( vector< Animation * >::iterator it = animation_attacks.begin(); it != animation_attacks.end(); it++ )
+       delete *it;
+       */
 }

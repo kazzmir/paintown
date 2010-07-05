@@ -72,6 +72,7 @@ static void sendQuit(Socket socket){
     quit.send(socket);
 }
 
+/* TODO: simplify this code */
 static void playGame( Socket socket ){
     Util::Thread::Id loadingThread;
     try{

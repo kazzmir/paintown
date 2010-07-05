@@ -493,6 +493,7 @@ static void sendAllOk(const vector<Socket> & sockets){
     sendToAll(sockets, ok);
 }
 
+/* TODO: simplify this code */
 static void playGame(vector<Client*> & clients, Menu * menuParent){
     vector< Object * > players;
     Util::Thread::Id loading_screen_thread;

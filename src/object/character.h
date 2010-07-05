@@ -43,6 +43,34 @@ const int Status_Dead = 7; /* dying */
 const int Status_Get = 8; /* getting an object */
 const int Status_Falling = 9; /* falling due to lack of ground beneath them */
 
+class Character;
+
+/* Handles palette swaps */
+class Remap{
+public:
+    Remap();
+    Remap(const std::string & from, const std::string & to, Remap * original);
+    Remap(const Remap & copy, Character * parent);
+
+    virtual ~Remap();
+
+    virtual void setAnimation(const std::string & name, Animation * animation);
+    virtual Animation * getAnimation(const std::string & name);
+    virtual const inline std::map<std::string, Animation*> & getAnimations() const {
+        return mapper;
+    }
+
+    virtual void use(Character * from);
+protected:
+    virtual void doRemap(Character * from);
+
+    std::map<std::string, Animation*> mapper;
+    bool needRemap;
+    Remap * original;
+    std::string remapFrom;
+    std::string remapTo;
+};
+
 class Character: public ObjectAttack {
 public:
 
@@ -242,7 +270,7 @@ public:
 		return thrown_status;
 	}
 
-	inline const std::map< int, std::map<std::string,Animation*> > getMapper() const {
+	inline const std::map< int, Remap*> getMapper() const {
 		return mapper;
 	}
 
@@ -250,7 +278,7 @@ public:
 	virtual Animation * getCurrentMovement() const;
 	virtual void setMovement( Animation * animation, const std::string & name );
 	virtual Animation * getMovement( const std::string & str );
-	virtual Animation * getMovement( const unsigned int x );
+	// virtual Animation * getMovement( const unsigned int x );
 	virtual const std::map<std::string,Animation*> & getMovements();
 
 	virtual inline int getShadow() const {
@@ -457,10 +485,11 @@ protected:
 
 	unsigned int current_map;
 	/* map from id to map of animations */
-    std::map< int, std::map<std::string,Animation*> > mapper;
-    std::vector< Object * > projectiles;
-    std::vector< BodyPart > body_parts;
-	
+        // std::map< int, std::map<std::string, Animation*> > mapper;
+        std::map<int, Remap*> mapper;
+        std::vector< Object * > projectiles;
+        std::vector< BodyPart > body_parts;
+
 	Sound * die_sound;
 	Sound * landed_sound;
 	Sound * squish_sound;
