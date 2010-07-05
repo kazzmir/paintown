@@ -494,16 +494,16 @@ static void sendAllOk(const vector<Socket> & sockets){
 }
 
 static void playGame(vector<Client*> & clients, Menu * menuParent){
-    /* FIXME */
-#if 0
     vector< Object * > players;
     Util::Thread::Id loading_screen_thread;
     try{
         /* first the user selects his own player */
         Level::LevelInfo info;
-        Object * player = Game::selectPlayer(false, "Pick a player", info);
-        /* ugly cast */
-        ((Player *) player)->ignoreLives();
+        int remap = 0;
+        Filesystem::AbsolutePath playerPath = Game::selectPlayer("Pick a player", info, remap);
+        Player * player = new Player(playerPath);
+        player->setMap(remap);
+        player->ignoreLives();
         players.push_back( player );
         /* then the user selects a set of levels to play */
         // Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
@@ -708,7 +708,7 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
         sendToAll( sockets, gameOver );
 
     } catch ( const LoadException & le ){
-        debug( 0 ) << "Load exception: " + le.getReason() << endl;
+        debug( 0 ) << "Load exception: " + le.getTrace() << endl;
     } catch ( const Exception::Return & re ){
     } catch ( const NetworkException & ne ){
         debug( 0 ) << "Network excetion: " + ne.getMessage() << endl;
@@ -723,7 +723,6 @@ static void playGame(vector<Client*> & clients, Menu * menuParent){
     }
 
     Loader::stopLoading(loading_screen_thread);
-#endif
 }
 
 static void popup( const Font & font, const string & message ){

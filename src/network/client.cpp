@@ -73,15 +73,16 @@ static void sendQuit(Socket socket){
 }
 
 static void playGame( Socket socket ){
-    /* FIXME */
-#if 0
     Util::Thread::Id loadingThread;
     try{
         /* TODO: get the info from the server */
         Level::LevelInfo info;
-        Character * player = (Character *) Game::selectPlayer( false, "Pick a player", info);
+        int remap = 0;
+        Filesystem::AbsolutePath playerPath = Game::selectPlayer("Pick a player", info, remap);
+        Player * player = new Player(playerPath);
+        player->setMap(remap);
         ((Player *) player)->ignoreLives();
-        Filesystem::RelativePath path = Filesystem::cleanse(player->getPath());
+        Filesystem::RelativePath path = Filesystem::cleanse(playerPath);
         // path.erase( 0, Util::getDataPath().length() );
 
         Loader::startLoading( &loadingThread );
@@ -205,11 +206,10 @@ static void playGame( Socket socket ){
             delete *it;
         }
     } catch ( const LoadException & le ){
-        Global::debug(0, "client") << "Load exception: " + le.getReason() << endl;
+        Global::debug(0, "client") << "Load exception: " + le.getTrace() << endl;
     }
 
     Loader::stopLoading(loadingThread);
-#endif
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
