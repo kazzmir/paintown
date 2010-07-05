@@ -302,6 +302,81 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
         Util::EventManager eventManager;
         Console::Console & console;
 
+        void doInput(GameState & state, bool & takeScreenshot, bool & draw){
+            InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
+
+            if (inputState[Game::ShowHelp]){
+                helped = true;
+                state.helpTime = state.helpTime < 260 ? 260 : state.helpTime;
+            }
+
+            if (inputState[Game::ShowFps]){
+                state.show_fps = ! state.show_fps;
+            }
+
+            if (inputState[Game::Console]){
+                console.toggle();
+            }
+
+            takeScreenshot = inputState[Game::Screenshot];
+
+            if (inputState[Game::Pause]){
+                /*
+                   paused = ! paused;
+                   world.addMessage(paused ? pausedMessage() : unpausedMessage());
+                   draw = true;
+                   */
+                world.changePause();
+            }
+
+            if (inputState[Game::MiniMaps]){
+                world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
+            }
+
+            /*
+               if ( key[ Keyboard::Key_F8 ] ){
+               world.killAllHumans( player );
+               }
+               */
+
+            if ( Global::getDebug() > 0 ){
+                const double SPEED_INC = 0.02;
+                if (inputState[Game::Speedup]){
+                    gameSpeed += SPEED_INC;
+                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                }
+
+                if (inputState[Game::Slowdown]){
+                    gameSpeed -= SPEED_INC;
+                    if ( gameSpeed < SPEED_INC ){
+                        gameSpeed = SPEED_INC;
+                    }
+                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                }
+
+                if (inputState[Game::NormalSpeed]){
+                    gameSpeed = 1;
+                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                }
+
+                if (inputState[Game::ReloadLevel]){
+                    try{
+                        world.reloadLevel();
+                        draw = true;
+                    } catch ( const LoadException & le ){
+                        Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
+                    }
+                }
+            }
+
+            state.force_quit |= inputState[Game::Quit];
+            try{
+                console.doInput();
+            } catch (const Exception::Return & r){
+                state.force_quit = true;
+            }
+        }
+
         bool run(bool & takeScreenshot, GameState & state){
             bool draw = false;
             if (Global::speed_counter > 0){
@@ -328,81 +403,10 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                     }
                 }
 
-                InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
-
-                if (inputState[Game::ShowHelp]){
-                    helped = true;
-                    state.helpTime = state.helpTime < 260 ? 260 : state.helpTime;
-                }
-
-                if (inputState[Game::ShowFps]){
-                    state.show_fps = ! state.show_fps;
-                }
-
-                if (inputState[Game::Console]){
-                    console.toggle();
-                }
-
-                takeScreenshot = inputState[Game::Screenshot];
-
-                if (inputState[Game::Pause]){
-                    /*
-                       paused = ! paused;
-                       world.addMessage(paused ? pausedMessage() : unpausedMessage());
-                       draw = true;
-                       */
-                    world.changePause();
-                }
-
-                if (inputState[Game::MiniMaps]){
-                    world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
-                }
-
-                /*
-                   if ( key[ Keyboard::Key_F8 ] ){
-                   world.killAllHumans( player );
-                   }
-                   */
-
-                if ( Global::getDebug() > 0 ){
-                    const double SPEED_INC = 0.02;
-                    if (inputState[Game::Speedup]){
-                        gameSpeed += SPEED_INC;
-                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                    }
-
-                    if (inputState[Game::Slowdown]){
-                        gameSpeed -= SPEED_INC;
-                        if ( gameSpeed < SPEED_INC ){
-                            gameSpeed = SPEED_INC;
-                        }
-                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                    }
-
-                    if (inputState[Game::NormalSpeed]){
-                        gameSpeed = 1;
-                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                    }
-
-                    if (inputState[Game::ReloadLevel]){
-                        try{
-                            world.reloadLevel();
-                            draw = true;
-                        } catch ( const LoadException & le ){
-                            Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
-                        }
-                    }
-                }
-
-                state.force_quit |= inputState[Game::Quit];
-                try{
-                    console.doInput();
-                } catch (const Exception::Return & r){
-                    state.force_quit = true;
-                }
-
-                Global::speed_counter = 0;
+                doInput(state, takeScreenshot, draw);
+                
                 state.done |= state.force_quit || world.finished();
+                Global::speed_counter = 0;
             }
 
             return draw;
@@ -454,15 +458,15 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 frames = 0;
             }
 
+            frames += 1;
         }
 
         void run(const Bitmap & screen_buffer, const GameState & state, bool takeScreenshot){
             updateFrames();
 
-            frames += 1;
             world.draw( &work );
 
-            work.Stretch( screen_buffer );
+            work.Stretch(screen_buffer);
             FontRender * render = FontRender::getInstance();
             render->render( &screen_buffer );
 

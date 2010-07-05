@@ -319,6 +319,10 @@ bool Global::init( int gfx ){
     out << "Paintown version " << Global::getVersionString() << endl;
     out << "Build date " << __DATE__ << " " << __TIME__ << endl;
 
+#ifdef WII
+    fatInitDefault();
+#endif
+
     /* do implementation specific setup */
     initSystem(out);
 
@@ -373,8 +377,5 @@ bool Global::init( int gfx ){
     white.fill(Bitmap::makeColor(255, 255, 255));
     white.BlitToScreen();
 
-#ifdef WII
-    fatInitDefault();
-#endif
     return true;
 }
