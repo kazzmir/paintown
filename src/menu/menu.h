@@ -126,7 +126,7 @@ class Menu{
         /*! Context Menu */
         Gui::ContextBox contextMenu;
 
-        /*! Need to come up with a method of storing data without having 10,000 variables for different aspects of the menu */
+        /*! Data holder */
         std::map<std::string, ValueHolder> data;
     private:
 };
