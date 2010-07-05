@@ -22,8 +22,8 @@ class Box : public Widget{
 		// Render
 		virtual void render(const Bitmap &);
 		
-		// Do a message Dialog centered on the given bitmap
-		static void msgDialog(const Bitmap & bmp, const std::string & message, int radius = 0);
+		// Do a message Dialog centered with respect to the given width/height
+		static void messageDialog(int width, int height, const std::string & message, int radius = 0);
 	
 	protected:
 };

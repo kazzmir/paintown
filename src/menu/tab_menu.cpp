@@ -307,8 +307,8 @@ void TabMenu::run(){
     //bool endMenu = false;
     bool done = false;
 
-    Bitmap work(640, 480);
-    setWork(&work);
+    Bitmap work(Menu::Width, Menu::Height);
+    // setWork(&work);
 
     if ( tabs.empty() ){
         return;

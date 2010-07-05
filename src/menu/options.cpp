@@ -866,8 +866,10 @@ void OptionJoystick::run(bool &endGame){
     const char * message = "Press a joystick button!";
     const int width = vFont.textLength(message) + 10;
     const int height = vFont.getHeight() + 10;
-    const int x = (getParent()->getWork()->getWidth()/2) - (width/2);
-    const int y = (getParent()->getWork()->getHeight()/2) - (height/2);
+    // const int x = (getParent()->getWork()->getWidth()/2) - (width/2);
+    // const int y = (getParent()->getWork()->getHeight()/2) - (height/2);
+    const int x = Menu::Width / 2 - width/2;
+    const int y = Menu::Height / 2 - height/2;
     Box dialog;
     dialog.location.setPosition(Gui::AbsolutePoint(0,0));
     dialog.location.setDimensions(vFont.textLength(message) + 10, vFont.getHeight() + 10);
@@ -1057,12 +1059,12 @@ void OptionKey::logic(){
 }
 
 void OptionKey::run(bool &endGame){
-	// Do dialog
-	Box::msgDialog(*getParent()->getWork(),"Press a Key!",2);
-	
-	Keyboard key;
-	keyCode = readKey( key );
-	setKey(player,type, keyCode);
+    // Do dialog
+    Box::messageDialog(Menu::Width, Menu::Height, "Press a Key!",2);
+
+    Keyboard key;
+    keyCode = readKey( key );
+    setKey(player,type, keyCode);
 }
 
 OptionLevel::OptionLevel(Token *token, int * set, int value):

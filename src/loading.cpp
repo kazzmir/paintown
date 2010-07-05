@@ -52,10 +52,16 @@ private:
 };
 
 void startLoading(Util::Thread::Id * thread, void * arg){
+    bool create = false;
     Util::Thread::acquireLock(&loading_screen_mutex);
+    create = ! done_loading;
     done_loading = false;
     Util::Thread::releaseLock(&loading_screen_mutex);
-    Util::Thread::createThread(thread, NULL, (Util::Thread::ThreadFunction) loadingScreen, arg);
+
+    /* prevent multiple loading threads from being made */
+    if (create){
+        Util::Thread::createThread(thread, NULL, (Util::Thread::ThreadFunction) loadingScreen, arg);
+    }
 }
 
 void stopLoading(Util::Thread::Id thread){

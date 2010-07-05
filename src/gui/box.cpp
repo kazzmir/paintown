@@ -49,12 +49,12 @@ void Box::render(const Bitmap & work){
     // work.drawingMode( Bitmap::MODE_SOLID );
 }
 
-void Box::msgDialog(const Bitmap & bmp, const std::string & message, int radius){
+void Box::messageDialog(int centerWidth, int centerHeight, const std::string & message, int radius){
     const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
     const int width = vFont.textLength(message.c_str()) + 10;
     const int height = vFont.getHeight() + 10;
-    const int x = (bmp.getWidth()/2) - (width/2);
-    const int y = (bmp.getHeight()/2) - (height/2);
+    const int x = (centerWidth/2) - (width/2);
+    const int y = (centerHeight/2) - (height/2);
     Box dialog;
     dialog.location.setDimensions(width, height);
     dialog.location.setRadius(radius);

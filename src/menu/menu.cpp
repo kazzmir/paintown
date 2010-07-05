@@ -793,8 +793,8 @@ void Menu::run(){
     bool done = false;
     bool endGame = false;
 
-    Bitmap work(640, 480);
-    setWork(&work);
+    Bitmap work(Menu::Width, Menu::Height);
+    // setWork(&work);
 
     if ( menuOptions.empty() ){
         return;
@@ -923,7 +923,7 @@ void Menu::run(){
         }
     }
 
-    setWork(NULL);
+    // setWork(NULL);
 }
 
 void Menu::runOption(bool &endGame){
@@ -990,6 +990,7 @@ void Menu::addOption(MenuOption *opt){
 }
 
 /*! Get working bitmap */
+/*
 Bitmap *Menu::getWork(){
     return currentWork;
 }
@@ -997,6 +998,7 @@ Bitmap *Menu::getWork(){
 void Menu::setWork(Bitmap * work){
     currentWork = work;
 }
+*/
 
 const Filesystem::RelativePath Menu::getFont(){
     return Filesystem::RelativePath(sharedFont);

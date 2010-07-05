@@ -184,8 +184,10 @@ public:
     void addOption(MenuOption *opt);
 
     /*! get working bitmap */
+    /*
     Bitmap *getWork();
     void setWork(Bitmap * work);
+    */
 
     //! get font
     static const Filesystem::RelativePath getFont();
@@ -228,6 +230,9 @@ public:
     
     //! Get context menu
     virtual std::vector<Gui::ContextItem *> getContextList();
+
+    static const int Width = 640;
+    static const int Height = 480;
 
 protected:
     //! Current music
