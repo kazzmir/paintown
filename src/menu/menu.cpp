@@ -27,6 +27,8 @@
 
 #include <queue>
 #include <map>
+#include <ostream>
+#include <sstream>
 
 #include "gui/context-box.h"
 
@@ -188,43 +190,62 @@ class MenuException : public Exception::Base{
         }
 };*/
 
-_Menu::ValueHolder::ValueHolder(){
+_Menu::ValueHolder::ValueHolder(const std::string & name):
+name(name),
+location(0){
 }
 _Menu::ValueHolder::~ValueHolder(){
 }
         
-_Menu::ValueHolder & _Menu::ValueHolder::operator<<(std::string val){
-    
+_Menu::ValueHolder & _Menu::ValueHolder::operator<<(const std::string & val){
+    values.push_back(val);
     return *this;
 }
 _Menu::ValueHolder & _Menu::ValueHolder::operator<<(bool val){
-    
-    return *this;
+    std::ostringstream o;
+    o << val;
+    return *this << o.str();
 }
 _Menu::ValueHolder & _Menu::ValueHolder::operator<<(int val){
-    
-    return *this;
+    std::ostringstream o;
+    o << val;
+    return *this << o.str();
 }
 _Menu::ValueHolder & _Menu::ValueHolder::operator<<(double val){
-    
-    return *this;
+    std::ostringstream o;
+    o << val;
+    return *this << o.str();
 }
 
-_Menu::ValueHolder & _Menu::ValueHolder::operator>>(std::string val){
-    
+_Menu::ValueHolder & _Menu::ValueHolder::operator>>(std::string & val){
+    val = values[location];
+    void next();
     return *this;
 }
 _Menu::ValueHolder & _Menu::ValueHolder::operator>>(bool val){
-   
+    std::istringstream i(values[location]);
+    i >> val;
+    void next();
     return *this;
 }
 _Menu::ValueHolder & _Menu::ValueHolder::operator>>(int val){
-    
+    std::istringstream i(values[location]);
+    i >> val;
+    void next();
     return *this;
 }
 _Menu::ValueHolder & _Menu::ValueHolder::operator>>(double val){
-    
+    std::istringstream i(values[location]);
+    i >> val;
+    void next();
     return *this;
+}
+
+void _Menu::ValueHolder::next(){
+    location++;
+    if (location >= values.size()){
+        location = 0;
+    }
 }
 
 /* New Menu */

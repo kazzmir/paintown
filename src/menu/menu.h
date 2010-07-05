@@ -79,15 +79,15 @@ class InfoBox: public Gui::Widget {
 
 class ValueHolder{
     public:
-        ValueHolder();
+        ValueHolder(const std::string &);
         virtual ~ValueHolder();
         
-        virtual ValueHolder & operator<<(std::string val);
+        virtual ValueHolder & operator<<(const std::string &);
         virtual ValueHolder & operator<<(bool val);
         virtual ValueHolder & operator<<(int val);
         virtual ValueHolder & operator<<(double val);
         
-        virtual ValueHolder & operator>>(std::string val);
+        virtual ValueHolder & operator>>(std::string &);
         virtual ValueHolder & operator>>(bool val);
         virtual ValueHolder & operator>>(int val);
         virtual ValueHolder & operator>>(double val);
@@ -95,6 +95,8 @@ class ValueHolder{
         std::string name;
         std::vector<std::string> values;
         unsigned int location;
+        
+        void next();
 };
 
 /*! New Menu class */
@@ -125,7 +127,7 @@ class Menu{
         Gui::ContextBox contextMenu;
 
         /*! Need to come up with a method of storing data without having 10,000 variables for different aspects of the menu */
-
+        std::map<std::string, ValueHolder> data;
     private:
 };
 
