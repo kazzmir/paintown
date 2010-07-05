@@ -39,6 +39,10 @@
 #include "music.h"
 #include "loading.h"
 
+#ifdef WII
+#include <fat.h>
+#endif
+
 using namespace std;
 
 volatile int Global::speed_counter = 0;
@@ -369,5 +373,8 @@ bool Global::init( int gfx ){
     white.fill(Bitmap::makeColor(255, 255, 255));
     white.BlitToScreen();
 
+#ifdef WII
+    fatInitDefault();
+#endif
     return true;
 }

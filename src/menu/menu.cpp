@@ -179,6 +179,53 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
     }
     return contextItems;
 }
+/*
+class MenuException : public Exception::Base{
+    public:
+        MenuException(){
+        }
+        ~MenuException(){
+        }
+};*/
+
+_Menu::ValueHolder::ValueHolder(){
+}
+_Menu::ValueHolder::~ValueHolder(){
+}
+        
+_Menu::ValueHolder & _Menu::ValueHolder::operator<<(std::string val){
+    
+    return *this;
+}
+_Menu::ValueHolder & _Menu::ValueHolder::operator<<(bool val){
+    
+    return *this;
+}
+_Menu::ValueHolder & _Menu::ValueHolder::operator<<(int val){
+    
+    return *this;
+}
+_Menu::ValueHolder & _Menu::ValueHolder::operator<<(double val){
+    
+    return *this;
+}
+
+_Menu::ValueHolder & _Menu::ValueHolder::operator>>(std::string val){
+    
+    return *this;
+}
+_Menu::ValueHolder & _Menu::ValueHolder::operator>>(bool val){
+   
+    return *this;
+}
+_Menu::ValueHolder & _Menu::ValueHolder::operator>>(int val){
+    
+    return *this;
+}
+_Menu::ValueHolder & _Menu::ValueHolder::operator>>(double val){
+    
+    return *this;
+}
 
 /* New Menu */
 _Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){

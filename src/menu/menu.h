@@ -77,8 +77,27 @@ class InfoBox: public Gui::Widget {
         std::vector<std::string> text;
 };
 
-/*! New Menu class */
+class ValueHolder{
+    public:
+        ValueHolder();
+        virtual ~ValueHolder();
+        
+        virtual ValueHolder & operator<<(std::string val);
+        virtual ValueHolder & operator<<(bool val);
+        virtual ValueHolder & operator<<(int val);
+        virtual ValueHolder & operator<<(double val);
+        
+        virtual ValueHolder & operator>>(std::string val);
+        virtual ValueHolder & operator>>(bool val);
+        virtual ValueHolder & operator>>(int val);
+        virtual ValueHolder & operator>>(double val);
+    private:
+        std::string name;
+        std::vector<std::string> values;
+        unsigned int location;
+};
 
+/*! New Menu class */
 class Menu{
     public:
         Menu();
