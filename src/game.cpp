@@ -207,10 +207,6 @@ static bool respawnPlayers(const vector<Object*> & players, World & world){
 
 bool playLevel( World & world, const vector< Object * > & players, double helpTime){
     
-    /* the game graphics are meant for 320x240 and will be stretched
-     * to fit the screen
-     */
-    Bitmap work( 320, 240 );
     Bitmap screen_buffer( GFX_X, GFX_Y );
 
     /* 150 pixel tall console */
@@ -248,11 +244,6 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
     world.getEngine()->createWorld(world);
 
     // int game_time = 100;
-    int frames = 0;
-    double fps = Global::TICS_PER_SECOND;
-    unsigned int second_counter = Global::second_counter;
-    /* don't put anything after these variables and before the while loop */
-    Global::speed_counter = 0;
     // Global::second_counter = 0;
 
     /* thrown when the player runs out of lives */
@@ -428,18 +419,28 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
         }
     };
 
-    bool finish = true;
-    Logic logic(players, world, console);
-    GameState state;
-    state.helpTime = helpTime;
+    class Draw{
+    public:
+        Draw(Console::Console & console, World & world):
+        console(console),
+        world(world),
+        /* the game graphics are meant for 320x240 and will be stretched
+         * to fit the screen
+         */
+        work(320, 240),
+        frames(0),
+        second_counter(Global::second_counter),
+        fps(Global::TICS_PER_SECOND){
+        }
 
-    try{
-        /* Main Loop! */
-        while ( ! state.done ){
-            bool draw = false;
-            bool takeScreenshot = false;
-            draw = logic.run(takeScreenshot, state);
+        Console::Console & console;
+        World & world;
+        Bitmap work;
+        int frames;
+        unsigned int second_counter;
+        double fps;
 
+        void updateFrames(){
             if (second_counter != Global::second_counter){
                 int difference = Global::second_counter - second_counter;
                 /* unlikely, but just in case */
@@ -453,46 +454,44 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 frames = 0;
             }
 
-            if ( draw ){
-                frames += 1;
-                world.draw( &work );
-
-                work.Stretch( screen_buffer );
-                FontRender * render = FontRender::getInstance();
-                render->render( &screen_buffer );
-
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-
-                if (state.helpTime > 0){
-                    int x = 100;
-                    int y = screen_buffer.getHeight() / 5;
-                    int color = Bitmap::makeColor( 255, 255, 255 );
-                    Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
-                    drawHelp( font, x, y, color, screen_buffer.translucent());
-                }
-
-                if (state.show_fps){
-                    font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
-                }
-                console.draw(screen_buffer);
-
-                /* getX/Y move when the world is quaking */
-                screen_buffer.BlitToScreen(world.getX(), world.getY());
-
-                if (takeScreenshot){
-                    doTakeScreenshot(work);
-                }
-
-                work.clear();
-            }
-
-            while (Global::speed_counter < 1){
-                logic.rest();
-            }
         }
 
+        void run(const Bitmap & screen_buffer, const GameState & state, bool takeScreenshot){
+            updateFrames();
 
-        if (!state.force_quit){
+            frames += 1;
+            world.draw( &work );
+
+            work.Stretch( screen_buffer );
+            FontRender * render = FontRender::getInstance();
+            render->render( &screen_buffer );
+
+            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+
+            if (state.helpTime > 0){
+                int x = 100;
+                int y = screen_buffer.getHeight() / 5;
+                int color = Bitmap::makeColor( 255, 255, 255 );
+                Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
+                drawHelp( font, x, y, color, screen_buffer.translucent());
+            }
+
+            if (state.show_fps){
+                font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
+            }
+            console.draw(screen_buffer);
+
+            /* getX/Y move when the world is quaking */
+            screen_buffer.BlitToScreen(world.getX(), world.getY());
+
+            if (takeScreenshot){
+                doTakeScreenshot(work);
+            }
+
+            work.clear();
+        }
+
+        void showScreenshots(const Bitmap & screen_buffer){
             work.clear();
             Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
             for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
@@ -512,7 +511,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 double scale = 0.9;
                 shot->border(0, 1, Bitmap::makeColor(64,64,64));
                 shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
-                work.Stretch( screen_buffer );
+                work.Stretch(screen_buffer);
                 screen_buffer.BlitToScreen();
                 snapshot.play();
                 Util::restSeconds(1.5);
@@ -520,6 +519,38 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             if (world.getScreenshots().size() > 0){
                 Util::restSeconds(2);
             }
+
+        }
+    };
+
+    bool finish = true;
+    Logic logic(players, world, console);
+    Draw drawer(console, world);
+    GameState state;
+    state.helpTime = helpTime;
+
+    /* don't put anything after these variables and before the while loop */
+    Global::speed_counter = 0;
+
+    try{
+        /* Main Loop! */
+        while ( ! state.done ){
+            bool draw = false;
+            bool takeScreenshot = false;
+            draw = logic.run(takeScreenshot, state);
+
+            if (draw){
+                drawer.run(screen_buffer, state, takeScreenshot);
+            }
+
+            while (Global::speed_counter < 1){
+                logic.rest();
+            }
+        }
+
+
+        if (!state.force_quit){
+            drawer.showScreenshots(screen_buffer);
         }
     } catch (const LoseException & lose){
         fadeOut(screen_buffer, "You lose");
