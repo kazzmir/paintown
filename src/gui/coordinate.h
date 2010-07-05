@@ -183,6 +183,8 @@ class Coordinate {
         virtual void setPosition2(const RelativePoint &);
         virtual void setPosition2(const AbsolutePoint &);
 
+        virtual void moveTo(const AbsolutePoint &);
+
         virtual void setDimensions(int width, int height);
 
         virtual inline RelativePoint & getPosition(){

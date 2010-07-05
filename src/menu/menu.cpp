@@ -421,7 +421,7 @@ selectSound(""),
 longestTextLength(0),
 currentDrawState( NoFade ),
 // work(new Bitmap(Global::getScreenWidth(), Global::getScreenHeight())),
-work(new Bitmap(640, 480)),
+// work(new Bitmap(640, 480)),
 menuInfo(""),
 parent(0),
 _name(""),
@@ -445,9 +445,11 @@ option(false){
 	optionInfoTextLocation.y = 100;
 	menuInfoLocation.x = 320;
 	menuInfoLocation.y = 465;
-    if (work->getError()){
+        /*
+    if (work.getError()){
         Global::debug(-1) << "*BUG* Could not allocate bitmap for menu" << endl;
     }
+    */
 
     /* key, delay, block, output */
     /* vi keys */
@@ -791,6 +793,9 @@ void Menu::run(){
     bool done = false;
     bool endGame = false;
 
+    Bitmap work(640, 480);
+    setWork(&work);
+
     if ( menuOptions.empty() ){
         return;
     }
@@ -862,32 +867,32 @@ void Menu::run(){
                 // Draw
 
                 // Do the background
-                drawBackground(work);
+                drawBackground(&work);
                 // Do background animations
                 for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-                    (*i)->draw(*work);
+                    (*i)->draw(work);
                 }
                 // Draw any misc stuff in the background of the menu of selected object 
-                selectedOption->drawBelow(work);
+                selectedOption->drawBelow(&work);
                 // Draw menu
-                contextMenu.render(*work);
+                contextMenu.render(work);
                 // Draw option info text
-                renderInfoBoxes(*work);
+                renderInfoBoxes(work);
                 // Draw menu info text
-                menuInfoBox.render(*work);
+                menuInfoBox.render(work);
                 // Draw foreground animations
                 for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-                    (*i)->draw(*work);
+                    (*i)->draw(work);
                 }
                 // Draw any misc stuff in the foreground of the menu of selected object 
-                selectedOption->drawAbove(work);
+                selectedOption->drawAbove(&work);
 
                 if (isFading()){
-                    doFade(work);
+                    doFade(&work);
                 }
 
                 // Finally render to screen
-                work->BlitToScreen();
+                work.BlitToScreen();
             }
 
             while ( Global::speed_counter < 1 ){
@@ -917,6 +922,8 @@ void Menu::run(){
             }
         }
     }
+
+    setWork(NULL);
 }
 
 void Menu::runOption(bool &endGame){
@@ -984,7 +991,11 @@ void Menu::addOption(MenuOption *opt){
 
 /*! Get working bitmap */
 Bitmap *Menu::getWork(){
-    return work;
+    return currentWork;
+}
+
+void Menu::setWork(Bitmap * work){
+    currentWork = work;
 }
 
 const Filesystem::RelativePath Menu::getFont(){
@@ -1122,10 +1133,10 @@ void Menu::actInfoBoxes(){
 }
 
 //! Render info boxes
-void Menu::renderInfoBoxes(const Bitmap &){
+void Menu::renderInfoBoxes(const Bitmap & work){
     for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
         _Menu::InfoBox *box = *i;
-        box->render(*work);
+        box->render(work);
     }
 }
 
@@ -1139,9 +1150,11 @@ void Menu::closeInfoBoxes(){
 
 Menu::~Menu(){
     // cleanup
+    /*
     if (work){
         delete work;
     }
+    */
 
     for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
         _Menu::InfoBox *box = *i;

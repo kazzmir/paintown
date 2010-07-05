@@ -538,6 +538,8 @@ MugenMenu::~MugenMenu(){
 }
 
 void MugenMenu::run(){
+    Bitmap work(640, 480);
+    setWork(&work);
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool endGame = false;
@@ -564,12 +566,12 @@ void MugenMenu::run(){
     // Logo run it no repeat
     if (logo){
         logo->setInput(player1Input);
-	logo->run( *work,false);
+	logo->run(work, false);
     }
     // Intro run it no repeat
     if (intro){
         intro->setInput(player1Input);
-	intro->run( *work,false);
+	intro->run(work, false);
     }
   
     double runCounter = 0;
@@ -666,22 +668,26 @@ void MugenMenu::run(){
 	    }
 	
 	    if ( draw ){
+                /* This logic doesn't make sense.. why does it draw to `work'
+                 * and then stretch blit `workArea' to `work'? That will just
+                 * clear anything drawn to `work', won't it?
+                 */
 		// backgrounds
 		background->renderBackground(0, 0, workArea);
 
 		// Draw any misc stuff in the background of the menu of selected object 
-		(*currentOption)->drawBelow(work);
+		(*currentOption)->drawBelow(&work);
 		// Draw text
 		renderText(&workArea);
 		// Foregrounds
 		background->renderForeground(0,0,workArea);
 		// Draw any misc stuff in the foreground of the menu of selected object 
-		(*currentOption)->drawAbove(work);
+		(*currentOption)->drawAbove(&work);
 		// Do fades
 		fader.draw(workArea);
 		// Finally render to screen
-		workArea.Stretch(*work);
-		work->BlitToScreen();
+		workArea.Stretch(work);
+		work.BlitToScreen();
 	    }
 
 	    while ( Global::speed_counter < 1 ){

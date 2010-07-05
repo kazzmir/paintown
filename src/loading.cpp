@@ -59,10 +59,14 @@ void startLoading(Util::Thread::Id * thread, void * arg){
 }
 
 void stopLoading(Util::Thread::Id thread){
+    bool needJoin = false;
     Util::Thread::acquireLock( &loading_screen_mutex );
+    needJoin = ! done_loading;
     done_loading = true;
     Util::Thread::releaseLock( &loading_screen_mutex );
-    Util::Thread::joinThread(thread);
+    if (needJoin){
+        Util::Thread::joinThread(thread);
+    }
 }
 
 static void setupBackground(const Bitmap & background, int load_x, int load_y, int load_width, int load_height, int infobox_x, int infobox_y, int infoWidth, int infoHeight, const Bitmap & infoBackground, const Bitmap & work){

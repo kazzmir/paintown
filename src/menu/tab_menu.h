@@ -16,6 +16,7 @@ class MenuAnimation;
 class ColorInfo;
 
 // Provides a buffer for going between two colors
+/* This is probably just Util::Gradient */
 class ColorBuffer{
     public:
 	ColorBuffer(int color1, int color2);
@@ -49,14 +50,10 @@ class MenuBox : public Gui::Box{
 class TabMenu : public Menu
 {
     public:
-	/*! ctor dtor */
 	TabMenu();
 	virtual ~TabMenu();
 	
-	/*! load */
 	void load(const Filesystem::AbsolutePath &filename) throw (LoadException);
-	
-	/*! load */
 	void load(Token *token) throw (LoadException);
 	
 	/*! do logic, draw whatever */

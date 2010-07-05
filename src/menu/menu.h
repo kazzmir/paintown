@@ -185,6 +185,7 @@ public:
 
     /*! get working bitmap */
     Bitmap *getWork();
+    void setWork(Bitmap * work);
 
     //! get font
     static const Filesystem::RelativePath getFont();
@@ -264,7 +265,7 @@ protected:
 
     //! Our current bitmap to draw to
     /* can't this be passed in instead of created for every menu? */
-    Bitmap *work;
+    Bitmap * currentWork;
 
     //! Draw background
     void drawBackground(Bitmap *work);

@@ -307,6 +307,9 @@ void TabMenu::run(){
     //bool endMenu = false;
     bool done = false;
 
+    Bitmap work(640, 480);
+    setWork(&work);
+
     if ( tabs.empty() ){
         return;
     }
@@ -536,33 +539,33 @@ void TabMenu::run(){
 
         if ( draw ){
             // Draw
-            drawBackground(work);
+            drawBackground(&work);
 
             // Do background animations
             for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-                (*i)->draw(*work);
+                (*i)->draw(work);
             }
 
             // Draw menu area
-            contentArea.render(*work);
+            contentArea.render(work);
 
             // Menus
             if (contentArea.isActive()){
-                drawMenus(work);
+                drawMenus(&work);
             }
 
             // Draw menu info text
-            menuInfoBox.render(*work);
+            menuInfoBox.render(work);
             
-            renderInfoBoxes(*work);
+            renderInfoBoxes(work);
 
             // Draw foreground animations
             for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-                (*i)->draw(*work);
+                (*i)->draw(work);
             }
 
             // Finally render to screen
-            work->BlitToScreen();
+            work.BlitToScreen();
         }
 
         while ( Global::speed_counter < 1 ){
@@ -592,7 +595,7 @@ void TabMenu::drawMenus(Bitmap *bmp){
             tabstartx = backboard.getX();
             tabstarty += tab->location.getHeight();
         }
-        tab->location.setPosition(Gui::AbsolutePoint(tabstartx, tabstarty));
+        tab->location.moveTo(Gui::AbsolutePoint(tabstartx, tabstarty));
         tab->render(*bmp);
         // Draw text
         vFont.printf(tabstartx + ((tabWidth/2)-(vFont.textLength(tab->menu.getName().c_str())/2)), tabstarty, tab->fontColor, *bmp, tab->menu.getName(), 0 );
