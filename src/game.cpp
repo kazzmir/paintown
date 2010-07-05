@@ -1,5 +1,6 @@
 /* bitmap.h must come first */
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 
 #include "game.h"
 #include "music.h"
@@ -52,7 +53,7 @@ struct Background{
 };
 	
 static double startingGameSpeed(){
-	return 1.0;
+    return 1.0;
 }
 
 static void stopLoading(Util::Thread::Id thread){
@@ -119,45 +120,45 @@ static vector< Background > readBackgrounds( const Filesystem::AbsolutePath & pa
 }
 
 static string findNextFile( const char * name ){
-	char buf[ 128 ];
-	const char * extension = strchr( name, '.' );
-	char first[ 128 ];
-	strncpy( first, name, extension - name );
-	first[ extension - name ] = '\0';
-	unsigned int num = 0;
-	sprintf( buf, "%s%u%s", first, num, extension );
-	do{
-		num += 1;
-		sprintf( buf, "%s%u%s", first, num, extension );
+    char buf[ 128 ];
+    const char * extension = strchr( name, '.' );
+    char first[ 128 ];
+    strncpy( first, name, extension - name );
+    first[ extension - name ] = '\0';
+    unsigned int num = 0;
+    sprintf( buf, "%s%u%s", first, num, extension );
+    do{
+        num += 1;
+        sprintf( buf, "%s%u%s", first, num, extension );
         /* num != 0 prevents an infinite loop in the extremely
          * remote case that the user has 2^32 files in the directory
          */
-	} while ( num != 0 && Util::exists( buf ) );
-	return string( buf );
+    } while (num != 0 && Util::exists(buf));
+    return string(buf);
 }
 
-static void drawHelp( const Font & font, int x, int y, int color, Bitmap & buffer ){
-	font.printf( x, y, color, buffer, "Controls", 0 );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Up: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Down: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getDown() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Left: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getLeft() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Right: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getRight() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Jump: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getJump() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Attack1: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack1() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Attack2: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack2() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Attack3: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Tab to hide/show minimap", 0 );
-	y += font.getHeight() + 1;
-	font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
+static void drawHelp( const Font & font, int x, int y, int color, const Bitmap & buffer ){
+    font.printf( x, y, color, buffer, "Controls", 0 );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Up: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Down: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getDown() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Left: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getLeft() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Right: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getRight() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Jump: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getJump() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Attack1: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack1() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Attack2: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack2() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Attack3: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getAttack3() ) );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Tab to hide/show minimap", 0 );
+    y += font.getHeight() + 1;
+    font.printf( x, y, color, buffer, "Press F1 to view this help", 0 );
 }
 
 namespace Game{
@@ -205,23 +206,7 @@ static bool respawnPlayers(const vector<Object*> & players, World & world){
 }
 
 bool playLevel( World & world, const vector< Object * > & players, double helpTime){
-    InputMap<Game::Input> input;
-
-    if (Global::getDebug() > 0){
-        input.set(Keyboard::Key_MINUS_PAD, 2, false, Game::Slowdown);
-        input.set(Keyboard::Key_PLUS_PAD, 2, false, Game::Speedup);
-        input.set(Keyboard::Key_F4, 0, true, Game::ReloadLevel);
-        input.set(Keyboard::Key_F8, 200, false, Game::KillAllHumans);
-    }
-
-    input.set(Keyboard::Key_P, 10, false, Game::Pause);
-    input.set(Keyboard::Key_TAB, 10, false, Game::MiniMaps);
-    input.set(Keyboard::Key_TILDE, 25, false, Game::Console);
-    input.set(Keyboard::Key_ESC, 0, false, Game::Quit);
-    input.set(Keyboard::Key_F1, 0, false, Game::ShowHelp);
-    input.set(Keyboard::Key_F9, 20, false, Game::ShowFps);
-    input.set(Keyboard::Key_F12, 10, false, Game::Screenshot);
-
+    
     /* the game graphics are meant for 320x240 and will be stretched
      * to fit the screen
      */
@@ -265,257 +250,290 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
     // int game_time = 100;
     int frames = 0;
     double fps = Global::TICS_PER_SECOND;
-    bool show_fps = false;
-    bool done = false;
-
-    double gameSpeed = startingGameSpeed();
-
-    const bool paused = false;
-    bool helped = false;
-    bool force_quit = false;
-
-    Util::EventManager eventManager;
-
     unsigned int second_counter = Global::second_counter;
     /* don't put anything after these variables and before the while loop */
     Global::speed_counter = 0;
     // Global::second_counter = 0;
-    double runCounter = 0;
-    /* Main Loop! */
-    while ( ! done ){
 
-        bool draw = false;
-        bool takeScreenshot = false;
+    /* thrown when the player runs out of lives */
+    class LoseException: Exception::Base {
+    public:
+        LoseException():
+        Exception::Base(__FILE__, __LINE__){
+        }
+    };
 
-        if ( Global::speed_counter > 0 ){
-            runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
+    struct GameState{
+        GameState():
+            force_quit(false),
+            helpTime(0),
+            done(false),
+            show_fps(false){
+            }
 
-            while ( runCounter >= 1.0 ){
-                InputManager::poll();
-                eventManager.run();
-                draw = true;
-                world.act();
-                console.act();
-                runCounter -= 1.0;
+        bool force_quit;
+        double helpTime;
+        bool done;
+        bool show_fps;
+    };
 
-                if (!respawnPlayers(players, world)){
-                    fadeOut(screen_buffer, "You lose");
-                    return false;
-                }
+    class Logic{
+    public:
+        Logic(const vector<Object*> & players, World & world, Console::Console & console):
+        runCounter(0),
+        gameSpeed(startingGameSpeed()),
+        players(players),
+        helped(false),
+        world(world),
+        console(console){
+            if (Global::getDebug() > 0){
+                input.set(Keyboard::Key_MINUS_PAD, 2, false, Game::Slowdown);
+                input.set(Keyboard::Key_PLUS_PAD, 2, false, Game::Speedup);
+                input.set(Keyboard::Key_F4, 0, true, Game::ReloadLevel);
+                input.set(Keyboard::Key_F8, 200, false, Game::KillAllHumans);
+            }
 
-                if (helpTime > 0){
-                    if (helped){
-                        helpTime -= 2;
-                    } else {
-                        helpTime -= 0.5;
+            input.set(Keyboard::Key_P, 10, false, Game::Pause);
+            input.set(Keyboard::Key_TAB, 10, false, Game::MiniMaps);
+            input.set(Keyboard::Key_TILDE, 25, false, Game::Console);
+            input.set(Keyboard::Key_ESC, 0, false, Game::Quit);
+            input.set(Keyboard::Key_F1, 0, false, Game::ShowHelp);
+            input.set(Keyboard::Key_F9, 20, false, Game::ShowFps);
+            input.set(Keyboard::Key_F12, 10, false, Game::Screenshot);
+        }
+
+        InputMap<Game::Input> input;
+        double runCounter;
+        double gameSpeed;
+        const vector<Object*> & players;
+        bool helped;
+        World & world;
+        Util::EventManager eventManager;
+        Console::Console & console;
+
+        bool run(bool & takeScreenshot, GameState & state){
+            bool draw = false;
+            if (Global::speed_counter > 0){
+                runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
+
+                while (runCounter >= 1.0){
+                    InputManager::poll();
+                    eventManager.run();
+                    draw = true;
+                    world.act();
+                    console.act();
+                    runCounter -= 1.0;
+
+                    if (!respawnPlayers(players, world)){
+                        throw LoseException();
+                    }
+
+                    if (state.helpTime > 0){
+                        if (helped){
+                            state.helpTime -= 2;
+                        } else {
+                            state.helpTime -= 0.5;
+                        }
                     }
                 }
-            }
 
-            InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
+                InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
 
-            if (inputState[Game::ShowHelp]){
-                helped = true;
-                helpTime = helpTime < 260 ? 260 : helpTime;
-            }
+                if (inputState[Game::ShowHelp]){
+                    helped = true;
+                    state.helpTime = state.helpTime < 260 ? 260 : state.helpTime;
+                }
 
-            if (inputState[Game::ShowFps]){
-                show_fps = ! show_fps;
-            }
+                if (inputState[Game::ShowFps]){
+                    state.show_fps = ! state.show_fps;
+                }
 
-            if (inputState[Game::Console]){
-                console.toggle();
-            }
+                if (inputState[Game::Console]){
+                    console.toggle();
+                }
 
-            takeScreenshot = inputState[Game::Screenshot];
+                takeScreenshot = inputState[Game::Screenshot];
 
-            if (inputState[Game::Pause]){
+                if (inputState[Game::Pause]){
+                    /*
+                       paused = ! paused;
+                       world.addMessage(paused ? pausedMessage() : unpausedMessage());
+                       draw = true;
+                       */
+                    world.changePause();
+                }
+
+                if (inputState[Game::MiniMaps]){
+                    world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
+                }
+
                 /*
-                   paused = ! paused;
-                   world.addMessage(paused ? pausedMessage() : unpausedMessage());
-                   draw = true;
+                   if ( key[ Keyboard::Key_F8 ] ){
+                   world.killAllHumans( player );
+                   }
                    */
-                world.changePause();
-            }
 
-            if (inputState[Game::MiniMaps]){
-                world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
-            }
-
-            /*
-               if ( key[ Keyboard::Key_F8 ] ){
-               world.killAllHumans( player );
-               }
-               */
-
-            if ( Global::getDebug() > 0 ){
-                const double SPEED_INC = 0.02;
-                if (inputState[Game::Speedup]){
-                    gameSpeed += SPEED_INC;
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
-
-                if (inputState[Game::Slowdown]){
-                    gameSpeed -= SPEED_INC;
-                    if ( gameSpeed < SPEED_INC ){
-                        gameSpeed = SPEED_INC;
+                if ( Global::getDebug() > 0 ){
+                    const double SPEED_INC = 0.02;
+                    if (inputState[Game::Speedup]){
+                        gameSpeed += SPEED_INC;
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
                     }
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
 
-                if (inputState[Game::NormalSpeed]){
-                    gameSpeed = 1;
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
+                    if (inputState[Game::Slowdown]){
+                        gameSpeed -= SPEED_INC;
+                        if ( gameSpeed < SPEED_INC ){
+                            gameSpeed = SPEED_INC;
+                        }
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                    }
 
-                if (inputState[Game::ReloadLevel]){
-                    try{
-                        world.reloadLevel();
-                        draw = true;
-                    } catch ( const LoadException & le ){
-                        Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
+                    if (inputState[Game::NormalSpeed]){
+                        gameSpeed = 1;
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                    }
+
+                    if (inputState[Game::ReloadLevel]){
+                        try{
+                            world.reloadLevel();
+                            draw = true;
+                        } catch ( const LoadException & le ){
+                            Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
+                        }
                     }
                 }
+
+                state.force_quit |= inputState[Game::Quit];
+                try{
+                    console.doInput();
+                } catch (const Exception::Return & r){
+                    state.force_quit = true;
+                }
+
+                Global::speed_counter = 0;
+                state.done |= state.force_quit || world.finished();
             }
 
-            force_quit |= inputState[Game::Quit];
-            try{
-                console.doInput();
-            } catch (const Exception::Return & r){
-                force_quit = true;
-            }
-
-            Global::speed_counter = 0;
-            done |= force_quit || world.finished();
+            return draw;
         }
 
-        /*
-           while ( Global::second_counter > 0 ){
-           game_time--;
-           Global::second_counter--;
-           if ( game_time < 0 )
-           game_time = 0;
-           }
-           */
-        if (second_counter != Global::second_counter){
-            int difference = Global::second_counter - second_counter;
-            /* unlikely, but just in case */
-            if (difference == 0){
-                difference = 1;
-            }
-            fps = (0.75 * fps) + (0.25 * (double) frames / difference);
-            // fps[fps_index] = (double) frames / (double) difference;
-            // fps_index = (fps_index+1) % max_fps_index;
-            second_counter = Global::second_counter;
-            frames = 0;
-        }
-
-        if ( draw ){
-            frames += 1;
-            world.draw( &work );
-
-            work.Stretch( screen_buffer );
-            FontRender * render = FontRender::getInstance();
-            render->render( &screen_buffer );
-
-            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-
-            if ( helpTime > 0 ){
-                int x = 100;
-                int y = screen_buffer.getHeight() / 5;
-                int color = Bitmap::makeColor( 255, 255, 255 );
-                Bitmap::transBlender( 0, 0, 0, (int)(helpTime > 255 ? 255 : helpTime));
-                screen_buffer.drawingMode( Bitmap::MODE_TRANS );
-                drawHelp( font, x, y, color, screen_buffer );
-                screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-            }
-
-            /*
-            if ( paused ){
-                screen_buffer.transBlender( 0, 0, 0, 128 );
-                screen_buffer.drawingMode( Bitmap::MODE_TRANS );
-                screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-                screen_buffer.drawingMode( Bitmap::MODE_SOLID );
-                font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
-            }
-            */
-
-            /*
-            double real_fps = 0;
-            for ( int i = 0; i < max_fps_index; i++ ){
-                real_fps += fps[i];
-            }
-            real_fps /= max_fps_index;
-            */
-
-            if ( show_fps ){
-                font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
-            }
-            console.draw(screen_buffer);
-
-            /* getX/Y move when the world is quaking */
-            screen_buffer.BlitToScreen( world.getX(), world.getY() );
-
-            if (takeScreenshot){
-                doTakeScreenshot(work);
-            }
-
-            work.clear();
-        }
-
-        while ( Global::speed_counter < 1 ){
-            Util::rest( 1 );
-            // key.poll();
+        void rest(){
+            Util::rest(1);
             InputManager::poll();
             eventManager.run();
         }
-    }
 
-
-    if (!force_quit){
-        work.clear();
-        Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
-        for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
-            Bitmap * shot = *it;
-            int angle = Util::rnd(13) - 6;
-
-            /*
-               int gap = 4;
-               int x = Util::rnd(work.getWidth() - 2 * work.getWidth() / gap) + work.getWidth() / gap;
-               int y = Util::rnd(work.getHeight() - 2 * work.getHeight() / gap) + work.getHeight() / gap;
-               double scale = 1.0 - log(world.getScreenshots().size()+1) / 9.0;
-               shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
-               */
-
-            int x = work.getWidth() / 2;
-            int y = work.getHeight() / 2;
-            double scale = 0.9;
-            shot->border(0, 1, Bitmap::makeColor(64,64,64));
-            shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
-            work.Stretch( screen_buffer );
-            screen_buffer.BlitToScreen();
-            snapshot.play();
-            Util::restSeconds(1.5);
+        void waitForQuit(){
+            InputManager::waitForRelease(input, Game::Quit);
         }
-        if (world.getScreenshots().size() > 0){
-            Util::restSeconds(2);
+    };
+
+    bool finish = true;
+    Logic logic(players, world, console);
+    GameState state;
+    state.helpTime = helpTime;
+
+    try{
+        /* Main Loop! */
+        while ( ! state.done ){
+            bool draw = false;
+            bool takeScreenshot = false;
+            draw = logic.run(takeScreenshot, state);
+
+            if (second_counter != Global::second_counter){
+                int difference = Global::second_counter - second_counter;
+                /* unlikely, but just in case */
+                if (difference == 0){
+                    difference = 1;
+                }
+                fps = (0.75 * fps) + (0.25 * (double) frames / difference);
+                // fps[fps_index] = (double) frames / (double) difference;
+                // fps_index = (fps_index+1) % max_fps_index;
+                second_counter = Global::second_counter;
+                frames = 0;
+            }
+
+            if ( draw ){
+                frames += 1;
+                world.draw( &work );
+
+                work.Stretch( screen_buffer );
+                FontRender * render = FontRender::getInstance();
+                render->render( &screen_buffer );
+
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+
+                if (state.helpTime > 0){
+                    int x = 100;
+                    int y = screen_buffer.getHeight() / 5;
+                    int color = Bitmap::makeColor( 255, 255, 255 );
+                    Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
+                    drawHelp( font, x, y, color, screen_buffer.translucent());
+                }
+
+                if (state.show_fps){
+                    font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
+                }
+                console.draw(screen_buffer);
+
+                /* getX/Y move when the world is quaking */
+                screen_buffer.BlitToScreen(world.getX(), world.getY());
+
+                if (takeScreenshot){
+                    doTakeScreenshot(work);
+                }
+
+                work.clear();
+            }
+
+            while (Global::speed_counter < 1){
+                logic.rest();
+            }
         }
+
+
+        if (!state.force_quit){
+            work.clear();
+            Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
+            for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
+                Bitmap * shot = *it;
+                int angle = Util::rnd(13) - 6;
+
+                /*
+                   int gap = 4;
+                   int x = Util::rnd(work.getWidth() - 2 * work.getWidth() / gap) + work.getWidth() / gap;
+                   int y = Util::rnd(work.getHeight() - 2 * work.getHeight() / gap) + work.getHeight() / gap;
+                   double scale = 1.0 - log(world.getScreenshots().size()+1) / 9.0;
+                   shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
+                   */
+
+                int x = work.getWidth() / 2;
+                int y = work.getHeight() / 2;
+                double scale = 0.9;
+                shot->border(0, 1, Bitmap::makeColor(64,64,64));
+                shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
+                work.Stretch( screen_buffer );
+                screen_buffer.BlitToScreen();
+                snapshot.play();
+                Util::restSeconds(1.5);
+            }
+            if (world.getScreenshots().size() > 0){
+                Util::restSeconds(2);
+            }
+        }
+    } catch (const LoseException & lose){
+        fadeOut(screen_buffer, "You lose");
+        finish = false;
     }
 
     world.getEngine()->destroyWorld(world);
 
-    if (force_quit){
-        InputManager::waitForRelease(input, Game::Quit);
-        /*
-        while (inputState[Game::Quit] key[ Keyboard::Key_ESC ] ){
-            key.poll();
-            Util::rest( 1 );
-        }
-        */
-        return false;
+    if (state.force_quit){
+        logic.waitForQuit();
+        finish = false;
     }
 
-    return true;
+    return finish;
 }
 
 static string funnyGo(){
