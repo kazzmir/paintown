@@ -1,0 +1,7 @@
+Issues with porting paintown to the Wii:
+  * Wii has a memory limit of 78 megs or so. 24m from mem1 and 64m from mem2 but 10m is reserved which leaves 78m. On Linux, Paintown usually uses around 100m so this had to be reduced to fit on the Wii.
+  The resolution was to make palette swaps for characters only if they are used. This reduced memory usage by about 20m when playing with Akuma on stage 1 of Paintown. Another reduction was not creating buffer bitmaps in the menu in the constructor. Instead the buffers are created when then menu is executing since that is the only time the buffers are needed. In total memory usage is about 50m down from 100m.
+
+  * Wii input (wiimote, gamecube pad, classic controller, nunchuck), these things weren't very well supported, Juvinious added code to read them.
+
+  * Reading data files is incredibly slow. WiiOs doesn't cache files and reading from FAT partition is slow in itself which yields load times upto 10x slower than Paintown on the PC.
