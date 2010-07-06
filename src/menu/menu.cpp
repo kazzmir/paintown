@@ -397,6 +397,17 @@ void _Menu::Menu::load(Token * token){
                     foregroundAnimations.push_back(animation);
                 }
                 */
+            } else if (*tok == "val" || *tok == "value"){
+                Token * val;
+                *tok >> val;
+                ValueHolder * value = new ValueHolder(val->getName());
+                try {
+                    while (true){
+                        *value << val;
+                    }
+                } catch (const TokenException & ex){
+                }
+                addData(value);
             } else {
                 Global::debug(3) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
