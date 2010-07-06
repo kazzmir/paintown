@@ -80,17 +80,28 @@ class InfoBox: public Gui::Widget {
 class ValueHolder{
     public:
         ValueHolder(const std::string &);
+        ValueHolder(const ValueHolder &);
         virtual ~ValueHolder();
+
+        virtual ValueHolder & operator=(const ValueHolder &);
         
         virtual ValueHolder & operator<<(const std::string &);
         virtual ValueHolder & operator<<(bool val);
         virtual ValueHolder & operator<<(int val);
-        virtual ValueHolder & operator<<(double val);
+        virtual ValueHolder & operator<<(double val);  
+        virtual ValueHolder & operator<<(Token *);
         
         virtual ValueHolder & operator>>(std::string &);
         virtual ValueHolder & operator>>(bool val);
         virtual ValueHolder & operator>>(int val);
         virtual ValueHolder & operator>>(double val);
+
+        virtual inline const std::string & getName() const {
+            return this->name;
+        }
+
+        virtual const std::string getValues();
+
     private:
         std::string name;
         std::vector<std::string> values;
@@ -103,8 +114,8 @@ class ValueHolder{
 class Menu{
     public:
         Menu();
-        Menu(const Filesystem::AbsolutePath & filename);
-        Menu(Token * token);
+        Menu(const Filesystem::AbsolutePath &);
+        Menu(Token *);
         virtual ~Menu();
 
         /*! Run Menu */
@@ -127,7 +138,10 @@ class Menu{
         Gui::ContextBox contextMenu;
 
         /*! Data holder */
-        std::map<std::string, ValueHolder> data;
+        std::map<std::string, ValueHolder *> data;
+
+        /*! Add Data */
+        void addData(ValueHolder *);
     private:
 };
 

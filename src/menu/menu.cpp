@@ -196,6 +196,21 @@ location(0){
 }
 _Menu::ValueHolder::~ValueHolder(){
 }
+
+_Menu::ValueHolder::ValueHolder(const ValueHolder & copy){
+    // reset position
+    this->location = 0;
+    this->name = copy.name;
+    this->values = copy.values;
+}
+
+_Menu::ValueHolder & _Menu::ValueHolder::operator=(const ValueHolder & copy){
+    // reset position
+    this->location = 0;
+    this->name = copy.name;
+    this->values = copy.values;
+    return *this;
+}
         
 _Menu::ValueHolder & _Menu::ValueHolder::operator<<(const std::string & val){
     values.push_back(val);
@@ -216,6 +231,13 @@ _Menu::ValueHolder & _Menu::ValueHolder::operator<<(double val){
     o << val;
     return *this << o.str();
 }
+
+_Menu::ValueHolder & _Menu::ValueHolder::operator<<(Token * tok){
+    std::string temp;
+    *tok >> temp;
+    return *this << temp;
+}
+
 
 _Menu::ValueHolder & _Menu::ValueHolder::operator>>(std::string & val){
     val = values[location];
@@ -248,6 +270,14 @@ void _Menu::ValueHolder::next(){
     }
 }
 
+const std::string _Menu::ValueHolder::getValues() {
+    std::string temp;
+    for (std::vector<std::string>::iterator i = values.begin(); i != values.end(); ++i){
+        temp += *i + "; ";
+    }
+    return temp;
+}
+
 /* New Menu */
 _Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     // Load up tokenizer
@@ -266,6 +296,12 @@ _Menu::Menu::Menu(Token * token){
 }
 
 _Menu::Menu::~Menu(){
+    // Kill values
+    for (std::map<string,ValueHolder *>::iterator i = data.begin(); i != data.end(); ++i){
+        if (i->second){
+            delete i->second;
+        }
+    }
 }
 
 void _Menu::Menu::load(Token * token){
@@ -280,52 +316,29 @@ void _Menu::Menu::load(Token * token){
             Token * tok;
             *token >> tok;
             if ( *tok == "name" ){
-                // Set menu name
-                //*tok >> _name;
+                ValueHolder * value = new ValueHolder("name");
+                *value << tok;
+                addData(value);
             } else if ( *tok == "music" ) {
-                // Set music and push onto the stack
-                //*tok >> music;
+                ValueHolder * value = new ValueHolder("music");
+                *value << tok;
+                addData(value);
             } else if( *tok == "select-sound" ) {
-                //*tok >> selectSound;
+                ValueHolder * value = new ValueHolder("select-sound");
+                *value << tok;
+                addData(value);
             } else if (*tok == "back-sound"){
-                //*tok >> backSound;
-                try{
-                    /* try to load it */
-                    //Resource::getSound(backSound);
-                } catch (const LoadException & le){
-                    //Global::debug(0) << "Could not load sound " << backSound << " because " << le.getReason() << endl;
-                    /* we failed, so set the backSound to nothing */
-                    //backSound = "";
-                }
+                ValueHolder * value = new ValueHolder("back-sound");
+                *value << tok;
+                addData(value);
             } else if (*tok == "ok-sound"){
-                //*tok >> okSound;
-                try{
-                    /* try to load it */
-                    //Resource::getSound(okSound);
-                } catch (const LoadException & le){
-                    //Global::debug(0) << "Could not load sound " << okSound << " because " << le.getReason() << endl;
-                    /* we failed, so set the backSound to nothing */
-                    //okSound = "";
-                }
+                ValueHolder * value = new ValueHolder("ok-sound");
+                *value << tok;
+                addData(value);
             } else if ( *tok == "background" ) {
-                /*std::string temp;
-                *tok >> temp;
-                if ( background ){
-                    delete background;
-                }
-                Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(temp));
-                background = new Bitmap(full.path());
-                if ( background->getError() ){
-                    Global::debug(0) << "Problem loading Bitmap: " << full.path() << endl;
-                    delete background;
-                    background = 0;
-                }*/
+                // Being replaced by animation
             } else if ( *tok == "clear-color" ) {
-                /* This is the clear color of the background if there is no background image specified within the menu
-                 * Although if this is a submenu, and parent has a background that will be used instead...*/
-                //int r=0,g=0,b=0;
-                //*tok >> r >> g >> b;
-                //clearColor = Bitmap::makeColor(r,g,b);
+                // Still necessary?
             } else if ( *tok == "position" ) {
                 // This handles the placement of the menu list and surrounding box
                 //contextMenu.setCoordinates(tok);
@@ -345,10 +358,9 @@ void _Menu::Menu::load(Token * token){
                 //*tok >> speed;
                 //contextMenu.setFadeSpeed(speed);
             } else if ( *tok == "font" ) {
-                //string str;
-                //*tok >> str >> sharedFontWidth >> sharedFontHeight; 
-                /* FIXME: make sharedFont an AbsolutePath */
-                //sharedFont = Filesystem::find(Filesystem::RelativePath(str)).path();
+                ValueHolder * value = new ValueHolder("font");
+                *value << tok << tok << tok;
+                addData(value);
             } else if( *tok == "option" ) {
                 try{
                     MenuOption *temp = OptionFactory::getOption(tok);
@@ -365,11 +377,17 @@ void _Menu::Menu::load(Token * token){
             } else if (*tok == "action"){
                 //ActionAct(tok);
             } else if (*tok == "info-position"){
-                //*tok >> optionInfoTextLocation.x >> optionInfoTextLocation.y;
+                ValueHolder * value = new ValueHolder("info-position");
+                *value << tok << tok;
+                addData(value);
             } else if (*tok == "menuinfo"){
-                //*tok >> menuInfo;
+                ValueHolder * value = new ValueHolder("menuinfo");
+                *value << tok;
+                addData(value);
             } else if (*tok == "menuinfo-position"){
-                //*tok >> menuInfoLocation.x >> menuInfoLocation.y;
+                ValueHolder * value = new ValueHolder("menuinfo-position");
+                *value << tok << tok;
+                addData(value);
             } else if (*tok == "anim"){
                 /*
                 MenuAnimation *animation = new MenuAnimation(tok);
@@ -402,6 +420,16 @@ void _Menu::Menu::act(){
 }
 
 void _Menu::Menu::render(int x, int y, const Bitmap & bmp){
+}
+
+void _Menu::Menu::addData(ValueHolder * item){
+    std::pair<std::map<std::string,ValueHolder *>::iterator,bool> check;
+    check = data.insert( std::pair<std::string,ValueHolder *>(item->getName(),item) );
+    if (check.second == false){
+        Global::debug(0,"MENU") << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
+        Global::debug(0,"MENU") << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
+        data[item->getName()] = item;
+    }
 }
 
 
