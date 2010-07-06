@@ -805,6 +805,7 @@ void Configuration::saveConfiguration(){
     }
 }
 
+/* Defaults for all configuration options */
 double Configuration::gamespeed = 1.0;
 bool Configuration::invincible = false;
 bool Configuration::fullscreen = false;
@@ -825,6 +826,7 @@ int Configuration::menuFontWidth = 24;
 int Configuration::menuFontHeight = 24;
 int Configuration::soundVolume = 80;
 int Configuration::musicVolume = 80;
+bool Configuration::joystickEnabled = true;
 std::string Configuration::currentGameDir = "paintown";
 std::map<std::string, std::string> Configuration::properties;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
@@ -931,5 +933,9 @@ void Configuration::setMusicVolume(int volume){
 }
 
 bool Configuration::isJoystickEnabled(){
-    return true;
+    return joystickEnabled;
+}
+    
+void Configuration::setJoystickEnabled(bool enabled){
+    joystickEnabled = enabled;
 }

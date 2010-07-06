@@ -93,6 +93,7 @@ public:
     static void setCurrentGame(const std::string & str);
 
     static bool isJoystickEnabled();
+    static void setJoystickEnabled(bool enabled);
 
     static void setStringProperty(const std::string & path, const std::string & value);
     static std::string getStringProperty(const std::string & path, const std::string & defaultValue);
@@ -160,6 +161,8 @@ private:
 
     static int soundVolume;
     static int musicVolume;
+
+    static bool joystickEnabled;
 
     /* directory of current game/mod */
     static std::string currentGameDir;

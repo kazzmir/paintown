@@ -39,6 +39,7 @@ static const char * DEBUG_ARG[] = {"-l", "debug"};
 static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
 static const char * MUGEN_ARG[] = {"mugen"};
+static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 
 static const char * closestMatch(const char * s1, vector<const char *> args){
 
@@ -91,6 +92,7 @@ static void showOptions(){
 	Global::debug(0) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
 	Global::debug(0) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
         Global::debug(0) << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
+        Global::debug(0) << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
 #ifdef HAVE_NETWORKING
 	Global::debug(0) << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
 #endif
@@ -133,6 +135,7 @@ static void hack(){
 int paintown_main( int argc, char ** argv ){
 
     bool music_on = true;
+    bool joystick_on = true;
     bool mugen = false;
     bool just_network_server = false;
     Collector janitor;
@@ -163,6 +166,8 @@ int paintown_main( int argc, char ** argv ){
             music_on = false;
         } else if (isArg(argv[q], MUGEN_ARG, NUM_ARGS(MUGEN_ARG))){
             mugen = true;
+        } else if (isArg(argv[q], JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG))){
+            joystick_on = false;
         } else if ( isArg( argv[ q ], DEBUG_ARG, NUM_ARGS(DEBUG_ARG) ) ){
             q += 1;
             if ( q < argc ){
@@ -217,6 +222,8 @@ int paintown_main( int argc, char ** argv ){
         Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << ": " << e.getTrace() << endl;
         Paintown::Mod::loadDefaultMod();
     }
+
+    Configuration::setJoystickEnabled(joystick_on);
 
     InputManager input;
     Music music(music_on);
