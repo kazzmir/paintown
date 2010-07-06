@@ -1,0 +1,13 @@
+Import('use')
+
+source = Split("""
+semaphores.cpp
+../../util/thread.cpp
+../../util/token_exception.cpp
+../../util/load_exception.cpp
+../../exceptions/exception.cpp
+""")
+
+x = []
+x.append(use.Program('semaphore', source))
+Return('x')
