@@ -304,10 +304,6 @@ _Menu::Menu::~Menu(){
     }
 }
 
-static int getVersion(int h, int m, int l){
-    return h * 1000 + m * 100 + l;
-}
-
 void _Menu::Menu::load(Token * token){
     // version info;
     int major=0, minor=0, micro=0;
@@ -316,6 +312,11 @@ void _Menu::Menu::load(Token * token){
     } else if (!token->hasTokens()){
         return;
     } else {
+        /* FIXME: It looks like this code assumes the first 3 things in the menu will be
+         * a version number. Instead have a (version x y z) field that you can search for.
+         * Something like token->findToken("version")->match(major, minor, micro);
+         * If that fails then there is no version or it is incorrectly specified.
+         */
         // Get version
         try {
             *token >> major >> minor >> micro;
@@ -344,8 +345,8 @@ void _Menu::Menu::load(Token * token){
                 } catch (const TokenException & ex){
                 }
                 addData(value);
-            } else if (getVersion(major, minor, micro) != Global::getVersion()){
-                handleCompatibility(tok, getVersion(major, minor, micro));
+            } else if (Global::getVersion(major, minor, micro) != Global::getVersion()){
+                handleCompatibility(tok, Global::getVersion(major, minor, micro));
             } else {
                 Global::debug(3,"MENU") <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -383,7 +384,7 @@ void _Menu::Menu::addData(ValueHolder * item){
 
 void _Menu::Menu::handleCompatibility(Token * tok, int version){
     Global::debug(0,"MENU") << "Trying version: " << version << endl;
-    if (version <= 3301){
+    if (version <= Global::getVersion(3, 3, 1)){
         if ( *tok == "name" ){
             ValueHolder * value = new ValueHolder("name");
             *value << tok;

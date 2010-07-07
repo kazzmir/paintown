@@ -25,8 +25,13 @@ extern const unsigned int MagicId;
 
 extern const Filesystem::RelativePath DEFAULT_FONT;
 
+/* The current version */
 int getVersion();
+/* The current version as a string */
 std::string getVersionString();
+
+/* Turn some major.minor.micro into a single version number for comparisons */
+int getVersion(int major, int minor, int micro);
 
 bool shutdown();
 

@@ -69,8 +69,12 @@ bool Global::shutdown(){
     return do_shutdown > 0;
 }
 
+int Global::getVersion(int major, int minor, int micro){
+    return major * 1000 + minor * 100 + micro;
+}
+
 int Global::getVersion(){
-    return major_version * 1000 + minor_version * 100 + micro_version;
+    return getVersion(major_version, minor_version, micro_version);
 }
 
 string Global::getVersionString(){

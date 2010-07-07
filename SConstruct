@@ -749,6 +749,7 @@ pspnet_inet
             # cflags.append( ['-g3','-ggdb', '-Werror'])
             cflags.append( ['-g3','-ggdb'])
         else:
+            # -march=native
             cflags.append(['-O2'])
 
         if isCygwin():
