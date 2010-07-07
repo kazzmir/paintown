@@ -12,6 +12,7 @@
 #include "gui/context-box.h"
 #include "gui/popup-box.h"
 #include "gui/widget.h"
+#include "gui/animation.h"
 
 #ifdef _MSC_VER
 #ifndef uint32_t
@@ -23,9 +24,7 @@ class Font;
 class Bitmap;
 class MenuOption;
 class Token;
-namespace Gui{
-    class Animation;
-}
+
 namespace _Menu{
 class Point{
     public:
@@ -108,6 +107,23 @@ class ValueHolder{
         unsigned int location;
         
         void next();
+};
+
+class Background{
+    public:
+        Background();
+        ~Background();
+
+        /*! Logic - Change over to Gui::Space later */
+        void act(const Gui::Coordinate &);
+
+        void render(const Gui::Animation::Depth &, const Bitmap &);
+
+        void add(Gui::Animation *);
+    private:
+        std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> > backgrounds;
+
+        void drawBackgrounds(std::vector<Gui::Animation *> &, const Bitmap &);
 };
 
 /*! New Menu class */

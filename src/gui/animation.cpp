@@ -152,7 +152,7 @@ void Frame::draw(const int xaxis, const int yaxis, const Bitmap & work){
 
 Animation::Animation(Token *the_token) throw (LoadException):
 id(0),
-location(0),
+depth(Background0),
 ticks(0),
 currentFrame(0),
 loop(0),
@@ -166,11 +166,13 @@ allowReset(true){
 	The images must be listed prior to listing any frames, basedir can be used to set the directory where the images are located
 	loop will begin at the subsequent frame listed after loop
 	axis is the location in which the drawing must be placed
-	location - used to render in background or foreground (0 == background [default]| 1 == foreground)
+	location *old* - used to render in background or foreground (0 == background [default]| 1 == foreground)
+    depth - used to render in background or foreground space (depth background 0) | (depth foreground 1)
 	reset - used to allow resetting of animation (0 == no | 1 == yes [default])
 	velocity - used to get a wrapping scroll effect while animating
 	(anim (id NUM) 
 	      (location NUM)
+          (depth background|foreground NUM)
 	      (basedir LOCATION)
 	      (image NUM FILE) 
 	      (velocity x y)
@@ -189,8 +191,32 @@ allowReset(true){
                 // get the id
                 *token >> id;
             } else if (*token == "location"){
-                // get the location
+                // translate location to depth
+                int location = 0;
                 *token >> location;
+                if (location == 0){
+                    depth = Background0;
+                } else if (location == 1){
+                    depth = Foreground0;
+                }
+            } else if (*token == "depth"){
+                // get the depth
+                std::string name;
+                int level;
+                *token >> name >> level;
+                if (name == "background"){
+                    switch (level){
+                        case 0: depth = Background0;break;
+                        case 1: depth = Background1;break;
+                        default: depth = Background0;break;
+                    }
+                } else if (name == "foreground"){
+                    switch (level){
+                        case 0: depth = Foreground0;break;
+                        case 1: depth = Foreground1;break;
+                        default: depth = Foreground0;break;
+                    }
+                }
             } else if (*token == "basedir"){
                 // set the base directory for loading images
                 *token >> basedir;

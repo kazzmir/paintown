@@ -55,11 +55,18 @@ public:
 	
 	inline void reset(){ if (allowReset){ currentFrame = 0; } }
 	inline int getID() const { return id; }
-	inline int getLocation() const { return location; }
+
+    enum Depth {
+        Background0,
+        Background1,
+        Foreground0,
+        Foreground1,
+    };
+	inline const Depth & getDepth() const { return this->depth; }
 	
 private:
 	int id;
-	int location;
+	Depth depth;
 	int ticks;
 	unsigned int currentFrame;
 	unsigned int loop;

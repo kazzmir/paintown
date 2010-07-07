@@ -20,7 +20,6 @@
 #include "optionfactory.h"
 #include "actionfactory.h"
 #include "menu_global.h"
-#include "gui/animation.h"
 
 #include "input/input-manager.h"
 #include "input/input-map.h"
@@ -278,6 +277,47 @@ const std::string _Menu::ValueHolder::getValues() {
     return temp;
 }
 
+/* backgrounds */
+_Menu::Background::Background(){
+}
+
+_Menu::Background::~Background(){
+    for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
+        std::vector<Gui::Animation *> & animations = i->second;
+        for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
+            Gui::Animation * anim = *j;
+            if (anim){
+                delete anim;
+            }
+        }
+    }
+}
+
+void _Menu::Background::act(const Gui::Coordinate & coord){
+    for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
+        std::vector<Gui::Animation *> & animations = i->second;
+        for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
+            Gui::Animation * anim = *j;
+            if (anim){
+                anim->act();
+            }
+        }
+    }
+}
+
+void _Menu::Background::render(const Gui::Animation::Depth & depth, const Bitmap & bmp){
+    for (std::vector<Gui::Animation *>::iterator i = backgrounds[depth].begin(); i != backgrounds[depth].end(); ++i){
+        Gui::Animation * anim = *i;
+        if (anim){
+            anim->draw(bmp);
+        }   
+    }
+}
+
+void _Menu::Background::add(Gui::Animation * anim){
+    backgrounds[anim->getDepth()].push_back(anim);
+}
+
 /* New Menu */
 _Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     // Load up tokenizer
@@ -312,21 +352,20 @@ void _Menu::Menu::load(Token * token){
     } else if (!token->hasTokens()){
         return;
     } else {
-        /* FIXME: It looks like this code assumes the first 3 things in the menu will be
-         * a version number. Instead have a (version x y z) field that you can search for.
-         * Something like token->findToken("version")->match(major, minor, micro);
-         * If that fails then there is no version or it is incorrectly specified.
-         */
         // Get version
-        try {
-            *token >> major >> minor >> micro;
-        } catch (const TokenException & ex){
-            if (major == 0){
+        Token * tok;
+        *token >> tok;
+        Token *version = tok->findToken("version");
+        if (version != NULL){
+            try {
+                *version >> major >> minor >> micro;
+            } catch (const TokenException & ex){
+            }
+        } else {
                 Global::debug(0, "MENU") << "No version indicated, assuming 3.3.1 or below." << endl;
                 major = 3;
                 minor = 3;
-                micro = 1;
-            }
+                micro = 1; 
         }
     }
 
@@ -383,7 +422,7 @@ void _Menu::Menu::addData(ValueHolder * item){
 }
 
 void _Menu::Menu::handleCompatibility(Token * tok, int version){
-    Global::debug(0,"MENU") << "Trying version: " << version << endl;
+    Global::debug(1,"MENU") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
         if ( *tok == "name" ){
             ValueHolder * value = new ValueHolder("name");
@@ -656,9 +695,9 @@ void Menu::load(Token *token){
                 *tok >> menuInfoLocation.x >> menuInfoLocation.y;
             } else if (*tok == "anim"){
                 Gui::Animation *animation = new Gui::Animation(tok);
-                if (animation->getLocation() == 0){
+                if (animation->getDepth() == Gui::Animation::Background0){
                     backgroundAnimations.push_back(animation);
-                } else if (animation->getLocation() == 1){
+                } else if (animation->getDepth() == Gui::Animation::Foreground0){
                     foregroundAnimations.push_back(animation);
                 }
             } else {
