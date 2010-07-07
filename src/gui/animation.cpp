@@ -97,6 +97,14 @@ alpha(255){
     }
 }
 
+Frame::Frame(Bitmap * bmp):
+bmp(bmp),
+time(0),
+horizontalFlip(false),
+verticalFlip(false),
+alpha(255){
+}
+
 Frame::~Frame(){
 }
 
@@ -288,6 +296,25 @@ allowReset(true){
         out << "Loop location is larger than the number of frames. Loop: " << loop << " Frames: " << frames.size();
         throw LoadException(__FILE__, __LINE__, out.str());
     }
+}
+
+Animation::Animation(const std::string & background) throw (LoadException):
+id(0),
+depth(BackgroundBottom),
+ticks(0),
+currentFrame(0),
+loop(0),
+allowReset(true){
+    // add bitmap
+    Bitmap *bmp = new Bitmap(Filesystem::find(Filesystem::RelativePath(background)).path());
+    if (bmp->getError()){
+        delete bmp;
+        throw LoadException(__FILE__,__LINE__, "Problem loading file: " + background);
+    } else {
+        images[0] = bmp;
+    }
+    Frame *frame = new Frame(bmp);
+    frames.push_back(frame);
 }
 
 Animation::~Animation(){

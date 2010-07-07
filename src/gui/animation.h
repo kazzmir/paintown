@@ -18,6 +18,7 @@ typedef std::map< int, Bitmap *> imageMap;
 class Frame{
     public:
 	Frame(Token *token, imageMap &images) throw (LoadException);
+    Frame(Bitmap *);
 	virtual ~Frame();
 	virtual void act(double xvel, double yvel);
 	virtual void draw(int xaxis, int yaxis, const Bitmap &);
@@ -33,6 +34,8 @@ class Frame{
 class Animation{
 public:
 	Animation(Token *token) throw (LoadException);
+    /*! Load only a single bitmap (for bacwards compatibility of backgrounds in menu) */
+    Animation(const std::string &) throw (LoadException);
 	virtual ~Animation();
 	// Logic
 	virtual void act();

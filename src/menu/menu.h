@@ -154,6 +154,9 @@ class Menu{
         /*! Data holder */
         std::map<std::string, ValueHolder *> data;
 
+        /*! Backgrounds */
+        Background background;
+
         /*! load token */
         void load(Token * token);
         

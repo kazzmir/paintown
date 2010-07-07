@@ -385,7 +385,12 @@ void _Menu::Menu::load(Token * token){
                 }
                 addData(value);
             } else if (Global::getVersion(major, minor, micro) != Global::getVersion()){
+                // Do compatible translations if necessary
                 handleCompatibility(tok, Global::getVersion(major, minor, micro));
+            } 
+            // Newer items
+            else if (*tok == "animation" || *tok == "background"){
+                background.add(new Gui::Animation(tok));
             } else {
                 Global::debug(3,"MENU") <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -445,7 +450,11 @@ void _Menu::Menu::handleCompatibility(Token * tok, int version){
             *value << tok;
             addData(value);
         } else if ( *tok == "background" ) {
-            // Being replaced by animation
+            std::string temp;
+            *tok >> temp;
+            background.add(new Gui::Animation(temp));
+        } else if (*tok == "anim"){
+            background.add(new Gui::Animation(tok));
         } else if ( *tok == "clear-color" ) {
             // Still necessary?
         } else if ( *tok == "position" ) {
@@ -497,15 +506,6 @@ void _Menu::Menu::handleCompatibility(Token * tok, int version){
             ValueHolder * value = new ValueHolder("menuinfo-position");
             *value << tok << tok;
             addData(value);
-        } else if (*tok == "anim"){
-            /*
-            MenuAnimation *animation = new MenuAnimation(tok);
-            if (animation->getLocation() == 0){
-                backgroundAnimations.push_back(animation);
-            } else if (animation->getLocation() == 1){
-                foregroundAnimations.push_back(animation);
-            }
-            */
         } 
     }
 }
