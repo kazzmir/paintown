@@ -128,8 +128,6 @@ class Menu{
         virtual void render(int x, int y, const Bitmap &);
 
     protected:
-        /*! load token */
-        void load(Token * token);
 
         /*! Option List */
         std::vector <MenuOption *> options;
@@ -140,8 +138,14 @@ class Menu{
         /*! Data holder */
         std::map<std::string, ValueHolder *> data;
 
+        /*! load token */
+        void load(Token * token);
+        
         /*! Add Data */
         void addData(ValueHolder *);
+        
+        /*! Prior token compatibility based on version Global::getVersion() */
+        virtual void handleCompatibility(Token * token, int version);
     private:
 };
 

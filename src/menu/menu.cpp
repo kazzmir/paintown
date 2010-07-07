@@ -282,7 +282,7 @@ const std::string _Menu::ValueHolder::getValues() {
 _Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     // Load up tokenizer
     try{
-        Global::debug(1) << "Loading menu " << filename.path() << endl;
+        Global::debug(1,"MENU") << "Loading menu " << filename.path() << endl;
         TokenReader tr(filename.path());
         Token * token = tr.readToken();
         load(token);
@@ -304,100 +304,36 @@ _Menu::Menu::~Menu(){
     }
 }
 
+static int getVersion(int h, int m, int l){
+    return h * 1000 + m * 100 + l;
+}
+
 void _Menu::Menu::load(Token * token){
+    // version info;
+    int major=0, minor=0, micro=0;
     if ( *token != "menu" ){
         throw LoadException(__FILE__, __LINE__, "Not a menu");
     } else if (!token->hasTokens()){
         return;
+    } else {
+        // Get version
+        try {
+            *token >> major >> minor >> micro;
+        } catch (const TokenException & ex){
+            if (major == 0){
+                Global::debug(0, "MENU") << "No version indicated, assuming 3.3.1 or below." << endl;
+                major = 3;
+                minor = 3;
+                micro = 1;
+            }
+        }
     }
 
     while ( token->hasTokens() ){
         try{
             Token * tok;
             *token >> tok;
-            if ( *tok == "name" ){
-                ValueHolder * value = new ValueHolder("name");
-                *value << tok;
-                addData(value);
-            } else if ( *tok == "music" ) {
-                ValueHolder * value = new ValueHolder("music");
-                *value << tok;
-                addData(value);
-            } else if( *tok == "select-sound" ) {
-                ValueHolder * value = new ValueHolder("select-sound");
-                *value << tok;
-                addData(value);
-            } else if (*tok == "back-sound"){
-                ValueHolder * value = new ValueHolder("back-sound");
-                *value << tok;
-                addData(value);
-            } else if (*tok == "ok-sound"){
-                ValueHolder * value = new ValueHolder("ok-sound");
-                *value << tok;
-                addData(value);
-            } else if ( *tok == "background" ) {
-                // Being replaced by animation
-            } else if ( *tok == "clear-color" ) {
-                // Still necessary?
-            } else if ( *tok == "position" ) {
-                // This handles the placement of the menu list and surrounding box
-                //contextMenu.setCoordinates(tok);
-            } else if ( *tok == "relative-position"){
-                //contextMenu.setCoordinates(tok);
-            } else if ( *tok == "coordinate"){
-                //contextMenu.setCoordinates(tok);
-            } else if ( *tok == "position-body" ) {
-                // This handles the body color of the menu box
-                //contextMenu.setColors(tok);
-            } else if ( *tok == "position-border" ) {
-                // This handles the border color of the menu box
-                //contextMenu.setColors(tok);
-            } else if ( *tok == "fade-speed" ) {
-                // Menu fade in speed
-                //int speed;
-                //*tok >> speed;
-                //contextMenu.setFadeSpeed(speed);
-            } else if ( *tok == "font" ) {
-                ValueHolder * value = new ValueHolder("font");
-                *value << tok << tok << tok;
-                addData(value);
-            } else if( *tok == "option" ) {
-                try{
-                    MenuOption *temp = OptionFactory::getOption(tok);
-                    if (temp){
-                        //addOption(temp);
-                        //temp->setParent(this);
-                        //hasOptions = true;
-                        options.push_back(temp);
-                    }
-                } catch (const LoadException & le){
-                    Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
-                    tok->print(" ");
-                }
-            } else if (*tok == "action"){
-                //ActionAct(tok);
-            } else if (*tok == "info-position"){
-                ValueHolder * value = new ValueHolder("info-position");
-                *value << tok << tok;
-                addData(value);
-            } else if (*tok == "menuinfo"){
-                ValueHolder * value = new ValueHolder("menuinfo");
-                *value << tok;
-                addData(value);
-            } else if (*tok == "menuinfo-position"){
-                ValueHolder * value = new ValueHolder("menuinfo-position");
-                *value << tok << tok;
-                addData(value);
-            } else if (*tok == "anim"){
-                /*
-                MenuAnimation *animation = new MenuAnimation(tok);
-                if (animation->getLocation() == 0){
-                    backgroundAnimations.push_back(animation);
-                } else if (animation->getLocation() == 1){
-                    foregroundAnimations.push_back(animation);
-                }
-                */
-            } else if (*tok == "val" || *tok == "value"){
+            if (*tok == "val" || *tok == "value"){
                 Token * val;
                 *tok >> val;
                 ValueHolder * value = new ValueHolder(val->getName());
@@ -408,8 +344,10 @@ void _Menu::Menu::load(Token * token){
                 } catch (const TokenException & ex){
                 }
                 addData(value);
+            } else if (getVersion(major, minor, micro) != Global::getVersion()){
+                handleCompatibility(tok, getVersion(major, minor, micro));
             } else {
-                Global::debug(3) <<"Unhandled menu attribute: "<<endl;
+                Global::debug(3,"MENU") <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
                 }
@@ -440,6 +378,95 @@ void _Menu::Menu::addData(ValueHolder * item){
         Global::debug(0,"MENU") << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
         Global::debug(0,"MENU") << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
         data[item->getName()] = item;
+    }
+}
+
+void _Menu::Menu::handleCompatibility(Token * tok, int version){
+    Global::debug(0,"MENU") << "Trying version: " << version << endl;
+    if (version <= 3301){
+        if ( *tok == "name" ){
+            ValueHolder * value = new ValueHolder("name");
+            *value << tok;
+            addData(value);
+        } else if ( *tok == "music" ) {
+            ValueHolder * value = new ValueHolder("music");
+            *value << tok;
+            addData(value);
+        } else if( *tok == "select-sound" ) {
+            ValueHolder * value = new ValueHolder("select-sound");
+            *value << tok;
+            addData(value);
+        } else if (*tok == "back-sound"){
+            ValueHolder * value = new ValueHolder("back-sound");
+            *value << tok;
+            addData(value);
+        } else if (*tok == "ok-sound"){
+            ValueHolder * value = new ValueHolder("ok-sound");
+            *value << tok;
+            addData(value);
+        } else if ( *tok == "background" ) {
+            // Being replaced by animation
+        } else if ( *tok == "clear-color" ) {
+            // Still necessary?
+        } else if ( *tok == "position" ) {
+            // This handles the placement of the menu list and surrounding box
+            //contextMenu.setCoordinates(tok);
+        } else if ( *tok == "relative-position"){
+            //contextMenu.setCoordinates(tok);
+        } else if ( *tok == "coordinate"){
+            //contextMenu.setCoordinates(tok);
+        } else if ( *tok == "position-body" ) {
+            // This handles the body color of the menu box
+            //contextMenu.setColors(tok);
+        } else if ( *tok == "position-border" ) {
+            // This handles the border color of the menu box
+            //contextMenu.setColors(tok);
+        } else if ( *tok == "fade-speed" ) {
+            // Menu fade in speed
+            //int speed;
+            //*tok >> speed;
+            //contextMenu.setFadeSpeed(speed);
+        } else if ( *tok == "font" ) {
+            ValueHolder * value = new ValueHolder("font");
+            *value << tok << tok << tok;
+            addData(value);
+        } else if( *tok == "option" ) {
+            try{
+                MenuOption *temp = OptionFactory::getOption(tok);
+                if (temp){
+                    //addOption(temp);
+                    //temp->setParent(this);
+                    //hasOptions = true;
+                    options.push_back(temp);
+                }
+            } catch (const LoadException & le){
+                Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
+                tok->print(" ");
+            }
+        } else if (*tok == "action"){
+            //ActionAct(tok);
+        } else if (*tok == "info-position"){
+            ValueHolder * value = new ValueHolder("info-position");
+            *value << tok << tok;
+            addData(value);
+        } else if (*tok == "menuinfo"){
+            ValueHolder * value = new ValueHolder("menuinfo");
+            *value << tok;
+            addData(value);
+        } else if (*tok == "menuinfo-position"){
+            ValueHolder * value = new ValueHolder("menuinfo-position");
+            *value << tok << tok;
+            addData(value);
+        } else if (*tok == "anim"){
+            /*
+            MenuAnimation *animation = new MenuAnimation(tok);
+            if (animation->getLocation() == 0){
+                backgroundAnimations.push_back(animation);
+            } else if (animation->getLocation() == 1){
+                foregroundAnimations.push_back(animation);
+            }
+            */
+        } 
     }
 }
 
