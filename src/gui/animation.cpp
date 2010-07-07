@@ -39,9 +39,6 @@ static void renderSprite(const Bitmap & bmp, const int x, const int y, const int
     }
 }
 
-AnimationPoint::AnimationPoint():x(0),y(0){}
-AnimationArea::AnimationArea():x1(0),y1(0),x2(0),y2(0){}
-
 Frame::Frame(Token *the_token, imageMap &images) throw (LoadException):
 bmp(0),
 time(0),
@@ -71,7 +68,12 @@ alpha(255){
                 *token >> alpha;
             } else if (*token == "offset"){
                 // Get the offset location it defaults to 0,0
-                *token >> offset.x >> offset.y;
+                double x=0, y=0;
+                try {
+                    *token >> x >> y;
+                } catch (const TokenException & ex){
+                }
+                offset.set(x,y);
             } else if (*token == "hflip"){
                 // horizontal flip
                 *token >> horizontalFlip;
@@ -98,18 +100,17 @@ alpha(255){
 Frame::~Frame(){
 }
 
-void Frame::act(const double xvel, const double yvel){
-    scrollOffset.x +=xvel;
-    scrollOffset.y +=yvel;
-    if (scrollOffset.x >=bmp->getWidth()){
-	    scrollOffset.x = 0;
-    } else if (scrollOffset.x <= -(bmp->getWidth())){
-	    scrollOffset.x = 0;
+void Frame::act(double xvel, double yvel){
+    scrollOffset.moveBy(xvel,yvel);
+    if (scrollOffset.getDistanceFromCenterX() >=bmp->getWidth()){
+	    scrollOffset.setX(0);
+    } else if (scrollOffset.getDistanceFromCenterX() <= -(bmp->getWidth())){
+	    scrollOffset.setX(0);
     }
-    if (scrollOffset.y >=bmp->getHeight()){
-	    scrollOffset.y = 0;
-    } else if (scrollOffset.y <= -(bmp->getHeight())){
-	    scrollOffset.y = 0;
+    if (scrollOffset.getDistanceFromCenterY() >=bmp->getHeight()){
+	    scrollOffset.setY(0);
+    } else if (scrollOffset.getDistanceFromCenterY() <= -(bmp->getHeight())){
+	    scrollOffset.setY(0);
     }
 }
 
@@ -123,36 +124,37 @@ void Frame::draw(const int xaxis, const int yaxis, const Bitmap & work){
         return;
     }
 
-    if (!closeFloat(scrollOffset.x, 0) || !closeFloat(scrollOffset.y, 0)){
+    if (!closeFloat(scrollOffset.getDistanceFromCenterX(), 0) || !closeFloat(scrollOffset.getDistanceFromCenterY(), 0)){
 
         // Lets do some scrolling
         Bitmap temp = Bitmap::temporaryBitmap(bmp->getWidth(), bmp->getHeight());
-        AnimationPoint loc;
-        if (scrollOffset.x < 0){
-            loc.x = scrollOffset.x + bmp->getWidth();
-        } else if (scrollOffset.x > 0){
-            loc.x = scrollOffset.x - bmp->getWidth();
+        //AnimationPoint loc;
+        AbsolutePoint loc;
+        if (scrollOffset.getRelativeX() < 0){
+            loc.setX(scrollOffset.getDistanceFromCenterX() + bmp->getWidth());
+        } else if (scrollOffset.getRelativeX() > 0){
+            loc.setX(scrollOffset.getDistanceFromCenterX() - bmp->getWidth());
         }
-        if (scrollOffset.y < 0){
-            loc.y = scrollOffset.y + bmp->getHeight();
-        } else if (scrollOffset.y > 0){
-            loc.y = scrollOffset.y - bmp->getHeight();
+        if (scrollOffset.getRelativeY() < 0){
+            loc.setY(scrollOffset.getDistanceFromCenterY() + bmp->getHeight());
+        } else if (scrollOffset.getRelativeY() > 0){
+            loc.setY(scrollOffset.getDistanceFromCenterY() - bmp->getHeight());
         }
-        bmp->Blit((int) scrollOffset.x, (int) scrollOffset.y, temp);
-        bmp->Blit((int) scrollOffset.x, (int) loc.y, temp);
-        bmp->Blit((int) loc.x, (int) scrollOffset.y, temp);
-        bmp->Blit((int) loc.x, (int) loc.y, temp);
-
-        renderSprite(temp, (int)(xaxis+offset.x), (int)(yaxis+offset.y), alpha, horizontalFlip, verticalFlip, work);
+        bmp->Blit((int) scrollOffset.getDistanceFromCenterX(), (int) scrollOffset.getDistanceFromCenterY(), temp);
+        bmp->Blit((int) scrollOffset.getDistanceFromCenterX(), (int) loc.getY(), temp);
+        bmp->Blit((int) loc.getX(), (int) scrollOffset.getDistanceFromCenterY(), temp);
+        bmp->Blit((int) loc.getX(), (int) loc.getY(), temp);
+        
+        renderSprite(temp, (int)(xaxis+offset.getDistanceFromCenterX()), (int)(yaxis+offset.getDistanceFromCenterY()), alpha, horizontalFlip, verticalFlip, work);
 
     } else {
-        renderSprite(*bmp, (int)(xaxis+offset.x), (int)(yaxis+offset.y), alpha, horizontalFlip, verticalFlip, work);
+        renderSprite(*bmp, (int)(xaxis+offset.getDistanceFromCenterX()), (int)(yaxis+offset.getDistanceFromCenterY()), alpha, horizontalFlip, verticalFlip, work);
     }
 }
 
 Animation::Animation(Token *the_token) throw (LoadException):
 id(0),
-depth(Background0),
+depth(BackgroundBottom),
 ticks(0),
 currentFrame(0),
 loop(0),
@@ -167,9 +169,10 @@ allowReset(true){
 	loop will begin at the subsequent frame listed after loop
 	axis is the location in which the drawing must be placed
 	location *old* - used to render in background or foreground (0 == background [default]| 1 == foreground)
-    depth - used to render in background or foreground space (depth background 0) | (depth foreground 1)
+    depth - used to render in background or foreground space (depth background bottom|middle|top) | (depth foreground bottom|midle|top)
 	reset - used to allow resetting of animation (0 == no | 1 == yes [default])
 	velocity - used to get a wrapping scroll effect while animating
+    window - area in which the item will be contained
 	(anim (id NUM) 
 	      (location NUM)
           (depth background|foreground NUM)
@@ -195,26 +198,29 @@ allowReset(true){
                 int location = 0;
                 *token >> location;
                 if (location == 0){
-                    depth = Background0;
+                    depth = BackgroundBottom;
                 } else if (location == 1){
-                    depth = Foreground0;
+                    depth = ForegroundBottom;
                 }
             } else if (*token == "depth"){
                 // get the depth
-                std::string name;
-                int level;
+                std::string name, level;
                 *token >> name >> level;
                 if (name == "background"){
-                    switch (level){
-                        case 0: depth = Background0;break;
-                        case 1: depth = Background1;break;
-                        default: depth = Background0;break;
+                    if (level == "bottom"){
+                        depth = BackgroundBottom;
+                    } else if (level == "middle"){
+                        depth = BackgroundMiddle;
+                    } else if (level == "top"){
+                        depth = BackgroundTop;
                     }
                 } else if (name == "foreground"){
-                    switch (level){
-                        case 0: depth = Foreground0;break;
-                        case 1: depth = Foreground1;break;
-                        default: depth = Foreground0;break;
+                    if (level == "bottom"){
+                        depth = ForegroundBottom;
+                    } else if (level == "middle"){
+                        depth = ForegroundMiddle;
+                    } else if (level == "top"){
+                        depth = ForegroundTop;
                     }
                 }
             } else if (*token == "basedir"){
@@ -233,13 +239,28 @@ allowReset(true){
                 }
             } else if (*token == "axis"){
                 // Get the axis location it defaults to 0,0
-                *token >> axis.x >> axis.y;
+                double x=0, y=0;
+                try {
+                    *token >> x >> y;
+                } catch (const TokenException & ex){
+                }
+                axis.set(x,y);
             } else if (*token == "window"){
-                // time to display
-                *token >> window.x1 >> window.y1 >> window.x2 >> window.y2;
+                // Windowed area where to clip if necessary otherwise it defaults to max
+                double x1=0,x2=0, y1=0,y2=0;
+                try {
+                    *token >> x1 >> y1 >> x2 >> y2;
+                } catch (const TokenException & ex){
+                }
+                window.set(x1,y1,x2,y2);
             } else if (*token == "velocity"){
                 // This allows the animation to get a wrapping scroll action going on
-                *token >> velocity.x >> velocity.y;
+                double x=0, y=0;
+                try {
+                    *token >> x >> y;
+                } catch (const TokenException & ex){
+                }
+                velocity.set(x,y);
             } else if (*token == "frame"){
                 // new frame
                 Frame *frame = new Frame(token,images);
@@ -284,7 +305,7 @@ Animation::~Animation(){
 void Animation::act(){
     // Used for scrolling
     for (std::vector<Frame *>::iterator i = frames.begin(); i != frames.end(); ++i){
-	    (*i)->act(velocity.x, velocity.y);
+	    (*i)->act(velocity.getRelativeX(), velocity.getRelativeY());
     }
     if( frames[currentFrame]->time != -1 ){
 	    ticks++;
@@ -297,8 +318,8 @@ void Animation::act(){
 void Animation::draw(const Bitmap & work){
     /* should use sub-bitmaps here */
      // Set clip from the axis default is 0,0,bitmap width, bitmap height
-    work.setClipRect(window.x1,window.y1,work.getWidth() + window.x2,work.getHeight() + window.y2);
-    frames[currentFrame]->draw((int) axis.x, (int) axis.y,work);
+    work.setClipRect(-(window.getPosition().getDistanceFromCenterX()),-(window.getPosition().getDistanceFromCenterY()),work.getWidth() - window.getPosition2().getDistanceFromCenterX(),work.getHeight() - window.getPosition2().getDistanceFromCenterY());
+    frames[currentFrame]->draw(axis.getDistanceFromCenterX(), axis.getDistanceFromCenterY(),work);
     work.setClipRect(0,0,work.getWidth(),work.getHeight());
 }
 

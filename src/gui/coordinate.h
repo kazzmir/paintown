@@ -98,9 +98,11 @@ class RelativePoint {
             this->x = x;
             this->y = y;
         }
-        virtual void resizeX(double percent);
-        virtual void resizeY(double percent);
-        virtual void resizeBy(double x, double y);
+        virtual int getDistanceFromCenterX();
+        virtual int getDistanceFromCenterY();
+        virtual void moveX(double percent);
+        virtual void moveY(double percent);
+        virtual void moveBy(double x, double y);
         virtual AbsolutePoint getAbsolute();
         virtual double getRelativeX() const;
         virtual double getRelativeY() const;
@@ -142,6 +144,7 @@ class Coordinate {
         virtual void growVertical(double by);
         virtual void growTo(const Coordinate &, double percent = 0.005);
         virtual void center(const Coordinate &);
+        virtual void moveBy(double x, double y);
         virtual inline double getRelativeX1() const{
             return this->position.getRelativeX();
         }

@@ -191,9 +191,9 @@ void TabMenu::load(Token *token) throw (LoadException){
                 runningFontColor = Bitmap::makeColor(r,g,b);
             } else if( *tok == "anim" ) {
                 Gui::Animation *animation = new Gui::Animation(tok);
-                if (animation->getDepth() == Gui::Animation::Background0){
+                if (animation->getDepth() == Gui::Animation::BackgroundBottom){
                     backgroundAnimations.push_back(animation);
-                } else if (animation->getDepth() == Gui::Animation::Foreground0){
+                } else if (animation->getDepth() == Gui::Animation::ForegroundBottom){
                     foregroundAnimations.push_back(animation);
                 }
             } else if (*tok == "menu"){

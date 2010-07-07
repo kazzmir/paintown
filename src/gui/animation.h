@@ -5,6 +5,7 @@
 #include <map>
 
 #include "util/load_exception.h"
+#include "gui/coordinate.h"
 
 class Token;
 class Bitmap;
@@ -14,29 +15,15 @@ namespace Gui{
 // To hold images by number easier to access and reuse
 typedef std::map< int, Bitmap *> imageMap;
 
-struct AnimationPoint{
-    AnimationPoint();
-    double x;
-    double y;
-};
-
-struct AnimationArea{
-    AnimationArea();
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-};
-
 class Frame{
     public:
 	Frame(Token *token, imageMap &images) throw (LoadException);
 	virtual ~Frame();
-	virtual void act(const double xvel, const double yvel);
-	virtual void draw(const int xaxis, const int yaxis, const Bitmap &);
+	virtual void act(double xvel, double yvel);
+	virtual void draw(int xaxis, int yaxis, const Bitmap &);
 	Bitmap *bmp;
-	AnimationPoint offset;
-	AnimationPoint scrollOffset;
+    RelativePoint offset;
+    RelativePoint scrollOffset;
 	int time;
 	bool horizontalFlip;
 	bool verticalFlip;
@@ -57,10 +44,12 @@ public:
 	inline int getID() const { return id; }
 
     enum Depth {
-        Background0,
-        Background1,
-        Foreground0,
-        Foreground1,
+        BackgroundBottom,
+        BackgroundMiddle,
+        BackgroundTop,
+        ForegroundBottom,
+        ForegroundMiddle,
+        ForegroundTop,
     };
 	inline const Depth & getDepth() const { return this->depth; }
 	
@@ -71,10 +60,10 @@ private:
 	unsigned int currentFrame;
 	unsigned int loop;
 	bool allowReset;
-	AnimationPoint axis;
+    RelativePoint axis;
 	// This allows the frames to scroll in place
-	AnimationPoint velocity;
-	AnimationArea window;
+    RelativePoint velocity;
+    Coordinate window;
 	std::vector<Frame *> frames;
 	imageMap images;
 };

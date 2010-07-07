@@ -117,6 +117,14 @@ static int relativeToAbsolute(double x, int center){
     return (int)(center + (center * x));
 }
 
+static int amountFromCenterX(int x){
+    return x - (640 / 2);
+}
+
+static int amountFromCenterY(int y){
+    return y - (480 / 2);
+}
+
 static double absoluteToRelative(int x, int center){
     return (double)(x-center)/center;
 }
@@ -169,8 +177,8 @@ int AbsolutePoint::getY() const {
 }
 
 RelativePoint::RelativePoint():
-x(-1),
-y(-1){
+x(0),
+y(0){
 }
 
 RelativePoint::RelativePoint(double x, double y):
@@ -216,17 +224,25 @@ int RelativePoint::getY() const{
     return relativeToAbsoluteY(y);
 }
 
-void RelativePoint::resizeX(double percent){
+int RelativePoint::getDistanceFromCenterX(){
+    return amountFromCenterX(getX()); 
+}
+
+int RelativePoint::getDistanceFromCenterY(){
+    return amountFromCenterY(getY());
+}
+
+void RelativePoint::moveX(double percent){
     x+=percent;
 }
 
-void RelativePoint::resizeY(double percent){
+void RelativePoint::moveY(double percent){
     y+=percent;
 }
 
-void RelativePoint::resizeBy(double x, double y){
-    resizeX(x);
-    resizeY(y);
+void RelativePoint::moveBy(double x, double y){
+    moveX(x);
+    moveY(y);
 }
 
 AbsolutePoint RelativePoint::getAbsolute(){
@@ -302,56 +318,56 @@ int Coordinate::getY2() const{
 }
 
 void Coordinate::growHorizontal(double by){
-    position.resizeX(-(by));
-    position2.resizeX(by);
+    position.moveX(-(by));
+    position2.moveX(by);
 }
 
 void Coordinate::growVertical(double by){
-    position.resizeY(-(by));
-    position2.setY(by);
+    position.moveY(-(by));
+    position2.moveY(by);
 }
 
 void Coordinate::growTo(const Coordinate & coord, double percent){
     if (position.getRelativeX() > coord.position.getRelativeX()){
-        position.resizeX(-(percent));
+        position.moveX(-(percent));
         if (position.getRelativeX() < coord.position.getRelativeX()){
             position.setX(coord.position.getRelativeX());
         }
     } else if (position.getRelativeX() < coord.position.getRelativeX()){
-        position.resizeX(percent);
+        position.moveX(percent);
         if (position.getRelativeX() > coord.position.getRelativeX()){
             position.setX(coord.position.getRelativeX());
         }
     }
     if (position.getRelativeY() > coord.position.getRelativeY()){
-        position.resizeY(-(percent));
+        position.moveY(-(percent));
         if (position.getRelativeY() < coord.position.getRelativeY()){
             position.setY(coord.position.getRelativeY());
         }
     } else if (position.getRelativeY() < coord.position.getRelativeY()){
-        position.resizeY(percent);
+        position.moveY(percent);
         if (position.getRelativeY() > coord.position.getRelativeY()){
             position.setY(coord.position.getRelativeY());
         }
     }
     if (position2.getRelativeX() > coord.position2.getRelativeX()){
-        position2.resizeX(-(percent));
+        position2.moveX(-(percent));
         if (position2.getRelativeX() < coord.position2.getRelativeX()){
             position2.setX(coord.position2.getRelativeX());
         }
     } else if (position2.getRelativeX() < coord.position2.getRelativeX()){
-        position2.resizeX(percent);
+        position2.moveX(percent);
         if (position2.getRelativeX() > coord.position2.getRelativeX()){
             position2.setX(coord.position2.getRelativeX());
         }
     }
     if (position2.getRelativeY() > coord.position2.getRelativeY()){
-        position2.resizeY(-(percent));
+        position2.moveY(-(percent));
         if (position2.getRelativeY() < coord.position2.getRelativeY()){
             position2.setY(coord.position2.getRelativeY());
         }
     } else if (position2.getRelativeY() < coord.position2.getRelativeY()){
-        position2.resizeY(percent);
+        position2.moveY(percent);
         if (position2.getRelativeY() > coord.position2.getRelativeY()){
             position2.setY(coord.position2.getRelativeY());
         }
@@ -363,6 +379,11 @@ void Coordinate::center(const Coordinate & coord){
     const double centery = (coord.getRelativeY1() + coord.getRelativeY2())/2;
     
     set(centerx,centery,centerx,centery);
+}
+
+void Coordinate::moveBy(double x, double y){
+    position.moveBy(x, y);
+    position2.moveBy(x, y);
 }
 
 bool Coordinate::operator==( const Coordinate & coord){
