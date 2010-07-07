@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -25,13 +26,38 @@ public:
         return convert(readBytes(sizeof(int32_t)));
     }
 
-protected:
-    virtual int32_t convert(const vector<char> & bytes) = 0;
+    virtual string readString(int length){
+        ostringstream out;
+        vector<uint8_t> bytes = readBytes(length);
+        for (vector<uint8_t>::iterator it = bytes.begin(); it != bytes.end(); it++){
+            char byte = *it;
+            if (byte == 0){
+                break;
+            }
+            out << *it;
+        }
+        return out.str();
+    }
 
-    vector<char> readBytes(int length){
-        vector<char> bytes;
+    virtual void seekEnd(int where){
+        stream.seekg(where, ios::end);
+    }
+
+    virtual void seek(int where){
+        stream.seekg(where);
+    }
+
+    virtual int position(){
+        return stream.tellg();
+    }
+
+protected:
+    virtual int32_t convert(const vector<uint8_t> & bytes) = 0;
+
+    vector<uint8_t> readBytes(int length){
+        vector<uint8_t> bytes;
         for (int i = 0; i < length; i++){
-            char byte;
+            uint8_t byte;
             stream >> byte;
             bytes.push_back(byte);
         }
@@ -47,9 +73,9 @@ public:
     EndianReader(stream){
     }
 protected:
-    virtual int32_t convert(const vector<char> & bytes){
+    virtual int32_t convert(const vector<uint8_t> & bytes){
         int32_t out = 0;
-        for (vector<char>::const_reverse_iterator it = bytes.rbegin(); it != bytes.rend(); it++){
+        for (vector<uint8_t>::const_reverse_iterator it = bytes.rbegin(); it != bytes.rend(); it++){
             out = (out << 8) + *it;
         }
         return out;
@@ -62,9 +88,9 @@ public:
     EndianReader(stream){
     }
 protected:
-    virtual int32_t convert(const vector<char> & bytes){
+    virtual int32_t convert(const vector<uint8_t> & bytes){
         int32_t out = 0;
-        for (vector<char>::const_iterator it = bytes.begin(); it != bytes.end(); it++){
+        for (vector<uint8_t>::const_iterator it = bytes.begin(); it != bytes.end(); it++){
             out = (out << 8) + *it;
         }
         return out;
@@ -84,13 +110,33 @@ public:
         } else {
             cout << "Ok got a packfile" << endl;
         }
+        uint32_t version = reader.readByte4();
+        reader.seekEnd(-4);
+        uint32_t headerPosition = reader.readByte4();
+        reader.seek(headerPosition);
+
+        cout << "Header at " << headerPosition << endl;
+
+        bool done = false;
+        while (!done){
+            uint32_t current = reader.position();
+            uint32_t length = reader.readByte4();
+            uint32_t start = reader.readByte4();
+            uint32_t size = reader.readByte4();
+            string name = reader.readString(80);
+            done = name.size() == 0;
+            cout << name << " at " << start << " size " << size << endl;
+            cout << " seek to " << (current + length) << endl;
+            reader.seek(current + length);
+            done |= stream.eof();
+        }
     }
 
 private:
     static const uint32_t MAGIC = 0x4B434150;
 };
 
-};
+}
 
 int main(int argc, char ** argv){
     Bor::PackReader reader(argv[1]);
