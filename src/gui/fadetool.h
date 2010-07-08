@@ -4,6 +4,7 @@
 /*! FADE UTILITY */
 
 class Bitmap;
+class Token;
 
 namespace Gui{
 
@@ -18,6 +19,9 @@ public:
             NoFade,
             RunFade,
         };
+        
+        //! Read info from Token
+        void parseDefaults(Token *);
 	
 	// Fade state
 	void setState(const State &);

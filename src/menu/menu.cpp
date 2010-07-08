@@ -318,11 +318,84 @@ void _Menu::Background::add(Gui::Animation * anim){
     backgrounds[anim->getDepth()].push_back(anim);
 }
 
+_Menu::Context::Context():
+fades(0),
+background(0),
+menu(0){
+}
+_Menu::Context::Context(const Menu & menu){
+}
+_Menu::Context::Context(const Context & copy){
+}
+_Menu::Context::~Context(){
+    /* FIXME Should only delete things it owns */
+    if (fades){
+        delete fades;
+    }
+    if (background){
+        delete background;
+    }
+    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
+        if (*i){
+            delete *i;
+        }
+    }
+    if (menu){
+        delete menu;
+    }
+}
+void _Menu::Context::act(){
+    // fader
+    if (fades){
+       fades->act();
+    }
+    // Backgrounds
+    if (background){    
+        background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Global::getScreenWidth(),Global::getScreenHeight())));
+    }
+}
+void _Menu::Context::render(const Bitmap & bmp){
+    if (background){
+        // background
+        background->render(Gui::Animation::BackgroundBottom, bmp);
+        background->render(Gui::Animation::BackgroundMiddle, bmp);
+        background->render(Gui::Animation::BackgroundTop, bmp);
+    } else {
+        bmp.fill(Bitmap::makeColor(0,0,0));
+    }
+    
+    // Menu
+    
+    if (background){
+        // foreground
+        background->render(Gui::Animation::ForegroundBottom, bmp);
+        background->render(Gui::Animation::ForegroundMiddle, bmp);
+        background->render(Gui::Animation::ForegroundTop, bmp);
+    }
+    
+    // Fades
+    if (fades){
+        fades->draw(bmp);
+    }
+}
+void _Menu::Context::setFadeTool(Gui::FadeTool *fade){
+    fades = fade;
+}
+void _Menu::Context::setBackground(Background *bg){
+    background = bg;
+}
+void _Menu::Context::setOptions(std::vector<MenuOption *> & opt){
+    options = opt;
+}
+void _Menu::Context::setContextBox(Gui::ContextBox * box){
+    menu = box;
+}
+
 /* New Menu */
 _Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     // Load up tokenizer
     try{
-        Global::debug(1,"MENU") << "Loading menu " << filename.path() << endl;
+        Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
         TokenReader tr(filename.path());
         Token * token = tr.readToken();
         load(token);
@@ -345,6 +418,27 @@ _Menu::Menu::~Menu(){
 }
 
 void _Menu::Menu::load(Token * token){
+    // TODO figure out where keys belong
+    // Set keys
+    input.set(Keyboard::Key_J, 0, true, Down);
+    input.set(Keyboard::Key_K, 0, true, Up);
+    input.set(Keyboard::Key_H, 0, true, Left);
+    input.set(Keyboard::Key_L, 0, true, Right);
+    input.set(Keyboard::Key_UP, 0, true, Up);
+    /* regular keys */
+    input.set(Keyboard::Key_DOWN, 0, true, Down);
+    input.set(Keyboard::Key_LEFT, 0, true, Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Keyboard::Key_ENTER, 0, true, Select);
+    input.set(Keyboard::Key_ESC, 0, true, Exit);
+    /* joystick */
+    input.set(Joystick::Up, 0, true, Up);
+    input.set(Joystick::Down, 0, true, Down);
+    input.set(Joystick::Left, 0, true, Left);
+    input.set(Joystick::Right, 0, true, Right);
+    input.set(Joystick::Button1, 0, true, Select);
+    input.set(Joystick::Button2, 0, true, Exit);
+    
     // version info;
     int major=0, minor=0, micro=0;
     if ( *token != "menu" ){
@@ -355,25 +449,48 @@ void _Menu::Menu::load(Token * token){
         // Get version
         Token * tok;
         *token >> tok;
-        Token *version = tok->findToken("version");
-        if (version != NULL){
+        Token *ourToken = tok->findToken("version");
+        if (ourToken != NULL){
             try {
-                *version >> major >> minor >> micro;
+                *ourToken >> major >> minor >> micro;
             } catch (const TokenException & ex){
             }
         } else {
-                Global::debug(0, "MENU") << "No version indicated, assuming 3.3.1 or below." << endl;
+                Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
                 major = 3;
                 minor = 3;
                 micro = 1; 
         }
+        //FIXME (Move to context should not assume a fadetool for the menu)
+        // Fade info
+        if (!context.getFadeTool()){
+            context.setFadeTool(new Gui::FadeTool());
+            // Set fader default to white
+            context.getFadeTool()->setFadeInColor(Bitmap::makeColor(255,255,255));
+            context.getFadeTool()->setFadeOutColor(Bitmap::makeColor(255,255,255));
+            context.getFadeTool()->setFadeInTime(25);
+            context.getFadeTool()->setFadeOutTime(12);
+        }
+        ourToken = tok->findToken("fade");
+        if (ourToken != NULL){
+            context.getFadeTool()->parseDefaults(ourToken);
+        }
+        // Prepare screen
+        Bitmap screen(Global::getScreenWidth(), Global::getScreenHeight());
+        screen.fill(context.getFadeTool()->getFadeInColor());
+        screen.BlitToScreen();
     }
 
     while ( token->hasTokens() ){
         try{
             Token * tok;
             *token >> tok;
-            if (*tok == "val" || *tok == "value"){
+            if (Global::getVersion(major, minor, micro) != Global::getVersion()){
+                // Do compatible translations if necessary
+                handleCompatibility(tok, Global::getVersion(major, minor, micro));
+            } 
+            // Newer items
+            else if (*tok == "val" || *tok == "value"){
                 Token * val;
                 *tok >> val;
                 ValueHolder * value = new ValueHolder(val->getName());
@@ -384,15 +501,13 @@ void _Menu::Menu::load(Token * token){
                 } catch (const TokenException & ex){
                 }
                 addData(value);
-            } else if (Global::getVersion(major, minor, micro) != Global::getVersion()){
-                // Do compatible translations if necessary
-                handleCompatibility(tok, Global::getVersion(major, minor, micro));
-            } 
-            // Newer items
-            else if (*tok == "animation" || *tok == "background"){
-                background.add(new Gui::Animation(tok));
+            } else if (*tok == "animation" || *tok == "background"){
+                if (!context.getBackground()){
+                    context.setBackground(new Background());
+                }
+                context.getBackground()->add(new Gui::Animation(tok));
             } else {
-                Global::debug(3,"MENU") <<"Unhandled menu attribute: "<<endl;
+                Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
                 }
@@ -408,26 +523,80 @@ void _Menu::Menu::load(Token * token){
 }
 
 void _Menu::Menu::run(){
+    bool done = false;
+    
+    Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
+    
+    double runCounter = 0;
+    Global::speed_counter = 0;
+    
+    // Set fader start
+    context.getFadeTool()->setState(FadeTool::FadeIn);
+        
+    while( !done ){
+        bool draw = false;
+
+        if ( Global::speed_counter > 0 ){
+            draw = true;
+            runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+            
+            /* Added to make the psp update more frequently. */
+            if (runCounter > 3){
+                runCounter = 3;
+            }
+            while ( runCounter >= 1.0 ){
+                runCounter -= 1;
+                act();
+            }
+
+            Global::speed_counter = 0;
+        }
+
+        if (draw){
+            // Render
+            render(work);
+            
+            // screen
+            work.BlitToScreen();
+        }
+
+        while ( Global::speed_counter < 1 ){
+            Util::rest( 1 );
+            InputManager::poll();
+        }
+    }
 }
 
 void _Menu::Menu::act(){
+    // Keys Move to context?
+    InputManager::poll();
+    InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
+    if (inputState[Exit]){
+        InputManager::waitForRelease(input, Exit);
+        throw Exception::Return(__FILE__, __LINE__);
+    }
+    
+    // Act context
+    context.act();
 }
 
-void _Menu::Menu::render(int x, int y, const Bitmap & bmp){
+void _Menu::Menu::render(const Bitmap & bmp){
+    // Render context
+    context.render(bmp);
 }
 
 void _Menu::Menu::addData(ValueHolder * item){
     std::pair<std::map<std::string,ValueHolder *>::iterator,bool> check;
     check = data.insert( std::pair<std::string,ValueHolder *>(item->getName(),item) );
     if (check.second == false){
-        Global::debug(0,"MENU") << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
-        Global::debug(0,"MENU") << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
+        Global::debug(0,"menu") << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
+        Global::debug(0,"menu") << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
         data[item->getName()] = item;
     }
 }
 
 void _Menu::Menu::handleCompatibility(Token * tok, int version){
-    Global::debug(1,"MENU") << "Trying version: " << version << endl;
+    Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
         if ( *tok == "name" ){
             ValueHolder * value = new ValueHolder("name");
@@ -452,9 +621,15 @@ void _Menu::Menu::handleCompatibility(Token * tok, int version){
         } else if ( *tok == "background" ) {
             std::string temp;
             *tok >> temp;
-            background.add(new Gui::Animation(temp));
+            if (!context.getBackground()){
+                context.setBackground(new Background());
+            }
+            context.getBackground()->add(new Gui::Animation(temp));
         } else if (*tok == "anim"){
-            background.add(new Gui::Animation(tok));
+            if (!context.getBackground()){
+                context.setBackground(new Background());
+            }
+            context.getBackground()->add(new Gui::Animation(tok));
         } else if ( *tok == "clear-color" ) {
             // Still necessary?
         } else if ( *tok == "position" ) {
@@ -486,7 +661,7 @@ void _Menu::Menu::handleCompatibility(Token * tok, int version){
                     //addOption(temp);
                     //temp->setParent(this);
                     //hasOptions = true;
-                    options.push_back(temp);
+                    context.getOptions().push_back(temp);
                 }
             } catch (const LoadException & le){
                 Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
@@ -507,6 +682,12 @@ void _Menu::Menu::handleCompatibility(Token * tok, int version){
             *value << tok << tok;
             addData(value);
         } 
+    }
+    
+    
+    Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+    if (Global::getDebug() >= 3){
+        tok->print(" ");
     }
 }
 

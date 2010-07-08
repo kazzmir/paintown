@@ -8,11 +8,13 @@
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "input/input-map.h"
+
+#include "gui/animation.h"
 #include "gui/box.h"
 #include "gui/context-box.h"
+#include "gui/fadetool.h"
 #include "gui/popup-box.h"
 #include "gui/widget.h"
-#include "gui/animation.h"
 
 #ifdef _MSC_VER
 #ifndef uint32_t
@@ -109,6 +111,7 @@ class ValueHolder{
         void next();
 };
 
+/*! Menu Backgrounds */
 class Background{
     public:
         Background();
@@ -126,6 +129,61 @@ class Background{
         void drawBackgrounds(std::vector<Gui::Animation *> &, const Bitmap &);
 };
 
+class Menu;
+/*! Menu contexts
+    - Each menu has a context which it defaults to
+        - Sub menus inherit the parents context at creation and will overwrite any changes it has
+          which will be used to render itself from the main menu instead of running a new menu each time
+        - Returning from a child menu will result in a restoration of the current context
+    - Fader
+    - Backgrounds (No background will fall back onto a fill screen)
+    - Menu (options, ContextBox, etc)
+    - Contexts are settable to omit drawing certain items (usefull for things like in-game menus)
+ */
+class Context{
+    public:
+        Context();
+        Context(const Menu &);
+        Context(const Context &);
+        virtual ~Context();
+        
+        virtual void act();
+        virtual void render(const Bitmap &);
+        
+        enum Type {
+            Full,
+            FaderOnly,
+            BackgroundsOnly,
+            MenuOnly,
+        };
+        
+        virtual void setFadeTool(Gui::FadeTool *);
+        virtual inline Gui::FadeTool * getFadeTool(){
+            return this->fades;
+        }
+        virtual void setBackground(Background *);
+        virtual inline Background * getBackground(){
+            return this->background;
+        }
+        virtual void setOptions(std::vector<MenuOption *> &);
+        virtual inline std::vector<MenuOption *> & getOptions(){
+            return this->options;
+        }
+        virtual void setContextBox(Gui::ContextBox *);
+        virtual inline Gui::ContextBox * getContextBox(){
+            return this->menu;
+        }
+        
+    private:
+        /*! FIXME not sure if these should even be pointers
+            perhaps copies would be the best method
+            if not need to assess management of resources */
+        Gui::FadeTool * fades;
+        Background * background;
+        std::vector <MenuOption *> options;
+        Gui::ContextBox * menu;
+};
+
 /*! New Menu class */
 class Menu{
     public:
@@ -140,22 +198,16 @@ class Menu{
         /*! Logic */
         virtual void act();
 
-        /*! render - renders only actual context menu excluding other elements (animations etc) */
-        virtual void render(int x, int y, const Bitmap &);
+        /*! render */
+        virtual void render(const Bitmap &);
 
     protected:
-
-        /*! Option List */
-        std::vector <MenuOption *> options;
-
-        /*! Context Menu */
-        Gui::ContextBox contextMenu;
-
+        
+        /*! Context */
+        Context context;
+        
         /*! Data holder */
         std::map<std::string, ValueHolder *> data;
-
-        /*! Backgrounds */
-        Background background;
 
         /*! load token */
         void load(Token * token);
@@ -166,6 +218,20 @@ class Menu{
         /*! Prior token compatibility based on version Global::getVersion() */
         virtual void handleCompatibility(Token * token, int version);
     private:
+        /*! move to context? */
+        enum MenuInput{
+            Up,
+            Down,
+            Left,
+            Right,
+            Select,
+            /* return is a safe menu return */
+            Return,
+            /* exit is usually done by ESC */
+            Exit,
+        };
+        InputMap<MenuInput> input;
+    
 };
 
 }

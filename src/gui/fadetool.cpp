@@ -1,6 +1,8 @@
 #include "gui/fadetool.h"
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/token.h"
+#include "util/load_exception.h"
 
 using namespace Gui;
 
@@ -15,6 +17,67 @@ fadeOutColor(Bitmap::makeColor(0,0,0)){
 }
 
 FadeTool::~FadeTool(){
+}
+
+void FadeTool::parseDefaults(Token * token){
+    if ( *token != "fade" ){
+        throw LoadException(__FILE__, __LINE__, "Not a fader");
+    }
+    /*!
+     * (fade 
+        (in (color 0 0 0) (time 0) ) 
+        (out (color 0 0 0) (time 0) ))
+    */
+    Token ourToken(*token);
+    while ( ourToken.hasTokens() ){
+        try{
+            Token * tok;
+            ourToken >> tok;
+            if (*tok == "in"){
+                Token in(*tok);
+                while (in.hasTokens()){
+                    if (in == "color"){
+                        int r=0,g=0,b=0;
+                        try {
+                            in >> r >> g >> b;
+                        } catch (const TokenException & ex){
+                        }
+                        setFadeInColor(Bitmap::makeColor(r,b,g));
+                    } else if (in == "time"){
+                        int time=0;
+                        try {
+                            in >> time;
+                        } catch (const TokenException & ex){
+                        }
+                        setFadeInTime(time);
+                    }
+                }
+            } else if (*tok == "out"){
+                Token out(*tok);
+                while (out.hasTokens()){
+                    if (out == "color"){
+                        int r=0,g=0,b=0;
+                        try {
+                            out >> r >> g >> b;
+                        } catch (const TokenException & ex){
+                        }
+                        setFadeOutColor(Bitmap::makeColor(r,b,g));
+                    } else if (out == "time"){
+                        int time=0;
+                        try {
+                            out >> time;
+                        } catch (const TokenException & ex){
+                        }
+                        setFadeOutTime(time);
+                    }
+                }
+            } 
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Fade tool parse error");
+        } catch ( const LoadException & ex ) {
+            throw ex;
+        }
+    }
 }
 	
 
