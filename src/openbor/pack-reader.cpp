@@ -28,6 +28,16 @@ public:
 
     virtual string readString(int length){
         ostringstream out;
+        uint8_t letter = readByte1();
+        while (letter != 0 && length > 0){
+            out << letter;
+            letter = readByte1();
+        }
+        return out.str();
+    }
+
+    virtual string readString2(int length){
+        ostringstream out;
         vector<uint8_t> bytes = readBytes(length);
         for (vector<uint8_t>::iterator it = bytes.begin(); it != bytes.end(); it++){
             char byte = *it;
@@ -39,11 +49,11 @@ public:
         return out.str();
     }
 
-    virtual void seekEnd(int where){
+    virtual void seekEnd(streamoff where){
         stream.seekg(where, ios::end);
     }
 
-    virtual void seek(int where){
+    virtual void seek(streampos where){
         stream.seekg(where);
     }
 
@@ -57,8 +67,12 @@ protected:
     vector<uint8_t> readBytes(int length){
         vector<uint8_t> bytes;
         for (int i = 0; i < length; i++){
-            uint8_t byte;
-            stream >> byte;
+            uint8_t byte = 0;
+            stream.read((char*) &byte, 1);
+            if (stream.eof()){
+                cout << "Stream eof!" << endl;
+            } else {
+            }
             bytes.push_back(byte);
         }
         return bytes;
@@ -74,7 +88,7 @@ public:
     }
 protected:
     virtual int32_t convert(const vector<uint8_t> & bytes){
-        int32_t out = 0;
+        uint32_t out = 0;
         for (vector<uint8_t>::const_reverse_iterator it = bytes.rbegin(); it != bytes.rend(); it++){
             out = (out << 8) + *it;
         }
@@ -89,7 +103,7 @@ public:
     }
 protected:
     virtual int32_t convert(const vector<uint8_t> & bytes){
-        int32_t out = 0;
+        uint32_t out = 0;
         for (vector<uint8_t>::const_iterator it = bytes.begin(); it != bytes.end(); it++){
             out = (out << 8) + *it;
         }
@@ -102,20 +116,24 @@ class PackReader{
 public:
     PackReader(const string & filename){
         ifstream stream;
+        // stream.rdbuf()->pubsetbuf(0, 0);
         stream.open(filename.c_str(), std::ios::in | std::ios::binary);
         LittleEndianReader reader(stream);
         uint32_t magic = reader.readByte4();
         if (magic != MAGIC){
             cout << "Not a packfile! " << std::hex << magic << endl;
+            return;
         } else {
             cout << "Ok got a packfile" << endl;
         }
+        cout << "Stream position is " << stream.tellg() << endl;
         uint32_t version = reader.readByte4();
+        cout << "Version is " << version << endl;
         reader.seekEnd(-4);
         uint32_t headerPosition = reader.readByte4();
         reader.seek(headerPosition);
 
-        cout << "Header at " << headerPosition << endl;
+        cout << "Header at 0x" << std::hex << headerPosition << std::dec << endl;
 
         bool done = false;
         while (!done){
@@ -125,9 +143,9 @@ public:
             uint32_t size = reader.readByte4();
             string name = reader.readString(80);
             done = name.size() == 0;
-            cout << name << " at " << start << " size " << size << endl;
-            cout << " seek to " << (current + length) << endl;
-            reader.seek(current + length);
+            cout << name << " at " << start << " size " << size << " length " << length << endl;
+            // cout << " seek to " << (current + length) << endl;
+            // reader.seek(current + length);
             done |= stream.eof();
         }
     }
