@@ -323,8 +323,7 @@ fades(0),
 background(0),
 menu(0){
 }
-_Menu::Context::Context(const Menu & menu){
-}
+
 _Menu::Context::Context(const Context & copy){
 }
 _Menu::Context::~Context(){
@@ -344,6 +343,74 @@ _Menu::Context::~Context(){
         delete menu;
     }
 }
+
+void _Menu::Context::parseToken(Token * token){
+    if ( *token != "context" ){
+        throw LoadException(__FILE__, __LINE__, "Not a menu context");
+    } else if (!token->hasTokens()){
+        return;
+    } 
+    // Token
+    Token * tok;
+    *token >> tok;
+    
+    while (tok->hasTokens()){
+        Token * context;
+        *tok >> context;
+        if (*context == "fade"){
+            // Fade info
+            if (!fades){
+                fades = new Gui::FadeTool();
+            }
+            // Set fader default to white
+            fades->setFadeInColor(Bitmap::makeColor(255,255,255));
+            fades->setFadeOutColor(Bitmap::makeColor(255,255,255));
+            fades->setFadeInTime(25);
+            fades->setFadeOutTime(12);
+
+            // Load defaults
+            fades->parseDefaults(context);
+        
+            // Prepare screen
+            Bitmap screen(Global::getScreenWidth(), Global::getScreenHeight());
+            screen.fill(fades->getFadeInColor());
+            screen.BlitToScreen();
+        } else if (*context == "animation" || *context == "background"){  
+            // Backgrounds
+            addBackground(context);
+        } else if (*context == ""){
+        }
+    }
+
+}
+
+void _Menu::Context::addBackground(Token * token){
+    // Backgrounds
+    if (!background){
+        background = new Background();
+    }
+    background->add(new Gui::Animation(token));
+}
+
+void _Menu::Context::addBackground(const std::string & image){
+    // Backgrounds
+    if (!background){
+        background = new Background();
+    }
+    background->add(new Gui::Animation(image));
+}
+
+void _Menu::Context::fadeIn(){
+    if (fades){
+        fades->setState(FadeTool::FadeIn);
+    }
+}
+void _Menu::Context::fadeOut(){
+    if (fades){
+        fades->setState(FadeTool::FadeOut);
+    }
+}
+
 void _Menu::Context::act(){
     // fader
     if (fades){
@@ -461,24 +528,6 @@ void _Menu::Menu::load(Token * token){
                 minor = 3;
                 micro = 1; 
         }
-        //FIXME (Move to context should not assume a fadetool for the menu)
-        // Fade info
-        if (!context.getFadeTool()){
-            context.setFadeTool(new Gui::FadeTool());
-            // Set fader default to white
-            context.getFadeTool()->setFadeInColor(Bitmap::makeColor(255,255,255));
-            context.getFadeTool()->setFadeOutColor(Bitmap::makeColor(255,255,255));
-            context.getFadeTool()->setFadeInTime(25);
-            context.getFadeTool()->setFadeOutTime(12);
-        }
-        ourToken = tok->findToken("fade");
-        if (ourToken != NULL){
-            context.getFadeTool()->parseDefaults(ourToken);
-        }
-        // Prepare screen
-        Bitmap screen(Global::getScreenWidth(), Global::getScreenHeight());
-        screen.fill(context.getFadeTool()->getFadeInColor());
-        screen.BlitToScreen();
     }
 
     while ( token->hasTokens() ){
@@ -501,11 +550,8 @@ void _Menu::Menu::load(Token * token){
                 } catch (const TokenException & ex){
                 }
                 addData(value);
-            } else if (*tok == "animation" || *tok == "background"){
-                if (!context.getBackground()){
-                    context.setBackground(new Background());
-                }
-                context.getBackground()->add(new Gui::Animation(tok));
+            } else if (*tok == "context"){
+                context.parseToken(tok);
             } else {
                 Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -531,8 +577,8 @@ void _Menu::Menu::run(){
     Global::speed_counter = 0;
     
     // Set fader start
-    context.getFadeTool()->setState(FadeTool::FadeIn);
-        
+    context.fadeIn();
+
     while( !done ){
         bool draw = false;
 
@@ -621,15 +667,9 @@ void _Menu::Menu::handleCompatibility(Token * tok, int version){
         } else if ( *tok == "background" ) {
             std::string temp;
             *tok >> temp;
-            if (!context.getBackground()){
-                context.setBackground(new Background());
-            }
-            context.getBackground()->add(new Gui::Animation(temp));
+            context.addBackground(temp);
         } else if (*tok == "anim"){
-            if (!context.getBackground()){
-                context.setBackground(new Background());
-            }
-            context.getBackground()->add(new Gui::Animation(tok));
+            context.addBackground(tok);
         } else if ( *tok == "clear-color" ) {
             // Still necessary?
         } else if ( *tok == "position" ) {

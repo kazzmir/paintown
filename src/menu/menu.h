@@ -143,12 +143,19 @@ class Menu;
 class Context{
     public:
         Context();
-        Context(const Menu &);
         Context(const Context &);
         virtual ~Context();
         
         virtual void act();
         virtual void render(const Bitmap &);
+
+        virtual void parseToken(Token *);
+
+        virtual void addBackground(Token *);
+        virtual void addBackground(const std::string &);
+
+        virtual void fadeIn();
+        virtual void fadeOut();
         
         enum Type {
             Full,
