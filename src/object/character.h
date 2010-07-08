@@ -49,7 +49,7 @@ class Character;
 class Remap{
 public:
     Remap();
-    Remap(const std::string & from, const std::string & to, Remap * original);
+    Remap(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to, Remap * original);
     Remap(const Remap & copy, Character * parent);
 
     virtual ~Remap();
@@ -67,8 +67,8 @@ protected:
     std::map<std::string, Animation*> mapper;
     bool needRemap;
     Remap * original;
-    std::string remapFrom;
-    std::string remapTo;
+    Filesystem::RelativePath remapFrom;
+    Filesystem::RelativePath remapTo;
 };
 
 class Character: public ObjectAttack {
@@ -391,7 +391,7 @@ protected:
 	int getShadowY();
 
 	virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
-	virtual void reMap( const std::string & from, const std::string & to, int id );
+	// virtual void reMap( const std::string & from, const std::string & to, int id );
 	void loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException );
 	bool realCollision( ObjectAttack * obj );
 	

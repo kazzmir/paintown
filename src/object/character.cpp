@@ -44,7 +44,7 @@ needRemap(false),
 original(NULL){
 }
 
-Remap::Remap(const std::string & from, const std::string & to, Remap * original):
+Remap::Remap(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to, Remap * original):
 needRemap(true),
 original(original),
 remapFrom(from),
@@ -90,8 +90,8 @@ void Remap::use(Character * from){
 }
 
 void Remap::doRemap(Character * from){
-    Bitmap b_from(remapFrom);
-    Bitmap b_to(remapTo);
+    Bitmap b_from(Filesystem::find(remapFrom).path());
+    Bitmap b_to(Filesystem::find(remapTo).path());
 
     map< int, int > remap_colors;
 
@@ -351,7 +351,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     current_map = 0;
     mapper[current_map] = new Remap();
 
-    map<string, Filesystem::AbsolutePath> remaps;
+    // map<string, Filesystem::AbsolutePath> remaps;
 
     Token * n = NULL;
     try{
@@ -373,7 +373,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                    movements[ ani->getName() ] = ani;
                    */
 
-                Remap* remap = mapper[ current_map ];
+                Remap* remap = mapper[current_map];
                 remap->setAnimation(ani->getName(), ani);
                 /*
                 if ( cur[ ani->getName() ] != 0 ){
@@ -419,7 +419,8 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                 string first;
                 string second;
                 *n >> first >> second;
-                remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
+                mapper[mapper.size()] = new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]);
+                // remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             } else {
                 Global::debug(0) << "Unhandled character attribute: " << endl;
                 n->print(" ");
@@ -470,11 +471,13 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
 
     // delete head;
 
+    /*
     for ( map<string, Filesystem::AbsolutePath>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
         const string & x1 = (*it).first;
         const Filesystem::AbsolutePath & alter = (*it).second;
         reMap(alter.path(), x1, getMapper().size());
     }
+    */
 
     if (getMovement("walk") != NULL){
         if (getMovement("walk")->getKeys().size() > 0){
@@ -605,43 +608,15 @@ void Character::setMap( const unsigned int x ){
 }
 
 /* swap some colors around */
-void Character::reMap( const string & from, const string & to, int id ){
-	
-	if ( mapper.find( id ) != mapper.end() )
-		return;
-	
+/*
+void Character::reMap(const string & from, const string & to, int id){
+    if (mapper.find(id) != mapper.end()){
+        return;
+    }
+
     mapper[id] = new Remap(from, to, mapper[0]);
-
-    /*
-	Bitmap b_from( from );
-	Bitmap b_to( to );
-
-	map< int, int > remap_colors;
-
-	for ( int x1 = 0; x1 < b_from.getWidth(); x1++ ){
-		for ( int y1 = 0; y1 < b_from.getHeight(); y1++ ){
-			int from_col = b_from.getPixel( x1, y1 );
-			int to_col = b_to.getPixel( x1, y1 );
-			if ( to_col != -1 && from_col != to_col ){
-				remap_colors[ from_col ] = to_col;
-			}
-		}
-	}
-
-	map< string, Animation * > & new_map = mapper[ id ];
-	const map< string, Animation * > & old_map = getMovements();
-	for ( map<string,Animation*>::const_iterator it = old_map.begin(); it != old_map.end(); it++ ){
-		const string & name = (*it).first;
-		const Animation * old_ani = (*it).second;
-
-		Animation * new_ani = new Animation( *old_ani, this );
-		new_ani->reMap( remap_colors );
-		// cout<<"Remap "<<new_ani->getName()<<" attack = "<<new_ani->isAttack()<<endl;
-
-		new_map[ name ] = new_ani;
-	}
-        */
 }
+*/
 	
 bool Character::isCollidable( Object * obj ){
 	if ( death >= 1 )

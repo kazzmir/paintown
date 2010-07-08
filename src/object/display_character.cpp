@@ -47,7 +47,7 @@ void DisplayCharacter::load(){
             throw LoadException(__FILE__, __LINE__, "First token is not 'character' in " + path );
         }
 
-        map<string, Filesystem::AbsolutePath> remaps;
+        // map<string, Filesystem::AbsolutePath> remaps;
 
         Token * current;
         while ( head->hasTokens() ){
@@ -81,15 +81,18 @@ void DisplayCharacter::load(){
                 string first;
                 string second;
                 *current >> first >> second;
-                remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
+                mapper[mapper.size()] = new Remap(Filesystem::RelativePath(second), Filesystem::RelativePath(first), mapper[0]);
+                // remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             }
         }
 
+        /*
         for ( map<string, Filesystem::AbsolutePath>::iterator it = remaps.begin(); it != remaps.end(); it++ ){
             const string & x1 = (*it).first;
             const Filesystem::AbsolutePath & alter = (*it).second;
             reMap(alter.path(), x1, getMapper().size() );
         }
+        */
     } catch (const TokenException & ex){
         // Global::debug(0) << "Could not read " << path << " : " << ex.getReason() << endl;
         throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path );
