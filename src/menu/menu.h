@@ -1,5 +1,5 @@
-#ifndef _paintown_menu_h
-#define _paintown_menu_h
+#ifndef _paintownNewMenu_h
+#define _paintownNewMenu_h
 
 #include <vector>
 #include <string>
@@ -27,7 +27,7 @@ class Bitmap;
 class MenuOption;
 class Token;
 
-namespace _Menu{
+namespace NewMenu{
 class Point{
     public:
     int x;
@@ -391,7 +391,7 @@ protected:
     void doFade(Bitmap * work);
     
     //! Menu info box
-    _Menu::InfoBox menuInfoBox;
+    NewMenu::InfoBox menuInfoBox;
     
     //! Add Info box
     void addInfoBox (const std::string &);
@@ -409,7 +409,7 @@ protected:
     std::string menuInfo;
 
     //! menu info location
-    _Menu::Point menuInfoLocation;
+    NewMenu::Point menuInfoLocation;
 
     //! parent menu
     Menu *parent;
@@ -449,10 +449,10 @@ private:
     bool option;
 
     //! This is the location of the option info text
-    _Menu::Point optionInfoTextLocation;
+    NewMenu::Point optionInfoTextLocation;
     
     //! Info boxes
-    std::vector<_Menu::InfoBox *> optionInfoBoxes;
+    std::vector<NewMenu::InfoBox *> optionInfoBoxes;
 
     enum MenuInput{
         Up,

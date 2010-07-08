@@ -40,20 +40,20 @@ static int sharedFontHeight = 24;
 
 static const int GradientMax = 50;
 
-_Menu::Point::Point():
+NewMenu::Point::Point():
 x(0),
 y(0){
 }
 
-_Menu::Point::Point(int x, int y):
+NewMenu::Point::Point(int x, int y):
 x(x),
 y(y){
 }
 
-_Menu::Point::~Point(){
+NewMenu::Point::~Point(){
 }
 
-_Menu::InfoBox::InfoBox():
+NewMenu::InfoBox::InfoBox():
 state(NotActive),
 font(Filesystem::RelativePath(sharedFont)),
 fontWidth(sharedFontWidth),
@@ -62,10 +62,10 @@ fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
 
-_Menu::InfoBox::~InfoBox(){
+NewMenu::InfoBox::~InfoBox(){
 }
  
-void _Menu::InfoBox::act(){
+void NewMenu::InfoBox::act(){
     popup.act();
     
     int speed = 9;
@@ -103,7 +103,7 @@ void _Menu::InfoBox::act(){
     }
 }
 
-void _Menu::InfoBox::render(const Bitmap & bmp){
+void NewMenu::InfoBox::render(const Bitmap & bmp){
     popup.render(bmp);
     
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
@@ -131,7 +131,7 @@ void _Menu::InfoBox::render(const Bitmap & bmp){
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
 
-void _Menu::InfoBox::open(){
+void NewMenu::InfoBox::open(){
     state = Opening;
     popup.location = location;
     popup.colors = colors;
@@ -139,12 +139,12 @@ void _Menu::InfoBox::open(){
     fadeAlpha = 0;
 }
 
-void _Menu::InfoBox::close(){
+void NewMenu::InfoBox::close(){
     state = Closing;
     popup.close();
 }
 
-void _Menu::InfoBox::setText(const std::string & info){
+void NewMenu::InfoBox::setText(const std::string & info){
     if (info.empty()){
         return;
     }
@@ -189,21 +189,21 @@ class MenuException : public Exception::Base{
         }
 };*/
 
-_Menu::ValueHolder::ValueHolder(const std::string & name):
+NewMenu::ValueHolder::ValueHolder(const std::string & name):
 name(name),
 location(0){
 }
-_Menu::ValueHolder::~ValueHolder(){
+NewMenu::ValueHolder::~ValueHolder(){
 }
 
-_Menu::ValueHolder::ValueHolder(const ValueHolder & copy){
+NewMenu::ValueHolder::ValueHolder(const ValueHolder & copy){
     // reset position
     this->location = 0;
     this->name = copy.name;
     this->values = copy.values;
 }
 
-_Menu::ValueHolder & _Menu::ValueHolder::operator=(const ValueHolder & copy){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator=(const ValueHolder & copy){
     // reset position
     this->location = 0;
     this->name = copy.name;
@@ -211,65 +211,65 @@ _Menu::ValueHolder & _Menu::ValueHolder::operator=(const ValueHolder & copy){
     return *this;
 }
         
-_Menu::ValueHolder & _Menu::ValueHolder::operator<<(const std::string & val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(const std::string & val){
     values.push_back(val);
     return *this;
 }
-_Menu::ValueHolder & _Menu::ValueHolder::operator<<(bool val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(bool val){
     std::ostringstream o;
     o << val;
     return *this << o.str();
 }
-_Menu::ValueHolder & _Menu::ValueHolder::operator<<(int val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(int val){
     std::ostringstream o;
     o << val;
     return *this << o.str();
 }
-_Menu::ValueHolder & _Menu::ValueHolder::operator<<(double val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(double val){
     std::ostringstream o;
     o << val;
     return *this << o.str();
 }
 
-_Menu::ValueHolder & _Menu::ValueHolder::operator<<(Token * tok){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(Token * tok){
     std::string temp;
     *tok >> temp;
     return *this << temp;
 }
 
 
-_Menu::ValueHolder & _Menu::ValueHolder::operator>>(std::string & val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(std::string & val){
     val = values[location];
     void next();
     return *this;
 }
-_Menu::ValueHolder & _Menu::ValueHolder::operator>>(bool val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(bool val){
     std::istringstream i(values[location]);
     i >> val;
     void next();
     return *this;
 }
-_Menu::ValueHolder & _Menu::ValueHolder::operator>>(int val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(int val){
     std::istringstream i(values[location]);
     i >> val;
     void next();
     return *this;
 }
-_Menu::ValueHolder & _Menu::ValueHolder::operator>>(double val){
+NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(double val){
     std::istringstream i(values[location]);
     i >> val;
     void next();
     return *this;
 }
 
-void _Menu::ValueHolder::next(){
+void NewMenu::ValueHolder::next(){
     location++;
     if (location >= values.size()){
         location = 0;
     }
 }
 
-const std::string _Menu::ValueHolder::getValues() {
+const std::string NewMenu::ValueHolder::getValues() {
     std::string temp;
     for (std::vector<std::string>::iterator i = values.begin(); i != values.end(); ++i){
         temp += *i + "; ";
@@ -278,10 +278,10 @@ const std::string _Menu::ValueHolder::getValues() {
 }
 
 /* backgrounds */
-_Menu::Background::Background(){
+NewMenu::Background::Background(){
 }
 
-_Menu::Background::~Background(){
+NewMenu::Background::~Background(){
     for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
         std::vector<Gui::Animation *> & animations = i->second;
         for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
@@ -293,7 +293,7 @@ _Menu::Background::~Background(){
     }
 }
 
-void _Menu::Background::act(const Gui::Coordinate & coord){
+void NewMenu::Background::act(const Gui::Coordinate & coord){
     for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
         std::vector<Gui::Animation *> & animations = i->second;
         for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
@@ -305,7 +305,7 @@ void _Menu::Background::act(const Gui::Coordinate & coord){
     }
 }
 
-void _Menu::Background::render(const Gui::Animation::Depth & depth, const Bitmap & bmp){
+void NewMenu::Background::render(const Gui::Animation::Depth & depth, const Bitmap & bmp){
     for (std::vector<Gui::Animation *>::iterator i = backgrounds[depth].begin(); i != backgrounds[depth].end(); ++i){
         Gui::Animation * anim = *i;
         if (anim){
@@ -314,20 +314,19 @@ void _Menu::Background::render(const Gui::Animation::Depth & depth, const Bitmap
     }
 }
 
-void _Menu::Background::add(Gui::Animation * anim){
+void NewMenu::Background::add(Gui::Animation * anim){
     backgrounds[anim->getDepth()].push_back(anim);
 }
 
-_Menu::Context::Context():
+NewMenu::Context::Context():
 fades(0),
 background(0),
 menu(0){
 }
 
-_Menu::Context::Context(const Context & copy){
+NewMenu::Context::Context(const Context & copy){
 }
-_Menu::Context::~Context(){
-    /* FIXME Should only delete things it owns */
+NewMenu::Context::~Context(){
     if (fades){
         delete fades;
     }
@@ -344,7 +343,7 @@ _Menu::Context::~Context(){
     }
 }
 
-void _Menu::Context::parseToken(Token * token){
+void NewMenu::Context::parseToken(Token * token){
     if ( *token != "context" ){
         throw LoadException(__FILE__, __LINE__, "Not a menu context");
     } else if (!token->hasTokens()){
@@ -371,6 +370,7 @@ void _Menu::Context::parseToken(Token * token){
             // Load defaults
             fades->parseDefaults(context);
         
+            // FIXME - this should be called by menu
             // Prepare screen
             Bitmap screen(Global::getScreenWidth(), Global::getScreenHeight());
             screen.fill(fades->getFadeInColor());
@@ -384,7 +384,7 @@ void _Menu::Context::parseToken(Token * token){
 
 }
 
-void _Menu::Context::addBackground(Token * token){
+void NewMenu::Context::addBackground(Token * token){
     // Backgrounds
     if (!background){
         background = new Background();
@@ -392,7 +392,7 @@ void _Menu::Context::addBackground(Token * token){
     background->add(new Gui::Animation(token));
 }
 
-void _Menu::Context::addBackground(const std::string & image){
+void NewMenu::Context::addBackground(const std::string & image){
     // Backgrounds
     if (!background){
         background = new Background();
@@ -400,18 +400,18 @@ void _Menu::Context::addBackground(const std::string & image){
     background->add(new Gui::Animation(image));
 }
 
-void _Menu::Context::fadeIn(){
+void NewMenu::Context::fadeIn(){
     if (fades){
         fades->setState(FadeTool::FadeIn);
     }
 }
-void _Menu::Context::fadeOut(){
+void NewMenu::Context::fadeOut(){
     if (fades){
         fades->setState(FadeTool::FadeOut);
     }
 }
 
-void _Menu::Context::act(){
+void NewMenu::Context::act(){
     // fader
     if (fades){
        fades->act();
@@ -421,7 +421,7 @@ void _Menu::Context::act(){
         background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Global::getScreenWidth(),Global::getScreenHeight())));
     }
 }
-void _Menu::Context::render(const Bitmap & bmp){
+void NewMenu::Context::render(const Bitmap & bmp){
     if (background){
         // background
         background->render(Gui::Animation::BackgroundBottom, bmp);
@@ -445,21 +445,21 @@ void _Menu::Context::render(const Bitmap & bmp){
         fades->draw(bmp);
     }
 }
-void _Menu::Context::setFadeTool(Gui::FadeTool *fade){
+void NewMenu::Context::setFadeTool(Gui::FadeTool *fade){
     fades = fade;
 }
-void _Menu::Context::setBackground(Background *bg){
+void NewMenu::Context::setBackground(Background *bg){
     background = bg;
 }
-void _Menu::Context::setOptions(std::vector<MenuOption *> & opt){
+void NewMenu::Context::setOptions(std::vector<MenuOption *> & opt){
     options = opt;
 }
-void _Menu::Context::setContextBox(Gui::ContextBox * box){
+void NewMenu::Context::setContextBox(Gui::ContextBox * box){
     menu = box;
 }
 
 /* New Menu */
-_Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
+NewMenu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     // Load up tokenizer
     try{
         Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
@@ -471,11 +471,11 @@ _Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     }
 }
 
-_Menu::Menu::Menu(Token * token){
+NewMenu::Menu::Menu(Token * token){
     load(token);
 }
 
-_Menu::Menu::~Menu(){
+NewMenu::Menu::~Menu(){
     // Kill values
     for (std::map<string,ValueHolder *>::iterator i = data.begin(); i != data.end(); ++i){
         if (i->second){
@@ -484,7 +484,7 @@ _Menu::Menu::~Menu(){
     }
 }
 
-void _Menu::Menu::load(Token * token){
+void NewMenu::Menu::load(Token * token){
     // TODO figure out where keys belong
     // Set keys
     input.set(Keyboard::Key_J, 0, true, Down);
@@ -568,7 +568,7 @@ void _Menu::Menu::load(Token * token){
     }
 }
 
-void _Menu::Menu::run(){
+void NewMenu::Menu::run(){
     bool done = false;
     
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
@@ -613,7 +613,7 @@ void _Menu::Menu::run(){
     }
 }
 
-void _Menu::Menu::act(){
+void NewMenu::Menu::act(){
     // Keys Move to context?
     InputManager::poll();
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
@@ -626,12 +626,12 @@ void _Menu::Menu::act(){
     context.act();
 }
 
-void _Menu::Menu::render(const Bitmap & bmp){
+void NewMenu::Menu::render(const Bitmap & bmp){
     // Render context
     context.render(bmp);
 }
 
-void _Menu::Menu::addData(ValueHolder * item){
+void NewMenu::Menu::addData(ValueHolder * item){
     std::pair<std::map<std::string,ValueHolder *>::iterator,bool> check;
     check = data.insert( std::pair<std::string,ValueHolder *>(item->getName(),item) );
     if (check.second == false){
@@ -641,7 +641,7 @@ void _Menu::Menu::addData(ValueHolder * item){
     }
 }
 
-void _Menu::Menu::handleCompatibility(Token * tok, int version){
+void NewMenu::Menu::handleCompatibility(Token * tok, int version){
     Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
         if ( *tok == "name" ){
@@ -1429,7 +1429,7 @@ void Menu::addInfoBox(const std::string & text){
     if (!optionInfoBoxes.empty()){
         optionInfoBoxes.back()->close();
     }
-    _Menu::InfoBox * temp = new _Menu::InfoBox();
+    NewMenu::InfoBox * temp = new NewMenu::InfoBox();
     temp->setFont(getFont(),getFontWidth(),getFontHeight());
     temp->setText(text);
     const int width = temp->location.getWidth();
@@ -1449,8 +1449,8 @@ void Menu::addInfoBox(const std::string & text){
 //! Update info boxes
 void Menu::actInfoBoxes(){
     // Global::debug(0) << "Info boxes " << optionInfoBoxes.size() << endl;
-    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
-        _Menu::InfoBox *box = *i;
+    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
+        NewMenu::InfoBox *box = *i;
         box->act();
         if (!box->isActive()){
             delete box;
@@ -1463,15 +1463,15 @@ void Menu::actInfoBoxes(){
 
 //! Render info boxes
 void Menu::renderInfoBoxes(const Bitmap & work){
-    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        _Menu::InfoBox *box = *i;
+    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        NewMenu::InfoBox *box = *i;
         box->render(work);
     }
 }
 
 void Menu::closeInfoBoxes(){
-    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        _Menu::InfoBox *box = *i;
+    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        NewMenu::InfoBox *box = *i;
         box->close();
     }
 }
@@ -1485,8 +1485,8 @@ Menu::~Menu(){
     }
     */
 
-    for (std::vector<_Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        _Menu::InfoBox *box = *i;
+    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        NewMenu::InfoBox *box = *i;
         if (box){
             delete box;
         }
