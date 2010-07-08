@@ -116,7 +116,6 @@ class PackReader{
 public:
     PackReader(const string & filename){
         ifstream stream;
-        // stream.rdbuf()->pubsetbuf(0, 0);
         stream.open(filename.c_str(), std::ios::in | std::ios::binary);
         LittleEndianReader reader(stream);
         uint32_t magic = reader.readByte4();

@@ -14,7 +14,7 @@
 class DisplayCharacterLoader;
 class DisplayCharacter: public Character{
 public:
-	DisplayCharacter(const std::string & str) throw (LoadException);
+	DisplayCharacter(const std::string & str);
 	virtual ~DisplayCharacter();
 
         virtual bool isLoaded();
@@ -22,7 +22,7 @@ public:
         friend class DisplayCharacterLoader;
 protected:
         /* called by the loader */
-        void load() throw (LoadException);
+        void load();
 
 private:
         const std::string path;

@@ -28,17 +28,17 @@ static Token * findNameToken( Token * token ){
 	return NULL;
 }
 
-DisplayCharacter::DisplayCharacter(const string & path) throw (LoadException):
+DisplayCharacter::DisplayCharacter(const string & path):
 Character(ALLIANCE_NONE),
 path(path),
 loaded(false){
     setName(Filesystem::removeExtension(Filesystem::stripDir(path)));
     /* throws load-exception if the file can't be read */
     Util::Thread::initializeLock(&load_lock);
-    TokenReader reader(path);
+    // TokenReader reader(path);
 }
 
-void DisplayCharacter::load() throw (LoadException) {
+void DisplayCharacter::load(){
     Global::debug(1) << "Loading " << path << endl;
     TokenReader reader( path );
     try{
