@@ -181,6 +181,7 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
     return contextItems;
 }
 /*
+ * FIXME Exception handling for ValueHolder
 class MenuException : public Exception::Base{
     public:
         MenuException(){
@@ -240,29 +241,30 @@ NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(Token * tok){
 
 NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(std::string & val){
     val = values[location];
-    void next();
+    next();
     return *this;
 }
 NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(bool val){
     std::istringstream i(values[location]);
     i >> val;
-    void next();
+    next();
     return *this;
 }
 NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(int val){
     std::istringstream i(values[location]);
     i >> val;
-    void next();
+    next();
     return *this;
 }
 NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(double val){
     std::istringstream i(values[location]);
     i >> val;
-    void next();
+    next();
     return *this;
 }
 
 void NewMenu::ValueHolder::next(){
+    /* FIXME throw exception when beyond */
     location++;
     if (location >= values.size()){
         location = 0;
