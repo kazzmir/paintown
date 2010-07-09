@@ -994,7 +994,7 @@ void Character::setTrails(const int produce, const int life){
 }
 
 void Character::createProjectile( Projectile * projectile ){
-	projectiles.push_back( (Object *) projectile );
+    projectiles.push_back( (Object *) projectile );
 }
 	
 Network::Message Character::grabMessage( Object::networkid_t from, Object::networkid_t who ){

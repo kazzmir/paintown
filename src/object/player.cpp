@@ -468,6 +468,7 @@ void Player::deathReset(){
         if (! isInvincible()){
             setInvincibility( 400 );
         }
+        setTrails(0, 0);
 	setDeath( 0 );
 	animation_current = getMovement( "idle" );
 	loseLife();

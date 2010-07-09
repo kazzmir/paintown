@@ -627,6 +627,7 @@ void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Leve
 
             for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
                 Player * playerX = (Player *) *it;
+                playerX->setTrails(0, 0);
                 playerX->setY( 200 );
                 /* setMoving(false) sets all velocities to 0 */
                 playerX->setMoving( false );
