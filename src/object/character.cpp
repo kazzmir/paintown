@@ -570,15 +570,15 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
 }
 
 void Character::nextMap(){
-	nextMap( getCurrentMap() );
+    nextMap(getCurrentMap());
 }
 
 void Character::nextMap( int x ){
-	unsigned int next = x + 1;
-	if ( next >= mapper.size() ){
-		next = 0;
-	}
-	setMap( next );
+    unsigned int next = x + 1;
+    if (next >= mapper.size()){
+        next = 0;
+    }
+    setMap(next);
 }
 
 int Character::getNextMap() const {
@@ -592,10 +592,13 @@ int Character::getNextMap( unsigned int x ) const {
 	return x + 1;
 }
 	
-void Character::setMap( const unsigned int x ){
+void Character::setMap(const unsigned int x){
     current_map = x;
-    if ( current_map >= mapper.size() ){
+    if (current_map >= mapper.size()){
         current_map = mapper.size() - 1;
+    }
+    if (current_map < 0){
+        current_map = 0;
     }
 
     mapper[current_map]->use(this);
@@ -607,7 +610,7 @@ void Character::setMap( const unsigned int x ){
        */
 
     if (animation_current != NULL){
-        animation_current = getMovement( animation_current->getName() );
+        animation_current = getMovement(animation_current->getName());
     }
 }
 

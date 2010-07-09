@@ -607,66 +607,66 @@ void Animation::setFacing( const int direction ){
 }
 	
 void Animation::reMap( map< int, int > & colors ){
-	/* if they arent are own bitmaps, make them so */
-	if ( !own_bitmaps ){
-		for ( map<string,Frame*>::iterator it = frames.begin(); it != frames.end(); it++ ){
-			Frame* & xframe = (*it).second;
+    /* if they arent are own bitmaps, make them so */
+    if ( !own_bitmaps ){
+        for ( map<string,Frame*>::iterator it = frames.begin(); it != frames.end(); it++ ){
+            Frame* & xframe = (*it).second;
 
-			Bitmap * xpic = new Bitmap( *(xframe->pic), true );
-			ECollide * xcollide = new ECollide( xframe->collide );
+            Bitmap * xpic = new Bitmap( *(xframe->pic), true );
+            ECollide * xcollide = new ECollide( xframe->collide );
 
-			/* oh evil! I am altering a map while iterating over it.
-			 * It should be ok, though, since Im altering an element
-			 * that already exists.
-			 */
-			frames[ (*it).first ] = new Frame( xpic, xcollide );
-		}
-	}
+            /* oh evil! I am altering a map while iterating over it.
+             * It should be ok, though, since Im altering an element
+             * that already exists.
+             */
+            frames[ (*it).first ] = new Frame( xpic, xcollide );
+        }
+    }
 
-	for ( map<string,Frame*>::iterator it = frames.begin(); it != frames.end(); it++ ){
-		Frame * xframe = (*it).second;
+    for ( map<string,Frame*>::iterator it = frames.begin(); it != frames.end(); it++ ){
+        Frame * xframe = (*it).second;
 
-		Bitmap * use = xframe->pic;
-		reMap( use, colors );
-	}
+        Bitmap * use = xframe->pic;
+        reMap(use, colors);
+    }
 
-	own_bitmaps = true;
+    own_bitmaps = true;
 }
 
 void Animation::reMap( Bitmap * work, map< int, int > & colors ){
-	const map<int,int>::iterator it_end = colors.end();
+    const map<int,int>::iterator it_end = colors.end();
 
-	/* maybe this is a little faster than just reading every pixel
-	 * and writing it back. i dunno
-	 */
-	for ( int y1 = 0; y1< work->getHeight(); y1++ ){
-		vector< int > xcols;
-		work->readLine( xcols, y1 );
-		for ( unsigned int x1 = 0; x1 < xcols.size(); x1++ ){
-			int pixel = xcols[ x1 ];
+    /* maybe this is a little faster than just reading every pixel
+     * and writing it back. i dunno
+     */
+    for ( int y1 = 0; y1< work->getHeight(); y1++ ){
+        vector< int > xcols;
+        work->readLine( xcols, y1 );
+        for ( unsigned int x1 = 0; x1 < xcols.size(); x1++ ){
+            int pixel = xcols[ x1 ];
 
-			map<int,int>::iterator find_it = colors.find( pixel );
-			if ( find_it != it_end ){
-				work->putPixel( x1, y1, (*find_it).second );
-			}
-			/*
-			if ( colors.find( pixel ) != it_end ){
-				work->putPixel( x1, y1, colors[ pixel ] );
-			}
-			*/
-		}
-	}
+            map<int,int>::iterator find_it = colors.find( pixel );
+            if (find_it != it_end){
+                work->putPixel( x1, y1, (*find_it).second );
+            }
+            /*
+               if ( colors.find( pixel ) != it_end ){
+               work->putPixel( x1, y1, colors[ pixel ] );
+               }
+               */
+        }
+    }
 
-	/*
-	for ( int x1 = 0; x1 < work->getWidth(); x1++ ){
-		for ( int y1 = 0; y1 < work->getHeight(); y1++ ){
-			int pixel = work->getPixel( x1, y1 );
-			if ( colors.find( pixel ) != it_end ){
-				work->putPixel( x1, y1, colors[ pixel ] );
-			}
-		}
-	}
-	*/
+    /*
+       for ( int x1 = 0; x1 < work->getWidth(); x1++ ){
+       for ( int y1 = 0; y1 < work->getHeight(); y1++ ){
+       int pixel = work->getPixel( x1, y1 );
+       if ( colors.find( pixel ) != it_end ){
+       work->putPixel( x1, y1, colors[ pixel ] );
+       }
+       }
+       }
+       */
 }
 	
 void Animation::getAttackCoords( int & x, int & y ){	

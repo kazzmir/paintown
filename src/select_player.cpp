@@ -451,19 +451,6 @@ Filesystem::AbsolutePath Game::selectPlayer(const string & message, const Level:
         }
 
         Global::debug(1, DEBUG_CONTEXT) << "Selected " << path.path() << ". Loading.." << endl;
-        /*
-        Player * player = new Player(players[current].path);
-        player->setInvincible(invincibile);
-        player->setMap(remap);
-        */
-
-        /* is this necessary? I dont think so.. if it is provide an
-         * explanation here.
-         */
-        /*
-        player->testAnimation();
-        return player;
-        */
         return path;
     } catch (const Exception::Return & r){
         for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
@@ -473,6 +460,8 @@ Filesystem::AbsolutePath Game::selectPlayer(const string & message, const Level:
     }
 }
 
+/* Deprecated */
+#if 0
 vector<Object *> Game::versusSelect( bool invincible ){
     Bitmap background(Global::titleScreen().path());
 
@@ -922,3 +911,4 @@ vector<Object *> Game::versusSelect( bool invincible ){
 
     return tempVec;
 }
+#endif
