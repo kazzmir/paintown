@@ -81,7 +81,7 @@ void DisplayCharacter::load(){
                 string first;
                 string second;
                 *current >> first >> second;
-                mapper[mapper.size()] = new Remap(Filesystem::RelativePath(second), Filesystem::RelativePath(first), mapper[0]);
+                addRemap(new Remap(Filesystem::RelativePath(second), Filesystem::RelativePath(first), mapper[0]));
                 // remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             }
         }

@@ -419,7 +419,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                 string first;
                 string second;
                 *n >> first >> second;
-                mapper[mapper.size()] = new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]);
+                addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
                 // remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             } else {
                 Global::debug(0) << "Unhandled character attribute: " << endl;
@@ -495,7 +495,11 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
 
     path = filename;
 }
-        
+
+void Character::addRemap(Remap * remap){
+    mapper[mapper.size()] = remap;
+}
+
 void Character::addEffect(DrawEffect * effect){
     effects.push_back(effect);
     std::sort(effects.begin(), effects.end(), DrawEffect::compare);

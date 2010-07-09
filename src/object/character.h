@@ -392,6 +392,7 @@ protected:
 
 	virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
 	// virtual void reMap( const std::string & from, const std::string & to, int id );
+        virtual void addRemap(Remap * remap);
 	void loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException );
 	bool realCollision( ObjectAttack * obj );
 	
