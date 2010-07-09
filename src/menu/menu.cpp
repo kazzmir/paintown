@@ -614,9 +614,14 @@ void NewMenu::Menu::run(const Context & parentContext){
     // Setup context from parent and this menu and initialize
     Context localContext(parentContext, context);
     localContext.initialize();
+
+    // Setup menu fonts etc
+    menu.setFont(Filesystem::RelativePath("fonts/arial.ttf"), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
+    menu.setList(toContextList(options));
+    menu.open();
     
-    // Run while the localContext till the localContext is done
-    while( localContext.getState() != Context::Completed ){
+    // Run while till the localContext is done
+    while( localContext.getState() != Context::Completed && menu.isActive() ){
         bool draw = false;
 
         if ( Global::speed_counter > 0 ){
@@ -634,6 +639,7 @@ void NewMenu::Menu::run(const Context & parentContext){
                 } catch (const Exception::Return & ex){
                     // signaled to quit wrap up menu and then exit
                     localContext.finish();
+                    menu.close();
                 }
             }
 
@@ -666,7 +672,16 @@ void NewMenu::Menu::act(Context & ourContext){
         InputManager::waitForRelease(input, Exit);
         throw Exception::Return(__FILE__, __LINE__);
     }
+    if (inputState[Up]){
+        bool moved = menu.previous();
+    }
     
+    if (inputState[Down]){
+        bool moved = menu.next();
+    }
+    // Menu act
+    menu.act();
+
     // Act context
     ourContext.act();
 }
@@ -719,22 +734,22 @@ void NewMenu::Menu::handleCompatibility(Token * tok, int version){
             // Still necessary?
         } else if ( *tok == "position" ) {
             // This handles the placement of the menu list and surrounding box
-            //contextMenu.setCoordinates(tok);
+            menu.setCoordinates(tok);
         } else if ( *tok == "relative-position"){
-            //contextMenu.setCoordinates(tok);
+            menu.setCoordinates(tok);
         } else if ( *tok == "coordinate"){
-            //contextMenu.setCoordinates(tok);
+            menu.setCoordinates(tok);
         } else if ( *tok == "position-body" ) {
             // This handles the body color of the menu box
-            //contextMenu.setColors(tok);
+            menu.setColors(tok);
         } else if ( *tok == "position-border" ) {
             // This handles the border color of the menu box
-            //contextMenu.setColors(tok);
+            menu.setColors(tok);
         } else if ( *tok == "fade-speed" ) {
             // Menu fade in speed
-            //int speed;
-            //*tok >> speed;
-            //contextMenu.setFadeSpeed(speed);
+            int speed;
+            *tok >> speed;
+            menu.setFadeSpeed(speed);
         } else if ( *tok == "font" ) {
             ValueHolder * value = new ValueHolder("font");
             *value << tok << tok << tok;
