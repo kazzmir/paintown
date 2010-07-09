@@ -150,6 +150,7 @@ class Context{
 
         virtual void parseToken(Token *);
 
+        // Compatibility stuff
         virtual void addBackground(Token *);
         virtual void addBackground(const std::string &);
         
@@ -192,6 +193,8 @@ class Context{
 
         /*! Backgrounds */
         Background * background;
+
+        /*! Sounds */
 };
 
 /*! New Menu class */

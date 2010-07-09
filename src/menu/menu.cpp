@@ -616,7 +616,11 @@ void NewMenu::Menu::run(const Context & parentContext){
     localContext.initialize();
 
     // Setup menu fonts etc
-    menu.setFont(Filesystem::RelativePath("fonts/arial.ttf"), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
+    std::string localFont = "fonts/arial.ttf";
+    if (Configuration::getMenuFont() != "" && Util::exists(Configuration::getMenuFont())){
+        localFont = Configuration::getMenuFont();
+    }
+    menu.setFont(Filesystem::RelativePath(localFont), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
     menu.setList(toContextList(options));
     menu.open();
     
