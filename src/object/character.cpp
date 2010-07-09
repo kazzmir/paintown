@@ -99,7 +99,7 @@ void Remap::doRemap(Character * from){
         for ( int y1 = 0; y1 < b_from.getHeight(); y1++ ){
             int from_col = b_from.getPixel( x1, y1 );
             int to_col = b_to.getPixel( x1, y1 );
-            if ( to_col != -1 && from_col != to_col ){
+            if (to_col != -1 && from_col != to_col){
                 remap_colors[ from_col ] = to_col;
             }
         }

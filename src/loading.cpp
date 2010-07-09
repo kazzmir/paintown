@@ -21,7 +21,7 @@ using namespace std;
 namespace Loader{
 
 Util::Thread::Lock loading_screen_mutex;
-volatile bool done_loading = false;
+volatile bool done_loading = true;
 
 typedef struct pair{
 	int x, y;
@@ -54,7 +54,7 @@ private:
 void startLoading(Util::Thread::Id * thread, void * arg){
     bool create = false;
     Util::Thread::acquireLock(&loading_screen_mutex);
-    create = ! done_loading;
+    create = done_loading;
     done_loading = false;
     Util::Thread::releaseLock(&loading_screen_mutex);
 
