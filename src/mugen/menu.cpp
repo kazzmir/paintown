@@ -579,7 +579,7 @@ void MugenMenu::run(){
 	Global::second_counter = 0;
 	int game_time = 100;
     
-	while ( ! done && (*currentOption)->getState() != MenuOption::Run && fader.getState() != Gui::FadeTool::RunFade ){
+	while ( ! done && (*currentOption)->getState() != MenuOption::Run && fader.getState() != Gui::FadeTool::EndFade ){
 
 	    bool draw = false;
 	    

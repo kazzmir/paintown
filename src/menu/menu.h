@@ -129,12 +129,9 @@ class Background{
         void drawBackgrounds(std::vector<Gui::Animation *> &, const Bitmap &);
 };
 
-class Menu;
 /*! Menu contexts
     - Each menu has a context which it defaults to
-        - Sub menus inherit the parents context at creation and will overwrite any changes it has
-          which will be used to render itself from the main menu instead of running a new menu each time
-        - Returning from a child menu will result in a restoration of the current context
+        - Sub menus will be passed the parents context when run
     - Fader
     - Backgrounds (No background will fall back onto a fill screen)
     - Menu (options, ContextBox, etc)
@@ -143,26 +140,36 @@ class Menu;
 class Context{
     public:
         Context();
-        Context(const Context &);
+        Context(const Context &, const Context &);
         virtual ~Context();
         
         virtual void act();
-        virtual void render(const Bitmap &);
+        // Pass the widget (Menu ContextBox in this case) to be drawn
+        // Allows for custom widget menus to be draw in place (ie for tabs or something)
+        virtual void render(Gui::Widget &, const Bitmap &);
 
         virtual void parseToken(Token *);
 
         virtual void addBackground(Token *);
         virtual void addBackground(const std::string &);
-
-        virtual void fadeIn();
-        virtual void fadeOut();
         
-        enum Type {
-            Full,
-            FaderOnly,
-            BackgroundsOnly,
-            MenuOnly,
+        /*! Initializes things like faders */
+        virtual void initialize();
+        /*! Closes things out like faders */
+        virtual void finish();
+
+        /*! Current state */
+        enum State{
+            NotStarted,
+            Initializing,
+            Running,
+            Finishing,
+            Completed,
         };
+
+        inline const State & getState() const {
+            return this->state;
+        }
         
         virtual void setFadeTool(Gui::FadeTool *);
         virtual inline Gui::FadeTool * getFadeTool(){
@@ -172,23 +179,19 @@ class Context{
         virtual inline Background * getBackground(){
             return this->background;
         }
-        virtual void setOptions(std::vector<MenuOption *> &);
-        virtual inline std::vector<MenuOption *> & getOptions(){
-            return this->options;
-        }
-        virtual void setContextBox(Gui::ContextBox *);
-        virtual inline Gui::ContextBox * getContextBox(){
-            return this->menu;
-        }
         
     private:
-        /*! FIXME not sure if these should even be pointers
-            perhaps copies would be the best method
-            if not need to assess management of resources */
+        /*! Require cleanup *default constructor only* */
+        bool cleanup;
+
+        /*! Current state */
+        State state;
+
+        /*! Fade Tool */
         Gui::FadeTool * fades;
+
+        /*! Backgrounds */
         Background * background;
-        std::vector <MenuOption *> options;
-        Gui::ContextBox * menu;
 };
 
 /*! New Menu class */
@@ -199,14 +202,14 @@ class Menu{
         Menu(Token *);
         virtual ~Menu();
 
-        /*! Run Menu */
-        virtual void run();
+        /*! Run Menu pass parent context */
+        virtual void run(const Context &);
 
-        /*! Logic */
-        virtual void act();
+        /*! Logic pass local context */
+        virtual void act(Context &);
 
-        /*! render */
-        virtual void render(const Bitmap &);
+        /*! render pass local context and work */
+        virtual void render(Context &, const Bitmap &);
 
     protected:
         
@@ -216,6 +219,12 @@ class Menu{
         /*! Data holder */
         std::map<std::string, ValueHolder *> data;
 
+        /*! Options */
+        std::vector <MenuOption *> options;
+
+        /*! Context Box Menu render */
+        Gui::ContextBox menu;
+        
         /*! load token */
         void load(Token * token);
         
@@ -224,6 +233,7 @@ class Menu{
         
         /*! Prior token compatibility based on version Global::getVersion() */
         virtual void handleCompatibility(Token * token, int version);
+
     private:
         /*! move to context? */
         enum MenuInput{

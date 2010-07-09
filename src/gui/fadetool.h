@@ -17,7 +17,7 @@ public:
             FadeIn,
             FadeOut,
             NoFade,
-            RunFade,
+            EndFade,
         };
         
         //! Read info from Token

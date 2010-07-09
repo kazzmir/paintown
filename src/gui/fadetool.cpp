@@ -93,7 +93,7 @@ void FadeTool::setState( const State & f){
 	    fadeTime = 0;
 	    break;
 	case NoFade:
-	case RunFade:
+	case EndFade:
 	default:
 	    fadeTime = 0;
 	    break;
@@ -111,11 +111,11 @@ void FadeTool::act(){
 	case FadeOut:
 	    fadeTime+=(255/(fadeOutTime <= 0 ? 1 : fadeOutTime));
 	    if (fadeTime>=255){
-		setState(RunFade);
+		setState(EndFade);
 	    }
 	    break;
 	case NoFade:
-	case RunFade:
+	case EndFade:
 	default:
 	    break;
     }
@@ -136,7 +136,7 @@ void FadeTool::draw(const Bitmap &bmp){
 	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	    break;
 	case NoFade:
-	case RunFade:
+	case EndFade:
 	default:
 	    break;
     }

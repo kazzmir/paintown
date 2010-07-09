@@ -321,27 +321,39 @@ void NewMenu::Background::add(Gui::Animation * anim){
 }
 
 NewMenu::Context::Context():
+cleanup(true),
+state(NotStarted),
 fades(0),
-background(0),
-menu(0){
+background(0){
 }
 
-NewMenu::Context::Context(const Context & copy){
+NewMenu::Context::Context(const Context & parent, const Context & child):
+cleanup(false),
+state(NotStarted),
+fades(NULL),
+background(NULL){
+    // Update with parents info
+    fades = parent.fades;
+    background = parent.background;
+
+    // Then overwrite with childs
+    if (child.fades != NULL){
+        fades = child.fades;
+    }
+    if (child.background != NULL){
+        background = child.background;
+    }
 }
+
 NewMenu::Context::~Context(){
-    if (fades){
-        delete fades;
-    }
-    if (background){
-        delete background;
-    }
-    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
-        if (*i){
-            delete *i;
+    // Only delete if required
+    if (cleanup){
+        if (fades != NULL){
+            delete fades;
         }
-    }
-    if (menu){
-        delete menu;
+        if (background != NULL){
+            delete background;
+        }
     }
 }
 
@@ -371,12 +383,6 @@ void NewMenu::Context::parseToken(Token * token){
 
             // Load defaults
             fades->parseDefaults(context);
-        
-            // FIXME - this should be called by menu
-            // Prepare screen
-            Bitmap screen(Global::getScreenWidth(), Global::getScreenHeight());
-            screen.fill(fades->getFadeInColor());
-            screen.BlitToScreen();
         } else if (*context == "animation" || *context == "background"){  
             // Backgrounds
             addBackground(context);
@@ -402,14 +408,30 @@ void NewMenu::Context::addBackground(const std::string & image){
     background->add(new Gui::Animation(image));
 }
 
-void NewMenu::Context::fadeIn(){
+void NewMenu::Context::initialize(){
     if (fades){
+        // state
+        state = Initializing;
+        // Prepare screen
+        Bitmap screen(Global::getScreenWidth(), Global::getScreenHeight());
+        screen.fill(fades->getFadeInColor());
+        screen.BlitToScreen();
+        // set fader state
         fades->setState(FadeTool::FadeIn);
+    } else {
+        // Running
+        state = Running;
     }
 }
-void NewMenu::Context::fadeOut(){
+void NewMenu::Context::finish(){
     if (fades){
+        // state
+        state = Finishing;
+        // set fader state
         fades->setState(FadeTool::FadeOut);
+    } else {
+        // Completed
+        state = Completed;
     }
 }
 
@@ -417,13 +439,22 @@ void NewMenu::Context::act(){
     // fader
     if (fades){
        fades->act();
+       if (state == Initializing){
+           if(fades->getState() == Gui::FadeTool::NoFade){
+               state = Running;
+           }
+       } else if (state == Finishing){
+           if(fades->getState() == Gui::FadeTool::EndFade){
+               state = Completed;
+           }
+       }
     }
     // Backgrounds
     if (background){    
         background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Global::getScreenWidth(),Global::getScreenHeight())));
     }
 }
-void NewMenu::Context::render(const Bitmap & bmp){
+void NewMenu::Context::render(Gui::Widget & menu, const Bitmap & bmp){
     if (background){
         // background
         background->render(Gui::Animation::BackgroundBottom, bmp);
@@ -434,6 +465,7 @@ void NewMenu::Context::render(const Bitmap & bmp){
     }
     
     // Menu
+    menu.render(bmp);
     
     if (background){
         // foreground
@@ -452,12 +484,6 @@ void NewMenu::Context::setFadeTool(Gui::FadeTool *fade){
 }
 void NewMenu::Context::setBackground(Background *bg){
     background = bg;
-}
-void NewMenu::Context::setOptions(std::vector<MenuOption *> & opt){
-    options = opt;
-}
-void NewMenu::Context::setContextBox(Gui::ContextBox * box){
-    menu = box;
 }
 
 /* New Menu */
@@ -482,6 +508,13 @@ NewMenu::Menu::~Menu(){
     for (std::map<string,ValueHolder *>::iterator i = data.begin(); i != data.end(); ++i){
         if (i->second){
             delete i->second;
+        }
+    }
+
+    // Kill options
+    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
+        if (*i){
+            delete *i;
         }
     }
 }
@@ -570,18 +603,20 @@ void NewMenu::Menu::load(Token * token){
     }
 }
 
-void NewMenu::Menu::run(){
+void NewMenu::Menu::run(const Context & parentContext){
     bool done = false;
     
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
     
     double runCounter = 0;
     Global::speed_counter = 0;
+     
+    // Setup context from parent and this menu and initialize
+    Context localContext(parentContext, context);
+    localContext.initialize();
     
-    // Set fader start
-    context.fadeIn();
-
-    while( !done ){
+    // Run while the localContext till the localContext is done
+    while( localContext.getState() != Context::Completed ){
         bool draw = false;
 
         if ( Global::speed_counter > 0 ){
@@ -594,7 +629,12 @@ void NewMenu::Menu::run(){
             }
             while ( runCounter >= 1.0 ){
                 runCounter -= 1;
-                act();
+                try {
+                    act(localContext);
+                } catch (const Exception::Return & ex){
+                    // signaled to quit wrap up menu and then exit
+                    localContext.finish();
+                }
             }
 
             Global::speed_counter = 0;
@@ -602,7 +642,7 @@ void NewMenu::Menu::run(){
 
         if (draw){
             // Render
-            render(work);
+            render(localContext, work);
             
             // screen
             work.BlitToScreen();
@@ -613,10 +653,13 @@ void NewMenu::Menu::run(){
             InputManager::poll();
         }
     }
+    
+    // FIXME Menu is finished, lets return is this even required anymore?
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
-void NewMenu::Menu::act(){
-    // Keys Move to context?
+void NewMenu::Menu::act(Context & ourContext){
+    // Keys
     InputManager::poll();
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
     if (inputState[Exit]){
@@ -625,12 +668,12 @@ void NewMenu::Menu::act(){
     }
     
     // Act context
-    context.act();
+    ourContext.act();
 }
 
-void NewMenu::Menu::render(const Bitmap & bmp){
+void NewMenu::Menu::render(Context & ourContext, const Bitmap & bmp){
     // Render context
-    context.render(bmp);
+    ourContext.render(menu, bmp);
 }
 
 void NewMenu::Menu::addData(ValueHolder * item){
@@ -703,7 +746,7 @@ void NewMenu::Menu::handleCompatibility(Token * tok, int version){
                     //addOption(temp);
                     //temp->setParent(this);
                     //hasOptions = true;
-                    context.getOptions().push_back(temp);
+                    options.push_back(temp);
                 }
             } catch (const LoadException & le){
                 Global::debug(0) << "Could not read option: " << le.getTrace() << endl;

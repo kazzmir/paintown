@@ -922,7 +922,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     InputMap<Mugen::Keys> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
     
-    while (!done && fader.getState() != Gui::FadeTool::RunFade){
+    while (!done && fader.getState() != Gui::FadeTool::EndFade){
     
 	bool draw = false;
 	
@@ -1912,7 +1912,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     // Set game keys temporary
     InputMap<Mugen::Keys> gameInput = Mugen::getPlayer1Keys(20);
     
-    while ( ! done && fader.getState() != Gui::FadeTool::RunFade ){
+    while ( ! done && fader.getState() != Gui::FadeTool::EndFade ){
     
 	bool draw = false;
 	
