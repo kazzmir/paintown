@@ -13,6 +13,9 @@ test:
 	build/test/regex/test
 	@-rm /tmp/token*
 
+install:
+	sh install.sh
+
 # usually only be executed by the buildbot script
 # gch is broken for some reason: http://gcc.gnu.org/ml/gcc-help/2005-02/msg00007.html
 buildbot: buildbot_normal buildbot_static buildbot_editor buildbot_cmake
