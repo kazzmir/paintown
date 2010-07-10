@@ -112,7 +112,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
 
-Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
+Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, OldMenu::Menu *parent){
 #if 0
     std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 
@@ -159,7 +159,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, Menu *parent){
     }
 
     try{
-        Menu temp;
+        OldMenu::Menu temp;
         temp.setParent(parent);
         int index = 0;
         for ( unsigned int i = 0; i < possible.size(); i++ ){

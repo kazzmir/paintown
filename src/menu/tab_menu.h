@@ -40,14 +40,14 @@ class MenuBox : public Gui::Box{
 	bool checkVisible(const Gui::Coordinate &);
 	void setColors(const Gui::ColorInfo &, const int fontColor);
 	void setColors(const int bodyColor, const int borderColor, const int fontColor);
-	Menu menu;
+	OldMenu::Menu menu;
 	int fontColor;
         //Gui::Box snapPosition;
         Gui::ContextBox context;
 	bool running;
 };
 
-class TabMenu : public Menu
+class TabMenu : public OldMenu::Menu
 {
     public:
 	TabMenu();

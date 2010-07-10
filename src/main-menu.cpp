@@ -231,16 +231,17 @@ int paintown_main( int argc, char ** argv ){
     while (true){
         try{
             /* fadein from white */
-            Menu game(true, Bitmap::makeColor(255, 255, 255));
-            game.load(mainMenuPath());
+            //Menu game(true, Bitmap::makeColor(255, 255, 255));
+            //game.load(mainMenuPath());
+            Menu::Menu game(mainMenuPath());
             if (just_network_server){
 #ifdef HAVE_NETWORKING
-                Network::networkServer(&game);
+                //Network::networkServer(&game);
 #endif
             } else if (mugen){
                 Mugen::run();
             } else {
-                game.run();
+                game.run(Menu::Context());
             }
         } catch (const Filesystem::Exception & ex){
             Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;

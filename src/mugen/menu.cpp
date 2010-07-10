@@ -142,7 +142,7 @@ Mugen::ItemOption::~ItemOption(){
 
 void Mugen::ItemOption::logic(){
 }
-void Mugen::ItemOption::run(bool &endGame){
+void Mugen::ItemOption::run(const Menu::Context & context){
 }
 
 void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<MugenFont *> & fonts, const Bitmap & bmp){

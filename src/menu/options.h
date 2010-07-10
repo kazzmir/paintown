@@ -14,7 +14,7 @@ class OptionAdventure : public MenuOption{
 
         // Finally it has been selected, this is what shall run 
         // endGame will be set true if it is a terminating option
-        virtual void run(bool &endGame);
+        virtual void run(const Menu::Context &);
 
         OptionAdventure(Token *token);
 
@@ -30,7 +30,7 @@ public:
 	
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
 	
 	virtual ~OptionAdventureCpu();
 };
@@ -41,7 +41,7 @@ public:
     OptionChangeMod(Token *token);
     virtual ~OptionChangeMod();
     virtual void logic();
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 };
 
 /*! Handles key reconfiguration */
@@ -56,7 +56,7 @@ public:
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame);
+		virtual void run(const Menu::Context &);
 		
 		OptionCredits(Token *token);
 	
@@ -80,7 +80,7 @@ public:
 
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
 
 	virtual ~OptionDummy();
 };
@@ -93,7 +93,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
     
     virtual std::string getText();
 
@@ -119,7 +119,7 @@ class OptionInvincible : public MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame);
+		virtual void run(const Menu::Context &);
 		
 		// This is to pass paramaters to an option ie a bar or something
 		virtual bool leftKey();
@@ -143,7 +143,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 
     OptionJoystick(Token *token);
 
@@ -183,7 +183,7 @@ class OptionKey : public MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame);
+		virtual void run(const Menu::Context &);
 		
 		OptionKey(Token *token);
 	
@@ -226,7 +226,7 @@ public:
 
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
 
 	virtual ~OptionLevel();
 
@@ -245,7 +245,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 
     // This is to pass paramaters to an option ie a bar or something
     virtual bool leftKey();
@@ -261,6 +261,11 @@ private:
     int rblue, rgreen;
 };
 
+namespace Menu {
+    class Menu;
+    class Context;
+}
+
 /*! Handles sub menus */
 class OptionMenu : public MenuOption
 {
@@ -270,16 +275,17 @@ class OptionMenu : public MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame);
+		virtual void run(const Menu::Context &);
 		
 		OptionMenu(Token *token);
 		
-		virtual  void setParent(Menu *menu);
+		virtual  void setParent(OldMenu::Menu *menu);
 	
 		virtual ~OptionMenu();
 		
 	private:
-		Menu *menu;
+		//Menu *menu;
+                Menu::Menu *menu;
 };
 
 /*! Handles sub menus */
@@ -290,7 +296,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 
     OptionMugenMenu(Token *token);
 
@@ -311,7 +317,7 @@ public:
 	
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
 	
 	virtual ~OptionNetworkHost();
 };
@@ -326,7 +332,7 @@ public:
 	
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
 	
 	virtual ~OptionNetworkJoin();
 };
@@ -342,7 +348,7 @@ public:
 	
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
     
         virtual std::string getText();
 	
@@ -366,7 +372,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
     
     virtual std::string getText();
 
@@ -396,7 +402,7 @@ public:
 
 	// Finally it has been selected, this is what shall run 
 	// endGame will be set true if it is a terminating option
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
 
 	virtual ~OptionQuit();
 };
@@ -416,7 +422,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 
     // This is to pass paramaters to an option ie a bar or something
     virtual bool leftKey();
@@ -448,7 +454,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 
     // This is to pass paramaters to an option ie a bar or something
     virtual bool leftKey();
@@ -487,7 +493,7 @@ class OptionSpeed : public MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame);
+		virtual void run(const Menu::Context &);
 		
 		// This is to pass paramaters to an option ie a bar or something
 		virtual bool leftKey();
@@ -517,7 +523,7 @@ class OptionTabMenu : public MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame);
+		virtual void run(const Menu::Context &);
 		
 		OptionTabMenu(Token *token);
 	
@@ -536,7 +542,7 @@ class OptionVersus : public MenuOption
 		
 		// Finally it has been selected, this is what shall run 
 		// endGame will be set true if it is a terminating option
-		virtual void run(bool &endGame);
+		virtual void run(const Menu::Context &);
 		
 		OptionVersus(Token *token);
 	
@@ -555,7 +561,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 
     // This is to pass parameters to an option ie a bar or something
     virtual bool leftKey();
@@ -580,7 +586,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame);
+    virtual void run(const Menu::Context &);
 
     // This is to pass parameters to an option ie a bar or something
     virtual bool leftKey();

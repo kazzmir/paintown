@@ -7,7 +7,9 @@
 #include "level/utils.h"
 
 class Sound;
-class Menu;
+namespace OldMenu{
+    class Menu;
+}
 
 class MenuGlobals{
     public:
@@ -62,7 +64,7 @@ class MenuGlobals{
 	inline static const std::string &getLevel(){ return level; }
         */
 	
-	static Level::LevelInfo doLevelMenu(const std::string dir, Menu *parent);
+	static Level::LevelInfo doLevelMenu(const std::string dir, OldMenu::Menu *parent);
 
         /* free for all lets players attack each other in network mode.
          * cooperative means they are on the same team.

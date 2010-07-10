@@ -50,7 +50,7 @@ void Box::render(const Bitmap & work){
 }
 
 void Box::messageDialog(int centerWidth, int centerHeight, const std::string & message, int radius){
-    const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+    const Font &vFont = Font::getFont(OldMenu::Menu::getFont(),OldMenu::Menu::getFontWidth(),OldMenu::Menu::getFontHeight());
     const int width = vFont.textLength(message.c_str()) + 10;
     const int height = vFont.getHeight() + 10;
     const int x = (centerWidth/2) - (width/2);

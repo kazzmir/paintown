@@ -183,6 +183,6 @@ void MenuOption::updateAnimations(){
     }
 }
 
-void MenuOption::setParent(Menu *menu){
+void MenuOption::setParent(OldMenu::Menu *menu){
     this->parent = menu;
 }

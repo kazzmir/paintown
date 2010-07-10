@@ -494,7 +494,7 @@ static void sendAllOk(const vector<Socket> & sockets){
 }
 
 /* TODO: simplify this code */
-static void playGame(vector<Client*> & clients, Menu * menuParent){
+static void playGame(vector<Client*> & clients, OldMenu::Menu * menuParent){
     vector< Object * > players;
     Util::Thread::Id loading_screen_thread;
     try{
@@ -740,7 +740,7 @@ static void popup( const Font & font, const string & message ){
         background.BlitToScreen();
 }
 
-void networkServer(Menu * menu){
+void networkServer(OldMenu::Menu * menu){
 
 	// const int startingLives = 4;
 	int port = getServerPort();

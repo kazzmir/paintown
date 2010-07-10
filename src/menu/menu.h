@@ -27,7 +27,7 @@ class Bitmap;
 class MenuOption;
 class Token;
 
-namespace NewMenu{
+namespace Menu{
 class Point{
     public:
     int x;
@@ -144,20 +144,50 @@ class Context{
         virtual ~Context();
         
         virtual void act();
-        // Pass the widget (Menu ContextBox in this case) to be drawn
-        // Allows for custom widget menus to be draw in place (ie for tabs or something)
+        /*! Pass the widget (Menu ContextBox in this case) to be drawn
+         * Allows for custom widget menus to be draw in place (ie for tabs or something)
+        */
         virtual void render(Gui::Widget &, const Bitmap &);
-
+        
+        /*! Parse data */
         virtual void parseToken(Token *);
 
-        // Compatibility stuff
+        //! Compatibility stuff
         virtual void addBackground(Token *);
         virtual void addBackground(const std::string &);
         
         /*! Initializes things like faders */
         virtual void initialize();
+        
         /*! Closes things out like faders */
         virtual void finish();
+        
+        /*! Sound Types */
+        enum Sound{
+            Up,
+            Down,
+            Left,
+            Right,
+            Select,
+            Back,
+            Cancel,
+            Modify,
+            Pause,
+        };
+        
+        /*! Play sound */
+        virtual void playSound(const Sound &);
+        
+        /*! Add sound */
+        virtual void addSound(const Sound &, const std::string &);
+        
+        /*! Play music */
+        virtual void playMusic();
+        
+        /*! set music */
+        virtual inline void setMusic(const std::string & music){
+            this->music = music;
+        }
 
         /*! Current state */
         enum State{
@@ -167,7 +197,7 @@ class Context{
             Finishing,
             Completed,
         };
-
+        
         inline const State & getState() const {
             return this->state;
         }
@@ -195,6 +225,10 @@ class Context{
         Background * background;
 
         /*! Sounds */
+        std::map<Sound, std::string> sounds;
+        
+        /*! Music */
+        std::string music;
 };
 
 /*! New Menu class */
@@ -213,6 +247,9 @@ class Menu{
 
         /*! render pass local context and work */
         virtual void render(Context &, const Bitmap &);
+        
+        /*! Get Name */
+        virtual std::string getName();
 
     protected:
         
@@ -257,6 +294,7 @@ class Menu{
 }
 
 /* Keep old menu class for backwards compatibility until everything has been moved over */
+namespace OldMenu{
 class Menu{
 public:
     /* TODO: make the fadein stuff part of the configuration file for
@@ -404,7 +442,7 @@ protected:
     void doFade(Bitmap * work);
     
     //! Menu info box
-    NewMenu::InfoBox menuInfoBox;
+    ::Menu::InfoBox menuInfoBox;
     
     //! Add Info box
     void addInfoBox (const std::string &);
@@ -422,7 +460,7 @@ protected:
     std::string menuInfo;
 
     //! menu info location
-    NewMenu::Point menuInfoLocation;
+    ::Menu::Point menuInfoLocation;
 
     //! parent menu
     Menu *parent;
@@ -462,10 +500,10 @@ private:
     bool option;
 
     //! This is the location of the option info text
-    NewMenu::Point optionInfoTextLocation;
+    ::Menu::Point optionInfoTextLocation;
     
     //! Info boxes
-    std::vector<NewMenu::InfoBox *> optionInfoBoxes;
+    std::vector< ::Menu::InfoBox *> optionInfoBoxes;
 
     enum MenuInput{
         Up,
@@ -482,4 +520,5 @@ private:
     InputMap<MenuInput> input;
 
 };
+}
 #endif

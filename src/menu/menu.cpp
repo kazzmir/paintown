@@ -40,20 +40,20 @@ static int sharedFontHeight = 24;
 
 static const int GradientMax = 50;
 
-NewMenu::Point::Point():
+Menu::Point::Point():
 x(0),
 y(0){
 }
 
-NewMenu::Point::Point(int x, int y):
+Menu::Point::Point(int x, int y):
 x(x),
 y(y){
 }
 
-NewMenu::Point::~Point(){
+Menu::Point::~Point(){
 }
 
-NewMenu::InfoBox::InfoBox():
+Menu::InfoBox::InfoBox():
 state(NotActive),
 font(Filesystem::RelativePath(sharedFont)),
 fontWidth(sharedFontWidth),
@@ -62,10 +62,10 @@ fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
 
-NewMenu::InfoBox::~InfoBox(){
+Menu::InfoBox::~InfoBox(){
 }
  
-void NewMenu::InfoBox::act(){
+void Menu::InfoBox::act(){
     popup.act();
     
     int speed = 9;
@@ -103,7 +103,7 @@ void NewMenu::InfoBox::act(){
     }
 }
 
-void NewMenu::InfoBox::render(const Bitmap & bmp){
+void Menu::InfoBox::render(const Bitmap & bmp){
     popup.render(bmp);
     
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
@@ -131,7 +131,7 @@ void NewMenu::InfoBox::render(const Bitmap & bmp){
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
 
-void NewMenu::InfoBox::open(){
+void Menu::InfoBox::open(){
     state = Opening;
     popup.location = location;
     popup.colors = colors;
@@ -139,12 +139,12 @@ void NewMenu::InfoBox::open(){
     fadeAlpha = 0;
 }
 
-void NewMenu::InfoBox::close(){
+void Menu::InfoBox::close(){
     state = Closing;
     popup.close();
 }
 
-void NewMenu::InfoBox::setText(const std::string & info){
+void Menu::InfoBox::setText(const std::string & info){
     if (info.empty()){
         return;
     }
@@ -180,31 +180,59 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
     }
     return contextItems;
 }
+
+static void tryPlaySound(const string & path){
+    if (path != ""){
+        Sound * ok = Resource::getSound(path);
+        if (ok != NULL){
+            ok->play();
+        }
+    }
+}
 /*
- * FIXME Exception handling for ValueHolder
+ * FIXME Exception handling for ValueHolder*/
 class MenuException : public Exception::Base{
     public:
-        MenuException(){
+        MenuException(const std::string & file, int line, const std::string reason = ""):
+        Exception::Base(file, line),
+        reason(reason){
         }
-        ~MenuException(){
+        MenuException(const MenuException & copy):
+        Exception::Base(copy),
+        reason(copy.reason){
         }
-};*/
+        MenuException(const Exception::Base & copy):
+        Exception::Base(copy),
+        reason("unknown"){
+        }
+        ~MenuException() throw(){
+        }
+        const std::string getReason() const {
+            return reason;
+        }
+    protected:
+        std::string reason;
+        
+        Exception::Base * copy() const {
+            return new MenuException(*this);
+        }
+};
 
-NewMenu::ValueHolder::ValueHolder(const std::string & name):
+Menu::ValueHolder::ValueHolder(const std::string & name):
 name(name),
 location(0){
 }
-NewMenu::ValueHolder::~ValueHolder(){
+Menu::ValueHolder::~ValueHolder(){
 }
 
-NewMenu::ValueHolder::ValueHolder(const ValueHolder & copy){
+Menu::ValueHolder::ValueHolder(const ValueHolder & copy){
     // reset position
     this->location = 0;
     this->name = copy.name;
     this->values = copy.values;
 }
 
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator=(const ValueHolder & copy){
+Menu::ValueHolder & Menu::ValueHolder::operator=(const ValueHolder & copy){
     // reset position
     this->location = 0;
     this->name = copy.name;
@@ -212,66 +240,79 @@ NewMenu::ValueHolder & NewMenu::ValueHolder::operator=(const ValueHolder & copy)
     return *this;
 }
         
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(const std::string & val){
+Menu::ValueHolder & Menu::ValueHolder::operator<<(const std::string & val){
     values.push_back(val);
     return *this;
 }
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(bool val){
+Menu::ValueHolder & Menu::ValueHolder::operator<<(bool val){
     std::ostringstream o;
     o << val;
     return *this << o.str();
 }
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(int val){
+Menu::ValueHolder & Menu::ValueHolder::operator<<(int val){
     std::ostringstream o;
     o << val;
     return *this << o.str();
 }
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(double val){
+Menu::ValueHolder & Menu::ValueHolder::operator<<(double val){
     std::ostringstream o;
     o << val;
     return *this << o.str();
 }
 
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator<<(Token * tok){
+Menu::ValueHolder & Menu::ValueHolder::operator<<(Token * tok){
     std::string temp;
     *tok >> temp;
     return *this << temp;
 }
 
 
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(std::string & val){
+Menu::ValueHolder & Menu::ValueHolder::operator>>(std::string & val){
+    if (values[location].empty()){
+        throw MenuException(__FILE__, __LINE__, "Empty value.");
+    }
     val = values[location];
     next();
     return *this;
 }
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(bool val){
+Menu::ValueHolder & Menu::ValueHolder::operator>>(bool val){
+    if (values[location].empty()){
+        throw MenuException(__FILE__, __LINE__, "Empty value.");
+    }
     std::istringstream i(values[location]);
     i >> val;
     next();
     return *this;
 }
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(int val){
+Menu::ValueHolder & Menu::ValueHolder::operator>>(int val){
+    if (values[location].empty()){
+        throw MenuException(__FILE__, __LINE__, "Empty value.");
+    }
     std::istringstream i(values[location]);
     i >> val;
     next();
     return *this;
 }
-NewMenu::ValueHolder & NewMenu::ValueHolder::operator>>(double val){
+Menu::ValueHolder & Menu::ValueHolder::operator>>(double val){
+    if (values[location].empty()){
+        throw MenuException(__FILE__, __LINE__, "Empty value.");
+    }
     std::istringstream i(values[location]);
     i >> val;
     next();
     return *this;
 }
 
-void NewMenu::ValueHolder::next(){
+void Menu::ValueHolder::next(){
     /* FIXME throw exception when beyond */
     location++;
     if (location >= values.size()){
         location = 0;
+        throw MenuException(__FILE__, __LINE__, "End values.");
     }
 }
 
-const std::string NewMenu::ValueHolder::getValues() {
+const std::string Menu::ValueHolder::getValues() {
     std::string temp;
     for (std::vector<std::string>::iterator i = values.begin(); i != values.end(); ++i){
         temp += *i + "; ";
@@ -280,10 +321,10 @@ const std::string NewMenu::ValueHolder::getValues() {
 }
 
 /* backgrounds */
-NewMenu::Background::Background(){
+Menu::Background::Background(){
 }
 
-NewMenu::Background::~Background(){
+Menu::Background::~Background(){
     for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
         std::vector<Gui::Animation *> & animations = i->second;
         for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
@@ -295,7 +336,7 @@ NewMenu::Background::~Background(){
     }
 }
 
-void NewMenu::Background::act(const Gui::Coordinate & coord){
+void Menu::Background::act(const Gui::Coordinate & coord){
     for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
         std::vector<Gui::Animation *> & animations = i->second;
         for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
@@ -307,7 +348,7 @@ void NewMenu::Background::act(const Gui::Coordinate & coord){
     }
 }
 
-void NewMenu::Background::render(const Gui::Animation::Depth & depth, const Bitmap & bmp){
+void Menu::Background::render(const Gui::Animation::Depth & depth, const Bitmap & bmp){
     for (std::vector<Gui::Animation *>::iterator i = backgrounds[depth].begin(); i != backgrounds[depth].end(); ++i){
         Gui::Animation * anim = *i;
         if (anim){
@@ -316,18 +357,18 @@ void NewMenu::Background::render(const Gui::Animation::Depth & depth, const Bitm
     }
 }
 
-void NewMenu::Background::add(Gui::Animation * anim){
+void Menu::Background::add(Gui::Animation * anim){
     backgrounds[anim->getDepth()].push_back(anim);
 }
 
-NewMenu::Context::Context():
+Menu::Context::Context():
 cleanup(true),
 state(NotStarted),
 fades(0),
 background(0){
 }
 
-NewMenu::Context::Context(const Context & parent, const Context & child):
+Menu::Context::Context(const Context & parent, const Context & child):
 cleanup(false),
 state(NotStarted),
 fades(NULL),
@@ -335,6 +376,8 @@ background(NULL){
     // Update with parents info
     fades = parent.fades;
     background = parent.background;
+    sounds = parent.sounds;
+    music = parent.music;
 
     // Then overwrite with childs
     if (child.fades != NULL){
@@ -343,9 +386,15 @@ background(NULL){
     if (child.background != NULL){
         background = child.background;
     }
+    if (!child.sounds.empty()){
+        sounds = child.sounds;
+    }
+    if (!child.music.empty()){
+        music = child.music;
+    }
 }
 
-NewMenu::Context::~Context(){
+Menu::Context::~Context(){
     // Only delete if required
     if (cleanup){
         if (fades != NULL){
@@ -357,7 +406,7 @@ NewMenu::Context::~Context(){
     }
 }
 
-void NewMenu::Context::parseToken(Token * token){
+void Menu::Context::parseToken(Token * token){
     if ( *token != "context" ){
         throw LoadException(__FILE__, __LINE__, "Not a menu context");
     } else if (!token->hasTokens()){
@@ -392,7 +441,7 @@ void NewMenu::Context::parseToken(Token * token){
 
 }
 
-void NewMenu::Context::addBackground(Token * token){
+void Menu::Context::addBackground(Token * token){
     // Backgrounds
     if (!background){
         background = new Background();
@@ -400,7 +449,7 @@ void NewMenu::Context::addBackground(Token * token){
     background->add(new Gui::Animation(token));
 }
 
-void NewMenu::Context::addBackground(const std::string & image){
+void Menu::Context::addBackground(const std::string & image){
     // Backgrounds
     if (!background){
         background = new Background();
@@ -408,14 +457,10 @@ void NewMenu::Context::addBackground(const std::string & image){
     background->add(new Gui::Animation(image));
 }
 
-void NewMenu::Context::initialize(){
+void Menu::Context::initialize(){
     if (fades){
         // state
         state = Initializing;
-        // Prepare screen
-        Bitmap screen(Global::getScreenWidth(), Global::getScreenHeight());
-        screen.fill(fades->getFadeInColor());
-        screen.BlitToScreen();
         // set fader state
         fades->setState(FadeTool::FadeIn);
     } else {
@@ -423,7 +468,7 @@ void NewMenu::Context::initialize(){
         state = Running;
     }
 }
-void NewMenu::Context::finish(){
+void Menu::Context::finish(){
     if (fades){
         // state
         state = Finishing;
@@ -435,7 +480,26 @@ void NewMenu::Context::finish(){
     }
 }
 
-void NewMenu::Context::act(){
+void Menu::Context::playSound(const Sound & sound){
+    tryPlaySound(sounds[sound]);
+}
+
+void Menu::Context::addSound(const Sound & sound, const std::string & path){
+    sounds[sound] = path;
+}
+
+void Menu::Context::playMusic(){
+    #if 0
+    if (Filesystem::exists(Filesystem::RelativePath(music))){
+        if (Music::loadSong(Filesystem::RelativePath(music).path())){
+            Music::pause();
+            Music::play();
+        }
+    }
+    #endif
+}
+
+void Menu::Context::act(){
     // fader
     if (fades){
        fades->act();
@@ -454,7 +518,7 @@ void NewMenu::Context::act(){
         background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Global::getScreenWidth(),Global::getScreenHeight())));
     }
 }
-void NewMenu::Context::render(Gui::Widget & menu, const Bitmap & bmp){
+void Menu::Context::render(Gui::Widget & menu, const Bitmap & bmp){
     if (background){
         // background
         background->render(Gui::Animation::BackgroundBottom, bmp);
@@ -479,15 +543,15 @@ void NewMenu::Context::render(Gui::Widget & menu, const Bitmap & bmp){
         fades->draw(bmp);
     }
 }
-void NewMenu::Context::setFadeTool(Gui::FadeTool *fade){
+void Menu::Context::setFadeTool(Gui::FadeTool *fade){
     fades = fade;
 }
-void NewMenu::Context::setBackground(Background *bg){
+void Menu::Context::setBackground(Background *bg){
     background = bg;
 }
 
 /* New Menu */
-NewMenu::Menu::Menu(const Filesystem::AbsolutePath & filename){
+Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     // Load up tokenizer
     try{
         Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
@@ -499,11 +563,11 @@ NewMenu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     }
 }
 
-NewMenu::Menu::Menu(Token * token){
+Menu::Menu::Menu(Token * token){
     load(token);
 }
 
-NewMenu::Menu::~Menu(){
+Menu::Menu::~Menu(){
     // Kill values
     for (std::map<string,ValueHolder *>::iterator i = data.begin(); i != data.end(); ++i){
         if (i->second){
@@ -519,7 +583,7 @@ NewMenu::Menu::~Menu(){
     }
 }
 
-void NewMenu::Menu::load(Token * token){
+void Menu::Menu::load(Token * token){
     // TODO figure out where keys belong
     // Set keys
     input.set(Keyboard::Key_J, 0, true, Down);
@@ -603,7 +667,7 @@ void NewMenu::Menu::load(Token * token){
     }
 }
 
-void NewMenu::Menu::run(const Context & parentContext){
+void Menu::Menu::run(const Context & parentContext){
     bool done = false;
     
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
@@ -623,6 +687,9 @@ void NewMenu::Menu::run(const Context & parentContext){
     menu.setFont(Filesystem::RelativePath(localFont), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
     menu.setList(toContextList(options));
     menu.open();
+    
+    //Play music
+    localContext.playMusic();
     
     // Run while till the localContext is done
     while( localContext.getState() != Context::Completed && menu.isActive() ){
@@ -668,20 +735,42 @@ void NewMenu::Menu::run(const Context & parentContext){
     throw Exception::Return(__FILE__, __LINE__);
 }
 
-void NewMenu::Menu::act(Context & ourContext){
+void Menu::Menu::act(Context & ourContext){
     // Keys
     InputManager::poll();
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
     if (inputState[Exit]){
+        ourContext.playSound(Context::Cancel);
         InputManager::waitForRelease(input, Exit);
         throw Exception::Return(__FILE__, __LINE__);
     }
     if (inputState[Up]){
-        bool moved = menu.previous();
+        if (menu.previous()){
+            ourContext.playSound(Context::Up);
+        }
     }
-    
     if (inputState[Down]){
-        bool moved = menu.next();
+        if (menu.next()){
+            ourContext.playSound(Context::Down);
+        }
+    }
+    if (inputState[Left]){
+        if (options[menu.getCurrentIndex()]->leftKey()){
+            ourContext.playSound(Context::Left);
+        }
+    }
+    if (inputState[Right]){
+        if (options[menu.getCurrentIndex()]->rightKey()){
+            ourContext.playSound(Context::Right);
+        }
+    }
+    if (inputState[Select]){
+        ourContext.playSound(Context::Select);
+        try {
+            options[menu.getCurrentIndex()]->run(ourContext);
+        } catch (const Exception::Return & ex){
+            // OOOOOOOOOPS
+        }
     }
     // Menu act
     menu.act();
@@ -690,12 +779,23 @@ void NewMenu::Menu::act(Context & ourContext){
     ourContext.act();
 }
 
-void NewMenu::Menu::render(Context & ourContext, const Bitmap & bmp){
+void Menu::Menu::render(Context & ourContext, const Bitmap & bmp){
     // Render context
     ourContext.render(menu, bmp);
 }
 
-void NewMenu::Menu::addData(ValueHolder * item){
+std::string Menu::Menu::getName(){
+    std::string name;
+    try {
+        if (data[name]){
+            *data[name] >> name;
+        }
+    } catch (const MenuException & ex){
+    }
+    return name;
+}
+
+void Menu::Menu::addData(ValueHolder * item){
     std::pair<std::map<std::string,ValueHolder *>::iterator,bool> check;
     check = data.insert( std::pair<std::string,ValueHolder *>(item->getName(),item) );
     if (check.second == false){
@@ -705,7 +805,7 @@ void NewMenu::Menu::addData(ValueHolder * item){
     }
 }
 
-void NewMenu::Menu::handleCompatibility(Token * tok, int version){
+void Menu::Menu::handleCompatibility(Token * tok, int version){
     Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
         if ( *tok == "name" ){
@@ -716,18 +816,44 @@ void NewMenu::Menu::handleCompatibility(Token * tok, int version){
             ValueHolder * value = new ValueHolder("music");
             *value << tok;
             addData(value);
+            try {
+                std::string music;
+                *value >> music;
+                context.setMusic(music);
+            } catch (const MenuException & ex){
+            }
         } else if( *tok == "select-sound" ) {
             ValueHolder * value = new ValueHolder("select-sound");
             *value << tok;
             addData(value);
+            try{
+                std::string sound;
+                *value >> sound;
+                context.addSound(Context::Up,sound);
+                context.addSound(Context::Down,sound);
+            } catch (const MenuException & ex){
+            }
         } else if (*tok == "back-sound"){
             ValueHolder * value = new ValueHolder("back-sound");
             *value << tok;
             addData(value);
+            try{
+                std::string sound;
+                *value >> sound;
+                context.addSound(Context::Back,sound);
+                context.addSound(Context::Cancel,sound);
+            } catch (const MenuException & ex){
+            }
         } else if (*tok == "ok-sound"){
             ValueHolder * value = new ValueHolder("ok-sound");
             *value << tok;
             addData(value);
+            try{
+                std::string sound;
+                *value >> sound;
+                context.addSound(Context::Select,sound);
+            } catch (const MenuException & ex){
+            }
         } else if ( *tok == "background" ) {
             std::string temp;
             *tok >> temp;
@@ -735,7 +861,7 @@ void NewMenu::Menu::handleCompatibility(Token * tok, int version){
         } else if (*tok == "anim"){
             context.addBackground(tok);
         } else if ( *tok == "clear-color" ) {
-            // Still necessary?
+            // Not necessary ignore
         } else if ( *tok == "position" ) {
             // This handles the placement of the menu list and surrounding box
             menu.setCoordinates(tok);
@@ -798,15 +924,15 @@ void NewMenu::Menu::handleCompatibility(Token * tok, int version){
 
 
 /* Old Menu */
-Menu::Menu(const Filesystem::AbsolutePath & str){
+OldMenu::Menu::Menu(const Filesystem::AbsolutePath & str){
     load(str);
 }
 
-Menu::Menu(Token * token){
+OldMenu::Menu::Menu(Token * token){
     load(token);
 }
 
-Menu::Menu(bool fade, int fadeColor):
+OldMenu::Menu::Menu(bool fade, int fadeColor):
 music(""),
 selectSound(""),
 longestTextLength(0),
@@ -864,7 +990,7 @@ option(false){
     input.set(Joystick::Button2, 0, true, Exit);
 }
 
-void Menu::waitForSelect(){
+void OldMenu::Menu::waitForSelect(){
     InputManager::waitForRelease(input, Select);
 }
 
@@ -874,7 +1000,7 @@ static map<string, Gui::Space::Space*> parseSpaces(const vector<Token*> & tokens
     return spaces;
 }
 
-void Menu::load(Token *token){
+void OldMenu::Menu::load(Token *token){
     if ( *token != "menu" ){
         throw LoadException(__FILE__, __LINE__, "Not a menu");
     } else if (!token->hasTokens()){
@@ -1025,7 +1151,7 @@ void Menu::load(Token *token){
     }   
 }
 
-void Menu::setupOptions(){
+void OldMenu::Menu::setupOptions(){
     longestTextLength = Font::getFont(getFont(), getFontWidth(), getFontHeight()).textLength(menuOptions[0]->getText().c_str());
     // Before we finish lets get rid of the cruft
     for (std::vector< MenuOption *>::iterator optBegin = menuOptions.begin() ; optBegin != menuOptions.end(); /**/){
@@ -1053,11 +1179,11 @@ void Menu::setupOptions(){
     contextMenu.open();
 }
 
-std::vector<Gui::ContextItem *> Menu::getContextList(){
+std::vector<Gui::ContextItem *> OldMenu::Menu::getContextList(){
     return toContextList(menuOptions);
 }
 
-void Menu::load(const Filesystem::AbsolutePath & filename){
+void OldMenu::Menu::load(const Filesystem::AbsolutePath & filename){
     // Must check for initial token, menu
     try{
         Global::debug(1) << "Loading menu " << filename.path() << endl;
@@ -1069,17 +1195,8 @@ void Menu::load(const Filesystem::AbsolutePath & filename){
     }
 }
 
-static void tryPlaySound(const string & path){
-    if (path != ""){
-        Sound * ok = Resource::getSound(path);
-        if (ok != NULL){
-            ok->play();
-        }
-    }
-}
-
 /*! Logic */
-void Menu::act(bool &endGame, bool reset){
+void OldMenu::Menu::act(bool &endGame, bool reset){
 
     InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
 
@@ -1166,11 +1283,11 @@ void Menu::act(bool &endGame, bool reset){
     actInfoBoxes();
 }
 
-bool Menu::isFading(){
+bool OldMenu::Menu::isFading(){
     return fade.fade > 0;
 }
 
-void Menu::doFade(Bitmap * work){
+void OldMenu::Menu::doFade(Bitmap * work){
     Bitmap::transBlender(0, 0, 0, fade.fade);
     work->translucent().fill(fade.color);
     // fade.fade -= 8;
@@ -1180,11 +1297,11 @@ void Menu::doFade(Bitmap * work){
     }
 }
 
-void Menu::run(){
+void OldMenu::Menu::run(){
     bool done = false;
     bool endGame = false;
 
-    Bitmap work(Menu::Width, Menu::Height);
+    Bitmap work(OldMenu::Menu::Width, OldMenu::Menu::Height);
     // setWork(&work);
 
     if ( menuOptions.empty() ){
@@ -1317,11 +1434,11 @@ void Menu::run(){
     // setWork(NULL);
 }
 
-void Menu::runOption(bool &endGame){
+void OldMenu::Menu::runOption(bool &endGame){
     if (selectedOption->getState() == MenuOption::Run){
         // lets run it
         try{
-            selectedOption->run(endGame);
+            selectedOption->run(::Menu::Context());
         } catch (const Exception::Return & re){
             tryPlaySound(backSound);
         }
@@ -1334,19 +1451,19 @@ void Menu::runOption(bool &endGame){
     }
 }
 
-void Menu::runOption(unsigned int index){
+void OldMenu::Menu::runOption(unsigned int index){
     if (index >= menuOptions.size()){
         return;
     }
     try{
         bool endGame = false;
-        menuOptions[index]->run(endGame);
+        menuOptions[index]->run(::Menu::Context());
     } catch (const Exception::Return & re){
         tryPlaySound(backSound);
     }
 }
 
-MenuOption * Menu::getOption(unsigned int index){
+MenuOption * OldMenu::Menu::getOption(unsigned int index){
     if (index >= menuOptions.size()){
         return 0;
     }
@@ -1354,12 +1471,12 @@ MenuOption * Menu::getOption(unsigned int index){
 }
 
 /*! set parent */
-void Menu::setParent(Menu *menu){
+void OldMenu::Menu::setParent(Menu *menu){
     this->parent = menu;
 }
 
 /*! get background */
-Bitmap *Menu::getBackground(){
+Bitmap *OldMenu::Menu::getBackground(){
     if (!background){
 	Menu *p = getParent();
 	if (p){
@@ -1372,7 +1489,7 @@ Bitmap *Menu::getBackground(){
 }
 
 /*! Add options to menu */
-void Menu::addOption(MenuOption *opt){
+void OldMenu::Menu::addOption(MenuOption *opt){
   if (opt){
       opt->setParent(this);
       hasOptions = true;
@@ -1391,27 +1508,27 @@ void Menu::setWork(Bitmap * work){
 }
 */
 
-const Filesystem::RelativePath Menu::getFont(){
+const Filesystem::RelativePath OldMenu::Menu::getFont(){
     return Filesystem::RelativePath(sharedFont);
 }
 
 //! get font width
-int Menu::getFontWidth(){
+int OldMenu::Menu::getFontWidth(){
   return sharedFontWidth;
 }
 
 //! get font height
-int Menu::getFontHeight(){
+int OldMenu::Menu::getFontHeight(){
   return sharedFontHeight;
 }
                 
-void Menu::setFontName(const std::string & str){
+void OldMenu::Menu::setFontName(const std::string & str){
     Configuration::setMenuFont(str);
     sharedFont = str;
     setFont(sharedFont, getFontWidth(), getFontHeight());
 }
 
-void Menu::setFontWidth(int w){
+void OldMenu::Menu::setFontWidth(int w){
     if (w < 1){
         w = 1;
     }
@@ -1421,7 +1538,7 @@ void Menu::setFontWidth(int w){
     setFont(sharedFont, getFontWidth(), getFontHeight());
 }
 
-void Menu::setFontHeight(int h){
+void OldMenu::Menu::setFontHeight(int h){
     if (h < 1){
         h = 1;
     }
@@ -1432,7 +1549,7 @@ void Menu::setFontHeight(int h){
 }
 
 //! set new font menu wide
-void Menu::setFont(const std::string &font, int w, int h){
+void OldMenu::Menu::setFont(const std::string &font, int w, int h){
     if (Util::exists(font) == true){
         sharedFont = font;
         sharedFontWidth = w;
@@ -1441,7 +1558,7 @@ void Menu::setFont(const std::string &font, int w, int h){
 }
 
 //! Set longest length
-void Menu::checkTextLength(MenuOption *opt){
+void OldMenu::Menu::checkTextLength(MenuOption *opt){
 	// Set longest text length depending on type
 	switch(opt->getType()){
 		case MenuOption::AdjustableOption : {
@@ -1460,7 +1577,7 @@ void Menu::checkTextLength(MenuOption *opt){
 	}
 }
 
-void Menu::drawBackground(Bitmap *bmp){
+void OldMenu::Menu::drawBackground(Bitmap *bmp){
     Bitmap *temp = getBackground();
     if ( !temp ){
         bmp->fill(clearColor);
@@ -1469,7 +1586,7 @@ void Menu::drawBackground(Bitmap *bmp){
     }
 }
 
-void Menu::setMenuInfo(const std::string & text){
+void OldMenu::Menu::setMenuInfo(const std::string & text){
     // Setup menu info
     menuInfoBox.setFont(getFont(), getFontWidth(), getFontHeight());
     menuInfoBox.setText(text);
@@ -1486,14 +1603,14 @@ void Menu::setMenuInfo(const std::string & text){
     menuInfoBox.open();
 }
 
-void Menu::addInfoBox(const std::string & text){
+void OldMenu::Menu::addInfoBox(const std::string & text){
     if (text.empty()){
         return;
     }
     if (!optionInfoBoxes.empty()){
         optionInfoBoxes.back()->close();
     }
-    NewMenu::InfoBox * temp = new NewMenu::InfoBox();
+    ::Menu::InfoBox * temp = new ::Menu::InfoBox();
     temp->setFont(getFont(),getFontWidth(),getFontHeight());
     temp->setText(text);
     const int width = temp->location.getWidth();
@@ -1511,10 +1628,10 @@ void Menu::addInfoBox(const std::string & text){
 }
 
 //! Update info boxes
-void Menu::actInfoBoxes(){
+void OldMenu::Menu::actInfoBoxes(){
     // Global::debug(0) << "Info boxes " << optionInfoBoxes.size() << endl;
-    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
-        NewMenu::InfoBox *box = *i;
+    for (std::vector< ::Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end();){
+        ::Menu::InfoBox *box = *i;
         box->act();
         if (!box->isActive()){
             delete box;
@@ -1526,22 +1643,22 @@ void Menu::actInfoBoxes(){
 }
 
 //! Render info boxes
-void Menu::renderInfoBoxes(const Bitmap & work){
-    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        NewMenu::InfoBox *box = *i;
+void OldMenu::Menu::renderInfoBoxes(const Bitmap & work){
+    for (std::vector< ::Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        ::Menu::InfoBox *box = *i;
         box->render(work);
     }
 }
 
-void Menu::closeInfoBoxes(){
-    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        NewMenu::InfoBox *box = *i;
+void OldMenu::Menu::closeInfoBoxes(){
+    for (std::vector< ::Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        ::Menu::InfoBox *box = *i;
         box->close();
     }
 }
 
 
-Menu::~Menu(){
+OldMenu::Menu::~Menu(){
     // cleanup
     /*
     if (work){
@@ -1549,8 +1666,8 @@ Menu::~Menu(){
     }
     */
 
-    for (std::vector<NewMenu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
-        NewMenu::InfoBox *box = *i;
+    for (std::vector< ::Menu::InfoBox *>::iterator i = optionInfoBoxes.begin(); i != optionInfoBoxes.end(); ++i){
+        ::Menu::InfoBox *box = *i;
         if (box){
             delete box;
         }

@@ -10,7 +10,12 @@
 
 class Bitmap;
 class Token;
-class Menu;
+namespace Menu {
+    class Context;
+}
+namespace OldMenu{
+    class Menu;
+}
 class Point;
 
 namespace Gui{
@@ -30,7 +35,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(bool &endGame) = 0;
+    virtual void run(const Menu::Context &) = 0;
 
     // This is to pass paramaters to an option ie a bar or something
     // return true to pause key input
@@ -44,7 +49,7 @@ public:
     virtual void updateAnimations();
 
     //! Set parent
-    virtual void setParent(Menu *menu);
+    virtual void setParent(OldMenu::Menu *menu);
 
     enum state
     {
@@ -66,7 +71,7 @@ public:
 protected:
 
     //! This is the owner of this option
-    Menu *parent;
+    OldMenu::Menu *parent;
 private:
     state currentState;
     OptionType mType;
@@ -101,7 +106,7 @@ public:
     inline bool isRunnable() const { return runnable; }
     inline void setForRemoval(const bool r) { forRemoval = r; }
     inline bool scheduledForRemoval() const { return forRemoval; }
-    inline Menu *getParent() const { return parent; }
+    inline OldMenu::Menu *getParent() const { return parent; }
 
 public:
     inline const std::string getName(){ return this->getText(); }

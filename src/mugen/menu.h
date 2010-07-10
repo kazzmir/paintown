@@ -76,6 +76,10 @@ class CursorHandler{
 	Mugen::FontInfo activeFont;
 };
 
+namespace NewMenu{
+    class Context;
+}
+
 namespace Mugen{
     class Background;
     class Character;
@@ -88,7 +92,7 @@ class ItemOption : public MenuOption {
 	virtual ~ItemOption();
 	
 	virtual void logic();
-	virtual void run(bool &endGame);
+	virtual void run(const Menu::Context &);
 	
 	virtual void render(int x, int y, CursorHandler &, std::vector<MugenFont *> &, const Bitmap &);
 	
@@ -99,7 +103,7 @@ class ItemOption : public MenuOption {
 
 class MugenStage;
 
-class MugenMenu : public Menu {
+class MugenMenu : public OldMenu::Menu {
     public:
 	/*! ctor dtor */
         explicit MugenMenu(const MugenMenu & menu);

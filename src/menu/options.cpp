@@ -25,6 +25,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "globals.h"
+#include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 #include "network/server.h"
 #include "network/client.h"
@@ -61,7 +62,7 @@ OptionAdventure::~OptionAdventure(){
 void OptionAdventure::logic(){
 }
 
-void OptionAdventure::run(bool &endGame){
+void OptionAdventure::run(const Menu::Context & context){
     Object * player = NULL;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
@@ -145,7 +146,7 @@ static string nthWord(int i){
     }
 }
 
-void OptionAdventureCpu::run(bool &endGame){
+void OptionAdventureCpu::run(const Menu::Context & context){
     int max_buddies = MenuGlobals::getNpcBuddies();
 
     Keyboard key;
@@ -289,13 +290,13 @@ static void changeMod(const std::string & path){
     }
 }
 
-void OptionChangeMod::run(bool &endGame){
+void OptionChangeMod::run(const Menu::Context & context){
     try{
         int select = 0;
         // Menu menu(Filesystem::find("menu/change-mod.txt"));
         // menu.addOption(new OptionLevel(0, &select, 0));
         // menu.setupOptions();
-        Menu menu;
+        OldMenu::Menu menu;
         menu.setParent(getParent());
         vector<string> mods = findMods();
         int index = 0;
@@ -461,7 +462,7 @@ OptionCredits::~OptionCredits(){
 void OptionCredits::logic(){
 }
 
-void OptionCredits::run( bool &endGame ){
+void OptionCredits::run( const Menu::Context & context ){
     Keyboard key;
 
     const int maxCredits = credits.size();
@@ -478,7 +479,7 @@ void OptionCredits::run( bool &endGame ){
 
     Paintown::Fire fire;
 
-    const Font & vFont = Font::getFont(Menu::getFont(), Menu::getFontWidth(), Menu::getFontHeight());
+    const Font & vFont = Font::getFont(OldMenu::Menu::getFont(), OldMenu::Menu::getFontWidth(), OldMenu::Menu::getFontHeight());
 
     bool quit = false;
 
@@ -576,7 +577,7 @@ OptionDummy::~OptionDummy(){
 void OptionDummy::logic(){
 }
 
-void OptionDummy::run(bool &endGame){
+void OptionDummy::run(const Menu::Context & context){
 }
 
 OptionFullscreen::OptionFullscreen(Token *token):
@@ -614,7 +615,7 @@ void OptionFullscreen::logic(){
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionFullscreen::run(bool &endGame){
+void OptionFullscreen::run(const Menu::Context & context){
 }
 
 bool OptionFullscreen::leftKey()
@@ -671,7 +672,7 @@ void OptionInvincible::logic()
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionInvincible::run(bool &endGame){
+void OptionInvincible::run(const Menu::Context & context){
 }
 
 bool OptionInvincible::leftKey()
@@ -860,16 +861,16 @@ void OptionJoystick::logic(){
     */
 }
 
-void OptionJoystick::run(bool &endGame){
+void OptionJoystick::run(const Menu::Context & context){
     //int x, y, width, height;
-    const Font &vFont = Font::getFont(Menu::getFont(),Menu::getFontWidth(),Menu::getFontHeight());
+    const Font &vFont = Font::getFont(OldMenu::Menu::getFont(),OldMenu::Menu::getFontWidth(),OldMenu::Menu::getFontHeight());
     const char * message = "Press a joystick button!";
     const int width = vFont.textLength(message) + 10;
     const int height = vFont.getHeight() + 10;
     // const int x = (getParent()->getWork()->getWidth()/2) - (width/2);
     // const int y = (getParent()->getWork()->getHeight()/2) - (height/2);
-    const int x = Menu::Width / 2 - width/2;
-    const int y = Menu::Height / 2 - height/2;
+    const int x = OldMenu::Menu::Width / 2 - width/2;
+    const int y = OldMenu::Menu::Height / 2 - height/2;
     Box dialog;
     dialog.location.setPosition(Gui::AbsolutePoint(0,0));
     dialog.location.setDimensions(vFont.textLength(message) + 10, vFont.getHeight() + 10);
@@ -1058,9 +1059,9 @@ void OptionKey::logic(){
 	setText(std::string(temp));
 }
 
-void OptionKey::run(bool &endGame){
+void OptionKey::run(const Menu::Context & context){
     // Do dialog
-    Box::messageDialog(Menu::Width, Menu::Height, "Press a Key!",2);
+    Box::messageDialog(OldMenu::Menu::Width, OldMenu::Menu::Height, "Press a Key!",2);
 
     Keyboard key;
     keyCode = readKey( key );
@@ -1081,8 +1082,8 @@ void OptionLevel::logic(){
 }
 
 /* redo this to not use global state */
-void OptionLevel::run(bool &endGame){
-	endGame = true;
+void OptionLevel::run(const Menu::Context & context){
+	//endGame = true;
     *set = value;
 }
 
@@ -1132,7 +1133,7 @@ void OptionLives::logic(){
     setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionLives::run(bool &endGame){
+void OptionLives::run(const Menu::Context & context){
 }
 
 bool OptionLives::leftKey(){
@@ -1155,13 +1156,13 @@ OptionMenu::OptionMenu(Token *token):
 MenuOption(token, Event),
 menu(0){
     // Check whether we have a menu or tabmenu
-    if ( *token == "menu" ){
+    /*if ( *token == "menu" ){
 	menu = new Menu();
     } else {
 	throw LoadException(__FILE__, __LINE__, "Not a menu");
-    }
+    }*/
     // Set this menu as an option
-    menu->setAsOption(true);
+    //menu->setAsOption(true);
     
     /*
     // Lets try loading from a file
@@ -1169,19 +1170,22 @@ menu(0){
     // Filename
     *token >> temp;
     */
+    if (*token != "menu"){
+        throw LoadException(__FILE__, __LINE__, "Not a menu");
+    }
 
     if (token->numTokens() == 1){
         std::string temp;
         *token >> temp;
-        menu->load(Filesystem::find(Filesystem::RelativePath(temp)));
+        menu = new Menu::Menu(Filesystem::find(Filesystem::RelativePath(temp)));
     } else {
-        menu->load(token);
+        menu = new Menu::Menu(token);
     }
 
     this->setText(menu->getName());
     
     // Lets check if this menu is going bye bye
-    if ( menu->checkRemoval() ) setForRemoval(true);
+    //if ( menu->checkRemoval() ) setForRemoval(true);
 }
 
 OptionMenu::~OptionMenu()
@@ -1195,14 +1199,14 @@ void OptionMenu::logic()
 	// Nothing
 }
 
-void OptionMenu::run(bool &endGame){
+void OptionMenu::run(const Menu::Context & context){
 	// Do our new menu
-    menu->run();
+    menu->run(context);
 }
 
-void OptionMenu::setParent(Menu *menu){
+void OptionMenu::setParent(OldMenu::Menu *menu){
     this->parent = menu;
-    this->menu->setParent(menu);
+    //this->menu->setParent(menu);
 }
 
 OptionMugenMenu::OptionMugenMenu(Token *token):
@@ -1262,7 +1266,7 @@ void OptionMugenMenu::logic(){
 	// Nothing
 }
 
-void OptionMugenMenu::run(bool &endGame){
+void OptionMugenMenu::run(const Menu::Context & context){
     Mugen::run();
 }
 
@@ -1283,7 +1287,7 @@ OptionNetworkHost::~OptionNetworkHost(){
 void OptionNetworkHost::logic(){
 }
 
-void OptionNetworkHost::run(bool &endGame){
+void OptionNetworkHost::run(const Menu::Context & context){
 	Keyboard key;
         try{
             Network::networkServer(parent);
@@ -1310,7 +1314,7 @@ OptionNetworkJoin::~OptionNetworkJoin(){
 void OptionNetworkJoin::logic(){
 }
 
-void OptionNetworkJoin::run(bool &endGame){
+void OptionNetworkJoin::run(const Menu::Context & context){
 	Keyboard key;
 	key.poll();
 	key.wait();
@@ -1372,7 +1376,7 @@ void OptionNpcBuddies::logic(){
     setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionNpcBuddies::run(bool &endGame){
+void OptionNpcBuddies::run(const Menu::Context & context){
 }
 
 bool OptionNpcBuddies::leftKey(){
@@ -1447,7 +1451,7 @@ void OptionPlayMode::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionPlayMode::run(bool &endGame){
+void OptionPlayMode::run(const Menu::Context & context){
 }
     
 void OptionPlayMode::changeMode(){
@@ -1493,8 +1497,8 @@ OptionQuit::~OptionQuit(){
 void OptionQuit::logic(){
 }
 
-void OptionQuit::run(bool &endGame){
-	endGame = true;
+void OptionQuit::run(const Menu::Context & context){
+	throw ShutdownException();
 }
 
 
@@ -1622,7 +1626,7 @@ void OptionScreenSize::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionScreenSize::run(bool &endGame){
+void OptionScreenSize::run(const Menu::Context & context){
 }
 
 void OptionScreenSize::setMode(int width, int height){
@@ -1767,17 +1771,17 @@ OptionSelectFont::~OptionSelectFont(){
 void OptionSelectFont::logic(){
     switch (typeAdjust){
         case fontName:	  
-            setText("Current Font: " + Menu::getFont().path());
+            setText("Current Font: " + OldMenu::Menu::getFont().path());
             break;
         case fontWidth:{
             ostringstream temp;
-            temp << "Font Width: " << Menu::getFontWidth();
+            temp << "Font Width: " << OldMenu::Menu::getFontWidth();
             setText(temp.str());
             break;
         }
         case fontHeight:{
             ostringstream temp;
-            temp << "Font Height: " << Menu::getFontHeight();
+            temp << "Font Height: " << OldMenu::Menu::getFontHeight();
             setText(temp.str());
             break;
         }
@@ -1803,7 +1807,7 @@ void OptionSelectFont::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionSelectFont::run(bool &endGame){
+void OptionSelectFont::run(const Menu::Context & context){
 }
 
 bool OptionSelectFont::leftKey(){
@@ -1812,10 +1816,10 @@ bool OptionSelectFont::leftKey(){
             nextIndex(false);
             break;
         case fontWidth:
-            Menu::setFontWidth(Menu::getFontWidth() - 1);
+            OldMenu::Menu::setFontWidth(OldMenu::Menu::getFontWidth() - 1);
             break;
         case fontHeight:
-            Menu::setFontHeight(Menu::getFontHeight() - 1);
+            OldMenu::Menu::setFontHeight(OldMenu::Menu::getFontHeight() - 1);
             break;
         default:
             break;
@@ -1831,10 +1835,10 @@ bool OptionSelectFont::rightKey(){
             nextIndex(true);
             break;
         case fontWidth:
-            Menu::setFontWidth(Menu::getFontWidth() + 1);
+            OldMenu::Menu::setFontWidth(OldMenu::Menu::getFontWidth() + 1);
             break;
         case fontHeight:
-            Menu::setFontHeight(Menu::getFontHeight() + 1);
+            OldMenu::Menu::setFontHeight(OldMenu::Menu::getFontHeight() + 1);
             break;
         default:
             break;
@@ -1851,7 +1855,7 @@ void OptionSelectFont::nextIndex(bool forward){
 
     int index = 0;
     for (unsigned int i = 0 ; i < fonts.size() ; ++i){
-        if (Menu::getFont().path() == fonts[i]){
+        if (OldMenu::Menu::getFont().path() == fonts[i]){
             if (forward){
                 index = i + 1;
                 if (index >= (int) fonts.size()){
@@ -1865,7 +1869,7 @@ void OptionSelectFont::nextIndex(bool forward){
             }
         }    
     }
-    Menu::setFontName(fonts[index]);
+    OldMenu::Menu::setFontName(fonts[index]);
 }
 
 OptionSpeed::OptionSpeed(Token *token): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
@@ -1906,7 +1910,7 @@ void OptionSpeed::logic(){
 	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
-void OptionSpeed::run(bool &endGame){
+void OptionSpeed::run(const Menu::Context & context){
 }
 
 bool OptionSpeed::leftKey()
@@ -1969,7 +1973,7 @@ void OptionTabMenu::logic()
 	// Nothing
 }
 
-void OptionTabMenu::run(bool &endGame){
+void OptionTabMenu::run(const Menu::Context & context){
 	// Do our new menu
 	_menu->run();
 }
@@ -2011,7 +2015,7 @@ OptionVersus::~OptionVersus(){
 void OptionVersus::logic(){
 }
 
-void OptionVersus::run(bool &endGame){
+void OptionVersus::run(const Menu::Context & context){
 #if 0
 	/*
 	Keyboard key;
@@ -2149,7 +2153,7 @@ void OptionSound::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionSound::run(bool &endGame){
+void OptionSound::run(const Menu::Context & context){
 }
 
 void OptionSound::changeSound(int much){
@@ -2220,7 +2224,7 @@ void OptionMusic::logic(){
     setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
-void OptionMusic::run(bool &endGame){
+void OptionMusic::run(const Menu::Context & context){
 }
 
 void OptionMusic::changeMusic(int much){
