@@ -103,7 +103,7 @@ class ItemOption : public MenuOption {
 
 class MugenStage;
 
-class MugenMenu : public OldMenu::Menu {
+class MugenMenu {
     public:
 	/*! ctor dtor */
         explicit MugenMenu(const MugenMenu & menu);
@@ -119,8 +119,19 @@ class MugenMenu : public OldMenu::Menu {
         virtual inline Filesystem::AbsolutePath getSelectInfoFile() const {
             return selectInfoFile;
         }
+        
+        inline void setName(const std::string & name){
+            this->name = name;
+        }
+        
+        inline const std::string & getName() const {
+            return this->name;
+        }
 	
     private:
+        
+        std::string name;
+        
         // Add option
 	void addMenuOption(Mugen::ItemOption * option);
 

@@ -538,7 +538,7 @@ MugenMenu::~MugenMenu(){
 }
 
 void MugenMenu::run(){
-    Bitmap work(Menu::Width, Menu::Height);
+    Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool endGame = false;
@@ -714,7 +714,7 @@ void MugenMenu::run(){
 
 void MugenMenu::addMenuOption(Mugen::ItemOption * option){
     if (option){
-	option->setParent(this);
+	//option->setParent(this);
 	options.push_back(option);
     }
 }
