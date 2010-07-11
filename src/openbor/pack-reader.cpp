@@ -1,14 +1,11 @@
 #include "pack-reader.h"
 
-#include <iostream>
 #include <map>
 #include <sstream>
 #include <fstream>
 #include <string>
 #include <vector>
-#include <exception>
-
-#include <sys/stat.h>
+#include "globals.h"
 
 using namespace std;
 
@@ -120,12 +117,14 @@ protected:
 PackReader::PackReader(const string & filename):
 filename(filename){
     ifstream stream;
+    Global::debug(0) << "Reading pak file " << filename << endl;
     stream.open(filename.c_str(), std::ios::in | std::ios::binary);
     LittleEndianReader reader(stream);
     uint32_t magic = reader.readByte4();
     if (magic != MAGIC){
         ostringstream error;
-        error << "Not a packfile! " << std::hex << magic;
+        error << filename << " is not a packfile! " << std::hex << magic;
+        Global::debug(0) << error.str() << endl;
         throw PackError(error.str());
     } else {
         // cout << "Ok got a packfile" << endl;
