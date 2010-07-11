@@ -70,32 +70,17 @@ void OptionAdventure::run(const Menu::Context & context){
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
         Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels", parent);
 
-        /*
-        if (level.empty()){
-            Global::debug(0) << "*bug* Level name is empty?" << endl;
-            throw an error or something
-            return;
-        */
-        // key.wait();
         if (parent != NULL){
             parent->waitForSelect();
         }
 
         Global::debug(1) << "Selecting players" << endl;
-        int remap;
+        int remap = 0;
         Filesystem::AbsolutePath path = Game::selectPlayer("Pick a player", info, remap);
-        // player = Game::selectPlayer("Pick a player", info, remap);
         
         PlayerFuture future(path, MenuGlobals::getInvincible(), MenuGlobals::getLives(), remap);
-        // Global::debug(0) << "From future got " << future.get() << endl;
-
-        /*
-        player->setObjectId(-1);
-        ((Player *)player)->setLives( MenuGlobals::getLives() );
-        */
         vector<Util::Future<Object *> *> players;
         players.push_back(&future);
-        // players.push_back( player );
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Error while loading: " << le.getTrace() << endl;

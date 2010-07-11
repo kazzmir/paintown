@@ -1,10 +1,10 @@
 Import('use')
 
 testEnv = use.Clone()
-testEnv.BuildDir('test', '../../', duplicate = False)
+testEnv.VariantDir('test', '../../', duplicate = False)
 
 use = testEnv
-SConscript('../../mugen/parser/SConstruct', exports = ['use'], build_dir = 'test-parser')
+SConscript('../../mugen/parser/SConstruct', exports = ['use'], variant_dir = 'test-parser')
 
 load_source = Split("""
 load.cpp
