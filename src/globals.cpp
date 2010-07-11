@@ -26,40 +26,7 @@ const int ALLIANCE_FREE_FOR_ALL = 1000;
 
 const int MIN_RELATIVE_DISTANCE = 10;
 
-// const char * NAME_FONT = "CENTURYGOTHIC_PCX";
-
-// static bool global_debug = false;
-static int global_debug_level = 0;
-
 const Filesystem::RelativePath Global::DEFAULT_FONT = Filesystem::RelativePath("fonts/arial.ttf");
-
-class nullstreambuf_t: public std::streambuf {
-public:
-	nullstreambuf_t():std::streambuf(){
-	}
-};
-
-static nullstreambuf_t nullstreambuf;
-
-class nullcout_t: public std::ostream {
-public:
-	nullcout_t():std::ostream(&nullstreambuf){
-	}
-};
-
-static nullcout_t nullcout;
-
-ostream & Global::debug(int i, const string & context){
-    if ( global_debug_level >= i ){
-        std::cout << "[" << i << ":" << context << "] ";
-        return std::cout;
-    }
-    return nullcout;
-}
-
-void Global::setDebug( int i ){
-	global_debug_level = i;
-}
 
 namespace Global{
     int do_shutdown = 0;
@@ -83,9 +50,6 @@ string Global::getVersionString(){
     return str.str();
 }
 
-int Global::getDebug(){
-    return global_debug_level;
-}
 
 void Global::showTitleScreen(){
     Bitmap s(Global::titleScreen().path());
@@ -127,6 +91,5 @@ int getScreenWidth(){
 int getScreenHeight(){
     return Bitmap::getScreenHeight();
 }
-
 
 }

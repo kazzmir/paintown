@@ -2,6 +2,7 @@ set(BASE_SRC
 src/configuration.cpp
 src/game.cpp
 src/globals.cpp
+src/debug.cpp
 src/loading.cpp
 src/music.cpp
 src/main-menu.cpp

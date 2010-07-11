@@ -19,6 +19,8 @@ extern const int MIN_RELATIVE_DISTANCE;
 
 // extern const char * NAME_FONT;
 
+#include "debug.h"
+
 namespace Global{
 	
 extern const unsigned int MagicId;
@@ -34,10 +36,6 @@ std::string getVersionString();
 int getVersion(int major, int minor, int micro);
 
 bool shutdown();
-
-void setDebug( int i );
-int getDebug();
-std::ostream & debug(int i, const std::string & context = "paintown");
 
 void showTitleScreen();
 const Filesystem::AbsolutePath titleScreen();

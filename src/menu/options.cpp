@@ -307,7 +307,7 @@ static string modNamePaintown(const Filesystem::AbsolutePath & path){
 }
 
 static string modNameOpenbor(const Filesystem::AbsolutePath & path){
-    return "openbor";
+    return "OpenBor " + Filesystem::cleanse(path).path();
 }
 
 static string modName(const ModType & mod){
