@@ -76,7 +76,7 @@ void OptionAdventure::run(const Menu::Context & context){
 
         Global::debug(1) << "Selecting players" << endl;
         int remap = 0;
-        Filesystem::AbsolutePath path = Game::selectPlayer("Pick a player", info, remap);
+        Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
         
         PlayerFuture future(path, MenuGlobals::getInvincible(), MenuGlobals::getLives(), remap);
         vector<Util::Future<Object *> *> players;
@@ -156,7 +156,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
         */
         
         int remap;
-        Filesystem::AbsolutePath path = Game::selectPlayer("Pick a player", info, remap);
+        Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
         Util::Future<Object*> * player = new PlayerFuture(path, MenuGlobals::getInvincible(), MenuGlobals::getLives(), remap);
         futures.push_back(player);
 
@@ -164,7 +164,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
             ostringstream out;
             out << "Pick buddy " << nthWord(i+1);
             int remap;
-            Filesystem::AbsolutePath path = Game::selectPlayer(out.str(), info, remap);
+            Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer(out.str(), info, remap);
             futures.push_back(new BuddyFuture(path, player, remap, -(i+2)));
             /*
             Object * b = Game::selectPlayer(false, out.str(), info);

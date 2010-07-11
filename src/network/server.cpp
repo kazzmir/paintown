@@ -18,6 +18,7 @@
 #include "object/network_player.h"
 #include "object/object.h"
 #include "object/player.h"
+#include "game/mod.h"
 #include "exceptions/exception.h"
 #include "menu/menu_global.h"
 #include "menu/menu.h"
@@ -501,7 +502,7 @@ static void playGame(vector<Client*> & clients, OldMenu::Menu * menuParent){
         /* first the user selects his own player */
         Level::LevelInfo info;
         int remap = 0;
-        Filesystem::AbsolutePath playerPath = Game::selectPlayer("Pick a player", info, remap);
+        Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
         Player * player = new Player(playerPath);
         player->setMap(remap);
         player->ignoreLives();

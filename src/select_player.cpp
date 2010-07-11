@@ -11,6 +11,7 @@
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"
+#include "game/mod.h"
 #include "input/keyboard.h"
 #include "input/input-manager.h"
 #include "input/input-map.h"
@@ -422,7 +423,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     return current;
 }
 
-Filesystem::AbsolutePath Game::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
+Filesystem::AbsolutePath Paintown::Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
     /* hm, it would be nice to cache this I suppose */
     PlayerVector players = loadPlayers(info.getPlayerPath());
 

@@ -20,6 +20,7 @@
 #include "object/network_player.h"
 #include "network_world_client.h"
 #include "game.h"
+#include "game/mod.h"
 #include "exceptions/exception.h"
 #include "loading.h"
 #include "chat_client.h"
@@ -79,7 +80,7 @@ static void playGame( Socket socket ){
         /* TODO: get the info from the server */
         Level::LevelInfo info;
         int remap = 0;
-        Filesystem::AbsolutePath playerPath = Game::selectPlayer("Pick a player", info, remap);
+        Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
         Player * player = new Player(playerPath);
         player->setMap(remap);
         ((Player *) player)->ignoreLives();

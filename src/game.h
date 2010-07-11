@@ -28,7 +28,7 @@ void realGame(const std::vector<Util::Future<Object *>* > & players, const Level
 
 void fadeOut( Bitmap & work, const std::string & message );
 
-Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
+// Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
 
 std::vector<Object *> versusSelect( bool invincible );
 

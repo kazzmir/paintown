@@ -24,6 +24,8 @@ public:
 
     virtual ~Mod();
 
+    Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
+
     static void loadPaintownMod(const std::string & path);
     static void loadOpenborMod(const Filesystem::AbsolutePath & path);
     static void loadDefaultMod();
