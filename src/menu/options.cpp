@@ -249,7 +249,7 @@ static bool isModFile(const std::string & path){
     return false;
 }
 
-static bool isOpenBorPackfile(string path){
+static bool isOpenBorPackfile(Filesystem::AbsolutePath path){
     try{
         Bor::PackReader reader(path);
         return true;
@@ -272,11 +272,11 @@ static vector<string> findMods(){
     }
 
     try{
-        vector<string> pakFiles = Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("paks")), "*", true);
-        for (vector<string>::iterator it = pakFiles.begin(); it != pakFiles.end(); it++){
-            const string & path = *it;
+        vector<Filesystem::AbsolutePath> pakFiles = Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("paks")), "*", true);
+        for (vector<Filesystem::AbsolutePath>::iterator it = pakFiles.begin(); it != pakFiles.end(); it++){
+            const Filesystem::AbsolutePath & path = *it;
             if (isOpenBorPackfile(path)){
-                Global::debug(0) << "Found openbor pakfile " << path << endl;
+                Global::debug(0) << "Found openbor pakfile " << path.path() << endl;
             }
         }
     } catch (const Filesystem::NotFound & n){
@@ -1715,11 +1715,11 @@ bool OptionScreenSize::rightKey(){
     return true;
 }
 
-static string join(const vector<string> & strings, const string & middle){
+static string joinPaths(const vector<Filesystem::AbsolutePath> & strings, const string & middle){
     ostringstream out;
 
-    for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
-        out << *it << middle;
+    for (vector<Filesystem::AbsolutePath>::const_iterator it = strings.begin(); it != strings.end(); it++){
+        out << (*it).path() << middle;
     }
 
     return out.str();
@@ -1768,16 +1768,26 @@ rgreen(255){
         try{
             Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
             Global::debug(1, "fonts") << "Font directory " << fontsDirectory.path() << endl;
-            vector<string> ttfFonts = Util::getFiles(fontsDirectory, "*.ttf");
-            Global::debug(1, "fonts") << "Found ttf fonts " << join(ttfFonts, ", ") << endl;
-            vector<string> otfFonts = Util::getFiles(fontsDirectory, "*.otf");
-            Global::debug(1, "fonts") << "Found otf fonts " << join(otfFonts, ", ") << endl;
-            std::back_insert_iterator< std::vector<string> > inserter(fonts);
+            vector<Filesystem::AbsolutePath> ttfFonts = Filesystem::getFiles(fontsDirectory, "*.ttf");
+            Global::debug(1, "fonts") << "Found ttf fonts " << joinPaths(ttfFonts, ", ") << endl;
+            vector<Filesystem::AbsolutePath> otfFonts = Filesystem::getFiles(fontsDirectory, "*.otf");
+            Global::debug(1, "fonts") << "Found otf fonts " << joinPaths(otfFonts, ", ") << endl;
+
+            /*
+            std::back_insert_iterator< std::vector<Filesystem::AbsolutePath> > inserter(fonts);
             copy(ttfFonts.begin(), ttfFonts.end(), inserter);
             copy(otfFonts.begin(), otfFonts.end(), inserter);
-            for (vector<string>::iterator it = fonts.begin(); it != fonts.end(); it++){
-                string & name = *it;
-                name = Filesystem::cleanse(Filesystem::AbsolutePath(name)).path();
+            for (vector<Filesystem::AbsolutePath>::iterator it = fonts.begin(); it != fonts.end(); it++){
+                Filesystem::AbsolutePath & name = *it;
+                name = Filesystem::cleanse(name).path();
+            }
+            */
+            for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
+                fonts.push_back(Filesystem::cleanse(*it).path());
+            }
+
+            for (vector<Filesystem::AbsolutePath>::iterator it = otfFonts.begin(); it != otfFonts.end(); it++){
+                fonts.push_back(Filesystem::cleanse(*it).path());
             }
 
             /* use for debugging */

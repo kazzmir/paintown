@@ -478,6 +478,7 @@ private:
     int rblue, rgreen;
     
     // fonts
+    /* FIXME: change this to Filesystem::RelativePath */
     std::vector<std::string> fonts;
     
     void nextIndex(bool forward);

@@ -5,6 +5,7 @@
 #include <map>
 #include <stdint.h>
 #include "exceptions/exception.h"
+#include "util/file-system.h"
 
 namespace Bor{
 
@@ -38,12 +39,12 @@ public:
         uint32_t length;
     };
 
-    PackReader(const std::string & filename);
+    PackReader(const Filesystem::AbsolutePath & path);
 
 private:
     /* Little endian magic number */
     static const uint32_t MAGIC = 0x4B434150;
-    std::string filename;
+    Filesystem::AbsolutePath filename;
     std::map<std::string, File> files;
 };
 

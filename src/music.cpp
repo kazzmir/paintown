@@ -210,7 +210,7 @@ static Tx_ removeVectorElement( vector< Tx_ > & toRemove, int pos ){
 
 }
 	
-void Music::loadSong( const vector< string > & Songs ){
+void Music::loadSong( const vector<Filesystem::AbsolutePath> & Songs ){
 
     /*
        cout << "Songs = " << &Songs << endl;
@@ -220,11 +220,11 @@ void Music::loadSong( const vector< string > & Songs ){
        return;
        */
 
-    vector< string > _songs = Songs;
-    vector< string > songs;
+    vector<Filesystem::AbsolutePath> _songs = Songs;
+    vector<Filesystem::AbsolutePath> songs;
     while ( ! _songs.empty() ){
         int i = Util::rnd( _songs.size() );
-        songs.push_back( removeVectorElement< string >( _songs, i ) );
+        songs.push_back(removeVectorElement(_songs, i));
     }
 
     /*
@@ -232,9 +232,9 @@ void Music::loadSong( const vector< string > & Songs ){
        songs.push_back( "music/song3.xm" );
        */
 
-    for ( vector< string >::iterator it = songs.begin(); it != songs.end(); it++ ){
-        Global::debug( 1 ) << "Trying to load song " << *it << endl;
-        if (loadSong(*it)){
+    for ( vector<Filesystem::AbsolutePath>::iterator it = songs.begin(); it != songs.end(); it++ ){
+        Global::debug( 1 ) << "Trying to load song " << (*it).path() << endl;
+        if (loadSong((*it).path())){
             break;
         }
     }
@@ -421,7 +421,7 @@ bool Music::internal_loadSong( const char * path ){
 void Music::changeSong(){
     pause();
     fadeIn(0.3);
-    loadSong(Util::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
+    loadSong(Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
     play();
 }
 

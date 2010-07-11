@@ -146,7 +146,7 @@ static void playGame( Socket socket ){
                     NetworkWorldClient world(socket, players, level, client_id, clientNames);
                     Music::pause();
                     Music::fadeIn( 0.3 );
-                    Music::loadSong(Util::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*" ) );
+                    Music::loadSong(Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*" ) );
                     Music::play();
 
                     Global::info("Waiting for ok from server");

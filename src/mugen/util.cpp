@@ -83,16 +83,14 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName( const Filesystem::Absol
     if (::Util::exists( dir.path() + str ) == false){
 	Global::debug(2) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
-	std::vector< string > files = ::Util::getFiles( dir, "*" );
+	std::vector<Filesystem::AbsolutePath> files = Filesystem::getFiles(dir, "*");
 	Global::debug(2) << "Correcting file: " << str << ", in directory: "<< dir.path() <<".\nGot " << files.size() << " files." << endl;
-	for( unsigned int i = 0; i < files.size(); ++i ){
-	    std::string temp = files[i].c_str();
-	    temp = Mugen::Util::fixCase( temp );
-	    if (std::string( dir.path() + str ) == temp ){
+        for (vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++){
+            Filesystem::AbsolutePath & path = *it;
+	    // temp = Mugen::Util::fixCase( temp );
+	    if (dir.join(Filesystem::RelativePath(str)) == path){
 		// We got number one chinese retaurant
-		// returnString = Filesystem::AbsolutePath(files[i]);
-                return Filesystem::AbsolutePath(files[i]);
-		// break;
+                return path;
 	    }
 	}
         throw Filesystem::NotFound(__FILE__, __LINE__, str);

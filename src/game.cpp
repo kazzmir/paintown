@@ -622,7 +622,7 @@ void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Leve
 
             Music::pause();
             Music::fadeIn( 0.3 );
-            Music::loadSong(Util::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
+            Music::loadSong(Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
             Music::play();
 
             for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){

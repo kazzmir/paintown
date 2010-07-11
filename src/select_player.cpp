@@ -44,13 +44,14 @@ struct playerInfo{
 typedef vector<playerInfo> PlayerVector;
 static PlayerVector loadPlayers( const string & path ){
     PlayerVector players;
-    vector< string > files = Util::getFiles(Filesystem::find(Filesystem::RelativePath(path + "/")), "*" );
-    std::sort( files.begin(), files.end() );
-    for ( vector< string >::iterator it = files.begin(); it != files.end(); it++ ){
-        Global::debug(2, DEBUG_CONTEXT) << "Found file " << *it << endl;
-        string file = (*it) + "/" + (*it).substr( (*it).find_last_of( '/' ) + 1 ) + ".txt";
+    vector<Filesystem::AbsolutePath> files = Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath(path + "/")), "*" );
+    std::sort(files.begin(), files.end());
+    for ( vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++ ){
+        string path = (*it).path();
+        Global::debug(2, DEBUG_CONTEXT) << "Found file " << path << endl;
+        string file = path + "/" + path.substr(path.find_last_of('/') + 1) + ".txt";
         Global::debug(1, DEBUG_CONTEXT) << "Checking " << file << endl;
-        if (Util::exists( file )){
+        if (Util::exists(file)){
             Global::debug(1, DEBUG_CONTEXT) << "Loading " << file << endl;
             try{
                 players.push_back(playerInfo(new DisplayCharacter(file), Filesystem::AbsolutePath(file)));

@@ -1,8 +1,9 @@
-#ifndef _music_class_h
-#define _music_class_h
+#ifndef _paintown_music_class_h
+#define _paintown_music_class_h
 
 #include <string>
 #include <vector>
+#include "util/file-system.h"
 
 struct AL_DUH_PLAYER;
 struct DUH;
@@ -25,7 +26,7 @@ public:
         static void changeSong();
 
 	/* load one of the songs in 'songs' */
-	static void loadSong( const std::vector< std::string > & songs );
+	static void loadSong( const std::vector<Filesystem::AbsolutePath> & songs );
 
 	static void pause();
 	static void play();

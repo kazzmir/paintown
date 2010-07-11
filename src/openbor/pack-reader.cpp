@@ -140,16 +140,16 @@ protected:
     }
 };
 
-PackReader::PackReader(const string & filename):
+PackReader::PackReader(const Filesystem::AbsolutePath & filename):
 filename(filename){
     ifstream stream;
-    Global::debug(0) << "Reading pak file " << filename << endl;
-    stream.open(filename.c_str(), std::ios::in | std::ios::binary);
+    Global::debug(0) << "Reading pak file " << filename.path() << endl;
+    stream.open(filename.path().c_str(), std::ios::in | std::ios::binary);
     LittleEndianReader reader(stream);
     uint32_t magic = reader.readByte4();
     if (magic != MAGIC){
         ostringstream error;
-        error << filename << " is not a packfile! " << std::hex << magic;
+        error << filename.path() << " is not a packfile! " << std::hex << magic;
         throw PackError(__FILE__, __LINE__, error.str());
     } else {
         // cout << "Ok got a packfile" << endl;
