@@ -1,0 +1,22 @@
+# openbor parser
+start-symbol: start
+options: debug0, no-memo
+module: Bor
+include:{{
+}}
+
+code:{{
+}}
+
+rules:
+    start = line* <eof>
+    line = comment
+         | empty-space
+         | data
+    comment = sw "#" (!"\n" .)* "\n"
+    empty-space = sw (!"\n" .)* "\n"
+    data = sw (item sw)+ "\n"
+    item = "something"
+    sw = space*
+    inline space = " "
+                 | "\t"
