@@ -176,7 +176,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir){
         // Run it
         try {
             temp.run(Menu::Context());
-        } catch (const Exception::Return & ex){
+        } catch (const Menu::MenuException & ex){
         }
         return possible[index];
     } catch (const TokenException & ex){

@@ -191,32 +191,23 @@ static void tryPlaySound(const string & path){
 }
 /*
  * FIXME Exception handling for ValueHolder*/
-class MenuException : public Exception::Base{
-    public:
-        MenuException(const std::string & file, int line, const std::string reason = ""):
-        Exception::Base(file, line),
-        reason(reason){
-        }
-        MenuException(const MenuException & copy):
-        Exception::Base(copy),
-        reason(copy.reason){
-        }
-        MenuException(const Exception::Base & copy):
-        Exception::Base(copy),
-        reason("unknown"){
-        }
-        ~MenuException() throw(){
-        }
-        const std::string getReason() const {
-            return reason;
-        }
-    protected:
-        std::string reason;
-        
-        Exception::Base * copy() const {
+Menu::MenuException::MenuException(const std::string & file, int line, const std::string reason ):
+Exception::Base(file, line),
+reason(reason){
+}
+Menu::MenuException::MenuException(const MenuException & copy):
+Exception::Base(copy),
+reason(copy.reason){
+}
+Menu::MenuException::MenuException(const Exception::Base & copy):
+Exception::Base(copy),
+reason("unknown"){
+}
+Menu::MenuException::~MenuException() throw(){
+}
+Exception::Base * Menu::MenuException::copy() const {
             return new MenuException(*this);
-        }
-};
+}
 
 Menu::ValueHolder::ValueHolder(const std::string & name):
 name(name),
@@ -687,6 +678,9 @@ void Menu::Menu::run(const Context & parentContext){
     //Play music
     localContext.playMusic();
     
+    // MenuException or something
+    bool specialExit = false;
+    
     // Run while till the localContext is done
     while( localContext.getState() != Context::Completed && menu.isActive() ){
         bool draw = false;
@@ -703,7 +697,7 @@ void Menu::Menu::run(const Context & parentContext){
                 runCounter -= 1;
                 try {
                     act(localContext);
-                } catch (const MenuException & ex){
+                } catch (const Exception::Return & ex){
                     // signaled to quit current menu, closing this one out
                     localContext.finish();
                     menu.close();
@@ -728,7 +722,7 @@ void Menu::Menu::run(const Context & parentContext){
     }
     
     // FIXME Menu is finished, lets return is this even required anymore?
-    throw MenuException(__FILE__, __LINE__);
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
 void Menu::Menu::act(Context & ourContext){
@@ -738,7 +732,7 @@ void Menu::Menu::act(Context & ourContext){
     if (inputState[Exit]){
         ourContext.playSound(Context::Cancel);
         InputManager::waitForRelease(input, Exit);
-        throw MenuException(__FILE__, __LINE__);
+        throw Exception::Return(__FILE__, __LINE__);
     }
     if (inputState[Up]){
         if (menu.previous()){
@@ -764,7 +758,7 @@ void Menu::Menu::act(Context & ourContext){
         ourContext.playSound(Context::Select);
         try {
             options[menu.getCurrentIndex()]->run(ourContext);
-        } catch (const MenuException & ex){
+        } catch (const Exception::Return & ex){
             menu.open();
         }
     }

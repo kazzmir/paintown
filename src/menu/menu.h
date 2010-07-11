@@ -78,6 +78,23 @@ class InfoBox: public Gui::Widget {
         std::vector<std::string> text;
 };
 
+class MenuException : public Exception::Base{
+    public:
+        MenuException(const std::string & file, int line, const std::string reason = "");
+        MenuException(const MenuException & copy);
+        MenuException(const Exception::Base & copy);
+        virtual ~MenuException() throw();
+    protected:
+        
+        std::string reason;
+        
+        virtual inline const std::string getReason() const {
+            return reason;
+        }
+        
+        virtual Exception::Base * copy() const;
+};
+
 class ValueHolder{
     public:
         ValueHolder(const std::string &);

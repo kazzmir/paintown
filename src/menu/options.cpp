@@ -1130,7 +1130,7 @@ void OptionLevel::logic(){
 void OptionLevel::run(const Menu::Context & context){
 	//endGame = true;
     *set = value;
-    throw Exception::Return(__FILE__, __LINE__);
+    throw Menu::MenuException(__FILE__, __LINE__);
 }
 
 OptionLives::OptionLives( Token * token ):
