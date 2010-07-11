@@ -250,6 +250,11 @@ class Menu{
         
         /*! Get Name */
         virtual std::string getName();
+        
+        /*! Add option */
+        virtual inline void addOption(MenuOption * opt){
+            this->options.push_back(opt);
+        }
 
     protected:
         

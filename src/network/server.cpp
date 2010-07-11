@@ -508,7 +508,7 @@ static void playGame(vector<Client*> & clients, OldMenu::Menu * menuParent){
         players.push_back( player );
         /* then the user selects a set of levels to play */
         // Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
-        Level::LevelInfo levelInfo = MenuGlobals::doLevelMenu("/levels", menuParent);
+        Level::LevelInfo levelInfo = MenuGlobals::doLevelMenu("/levels");
 
         /* show the loading screen */
         Loader::startLoading( &loading_screen_thread );

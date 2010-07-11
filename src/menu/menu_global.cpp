@@ -17,6 +17,8 @@
 #include "music.h"
 #include "options.h"
 
+#include "menu/menu-exception.h"
+
 using namespace std;
 
 std::priority_queue<std::string> MenuGlobals::selectSound;
@@ -112,7 +114,7 @@ void MenuGlobals::setNpcBuddies( int i ){
 	Configuration::setNpcBuddies( i );
 }
 
-Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, OldMenu::Menu *parent){
+Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir){
 #if 0
     std::vector<std::string> possible = Util::getFiles(Filesystem::find(dir + "/"), "*.txt" );
 
@@ -159,8 +161,8 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, OldMenu::Menu *
     }
 
     try{
-        OldMenu::Menu temp;
-        temp.setParent(parent);
+        Menu::Menu temp(Filesystem::find(Filesystem::RelativePath("menu/level_select.txt")));
+        //temp.setParent(parent);
         int index = 0;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
             OptionLevel *opt = new OptionLevel(0, &index, i);
@@ -168,11 +170,14 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir, OldMenu::Menu *
             opt->setInfoText("Select a set of levels to play");
             temp.addOption(opt);
         }
-        temp.load(Filesystem::find(Filesystem::RelativePath("menu/level_select.txt")));
+        //temp.load(Filesystem::find(Filesystem::RelativePath("menu/level_select.txt")));
         //temp.backboard.position.height = count;
-        temp.setMenuHeight(count);
+        //temp.setMenuHeight(count);
         // Run it
-        temp.run();
+        try {
+            temp.run(Menu::Context());
+        } catch (const Exception::Return & ex){
+        }
         return possible[index];
     } catch (const TokenException & ex){
         // Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;

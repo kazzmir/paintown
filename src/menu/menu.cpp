@@ -666,8 +666,6 @@ void Menu::Menu::load(Token * token){
 }
 
 void Menu::Menu::run(const Context & parentContext){
-    bool done = false;
-    
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
     
     double runCounter = 0;
@@ -705,8 +703,8 @@ void Menu::Menu::run(const Context & parentContext){
                 runCounter -= 1;
                 try {
                     act(localContext);
-                } catch (const Exception::Return & ex){
-                    // signaled to quit wrap up menu and then exit
+                } catch (const MenuException & ex){
+                    // signaled to quit current menu, closing this one out
                     localContext.finish();
                     menu.close();
                 }
@@ -730,7 +728,7 @@ void Menu::Menu::run(const Context & parentContext){
     }
     
     // FIXME Menu is finished, lets return is this even required anymore?
-    throw Exception::Return(__FILE__, __LINE__);
+    throw MenuException(__FILE__, __LINE__);
 }
 
 void Menu::Menu::act(Context & ourContext){
@@ -740,7 +738,7 @@ void Menu::Menu::act(Context & ourContext){
     if (inputState[Exit]){
         ourContext.playSound(Context::Cancel);
         InputManager::waitForRelease(input, Exit);
-        throw Exception::Return(__FILE__, __LINE__);
+        throw MenuException(__FILE__, __LINE__);
     }
     if (inputState[Up]){
         if (menu.previous()){
@@ -766,8 +764,8 @@ void Menu::Menu::act(Context & ourContext){
         ourContext.playSound(Context::Select);
         try {
             options[menu.getCurrentIndex()]->run(ourContext);
-        } catch (const Exception::Return & ex){
-            // OOOOOOOOOPS
+        } catch (const MenuException & ex){
+            menu.open();
         }
     }
     // Menu act

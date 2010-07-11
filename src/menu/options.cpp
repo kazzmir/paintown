@@ -68,7 +68,7 @@ void OptionAdventure::run(const Menu::Context & context){
     Object * player = NULL;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels", parent);
+        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels");
 
         if (parent != NULL){
             parent->waitForSelect();
@@ -142,7 +142,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
     vector< Object * > buddies;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels",parent);
+        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels");
         if (parent != NULL){
             parent->waitForSelect();
         }
@@ -1094,6 +1094,7 @@ void OptionLevel::logic(){
 void OptionLevel::run(const Menu::Context & context){
 	//endGame = true;
     *set = value;
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionLives::OptionLives( Token * token ):

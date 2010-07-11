@@ -11,6 +11,10 @@ namespace OldMenu{
     class Menu;
 }
 
+namespace Menu{
+    class Menu;
+}
+
 class MenuGlobals{
     public:
 	/*! ctor dtor */
@@ -64,7 +68,7 @@ class MenuGlobals{
 	inline static const std::string &getLevel(){ return level; }
         */
 	
-	static Level::LevelInfo doLevelMenu(const std::string dir, OldMenu::Menu *parent);
+	static Level::LevelInfo doLevelMenu(const std::string dir);
 
         /* free for all lets players attack each other in network mode.
          * cooperative means they are on the same team.
