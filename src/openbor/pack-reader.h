@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <stdint.h>
+#include <fstream>
 #include "exceptions/exception.h"
 #include "util/file-system.h"
 
@@ -41,11 +42,20 @@ public:
 
     PackReader(const Filesystem::AbsolutePath & path);
 
+    char * readFile(const File & file);
+
+    const std::map<std::string, File> & getFiles() const {
+        return files;
+    }
+
+    virtual ~PackReader();
+
 private:
     /* Little endian magic number */
     static const uint32_t MAGIC = 0x4B434150;
     Filesystem::AbsolutePath filename;
     std::map<std::string, File> files;
+    std::ifstream handle;
 };
 
 }

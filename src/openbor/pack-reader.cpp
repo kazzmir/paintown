@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "globals.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -187,6 +187,19 @@ filename(filename){
     } catch (const Eof & eof){
     }
     stream.close();
+
+    handle.open(filename.path().c_str(), std::ios::in | std::ios::binary);
+}
+    
+char * PackReader::readFile(const File & file){
+    handle.seekg(file.start);
+    char * data = new char[file.length];
+    handle.read(data, file.length);
+    return data;
+}
+
+PackReader::~PackReader(){
+    handle.close();
 }
 
 }
