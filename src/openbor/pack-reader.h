@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <stdint.h>
 #include "exceptions/exception.h"
 
 namespace Bor{
