@@ -37,6 +37,8 @@
 #include "input/input-map.h"
 #include "input/input-manager.h"
 
+#include "openbor/pack-reader.h"
+
 #include "game/mod.h"
 
 #include <sstream>
@@ -247,6 +249,16 @@ static bool isModFile(const std::string & path){
     return false;
 }
 
+static bool isOpenBorPackfile(string path){
+    try{
+        Bor::PackReader reader(path);
+        return true;
+    } catch (const Bor::PackError & error){
+        Global::debug(0) << "Error reading pak file: " << endl;
+        return false;
+    }
+}
+
 /* FIXME: change to AbsolutePath */
 static vector<string> findMods(){
     vector<string> mods;
@@ -257,6 +269,18 @@ static vector<string> findMods(){
         if (isModFile(file)){
             mods.push_back(file);
         }
+    }
+
+    try{
+        vector<string> pakFiles = Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("paks")), "*", true);
+        for (vector<string>::iterator it = pakFiles.begin(); it != pakFiles.end(); it++){
+            const string & path = *it;
+            if (isOpenBorPackfile(path)){
+                Global::debug(0) << "Found openbor pakfile " << path << endl;
+            }
+        }
+    } catch (const Filesystem::NotFound & n){
+        Global::debug(0) << "Could not find any pak files: " << n.getTrace() << endl;
     }
 
     return mods;

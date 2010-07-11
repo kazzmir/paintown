@@ -489,14 +489,12 @@ void Menu::Context::addSound(const Sound & sound, const std::string & path){
 }
 
 void Menu::Context::playMusic(){
-    #if 0
     if (Filesystem::exists(Filesystem::RelativePath(music))){
         if (Music::loadSong(Filesystem::RelativePath(music).path())){
             Music::pause();
             Music::play();
         }
     }
-    #endif
 }
 
 void Menu::Context::act(){

@@ -146,7 +146,8 @@ src/input/linux_joystick.cpp
 src/util/load_exception.cpp
 src/windows/funcs.cpp
 src/windows/system.cpp
-src/exceptions/exception.cpp)
+src/exceptions/exception.cpp
+src/openbor/pack-reader.cpp)
 
 set(LOADPNG_SRC
 src/loadpng/loadpng.c
