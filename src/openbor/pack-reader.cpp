@@ -11,6 +11,32 @@ using namespace std;
 
 namespace Bor{
 
+/* Only used in this file */
+class Eof: public std::exception {
+public:
+    Eof(){
+    }
+
+    virtual ~Eof() throw (){
+    }
+};
+
+PackError::PackError(const std::string & file, int line, const std::string & reason):
+Exception::Base(file, line),
+reason(reason){
+}
+
+PackError::~PackError() throw (){
+}
+    
+Exception::Base * PackError::copy() const {
+    return new PackError(file, line, reason);
+}
+
+const string PackError::getReason() const {
+    return reason;
+}
+
 class EndianReader{
 public:
     EndianReader(ifstream & stream):
@@ -124,12 +150,13 @@ filename(filename){
     if (magic != MAGIC){
         ostringstream error;
         error << filename << " is not a packfile! " << std::hex << magic;
-        Global::debug(0) << error.str() << endl;
-        throw PackError(error.str());
+        throw PackError(__FILE__, __LINE__, error.str());
     } else {
         // cout << "Ok got a packfile" << endl;
     }
     uint32_t version = reader.readByte4();
+    /* just assume we can read all versions for now */
+
     // cout << "Version is " << version << endl;
     reader.seekEnd(-4);
     uint32_t headerPosition = reader.readByte4();
@@ -144,6 +171,9 @@ filename(filename){
             uint32_t length = reader.readByte4();
             uint32_t start = reader.readByte4();
             uint32_t size = reader.readByte4();
+            /* will read upto 80 bytes, but potentially fewer if a null byte
+             * is reached.
+             */
             string name = reader.readString(80);
             if (name.size() != 0){
                 files[name] = File(start, size);

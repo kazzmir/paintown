@@ -2,28 +2,21 @@
 #define _paintown_openbor_packreader_h
 
 #include <string>
-#include <exception>
 #include <map>
+#include "exceptions/exception.h"
 
 namespace Bor{
 
 /* TODO: make these extend exceptions/exception.h */
-class Eof: public std::exception {
+class PackError: public Exception::Base {
 public:
-    Eof(){
-    }
+    PackError(const std::string & file, int line, const std::string & reason);
+    virtual ~PackError() throw ();
+protected:
+    virtual const std::string getReason() const;
+    Exception::Base * copy() const;
 
-    virtual ~Eof() throw (){
-    }
-};
-
-class PackError: public std::exception {
-public:
-    PackError(const std::string & reason){
-    }
-
-    virtual ~PackError() throw (){
-    }
+    std::string reason;
 };
 
 /* Reads Bor/Openbor packfiles */
