@@ -24,11 +24,16 @@ public:
 
     virtual ~Mod();
 
-    static void loadMod(const std::string & path);
+    static void loadPaintownMod(const std::string & path);
+    static void loadOpenborMod(const Filesystem::AbsolutePath & path);
     static void loadDefaultMod();
     static Mod * getCurrentMod();
     
 protected:
+    Mod();
+
+    static void setMod(Mod * mod);
+
     std::vector<Level::LevelInfo> levels;
     std::string menu;
 

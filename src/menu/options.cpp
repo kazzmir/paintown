@@ -319,17 +319,25 @@ static string modName(const ModType & mod){
 }
 
 static void changeMod(const ModType & mod){
-    /*
-    size_t slash = path.rfind('/');
-    size_t txt = path.rfind(".txt");
-    if (slash != string::npos && txt != string::npos){
-        string name = path.substr(slash + 1, path.length() - slash - 5);
-        Configuration::setCurrentGame(name);
-        Paintown::Mod::loadMod(name);
-    } else {
-        Global::debug(0) << "Could not change mod to " << path << endl;
+    switch (mod.type){
+        case ModType::Paintown : {
+            string path = mod.path.path();
+            size_t slash = path.rfind('/');
+            size_t txt = path.rfind(".txt");
+            if (slash != string::npos && txt != string::npos){
+                string name = path.substr(slash + 1, path.length() - slash - 5);
+                Configuration::setCurrentGame(name);
+                Paintown::Mod::loadPaintownMod(name);
+            } else {
+                Global::debug(0) << "Could not change mod to " << path << endl;
+            }
+            break;
+        }
+        case ModType::Openbor : {
+            Paintown::Mod::loadOpenborMod(mod.path);
+            break;
+        }
     }
-    */
 }
 
 void OptionChangeMod::run(const Menu::Context & context){
@@ -382,6 +390,9 @@ void OptionChangeMod::run(const Menu::Context & context){
     }
 }
 
+/* true if the arguments passed in match todays date.
+ * pass 0 for any argument that you don't care about (it will match any date)
+ */
 static bool todaysDate(int month, int day, int year){
     int currentMonth;
     int currentDay;

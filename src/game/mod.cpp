@@ -6,6 +6,7 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/load_exception.h"
+#include "openbor/mod.h"
 #include "globals.h"
 
 using namespace std;
@@ -36,6 +37,9 @@ Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
         Global::debug(0) << "Error while reading mod " << path.path() << ":" << e.getTrace() << endl;
     }
 }
+    
+Mod::Mod(){
+}
 
 Mod::~Mod(){
 }
@@ -49,16 +53,23 @@ const string & Mod::getMenu(){
 }
 
 void Mod::loadDefaultMod(){
-    loadMod("paintown");
+    loadPaintownMod("paintown");
 }
 
-void Mod::loadMod(const string & name){
+void Mod::setMod(Mod * mod){
+    if (currentMod != NULL){
+        delete currentMod;
+    }
+    currentMod = mod;
+}
+
+void Mod::loadOpenborMod(const Filesystem::AbsolutePath & path){
+    setMod(new OpenborMod(path));
+}
+
+void Mod::loadPaintownMod(const string & name){
    string path = name + "/" + name + ".txt"; 
-   Mod * newMod = new Mod(Filesystem::find(Filesystem::RelativePath(path)));
-   if (currentMod != NULL){
-       delete currentMod;
-   }
-   currentMod = newMod;
+   setMod(new Mod(Filesystem::find(Filesystem::RelativePath(path))));
 }
 
 Mod * Mod::getCurrentMod(){

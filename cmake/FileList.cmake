@@ -148,7 +148,8 @@ src/util/load_exception.cpp
 src/windows/funcs.cpp
 src/windows/system.cpp
 src/exceptions/exception.cpp
-src/openbor/pack-reader.cpp)
+src/openbor/pack-reader.cpp
+src/openbor/mod.cpp)
 
 set(LOADPNG_SRC
 src/loadpng/loadpng.c

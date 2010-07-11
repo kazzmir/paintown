@@ -217,7 +217,7 @@ int paintown_main( int argc, char ** argv ){
     Global::debug(0) << diff.printTime("Init took") << endl;
 
     try{
-        Paintown::Mod::loadMod(Configuration::getCurrentGame());
+        Paintown::Mod::loadPaintownMod(Configuration::getCurrentGame());
     } catch (const Filesystem::NotFound & e){
         Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << ": " << e.getTrace() << endl;
         Paintown::Mod::loadDefaultMod();
