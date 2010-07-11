@@ -51,22 +51,22 @@ public:
         Exit
     };
 
-		// Do logic before run part
-		virtual void logic();
-		
-		// Finally it has been selected, this is what shall run 
-		// endGame will be set true if it is a terminating option
-		virtual void run(const Menu::Context &);
-		
-		OptionCredits(Token *token);
-	
-		virtual ~OptionCredits();
-	private:
-		Bitmap *background;
-		std::vector<std::string> credits;
-		std::string music;
-		int color, title;
-        InputMap<CreditKey> input;
+    // Do logic before run part
+    virtual void logic();
+
+    // Finally it has been selected, this is what shall run 
+    // endGame will be set true if it is a terminating option
+    virtual void run(const Menu::Context &);
+
+    OptionCredits(Token *token);
+
+    virtual ~OptionCredits();
+private:
+    Bitmap *background;
+    std::vector<std::string> credits;
+    std::string music;
+    int color, title;
+    InputMap<CreditKey> input;
 };
 
 /*! Dummy option, to allow place fillers in menus */
@@ -175,44 +175,43 @@ private:
 };
 
 /*! Handles key reconfiguration */
-class OptionKey : public MenuOption
-{
-	public:
-		// Do logic before run part
-		virtual void logic();
-		
-		// Finally it has been selected, this is what shall run 
-		// endGame will be set true if it is a terminating option
-		virtual void run(const Menu::Context &);
-		
-		OptionKey(Token *token);
-	
-		virtual ~OptionKey();
-		
-		//! keys
-		enum keyType
-		{
-			up=0,
-			down,
-			left,
-			right,
-			jump,
-			attack1,
-			attack2,
-			attack3,
-			attack4,
-			attack5,
-			attack6,
-   			invalidkey
-		};
-	
-	private:
-		//! name
-		std::string name;
-		int player;
-		
-		keyType type;
-		int keyCode;
+class OptionKey : public MenuOption{
+    public:
+        // Do logic before run part
+        virtual void logic();
+
+        // Finally it has been selected, this is what shall run 
+        // endGame will be set true if it is a terminating option
+        virtual void run(const Menu::Context &);
+
+        OptionKey(Token *token);
+
+        virtual ~OptionKey();
+
+        //! keys
+        enum keyType
+        {
+            up=0,
+            down,
+            left,
+            right,
+            jump,
+            attack1,
+            attack2,
+            attack3,
+            attack4,
+            attack5,
+            attack6,
+            invalidkey
+        };
+
+    private:
+        //! name
+        std::string name;
+        int player;
+
+        keyType type;
+        int keyCode;
 };
 
 
@@ -267,25 +266,24 @@ namespace Menu {
 }
 
 /*! Handles sub menus */
-class OptionMenu : public MenuOption
-{
-	public:
-		// Do logic before run part
-		virtual void logic();
-		
-		// Finally it has been selected, this is what shall run 
-		// endGame will be set true if it is a terminating option
-		virtual void run(const Menu::Context &);
-		
-		OptionMenu(Token *token);
-		
-		virtual  void setParent(OldMenu::Menu *menu);
-	
-		virtual ~OptionMenu();
-		
-	private:
-		//Menu *menu;
-                Menu::Menu *menu;
+class OptionMenu : public MenuOption {
+    public:
+        // Do logic before run part
+        virtual void logic();
+
+        // Finally it has been selected, this is what shall run 
+        // endGame will be set true if it is a terminating option
+        virtual void run(const Menu::Context &);
+
+        OptionMenu(Token *token);
+
+        virtual  void setParent(OldMenu::Menu *menu);
+
+        virtual ~OptionMenu();
+
+    private:
+        //Menu *menu;
+        Menu::Menu *menu;
 };
 
 /*! Handles sub menus */
@@ -392,7 +390,7 @@ private:
 };
 
 /*! Handles key reconfiguration */
-class OptionQuit : public MenuOption{
+class OptionQuit : public MenuOption {
 public:
 	OptionQuit( Token *token );
 	OptionQuit( const std::string &name );

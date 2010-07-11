@@ -244,15 +244,33 @@ static bool isOpenBorPackfile(Filesystem::AbsolutePath path){
     }
 }
 
-/* FIXME: change to AbsolutePath */
-static vector<string> findMods(){
-    vector<string> mods;
+namespace {
+
+struct ModType{
+    enum Kind{
+        Paintown,
+        Openbor
+    };
+
+    ModType(const Filesystem::AbsolutePath & path, Kind type):
+    path(path),
+    type(type){
+    }
+
+    Filesystem::AbsolutePath path; 
+    Kind type;
+};
+
+}
+
+static vector<ModType> findMods(){
+    vector<ModType> mods;
 
     vector<Filesystem::AbsolutePath> directories = Filesystem::findDirectories(Filesystem::RelativePath("."));
     for (vector<Filesystem::AbsolutePath>::iterator dir = directories.begin(); dir != directories.end(); dir++){
         string file = (*dir).path() + "/" + Filesystem::cleanse(*dir).path() + ".txt";
         if (isModFile(file)){
-            mods.push_back(file);
+            mods.push_back(ModType(Filesystem::AbsolutePath(file), ModType::Paintown));
         }
     }
 
@@ -262,6 +280,7 @@ static vector<string> findMods(){
             const Filesystem::AbsolutePath & path = *it;
             if (isOpenBorPackfile(path)){
                 Global::debug(0) << "Found openbor pakfile " << path.path() << endl;
+                mods.push_back(ModType(path, ModType::Openbor));
             }
         }
     } catch (const Filesystem::NotFound & n){
@@ -271,7 +290,7 @@ static vector<string> findMods(){
     return mods;
 }
 
-static Filesystem::RelativePath modName(const Filesystem::AbsolutePath & path){
+static string modNamePaintown(const Filesystem::AbsolutePath & path){
     try{
         TokenReader reader(path.path());
         Global::debug(1) << "Checking for a mod in " << path.path() << endl;
@@ -279,15 +298,28 @@ static Filesystem::RelativePath modName(const Filesystem::AbsolutePath & path){
         if (name_token != NULL){
             string name;
             *name_token >> name;
-            return Filesystem::RelativePath(name);
+            return name;
         }
-        return Filesystem::cleanse(path);
+        return Filesystem::cleanse(path).path();
     } catch (const TokenException & e){
-        return Filesystem::cleanse(path);
+        return Filesystem::cleanse(path).path();
     }
 }
 
-static void changeMod(const std::string & path){
+static string modNameOpenbor(const Filesystem::AbsolutePath & path){
+    return "openbor";
+}
+
+static string modName(const ModType & mod){
+    switch (mod.type){
+        case ModType::Paintown : return modNamePaintown(mod.path);
+        case ModType::Openbor : return modNameOpenbor(mod.path);
+        default : return "unknown!!";
+    }
+}
+
+static void changeMod(const ModType & mod){
+    /*
     size_t slash = path.rfind('/');
     size_t txt = path.rfind(".txt");
     if (slash != string::npos && txt != string::npos){
@@ -297,6 +329,7 @@ static void changeMod(const std::string & path){
     } else {
         Global::debug(0) << "Could not change mod to " << path << endl;
     }
+    */
 }
 
 void OptionChangeMod::run(const Menu::Context & context){
@@ -307,15 +340,18 @@ void OptionChangeMod::run(const Menu::Context & context){
         // menu.setupOptions();
         OldMenu::Menu menu;
         menu.setParent(getParent());
-        vector<string> mods = findMods();
+        vector<ModType> mods = findMods();
+        map<int, ModType*> modMap;
         int index = 0;
         std::vector<OptionLevel *> options;
-        for (vector<string>::iterator it = mods.begin(); it != mods.end(); it++){
+        for (vector<ModType>::iterator it = mods.begin(); it != mods.end(); it++){
             // menu.addOption(new OptionLevel(0, &select, 0));
             OptionLevel *opt = new OptionLevel(0, &select, index);
-            opt->setText(modName(Filesystem::AbsolutePath(*it)).path());
+            string name = modName(*it);
+            modMap[index] = &(*it);
+            opt->setText(name);
             opt->setInfoText("Choose this mod");
-            if (modName(Filesystem::AbsolutePath(*it)).path().compare(Util::upcase(Configuration::getCurrentGame())) == 0){
+            if (name.compare(Util::upcase(Configuration::getCurrentGame())) == 0){
                 options.insert(options.begin(),opt);
             } else {
                 options.push_back(opt);
@@ -334,7 +370,7 @@ void OptionChangeMod::run(const Menu::Context & context){
         
         menu.load(Filesystem::find(Filesystem::RelativePath("menu/change-mod.txt")));
         menu.run();
-        changeMod(mods[select]);
+        changeMod(*modMap[select]);
 
         // Reload the menu
         throw ReloadMenuException();
