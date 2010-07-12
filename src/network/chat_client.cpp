@@ -17,6 +17,8 @@
 #include "resource.h"
 #include "util/sound.h"
 
+/* TODO: replace all pthread stuff with util/thread.h */
+
 using namespace std;
 
 static std::ostream & debug( int level ){
@@ -168,7 +170,7 @@ void ChatClient::addBuddy( int id, const std::string & s ){
     buddies.push_back( b );
     needUpdate();
     pthread_mutex_unlock( &lock );
-    Resource::getSound("menu/sounds/chip-in.wav")->play();
+    Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-in.wav"))->play();
 }
 	
 void ChatClient::changeName( int id, const std::string & s ){
@@ -195,7 +197,7 @@ void ChatClient::removeBuddy( int id ){
     }
     needUpdate();
     pthread_mutex_unlock( &lock );
-    Resource::getSound("menu/sounds/chip-out.wav")->play();
+    Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
 }
 
 void ChatClient::addMessage( const string & s, unsigned int id ){

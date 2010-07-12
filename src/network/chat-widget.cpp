@@ -87,7 +87,7 @@ void ChatWidget::receiveMessage(string message){
     while (chatMessages.size() > 20){
         chatMessages.pop_front();
     }
-    Resource::getSound("menu/sounds/talk.wav")->play();
+    Resource::getSound(Filesystem::RelativePath("menu/sounds/talk.wav"))->play();
 }
 
 void ChatWidget::drawChat(Bitmap * work, int start){

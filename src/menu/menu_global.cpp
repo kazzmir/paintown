@@ -52,7 +52,7 @@ const std::string MenuGlobals::currentSelectSound(){
 void MenuGlobals::playSelectSound(){
 	if (!selectSound.empty()){
 	      try{
-                  Sound * select = Resource::getSound(selectSound.top());
+                  Sound * select = Resource::getSound(Filesystem::RelativePath(selectSound.top()));
                   select->play();
 	      } catch ( const LoadException & ex ) {
 		      throw ex;

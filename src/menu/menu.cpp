@@ -183,7 +183,7 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
 
 static void tryPlaySound(const string & path){
     if (path != ""){
-        Sound * ok = Resource::getSound(path);
+        Sound * ok = Resource::getSound(Filesystem::RelativePath(path));
         if (ok != NULL){
             ok->play();
         }
@@ -1101,7 +1101,7 @@ void OldMenu::Menu::load(Token *token){
                 *tok >> backSound;
                 try{
                     /* try to load it */
-                    Resource::getSound(backSound);
+                    Resource::getSound(Filesystem::RelativePath(backSound));
                 } catch (const LoadException & le){
                     Global::debug(0) << "Could not load sound " << backSound << " because " << le.getTrace() << endl;
                     /* we failed, so set the backSound to nothing */
@@ -1111,7 +1111,7 @@ void OldMenu::Menu::load(Token *token){
                 *tok >> okSound;
                 try{
                     /* try to load it */
-                    Resource::getSound(okSound);
+                    Resource::getSound(Filesystem::RelativePath(okSound));
                 } catch (const LoadException & le){
                     Global::debug(0) << "Could not load sound " << okSound << " because " << le.getTrace() << endl;
                     /* we failed, so set the backSound to nothing */

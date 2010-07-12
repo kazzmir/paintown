@@ -23,6 +23,8 @@
 #include "resource.h"
 #include "util/sound.h"
 
+/* TODO: replace all pthread stuff with util/thread.h */
+
 #include <signal.h>
 
 using namespace std;
@@ -437,7 +439,7 @@ void ChatServer::addConnection( Network::Socket s ){
     clients.push_back( client );
     pthread_mutex_unlock( &lock );
 
-    Resource::getSound("menu/sounds/chip-in.wav")->play();
+    Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-in.wav"))->play();
 }
 
 #if 0
@@ -645,7 +647,7 @@ void ChatServer::killClient( Client * c ){
 	needUpdate();
 	pthread_mutex_unlock( &lock );
 	addMessage( "** " + name + " quit", 0 );
-        Resource::getSound("menu/sounds/chip-out.wav")->play();
+        Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
 	Network::Message remove;
 	remove << REMOVE_BUDDY;
 	remove << id;

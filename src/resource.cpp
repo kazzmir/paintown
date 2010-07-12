@@ -11,12 +11,12 @@
 using namespace std;
 
 Resource * Resource::resource = NULL;
-Sound * Resource::getSound(const std::string & path) throw (LoadException){
-    return resource->_getSound(Filesystem::find(Filesystem::RelativePath(path)));
+Sound * Resource::getSound(const Filesystem::RelativePath & path) throw (LoadException){
+    return resource->_getSound(Filesystem::find(path));
 }
 
-Bitmap * Resource::getBitmap(const std::string & path) throw (LoadException){
-    return resource->_getBitmap(Filesystem::find(Filesystem::RelativePath(path)));
+Bitmap * Resource::getBitmap(const Filesystem::RelativePath & path) throw (LoadException){
+    return resource->_getBitmap(Filesystem::find(path));
 }
 
 /* the resource is created in the Collector */

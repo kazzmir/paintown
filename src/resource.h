@@ -15,8 +15,8 @@ class Resource{
 public:
     /* do not prepend Util::getDataPath() to paths. Resource will do it for you.
      */
-    static Sound * getSound(const std::string & path) throw (LoadException);
-    static Bitmap * getBitmap(const std::string & path) throw (LoadException);
+    static Sound * getSound(const Filesystem::RelativePath & path) throw (LoadException);
+    static Bitmap * getBitmap(const Filesystem::RelativePath & path) throw (LoadException);
 private:
     friend class Collector;
     Resource();
