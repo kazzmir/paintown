@@ -396,22 +396,26 @@ bool Music::internal_loadSong( const char * path ){
         delete musicPlayer;
         musicPlayer = NULL;
     }
-    
-    if (isDumbFile(path)){
-        musicPlayer = new Util::DumbPlayer(path);
-        musicPlayer->play();
-        playing = true;
-    } else if (isGMEFile(path)){
-        musicPlayer = new Util::GMEPlayer(path);
-        musicPlayer->play();
-        playing = true;
+    try {
+        if (isDumbFile(path)){
+            musicPlayer = new Util::DumbPlayer(path);
+            musicPlayer->play();
+            playing = true;
+        } else if (isGMEFile(path)){
+            musicPlayer = new Util::GMEPlayer(path);
+            musicPlayer->play();
+            playing = true;
 #ifdef HAVE_OGG
-    } else if (isOggFile(path)){
-        musicPlayer = new Util::OggPlayer(path);
-        musicPlayer->play();
-        playing = true;
+        } else if (isOggFile(path)){
+            musicPlayer = new Util::OggPlayer(path);
+            musicPlayer->play();
+            playing = true;
 #endif
-    } else {
+        } else {
+            return false;
+        }
+    } catch (const Exception::Base & ex){
+        //! FIXME Change from Base exception in the futer
         return false;
     }
 

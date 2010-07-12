@@ -295,11 +295,9 @@ Menu::ValueHolder & Menu::ValueHolder::operator>>(double val){
 }
 
 void Menu::ValueHolder::next(){
-    /* FIXME throw exception when beyond */
     location++;
     if (location >= values.size()){
         location = 0;
-        throw MenuException(__FILE__, __LINE__, "End values.");
     }
 }
 
