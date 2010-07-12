@@ -37,6 +37,7 @@ test/input/joystick.cpp
 test/input/allegro/allegro-joystick.cpp
 test/input/sdl/joystick.cpp
 test/globals.cpp
+test/debug.cpp
 test/configuration.cpp
 test/util/events.cpp
 test/util/thread.cpp

@@ -21,7 +21,7 @@ static void load(const char * path){
     } catch (const MugenException & e){
         Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
     } catch (const Filesystem::NotFound & e){
-        Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getReason() << endl;
+        Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
     }
 }
 

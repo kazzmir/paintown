@@ -10,8 +10,7 @@
 using namespace std;
 
 void load(const char * path){
-    Menu menu;
-    menu.load(Filesystem::find(Filesystem::RelativePath(path)));
+    Menu::Menu menu(Filesystem::find(Filesystem::RelativePath(path)));
 }
 
 int paintown_main(int argc, char ** argv){
@@ -20,9 +19,9 @@ int paintown_main(int argc, char ** argv){
         load("menu/main.txt");
         cout << "Success" << endl;
     } catch (const TokenException & e ){
-        cout << "Error: " << e.getReason() << endl;
+        cout << "Error: " << e.getTrace() << endl;
     } catch (const LoadException & e){
-        cout << "Error: " << e.getReason() << endl;
+        cout << "Error: " << e.getTrace() << endl;
     }
     return 0;
 }

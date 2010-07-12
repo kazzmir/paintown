@@ -22,7 +22,9 @@ protected:
     std::string reason;
 };
 
-/* Reads Bor/Openbor packfiles */
+/* Reads Bor/Openbor packfiles
+ * TODO: extend the util/reader.h interface
+ */
 class PackReader{
 public:
     struct File{

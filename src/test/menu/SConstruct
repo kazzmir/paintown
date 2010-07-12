@@ -14,7 +14,6 @@ test/menu/menu.cpp
 test/menu/actionfactory.cpp
 test/menu/menu_global.cpp
 test/menu/tab_menu.cpp
-test/menu/menu_animation.cpp
 test/menu/optionfactory.cpp
 test/menu/action_speed.cpp
 test/menu/menu_option.cpp
@@ -30,6 +29,9 @@ test/util/bitmap.cpp
 test/util/funcs.cpp
 test/input/input-manager.cpp
 test/input/joystick.cpp
+test/debug.cpp
+test/openbor/pack-reader.cpp
+test/openbor/mod.cpp
 test/configuration.cpp
 test/util/load_exception.cpp
 test/util/events.cpp
@@ -105,6 +107,7 @@ test/network/network.cpp
 test/util/system.cpp
 test/factory/font_factory.cpp
 test/gui/context-box.cpp
+test/gui/animation.cpp
 test/gui/widget.cpp
 test/gui/popup-box.cpp
 test/util/gradient.cpp
