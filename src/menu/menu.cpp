@@ -352,6 +352,122 @@ void Menu::Background::add(Gui::Animation * anim){
     backgrounds[anim->getDepth()].push_back(anim);
 }
 
+Menu::Renderer::Renderer(){
+}
+Menu::Renderer::~Renderer(){
+}
+
+Menu::DefaultRenderer::DefaultRenderer(){
+}
+Menu::DefaultRenderer::~DefaultRenderer(){
+    // Kill options
+    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
+        if (*i){
+            delete *i;
+        }
+    }
+}
+bool Menu::DefaultRenderer::readToken(Token * token){
+    if( *token == "option" ) {
+        try{
+            MenuOption *temp = OptionFactory::getOption(token);
+            if (temp){
+                options.push_back(temp);
+            }
+        } catch (const LoadException & le){
+            Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
+            token->print(" ");
+        }
+    } else if ( *token == "position" ) {
+        // This handles the placement of the menu list and surrounding box
+        menu.setCoordinates(token);
+    } else if ( *token == "relative-position"){
+        menu.setCoordinates(token);
+    } else if ( *token == "coordinate"){
+        menu.setCoordinates(token);
+    } else if ( *token == "position-body" ) {
+        // This handles the body color of the menu box
+        menu.setColors(token);
+    } else if ( *token == "position-border" ) {
+        // This handles the border color of the menu box
+        menu.setColors(token);
+    } else if ( *token == "fade-speed" ) {
+        // Menu fade in speed
+        int speed;
+        *token >> speed;
+        menu.setFadeSpeed(speed);
+    } else {
+        return false;
+    }
+    
+    return true;
+}
+void Menu::DefaultRenderer::initialize(){
+    // Setup menu fonts etc
+    std::string localFont = "fonts/arial.ttf";
+    if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
+        localFont = Configuration::getMenuFont();
+    }
+    menu.setFont(Filesystem::RelativePath(localFont), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
+    menu.setList(toContextList(options));
+    menu.open();
+    
+}
+void Menu::DefaultRenderer::finish(){
+    menu.close();
+}
+bool Menu::DefaultRenderer::active(){
+    return menu.isActive();
+}
+void Menu::DefaultRenderer::act(){
+    menu.act();
+}
+void Menu::DefaultRenderer::render(const Bitmap & bmp){
+    menu.render(bmp);
+}
+void Menu::DefaultRenderer::addOption(MenuOption * opt){
+    this->options.push_back(opt);
+}
+void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
+    switch(action){
+        case Up:
+            if (menu.previous()){
+                context.playSound(Up);
+            }
+            break;
+        case Down:
+            if (menu.next()){
+                context.playSound(Down);
+            }
+            break;
+        case Left:
+            if (options[menu.getCurrentIndex()]->leftKey()){
+                context.playSound(Left);
+            }
+            break;
+        case Right:
+            if (options[menu.getCurrentIndex()]->rightKey()){
+                context.playSound(Right);
+            }
+            break;
+        case Select:
+            try{
+                context.playSound(Select);
+                options[menu.getCurrentIndex()]->run(context);
+            } catch (const Exception::Return & ex){
+                menu.open();
+            }
+            break;
+        case Cancel:
+            context.playSound(Cancel);
+            throw Exception::Return(__FILE__, __LINE__);
+            break;
+        default:
+            break;
+    }
+}
+
+
 Menu::Context::Context():
 cleanup(true),
 state(NotStarted),
@@ -471,11 +587,11 @@ void Menu::Context::finish(){
     }
 }
 
-void Menu::Context::playSound(const Sound & sound){
+void Menu::Context::playSound(const Actions & sound){
     tryPlaySound(sounds[sound]);
 }
 
-void Menu::Context::addSound(const Sound & sound, const std::string & path){
+void Menu::Context::addSound(const Actions & sound, const std::string & path){
     sounds[sound] = path;
 }
 
@@ -507,7 +623,7 @@ void Menu::Context::act(){
         background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Global::getScreenWidth(),Global::getScreenHeight())));
     }
 }
-void Menu::Context::render(Gui::Widget & menu, const Bitmap & bmp){
+void Menu::Context::render(Renderer * renderer, const Bitmap & bmp){
     if (background){
         // background
         background->render(Gui::Animation::BackgroundBottom, bmp);
@@ -518,7 +634,9 @@ void Menu::Context::render(Gui::Widget & menu, const Bitmap & bmp){
     }
     
     // Menu
-    menu.render(bmp);
+    if (renderer){
+        renderer->render(bmp);
+    }
     
     if (background){
         // foreground
@@ -540,7 +658,8 @@ void Menu::Context::setBackground(Background *bg){
 }
 
 /* New Menu */
-Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
+Menu::Menu::Menu(const Filesystem::AbsolutePath & filename):
+renderer(0){
     // Load up tokenizer
     try{
         Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
@@ -552,7 +671,8 @@ Menu::Menu::Menu(const Filesystem::AbsolutePath & filename){
     }
 }
 
-Menu::Menu::Menu(Token * token){
+Menu::Menu::Menu(Token * token):
+renderer(0){
     load(token);
 }
 
@@ -564,11 +684,9 @@ Menu::Menu::~Menu(){
         }
     }
 
-    // Kill options
-    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
-        if (*i){
-            delete *i;
-        }
+    // Kill renderer
+    if (renderer){
+        delete renderer;
     }
 }
 
@@ -585,14 +703,15 @@ void Menu::Menu::load(Token * token){
     input.set(Keyboard::Key_LEFT, 0, true, Left);
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
     input.set(Keyboard::Key_ENTER, 0, true, Select);
-    input.set(Keyboard::Key_ESC, 0, true, Exit);
+    input.set(Keyboard::Key_ESC, 0, true, Cancel);
     /* joystick */
     input.set(Joystick::Up, 0, true, Up);
     input.set(Joystick::Down, 0, true, Down);
     input.set(Joystick::Left, 0, true, Left);
     input.set(Joystick::Right, 0, true, Right);
+    /*! FIXME this should be changed to Select/Cancel buttons, all other buttons should be Select */
     input.set(Joystick::Button1, 0, true, Select);
-    input.set(Joystick::Button2, 0, true, Exit);
+    input.set(Joystick::Button2, 0, true, Cancel);
     
     // version info;
     int major=0, minor=0, micro=0;
@@ -615,6 +734,8 @@ void Menu::Menu::load(Token * token){
                 major = 3;
                 minor = 3;
                 micro = 1; 
+                // Create default rendere which is compatible with 3.3.1 and below
+                renderer = new DefaultRenderer();
         }
     }
 
@@ -667,13 +788,9 @@ void Menu::Menu::run(const Context & parentContext){
     localContext.initialize();
 
     // Setup menu fonts etc
-    std::string localFont = "fonts/arial.ttf";
-    if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
-        localFont = Configuration::getMenuFont();
+    if (renderer){        
+        renderer->initialize();
     }
-    menu.setFont(Filesystem::RelativePath(localFont), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
-    menu.setList(toContextList(options));
-    menu.open();
     
     //Play music
     localContext.playMusic();
@@ -682,7 +799,7 @@ void Menu::Menu::run(const Context & parentContext){
     bool specialExit = false;
     
     // Run while till the localContext is done
-    while( localContext.getState() != Context::Completed && menu.isActive() ){
+    while( localContext.getState() != Context::Completed && (renderer && renderer->active()) ){
         bool draw = false;
 
         if ( Global::speed_counter > 0 ){
@@ -700,7 +817,9 @@ void Menu::Menu::run(const Context & parentContext){
                 } catch (const Exception::Return & ex){
                     // signaled to quit current menu, closing this one out
                     localContext.finish();
-                    menu.close();
+                    if (renderer){
+                        renderer->finish();
+                    }
                 }
             }
 
@@ -728,42 +847,36 @@ void Menu::Menu::run(const Context & parentContext){
 void Menu::Menu::act(Context & ourContext){
     // Keys
     InputManager::poll();
-    InputMap<MenuInput>::Output inputState = InputManager::getMap(input);
-    if (inputState[Exit]){
-        ourContext.playSound(Context::Cancel);
-        InputManager::waitForRelease(input, Exit);
-        throw Exception::Return(__FILE__, __LINE__);
-    }
-    if (inputState[Up]){
-        if (menu.previous()){
-            ourContext.playSound(Context::Up);
+    InputMap<Actions>::Output inputState = InputManager::getMap(input);
+    if (inputState[Cancel]){
+        if (renderer){
+            InputManager::waitForRelease(input, Cancel);
+            renderer->doAction(Cancel, ourContext);
+        } else {
+            ourContext.playSound(Cancel);
+            InputManager::waitForRelease(input, Cancel);
+            throw Exception::Return(__FILE__, __LINE__);
         }
     }
-    if (inputState[Down]){
-        if (menu.next()){
-            ourContext.playSound(Context::Down);
+    if (renderer){
+        if (inputState[Up]){
+            renderer->doAction(Up, ourContext);
         }
-    }
-    if (inputState[Left]){
-        if (options[menu.getCurrentIndex()]->leftKey()){
-            ourContext.playSound(Context::Left);
+        if (inputState[Down]){
+            renderer->doAction(Down, ourContext);
         }
-    }
-    if (inputState[Right]){
-        if (options[menu.getCurrentIndex()]->rightKey()){
-            ourContext.playSound(Context::Right);
+        if (inputState[Left]){
+            renderer->doAction(Left, ourContext);
         }
-    }
-    if (inputState[Select]){
-        ourContext.playSound(Context::Select);
-        try {
-            options[menu.getCurrentIndex()]->run(ourContext);
-        } catch (const Exception::Return & ex){
-            menu.open();
+        if (inputState[Right]){
+            renderer->doAction(Right, ourContext);
         }
+        if (inputState[Select]){
+            renderer->doAction(Select, ourContext);
+        }
+        // Menu act
+        renderer->act();
     }
-    // Menu act
-    menu.act();
 
     // Act context
     ourContext.act();
@@ -771,7 +884,7 @@ void Menu::Menu::act(Context & ourContext){
 
 void Menu::Menu::render(Context & ourContext, const Bitmap & bmp){
     // Render context
-    ourContext.render(menu, bmp);
+    ourContext.render(renderer, bmp);
 }
 
 std::string Menu::Menu::getName(){
@@ -819,8 +932,8 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             try{
                 std::string sound;
                 *value >> sound;
-                context.addSound(Context::Up,sound);
-                context.addSound(Context::Down,sound);
+                context.addSound(Up,sound);
+                context.addSound(Down,sound);
             } catch (const MenuException & ex){
             }
         } else if (*tok == "back-sound"){
@@ -830,8 +943,8 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             try{
                 std::string sound;
                 *value >> sound;
-                context.addSound(Context::Back,sound);
-                context.addSound(Context::Cancel,sound);
+                context.addSound(Back,sound);
+                context.addSound(Cancel,sound);
             } catch (const MenuException & ex){
             }
         } else if (*tok == "ok-sound"){
@@ -841,7 +954,7 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             try{
                 std::string sound;
                 *value >> sound;
-                context.addSound(Context::Select,sound);
+                context.addSound(Select,sound);
             } catch (const MenuException & ex){
             }
         } else if ( *tok == "background" ) {
@@ -852,42 +965,14 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             context.addBackground(tok);
         } else if ( *tok == "clear-color" ) {
             // Not necessary ignore
-        } else if ( *tok == "position" ) {
-            // This handles the placement of the menu list and surrounding box
-            menu.setCoordinates(tok);
-        } else if ( *tok == "relative-position"){
-            menu.setCoordinates(tok);
-        } else if ( *tok == "coordinate"){
-            menu.setCoordinates(tok);
-        } else if ( *tok == "position-body" ) {
-            // This handles the body color of the menu box
-            menu.setColors(tok);
-        } else if ( *tok == "position-border" ) {
-            // This handles the border color of the menu box
-            menu.setColors(tok);
-        } else if ( *tok == "fade-speed" ) {
-            // Menu fade in speed
-            int speed;
-            *tok >> speed;
-            menu.setFadeSpeed(speed);
+        } else if ( renderer && renderer->readToken(tok) ) {
+            // Nothing checks compatible version of renderer
         } else if ( *tok == "font" ) {
             ValueHolder * value = new ValueHolder("font");
             *value << tok << tok << tok;
             addData(value);
-        } else if( *tok == "option" ) {
-            try{
-                MenuOption *temp = OptionFactory::getOption(tok);
-                if (temp){
-                    //addOption(temp);
-                    //temp->setParent(this);
-                    //hasOptions = true;
-                    options.push_back(temp);
-                }
-            } catch (const LoadException & le){
-                Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
-                tok->print(" ");
-            }
         } else if (*tok == "action"){
+            // Set speed
             //ActionAct(tok);
         } else if (*tok == "info-position"){
             ValueHolder * value = new ValueHolder("info-position");

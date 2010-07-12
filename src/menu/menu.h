@@ -146,6 +146,73 @@ class Background{
         void drawBackgrounds(std::vector<Gui::Animation *> &, const Bitmap &);
 };
 
+/*! Menu actions */
+enum Actions{
+    Up,
+    Down,
+    Left,
+    Right,
+    Select,
+    Back,
+    Cancel,
+    Modify,
+    Pause,
+};
+
+class Context;
+
+/*! Menu Renderer
+ * Allows menu to modify the way it displays it's contents
+ * ie regular menus, tab menus, specialized menu etc
+ */
+class Renderer{
+    public:
+        Renderer();
+        virtual ~Renderer();
+        
+        //! Reader
+        virtual bool readToken(Token *)=0;
+        
+        virtual void initialize()=0;
+        virtual void finish()=0;
+        virtual bool active()=0;
+        
+        virtual void act()=0;
+        virtual void render(const Bitmap &)=0;
+        
+        //! Compatibility for now, remove later
+        virtual void addOption(MenuOption *)=0;
+        
+        /*! Handle action, with access to context
+        */
+        virtual void doAction(const Actions &, Context &)=0;
+};
+
+/*! Regular Menu */
+class DefaultRenderer : public Renderer {
+    public:
+        DefaultRenderer();
+        virtual ~DefaultRenderer();
+        
+        virtual bool readToken(Token *);
+        virtual void initialize();
+        virtual void finish();
+        virtual bool active();
+        virtual void act();
+        virtual void render(const Bitmap &);
+        virtual void addOption(MenuOption *);
+        virtual void doAction(const Actions &, Context &);
+        
+    private:
+
+        /*! Options */
+        std::vector <MenuOption *> options;
+        
+        /*! Context Box */
+        Gui::ContextBox menu;
+        
+};
+
 /*! Menu contexts
     - Each menu has a context which it defaults to
         - Sub menus will be passed the parents context when run
@@ -164,7 +231,7 @@ class Context{
         /*! Pass the widget (Menu ContextBox in this case) to be drawn
          * Allows for custom widget menus to be draw in place (ie for tabs or something)
         */
-        virtual void render(Gui::Widget &, const Bitmap &);
+        virtual void render(Renderer *, const Bitmap &);
         
         /*! Parse data */
         virtual void parseToken(Token *);
@@ -179,24 +246,11 @@ class Context{
         /*! Closes things out like faders */
         virtual void finish();
         
-        /*! Sound Types */
-        enum Sound{
-            Up,
-            Down,
-            Left,
-            Right,
-            Select,
-            Back,
-            Cancel,
-            Modify,
-            Pause,
-        };
-        
         /*! Play sound */
-        virtual void playSound(const Sound &);
+        virtual void playSound(const Actions &);
         
         /*! Add sound */
-        virtual void addSound(const Sound &, const std::string &);
+        virtual void addSound(const Actions &, const std::string &);
         
         /*! Play music */
         virtual void playMusic();
@@ -242,7 +296,7 @@ class Context{
         Background * background;
 
         /*! Sounds */
-        std::map<Sound, std::string> sounds;
+        std::map<Actions, std::string> sounds;
         
         /*! Music */
         std::string music;
@@ -269,7 +323,9 @@ class Menu{
         
         /*! Add option */
         virtual inline void addOption(MenuOption * opt){
-            this->options.push_back(opt);
+            if (renderer){
+                this->renderer->addOption(opt);
+            }
         }
 
     protected:
@@ -280,11 +336,8 @@ class Menu{
         /*! Data holder */
         std::map<std::string, ValueHolder *> data;
 
-        /*! Options */
-        std::vector <MenuOption *> options;
-
-        /*! Context Box Menu render */
-        Gui::ContextBox menu;
+        /*! Renderer */
+        Renderer * renderer;
         
         /*! load token */
         void load(Token * token);
@@ -295,20 +348,8 @@ class Menu{
         /*! Prior token compatibility based on version Global::getVersion() */
         virtual void handleCompatibility(Token * token, int version);
 
-    private:
-        /*! move to context? */
-        enum MenuInput{
-            Up,
-            Down,
-            Left,
-            Right,
-            Select,
-            /* return is a safe menu return */
-            Return,
-            /* exit is usually done by ESC */
-            Exit,
-        };
-        InputMap<MenuInput> input;
+        /*! Keys */
+        InputMap<Actions> input;
     
 };
 
