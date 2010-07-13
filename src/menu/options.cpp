@@ -1239,7 +1239,18 @@ menu(0){
         menu = new Menu::Menu(token);
     }
 
-    this->setText(menu->getName());
+    // this->setText(menu->getName());
+    // token->print("Menu: ");
+    Token * tok = token->findToken("_/name");
+    if (tok != NULL){
+        std::string name;
+        *tok >> name;
+        Global::debug(0, "menu") << "Menu name: " << name << endl;
+        this->setText(name);
+    } else {
+        // No name?
+        throw LoadException(__FILE__, __LINE__, "Menu has no name");
+    }
     
     // Lets check if this menu is going bye bye
     //if ( menu->checkRemoval() ) setForRemoval(true);
