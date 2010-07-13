@@ -398,13 +398,20 @@ bool Menu::DefaultRenderer::readToken(Token * token){
     
     return true;
 }
-void Menu::DefaultRenderer::initialize(){
+void Menu::DefaultRenderer::initialize(Context & context){
     // Setup menu fonts etc
-    std::string localFont = "fonts/arial.ttf";
+    Filesystem::RelativePath localFont("fonts/arial.ttf");
+    int width = 24, height = 24;
     if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
-        localFont = Configuration::getMenuFont();
+        localFont = Filesystem::RelativePath(Configuration::getMenuFont());
+        width = Configuration::getMenuFontWidth();
+        height = Configuration::getMenuFontHeight();
+    } else if (Filesystem::exists(context.getFont())){
+        localFont = context.getFont();
+        width = context.getFontWidth();
+        height = context.getFontHeight();
     }
-    menu.setFont(Filesystem::RelativePath(localFont), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
+    menu.setFont(localFont, width, height);
     menu.setList(toContextList(options));
     menu.open();
     
@@ -416,6 +423,11 @@ bool Menu::DefaultRenderer::active(){
     return menu.isActive();
 }
 void Menu::DefaultRenderer::act(){
+    // FIXME find a better way to get options to update this is a waste
+    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
+        MenuOption * option = *i;
+        option->logic();
+    }
     menu.act();
 }
 void Menu::DefaultRenderer::render(const Bitmap & bmp){
@@ -468,19 +480,26 @@ Menu::Context::Context():
 cleanup(true),
 state(NotStarted),
 fades(0),
-background(0){
+background(0),
+fontWidth(24),
+fontHeight(24){
 }
 
 Menu::Context::Context(const Context & parent, const Context & child):
 cleanup(false),
 state(NotStarted),
 fades(NULL),
-background(NULL){
+background(NULL),
+fontWidth(24),
+fontHeight(24){
     // Update with parents info
     fades = parent.fades;
     background = parent.background;
     sounds = parent.sounds;
     music = parent.music;
+    font = parent.font;
+    fontWidth = parent.fontWidth;
+    fontHeight = parent.fontHeight;
 
     // Then overwrite with childs
     if (child.fades != NULL){
@@ -494,6 +513,11 @@ background(NULL){
     }
     if (Filesystem::exists(child.music)){
         music = child.music;
+    }
+    if (Filesystem::exists(child.font)){
+        font = child.font;
+        fontWidth = child.fontWidth;
+        fontHeight = child.fontHeight;
     }
 }
 
@@ -790,7 +814,7 @@ void Menu::Menu::run(const Context & parentContext){
 
     // Setup menu fonts etc
     if (renderer){        
-        renderer->initialize();
+        renderer->initialize(localContext);
     }
     
     //Play music
@@ -972,6 +996,15 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             ValueHolder * value = new ValueHolder("font");
             *value << tok << tok << tok;
             addData(value);
+            try {
+                std::string font;
+                int w=24,h=24;
+                *value >> font >> w >> h;
+                context.setFont(Filesystem::RelativePath(font));
+                context.setFontWidth(w);
+                context.setFontHeight(h);
+            } catch (const MenuException & ex){
+            }
         } else if (*tok == "action"){
             // Set speed
             //ActionAct(tok);

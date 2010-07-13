@@ -173,7 +173,7 @@ class Renderer{
         //! Reader
         virtual bool readToken(Token *)=0;
         
-        virtual void initialize()=0;
+        virtual void initialize(Context &)=0;
         virtual void finish()=0;
         virtual bool active()=0;
         
@@ -195,7 +195,7 @@ class DefaultRenderer : public Renderer {
         virtual ~DefaultRenderer();
         
         virtual bool readToken(Token *);
-        virtual void initialize();
+        virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
         virtual void act();
@@ -282,6 +282,25 @@ class Context{
             return this->background;
         }
         
+        virtual inline void setFont(const Filesystem::RelativePath & font){
+            this->font = font;
+        }
+        virtual inline const Filesystem::RelativePath & getFont() const {
+            return this->font;
+        }
+        virtual inline void setFontWidth(int width){
+            this->fontWidth = width;
+        }
+        virtual inline int getFontWidth() const {
+            return this->fontWidth;
+        }
+        virtual inline void setFontHeight(int height){
+            this->fontHeight = height;
+        }
+        virtual inline int getFontHeight() const {
+            return this->fontHeight;
+        }
+        
     private:
         /*! Require cleanup *default constructor only* */
         bool cleanup;
@@ -300,6 +319,15 @@ class Context{
         
         /*! Music */
         Filesystem::RelativePath music;
+        
+        /*! Font */
+        Filesystem::RelativePath font;
+        
+        /*! Font Width */
+        int fontWidth;
+        
+        /*! Font Height */
+        int fontHeight;
 };
 
 /*! New Menu class */
