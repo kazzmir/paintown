@@ -347,7 +347,7 @@ void MugenAnimation::forwardFrame(){
 
 void MugenAnimation::backFrame(){
     if( position > loopPosition )position--;
-    else position = position = frames.size() - 1;
+    else position = frames.size() - 1;
 }
 
 void MugenAnimation::reloadBitmaps(){
