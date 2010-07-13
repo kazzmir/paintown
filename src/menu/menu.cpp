@@ -181,12 +181,10 @@ static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> 
     return contextItems;
 }
 
-static void tryPlaySound(const string & path){
-    if (path != ""){
-        Sound * ok = Resource::getSound(Filesystem::RelativePath(path));
-        if (ok != NULL){
-            ok->play();
-        }
+static void tryPlaySound(const Filesystem::RelativePath & path){
+    Sound * ok = Resource::getSound(path);
+    if (ok != NULL){
+        ok->play();
     }
 }
 /*
@@ -587,7 +585,7 @@ void Menu::Context::finish(){
 
 void Menu::Context::playSound(const Actions & sound){
     if (Filesystem::exists(sounds[sound])){
-        tryPlaySound(sounds[sound].path());
+        tryPlaySound(sounds[sound]);
     }
 }
 
@@ -782,6 +780,8 @@ void Menu::Menu::run(const Context & parentContext){
     
     double runCounter = 0;
     Global::speed_counter = 0;
+
+    InputManager::enableBufferInput();
      
     // Setup context from parent and this menu and initialize
     Context localContext(parentContext, context);
@@ -1323,7 +1323,7 @@ void OldMenu::Menu::act(bool &endGame, bool reset){
     if (inputState[Select]){
         if (selectedOption->isRunnable()){
             selectedOption->setState(MenuOption::Run);
-            tryPlaySound(okSound);
+            tryPlaySound(Filesystem::RelativePath(okSound));
             contextMenu.close();
         }
     }
@@ -1515,7 +1515,7 @@ void OldMenu::Menu::runOption(bool &endGame){
         try{
             selectedOption->run(::Menu::Context());
         } catch (const Exception::Return & re){
-            tryPlaySound(backSound);
+            tryPlaySound(Filesystem::RelativePath(backSound));
         }
         selectedOption->setState(MenuOption::Selected);
         selectedOption->resetAnimations();
@@ -1534,7 +1534,7 @@ void OldMenu::Menu::runOption(unsigned int index){
         bool endGame = false;
         menuOptions[index]->run(::Menu::Context());
     } catch (const Exception::Return & re){
-        tryPlaySound(backSound);
+        tryPlaySound(Filesystem::RelativePath(backSound));
     }
 }
 

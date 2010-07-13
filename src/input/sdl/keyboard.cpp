@@ -35,7 +35,7 @@ void Keyboard::readKeys( std::vector<int> & all_keys ){
      * use a function here that returns the right mapping.
      */
     for (int i = 0; i < keys; i++){
-        if (state[i] == 1){
+        if (i != SDLK_NUMLOCK && state[i] == 1){
             all_keys.push_back(i);
         }
     }

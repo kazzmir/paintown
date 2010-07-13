@@ -2,6 +2,7 @@
 #define _paintown_input_manager
 
 #include <vector>
+#include <algorithm>
 #include "input.h"
 #include "input-map.h"
 #include "util/funcs.h"
@@ -21,6 +22,8 @@ public:
 
     static std::vector<Input::PaintownInput> getInput(const Configuration & configuration, const int facing);
     static void poll();
+    static void enableBufferInput();
+    static void disableBufferInput();
 
     template <typename X>
     static typename InputMap<X>::Output getMap(InputMap<X> & input){
@@ -89,6 +92,18 @@ protected:
         }
     }
 
+    void removeDuplicates(std::vector<int> & storage){
+        std::vector<int> output;
+        int last = -1;
+        for (std::vector<int>::iterator it = storage.begin(); it != storage.end(); it++){
+            if (*it != last){
+                output.push_back(*it);
+                last = *it;
+            }
+        }
+        storage = output;
+    }
+
     template <typename X>
     typename InputMap<X>::Output _getMap(InputMap<X> & input){
         typename InputMap<X>::Output output;
@@ -99,6 +114,12 @@ protected:
 
         std::vector<int> all_keys;
         keyboard.readKeys(all_keys);
+
+        all_keys.insert(all_keys.end(), bufferedKeys.begin(), bufferedKeys.end());
+        std::sort(all_keys.begin(), all_keys.end());
+        removeDuplicates(all_keys);
+        // std::unique(all_keys.begin(), all_keys.end());
+        bufferedKeys.clear();
 
         input.read(all_keys, &output);
 
@@ -122,6 +143,10 @@ protected:
 
         std::vector<int> all_keys;
         keyboard.readKeys(all_keys);
+        all_keys.insert(all_keys.end(), bufferedKeys.begin(), bufferedKeys.end());
+        std::sort(all_keys.begin(), all_keys.end());
+        removeDuplicates(all_keys);
+        bufferedKeys.clear();
         bool out = false;
 
         out = input.pressed(all_keys, result);
@@ -141,6 +166,8 @@ private:
     void * capture;
     Joystick * joystick;
     Keyboard keyboard;
+    std::vector<int> bufferedKeys;
+    bool bufferKeys;
 };
 
 #endif

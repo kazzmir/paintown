@@ -586,6 +586,20 @@ static string funnyGo(){
 
 void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
 
+    /* disables buffer input on entry, enables buffering on function exit */
+    class InputBuffer{
+    public:
+        InputBuffer(){
+            InputManager::disableBufferInput();
+        }
+
+        ~InputBuffer(){
+            InputManager::enableBufferInput();
+        }
+    };
+
+    InputBuffer buffer;
+
     // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 
     // global_debug = true;

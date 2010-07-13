@@ -13,7 +13,8 @@ InputManager * InputManager::manager = 0;
 
 InputManager::InputManager():
 capture(0),
-joystick(NULL){
+joystick(NULL),
+bufferKeys(false){
     manager = this;
     if (Configuration::isJoystickEnabled()){
         joystick = Joystick::create();
@@ -31,6 +32,14 @@ vector<Input::PaintownInput> InputManager::getInput(const Configuration & config
     }
 
     return manager->_getInput(configuration, facing);
+}
+    
+void InputManager::enableBufferInput(){
+    manager->bufferKeys = true;
+}
+
+void InputManager::disableBufferInput(){
+    manager->bufferKeys = false;
 }
 
 /* these mappings should agree with configuration.cpp:defaultJoystick1Keys,
@@ -112,12 +121,18 @@ void InputManager::poll(){
 void InputManager::_poll(){
     /* FIXME: not sure if its a good idea to put the event manager here */
     Util::EventManager eventManager;
+    if (bufferKeys){
+        eventManager.enableKeyBuffer();
+    }
     eventManager.run();
 
     keyboard.poll();
     if (joystick != NULL){
         joystick->poll();
     }
+
+    const vector<Util::EventManager::KeyType> & keys = eventManager.getBufferedKeys();
+    bufferedKeys.insert(bufferedKeys.end(), keys.begin(), keys.end());
 }
 
 vector<Input::PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){
