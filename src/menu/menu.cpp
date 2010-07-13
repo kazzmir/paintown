@@ -642,7 +642,7 @@ void Menu::Context::act(){
     }
     // Backgrounds
     if (background){    
-        background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Global::getScreenWidth(),Global::getScreenHeight())));
+        background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Menu::Width, Menu::Height)));
     }
 }
 void Menu::Context::render(Renderer * renderer, const Bitmap & bmp){
@@ -800,8 +800,11 @@ void Menu::Menu::load(Token * token){
 }
 
 void Menu::Menu::run(const Context & parentContext){
+    /*
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
     work.updateOnResize();
+    */
+    Bitmap work(Menu::Width, Menu::Height);
     
     double runCounter = 0;
     Global::speed_counter = 0;

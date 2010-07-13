@@ -355,6 +355,9 @@ class Menu{
                 this->renderer->addOption(opt);
             }
         }
+    
+    static const int Width = 640;
+    static const int Height = 480;
 
     protected:
         
