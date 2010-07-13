@@ -494,7 +494,7 @@ background(NULL){
     if (!child.sounds.empty()){
         sounds = child.sounds;
     }
-    if (!child.music.empty()){
+    if (Filesystem::exists(child.music)){
         music = child.music;
     }
 }
@@ -586,17 +586,19 @@ void Menu::Context::finish(){
 }
 
 void Menu::Context::playSound(const Actions & sound){
-    tryPlaySound(sounds[sound]);
+    if (Filesystem::exists(sounds[sound])){
+        tryPlaySound(sounds[sound].path());
+    }
 }
 
-void Menu::Context::addSound(const Actions & sound, const std::string & path){
+void Menu::Context::addSound(const Actions & sound, const Filesystem::RelativePath & path){
     sounds[sound] = path;
 }
 
 void Menu::Context::playMusic(){
-    if (Filesystem::exists(Filesystem::RelativePath(music))){
-        if (Music::loadSong(Filesystem::RelativePath(music).path())){
-            Music::pause();
+    if (Filesystem::exists(music)){
+        if (Music::loadSong(music.path())){
+            //Music::pause();
             Music::play();
         }
     }
@@ -920,7 +922,7 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             try {
                 std::string music;
                 *value >> music;
-                context.setMusic(music);
+                context.setMusic(Filesystem::RelativePath(music));
             } catch (const MenuException & ex){
             }
         } else if( *tok == "select-sound" ) {
@@ -930,8 +932,8 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             try{
                 std::string sound;
                 *value >> sound;
-                context.addSound(Up,sound);
-                context.addSound(Down,sound);
+                context.addSound(Up,Filesystem::RelativePath(sound));
+                context.addSound(Down,Filesystem::RelativePath(sound));
             } catch (const MenuException & ex){
             }
         } else if (*tok == "back-sound"){
@@ -941,8 +943,8 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             try{
                 std::string sound;
                 *value >> sound;
-                context.addSound(Back,sound);
-                context.addSound(Cancel,sound);
+                context.addSound(Back,Filesystem::RelativePath(sound));
+                context.addSound(Cancel,Filesystem::RelativePath(sound));
             } catch (const MenuException & ex){
             }
         } else if (*tok == "ok-sound"){
@@ -952,7 +954,7 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
             try{
                 std::string sound;
                 *value >> sound;
-                context.addSound(Select,sound);
+                context.addSound(Select,Filesystem::RelativePath(sound));
             } catch (const MenuException & ex){
             }
         } else if ( *tok == "background" ) {

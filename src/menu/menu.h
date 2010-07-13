@@ -250,13 +250,13 @@ class Context{
         virtual void playSound(const Actions &);
         
         /*! Add sound */
-        virtual void addSound(const Actions &, const std::string &);
+        virtual void addSound(const Actions &, const Filesystem::RelativePath &);
         
         /*! Play music */
         virtual void playMusic();
         
         /*! set music */
-        virtual inline void setMusic(const std::string & music){
+        virtual inline void setMusic(const Filesystem::RelativePath & music){
             this->music = music;
         }
 
@@ -296,10 +296,10 @@ class Context{
         Background * background;
 
         /*! Sounds */
-        std::map<Actions, std::string> sounds;
+        std::map<Actions, Filesystem::RelativePath> sounds;
         
         /*! Music */
-        std::string music;
+        Filesystem::RelativePath music;
 };
 
 /*! New Menu class */
