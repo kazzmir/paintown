@@ -7,6 +7,7 @@
 #include "input-map.h"
 #include "util/funcs.h"
 #include "input/keyboard.h"
+#include "exceptions/exception.h"
 
 class Configuration;
 class Joystick;
@@ -31,7 +32,7 @@ public:
             return manager->_getMap(input);
         }
         /* just crash hard.. who cares */
-        *(char *)0 = 0;
+        throw Exception::Base(__FILE__, __LINE__);
         /* make the compiler happy about returning something */
         return *(typename InputMap<X>::Output*)1;
     }
