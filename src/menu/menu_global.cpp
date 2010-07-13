@@ -161,7 +161,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir){
     }
 
     try{
-        Menu::Menu temp(Filesystem::find(Filesystem::RelativePath("menu/level_select.txt")));
+        Menu::Menu temp;//(Filesystem::find(Filesystem::RelativePath("menu/level_select.txt")));
         //temp.setParent(parent);
         int index = 0;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
