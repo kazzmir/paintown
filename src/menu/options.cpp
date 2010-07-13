@@ -561,8 +561,8 @@ void OptionCredits::run( const Menu::Context & context ){
     Global::speed_counter = 0;
     double min_y = GFX_Y;
 
-    /* use Bitmap::temporaryBitmap here? */
-    Bitmap tmp(Global::getScreenWidth(), Global::getScreenHeight());
+    /* use Bitmap::temporaryBitmap here? no! BlitToScreen uses temporaryBitmap */
+    Bitmap tmp(Menu::Menu::Width, Menu::Menu::Height);
     // Bitmap fireWork(GFX_X, GFX_Y);
     if (! music.empty()){
         MenuGlobals::setMusic(music);
@@ -1280,7 +1280,7 @@ menu(0){
     if (tok != NULL){
         std::string name;
         *tok >> name;
-        Global::debug(0, "menu") << "Menu name: " << name << endl;
+        // Global::debug(0, "menu") << "Menu name: " << name << endl;
         this->setText(name);
     } else {
         // No name?
