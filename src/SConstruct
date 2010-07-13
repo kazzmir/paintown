@@ -247,6 +247,8 @@ def psp_prx(env):
     else:
         return []
 
+obj_files.append(use.Peg('openbor/data.peg'))
+
 use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])

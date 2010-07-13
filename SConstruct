@@ -791,8 +791,23 @@ if isWindows():
         print "export CYGWIN=1"
     else:
         print "Cygwin detected"
-    
+
+def peg_to_cpp(target, source, env):
+    import sys
+    sys.path.append("src/mugen/parser")
+    # sys.path.append(".")
+    import peg, re
+    name = source[0].name
+    parser = peg.make_peg_parser(re.sub('\..*', '', name))
+    fout = open(target[0].path, 'w')
+    fout.write(parser(source[0].path).generate_cpp())
+    fout.write('\n')
+    fout.close()
+
 env = getEnvironment(getDebug())
+peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']), suffix = '.cpp', src_suffix = '.peg')
+env.Append(BUILDERS = {'Peg' : peg_builder})
+
 env['PAINTOWN_USE_PRX'] = usePrx()
 if not useWii() and not useMinpspw():
     env['PAINTOWN_NETWORKING'] = True
