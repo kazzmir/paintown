@@ -48,6 +48,47 @@
 using namespace std;
 using namespace Gui;
 
+static Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & context){
+    vector<Level::LevelInfo> & possible = Paintown::Mod::getCurrentMod()->getLevels();
+    if (possible.size() == 0){
+        throw LoadException(__FILE__, __LINE__, "No level sets defined!");
+    }
+
+    if (possible.size() == 1){
+        return possible[0];
+    }
+    
+    // FIXME what is this crap? Do we need it?
+    /* don't hardcode 60, base it on the size of the font */
+    int count = possible.size() * 60;
+    /* what is 250?? */
+    if (count > 250){
+        count = 250;
+    }
+
+    try{
+        Menu::Menu temp;
+        //temp.setParent(parent);
+        int index = 0;
+        for ( unsigned int i = 0; i < possible.size(); i++ ){
+            OptionLevel *opt = new OptionLevel(0, &index, i);
+            opt->setText(possible[i].getName());
+            opt->setInfoText("Select a set of levels to play");
+            temp.addOption(opt);
+        }
+        // Run it
+        try {
+            temp.run(context);
+        } catch (const Menu::MenuException & ex){
+        }
+        return possible[index];
+    } catch (const TokenException & ex){
+        // Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getReason() << endl;
+        throw LoadException(__FILE__, __LINE__, ex, "Could not load levels");
+    }
+    throw LoadException(__FILE__, __LINE__, "No level chosen!");
+}
+
 OptionAdventure::OptionAdventure(Token *token):
 MenuOption(token, Event){
     if ( *token != "adventure" ){
@@ -68,7 +109,7 @@ void OptionAdventure::run(const Menu::Context & context){
     Object * player = NULL;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels");
+        Level::LevelInfo info = doLevelMenu("/levels", context);
 
         if (parent != NULL){
             parent->waitForSelect();
@@ -142,7 +183,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
     vector< Object * > buddies;
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-        Level::LevelInfo info = MenuGlobals::doLevelMenu("/levels");
+        Level::LevelInfo info = doLevelMenu("/levels", context);
         if (parent != NULL){
             parent->waitForSelect();
         }
@@ -343,17 +384,12 @@ static void changeMod(const ModType & mod){
 void OptionChangeMod::run(const Menu::Context & context){
     try{
         int select = 0;
-        // Menu menu(Filesystem::find("menu/change-mod.txt"));
-        // menu.addOption(new OptionLevel(0, &select, 0));
-        // menu.setupOptions();
-        OldMenu::Menu menu;
-        menu.setParent(getParent());
+        Menu::Menu menu;
         vector<ModType> mods = findMods();
         map<int, ModType*> modMap;
         int index = 0;
         std::vector<OptionLevel *> options;
         for (vector<ModType>::iterator it = mods.begin(); it != mods.end(); it++){
-            // menu.addOption(new OptionLevel(0, &select, 0));
             OptionLevel *opt = new OptionLevel(0, &select, index);
             string name = modName(*it);
             modMap[index] = &(*it);
@@ -376,8 +412,7 @@ void OptionChangeMod::run(const Menu::Context & context){
             return;
         }
         
-        menu.load(Filesystem::find(Filesystem::RelativePath("menu/change-mod.txt")));
-        menu.run();
+        menu.run(context);
         changeMod(*modMap[select]);
 
         // Reload the menu

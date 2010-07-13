@@ -333,6 +333,7 @@ class Context{
 /*! New Menu class */
 class Menu{
     public:
+        Menu();
         Menu(const Filesystem::AbsolutePath &);
         Menu(Token *);
         virtual ~Menu();

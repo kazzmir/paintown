@@ -354,6 +354,15 @@ Menu::Renderer::~Renderer(){
 }
 
 Menu::DefaultRenderer::DefaultRenderer(){
+    
+    // Default the menu to a certain size and details
+    menu.location.setRadius(15);
+    menu.location.setPosition(Gui::RelativePoint(-.6, -.3));
+    menu.location.setPosition2(Gui::RelativePoint( .6, .8));
+    menu.colors.body = Bitmap::makeColor(0,0,0);
+    menu.colors.bodyAlpha = 128;
+    menu.colors.border = Bitmap::makeColor(200,200,200);
+    menu.colors.borderAlpha = 255;
 }
 Menu::DefaultRenderer::~DefaultRenderer(){
     // Kill options
@@ -680,6 +689,11 @@ void Menu::Context::setBackground(Background *bg){
 }
 
 /* New Menu */
+
+// Utilizes default renderer
+Menu::Menu::Menu():
+renderer(new DefaultRenderer()){
+}
 Menu::Menu::Menu(const Filesystem::AbsolutePath & filename):
 renderer(0){
     // Load up tokenizer
@@ -712,29 +726,7 @@ Menu::Menu::~Menu(){
     }
 }
 
-void Menu::Menu::load(Token * token){
-    // TODO figure out where keys belong
-    // Set keys
-    input.set(Keyboard::Key_J, 0, true, Down);
-    input.set(Keyboard::Key_K, 0, true, Up);
-    input.set(Keyboard::Key_H, 0, true, Left);
-    input.set(Keyboard::Key_L, 0, true, Right);
-    input.set(Keyboard::Key_UP, 0, true, Up);
-    /* regular keys */
-    input.set(Keyboard::Key_DOWN, 0, true, Down);
-    input.set(Keyboard::Key_LEFT, 0, true, Left);
-    input.set(Keyboard::Key_RIGHT, 0, true, Right);
-    input.set(Keyboard::Key_ENTER, 0, true, Select);
-    input.set(Keyboard::Key_ESC, 0, true, Cancel);
-    /* joystick */
-    input.set(Joystick::Up, 0, true, Up);
-    input.set(Joystick::Down, 0, true, Down);
-    input.set(Joystick::Left, 0, true, Left);
-    input.set(Joystick::Right, 0, true, Right);
-    /*! FIXME this should be changed to Select/Cancel buttons, all other buttons should be Select */
-    input.set(Joystick::Button1, 0, true, Select);
-    input.set(Joystick::Button2, 0, true, Cancel);
-    
+void Menu::Menu::load(Token * token){ 
     // version info;
     int major=0, minor=0, micro=0;
     if ( *token != "menu" ){
@@ -800,6 +792,28 @@ void Menu::Menu::load(Token * token){
 }
 
 void Menu::Menu::run(const Context & parentContext){
+    // TODO Keys need a home
+    // Set keys
+    input.set(Keyboard::Key_J, 0, true, Down);
+    input.set(Keyboard::Key_K, 0, true, Up);
+    input.set(Keyboard::Key_H, 0, true, Left);
+    input.set(Keyboard::Key_L, 0, true, Right);
+    input.set(Keyboard::Key_UP, 0, true, Up);
+    /* regular keys */
+    input.set(Keyboard::Key_DOWN, 0, true, Down);
+    input.set(Keyboard::Key_LEFT, 0, true, Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Keyboard::Key_ENTER, 0, true, Select);
+    input.set(Keyboard::Key_ESC, 0, true, Cancel);
+    /* joystick */
+    input.set(Joystick::Up, 0, true, Up);
+    input.set(Joystick::Down, 0, true, Down);
+    input.set(Joystick::Left, 0, true, Left);
+    input.set(Joystick::Right, 0, true, Right);
+    /*! FIXME this should be changed to Select/Cancel buttons, all other buttons should be Select */
+    input.set(Joystick::Button1, 0, true, Select);
+    input.set(Joystick::Button2, 0, true, Cancel);
+   
     /*
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
     work.updateOnResize();
