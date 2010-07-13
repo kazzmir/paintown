@@ -795,7 +795,7 @@ if isWindows():
 def peg_to_cpp(target, source, env):
     import sys
     sys.path.append("src/mugen/parser")
-    # sys.path.append(".")
+    sys.path.append(".")
     import peg, re
     name = source[0].name
     parser = peg.make_peg_parser(re.sub('\..*', '', name))
