@@ -247,7 +247,7 @@ def psp_prx(env):
     else:
         return []
 
-obj_files.append(use.Peg('openbor/data.peg'))
+use.Depends(use.Peg('openbor/data.peg'), 'mugen/parser/peg.py')
 
 use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
