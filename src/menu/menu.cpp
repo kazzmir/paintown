@@ -357,8 +357,7 @@ Menu::DefaultRenderer::DefaultRenderer(){
     
     // Default the menu to a certain size and details
     menu.location.setRadius(15);
-    menu.location.setPosition(Gui::RelativePoint(-.6, -.3));
-    menu.location.setPosition2(Gui::RelativePoint( .6, .8));
+    menu.location.set(-.6, -.3, .6, .8);
     menu.colors.body = Bitmap::makeColor(0,0,0);
     menu.colors.bodyAlpha = 128;
     menu.colors.border = Bitmap::makeColor(200,200,200);
@@ -628,8 +627,8 @@ void Menu::Context::addSound(const Actions & sound, const Filesystem::RelativePa
 
 void Menu::Context::playMusic(){
     if (Filesystem::exists(music)){
-        if (Music::loadSong(music.path())){
-            //Music::pause();
+        if (Music::loadSong(Filesystem::find(music).path())){
+            Music::pause();
             Music::play();
         }
     }
