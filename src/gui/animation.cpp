@@ -15,27 +15,26 @@ using namespace Gui;
 // Temporary solution
 static void renderSprite(const Bitmap & bmp, const int x, const int y, const int alpha, const bool hflip, const bool vflip, const Bitmap & work){
     if (alpha != 255){
-	    Bitmap::transBlender( 0, 0, 0, alpha );
-	    if (hflip && !vflip){
-	        bmp.drawTransHFlip(x,y, work);
-	    } else if (!hflip && vflip){
-	        bmp.drawTransVFlip(x,y, work);
-	    } else if (hflip && vflip){
-	        bmp.drawTransHVFlip(x,y, work);
-	    } else if (!hflip && !vflip){
-	        bmp.drawTrans(x,y, work);
-	    }
-    }
-    else {
-	    if (hflip && !vflip){
-	        bmp.drawHFlip(x,y, work);
-	    } else if (!hflip && vflip){
-	        bmp.drawVFlip(x,y, work);
-	    } else if (hflip && vflip){
-	        bmp.drawHVFlip(x,y, work);
-	    } else if (!hflip && !vflip){
-	        bmp.draw(x,y, work);
-	    }
+        Bitmap::transBlender( 0, 0, 0, alpha );
+        if (hflip && !vflip){
+            bmp.drawTransHFlip(x,y, work);
+        } else if (!hflip && vflip){
+            bmp.drawTransVFlip(x,y, work);
+        } else if (hflip && vflip){
+            bmp.drawTransHVFlip(x,y, work);
+        } else if (!hflip && !vflip){
+            bmp.drawTrans(x,y, work);
+        }
+    } else {
+        if (hflip && !vflip){
+            bmp.drawHFlip(x,y, work);
+        } else if (!hflip && vflip){
+            bmp.drawVFlip(x,y, work);
+        } else if (hflip && vflip){
+            bmp.drawHVFlip(x,y, work);
+        } else if (!hflip && !vflip){
+            bmp.draw(x,y, work);
+        }
     }
 }
 
