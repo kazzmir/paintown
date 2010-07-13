@@ -777,6 +777,7 @@ void Menu::Menu::load(Token * token){
 
 void Menu::Menu::run(const Context & parentContext){
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
+    work.updateOnResize();
     
     double runCounter = 0;
     Global::speed_counter = 0;
