@@ -4,7 +4,6 @@
 
 #include "animation.h"
 #include "animation_event.h"
-#include "animation_event_attack.h"
 #include "animation_event_bbox.h"
 #include "animation_event_coords.h"
 #include "animation_event_delay.h"

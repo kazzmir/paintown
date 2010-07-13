@@ -1094,53 +1094,43 @@ static int readKey( Keyboard & key ){
 
 OptionKey::OptionKey(Token *token): MenuOption(token, Event), name(""), player(-1), type(invalidkey), keyCode(0)
 {
-	if ( *token != "key" )
-		throw LoadException(__FILE__, __LINE__, "Not key option");
-	
-	while ( token->hasTokens() )
-	{
-		try 
-		{
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "name" )
-			{
-				*tok >> name;
-			}
-			else if ( *tok == "player" )
-			{
-				*tok >> player;
-			}
-			else if ( *tok == "type" )
-			{
-				std::string temp;
-				*tok >> temp;
-				type = convertToKeyboardKey(temp);
-			}
-			else 
-			{
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-				tok->print(" ");
-			}
-		} catch ( const TokenException & ex ){
-			throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-		} catch ( const LoadException & ex ) {
-			// delete current;
-			throw ex;
-		}
-	}
-	
-	if(name.empty())throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
-	if(type == invalidkey)throw LoadException(__FILE__, __LINE__, "Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
-	if(player == -1)throw LoadException(__FILE__, __LINE__, "Player not specified in key configuration");
-	
-        char temp[255];
-	sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
-	setText(std::string(temp));
+    if ( *token != "key" )
+        throw LoadException(__FILE__, __LINE__, "Not key option");
+
+    while ( token->hasTokens() ) {
+        try {
+            Token * tok;
+            *token >> tok;
+            if ( *tok == "name" ) {
+                *tok >> name;
+            } else if ( *tok == "player" ) {
+                *tok >> player;
+            } else if ( *tok == "type" ) {
+                std::string temp;
+                *tok >> temp;
+                type = convertToKeyboardKey(temp);
+            } else {
+                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                tok->print(" ");
+            }
+        } catch ( const TokenException & ex ){
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+        } catch ( const LoadException & ex ) {
+            // delete current;
+            throw ex;
+        }
+    }
+
+    if(name.empty())throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
+    if(type == invalidkey)throw LoadException(__FILE__, __LINE__, "Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
+    if(player == -1)throw LoadException(__FILE__, __LINE__, "Player not specified in key configuration");
+
+    char temp[255];
+    sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
+    setText(std::string(temp));
 }
 
-OptionKey::~OptionKey()
-{
+OptionKey::~OptionKey(){
 	// Nothing
 }
 
@@ -1172,9 +1162,7 @@ OptionLevel::~OptionLevel(){
 void OptionLevel::logic(){
 }
 
-/* redo this to not use global state */
 void OptionLevel::run(const Menu::Context & context){
-	//endGame = true;
     *set = value;
     throw Menu::MenuException(__FILE__, __LINE__);
 }

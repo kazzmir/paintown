@@ -110,6 +110,7 @@ protected:
     ifstream & stream;
 };
 
+/* combines bytes b0 b1 b2 b3 as b0 + b1*2^8 + b2*2^16 + b3*2^24 */
 class LittleEndianReader: public EndianReader {
 public:
     LittleEndianReader(ifstream & stream):
@@ -125,6 +126,7 @@ protected:
     }
 };
 
+/* combines bytes b0 b1 b2 b3 as b0*2^24 + b1*2^16 + b2*2^8 + b3 */
 class BigEndianReader: public EndianReader {
 public:
     BigEndianReader(ifstream & stream):
@@ -190,7 +192,8 @@ filename(filename){
 
     handle.open(filename.path().c_str(), std::ios::in | std::ios::binary);
 }
-    
+
+/* read a blob of bytes */
 char * PackReader::readFile(const File & file){
     handle.seekg(file.start);
     char * data = new char[file.length];

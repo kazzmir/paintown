@@ -68,7 +68,6 @@ set(OBJECT_SRC
 src/object/actor.cpp
 src/object/animation.cpp
 src/object/animation_event.cpp
-src/object/animation_event_attack.cpp
 src/object/animation_event_bbox.cpp
 src/object/animation_event_coords.cpp
 src/object/animation_event_delay.cpp
