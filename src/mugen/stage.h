@@ -61,11 +61,11 @@ public:
             return animations;
         }*/
 	
-	inline const double getCameraX() { return camerax; }
-	inline const double getCameraY() { return cameray; }
-	inline const int getTension(){ return tension; }
-	inline const int getFloorTension(){ return floortension; }
-	inline const int getZ(){ return zoffset; }
+	inline double getCameraX() { return camerax; }
+	inline double getCameraY() { return cameray; }
+	inline int getTension(){ return tension; }
+	inline int getFloorTension(){ return floortension; }
+	inline int getZ(){ return zoffset; }
 	
 	inline unsigned long int getTicks(){ return ticker; }
 	
@@ -100,7 +100,7 @@ public:
         }
         
         //! Check match
-        virtual const bool isMatchOver() const {
+        virtual bool isMatchOver() const {
             return this->gameOver;
         }
         
@@ -158,7 +158,7 @@ public:
 
     virtual const Mugen::Character * getEnemy(const Mugen::Character * who) const;
     
-    virtual const int getGameTime() const;
+    virtual int getGameTime() const;
 
     /* pause for dramatic effect */
     virtual void doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner);

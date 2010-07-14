@@ -16,7 +16,7 @@ class MugenItemContent{
     MugenItemContent();
     virtual ~MugenItemContent();
     
-    const bool hasItems() const;
+    bool hasItems() const;
     
     void reset();
     

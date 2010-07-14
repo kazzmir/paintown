@@ -163,7 +163,7 @@ class CharacterInfo {
             randomStage = r;
         }
 
-        virtual inline const bool hasRandomStage() const{
+        virtual inline bool hasRandomStage() const{
             return randomStage;
         }
 
@@ -187,7 +187,7 @@ class CharacterInfo {
             order = o;
         }
 
-        virtual inline const int getOrder() const{
+        virtual inline int getOrder() const{
             return order;
         }
 	
@@ -332,7 +332,7 @@ class Cell{
         virtual void randomize(std::vector<CharacterInfo *> &characters);
         virtual void render(const Bitmap &);
 	
-	virtual inline const bool operator==(const Cell &cell) const{
+	virtual inline bool operator==(const Cell &cell) const{
 	    return (this->location == cell.location);
 	}
 	

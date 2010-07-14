@@ -37,7 +37,7 @@ public:
     
     inline const std::string &getHeader() const { return header; }
     inline void setHeader( std::string & name ){ header = name; }
-    const bool hasItems()const;
+    bool hasItems() const;
     
     MugenSection & operator=( const MugenSection & s);
     

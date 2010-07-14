@@ -153,7 +153,7 @@ class MugenAnimation{
 	inline void setType(const Mugen::AnimationType t){ type = t; }
 	
 	// Get type number
-	inline const Mugen::AnimationType getType(){ return type; }
+	inline Mugen::AnimationType getType(){ return type; }
 	
 	// Show offense | defense Clsn framework
 	inline void toggleDefense(){ showDefense = !showDefense; }

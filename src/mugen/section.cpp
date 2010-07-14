@@ -22,7 +22,7 @@ MugenSection::~MugenSection(){
   }
 }
 
-const bool MugenSection::hasItems()const { 
+bool MugenSection::hasItems() const { 
   return ( contentCounter < itemContent.size() ); 
 }
     

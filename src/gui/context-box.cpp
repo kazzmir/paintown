@@ -24,13 +24,13 @@ ContextItem::ContextItem(){
 }
 ContextItem::~ContextItem(){
 }
-const bool ContextItem::isAdjustable(){
+bool ContextItem::isAdjustable(){
     return false;
 }
-const int ContextItem::getLeftColor(){
+int ContextItem::getLeftColor(){
     return 0;
 }
-const int ContextItem::getRightColor(){
+int ContextItem::getRightColor(){
     return 0;
 }
 

@@ -80,11 +80,11 @@ class Scene {
 	    this->clearColor = color;
 	}
 	
-	virtual inline const int getClearColor() const {
+	virtual inline int getClearColor() const {
 	    return this->clearColor;
 	}
 	
-	virtual inline const bool getClearColorSet() const {
+	virtual inline bool getClearColorSet() const {
 	    return this->clearColorSet;
 	}
 	
@@ -104,7 +104,7 @@ class Scene {
 	    return this->defaultPosition;
 	}
 	
-	virtual inline const bool getDefaultPositionSet() const {
+	virtual inline bool getDefaultPositionSet() const {
 	    return this->defaultPositionSet;
 	}
 

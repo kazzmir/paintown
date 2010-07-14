@@ -43,6 +43,9 @@ public:
     stream(stream){
     }
 
+    virtual ~EndianReader(){
+    }
+
     virtual int8_t readByte1(){
         return convert(readBytes(sizeof(int8_t)));
     }

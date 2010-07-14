@@ -5,7 +5,7 @@ class Object;
 class Character;
 
 namespace Network{
-	class Message;
+    struct Message;
 }
 
 class Stimulation{

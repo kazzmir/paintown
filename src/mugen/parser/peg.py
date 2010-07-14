@@ -124,11 +124,11 @@ struct Value{
 
     int which; // 0 is value, 1 is values
 
-    inline const bool isList() const {
+    inline bool isList() const {
         return which == 1;
     }
 
-    inline const bool isData() const {
+    inline bool isData() const {
         return which == 0;
     }
 
@@ -181,7 +181,7 @@ public:
         value.reset();
     }
 
-    inline const int getPosition() const {
+    inline int getPosition() const {
         return position;
     }
 
@@ -218,7 +218,7 @@ public:
     }
     */
 
-    inline const int matches() const {
+    inline int matches() const {
         if (value.isList()){
             return this->value.values.size();
         } else {

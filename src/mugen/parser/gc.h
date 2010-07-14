@@ -3,6 +3,7 @@
 
 #include <list>
 #include "mugen/ast/all.h"
+#include <exception>
 
 namespace GC{
 
@@ -25,7 +26,7 @@ static void save(const X x){
 
 static void check(){
     if (!(saved_pointers.size() == 0)){
-        *(char *) 0 = 0;
+        throw std::exception();
     }
 }
 

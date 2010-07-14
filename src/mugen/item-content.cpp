@@ -21,7 +21,7 @@ MugenItemContent::~MugenItemContent(){
   }
 }
 
-const bool MugenItemContent::hasItems()const { 
+bool MugenItemContent::hasItems()const { 
   return ( itemCounter < items.size() ); 
 }
 

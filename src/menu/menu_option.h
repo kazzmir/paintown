@@ -110,9 +110,9 @@ public:
 
 public:
     inline const std::string getName(){ return this->getText(); }
-    inline const bool isAdjustable(){ return (this->mType == AdjustableOption); }
-    inline const int getLeftColor(){ return this->adjustLeftColor; }
-    inline const int getRightColor(){ return this->adjustRightColor; }
+    inline bool isAdjustable(){ return (this->mType == AdjustableOption); }
+    inline int getLeftColor(){ return this->adjustLeftColor; }
+    inline int getRightColor(){ return this->adjustRightColor; }
 
 protected:
     void readName(Token * token);

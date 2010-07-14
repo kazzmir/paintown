@@ -32,10 +32,10 @@ public:
 	}
 
 	const char *getName() { return name; }
-	const int getNumberIndex() { return numberIndex; }
-	const bool hasNumberIndex() { return numberIndexFlag; }
+	int getNumberIndex() { return numberIndex; }
+	bool hasNumberIndex() { return numberIndexFlag; }
 	const char *getStringIndex() { return stringIndex; }
-	const bool hasStringIndex() { return stringIndexFlag; }
+	bool hasStringIndex() { return stringIndexFlag; }
 
 	void debugExplain() {
 		printf("%s", name);

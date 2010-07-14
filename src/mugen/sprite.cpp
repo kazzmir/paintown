@@ -239,11 +239,11 @@ Bitmap *MugenSprite::getBitmap() const {
     return bitmap;
 }
 
-const int MugenSprite::getWidth(){
+int MugenSprite::getWidth(){
     return bitmap->getWidth();
 }
 
-const int MugenSprite::getHeight(){
+int MugenSprite::getHeight(){
     return bitmap->getHeight();
 }
 

@@ -81,7 +81,7 @@ class Point{
 	    this->x = x;
 	    this->y = y;
 	}
-	inline const bool operator==(const Point &p) const{
+	inline bool operator==(const Point &p) const{
 	    return ((this->x == p.x) && (this->y == p.y));
 	}
 	~Point();

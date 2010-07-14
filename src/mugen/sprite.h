@@ -37,8 +37,8 @@ class MugenSprite{
 	
 	// get sprite
 	Bitmap *getBitmap() const;
-	const int getWidth();
-	const int getHeight();
+	int getWidth();
+	int getHeight();
 	
         /* FIXME: replace types with uintX_t */
 	// Setters getters
@@ -56,17 +56,17 @@ class MugenSprite{
 	
 	void loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[]);
 	
-	inline const unsigned long getNext() const { return next; }
-	inline const unsigned long getLocation() const { return location; }
-	inline const unsigned long getLength() const { return length; }
-	inline const unsigned long getRealLength() const { return reallength; }
-	inline const unsigned long getNewLength() const { return newlength; }
-	inline const short getX() const { return x; }
-	inline const short getY() const { return y; }
-	inline const unsigned short getGroupNumber() const { return groupNumber; }
-	inline const unsigned short getImageNumber() const { return imageNumber; }
-	inline const unsigned short getPrevious() const { return prev; }
-	inline const bool getSamePalette() const { return samePalette; }
+	inline unsigned long getNext() const { return next; }
+	inline unsigned long getLocation() const { return location; }
+	inline unsigned long getLength() const { return length; }
+	inline unsigned long getRealLength() const { return reallength; }
+	inline unsigned long getNewLength() const { return newlength; }
+	inline short getX() const { return x; }
+	inline short getY() const { return y; }
+	inline unsigned short getGroupNumber() const { return groupNumber; }
+	inline unsigned short getImageNumber() const { return imageNumber; }
+	inline unsigned short getPrevious() const { return prev; }
+	inline bool getSamePalette() const { return samePalette; }
 	inline const char *getComments() const { return comments; }
 
     protected:

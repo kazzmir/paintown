@@ -9,8 +9,8 @@ public:
 		modifierChar(m),
 		count(c) {}
 
-	const char getModifierChar() { return modifierChar; }
-	const int getCount() { return count; }
+	char getModifierChar() { return modifierChar; }
+	int getCount() { return count; }
 
 private:
 	char modifierChar;
