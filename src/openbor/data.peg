@@ -13,10 +13,19 @@ rules:
     line = comment
          | empty-space
          | data
-    comment = sw "#" (!"\n" .)* "\n"
-    empty-space = sw (!"\n" .)* "\n"
-    data = sw (item sw)+ "\n"
-    item = "something"
+    comment = sw "#" (!line_end .)* line_end
+    empty-space = sw line_end
+    data = sw (item sw)+ line_end
+    line_end = line_ender+
+    inline line_ender = "\n"
+                      | "\r"
+    item = valid_letter+
+    valid_letter = !invalid_letter .
+    inline invalid_letter = "\n"
+                          | "\r"
+                          | " "
+                          | "\t"
+                          | "#"
     sw = space*
     inline space = " "
                  | "\t"
