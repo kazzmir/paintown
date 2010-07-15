@@ -3,6 +3,7 @@ start-symbol: start
 options: debug0, no-memo
 module: Bor
 include:{{
+#include "../util/token.h"
 }}
 
 code:{{
