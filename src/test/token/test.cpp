@@ -119,6 +119,16 @@ static void test5(){
     }
 }
 
+static void test6(){
+    string data = "(foo1 (foo2 (foo3)) (foo2 (foo3)))";
+    TokenReader reader;
+    Token * head = reader.readTokenFromString(data);
+    vector<Token*> tokens = head->findTokens("foo1/foo2/foo3");
+    if (tokens.size() != 2){
+        throw Failure(6);
+    }
+}
+
 int main(){
     try{
         test1();
@@ -126,6 +136,7 @@ int main(){
         test3();
         test4();
         test5();
+        test6();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){
