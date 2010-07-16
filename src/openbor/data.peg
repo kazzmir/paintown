@@ -4,23 +4,43 @@ options: debug0, no-memo
 module: Bor
 include:{{
 #include "../util/token.h"
+#include <sstream>
+#include <iostream>
 }}
 
 code:{{
+std::string * combineItems(const Value & items){
+    std::ostringstream out;
+    for (Value::iterator it = items.getValues().begin(); it != items.getValues().end(); it++){
+        out << *(std::string *)(*it).getValue() << " ";
+    }
+    std::string * object = new std::string(out.str().substr(0, out.str().length() - 1));
+    return object;
+}
+
+std::string * toString(const Value & input){
+    std::ostringstream out;
+    for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
+        out << (char) (long) (*it).getValue();
+    }
+    std::string * object = new std::string(out.str());
+    return object;
+}
+
 }}
 
 rules:
-    start = line* <eof>
-    line = comment
-         | empty-space
-         | data
+    start = current:{{ value = new std::ostringstream(); *((std::ostringstream *) value.getValue()) << "("; }} line(current)* <eof> {{ *((std::ostringstream *) current.getValue()) << ")"; std::cout << ((std::ostringstream *) current.getValue())->str() << std::endl; }}
+    line(current) = comment
+                  | empty-space
+                  | data {{ std::ostringstream * stream = (std::ostringstream *) current.getValue(); *stream << "(" << *(std::string*) ($1.getValue()) << ")\n"; }}
     comment = sw "#" (!line_end .)* line_end
     empty-space = sw line_end
-    data = sw (item sw)+ line_end
+    data = sw items:(item sw {{value = $1;}})+ line_end {{ value = combineItems(items); }}
     line_end = line_ender+
     inline line_ender = "\n"
                       | "\r"
-    item = valid_letter+
+    item = valid_letter+ {{ value = toString($1); }}
     valid_letter = !invalid_letter .
     inline invalid_letter = "\n"
                           | "\r"

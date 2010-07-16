@@ -10,7 +10,6 @@
 
 namespace Bor{
 
-/* TODO: make these extend exceptions/exception.h */
 class PackError: public Exception::Base {
 public:
     PackError(const std::string & file, int line, const std::string & reason);
