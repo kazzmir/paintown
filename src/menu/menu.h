@@ -211,6 +211,18 @@ class DefaultRenderer : public Renderer {
         /*! Context Box */
         Gui::ContextBox menu;
         
+        /*! Info boxes */
+        std::vector <InfoBox *> info;
+        
+        /*! Add info box */
+        void addInfo(const std::string &, Context &);
+        
+        /*! act info box */
+        void actInfo();
+        
+        /*! render info box */
+        void renderInfo(const Bitmap &);
+        
 };
 
 /*! Menu contexts
@@ -301,6 +313,14 @@ class Context{
             return this->fontHeight;
         }
         
+        virtual inline void setInfoLocation(double x, double y){
+            this->infoLocation.set(x,y);
+        }
+        
+        virtual inline const Gui::RelativePoint & getInfoLocation(){
+            return this->infoLocation;
+        }
+        
     private:
         /*! Require cleanup *default constructor only* */
         bool cleanup;
@@ -328,6 +348,9 @@ class Context{
         
         /*! Font Height */
         int fontHeight;
+        
+        /*! Info Placement */
+        Gui::RelativePoint infoLocation;
 };
 
 /*! New Menu class */

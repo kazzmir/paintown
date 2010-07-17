@@ -294,7 +294,7 @@ Menu::ValueHolder & Menu::ValueHolder::operator>>(double val){
 
 void Menu::ValueHolder::next(){
     location++;
-    if (location >= values.size()){
+    if (location > values.size()){
         location = 0;
     }
 }
@@ -423,6 +423,8 @@ void Menu::DefaultRenderer::initialize(Context & context){
     menu.setList(toContextList(options));
     menu.open();
     
+    addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
+    
 }
 void Menu::DefaultRenderer::finish(){
     menu.close();
@@ -437,9 +439,11 @@ void Menu::DefaultRenderer::act(){
         option->logic();
     }
     menu.act();
+    actInfo();
 }
 void Menu::DefaultRenderer::render(const Bitmap & bmp){
     menu.render(bmp);
+    renderInfo(bmp);
 }
 void Menu::DefaultRenderer::addOption(MenuOption * opt){
     this->options.push_back(opt);
@@ -449,11 +453,13 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
         case Up:
             if (menu.previous()){
                 context.playSound(Up);
+                addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
             }
             break;
         case Down:
             if (menu.next()){
                 context.playSound(Down);
+                addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
             }
             break;
         case Left:
@@ -473,6 +479,8 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             } catch (const Exception::Return & ex){
                 menu.open();
             }
+            context.playMusic();
+            addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
             break;
         case Cancel:
             context.playSound(Cancel);
@@ -483,6 +491,47 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
     }
 }
 
+void Menu::DefaultRenderer::addInfo(const std::string & text, Context & context){
+    if (text.empty()){
+        return;
+    }
+    if (!info.empty()){
+        info.back()->close();
+    }
+    ::Menu::InfoBox * temp = new ::Menu::InfoBox();
+    temp->setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
+    temp->setText(text);
+    const int width = temp->location.getWidth();
+    const int height = temp->location.getHeight();
+    temp->location.setPosition(Gui::AbsolutePoint(context.getInfoLocation().getX() - width/2, context.getInfoLocation().getY() - height/2));
+    // have to pass the dimensions back in to correct proper placement
+    temp->location.setPosition2(Gui::AbsolutePoint(temp->location.getX() + width,temp->location.getY() + height));
+    temp->location.setRadius(menu.location.getRadius());
+    temp->colors = menu.colors;
+    temp->open();
+    info.push_back(temp);
+}
+
+void Menu::DefaultRenderer::actInfo(){
+    for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end();){
+        ::Menu::InfoBox *box = *i;
+        box->act();
+        if (!box->isActive()){
+            delete box;
+            i = info.erase(i);
+        } else {
+            i++;
+        }
+    }
+}
+
+void Menu::DefaultRenderer::renderInfo(const Bitmap & work){
+    for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end(); ++i){
+        ::Menu::InfoBox *box = *i;
+        box->render(work);
+    }
+}
+
 
 Menu::Context::Context():
 cleanup(true),
@@ -490,7 +539,8 @@ state(NotStarted),
 fades(0),
 background(0),
 fontWidth(24),
-fontHeight(24){
+fontHeight(24),
+infoLocation(0,-.5){
 }
 
 Menu::Context::Context(const Context & parent, const Context & child):
@@ -499,7 +549,8 @@ state(NotStarted),
 fades(NULL),
 background(NULL),
 fontWidth(24),
-fontHeight(24){
+fontHeight(24),
+infoLocation(0,-.5){
     // Update with parents info
     fades = parent.fades;
     background = parent.background;
@@ -508,6 +559,7 @@ fontHeight(24){
     font = parent.font;
     fontWidth = parent.fontWidth;
     fontHeight = parent.fontHeight;
+    infoLocation = parent.infoLocation;
 
     // Then overwrite with childs
     if (child.fades != NULL){
@@ -526,6 +578,9 @@ fontHeight(24){
         font = child.font;
         fontWidth = child.fontWidth;
         fontHeight = child.fontHeight;
+    }
+    if (child.infoLocation.getRelativeX() != 0 || child.infoLocation.getRelativeY() != .5){
+        infoLocation = child.infoLocation;
     }
 }
 
@@ -1009,25 +1064,25 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
         } else if ( renderer && renderer->readToken(tok) ) {
             // Nothing checks compatible version of renderer
         } else if ( *tok == "font" ) {
-            ValueHolder * value = new ValueHolder("font");
-            *value << tok << tok << tok;
-            addData(value);
             try {
                 std::string font;
-                int w=24,h=24;
-                *value >> font >> w >> h;
+                int w=0,h=0;
+                *tok >> font >> w >> h;
                 context.setFont(Filesystem::RelativePath(font));
                 context.setFontWidth(w);
                 context.setFontHeight(h);
-            } catch (const MenuException & ex){
+            } catch (const TokenException & ex){
             }
         } else if (*tok == "action"){
             // Set speed
             //ActionAct(tok);
         } else if (*tok == "info-position"){
-            ValueHolder * value = new ValueHolder("info-position");
-            *value << tok << tok;
-            addData(value);
+            try {
+                double x=0, y=0;
+                *tok >> x >> y;
+                context.setInfoLocation(x,y);
+            } catch (const TokenException & ex){
+            } 
         } else if (*tok == "menuinfo"){
             ValueHolder * value = new ValueHolder("menuinfo");
             *value << tok;
