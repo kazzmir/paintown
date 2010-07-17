@@ -110,9 +110,9 @@ class ValueHolder{
         virtual ValueHolder & operator<<(Token *);
         
         virtual ValueHolder & operator>>(std::string &);
-        virtual ValueHolder & operator>>(bool val);
-        virtual ValueHolder & operator>>(int val);
-        virtual ValueHolder & operator>>(double val);
+        virtual ValueHolder & operator>>(bool &);
+        virtual ValueHolder & operator>>(int &);
+        virtual ValueHolder & operator>>(double &);
 
         virtual inline const std::string & getName() const {
             return this->name;
@@ -213,6 +213,9 @@ class DefaultRenderer : public Renderer {
         
         /*! Info boxes */
         std::vector <InfoBox *> info;
+        
+        /*! Menu info box */
+        InfoBox menuInfo;
         
         /*! Add info box */
         void addInfo(const std::string &, Context &);
@@ -317,8 +320,24 @@ class Context{
             this->infoLocation.set(x,y);
         }
         
-        virtual inline const Gui::RelativePoint & getInfoLocation(){
+        virtual inline const Gui::RelativePoint & getInfoLocation() const {
             return this->infoLocation;
+        }
+        
+        virtual inline void setMenuInfoLocation(double x, double y){
+            this->menuInfoLocation.set(x,y);
+        }
+        
+        virtual inline const Gui::RelativePoint & getMenuInfoLocation()const {
+            return this->menuInfoLocation;
+        }
+        
+        virtual inline void setMenuInfoText(const std::string & text){
+            this->menuInfo = text;
+        }
+        
+        virtual inline const std::string & getMenuInfoText() const {
+            return this->menuInfo;
         }
         
     private:
@@ -351,6 +370,12 @@ class Context{
         
         /*! Info Placement */
         Gui::RelativePoint infoLocation;
+        
+        /*! Menu Info Placement */
+        Gui::RelativePoint menuInfoLocation;
+        
+        /*! Menu Info Text */
+        std::string menuInfo;
 };
 
 /*! New Menu class */

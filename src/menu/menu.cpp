@@ -264,7 +264,7 @@ Menu::ValueHolder & Menu::ValueHolder::operator>>(std::string & val){
     next();
     return *this;
 }
-Menu::ValueHolder & Menu::ValueHolder::operator>>(bool val){
+Menu::ValueHolder & Menu::ValueHolder::operator>>(bool & val){
     if (values[location].empty()){
         throw MenuException(__FILE__, __LINE__, "Empty value.");
     }
@@ -273,7 +273,7 @@ Menu::ValueHolder & Menu::ValueHolder::operator>>(bool val){
     next();
     return *this;
 }
-Menu::ValueHolder & Menu::ValueHolder::operator>>(int val){
+Menu::ValueHolder & Menu::ValueHolder::operator>>(int & val){
     if (values[location].empty()){
         throw MenuException(__FILE__, __LINE__, "Empty value.");
     }
@@ -282,7 +282,7 @@ Menu::ValueHolder & Menu::ValueHolder::operator>>(int val){
     next();
     return *this;
 }
-Menu::ValueHolder & Menu::ValueHolder::operator>>(double val){
+Menu::ValueHolder & Menu::ValueHolder::operator>>(double & val){
     if (values[location].empty()){
         throw MenuException(__FILE__, __LINE__, "Empty value.");
     }
@@ -294,7 +294,7 @@ Menu::ValueHolder & Menu::ValueHolder::operator>>(double val){
 
 void Menu::ValueHolder::next(){
     location++;
-    if (location > values.size()){
+    if (location >= values.size()){
         location = 0;
     }
 }
@@ -423,11 +423,28 @@ void Menu::DefaultRenderer::initialize(Context & context){
     menu.setList(toContextList(options));
     menu.open();
     
+    // Menu info
+    if (!context.getMenuInfoText().empty()){
+        Global::debug(0,"menu") << "Menu Text: " << context.getMenuInfoText() << endl;
+        menuInfo.setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
+        menuInfo.setText(context.getMenuInfoText());
+        const int width = menuInfo.location.getWidth();
+        const int height = menuInfo.location.getHeight();
+        menuInfo.location.setPosition(Gui::AbsolutePoint(context.getMenuInfoLocation().getX() - width/2, context.getMenuInfoLocation().getY() - height/2));
+        // have to pass the dimensions back in to correct proper placement
+        menuInfo.location.setPosition2(Gui::AbsolutePoint(menuInfo.location.getX() + width,menuInfo.location.getY() + height));
+        menuInfo.location.setRadius(menu.location.getRadius());
+        menuInfo.colors = menu.colors;
+    }
+    menuInfo.open();
+    
+    // Add first info option
     addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
     
 }
 void Menu::DefaultRenderer::finish(){
     menu.close();
+    menuInfo.close();
 }
 bool Menu::DefaultRenderer::active(){
     return menu.isActive();
@@ -439,10 +456,12 @@ void Menu::DefaultRenderer::act(){
         option->logic();
     }
     menu.act();
+    menuInfo.act();
     actInfo();
 }
 void Menu::DefaultRenderer::render(const Bitmap & bmp){
     menu.render(bmp);
+    menuInfo.render(bmp);
     renderInfo(bmp);
 }
 void Menu::DefaultRenderer::addOption(MenuOption * opt){
@@ -478,6 +497,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
                 options[menu.getCurrentIndex()]->run(context);
             } catch (const Exception::Return & ex){
                 menu.open();
+                menuInfo.open();
             }
             context.playMusic();
             addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
@@ -540,7 +560,8 @@ fades(0),
 background(0),
 fontWidth(24),
 fontHeight(24),
-infoLocation(0,-.5){
+infoLocation(0,-.5),
+menuInfoLocation(0,.95){
 }
 
 Menu::Context::Context(const Context & parent, const Context & child):
@@ -550,7 +571,8 @@ fades(NULL),
 background(NULL),
 fontWidth(24),
 fontHeight(24),
-infoLocation(0,-.5){
+infoLocation(0,-.5),
+menuInfoLocation(0,.95){
     // Update with parents info
     fades = parent.fades;
     background = parent.background;
@@ -560,6 +582,7 @@ infoLocation(0,-.5){
     fontWidth = parent.fontWidth;
     fontHeight = parent.fontHeight;
     infoLocation = parent.infoLocation;
+    menuInfoLocation = parent.menuInfoLocation;
 
     // Then overwrite with childs
     if (child.fades != NULL){
@@ -579,8 +602,14 @@ infoLocation(0,-.5){
         fontWidth = child.fontWidth;
         fontHeight = child.fontHeight;
     }
-    if (child.infoLocation.getRelativeX() != 0 || child.infoLocation.getRelativeY() != .5){
+    if (child.infoLocation.getRelativeX() != 0 || child.infoLocation.getRelativeY() != -.5){
         infoLocation = child.infoLocation;
+    }
+    if (child.menuInfoLocation.getRelativeX() != 0 || child.menuInfoLocation.getRelativeY() != .95){
+        infoLocation = child.infoLocation;
+    }
+    if (!child.menuInfo.empty()){
+        menuInfo = child.menuInfo;
     }
 }
 
@@ -1064,33 +1093,51 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
         } else if ( renderer && renderer->readToken(tok) ) {
             // Nothing checks compatible version of renderer
         } else if ( *tok == "font" ) {
+            ValueHolder * value = new ValueHolder("font");
+            *value << tok << tok << tok;
+            addData(value);
             try {
                 std::string font;
-                int w=0,h=0;
-                *tok >> font >> w >> h;
+                int w=24,h=24;
+                *value >> font >> w >> h;
                 context.setFont(Filesystem::RelativePath(font));
                 context.setFontWidth(w);
                 context.setFontHeight(h);
-            } catch (const TokenException & ex){
+            } catch (const MenuException & ex){
             }
         } else if (*tok == "action"){
             // Set speed
             //ActionAct(tok);
         } else if (*tok == "info-position"){
+            ValueHolder * value = new ValueHolder("info-position");
+            *value << tok << tok;
+            addData(value);
             try {
-                double x=0, y=0;
-                *tok >> x >> y;
+                double x=0, y=-.5;
+                *value >> x >> y;
                 context.setInfoLocation(x,y);
-            } catch (const TokenException & ex){
+            } catch (const MenuException & ex){
             } 
         } else if (*tok == "menuinfo"){
             ValueHolder * value = new ValueHolder("menuinfo");
             *value << tok;
             addData(value);
+            try {
+                std::string info;
+                *value >> info;
+                context.setMenuInfoText(info);
+            } catch (const MenuException & ex){
+            } 
         } else if (*tok == "menuinfo-position"){
             ValueHolder * value = new ValueHolder("menuinfo-position");
             *value << tok << tok;
             addData(value);
+            try {
+                double x=0, y=.95;
+                *value >> x >> y;
+                context.setMenuInfoLocation(x,y);
+            } catch (const MenuException & ex){
+            } 
         } 
     }
     
