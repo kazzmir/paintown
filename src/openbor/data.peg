@@ -9,12 +9,21 @@ include:{{
 }}
 
 code:{{
+std::vector<std::string*> strings;
+
+std::string * makeString(const std::string & input){
+    std::string * string = new std::string(input);
+    strings.push_back(string);
+    return string;
+}
+
+typedef std::ostringstream* Output;
 std::string * combineItems(const Value & items){
     std::ostringstream out;
     for (Value::iterator it = items.getValues().begin(); it != items.getValues().end(); it++){
         out << *(std::string *)(*it).getValue() << " ";
     }
-    std::string * object = new std::string(out.str().substr(0, out.str().length() - 1));
+    std::string * object = makeString(out.str().substr(0, out.str().length() - 1));
     return object;
 }
 
@@ -23,17 +32,24 @@ std::string * toString(const Value & input){
     for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
         out << (char) (long) (*it).getValue();
     }
-    std::string * object = new std::string(out.str());
+    std::string * object = makeString(out.str());
     return object;
+}
+
+void cleanup(){
+    for (std::vector<std::string*>::iterator it = strings.begin(); it != strings.end(); it++){
+        std::string * string = *it;
+        delete string;
+    }
 }
 
 }}
 
 rules:
-    start = current:{{ value = new std::ostringstream(); *((std::ostringstream *) value.getValue()) << "("; }} line(current)* <eof> {{ *((std::ostringstream *) current.getValue()) << ")"; std::cout << ((std::ostringstream *) current.getValue())->str() << std::endl; }}
+    start = current:{{ value = new std::ostringstream(); *((Output) value.getValue()) << "("; }} line(current)* <eof> {{ *((Output) current.getValue()) << ")"; value = new std::string(((Output) current.getValue())->str()); delete (Output) current.getValue(); cleanup(); }}
     line(current) = comment
                   | empty-space
-                  | data {{ std::ostringstream * stream = (std::ostringstream *) current.getValue(); *stream << "(" << *(std::string*) ($1.getValue()) << ")\n"; }}
+                  | data {{ Output stream = (Output) current.getValue(); *stream << "(" << *(std::string*) ($1.getValue()) << ")\n"; }}
     comment = sw "#" (!line_end .)* line_end
     empty-space = sw line_end
     data = sw items:(item sw {{value = $1;}})+ line_end {{ value = combineItems(items); }}

@@ -511,12 +511,21 @@ Result rule_valid_letter(Stream &, const int);
 Result rule_sw(Stream &, const int);
 
 
+std::vector<std::string*> strings;
+
+std::string * makeString(const std::string & input){
+    std::string * string = new std::string(input);
+    strings.push_back(string);
+    return string;
+}
+
+typedef std::ostringstream* Output;
 std::string * combineItems(const Value & items){
     std::ostringstream out;
     for (Value::iterator it = items.getValues().begin(); it != items.getValues().end(); it++){
         out << *(std::string *)(*it).getValue() << " ";
     }
-    std::string * object = new std::string(out.str().substr(0, out.str().length() - 1));
+    std::string * object = makeString(out.str().substr(0, out.str().length() - 1));
     return object;
 }
 
@@ -525,8 +534,15 @@ std::string * toString(const Value & input){
     for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
         out << (char) (long) (*it).getValue();
     }
-    std::string * object = new std::string(out.str());
+    std::string * object = makeString(out.str());
     return object;
+}
+
+void cleanup(){
+    for (std::vector<std::string*>::iterator it = strings.begin(); it != strings.end(); it++){
+        std::string * string = *it;
+        delete string;
+    }
 }
 
 
@@ -544,7 +560,7 @@ Result rule_start(Stream & stream, const int position){
     
         {
                 Value value((void*) 0);
-                value = new std::ostringstream(); *((std::ostringstream *) value.getValue()) << "(";
+                value = new std::ostringstream(); *((Output) value.getValue()) << "(";
                 result_peg_2.setValue(value);
             }
             current = result_peg_2.getValues();
@@ -576,7 +592,7 @@ Result rule_start(Stream & stream, const int position){
         
         {
                 Value value((void*) 0);
-                *((std::ostringstream *) current.getValue()) << ")"; std::cout << ((std::ostringstream *) current.getValue())->str() << std::endl;
+                *((Output) current.getValue()) << ")"; value = new std::string(((Output) current.getValue())->str()); delete (Output) current.getValue(); cleanup();
                 result_peg_2.setValue(value);
             }
         
@@ -631,7 +647,7 @@ Result rule_line(Stream & stream, const int position, Value current){
         
         {
                 Value value((void*) 0);
-                std::ostringstream * stream = (std::ostringstream *) current.getValue(); *stream << "(" << *(std::string*) (result_peg_16.getValues().getValue()) << ")\n";
+                Output stream = (Output) current.getValue(); *stream << "(" << *(std::string*) (result_peg_16.getValues().getValue()) << ")\n";
                 result_peg_15.setValue(value);
             }
         
