@@ -425,7 +425,6 @@ void Menu::DefaultRenderer::initialize(Context & context){
     
     // Menu info
     if (!context.getMenuInfoText().empty()){
-        Global::debug(0,"menu") << "Menu Text: " << context.getMenuInfoText() << endl;
         menuInfo.setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
         menuInfo.setText(context.getMenuInfoText());
         const int width = menuInfo.location.getWidth();
