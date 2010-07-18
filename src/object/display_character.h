@@ -23,9 +23,10 @@ public:
 protected:
         /* called by the loader */
         virtual void load();
+        virtual void loadDone();
 
-private:
         const std::string path;
+private:
         bool loaded;
         Util::Thread::Lock load_lock;
 };

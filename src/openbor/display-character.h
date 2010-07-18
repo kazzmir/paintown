@@ -14,6 +14,8 @@ public:
 protected:
     /* called by the loader */
     virtual void load();
+private:
+    PackReader & reader;
 };
 
 }

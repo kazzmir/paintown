@@ -534,44 +534,6 @@ static PlayerVector findOpenborPlayers(Bor::PackReader & reader){
 Filesystem::AbsolutePath OpenborMod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
     PlayerVector players = findOpenborPlayers(reader);
     return doSelectPlayer(players, message, info, remap);
-#if 0
-    /* hm, it would be nice to cache this I suppose */
-    PlayerVector players = loadPlayers(info.getPlayerPath());
-
-    try{
-        int current = 0;
-        if (players.size() == 0){
-            ostringstream out;
-            out << "No players found in '" << info.getPlayerPath() << "'";
-            throw LoadException(__FILE__, __LINE__,out.str());
-        }
-        /* only run the selection screen if there is more than 1 player to choose */
-        if (players.size() > 1){
-            current = choosePlayer(players, message);
-        }
-
-        /* set the map */
-        remap = players[current].guy->getCurrentMap();
-
-        /* delete all the preview characters. its ok to delete them
-         * before looking up the selected player in the map
-         * because 'delete' doesn't affect the map, it just changes
-         * memory around.
-         */
-        Filesystem::AbsolutePath path = players[current].path;
-        for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
-            delete it->guy;
-        }
-
-        Global::debug(1, DEBUG_CONTEXT) << "Selected " << path.path() << ". Loading.." << endl;
-        return path;
-    } catch (const Exception::Return & r){
-        for ( PlayerVector::iterator it = players.begin(); it != players.end(); it++ ){
-            delete it->guy;
-        }
-        throw r;
-    }
-#endif
 }
 
 }

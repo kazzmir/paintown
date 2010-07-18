@@ -96,12 +96,14 @@ void DisplayCharacter::load(){
     animation_current = getMovement( "idle" );
 
     effects.push_back(new DrawNormalEffect(this));
+}
 
+void DisplayCharacter::loadDone(){
     Util::Thread::acquireLock(&load_lock);
     loaded = true;
     Util::Thread::releaseLock(&load_lock);
 }
-        
+
 bool DisplayCharacter::isLoaded(){
     bool ok = false;
     Util::Thread::acquireLock(&load_lock);
@@ -125,6 +127,7 @@ void DisplayCharacterLoader::load(){
         DisplayCharacter * character = nextCharacter();
         try{
             character->load();
+            character->loadDone();
         } catch (const LoadException & le){
             Global::debug(0) << "Problem loading character: " << le.getTrace() << endl;
         }
