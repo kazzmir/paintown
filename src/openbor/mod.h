@@ -6,9 +6,11 @@
 
 namespace Paintown{
 
-class OpenborMod: public Mod{
+class OpenborMod: public Mod {
 public:
     OpenborMod(const Filesystem::AbsolutePath & path);
+
+    const std::string getMenu();
 };
 
 }

@@ -18,13 +18,13 @@ class Mod{
 public:
     Mod(const Filesystem::AbsolutePath & path) throw (LoadException);
 
-    const std::string & getMenu();
+    virtual const std::string getMenu();
 
-    std::vector<Level::LevelInfo> & getLevels();
+    virtual std::vector<Level::LevelInfo> & getLevels();
 
     virtual ~Mod();
 
-    Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
+    virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
 
     static void loadPaintownMod(const std::string & path);
     static void loadOpenborMod(const Filesystem::AbsolutePath & path);

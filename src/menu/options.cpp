@@ -412,7 +412,11 @@ void OptionChangeMod::run(const Menu::Context & context){
             return;
         }
         
-        menu.run(context);
+        try{
+            menu.run(context);
+        } catch (const Menu::MenuException & ignore){
+        }
+
         changeMod(*modMap[select]);
 
         // Reload the menu

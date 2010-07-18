@@ -48,7 +48,7 @@ vector<Level::LevelInfo> & Mod::getLevels(){
     return levels;
 }
     
-const string & Mod::getMenu(){
+const string Mod::getMenu(){
     return menu;
 }
 
