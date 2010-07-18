@@ -132,6 +132,7 @@ src/windows/funcs.cpp
 src/windows/system.cpp
 src/exceptions/exception.cpp
 src/openbor/pack-reader.cpp
+src/openbor/display-character.cpp
 src/openbor/mod.cpp
 src/openbor/util.cpp
 src/openbor/data.cpp)

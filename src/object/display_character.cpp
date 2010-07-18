@@ -18,14 +18,14 @@
 using namespace std;
 
 static Token * findNameToken( Token * token ){
-	Token * next;
-	while ( token->hasTokens() ){
-		*token >> next;
-		if ( *next == "name" ){
-			return next;
-		}
-	}
-	return NULL;
+    Token * next;
+    while ( token->hasTokens() ){
+        *token >> next;
+        if ( *next == "name" ){
+            return next;
+        }
+    }
+    return NULL;
 }
 
 DisplayCharacter::DisplayCharacter(const string & path):
@@ -58,7 +58,7 @@ void DisplayCharacter::load(){
                 setName( n );
             } else if ( *current == "anim" ){
 
-                Token * name = findNameToken( current );
+                Token * name = current->findToken("_/name");
                 if ( name == NULL ){
                     /* screw it */
                     continue;

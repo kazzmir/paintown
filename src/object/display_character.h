@@ -22,7 +22,7 @@ public:
         friend class DisplayCharacterLoader;
 protected:
         /* called by the loader */
-        void load();
+        virtual void load();
 
 private:
         const std::string path;
