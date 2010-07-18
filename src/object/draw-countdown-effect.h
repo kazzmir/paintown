@@ -1,5 +1,5 @@
-#ifndef _paintown_draw_until_effect_h
-#define _paintown_draw_until_effect_h
+#ifndef _paintown_draw_countdown_effect_h
+#define _paintown_draw_countdown_effect_h
 
 #include "draw-effect.h"
 

@@ -17,17 +17,6 @@
 
 using namespace std;
 
-static Token * findNameToken( Token * token ){
-    Token * next;
-    while ( token->hasTokens() ){
-        *token >> next;
-        if ( *next == "name" ){
-            return next;
-        }
-    }
-    return NULL;
-}
-
 DisplayCharacter::DisplayCharacter(const string & path):
 Character(ALLIANCE_NONE),
 path(path),
