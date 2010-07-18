@@ -47,13 +47,14 @@ void cleanup(){
 }}
 
 rules:
-    start = current:{{ value = new std::ostringstream(); *((Output) value.getValue()) << "("; }} line(current)* <eof> {{ *((Output) current.getValue()) << ")"; value = new std::string(((Output) current.getValue())->str()); delete (Output) current.getValue(); cleanup(); }}
+    start = current:{{ value = new std::ostringstream(); *((Output) value.getValue()) << "("; }} line(current)* sw <eof> {{ *((Output) current.getValue()) << ")"; value = new std::string(((Output) current.getValue())->str()); delete (Output) current.getValue(); cleanup(); }}
     line(current) = comment
                   | empty-space
                   | data {{ Output stream = (Output) current.getValue(); *stream << "(" << *(std::string*) ($1.getValue()) << ")\n"; }}
-    comment = sw "#" (!line_end .)* line_end
+    comment = sw comment_stuff line_end
+    comment_stuff = "#" (!line_end .)*
     empty-space = sw line_end
-    data = sw items:(item sw {{value = $1;}})+ line_end {{ value = combineItems(items); }}
+    data = sw items:(item sw {{value = $1;}})+ comment_stuff? line_end {{ value = combineItems(items); }}
     line_end = line_ender+
     inline line_ender = "\n"
                       | "\r"

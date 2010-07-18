@@ -31,7 +31,7 @@ static bool isPlayer(Bor::PackReader & reader, const string & path){
         TokenReader tokens;
         char * data = reader.readFile(reader.getFile(path));
         string parsed = Bor::doParse(data, reader.getFileLength(path));
-        Global::debug(0) << "Bor input: '" << parsed << "'" << endl;
+        // Global::debug(0) << "Bor input: '" << parsed << "'" << endl;
         delete[] data;
         data = NULL;
         Token * start = tokens.readTokenFromString(parsed);
