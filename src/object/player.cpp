@@ -18,8 +18,7 @@
 #include "player.h"
 #include "input/input.h"
 #include "input/input-manager.h"
-#include "draw-glow-effect.h"
-#include "draw-countdown-effect.h"
+#include "draw-effect.h"
 #include <math.h>
 
 // how many ticks to wait before the key cache is cleared.

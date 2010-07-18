@@ -18,9 +18,6 @@
 #include "object_attack.h"
 #include "stimulation.h"
 #include "draw-effect.h"
-#include "draw-normal-effect.h"
-#include "draw-until-effect.h"
-#include "draw-glow-effect.h"
 #include "gib.h"
 
 #include "factory/shadow.h"

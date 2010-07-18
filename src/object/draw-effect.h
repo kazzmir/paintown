@@ -29,4 +29,53 @@ protected:
     int level;
 };
 
+class DrawCountdownEffect: public DrawEffect {
+public:
+    DrawCountdownEffect(DrawEffect * const effect, int countdown);
+    virtual void draw(int x, Bitmap * work);
+    virtual bool act();
+    virtual DrawEffect * copy(const Character * owner) const;
+    virtual int getLevel() const;
+    virtual ~DrawCountdownEffect();
+protected:
+    DrawEffect * const effect;
+    int countdown;
+};
+
+class DrawGlowEffect: public DrawEffect {
+public:
+    DrawGlowEffect(const Character * owner, int startColor, int endColor, double period);
+    virtual void draw(int x, Bitmap * work);
+    virtual bool act();
+    virtual DrawEffect * copy(const Character * owner) const;
+    virtual ~DrawGlowEffect();
+protected:
+    int angle;
+    double period;
+    int startColor, endColor;
+};
+
+class DrawNormalEffect: public DrawEffect {
+public:
+    DrawNormalEffect(const Character * owner);
+    virtual void draw(int x, Bitmap * work);
+    virtual bool act();
+    virtual DrawEffect * copy(const Character * owner) const;
+    virtual ~DrawNormalEffect();
+};
+
+class DrawUntilEffect: public DrawEffect {
+public:
+    typedef bool (*until)(const Character * const character);
+    DrawUntilEffect(DrawEffect * const effect, until end);
+    virtual void draw(int x, Bitmap * work);
+    virtual bool act();
+    virtual DrawEffect * copy(const Character * owner) const;
+    virtual int getLevel() const;
+    virtual ~DrawUntilEffect();
+protected:
+    DrawEffect * const effect;
+    until end;
+};
+
 #endif

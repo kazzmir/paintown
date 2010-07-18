@@ -2,8 +2,7 @@
 #include "stimulation.h"
 #include "health_stimulation.h"
 #include "character.h"
-#include "draw-glow-effect.h"
-#include "draw-countdown-effect.h"
+#include "draw-effect.h"
 
 HealthStimulation::HealthStimulation( int value ):
 value( value ){

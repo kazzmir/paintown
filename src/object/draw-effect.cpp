@@ -1,10 +1,6 @@
 #include "animation.h"
 #include "character.h"
-#include "draw-countdown-effect.h"
 #include "draw-effect.h"
-#include "draw-glow-effect.h"
-#include "draw-normal-effect.h"
-#include "draw-until-effect.h"
 #include "globals.h"
 #include <math.h>
 #include "object.h"

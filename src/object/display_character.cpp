@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "character.h"
 #include "display_character.h"
-#include "draw-normal-effect.h"
+#include "draw-effect.h"
 #include "util/thread.h"
 #include "util/load_exception.h"
 #include "util/token.h"
