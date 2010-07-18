@@ -8,6 +8,7 @@
 #include <fstream>
 #include "exceptions/exception.h"
 #include "util/file-system.h"
+#include "util/thread.h"
 
 namespace Bor{
 
@@ -63,6 +64,9 @@ private:
     Filesystem::AbsolutePath filename;
     std::map<std::string, File> files;
     std::ifstream handle;
+
+    /* locked when reading data */
+    Util::Thread::Lock readLock;
 };
 
 }

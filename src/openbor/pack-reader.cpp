@@ -209,6 +209,7 @@ filename(filename){
     stream.close();
 
     handle.open(filename.path().c_str(), std::ios::in | std::ios::binary);
+    Util::Thread::initializeLock(&readLock);
 }
 
 static string convertToRegex(const string & input){
@@ -292,15 +293,17 @@ vector<string> PackReader::findPaths(const std::string & search){
 
 /* read a blob of bytes */
 char * PackReader::readFile(const File & file){
+    Util::Thread::acquireLock(&readLock);
     handle.seekg(file.start);
     char * data = new char[file.length];
     handle.read(data, file.length);
+    Util::Thread::releaseLock(&readLock);
     return data;
 }
     
 const PackReader::File & PackReader::getFile(const std::string & path){
-    if (files.find(path) != files.end()){
-        return files.find(path)->second;
+    if (files.find(lowercase(path)) != files.end()){
+        return files.find(lowercase(path))->second;
     }
     ostringstream out;
     out << "No suck pak file '" << path << "'";
@@ -314,6 +317,7 @@ uint32_t PackReader::getFileLength(const std::string & path){
 
 PackReader::~PackReader(){
     handle.close();
+    Util::Thread::destroyLock(&readLock);
 }
 
 }

@@ -11,6 +11,8 @@ namespace Level{
     class LevelInfo;
 }
 
+class Bitmap;
+
 /* encapsulates a configuration for a game */
 namespace Paintown{
 
@@ -19,6 +21,7 @@ public:
     Mod(const Filesystem::AbsolutePath & path) throw (LoadException);
 
     virtual const std::string getMenu();
+    virtual Bitmap * createBitmap(const Filesystem::RelativePath & path);
 
     virtual std::vector<Level::LevelInfo> getLevels();
 

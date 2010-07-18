@@ -20,6 +20,7 @@
 #include "util/timedifference.h"
 #include "util/token.h"
 #include "util/token_exception.h"
+#include "game/mod.h"
 
 using namespace std;
 
@@ -116,7 +117,7 @@ contact( NULL ){
 
 	Token * current1;
 
-	string basedir( "./" );
+	string basedir("");
 	diff.startTime();
 	while ( tok->hasTokens() ){
 		
@@ -367,19 +368,20 @@ contact( NULL ){
 			} else if ( current == "frame" ){
 				string path;
 				current >> path;
-                                Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
+                                Filesystem::RelativePath full = Filesystem::RelativePath(basedir + path);
+                                // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
 				if (frames.find(full.path()) == frames.end()){
-					Bitmap * pic = new Bitmap(full.path());
+					Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
 					ECollide * collide = new ECollide(pic);
-					Frame * f = new Frame( pic, collide );
+					Frame * f = new Frame(pic, collide);
 					frames[full.path()] = f;
-					if ( pic->getError() ){
-						Global::debug( 0 ) <<"Pic error"<<endl;
-						throw LoadException(__FILE__, __LINE__, "Could not load picture");
+					if (pic->getError()){
+                                            // Global::debug( 0 ) <<"Pic error"<<endl;
+                                            throw LoadException(__FILE__, __LINE__, "Could not load picture");
 					}
 				}
 				AnimationEvent * ani = new AnimationEventFrame(full.path());
-				events.push_back( ani );
+				events.push_back(ani);
 			} else {
 				Global::debug( 0 ) << tok->getFileName() << " Unhandled animation attribute: "<<endl;
 				current.print(" ");
@@ -992,13 +994,13 @@ void Animation::setStatus( const int status ){
 }
 
 void Animation::setFrame( const string & path ){
-	if ( frames.find( path ) != frames.end() ){
-		Frame * x = frames[ path ];
-		current_frame = x->pic;
-		current_collide = x->collide;
-	} else {
-		Global::debug( 0 ) <<"No frame "<<path<<endl;
-	}
+    if ( frames.find(path) != frames.end() ){
+        Frame * x = frames[ path ];
+        current_frame = x->pic;
+        current_collide = x->collide;
+    } else {
+        Global::debug( 0 ) <<"No frame "<<path<<endl;
+    }
 }
 
 void Animation::setFrame( const int fr ){

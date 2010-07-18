@@ -14,6 +14,7 @@ public:
     const std::string getMenu();
     virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
     virtual std::vector<Level::LevelInfo> getLevels();
+    virtual Bitmap * createBitmap(const Filesystem::RelativePath & path);
 
     Bor::PackReader reader;
 };

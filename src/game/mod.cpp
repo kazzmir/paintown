@@ -6,6 +6,7 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/load_exception.h"
+#include "util/bitmap.h"
 #include "openbor/mod.h"
 #include "globals.h"
 
@@ -36,6 +37,10 @@ Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
     } catch (const TokenException & e){
         Global::debug(0) << "Error while reading mod " << path.path() << ":" << e.getTrace() << endl;
     }
+}
+    
+Bitmap * Mod::createBitmap(const Filesystem::RelativePath & path){
+    return new Bitmap(Filesystem::find(path).path());
 }
     
 Mod::Mod(){
