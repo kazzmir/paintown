@@ -144,7 +144,7 @@ Level::LevelInfo MenuGlobals::doLevelMenu(const std::string dir){
     }
 #endif
     
-    vector<Level::LevelInfo> & possible = Paintown::Mod::getCurrentMod()->getLevels();
+    vector<Level::LevelInfo> possible = Paintown::Mod::getCurrentMod()->getLevels();
     if (possible.size() == 0){
         throw LoadException(__FILE__, __LINE__, "No level sets defined!");
     }

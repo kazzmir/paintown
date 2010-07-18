@@ -44,7 +44,7 @@ Mod::Mod(){
 Mod::~Mod(){
 }
     
-vector<Level::LevelInfo> & Mod::getLevels(){
+vector<Level::LevelInfo> Mod::getLevels(){
     return levels;
 }
     

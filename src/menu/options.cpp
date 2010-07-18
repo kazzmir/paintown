@@ -49,7 +49,7 @@ using namespace std;
 using namespace Gui;
 
 static Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & context){
-    vector<Level::LevelInfo> & possible = Paintown::Mod::getCurrentMod()->getLevels();
+    vector<Level::LevelInfo> possible = Paintown::Mod::getCurrentMod()->getLevels();
     if (possible.size() == 0){
         throw LoadException(__FILE__, __LINE__, "No level sets defined!");
     }

@@ -20,7 +20,7 @@ public:
 
     virtual const std::string getMenu();
 
-    virtual std::vector<Level::LevelInfo> & getLevels();
+    virtual std::vector<Level::LevelInfo> getLevels();
 
     virtual ~Mod();
 

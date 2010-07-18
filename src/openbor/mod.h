@@ -3,6 +3,7 @@
 
 #include "game/mod.h"
 #include "util/file-system.h"
+#include "pack-reader.h"
 
 namespace Paintown{
 
@@ -11,6 +12,10 @@ public:
     OpenborMod(const Filesystem::AbsolutePath & path);
 
     const std::string getMenu();
+    virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
+    virtual std::vector<Level::LevelInfo> getLevels();
+
+    Bor::PackReader reader;
 };
 
 }

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <stdint.h>
 #include <fstream>
 #include "exceptions/exception.h"
@@ -44,6 +45,8 @@ public:
     PackReader(const Filesystem::AbsolutePath & path);
 
     char * readFile(const File & file);
+
+    std::vector<std::string> findPaths(const std::string & search);
 
     const std::map<std::string, File> & getFiles() const {
         return files;
