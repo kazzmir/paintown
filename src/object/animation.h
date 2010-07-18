@@ -67,6 +67,10 @@ public:
 		return name;
 	}
 
+        inline void setName(const std::string & name){
+            this->name = name;
+        }
+
 	/* returns true if the animation has finished */
 	bool empty();
 

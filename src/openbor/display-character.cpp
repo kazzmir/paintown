@@ -81,6 +81,7 @@ void DisplayCharacter::load(){
             /* only care about the 'idle' animation */
             if (name == "idle"){
                 Animation * ani = new Animation(&animation, this);
+                ani->setName("idle");
 
                 if (getMovement("idle") != NULL){
                     delete getMovement("idle");
@@ -100,8 +101,7 @@ void DisplayCharacter::load(){
         throw LoadException(__FILE__, __LINE__, "No 'idle' animation given for " + path );
     }
 
-    animation_current = getMovement( "idle" );
-
+    animation_current = getMovement("idle");
     effects.push_back(new DrawNormalEffect(this));
 }
 
