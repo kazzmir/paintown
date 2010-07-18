@@ -52,6 +52,9 @@ public:
         return files;
     }
 
+    const File & getFile(const std::string & path);
+    uint32_t getFileLength(const std::string & path);
+
     virtual ~PackReader();
 
 private:

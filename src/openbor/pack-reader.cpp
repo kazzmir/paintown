@@ -297,6 +297,20 @@ char * PackReader::readFile(const File & file){
     handle.read(data, file.length);
     return data;
 }
+    
+const PackReader::File & PackReader::getFile(const std::string & path){
+    if (files.find(path) != files.end()){
+        return files.find(path)->second;
+    }
+    ostringstream out;
+    out << "No suck pak file '" << path << "'";
+    throw PackError(__FILE__, __LINE__, out.str());
+}
+    
+uint32_t PackReader::getFileLength(const std::string & path){
+    const File & file = getFile(path);
+    return file.length;
+}
 
 PackReader::~PackReader(){
     handle.close();

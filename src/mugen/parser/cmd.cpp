@@ -441,6 +441,7 @@ protected:
 
 class Stream{
 public:
+    /* read from a file */
     Stream(const std::string & filename):
     temp(0),
     buffer(0),
@@ -464,6 +465,7 @@ public:
         createMemo();
     }
 
+    /* for null-terminated strings */
     Stream(const char * in):
     temp(0),
     buffer(in),
@@ -471,6 +473,16 @@ public:
         max = strlen(buffer);
         createMemo();
     }
+
+    /* user-defined length */
+    Stream(const char * in, int length):
+    temp(0),
+    buffer(in),
+    farthest(0){
+        max = length;
+        createMemo();
+    }
+
 
     void createMemo(){
         memo_size = 1024 * 2;
@@ -9684,6 +9696,20 @@ const void * parse(const std::string & filename, bool stats = false){
 
 const void * parse(const char * in, bool stats = false){
     Stream stream(in);
+    errorResult.setError();
+    Result done = rule_start(stream, 0);
+    if (done.error()){
+        // std::cout << "Could not parse" << std::endl;
+        throw ParseException(stream.reportError());
+    }
+    if (stats){
+        stream.printStats();
+    }
+    return done.getValues().getValue();
+}
+
+const void * parse(const char * in, int length, bool stats = false){
+    Stream stream(in, length);
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
