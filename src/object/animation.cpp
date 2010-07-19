@@ -390,7 +390,9 @@ contact( NULL ){
 		} catch ( const TokenException & te ){
 			current1->print(" ");
 			throw LoadException(__FILE__, __LINE__, te, "Animation parse error");
-		}
+		} catch (const Exception::Base & e){
+                    throw LoadException(__FILE__, __LINE__, e, "Could not load animation");
+                }
 	}
 
 	diff.endTime();
