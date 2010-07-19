@@ -179,10 +179,14 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
             case EnemyType : {
                 string cachedPath = "enemy:" + block->getPath().path();
                 if ( cached[cachedPath] == NULL ){
-                    cached[cachedPath] = new Enemy( block->getPath() );
-                    Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
+                    cached[cachedPath] = new Enemy(block->getPath());
+                    Global::debug(1) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Filesystem::cleanse(block->getPath()).path());
                 }
+                /* Hack! Set the map here so the original cached object stores
+                 * remaps, thus saving time later
+                 */
+                ((Enemy*) cached[cachedPath])->setMap(block->getMap());
                 return makeEnemy( (Enemy *) cached[cachedPath]->copy(), block );
             }
             case CatType : {
