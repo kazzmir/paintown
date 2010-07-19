@@ -21,7 +21,11 @@ public:
     Mod(const Filesystem::AbsolutePath & path) throw (LoadException);
 
     virtual const std::string getMenu();
+    /* use the heap */
     virtual Bitmap * createBitmap(const Filesystem::RelativePath & path);
+
+    /* use the stack */
+    virtual Bitmap makeBitmap(const Filesystem::RelativePath & path);
 
     virtual std::vector<Level::LevelInfo> getLevels();
 

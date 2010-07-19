@@ -16,7 +16,7 @@ public:
     virtual int getOffsetX() const;
     virtual int getOffsetY() const;
         
-    virtual ::Animation * copy(Character * owner);
+    virtual ::Animation * copy(Character * owner) const;
 };
 
 }

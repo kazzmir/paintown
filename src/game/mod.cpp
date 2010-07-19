@@ -42,6 +42,13 @@ Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
 Bitmap * Mod::createBitmap(const Filesystem::RelativePath & path){
     return new Bitmap(Filesystem::find(path).path());
 }
+
+Bitmap Mod::makeBitmap(const Filesystem::RelativePath & path){
+    Bitmap * what = createBitmap(path);
+    Bitmap out(*what);
+    delete what;
+    return out;
+}
     
 Mod::Mod(){
 }

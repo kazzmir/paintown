@@ -560,7 +560,7 @@ void Animation::addCommision( const string & s ){
 	enable_animations.push_back( s );
 }
         
-Animation * Animation::copy(Character * owner){
+Animation * Animation::copy(Character * owner) const {
     return new Animation(*this, owner);
 }
 

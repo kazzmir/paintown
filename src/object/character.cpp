@@ -33,6 +33,7 @@
 #include "util/tokenreader.h"
 #include "script/script.h"
 #include "world.h"
+#include "game/mod.h"
 
 using namespace std;
 
@@ -87,8 +88,8 @@ void Remap::use(Character * from){
 }
 
 void Remap::doRemap(Character * from){
-    Bitmap b_from(Filesystem::find(remapFrom).path());
-    Bitmap b_to(Filesystem::find(remapTo).path());
+    Bitmap b_from(Paintown::Mod::getCurrentMod()->makeBitmap(remapFrom));
+    Bitmap b_to(Paintown::Mod::getCurrentMod()->makeBitmap(remapTo));
 
     map< int, int > remap_colors;
 
@@ -107,7 +108,7 @@ void Remap::doRemap(Character * from){
         const string & name = (*it).first;
         const Animation * old = (*it).second;
 
-        Animation * newAnimation = new Animation(*old, from);
+        Animation * newAnimation = old->copy(from);
         newAnimation->reMap(remap_colors);
         setAnimation(name, newAnimation);
     }

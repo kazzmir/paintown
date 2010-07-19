@@ -167,7 +167,7 @@ public:
             return offset_y;
 	}
 
-        virtual Animation * copy(Character * owner);
+        virtual Animation * copy(Character * owner) const;
 
 	/* tell the owning object to create a projectile */
 	void createProjectile( int x, int y, Projectile * p );

@@ -19,7 +19,7 @@ int Animation::getOffsetY() const {
     return getHeight() - ::Animation::getOffsetY();
 }
     
-::Animation * Animation::copy(Character * owner){
+::Animation * Animation::copy(Character * owner) const {
     return new Animation(*this, owner);
 }
 
