@@ -60,6 +60,14 @@ public:
         return mapper;
     }
 
+    virtual inline const Filesystem::RelativePath & getFrom() const {
+        return remapFrom;
+    }
+    
+    virtual inline const Filesystem::RelativePath & getTo() const {
+        return remapTo;
+    }
+
     virtual void use(Character * from);
 protected:
     virtual void doRemap(Character * from);
@@ -393,6 +401,8 @@ protected:
 	virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
 	// virtual void reMap( const std::string & from, const std::string & to, int id );
         virtual void addRemap(Remap * remap);
+        /* true if a mapping between `from' and `to' doesn't already exist */
+        virtual bool newRemap(const std::string & from, const std::string & to);
 	void loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException );
 	bool realCollision( ObjectAttack * obj );
 	

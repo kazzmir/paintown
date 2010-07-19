@@ -417,7 +417,9 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                 string first;
                 string second;
                 *n >> first >> second;
-                addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+                if (newRemap(first, second)){
+                    addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+                }
                 // remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             } else {
                 Global::debug(0) << "Unhandled character attribute: " << endl;
@@ -496,6 +498,17 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
 
 void Character::addRemap(Remap * remap){
     mapper[mapper.size()] = remap;
+}
+        
+bool Character::newRemap(const std::string & from, const std::string & to){
+    for (map<int, Remap*>::iterator it = mapper.begin(); it != mapper.end(); it++){
+        Remap * remap = it->second;
+        if (remap->getFrom().path() == from &&
+            remap->getTo().path() == to){
+            return false;
+        }
+    }
+    return true;
 }
 
 void Character::addEffect(DrawEffect * effect){

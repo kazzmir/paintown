@@ -70,7 +70,9 @@ void DisplayCharacter::load(){
             string first;
             string second;
             *remap >> first >> second;
-            addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+            if (newRemap(first, second)){
+                addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+            }
         }
 
         vector<Token> animations = getAnimations(head);
