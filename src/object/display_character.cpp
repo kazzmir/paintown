@@ -94,6 +94,7 @@ void DisplayCharacter::load(){
     }
 
     animation_current = getMovement( "idle" );
+    animation_current->Act();
 
     effects.push_back(new DrawNormalEffect(this));
 }

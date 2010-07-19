@@ -5,6 +5,7 @@
 #include "util.h"
 #include "object/animation.h"
 #include "object/draw-effect.h"
+#include "animation.h"
 #include <vector>
 
 using namespace std;
@@ -80,7 +81,7 @@ void DisplayCharacter::load(){
             // animation.resetToken();
             /* only care about the 'idle' animation */
             if (name == "idle"){
-                Animation * ani = new Animation(&animation, this);
+                ::Animation * ani = new Animation(&animation, this);
                 ani->setName("idle");
 
                 if (getMovement("idle") != NULL){
@@ -102,6 +103,8 @@ void DisplayCharacter::load(){
     }
 
     animation_current = getMovement("idle");
+    /* run the animation up till the first frame */
+    animation_current->Act();
     effects.push_back(new DrawNormalEffect(this));
 }
 

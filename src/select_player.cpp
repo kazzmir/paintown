@@ -140,9 +140,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     input.set(Configuration::config(0).getAttack1(), 0, false, Select::Choose);
 
     /* preview box for each character */
-    Bitmap temp( 120, 120 );
-    Bitmap preview( GFX_X / 2, GFX_Y / 2 );
-    Bitmap reflection( GFX_X / 2, GFX_Y / 2 );
+    Bitmap temp(120, 120);
+    Bitmap preview(GFX_X / 2, GFX_Y / 2);
+    Bitmap reflection(GFX_X / 2, GFX_Y / 2);
                     
     // const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
     // const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
@@ -296,13 +296,14 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
                 if (ch->isLoaded()){
-                    const int stand = 50;
+                    const int stand = 100;
                     ch->setFacing( Object::FACING_RIGHT );
-                    Character copy( *ch );
+                    Character copy(*ch);
                     copy.setDrawShadow( false );
                     copy.setX( preview.getWidth() / 2 );
                     copy.setY( 0 );
-                    copy.setZ( preview.getHeight() - stand );
+                    // copy.setZ( preview.getHeight() - stand );
+                    copy.setZ(preview.getHeight() - stand);
                     preview.fill( Bitmap::MaskColor() );
                     reflection.fill( Bitmap::MaskColor() );
                     // preview.fill( 0 );
@@ -326,7 +327,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
                     // preview.draw( 60, 0, work );
                     
-                    preview.drawStretched(-GFX_X / 2 + startX / 2, 0, GFX_X, GFX_Y, work);
+                    preview.drawStretched(-GFX_X / 2 + startX / 2, -70 + stand, GFX_X, GFX_Y, work);
                     // preview.drawStretched(-320, 0, GFX_X, GFX_Y, work);
                     
                     // preview.draw( 60, 0, work );

@@ -51,7 +51,7 @@ class Animation{
 public:
 	
 	Animation( Token * tok, Character * const owner );
-	Animation( const Animation & animation, Character * const owner );
+	Animation(const Animation & animation, Character * const owner);
 
 	virtual ~Animation();
 
@@ -159,13 +159,15 @@ public:
 		offset_y = y;
 	}
 
-	inline int getOffsetX(){
-		return offset_x;
+	virtual inline int getOffsetX() const {
+            return offset_x;
 	}
 
-	inline int getOffsetY(){
-		return offset_y;
+	virtual inline int getOffsetY() const {
+            return offset_y;
 	}
+
+        virtual Animation * copy(Character * owner);
 
 	/* tell the owning object to create a projectile */
 	void createProjectile( int x, int y, Projectile * p );

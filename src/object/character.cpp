@@ -56,7 +56,7 @@ remapTo(copy.remapTo){
     for (map<string, Animation*>::const_iterator it = copy.mapper.begin(); it != copy.mapper.end(); it++){
         string name = (*it).first;
         Animation * animation = (*it).second;
-        mapper[name] = new Animation(*animation, parent);
+        mapper[name] = animation->copy(parent);
     }
 }
 
@@ -1337,10 +1337,10 @@ int Character::getRZ() const {
 }
 
 int Character::getRY() const {
-	if ( animation_current ){
-		return Object::getRY() + animation_current->getOffsetY();
-	}
-	return Object::getRY();
+    if ( animation_current ){
+        return Object::getRY() + animation_current->getOffsetY();
+    }
+    return Object::getRY();
 }
 
 bool Character::realCollision( ObjectAttack * obj ){

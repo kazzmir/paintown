@@ -559,6 +559,10 @@ void Animation::addDecommision( const string & s ){
 void Animation::addCommision( const string & s ){
 	enable_animations.push_back( s );
 }
+        
+Animation * Animation::copy(Character * owner){
+    return new Animation(*this, owner);
+}
 
 void Animation::setTrails(const int produce, const int life){
     if (parent){
@@ -810,7 +814,7 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
 	y += offset_y;
 	*/
 
-	frame.draw( x-w, y-h, *work );
+	frame.draw( x - w, y - h, *work );
 
 	// cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
 
