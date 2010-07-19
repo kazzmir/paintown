@@ -47,7 +47,7 @@ void cleanup(){
 }}
 
 rules:
-    start = current:{{ value = new std::ostringstream(); *((Output) value.getValue()) << "("; }} line(current)* sw <eof> {{ *((Output) current.getValue()) << ")"; value = new std::string(((Output) current.getValue())->str()); delete (Output) current.getValue(); cleanup(); }}
+    start = current:{{ value = new std::ostringstream(); *((Output) value.getValue()) << "(open-bor\n"; }} line(current)* sw <eof> {{ *((Output) current.getValue()) << ")"; value = new std::string(((Output) current.getValue())->str()); delete (Output) current.getValue(); cleanup(); }}
     line(current) = comment
                   | empty-space
                   | data {{ Output stream = (Output) current.getValue(); *stream << "(" << *(std::string*) ($1.getValue()) << ")\n"; }}

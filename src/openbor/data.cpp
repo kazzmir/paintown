@@ -576,7 +576,7 @@ Result rule_start(Stream & stream, const int position){
     
         {
                 Value value((void*) 0);
-                value = new std::ostringstream(); *((Output) value.getValue()) << "(";
+                value = new std::ostringstream(); *((Output) value.getValue()) << "(open-bor\n";
                 result_peg_2.setValue(value);
             }
             current = result_peg_2.getValues();
