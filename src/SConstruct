@@ -36,6 +36,15 @@ util/sdl/sprig/SPG_surface.c
 
     return sprig.StaticLibrary('sprig', source)
 
+def alGifLibrary(env):
+    gif = env.Clone()
+    source = Split("""
+util/gif/algif.c
+util/gif/gif.c
+util/gif/lzw.c
+""")
+    return gif.StaticLibrary('algif', source)
+
 def sdlImageLibrary(env):
     image = env.Clone()
     image.Append(CPPDEFINES = ['LOAD_PNG', 'LOAD_PCX', 'LOAD_GIF'])
@@ -254,6 +263,8 @@ if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
 
 use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
+if not useSDL():
+    use.Prepend(LIBS = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use)])
 elif useMinpspw():

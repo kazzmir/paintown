@@ -27,8 +27,9 @@
 #include "dumb/include/dumb.h"
 #ifdef USE_ALLEGRO
 #include "dumb/include/aldumb.h"
-#endif
 #include "loadpng/loadpng.h"
+#include "util/gif/algif.h"
+#endif
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -170,6 +171,7 @@ static void initSystem(ostream & out){
 
     /* png */
     loadpng_init();
+    algif_init();
 
     out<<"Install keyboard: "<<install_keyboard()<<endl;
     /* do we need the mouse?? */
