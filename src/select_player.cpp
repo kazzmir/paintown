@@ -430,17 +430,6 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     return current;
 }
 
-/* FIXME: put this in a header somewhere */
-namespace Bor{
-
-class ParseException: std::exception {
-public:
-    std::string getReason() const;
-    virtual ~ParseException() throw();
-};
-
-}
-
 static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, const string & message, const Level::LevelInfo & info, int & remap){
     try{
         int current = 0;
@@ -482,58 +471,6 @@ namespace Paintown{
 Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
     /* hm, it would be nice to cache this I suppose */
     PlayerVector players = loadPlayers(info.getPlayerPath());
-    return doSelectPlayer(players, message, info, remap);
-}
-
-static bool isOpenborPlayer(Bor::PackReader & reader, const string & path){
-    char * data = NULL;
-    try{
-        TokenReader tokens;
-        char * data = reader.readFile(reader.getFile(path));
-        string parsed = Bor::doParse(data, reader.getFileLength(path));
-        // Global::debug(0) << "Bor input: '" << parsed << "'" << endl;
-        delete[] data;
-        data = NULL;
-
-        /* will either succeed or throw TokenException */
-        Token * start = tokens.readTokenFromString(parsed);
-
-        Token * type = start->findToken("_/type");
-        if (type != NULL){
-            string kind;
-            *type >> kind;
-            return kind == "player";
-        } else {
-            return false;
-        }
-    } catch (const TokenException & t){
-        Global::debug(0) << "Failed to parse pak file " << path << " " << t.getTrace() << endl;
-    } catch (const Bor::PackError & p){
-        Global::debug(0) << "Failed to parse pak file " << path << " " << p.getTrace() << endl;
-    } catch (const Bor::ParseException & e){
-        Global::debug(0) << "Failed to parse pak file " << path << " " << e.getReason() << endl;
-    }
-
-    delete[] data;
-    return false;
-}
-
-static PlayerVector findOpenborPlayers(Bor::PackReader & reader){
-    PlayerVector players;
-    vector<string> paths = reader.findPaths("data/chars/*/*.txt");
-    sort(paths.begin(), paths.end());
-    for (vector<string>::iterator it = paths.begin(); it != paths.end(); it++){
-        string file = *it;
-        if (isOpenborPlayer(reader, file)){
-            players.push_back(playerInfo(new Bor::DisplayCharacter(reader, file), Filesystem::AbsolutePath(file)));
-        }
-    }
-
-    return players;
-}
-
-Filesystem::AbsolutePath OpenborMod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
-    PlayerVector players = findOpenborPlayers(reader);
     return doSelectPlayer(players, message, info, remap);
 }
 
