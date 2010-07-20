@@ -3,7 +3,6 @@
 
 #ifdef HAVE_NETWORKING
 
-#include <pthread.h>
 #include "game/adventure_world.h"
 #include "network.h"
 #include "object/object.h"
@@ -12,6 +11,7 @@
 #include "input/input-map.h"
 #include "input/text-input.h"
 #include "chat-widget.h"
+#include "util/thread.h"
 #include <vector>
 
 class Bitmap;
@@ -30,7 +30,7 @@ public:
 		return server;
 	}
 
-	inline pthread_mutex_t * getLock(){
+	inline Util::Thread::Lock * getLock(){
 		return &message_mutex;
 	}
 
@@ -78,9 +78,9 @@ private:
 	NLsocket server;
 	std::vector< Network::Message > incoming;
 	std::vector< Network::Message > outgoing;
-	pthread_mutex_t message_mutex;
-	pthread_mutex_t running_mutex;
-	pthread_t message_thread;
+        Util::Thread::Lock message_mutex;
+        Util::Thread::Lock running_mutex;
+        Util::Thread::Id message_thread;
 
 	bool world_finished;
         unsigned int secondCounter;

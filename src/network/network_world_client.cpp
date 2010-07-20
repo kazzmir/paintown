@@ -17,7 +17,6 @@
 #include "object/object.h"
 #include "object/player.h"
 #include "factory/object_factory.h"
-#include <pthread.h>
 #include <string.h>
 #include "util/gradient.h"
 #include "util/system.h"
@@ -41,7 +40,6 @@ static std::ostream & debug( int level ){
 static void * handleMessages( void * arg ){
     NetworkWorldClient * world = (NetworkWorldClient *) arg;
     NLsocket socket = world->getServer();
-    // pthread_mutex_t * lock = world->getLock();
 
     /* at 100 messages per second (which is more than normal)
      * this can count 1.36 years worth of messages.
@@ -59,7 +57,6 @@ static void * handleMessages( void * arg ){
                 Global::debug(2, context.str()) << "Receiving message " << received << endl;
             }
             Network::Message m( socket );
-            // pthread_mutex_lock( lock );
             world->addIncomingMessage( m );
 
             {
@@ -67,7 +64,6 @@ static void * handleMessages( void * arg ){
                 context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
                 Global::debug(2, context.str()) << "Received path '" << m.path << "'" << endl;
             }
-            // pthread_mutex_unlock( lock );
         }
     } catch (const Network::MessageEnd & end){
         debug(1) << "Closed connection with socket " << socket << endl;
@@ -92,53 +88,49 @@ currentPing(0),
 clientNames(clientNames),
 pingCounter(0){
     objects.clear();
-    pthread_mutex_init( &message_mutex, NULL );
-    pthread_mutex_init( &running_mutex, NULL );
+    Util::Thread::initializeLock(&message_mutex);
+    Util::Thread::initializeLock(&running_mutex);
 }
 
 void NetworkWorldClient::startMessageHandler(){
-    pthread_create( &message_thread, NULL, handleMessages, this );
+    Util::Thread::createThread( &message_thread, NULL, (Util::Thread::ThreadFunction) handleMessages, this );
 }
 	
 NetworkWorldClient::~NetworkWorldClient(){
     debug( 1 ) << "Destroy client world" << endl;
-    /*
-       stopRunning();
-       pthread_join( message_thread, NULL );
-       */
 }
 	
 bool NetworkWorldClient::isRunning(){
-    pthread_mutex_lock( &running_mutex );
+    Util::Thread::acquireLock( &running_mutex );
     bool b = running;
-    pthread_mutex_unlock( &running_mutex );
+    Util::Thread::releaseLock( &running_mutex );
     return b;
 }
 
 void NetworkWorldClient::stopRunning(){
-    pthread_mutex_lock( &running_mutex );
+    Util::Thread::acquireLock( &running_mutex );
     running = false;
-    pthread_mutex_unlock( &running_mutex );
+    Util::Thread::releaseLock( &running_mutex );
     Network::Message finish;
     finish << World::FINISH;
     finish.id = 0;
     finish.send(getServer());
     debug(1) << "Sent finish, waiting for message thread to end." << endl;
-    pthread_join( message_thread, NULL );
+    Util::Thread::joinThread(message_thread);
 }
 	
 void NetworkWorldClient::addIncomingMessage( const Network::Message & message ){
-    pthread_mutex_lock( &message_mutex );
+    Util::Thread::acquireLock( &message_mutex );
     incoming.push_back( message );
-    pthread_mutex_unlock( &message_mutex );
+    Util::Thread::releaseLock( &message_mutex );
 }
 	
 void NetworkWorldClient::getIncomingMessages(vector<Network::Message> & messages){
     // vector< Network::Message > m;
-    pthread_mutex_lock( &message_mutex );
+    Util::Thread::acquireLock( &message_mutex );
     messages = incoming;
     incoming.clear();
-    pthread_mutex_unlock( &message_mutex );
+    Util::Thread::releaseLock( &message_mutex );
     // return m;
 }
 

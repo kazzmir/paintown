@@ -44,10 +44,8 @@ static void * handleMessages( void * arg ){
             context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
             Global::debug(2, context.str()) << "Received message " << id << " with path '" << m.path << "'" << endl;
             id += 1;
-            // pthread_mutex_lock( lock );
             world->addIncomingMessage(m, socket);
             // debug(2, __FILE__) << "Received path '" << m.path << "'" << endl;
-            // pthread_mutex_unlock( lock );
         }
     } catch (const Network::MessageEnd & end){
         debug(1) << "Closed connection with socket " << socket << endl;
@@ -70,8 +68,8 @@ sent_messages( 0 ),
 running(true){
     Object::networkid_t max_id = 0;
 
-    pthread_mutex_init( &message_mutex, NULL );
-    pthread_mutex_init( &running_mutex, NULL );
+    Util::Thread::initializeLock(&message_mutex);
+    Util::Thread::initializeLock(&running_mutex);
 
     for ( vector< PlayerTracker >::iterator it = this->players.begin(); it != this->players.end(); it++ ){
         Object * object = it->player;
@@ -88,28 +86,21 @@ void NetworkWorld::startMessageHandlers(){
         Stuff * s = new Stuff;
         s->socket = *it;
         s->world = this;
-        pthread_t thread;
-        pthread_create( &thread, NULL, handleMessages, s );
+        Util::Thread::Id thread;
+        Util::Thread::createThread( &thread, NULL, (Util::Thread::ThreadFunction) handleMessages, s );
         threads.push_back( thread );
     }
 }
 
 void NetworkWorld::waitForHandlers(){
-    for (vector<pthread_t>::iterator it = threads.begin(); it != threads.end(); it++){
-        pthread_t & thread = *it;
-        pthread_join(thread, NULL);
+    for (vector<Util::Thread::Id>::iterator it = threads.begin(); it != threads.end(); it++){
+        Util::Thread::Id & thread = *it;
+        Util::Thread::joinThread(thread);
     }
 }
 
 NetworkWorld::~NetworkWorld(){
     stopRunning();
-
-    /*
-       for ( vector< pthread_t >::iterator it = threads.begin(); it != threads.end(); it++ ){
-       const pthread_t & thread = *it;
-       pthread_join( thread, NULL );
-       }
-       */
 }
 	
 void NetworkWorld::addObject( Object * o ){
@@ -134,19 +125,19 @@ void NetworkWorld::addMessage( Network::Message m, Network::Socket from, Network
         }
         throw Network::NetworkException(out.str());
     }
-    pthread_mutex_lock( &message_mutex );
+    Util::Thread::acquireLock( &message_mutex );
     /* if the server generates a message `from' will probably be 0.
      * if the message should go to a specific client `to' will be non-zero.
      */
     Packet p(m, from, to);
     outgoing.push_back( p );
-    pthread_mutex_unlock( &message_mutex );
+    Util::Thread::releaseLock( &message_mutex );
 }
 
 void NetworkWorld::addIncomingMessage( const Network::Message & message, Network::Socket from ){
-    pthread_mutex_lock( &message_mutex );
+    Util::Thread::acquireLock( &message_mutex );
     incoming.push_back(message);
-    pthread_mutex_unlock( &message_mutex );
+    Util::Thread::releaseLock( &message_mutex );
 
     /* by default all messages get relayed to all clients, but a client
      * shouldn't send its own message back to itself so it populates the
@@ -156,15 +147,15 @@ void NetworkWorld::addIncomingMessage( const Network::Message & message, Network
 }
 	
 void NetworkWorld::stopRunning(){
-    pthread_mutex_lock( &running_mutex );
+    Util::Thread::acquireLock( &running_mutex );
     running = false;
-    pthread_mutex_unlock( &running_mutex );
+    Util::Thread::releaseLock( &running_mutex );
 }
 
 bool NetworkWorld::isRunning(){
-    pthread_mutex_lock( &running_mutex );
+    Util::Thread::acquireLock( &running_mutex );
     bool b = running;
-    pthread_mutex_unlock( &running_mutex );
+    Util::Thread::releaseLock( &running_mutex );
     return b;
 }
 
@@ -396,19 +387,19 @@ void NetworkWorld::handleMessage( Network::Message & message ){
 
 vector< Network::Message > NetworkWorld::getIncomingMessages(){
     vector< Network::Message > m;
-    pthread_mutex_lock( &message_mutex );
+    Util::Thread::acquireLock( &message_mutex );
     m = incoming;
     incoming.clear();
-    pthread_mutex_unlock( &message_mutex );
+    Util::Thread::releaseLock( &message_mutex );
     return m;
 }
 
 void NetworkWorld::flushOutgoing(){
     vector< Packet > packets;
-    pthread_mutex_lock( &message_mutex );
+    Util::Thread::acquireLock( &message_mutex );
     packets = outgoing;
     outgoing.clear();
-    pthread_mutex_unlock( &message_mutex );
+    Util::Thread::releaseLock( &message_mutex );
 
     for (vector<Network::Socket>::iterator socket = sockets.begin(); socket != sockets.end(); socket++){
         vector<Network::Message*> messages;

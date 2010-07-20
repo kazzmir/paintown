@@ -8,7 +8,7 @@
 #include "object/object.h"
 #include "input/text-input.h"
 #include "chat-widget.h"
-#include <pthread.h>
+#include "util/thread.h"
 #include <vector>
 #include <string>
 #include <deque>
@@ -77,17 +77,17 @@ protected:
 
 private:
 	std::vector<Network::Socket> & sockets;
-	std::vector< Packet > outgoing;
-	std::vector< Network::Message > incoming;
-	std::vector< pthread_t > threads;
+	std::vector<Packet> outgoing;
+	std::vector<Network::Message> incoming;
+	std::vector<Util::Thread::Id> threads;
         std::map<Object::networkid_t, std::string> clientNames;
 	std::map<Object*, Network::Socket> characterToClient;
         Object::networkid_t id;
 
 	unsigned int sent_messages;
 
-	pthread_mutex_t message_mutex;
-	pthread_mutex_t running_mutex;
+        Util::Thread::Lock message_mutex;
+        Util::Thread::Lock running_mutex;
 	bool running;
 };
 

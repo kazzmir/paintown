@@ -17,8 +17,6 @@
 #include "resource.h"
 #include "util/sound.h"
 
-/* TODO: replace all pthread stuff with util/thread.h */
-
 using namespace std;
 
 static std::ostream & debug( int level ){
@@ -95,9 +93,9 @@ focus( INPUT_BOX ),
 finished( false ),
 enterPressed( false ){
 	background = new Bitmap(Global::titleScreen().path());
-	pthread_mutex_init( &lock, NULL );
+        Util::Thread::initializeLock(&lock);
 
-	pthread_create( &inputThread, NULL, serverInput, this );
+        Util::Thread::createThread( &inputThread, NULL, (Util::Thread::ThreadFunction) serverInput, this );
 
 	try{
 		Network::Message nameMessage;
@@ -166,15 +164,15 @@ void ChatClient::addBuddy( int id, const std::string & s ){
     Buddy b;
     b.id = id;
     b.name = s;
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     buddies.push_back( b );
     needUpdate();
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-in.wav"))->play();
 }
 	
 void ChatClient::changeName( int id, const std::string & s ){
-	pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
 	for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
 		Buddy & b = *it;
 		if ( b.id == id ){
@@ -182,11 +180,11 @@ void ChatClient::changeName( int id, const std::string & s ){
 		}
 	}
 	needUpdate();
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 }
 
 void ChatClient::removeBuddy( int id ){
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); ){
         const Buddy & b = *it;
         if ( b.id == id ){
@@ -196,15 +194,15 @@ void ChatClient::removeBuddy( int id ){
         }
     }
     needUpdate();
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
 }
 
 void ChatClient::addMessage( const string & s, unsigned int id ){
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     messages.addMessage( s );
     needUpdate();
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
 }
 
 /*
@@ -377,23 +375,23 @@ void ChatClient::draw( const Bitmap & work ){
 			
 bool ChatClient::isFinished(){
     bool b;
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     b = finished;
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
     return b;
 }
 
 void ChatClient::finish(){
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     finished = true;
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
 }
 
 void ChatClient::killInputThread(){
     debug( 0 ) << "Killing input socket" << endl;
     Network::close( getSocket() );
     debug( 0 ) << "Waiting for input thread to die" << endl;
-    pthread_join( inputThread, NULL );
+    Util::Thread::joinThread(inputThread);
     debug( 0 ) << "Input thread killed" << endl;
 }
 

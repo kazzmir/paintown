@@ -23,8 +23,6 @@
 #include "resource.h"
 #include "util/sound.h"
 
-/* TODO: replace all pthread stuff with util/thread.h */
-
 #include <signal.h>
 
 using namespace std;
@@ -39,7 +37,7 @@ server( server ),
 id( id ),
 alive( true ),
 started( false ){
-	pthread_mutex_init( &lock, NULL );
+    Util::Thread::initializeLock(&lock);
 }
 	
 Client::~Client(){
@@ -47,30 +45,30 @@ Client::~Client(){
 	
 string Client::getName(){
 	string s;
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock(&lock);
 	s = name;
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock(&lock);
 	return s;
 }
 
 void Client::kill(){
-	pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock(&lock);
 	alive = false;
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 }
 
 bool Client::isAlive(){
 	bool b;
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock( &lock );
 	b = alive;
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 	return b;
 }
 
 void Client::setName( const std::string & s ){
-	pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
 	name = s;
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 }
 
 static void * clientInput( void * client_ ){
@@ -161,42 +159,42 @@ static void * clientOutput( void * client_ ){
 	
 bool Client::canKill(){
 	bool f;
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock( &lock );
 	f = alive;
         /* why set alive to false here?
          * it was supposed to check if the client was already dead.
          */
 	alive = false;
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 	return f;
 }
 
 bool Client::getOutgoing( Network::Message & m ){
 	bool has;
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock( &lock );
 	has = ! outgoing.empty();
 	if ( has ){
 		m = outgoing.front();
 		outgoing.erase( outgoing.begin() );
 	}
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 	return has;
 }
 
 void Client::addOutputMessage( const Network::Message & s ){
-	pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
 	outgoing.push_back( s );
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 }
 
 void Client::startThreads(){
-	pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
 	if ( ! started ){
-		pthread_create( &inputThread, NULL, clientInput, this );
-		pthread_create( &outputThread, NULL, clientOutput, this );
+            Util::Thread::createThread( &inputThread, NULL, (Util::Thread::ThreadFunction) clientInput, this );
+            Util::Thread::createThread( &outputThread, NULL, (Util::Thread::ThreadFunction) clientOutput, this );
 		started = true;
 	}
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 }
 
 struct do_add_stuff{
@@ -262,9 +260,9 @@ static void * acceptConnections( void * server_ ){
                      * the client dies or has an invalid version.
                      */
                     Network::Socket client = Network::accept(socket);
-                    pthread_t accepter;
+                    Util::Thread::Id accepter;
                     do_add_stuff * stuff = new do_add_stuff(server, client);
-                    pthread_create(&accepter, NULL, do_add, stuff);
+                    Util::Thread::createThread(&accepter, NULL, (Util::Thread::ThreadFunction) do_add, stuff);
                     server->addAccepter(accepter);
                     // server->addConnection(client);
 		} catch ( const Network::NoConnectionsPendingException & e ){
@@ -324,41 +322,41 @@ enterPressed( false ){
 	 */
 	debug( 1 ) << "Listen on socket" << endl;
 	Network::listen( socket );
-	pthread_mutex_init( &lock, NULL );
+        Util::Thread::initializeLock(&lock);
 }
 	
 bool ChatServer::isAccepting(){
     bool f;
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     f = accepting;	
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
     return f;
 }
         
-void ChatServer::addAccepter(pthread_t accepter){
-    pthread_mutex_lock(&lock);
+void ChatServer::addAccepter(Util::Thread::Id accepter){
+    Util::Thread::acquireLock(&lock);
     accepted.push_back(accepter);
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
 }
 
 void ChatServer::stopAccepting(){
 	debug( 1 ) << "Stop accepting" << endl;
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock( &lock );
 	accepting = false;
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 // #ifndef WINDOWS
 	Network::close( socket );
 // #endif
         debug(1) << "Waiting for client accept threads to stop" << endl;
-        pthread_mutex_lock(&lock);
-        for (vector<pthread_t>::iterator it = accepted.begin(); it != accepted.end(); it++){
-            pthread_t accept = *it;
+        Util::Thread::acquireLock(&lock);
+        for (vector<Util::Thread::Id>::iterator it = accepted.begin(); it != accepted.end(); it++){
+            Util::Thread::Id accept = *it;
             debug(2) << "Waiting for client accept thread " << endl;
-            pthread_join(accept, NULL);
+            Util::Thread::joinThread(accept);
         }
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 	debug( 1 ) << "Waiting for accepting thread to stop" << endl;
-	pthread_join( acceptThread, NULL );
+        Util::Thread::joinThread(acceptThread);
 	debug( 1 ) << "Not accepting any connections" << endl;
 }
 
@@ -411,7 +409,7 @@ void ChatServer::addConnection( Network::Socket s ){
     }
 
     /* send all the other client names to the just connected client */
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         Network::Message message;
@@ -420,7 +418,7 @@ void ChatServer::addConnection( Network::Socket s ){
         message.path = c->getName();
         client->addOutputMessage( message );
     }
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
 
     debug( 1 ) << "Adding client " << client->getId() << endl;
 
@@ -435,9 +433,9 @@ void ChatServer::addConnection( Network::Socket s ){
     message << client->getName();
     sendMessage( message, 0 );
 
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     clients.push_back( client );
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
 
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-in.wav"))->play();
 }
@@ -452,35 +450,35 @@ static char lowerCase( const char * x ){
 #endif
 
 void ChatServer::sendMessageNow(const Network::Message & message, unsigned int id){
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         if ( c->getId() != id ){
             message.send(c->getSocket());
         }
     }
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
 }
 
 void ChatServer::sendMessage( const Network::Message & message, unsigned int id ){
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         if ( c->getId() != id ){
             c->addOutputMessage( message );
         }
     }
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
 }
 
 void ChatServer::addMessage( const string & s, unsigned int id ){
 	Network::Message message;
 	message << ADD_MESSAGE;
 	message.path = s;
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock( &lock );
 	messages.addMessage( s );
 	needUpdate();
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 
 	sendMessage( message, id );
 	/*
@@ -564,13 +562,13 @@ void ChatServer::shutdownClientThreads(){
     debug(1) << "Shutting down client threads" << endl;
 
     /* end the output threads */
-    pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         c->kill();
-        pthread_join( c->getOutputThread(), NULL );
+        Util::Thread::joinThread(c->getOutputThread());
     }
-    pthread_mutex_unlock( &lock );
+    Util::Thread::releaseLock( &lock );
     
     /* tell clients that the game is starting */
     Network::Message message;
@@ -583,7 +581,7 @@ void ChatServer::shutdownClientThreads(){
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         debug( 1 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
-        pthread_join( c->getInputThread(), NULL );
+        Util::Thread::joinThread(c->getInputThread());
         debug( 1 ) << "Input thread done for " << c->getId() << endl;
         // debug( 1 ) << "Output thread done for " << c->getId() << endl;
         debug( 1 ) << "Client " << c->getId() << " is done" << endl;
@@ -607,9 +605,9 @@ vector<Client*> ChatServer::getConnectedClients(){
 
 void ChatServer::killAllClients(){
 	vector< Client * > all;
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock( &lock );
 	all = clients;
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 	for ( vector< Client * >::iterator it = all.begin(); it != all.end(); it++ ){
 		killClient( *it );
 	}
@@ -618,7 +616,7 @@ void ChatServer::killAllClients(){
 void ChatServer::killClient( Client * c ){
 	int id = c->getId();
 	string name = c->getName();
-	pthread_mutex_lock( &lock );
+        Util::Thread::acquireLock( &lock );
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
 		Client * client = *it;
 		if ( client == c ){
@@ -629,11 +627,12 @@ void ChatServer::killClient( Client * c ){
 			/* It looks like the client that called killClient is waiting
 			 * for itself to exit but pthread_join won't block if the
 			 * argument is the same as the calling thread, so its ok.
+                         * TODO: ensure this semantics works with SDL threads too
 			 */
 			debug( 1 ) << "Waiting for input thread to die" << endl;
-			pthread_join( c->getInputThread(), NULL );
+                        Util::Thread::joinThread(c->getInputThread());
 			debug( 1 ) << "Waiting for output thread to die" << endl;
-			pthread_join( c->getOutputThread(), NULL );
+                        Util::Thread::joinThread(c->getOutputThread());
 			debug( 1 ) << "Deleting client" << endl;
 			/* delete can be moved to the input/output thread exit part
 			 * if need be.
@@ -645,7 +644,7 @@ void ChatServer::killClient( Client * c ){
 		}
 	}
 	needUpdate();
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 	addMessage( "** " + name + " quit", 0 );
         Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
 	Network::Message remove;
@@ -772,12 +771,12 @@ void ChatServer::draw( const Bitmap & work ){
 }
 
 void ChatServer::startThreadsHack(){
-	pthread_mutex_lock( &lock );
+    Util::Thread::acquireLock( &lock );
 	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
 		Client * c = *it;
 		c->startThreads();
 	}
-	pthread_mutex_unlock( &lock );
+        Util::Thread::releaseLock( &lock );
 }
 	
 void ChatServer::run(){
@@ -789,7 +788,7 @@ void ChatServer::run(){
 	keyboard.setDelay( Keyboard::Key_TAB, 200 );
 	keyboard.setDelay( Keyboard::Key_ESC, 0 );
 	
-	pthread_create( &acceptThread, NULL, acceptConnections, this );
+        Util::Thread::createThread( &acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this );
 
 	bool done = false;
 	while ( ! done ){

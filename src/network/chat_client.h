@@ -5,7 +5,7 @@
 #include "messages.h"
 #include "gui/sigslot.h"
 #include <string>
-#include <pthread.h>
+#include "util/thread.h"
 #include <queue>
 
 class Keyboard;
@@ -67,11 +67,11 @@ private:
 	Network::Socket socket;
 	std::string input;
 	Focus focus;
-	pthread_mutex_t lock;
-	pthread_t inputThread;
+        Util::Thread::Lock lock;
+        Util::Thread::Id inputThread;
 	std::vector< Buddy > buddies;
 	bool finished;
-    Gui::LineEdit * lineEdit;
+        Gui::LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
         std::queue<std::string> toSend;

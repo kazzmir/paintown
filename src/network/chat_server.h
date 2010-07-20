@@ -4,7 +4,7 @@
 #include "network.h"
 #include "messages.h"
 #include "gui/sigslot.h"
-#include <pthread.h>
+#include "util/thread.h"
 #include <string>
 #include <vector>
 
@@ -40,11 +40,11 @@ public:
 		return server;
 	}
 
-	inline pthread_t getInputThread(){
+	inline Util::Thread::Id getInputThread(){
 		return inputThread;
 	}
 
-	inline pthread_t getOutputThread(){
+	inline Util::Thread::Id getOutputThread(){
 		return outputThread;
 	}
 
@@ -80,9 +80,9 @@ private:
 	bool ok;
 	bool started;
 	std::string name;
-	pthread_t inputThread;
-	pthread_t outputThread;
-	pthread_mutex_t lock;
+        Util::Thread::Id inputThread;
+        Util::Thread::Id outputThread;
+        Util::Thread::Lock lock;
 	std::vector< Network::Message > outgoing;
 };
 
@@ -121,7 +121,7 @@ public:
 	bool isAccepting();
         
         /* each new client starts an accepting thread */
-        void addAccepter(pthread_t accepter);
+        void addAccepter(Util::Thread::Id accepter);
 
 	/* get the list of connected clients */
         std::vector<Client*> getConnectedClients();
@@ -185,15 +185,15 @@ protected:
 	// std::string input;
 	Focus focus;
 	unsigned int client_id;
-	pthread_mutex_t lock;
-	pthread_t acceptThread;
+        Util::Thread::Lock lock;
+        Util::Thread::Id acceptThread;
 	std::vector< Client * > clients;
 	std::string name;
 	bool accepting;
     Gui::LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
-        std::vector<pthread_t> accepted;
+        std::vector<Util::Thread::Id> accepted;
 };
 
 #endif
