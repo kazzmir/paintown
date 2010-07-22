@@ -7,7 +7,6 @@ namespace Ast{
 
 class CompiledValue: public Value {
 public:
-
     CompiledValue(){
     }
 
