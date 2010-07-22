@@ -9,14 +9,18 @@ namespace Ast{
 
 namespace Mugen{
 
-    class Compiled{
+namespace Compiler{
+
+    class Value{
     public:
-        Compiled();
+        Value();
         RuntimeValue evaluate(const Environment & environment);
-        virtual ~Compiled();
+        virtual ~Value();
     };
 
-    CompiledValue * compile(Ast::Value * input);
+    Value * compile(Ast::Value * input);
+}
+
 }
 
 #endif

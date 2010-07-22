@@ -177,6 +177,7 @@ src/mugen/character.cpp
 src/mugen/character-select.cpp
 src/mugen/config.cpp
 src/mugen/evaluator.cpp
+src/mugen/compiler.cpp
 src/mugen/game.cpp
 src/mugen/command.cpp
 src/mugen/storyboard.cpp
