@@ -14,7 +14,7 @@ namespace Compiler{
     class Value{
     public:
         Value();
-        RuntimeValue evaluate(const Environment & environment);
+        virtual RuntimeValue evaluate(const Environment & environment) = 0;
         virtual ~Value();
     };
 

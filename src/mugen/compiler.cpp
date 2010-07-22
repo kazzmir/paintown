@@ -1,6 +1,7 @@
 #include "ast/all.h"
 #include "compiler.h"
 #include "exception.h"
+#include "character.h"
 #include <sstream>
     
 namespace Mugen{
@@ -23,6 +24,19 @@ public:
                     return RuntimeValue(environment.getCommands());
                 }
             };
+
+            return new Command();
+        }
+        
+        if (identifier == "anim"){
+            class Animation: public Value{
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getAnimation());
+                }
+            };
+
+            return new Animation();
         }
 
         std::ostringstream out;
@@ -37,6 +51,12 @@ public:
     Value * compiled;
 };
 
+}
+        
+Value::Value(){
+}
+
+Value::~Value(){
 }
 
 Value * compile(Ast::Value * input){
