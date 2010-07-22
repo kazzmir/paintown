@@ -2,7 +2,11 @@
 #include "compiler.h"
 #include "exception.h"
 #include "character.h"
+#include "stage.h"
+#include "util/funcs.h"
 #include <sstream>
+
+namespace PaintownUtil = ::Util;
     
 namespace Mugen{
 namespace Compiler{
@@ -50,47 +54,104 @@ public:
             return new Alive();
         }
 
-#if 0
         if (identifier == "facing"){
-	    if (environment.getCharacter().getFacing() == Object::FACING_LEFT){
-		return -1;
-	    } else if (environment.getCharacter().getFacing() == Object::FACING_RIGHT){
-		return 1;
-	    }
-	    return 0;
+            class Facing: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    if (environment.getCharacter().getFacing() == Object::FACING_LEFT){
+                        return RuntimeValue(-1);
+                    } else if (environment.getCharacter().getFacing() == Object::FACING_RIGHT){
+                        return RuntimeValue(1);
+                    }
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Facing();
 	}
 
         if (identifier == "life"){
-            return RuntimeValue(environment.getCharacter().getHealth());
+            class Life: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getHealth());
+                }
+            };
+
+            return new Life();
         }
-        
+
         if (identifier == "lifemax"){
-	    return RuntimeValue(environment.getCharacter().getMaxHealth());
+            class LifeMax: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getMaxHealth());
+                }
+            };
+
+            return new LifeMax();
+
 	}
 	
 	if (identifier == "matchno"){
-	    int wins = environment.getCharacter().getWins().size()+1;
-	    return RuntimeValue(wins);
+            class Wins: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    int wins = environment.getCharacter().getWins().size()+1;
+                    return RuntimeValue(wins);
+                }
+            };
+
+            return new Wins();
 	}
 	
         if (identifier == "matchover"){
-            return RuntimeValue(environment.getStage().isMatchOver());
+            class Over: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getStage().isMatchOver());
+                }
+            };
+
+            return new Over();
         }
 
         if (identifier == "movetype"){
-            return RuntimeValue(environment.getCharacter().getMoveType());
+            class MoveType: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getMoveType());
+                }
+            };
+
+            return new MoveType();
         }
 
         if (identifier == "p2movetype"){
-            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-            return RuntimeValue(enemy->getMoveType());
+            class MoveType2: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(enemy->getMoveType());
+                }
+            };
+
+            return new MoveType2();
         }
 
         if (identifier == "random"){
-            /* Returns a random number between 0 and 999, inclusive. */
-            return RuntimeValue(PaintownUtil::rnd(1000));
+            class Random: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* Returns a random number between 0 and 999, inclusive. */
+                    return RuntimeValue(PaintownUtil::rnd(1000));
+                }
+            };
+
+            return new Random();
         }
 
+#if 0
         if (identifier == "roundno"){
             return RuntimeValue(environment.getStage().getGameInfo()->getRound().getRound());
         }
