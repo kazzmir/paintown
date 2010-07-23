@@ -16,6 +16,7 @@
  *   (define intepreter (lambda (env) (lambda (input) (eval env input))))
  *   (define compiler (lambda (input) (let ([compiled (compile input)])
  *                       (lambda (env) (eval env compiled)))))
+ * Done: look at compiler.cpp
  * 4. Implement simple optimizations: constant folding, dead code elimintation.
  */
 
@@ -40,20 +41,25 @@ string toString(const RuntimeValue & value){
     return "";
 }
 
-double toNumber(const RuntimeValue & value){
-    if (value.isDouble()){
-        return value.getDoubleValue();
+double RuntimeValue::toNumber() const {
+    if (isDouble()){
+        return getDoubleValue();
     }
-    if (value.isBool()){
-        if (value.getBoolValue()){
+    if (isBool()){
+        if (getBoolValue()){
             return 1;
         } else {
             return 0;
         }
     }
-    raise(value, "number");
+
+    raise(*this, "number");
 
     return 0;
+}
+
+double toNumber(const RuntimeValue & value){
+    return value.toNumber();
 }
 
 int toRangeLow(const RuntimeValue & value){

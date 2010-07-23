@@ -106,6 +106,8 @@ struct RuntimeValue{
         return range.high;
     }
 
+    double toNumber() const;
+
     const char * canonicalName() const {
         switch (type){
             case Invalid : return "invalid";

@@ -14,11 +14,11 @@ namespace Compiler{
     class Value{
     public:
         Value();
-        virtual RuntimeValue evaluate(const Environment & environment) = 0;
+        virtual RuntimeValue evaluate(const Environment & environment) const = 0;
         virtual ~Value();
     };
 
-    Value * compile(Ast::Value * input);
+    Value * compile(const Ast::Value * input);
 }
 
 }
