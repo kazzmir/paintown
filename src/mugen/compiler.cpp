@@ -15,12 +15,13 @@ namespace Compiler{
 
 namespace{
 
-class CompileWalker: public Ast::Walker{
+class CompileWalker: public Ast::Walker {
 public:
-
     CompileWalker():
     compiled(NULL){
     }
+
+    Value * compiled;
 
     Value * compileIdentifier(const Ast::Identifier & identifier){
         if (identifier == "command"){
@@ -773,8 +774,7 @@ public:
         compiled = compileIdentifier(identifier);
     }
 
-    Value * evalRange(const Ast::Range & range){
-
+    Value * compileRange(const Ast::Range & range){
         class Range: public Value {
         public:
             Range(Value * const low, Value * const high, const Ast::Range::RangeType type):
@@ -822,10 +822,58 @@ public:
     }
     
     virtual void onRange(const Ast::Range & range){
-        compiled = evalRange(range);
+        compiled = compileRange(range);
     }
 
-    Value * compiled;
+    Value * compileExpressionUnary(const Ast::ExpressionUnary & expression){
+        class Unary: public Value {
+        public:
+            Unary(Value * expression, Ast::ExpressionUnary::UnaryType type):
+                expression(expression),
+                type(type){
+                }
+
+            Value * expression;
+            Ast::ExpressionUnary::UnaryType type;
+
+            virtual ~Unary(){
+                delete expression;
+            }
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                switch (type){
+                    case Ast::ExpressionUnary::Not : {
+                        return RuntimeValue(!toBool(expression->evaluate(environment)));
+                    }
+                    case Ast::ExpressionUnary::Minus : {
+                        return RuntimeValue(-toNumber(expression->evaluate(environment)));
+                    }
+                    case Ast::ExpressionUnary::Negation : {
+                        return RuntimeValue(~(int)toNumber(expression->evaluate(environment)));
+                    }
+                }
+            }
+        };
+
+        switch (expression.getExpressionType()){
+            case Ast::ExpressionUnary::Not :
+            case Ast::ExpressionUnary::Minus :
+            case Ast::ExpressionUnary::Negation : {
+                break;
+            }
+            default : {
+                std::ostringstream out;
+                out << "Unknown expression: " << expression.toString();
+                throw MugenException(out.str());
+            }
+        }
+
+        return new Unary(compile(expression.getExpression()), expression.getExpressionType());
+    }
+    
+    virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
+        compiled = compileExpressionUnary(expression);
+    }
 };
 
 }
