@@ -851,6 +851,7 @@ public:
                     case Ast::ExpressionUnary::Negation : {
                         return RuntimeValue(~(int)toNumber(expression->evaluate(environment)));
                     }
+                    default : throw MugenException("Can't get here");
                 }
             }
         };
@@ -874,6 +875,78 @@ public:
     virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
         compiled = compileExpressionUnary(expression);
     }
+
+    Value * compileKeyword(const Ast::Keyword & keyword){
+        if (keyword == "vel x"){
+            class VelX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getXVelocity());
+                }
+            };
+
+            return new VelX();
+        }
+
+        if (keyword == "vel y"){
+            class VelY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getYVelocity());
+                }
+            };
+
+            return new VelY();
+        }
+        
+        if (keyword == "pos y"){
+            class PosY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(-environment.getCharacter().getYPosition());
+                }
+            };
+
+            return new PosY();
+        }
+        
+        if (keyword == "p2bodydist x"){
+            class P2BodyDistX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new P2BodyDistX();
+        }
+
+        if (keyword == "p2dist x"){
+            class P2DistX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    /* FIXME: im not sure this is right, should it take into account
+                     * the facing direction?
+                     */
+                    return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
+
+                }
+            };
+
+            return new P2DistX();
+        }
+
+        std::ostringstream out;
+        out << "Unknown keyword '" << keyword.toString() << "'";
+        throw MugenException(out.str());
+    }
+
+    virtual void onKeyword(const Ast::Keyword & keyword){
+        compiled = compileKeyword(keyword);
+    }
+
 };
 
 }
