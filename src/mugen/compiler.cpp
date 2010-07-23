@@ -848,6 +848,185 @@ public:
         compiled = compileString(string);
     }
 
+    Value * compileNumber(const Ast::Number & number){
+        class JustNumber: public Value {
+        public:
+            JustNumber(double what):
+                value(what){
+                }
+
+            RuntimeValue value;
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                return value;
+            }
+        };
+
+        double x;
+        number >> x;
+        return new JustNumber(x);
+    }
+
+    virtual void onNumber(const Ast::Number & number){
+        compiled = compileNumber(number);
+    }
+
+    Value * compileFunction(const Ast::Function & function){
+#if 0
+        if (function == "const"){
+            return evaluate(function.getArg1());
+        }
+
+        if (function == "abs"){
+            return RuntimeValue(fabs(toNumber(evaluate(function.getArg1()))));
+        }
+
+        if (function == "floor"){
+            return RuntimeValue((int) toNumber(evaluate(function.getArg1())));
+        }
+
+        if (function == "var"){
+            int index = (int) toNumber(evaluate(function.getArg1()));
+            Ast::Value * value = environment.getCharacter().getVariable(index);
+            if (value == 0){
+                return RuntimeValue(false);
+                /*
+                ostringstream out;
+                out << "No variable for index " << index;
+                throw MugenException(out.str());
+                */
+            }
+            return evaluate(value);
+        }
+
+        if (function == "numtarget"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
+        if (function == "gethitvar"){
+            const HitState & state = environment.getCharacter().getHitState();
+            if (function.getArg1() == 0){
+                throw MugenException("No argument given to gethitvar");
+            }
+            string var = function.getArg1()->toString();
+            if (var == "xveladd"){
+            } else if (var == "yveladd"){
+            } else if (var == "type"){
+            } else if (var == "animtype"){
+                return RuntimeValue(state.animationType);
+            } else if (var == "airtype"){
+            } else if (var == "groundtype"){
+                return RuntimeValue(state.groundType);
+            } else if (var == "damage"){
+            } else if (var == "hitcount"){
+                return RuntimeValue(state.hits);
+            } else if (var == "fallcount"){
+            } else if (var == "hitshaketime"){
+            } else if (var == "hittime"){
+            } else if (var == "slidetime"){
+                return RuntimeValue(state.slideTime);
+            } else if (var == "ctrltime"){
+            } else if (var == "recovertime"){
+            } else if (var == "xoff"){
+            } else if (var == "yoff"){
+            } else if (var == "zoff"){
+            } else if (var == "xvel"){
+                return RuntimeValue(state.xVelocity);
+            } else if (var == "yvel"){
+                return RuntimeValue(state.yVelocity);
+            } else if (var == "yaccel"){
+                return RuntimeValue(state.yAcceleration);
+            } else if (var == "hitid"){
+            } else if (var == "chainid"){
+            } else if (var == "guarded"){
+            } else if (var == "fall"){
+                return RuntimeValue(state.fall.fall);
+            } else if (var == "fall.damage"){
+            } else if (var == "fall.xvel"){
+            } else if (var == "fall.yvel"){
+                return RuntimeValue(state.fall.yVelocity);
+            } else if (var == "fall.recover"){
+            } else if (var == "fall.time"){
+            } else if (var == "fall.recovertime"){
+            }
+
+            throw MugenException("Unknown gethitvar variable " + var);
+        }
+
+        if (function == "sysvar"){
+            int index = (int) toNumber(evaluate(function.getArg1()));
+            Ast::Value * value = environment.getCharacter().getSystemVariable(index);
+            if (value == 0){
+                /* non-existant variables are just false */
+                return RuntimeValue(false);
+                /*
+                ostringstream out;
+                out << "No system variable for index " << index;
+                throw MugenException(out.str());
+                */
+            }
+            return evaluate(value);
+        }
+
+        if (function == "numexplod"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
+        if (function == "animelem"){
+            unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
+            MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+            if (animation->getPosition() + 1 == index){
+                /* handle the second argument of animelem here */
+                return RuntimeValue(animation->getTicks() == 0);
+            }
+            return RuntimeValue(false);
+            // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
+        }
+
+        if (function == "ifelse"){
+            if (toBool(evaluate(function.getArg1()))){
+                return evaluate(function.getArg2());
+            } else {
+                return evaluate(function.getArg3());
+            }
+        }
+
+        if (function == "animelemno"){
+            /* FIXME */
+            unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
+            return RuntimeValue((int) (environment.getCharacter().getCurrentAnimation()->getPosition() + 1));
+        }
+
+        if (function == "selfanimexist"){
+	    /* FIXME this should actually be animexist... self checks if player has animation.
+	    If the opponent had given animation it will not be checked */
+            int animation = (int) toNumber(evaluate(function.getArg1()));
+            return RuntimeValue(environment.getCharacter().hasAnimation(animation));
+        }
+
+        /* Gets the animation-time elapsed since the start of a specified element
+         * of the current animation action. Useful for synchronizing events to
+         * elements of an animation action.
+         *
+         * (reminder: first element of an action is element 1, not 0)
+         */
+        if (function == "animelemtime"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+#endif
+
+        std::ostringstream out;
+        out << "Unknown function '" << function.toString() << "'";
+        throw MugenException(out.str());
+    }
+
+    virtual void onFunction(const Ast::Function & string){
+        compiled = compileFunction(string);
+    }
+
     Value * compileExpressionUnary(const Ast::ExpressionUnary & expression){
         class Unary: public Value {
         public:
