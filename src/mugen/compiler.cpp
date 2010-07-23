@@ -800,10 +800,20 @@ public:
                     case Ast::Range::AllExclusive : return RuntimeValue(low, high);
                     case Ast::Range::LeftInclusiveRightExclusive : return RuntimeValue(low - 1, high);
                     case Ast::Range::LeftExclusiveRightInclusive : return RuntimeValue(low, high + 1);
+                    default : throw MugenException("Can't get here");
                 }
-                throw MugenException("Unexpected range type");
             }
         };
+
+        switch (range.getRangeType()){
+            case Ast::Range::AllInclusive :
+            case Ast::Range::AllExclusive :
+            case Ast::Range::LeftInclusiveRightExclusive :
+            case Ast::Range::LeftExclusiveRightInclusive : {
+                break;
+            }
+            default : throw MugenException("Unexpected range type");
+        }
 
         Value * const  low = compile(range.getLow());
         Value * const high = compile(range.getHigh());
