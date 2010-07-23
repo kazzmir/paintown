@@ -1,10 +1,12 @@
 #include "ast/all.h"
 #include "compiler.h"
 #include "exception.h"
+#include "characterhud.h"
 #include "character.h"
 #include "stage.h"
 #include "util/funcs.h"
 #include <sstream>
+#include <string>
 
 namespace PaintownUtil = ::Util;
     
@@ -151,242 +153,616 @@ public:
             return new Random();
         }
 
-#if 0
         if (identifier == "roundno"){
-            return RuntimeValue(environment.getStage().getGameInfo()->getRound().getRound());
+            class RoundNumber: public Value {
+                public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().getRound());
+                }
+
+            };
+
+            return new RoundNumber();
         }
 
         if (identifier == "roundsexisted"){
-            /* FIXME */
-            return RuntimeValue(0);
+            class RoundsExisted: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new RoundsExisted();
         }
 
         if (identifier == "I"){
-            return RuntimeValue("I");
+            class JustI: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue("I");
+                }
+            };
+
+            return new JustI();
         }
 
         if (identifier == "H"){
-            return RuntimeValue("H");
+            class JustH: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue("H");
+                }
+            };
+            return new JustH();
         }
 
         if (identifier == "p2stateno"){
-            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-            return RuntimeValue(enemy->getCurrentState());
+            class P2StateNo: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(enemy->getCurrentState());
+                }
+            };
+
+            return new P2StateNo();
         }
 
         if (identifier == "hitcount"){
-            return RuntimeValue(environment.getCharacter().getHitCount());
+            class HitCount: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getHitCount());
+                }
+            };
+
+            return new HitCount();
         }
 
         if (identifier == "uniqhitcount"){
-            /* FIXME */
-            return RuntimeValue(environment.getCharacter().getHitCount());
+            class UniqueHitCount: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(environment.getCharacter().getHitCount());
+                }
+            };
+
+            return new UniqueHitCount();
+
         }
 
         if (identifier == "p2statetype"){
-            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-            return RuntimeValue(enemy->getStateType());
+            class P2StateType: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(enemy->getStateType());
+                }
+            };
+
+            return new P2StateType();
         }
 
         if (identifier == "wintime"){
-            return RuntimeValue(0);
+            class WinTime: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new WinTime();
         }
 
         if (identifier == "win"){
-            /* FIXME */
-            return RuntimeValue(0);
+            class Win: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Win();
         }
 
         if (identifier == "roundstate"){
-            /* FIXME */
-            return RuntimeValue(2);
+            class RoundState: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(2);
+                }
+            };
+
+            return new RoundState();
         }
 
         if (identifier == "movecontact"){
-            /* FIXME */
-            return RuntimeValue(0);
+            class MoveContact: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new MoveContact();
         }
 
         if (identifier == "numtarget"){
-            return RuntimeValue(1);
+            class NumTarget: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(1);
+                }
+            };
+
+            return new NumTarget();
         }
 
         if (identifier == "inguarddist"){
-            const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+            class InGuardDist: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
 
-            bool out = false;
-            out |= enemy->getMoveType() == Move::Attack;
+                    bool out = false;
+                    out |= enemy->getMoveType() == Move::Attack;
 
-            /* FIXME: deal with distance as well */
-            return RuntimeValue(out);
+                    /* FIXME: deal with distance as well */
+                    return RuntimeValue(out);
+
+                }
+            };
+
+            return new InGuardDist();
         }
 
         if (identifier == "animtime"){
-            return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
+            class AnimTime: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
+                }
+            };
+
+            return new AnimTime();
         }
 
         if (identifier == "palno"){
-            return RuntimeValue((int) environment.getCharacter().getCurrentPalette());
+            class PalNo: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue((int) environment.getCharacter().getCurrentPalette());
+                }
+            };
+
+            return new PalNo();
         }
 
         if (identifier == "winko"){
-            /* FIXME */
-            return RuntimeValue(false);
+            class Winko: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(false);
+                }
+            };
+
+            return new Winko();
         }
 
         if (identifier == "movehit"){
-            /* FIXME */
-            return RuntimeValue(0);
+            class MoveHit: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new MoveHit();
         }
 
         if (identifier == "projhit"){
-            /* FIXME */
-            return RuntimeValue(0);
+            class ProjHit: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new ProjHit();
         }
 
         if (identifier == "numexplod"){
-            /* FIXME: return total number of "explode" objects owned by the player */
-            return RuntimeValue(0);
+            class NumExplod: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* FIXME: return total number of "explode" objects owned by the player */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new NumExplod();
         }
         
         if (identifier == "gametime"){
-	    return RuntimeValue(environment.getStage().getGameTime());
+            class GameTime: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getStage().getGameTime());
+                }
+            };
+
+            return new GameTime();
 	}
 
         if (identifier == "hitshakeover"){
-            return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);
+            class HitShakeOver: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);
+                }
+            };
+
+            return new HitShakeOver();
         }
 
         if (identifier == "hitover"){
-            return RuntimeValue(environment.getCharacter().getHitState().hitTime <= -1);
+            class HitOver: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getHitState().hitTime <= -1);
+                }
+            };
+
+            return new HitOver();
         }
 
         if (identifier == "canrecover"){
-            return RuntimeValue(environment.getCharacter().canRecover());
+            class CanRecover: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().canRecover());
+                }
+            };
+
+            return new CanRecover();
         }
 
         if (identifier == "hitfall"){
-            const HitState & state = environment.getCharacter().getHitState();
-            return RuntimeValue(state.fall.fall);
+            class HitFall: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    const HitState & state = environment.getCharacter().getHitState();
+                    return RuntimeValue(state.fall.fall);
+                }
+            };
+
+            return new HitFall();
         }
 
         /* the mugen docs don't say anything about `statetime' but its
          * most likely the same thing as `time'
          */
         if (identifier == "time" || identifier == "statetime"){
-            return RuntimeValue(environment.getCharacter().getStateTime());
+            class Time: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getStateTime());
+                }
+            };
+
+            return new Time();
         }
 
         if (identifier == "A"){
-            return RuntimeValue(string("A"));
+            class JustA: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(std::string("A"));
+                }
+            };
+
+            return new JustA();
         }
         
         if (identifier == "S"){
-            /* states are just strings */
-            return RuntimeValue(string("S"));
+            class JustS: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    /* states are just strings */
+                    return RuntimeValue(std::string("S"));
+                }
+            };
+
+            return new JustS();
         }
 
         if (identifier == "C"){
-            return RuntimeValue(string("C"));
+            class JustC: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(std::string("C"));
+                }
+            };
+
+            return new JustC();
         }
         
         if (identifier == "L"){
-            return RuntimeValue(string("L"));
+            class JustL: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(std::string("L"));
+                }
+            };
+
+            return new JustL();
         }
 
         if (identifier == "statetype"){
-            return RuntimeValue(environment.getCharacter().getStateType());
+            class StateType: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getStateType());
+                }
+            };
+
+            return new StateType();
         }
 
         /* true if the player has control */
         if (identifier == "ctrl"){
-            return RuntimeValue(environment.getCharacter().hasControl());
+            class Ctrl: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().hasControl());
+                }
+            };
+
+            return new Ctrl();
         }
 
+        /* god I need a drink */
+
         if (identifier == "stateno"){
-            return RuntimeValue(environment.getCharacter().getCurrentState());
+            class StateNo: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getCurrentState());
+                }
+            };
+
+            return new StateNo();
         }
 
         if (identifier == "power"){
-            return RuntimeValue(environment.getCharacter().getPower());
+            class Power: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getPower());
+                }
+            };
+
+            return new Power();
         }
         
         if (identifier == "internal:extra-jumps"){
-            return RuntimeValue(environment.getCharacter().getExtraJumps());
+            class ExtraJumps: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getExtraJumps());
+                }
+            };
+
+            return new ExtraJumps();
         }
 
         if (identifier == "internal:airjump-height"){
-            return RuntimeValue(environment.getCharacter().getAirJumpHeight());
+            class AirJump: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getAirJumpHeight());
+                }
+            };
+
+            return new AirJump();
         }
 
         if (identifier == "velocity.walk.back.x"){
-            return RuntimeValue(environment.getCharacter().getWalkBackX());
+            class VelocityBackX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getWalkBackX());
+                }
+            };
+
+            return new VelocityBackX();
         }
 
         if (identifier == "velocity.walk.fwd.x"){
-            return RuntimeValue(environment.getCharacter().getWalkForwardX());
+            class VelocityForwardX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getWalkForwardX());
+                }
+            };
+
+            return new VelocityForwardX();
         }
 
         if (identifier == "velocity.run.fwd.x"){
-            return RuntimeValue(environment.getCharacter().getRunForwardX());
+            class RunForwardX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getRunForwardX());
+                }
+            };
+
+            return new RunForwardX();
         }
         
         if (identifier == "velocity.run.fwd.y"){
-            return RuntimeValue(environment.getCharacter().getRunForwardY());
+            class RunForwardY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getRunForwardY());
+                }
+            };
+
+            return new RunForwardY();
         }
         
         if (identifier == "velocity.jump.neu.x"){
-            return RuntimeValue(environment.getCharacter().getNeutralJumpingX());
+            class JumpX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getNeutralJumpingX());
+                }
+            };
+
+            return new JumpX();
         }
         
         if (identifier == "velocity.jump.y"){
-            return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
+            class JumpY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
+                }
+            };
+
+            return new JumpY();
         }
 
         if (identifier == "prevstateno"){
-            return RuntimeValue(environment.getCharacter().getPreviousState());
+            class PrevStateNo: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getPreviousState());
+                }
+            };
+
+            return new PrevStateNo();
         }
         
         if (identifier == "velocity.run.back.x"){
-            return RuntimeValue(environment.getCharacter().getRunBackX());
+            class RunBackX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getRunBackX());
+                }
+            };
+
+            return new RunBackX();
         }
         
         if (identifier == "velocity.run.back.y"){
-            return RuntimeValue(environment.getCharacter().getRunBackY());
+            class RunBackY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getRunBackY());
+                }
+            };
+
+            return new RunBackY();
         }
 
         if (identifier == "velocity.jump.back.x"){
-            return RuntimeValue(environment.getCharacter().getJumpBack());
+            class JumpBackX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getJumpBack());
+                }
+            };
+
+            return new JumpBackX();
         }
 
         if (identifier == "velocity.jump.fwd.x"){
-            return RuntimeValue(environment.getCharacter().getJumpForward());
+            class JumpForwardX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getJumpForward());
+                }
+            };
+
+            return new JumpForwardX();
         }
 
         if (identifier == "velocity.runjump.fwd.x"){
-            return RuntimeValue(environment.getCharacter().getRunJumpForward());
+            class RunJumpForwardX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getRunJumpForward());
+                }
+            };
+
+            return new RunJumpForwardX();
         }
 
         if (identifier == "velocity.airjump.neu.x"){
-            return RuntimeValue(environment.getCharacter().getAirJumpNeutralX());
+            class AirJumpX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getAirJumpNeutralX());
+                }
+            };
+
+            return new AirJumpX();
         }
         
         if (identifier == "velocity.airjump.y"){
-            return RuntimeValue(environment.getCharacter().getAirJumpNeutralY());
+            class AirJumpY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getAirJumpNeutralY());
+                }
+            };
+
+            return new AirJumpY();
         }
         
         if (identifier == "velocity.airjump.back.x"){
-            return RuntimeValue(environment.getCharacter().getAirJumpBack());
+            class AirJumpBackX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getAirJumpBack());
+                }
+            };
+
+            return new AirJumpBackX();
         }
         
         if (identifier == "velocity.airjump.fwd.x"){
-            return RuntimeValue(environment.getCharacter().getAirJumpForward());
+            class AirJumpForwardX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getAirJumpForward());
+                }
+            };
+
+            return new AirJumpForwardX();
         }
 
         if (identifier == "movement.yaccel"){
-            return RuntimeValue(environment.getCharacter().getGravity());
+            class MovemntYAccel: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment){
+                    return RuntimeValue(environment.getCharacter().getGravity());
+                }
+            };
+
+            return new MovemntYAccel();
         }
-#endif
 
         std::ostringstream out;
         out << "Don't know how to compile identifier '" << identifier.toString() << "'";
