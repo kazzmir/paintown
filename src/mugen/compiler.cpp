@@ -825,6 +825,29 @@ public:
         compiled = compileRange(range);
     }
 
+    Value * compileString(const Ast::String & string_value){
+        class JustString: public Value {
+        public:
+            JustString(const std::string & what):
+                value(what){
+                }
+
+            RuntimeValue value;
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                return value;
+            }
+        };
+
+        std::string out;
+        string_value >> out;
+        return new JustString(out);
+    }
+
+    virtual void onString(const Ast::String & string){
+        compiled = compileString(string);
+    }
+
     Value * compileExpressionUnary(const Ast::ExpressionUnary & expression){
         class Unary: public Value {
         public:
