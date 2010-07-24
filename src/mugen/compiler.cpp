@@ -969,6 +969,14 @@ public:
 
                 return new HitVarAnimType();
             } else if (var == "airtype"){
+                class HitVarAirType: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).airType);
+                    }
+                };
+
+                return new HitVarAirType();
             } else if (var == "groundtype"){
                 class HitVarGroundType: public HitVar {
                 public:

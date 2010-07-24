@@ -157,6 +157,7 @@ struct HitDefinition{
     spark(-1),
     guardSpark(-1),
     groundType(AttackType::None),
+    airType(AttackType::None),
     groundHitTime(0),
     airHitTime(20),
     yAcceleration(0.35),
@@ -329,7 +330,7 @@ struct HitDefinition{
     /* air.type = attack_type (string)
      * This is the kind of attack if P2 is in the air. Defaults to the same value as "ground.type" if omitted.
      */
-    std::string airType;
+    AttackType::Ground airType;
 
     /* ground.slidetime = slide_time (int)
      * This is the time in game-ticks that P2 will slide back for after being hit (this time does not include the pausetime for P2). Applicable only to hits that keep P2 on the ground. Defaults to 0 if omitted.
@@ -627,6 +628,7 @@ struct HitState{
     double xVelocity;
     AttackType::Animation animationType;
     AttackType::Ground groundType;
+    AttackType::Ground airType;
 
     struct Fall{
         Fall():

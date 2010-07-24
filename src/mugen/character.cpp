@@ -820,6 +820,7 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
 
     shakeTime = hit.pause.player2;
     groundType = hit.groundType;
+    airType = hit.airType;
     yAcceleration = hit.yAcceleration;
     
     /* if in the air */
@@ -1928,7 +1929,16 @@ void Character::parseState(Ast::Section * section){
                         controller->getHit().groundType = AttackType::Trip;
                     }
                 } else if (simple == "air.type"){
-                    simple >> controller->getHit().airType;
+                    string type;
+                    simple >> type;
+                    type = Util::fixCase(type);
+                    if (type == "low"){
+                        controller->getHit().airType = AttackType::Low;
+                    } else if (type == "high"){
+                        controller->getHit().airType = AttackType::High;
+                    } else if (type == "trip"){
+                        controller->getHit().airType = AttackType::Trip;
+                    }
                 } else if (simple == "ground.slidetime"){
                     simple >> controller->getHit().groundSlideTime;
                 } else if (simple == "guard.slidetime"){
