@@ -1453,6 +1453,12 @@ Value * compile(const Ast::Value * input){
     }
     return compiler.compiled;
 }
+    
+Value * compileAndDelete(const Ast::Value * input){
+    Value * compiled = compile(input);
+    delete input;
+    return compiled;
+}
 
 Value * compile(int immediate){
     Ast::Number number(immediate);

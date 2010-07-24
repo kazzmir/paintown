@@ -119,10 +119,10 @@ debug(false){
 }
 
 StateController::~StateController(){
-    for (map<int, vector<Ast::Value*> >::iterator it = triggers.begin(); it != triggers.end(); it++){
-        vector<Ast::Value*> values = (*it).second;
-        for (vector<Ast::Value*>::iterator value_it = values.begin(); value_it != values.end(); value_it++){
-            Ast::Value * value = *value_it;
+    for (map<int, vector<Compiler::Value*> >::iterator it = triggers.begin(); it != triggers.end(); it++){
+        vector<Compiler::Value*> values = (*it).second;
+        for (vector<Compiler::Value*>::iterator value_it = values.begin(); value_it != values.end(); value_it++){
+            Compiler::Value * value = *value_it;
             delete value;
         }
     }
@@ -147,20 +147,20 @@ StateController::~StateController(){
 }
 
 /*
-void StateController::setValue1(Ast::Value * value){
+void StateController::setValue1(Compiler::Value * value){
     this->value1 = value;
 }
 
-void StateController::setValue2(Ast::Value * value){
+void StateController::setValue2(Compiler::Value * value){
     this->value2 = value;
 }
 */
 
-void StateController::setX(Ast::Value * value){
+void StateController::setX(Compiler::Value * value){
     this->x = value;
 }
 
-void StateController::setY(Ast::Value * value){
+void StateController::setY(Compiler::Value * value){
     this->y = value;
 }
 
@@ -172,11 +172,11 @@ void StateController::setVariable(Compiler::Value * value){
     this->variable = value;
 }
 
-void StateController::addTriggerAll(Ast::Value * trigger){
+void StateController::addTriggerAll(Compiler::Value * trigger){
     triggers[-1].push_back(trigger);
 }
 
-void StateController::addTrigger(int number, Ast::Value * trigger){
+void StateController::addTrigger(int number, Compiler::Value * trigger){
     triggers[number].push_back(trigger);
 }
     
@@ -195,30 +195,30 @@ void StateController::addSystemVariable(int number, Compiler::Value * variable){
     systemVariables[number] = variable;
 }
 
-bool StateController::canTrigger(const MugenStage & stage, const Character & character, const Ast::Value * expression, const vector<string> & commands) const {
+bool StateController::canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
     /* this makes it easy to break in gdb */
     try{
         if (debug){
             int x = 2;
             x += 1;
         }
-        RuntimeValue result = evaluate(expression, FullEnvironment(stage, character, commands));
-        return toBool(result);
+        RuntimeValue result = expression->evaluate(FullEnvironment(stage, character, commands));
+        return result.toBool();
     } catch (const MugenException & e){
         ostringstream out;
-        out << "Expression `" << expression->toString() << "' " << e.getReason();
+        out << "Expression `" << expression << "' " << e.getReason();
         throw MugenException(out.str());
     }
 }
 
-bool StateController::canTrigger(const MugenStage & stage, const Character & character, const vector<Ast::Value*> & expressions, const vector<string> & commands) const {
-    for (vector<Ast::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
-        const Ast::Value * value = *it;
+bool StateController::canTrigger(const MugenStage & stage, const Character & character, const vector<Compiler::Value*> & expressions, const vector<string> & commands) const {
+    for (vector<Compiler::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
+        const Compiler::Value * value = *it;
         if (!canTrigger(stage, character, value, commands)){
-            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
+            // Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
             return false;
         } else {
-            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
+            // Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
         }
     }
     return true;
@@ -227,7 +227,7 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
 vector<int> StateController::sortTriggers() const {
     vector<int> out;
 
-    for (map<int, vector<Ast::Value*> >::const_iterator it = triggers.begin(); it != triggers.end(); it++){
+    for (map<int, vector<Compiler::Value*> >::const_iterator it = triggers.begin(); it != triggers.end(); it++){
         int number = it->first;
         /* ignore triggerall (-1) */
         if (number != -1){
@@ -242,7 +242,7 @@ vector<int> StateController::sortTriggers() const {
 
 bool StateController::canTrigger(const MugenStage & stage, const Character & character, const vector<string> & commands) const {
     if (triggers.find(-1) != triggers.end()){
-        vector<Ast::Value*> values = triggers.find(-1)->second;
+        vector<Compiler::Value*> values = triggers.find(-1)->second;
         /* if the triggerall fails then no triggers will work */
         if (!canTrigger(stage, character, values, commands)){
             return false;
@@ -251,7 +251,7 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
 
     vector<int> keys = sortTriggers();
     for (vector<int>::iterator it = keys.begin(); it != keys.end(); it++){
-        vector<Ast::Value*> values = triggers.find(*it)->second;
+        vector<Compiler::Value*> values = triggers.find(*it)->second;
         /* if a trigger succeeds then stop processing and just return true */
         if (canTrigger(stage, character, values, commands)){
             return true;
@@ -265,7 +265,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
     Global::debug(1 * !debug) << "Activate controller " << name << endl;
 
     if (changeControl){
-        guy.setControl(toBool(evaluate(control, FullEnvironment(stage, guy, commands))));
+        guy.setControl(control->evaluate(FullEnvironment(stage, guy, commands)).toBool());
     }
 
     switch (getType()){
@@ -405,14 +405,14 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case HitVelSet : {
             if (getX() != NULL){
-                RuntimeValue result = evaluate(getX(), FullEnvironment(stage, guy));
+                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
                 if (result.getBoolValue()){
                     guy.setXVelocity(guy.getHitState().xVelocity);
                 }
             }
 
             if (getY() != NULL){
-                RuntimeValue result = evaluate(getY(), FullEnvironment(stage, guy));
+                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
                 if (result.getBoolValue()){
                     guy.setYVelocity(guy.getHitState().yVelocity);
                 }
@@ -464,7 +464,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
 #if 0
                 /* FIXME: group could start with F */
                 string group;
-                Ast::Value * item = 0;
+                Compiler::Value * item = 0;
                 getValue()->reset();
                 *getValue() >> group >> item;
                 int realItem = (int) toNumber(evaluate(item, FullEnvironment(stage, guy)));
@@ -482,21 +482,21 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
                     Global::debug(0) << "Error with PlaySnd " << name << ": no sound for " << group << ", " << item->toString() << endl;
                 }
 #endif
-            } catch (const Ast::Exception & e){
+            } catch (const MugenException & e){
                 Global::debug(0) << "Error with PlaySnd " << name << ": " << e.getReason() << endl;
             }
             break;
         }
         case PosAdd : {
             if (getX() != NULL){
-                RuntimeValue result = evaluate(getX(), FullEnvironment(stage, guy));
+                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.moveX(result.getDoubleValue());
                     // guy.setX(guy.getX() + result.getDoubleValue());
                 }
             }
             if (getY() != NULL){
-                RuntimeValue result = evaluate(getY(), FullEnvironment(stage, guy));
+                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.moveYNoCheck(-result.getDoubleValue());
                     // guy.setY(guy.getY() + result.getDoubleValue());
@@ -509,13 +509,13 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case PosSet : {
             if (getX() != NULL){
-                RuntimeValue result = evaluate(getX(), FullEnvironment(stage, guy));
+                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setX(result.getDoubleValue());
                 }
             }
             if (getY() != NULL){
-                RuntimeValue result = evaluate(getY(), FullEnvironment(stage, guy));
+                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setY(result.getDoubleValue());
                 }
@@ -568,7 +568,9 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case SuperPause : {
             FullEnvironment env(stage, guy);
-            stage.doSuperPause(time, animation, guy.getRX() + (int) toNumber(evaluate(posX, env)) * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1), guy.getRY() + (int) toNumber(evaluate(posY, env)), sound.group, sound.item); 
+            int x = guy.getRX() + (int) posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
+            int y = guy.getRY() + (int) posY->evaluate(env).toNumber();
+            stage.doSuperPause(time, animation, x, y, sound.group, sound.item); 
             break;
         }
         case TargetBind : {
@@ -634,13 +636,13 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case VelAdd : {
             if (getX() != NULL){
-                RuntimeValue result = evaluate(getX(), FullEnvironment(stage, guy));
+                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
                 }
             }
             if (getY() != NULL){
-                RuntimeValue result = evaluate(getY(), FullEnvironment(stage, guy));
+                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(guy.getYVelocity() + result.getDoubleValue());
                 }
@@ -649,14 +651,14 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case VelMul : {
             if (getX() != NULL){
-                RuntimeValue result = evaluate(getX(), FullEnvironment(stage, guy));
+                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(guy.getXVelocity() * result.getDoubleValue());
                 }
             }
 
             if (getY() != NULL){
-                RuntimeValue result = evaluate(getY(), FullEnvironment(stage, guy));
+                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(guy.getYVelocity() * result.getDoubleValue());
                 }
@@ -665,13 +667,13 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         }
         case VelSet : {
             if (getX() != NULL){
-                RuntimeValue result = evaluate(getX(), FullEnvironment(stage, guy));
+                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setXVelocity(result.getDoubleValue());
                 }
             }
             if (getY() != NULL){
-                RuntimeValue result = evaluate(getY(), FullEnvironment(stage, guy));
+                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
                 if (result.isDouble()){
                     guy.setYVelocity(result.getDoubleValue());
                 }
@@ -716,17 +718,17 @@ void State::addControllerFront(StateController * controller){
     controllers.insert(controllers.begin(), controller);
 }
 
-void State::setJuggle(Ast::Value * juggle){
+void State::setJuggle(Compiler::Value * juggle){
     this->juggle = juggle;
 }
 
-void State::setVelocity(Ast::Value * x, Ast::Value * y){
+void State::setVelocity(Compiler::Value * x, Compiler::Value * y){
     changeVelocity = true;
     velocity_x = x;
     velocity_y = y;
 }
 
-void State::setPower(Ast::Value * power){
+void State::setPower(Compiler::Value * power){
     powerAdd = power;
     changePower = true;
 }
@@ -741,16 +743,16 @@ void State::setPhysics(Physics::Type p){
 }
 
 void State::transitionTo(const MugenStage & stage, Character & who){
-    if (animation != 0){
-        who.setAnimation((int) toNumber(evaluate(animation, FullEnvironment(stage, who))));
+    if (animation != NULL){
+        who.setAnimation((int) animation->evaluate(FullEnvironment(stage, who)).toNumber());
     }
 
     if (changeControl){
-        who.setControl(toBool(evaluate(control, FullEnvironment(stage, who))));
+        who.setControl(control->evaluate(FullEnvironment(stage, who)).toBool());
     }
 
-    if (juggle != 0){
-        who.setCurrentJuggle((int) toNumber(evaluate(juggle, FullEnvironment(stage, who))));
+    if (juggle != NULL){
+        who.setCurrentJuggle((int) juggle->evaluate(FullEnvironment(stage, who)).toNumber());
     }
 
     who.setMoveType(moveType);
@@ -771,8 +773,8 @@ void State::transitionTo(const MugenStage & stage, Character & who){
     }
 
     if (changeVelocity){
-        who.setXVelocity(toNumber(evaluate(velocity_x, FullEnvironment(stage, who))));
-        who.setYVelocity(toNumber(evaluate(velocity_y, FullEnvironment(stage, who))));
+        who.setXVelocity(velocity_x->evaluate(FullEnvironment(stage, who)).toNumber());
+        who.setYVelocity(velocity_y->evaluate(FullEnvironment(stage, who)).toNumber());
     }
 
     if (changePhysics){
@@ -851,7 +853,7 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
         yVelocity = hit.airVelocity.y;
 
         if (hit.fall.fall != NULL){
-            fall.fall |= toBool(evaluate(hit.fall.fall, FullEnvironment(stage, guy)));
+            fall.fall |= hit.fall.fall->evaluate(FullEnvironment(stage, guy)).toBool();
         }
         fall.yVelocity = hit.fall.yVelocity;
     } else {
@@ -1517,18 +1519,18 @@ void Character::parseStateDefinition(Ast::Section * section){
                      * a state transition.
                      */
                 } else if (simple == "anim"){
-                    definition->setAnimation((Ast::Value*) simple.getValue()->copy());
+                    definition->setAnimation(Compiler::compile(simple.getValue()));
                 } else if (simple == "velset"){
                     Ast::Value * x;
                     Ast::Value * y;
                     simple >> x >> y;
-                    definition->setVelocity((Ast::Value*) x->copy(), (Ast::Value*) y->copy());
+                    definition->setVelocity(Compiler::compile(x), Compiler::compile(y));
                 } else if (simple == "ctrl"){
-                    definition->setControl((Ast::Value*) simple.getValue()->copy());
+                    definition->setControl(Compiler::compile(simple.getValue()));
                 } else if (simple == "poweradd"){
-                    definition->setPower((Ast::Value*) simple.getValue()->copy());
+                    definition->setPower(Compiler::compile(simple.getValue()));
                 } else if (simple == "juggle"){
-                    definition->setJuggle((Ast::Value*) simple.getValue()->copy());
+                    definition->setJuggle(Compiler::compile(simple.getValue()));
                 } else if (simple == "facep2"){
                 } else if (simple == "hitdefpersist"){
                     bool what;
@@ -1599,11 +1601,11 @@ void Character::parseState(Ast::Section * section){
                 if (simple == "var"){
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
-                    controller->addVariable(index, Compiler::compile((Ast::Value*) value));
+                    controller->addVariable(index, Compiler::compile(value));
                 } else if (simple == "sysvar"){
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
-                    controller->addSystemVariable(index, Compiler::compile((Ast::Value*) value));
+                    controller->addSystemVariable(index, Compiler::compile(value));
                 }
             }
 
@@ -1708,18 +1710,18 @@ void Character::parseState(Ast::Section * section){
                         Global::debug(0) << "Unknown state controller type " << type << endl;
                     }
                 } else if (simple == "value"){
-                    controller->setValue(Compiler::compile((Ast::Value*) simple.getValue()));
+                    controller->setValue(Compiler::compile(simple.getValue()));
                 } else if (simple == "triggerall"){
-                    controller->addTriggerAll((Ast::Value*) simple.getValue()->copy());
+                    controller->addTriggerAll(Compiler::compile(simple.getValue()));
                 } else if (PaintownUtil::matchRegex(simple.idString(), "trigger[0-9]+")){
                     int trigger = atoi(PaintownUtil::captureRegex(simple.idString(), "trigger([0-9]+)", 0).c_str());
-                    controller->addTrigger(trigger, (Ast::Value*) simple.getValue()->copy());
+                    controller->addTrigger(trigger, Compiler::compile(simple.getValue()));
                 } else if (simple == "x"){
-                    controller->setX((Ast::Value*) simple.getValue()->copy());
+                    controller->setX(Compiler::compile(simple.getValue()));
                 } else if (simple == "y"){
-                    controller->setY((Ast::Value*) simple.getValue()->copy());
+                    controller->setY(Compiler::compile(simple.getValue()));
                 } else if (simple == "v"){
-                    controller->setVariable(Compiler::compile((Ast::Value*) simple.getValue()));
+                    controller->setVariable(Compiler::compile(simple.getValue()));
                 } else if (simple == "movetype"){
                     string type;
                     simple >> type;
@@ -1760,7 +1762,7 @@ void Character::parseState(Ast::Section * section){
                         Ast::Value * x;
                         Ast::Value * y;
                         simple >> x >> y;
-                        controller->setPosition((Ast::Value*) x->copy(), (Ast::Value*) y->copy());
+                        controller->setPosition(Compiler::compile(x), Compiler::compile(y));
                     } catch (const Ast::Exception & e){
                         /* should delete the values above if an exception occurs */
                     }
@@ -1772,7 +1774,7 @@ void Character::parseState(Ast::Section * section){
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "ctrl"){
-                    controller->setControl((Ast::Value*) simple.getValue()->copy());
+                    controller->setControl(Compiler::compile(simple.getValue()));
                 } else if (simple == "attr"){
                     string type, attack;
                     simple >> type >> attack;
@@ -1843,12 +1845,12 @@ void Character::parseState(Ast::Section * section){
                             container->reset();
                             Ast::Value * value;
                             *container >> value;
-                            controller->getHit().damage.damage = (Ast::Value*) value->copy();
+                            controller->getHit().damage.damage = Compiler::compile(value);
                             *container >> value;
-                            controller->getHit().damage.guardDamage = (Ast::Value*) value->copy();
+                            controller->getHit().damage.guardDamage = Compiler::compile(value);
                         } else {
                             /* otherwise its a single expression */
-                            controller->getHit().damage.damage = (Ast::Value*) container->copy();
+                            controller->getHit().damage.damage = Compiler::compile(container);
                         }
                     } catch (const Ast::Exception & e){
                         ostringstream out;
@@ -2018,23 +2020,23 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "p2sprpriority"){
                     simple >> controller->getHit().player2SpritePriority;
                 } else if (simple == "p1facing"){
-                    controller->getHit().player1Facing = (Ast::Value*) simple.getValue()->copy();
+                    controller->getHit().player1Facing = Compiler::compile(simple.getValue());
                 } else if (simple == "p2facing"){
-                    controller->getHit().player2Facing = (Ast::Value*) simple.getValue()->copy();
+                    controller->getHit().player2Facing = Compiler::compile(simple.getValue());
                 } else if (simple == "p1getp2facing"){
-                    simple >> controller->getHit().player1GetPlayer2Facing;
+                    controller->getHit().player1GetPlayer2Facing = Compiler::compile(simple.getValue());
                 } else if (simple == "player2Facing"){
-                    simple >> controller->getHit().player2Facing;
+                    controller->getHit().player2Facing = Compiler::compile(simple.getValue());
                 } else if (simple == "p1stateno"){
-                    controller->getHit().player1State = (Ast::Value*) simple.getValue()->copy();
+                    controller->getHit().player1State = Compiler::compile(simple.getValue());
                 } else if (simple == "p2stateno"){
-                    controller->getHit().player2State = (Ast::Value*) simple.getValue()->copy();
+                    controller->getHit().player2State = Compiler::compile(simple.getValue());
                 } else if (simple == "p2getp1state"){
                     simple >> controller->getHit().player2GetPlayer1State;
                 } else if (simple == "forcestand"){
                     simple >> controller->getHit().forceStand;
                 } else if (simple == "fall"){
-                    controller->getHit().fall.fall = (Ast::Value*) simple.getValue()->copy();
+                    controller->getHit().fall.fall = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.xvelocity"){
                     simple >> controller->getHit().fall.xVelocity;
                 } else if (simple == "fall.yvelocity"){
@@ -2466,16 +2468,16 @@ void Character::fixAssumptions(){
             StateController * controller = new StateController("walk");
             controller->setType(StateController::ChangeState);
             controller->setValue(Compiler::compile(WalkingForwards));
-            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
-                        new Ast::Number(0)));
-            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
-            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::Number(0))));
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdfwd"))));
-            controller->addTrigger(2, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::String(new string("holdfwd")))));
+            controller->addTrigger(2, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdback"))));
+                        new Ast::String(new string("holdback")))));
             states[-1]->addController(controller);
         }
 
@@ -2484,16 +2486,16 @@ void Character::fixAssumptions(){
             StateController * controller = new StateController("crouch");
             controller->setType(StateController::ChangeState);
             controller->setValue(Compiler::compile(StandToCrouch));
-            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
-            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
-                        new Ast::Number(0)));
-            controller->addTrigger(2, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::Number(0))));
+            controller->addTrigger(2, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
-                        new Ast::Number(WalkingForwards)));
-            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::Number(WalkingForwards))));
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holddown"))));
+                        new Ast::String(new string("holddown")))));
             states[-1]->addControllerFront(controller);
         }
 
@@ -2502,13 +2504,13 @@ void Character::fixAssumptions(){
             StateController * controller = new StateController("jump");
             controller->setType(StateController::InternalCommand);
             controller->setInternal(&Mugen::Character::resetJump);
-            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
-            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
-                        new Ast::String(new string("S"))));
-            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::String(new string("S")))));
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdup"))));
+                        new Ast::String(new string("holdup")))));
             states[-1]->addController(controller);
         }
 
@@ -2527,22 +2529,22 @@ void Character::fixAssumptions(){
             StateController * controller = new StateController("double jump");
             controller->setType(StateController::InternalCommand);
             controller->setInternal(&Mugen::Character::doubleJump);
-            controller->addTriggerAll(new Ast::SimpleIdentifier("ctrl"));
-            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
-                        new Ast::String(new string("A"))));
-            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThan,
-                        new Ast::ExpressionUnary(Ast::ExpressionUnary::Minus,
-                            new Ast::Keyword("pos y")),
-                        new Ast::SimpleIdentifier("internal:airjump-height")));
-            controller->addTriggerAll(new Ast::ExpressionInfix(Ast::ExpressionInfix::LessThan,
+                        new Ast::String(new string("A")))));
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThan,
+                                                                                          new Ast::ExpressionUnary(Ast::ExpressionUnary::Minus,
+                                                                                                                   new Ast::Keyword("pos y")),
+                                                                                          new Ast::SimpleIdentifier("internal:airjump-height"))));
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::LessThan,
                         new Ast::Function("sysvar", new Ast::ValueList(new Ast::Number(JumpIndex))),
-                        new Ast::SimpleIdentifier("internal:extra-jumps")));
-            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("internal:extra-jumps"))));
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         // new Ast::String(new string("holdup")
                         new Ast::String(new string(jumpCommand)
-                            )));
+                            ))));
             states[-1]->addController(controller);
         }
 
@@ -2554,9 +2556,9 @@ void Character::fixAssumptions(){
             states[StopGuardStand]->addController(controller);
             controller->setType(StateController::InternalCommand);
             controller->setInternal(&Mugen::Character::stopGuarding);
-            controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
-                    new Ast::Number(0)));
+                    new Ast::Number(0))));
         }
     }
 
@@ -2567,17 +2569,17 @@ void Character::fixAssumptions(){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
         controller->setValue(Compiler::compile(Standing));
-        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
+        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holdfwd"))));
-        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
+                    new Ast::String(new string("holdfwd")))));
+        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holdback"))));
+                    new Ast::String(new string("holdback")))));
         states[20]->addController(controller);
     }
 
     if (states[Standing] != 0){
-        states[Standing]->setControl(new Ast::Number(1));
+        states[Standing]->setControl(Compiler::compile(1));
     }
 
     /* stand after crouching */
@@ -2585,9 +2587,9 @@ void Character::fixAssumptions(){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
         controller->setValue(Compiler::compile(CrouchToStand));
-        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
+        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holddown"))));
+                    new Ast::String(new string("holddown")))));
         states[11]->addController(controller);
     }
 
@@ -2597,9 +2599,9 @@ void Character::fixAssumptions(){
         controller->setType(StateController::ChangeState);
         controller->setValue(Compiler::compile(GetUpFromLiedown));
 
-        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
+        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
                     new Ast::SimpleIdentifier("time"),
-                    new Ast::Number(getLieDownTime())));
+                    new Ast::Number(getLieDownTime()))));
 
         states[Liedown]->addController(controller);
     }
@@ -2608,15 +2610,15 @@ void Character::fixAssumptions(){
     {
         State * turn = new State();
         turn->setType(State::Unchanged);
-        turn->setAnimation(new Ast::Number(5));
+        turn->setAnimation(Compiler::compile(5));
         states[5] = turn;
 
         StateController * controller = new StateController("stand");
         controller->setType(StateController::ChangeState);
         controller->setValue(Compiler::compile(Standing));
-        controller->addTrigger(1, new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
-                    new Ast::Number(0)));
+                    new Ast::Number(0))));
         turn->addController(controller);
     }
 
@@ -2933,7 +2935,7 @@ void Character::didHit(Character * enemy, MugenStage & stage){
     }
 
     if (states[getCurrentState()]->powerChanged()){
-        addPower(toNumber(evaluate(states[getCurrentState()]->getPower(), FullEnvironment(stage, *this))));
+        addPower(states[getCurrentState()]->getPower()->evaluate(FullEnvironment(stage, *this)).toNumber());
     }
 
     /* if he is already in a Hit state then increase combo */
@@ -2959,7 +2961,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     lastTicket = enemy->getTicket();
 
     if (hisHit.damage.damage != 0){
-        takeDamage(stage, enemy, (int) toNumber(evaluate(hisHit.damage.damage, FullEnvironment(stage, *this))));
+        takeDamage(stage, enemy, (int) hisHit.damage.damage->evaluate(FullEnvironment(stage, *this)).toNumber());
     }
 
     /*

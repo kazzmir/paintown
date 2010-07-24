@@ -18,6 +18,10 @@ namespace Compiler{
         virtual ~Value();
     };
 
+    /* deletes `input' */
+    Value * compileAndDelete(const Ast::Value * input);
+
+    /* does not delete `input' */
     Value * compile(const Ast::Value * input);
     Value * compile(int immediate);
 }

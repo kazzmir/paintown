@@ -39,7 +39,7 @@ const int DEFAULT_HEIGHT = 240;
 static void showError(const Bitmap & screen, const MugenException & e){
     screen.BlitFromScreen(0, 0);
     Bitmap error(screen.getWidth() - 100, screen.getHeight() - 100);
-    error.fill(Bitmap::darken(Bitmap::makeColor(255, 0, 0), 3));
+    error.fill(Bitmap::darken(Bitmap::makeColor(190, 0, 0), 3));
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 18, 18);
     int y = 10;
     std::ostringstream out;
@@ -47,7 +47,7 @@ static void showError(const Bitmap & screen, const MugenException & e){
     out << "\n";
     out << "We are very sorry but an error has occured while trying to load MUGEN.";
     out << " " << e.getReason();
-    font.printfWrap(10, 10, Bitmap::makeColor(255, 255, 255), error, error.getWidth() - 20, out.str(), 0);
+    font.printfWrap(10, 10, Bitmap::makeColor(240, 240, 240), error, error.getWidth() - 20, out.str(), 0);
     Global::debug(0) << out.str() << std::endl;
 
     Bitmap::transBlender(0, 0, 0, 200);

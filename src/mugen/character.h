@@ -258,8 +258,8 @@ struct HitDefinition{
 
         ~Damage();
 
-        Ast::Value * damage;
-        Ast::Value * guardDamage;
+        Compiler::Value * damage;
+        Compiler::Value * guardDamage;
     } damage;
 
     /* pausetime = p1_pausetime, p2_shaketime (int, int)
@@ -470,27 +470,27 @@ struct HitDefinition{
     /* p1facing = facing (int)
     * Set to -1 to make P1 turn around if the hit is successful. The default value is no change in where P1 is facing.
     */
-    Ast::Value * player1Facing;
+    Compiler::Value * player1Facing;
 
     /* p1getp2facing = facing (int)
     * Set to 1 to have P1 face in the same direction as P2 is facing after the hit connects, and -1 to have P1 face the opposite direction from P2. Defaults to 0 (no change). If nonzero, this parameter takes precedence over p1facing.
     */
-    int player1GetPlayer2Facing;
+    Compiler::Value * player1GetPlayer2Facing;
 
     /* p2facing = facing (int)
     * Set to 1 to make P2 face the same direction as P1 if the hit is successful, -1 to make P2 face away. The default value is 0, no change in where P2 is facing.
     */
-    Ast::Value * player2Facing;
+    Compiler::Value * player2Facing;
 
     /* p1stateno = state_no (int)
     * This is the number of the state to set P1 to if the hit is successful. The state must be an attack state (movetype = A) for at least 1 tick. Used mainly for throws. Defaults to -1, no change.
     */
-    Ast::Value * player1State;
+    Compiler::Value * player1State;
 
     /* p2stateno = state_no (int)
     * This is the number of the state to set P2 to if the hit is successful. P2 will get P1's state and animation data. P2 will retain P1's states and animation data until P2 is hit, or a SelfState controller is used to return P2 to his own states. The state must be a get-hit state (movetype = H) for at least 1 tick. Used mainly for throws; can also be used for custom hit reactions. Defaults to -1, no change.
     */
-    Ast::Value * player2State;
+    Compiler::Value * player2State;
 
     /* p2getp1state = bvalue (boolean)
     * Set to 0 to prevent P2 from getting P1's state and animation data, in case you do not want that default behaviour of the "p2stateno" parameter. Defaults to 1 if the "p2stateno" parameter is used. Ignored otherwise.
@@ -513,7 +513,7 @@ struct HitDefinition{
         /* fall = bvalue (boolean)
          * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air). Use if you want a move to "knock down" P2. Defaults to 0.
          */
-        Ast::Value * fall;
+        Compiler::Value * fall;
 
         /* fall.xvelocity = x_velocity (float)
          * This is the x-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to no change if omitted.
@@ -750,7 +750,7 @@ public:
         this->type = type;
     }
 
-    virtual inline void setControl(Ast::Value * value){
+    virtual inline void setControl(Compiler::Value * value){
         changeControl = true;
         this->control = value;
     }
@@ -764,20 +764,20 @@ public:
     }
 
     /*
-    virtual void setValue1(Ast::Value * value);
-    virtual void setValue2(Ast::Value * value);
+    virtual void setValue1(Compiler::Value * value);
+    virtual void setValue2(Compiler::Value * value);
     */
 
-    virtual void setX(Ast::Value * value);
-    virtual void setY(Ast::Value * value);
+    virtual void setX(Compiler::Value * value);
+    virtual void setY(Compiler::Value * value);
     virtual void setValue(Compiler::Value * value);
     virtual void setVariable(Compiler::Value * value);
 
-    virtual inline Ast::Value * getX() const {
+    virtual inline Compiler::Value * getX() const {
         return this->x;
     }
 
-    virtual inline Ast::Value * getY() const {
+    virtual inline Compiler::Value * getY() const {
         return this->y;
     }
 
@@ -789,8 +789,8 @@ public:
         return this->variable;
     }
 
-    virtual void addTriggerAll(Ast::Value * trigger);
-    virtual void addTrigger(int number, Ast::Value * trigger);
+    virtual void addTriggerAll(Compiler::Value * trigger);
+    virtual void addTrigger(int number, Compiler::Value * trigger);
     virtual void addVariable(int number, Compiler::Value * variable);
     virtual void addSystemVariable(int number, Compiler::Value * variable);
 
@@ -838,7 +838,7 @@ public:
         animation = a;
     }
 
-    virtual inline void setPosition(Ast::Value * x, Ast::Value * y){
+    virtual inline void setPosition(Compiler::Value * x, Compiler::Value * y){
         posX = x;
         posY = y;
     }
@@ -852,23 +852,23 @@ public:
 
 protected:
 
-    bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<Ast::Value*> & expressions, const std::vector<std::string> & commands) const;
-    bool canTrigger(const MugenStage & stage, const Character & character, const Ast::Value * expression, const std::vector<std::string> & commands) const;
+    bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<Compiler::Value*> & expressions, const std::vector<std::string> & commands) const;
+    bool canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
 
 protected:
     Type type;
     std::string name;
     bool changeControl;
-    Ast::Value * control;
-    Ast::Value * x;
-    Ast::Value * y;
+    Compiler::Value * control;
+    Compiler::Value * x;
+    Compiler::Value * y;
     Compiler::Value * value;
 
     /* how is this different from the `variables' map? */
     Compiler::Value * variable;
-    Ast::Value * posX;
-    Ast::Value * posY;
+    Compiler::Value * posX;
+    Compiler::Value * posY;
 
     int time;
     int animation;
@@ -878,7 +878,7 @@ protected:
         int item;
     } sound;
 
-    std::map<int, std::vector<Ast::Value*> > triggers;
+    std::map<int, std::vector<Compiler::Value*> > triggers;
 
     /* var(1) and whatnot */
     std::map<int, Compiler::Value*> variables;
@@ -917,22 +917,22 @@ public:
         type = t;
     }
 
-    virtual inline void setAnimation(Ast::Value * animation){
+    virtual inline void setAnimation(Compiler::Value * animation){
         this->animation = animation;
     }
 
-    virtual inline void setControl(Ast::Value * control){
+    virtual inline void setControl(Compiler::Value * control){
         changeControl = true;
         this->control = control;
     }
 
-    virtual void setJuggle(Ast::Value * juggle);
+    virtual void setJuggle(Compiler::Value * juggle);
 
-    virtual void setVelocity(Ast::Value * x, Ast::Value * y);
+    virtual void setVelocity(Compiler::Value * x, Compiler::Value * y);
     virtual void setPhysics(Physics::Type p);
-    virtual void setPower(Ast::Value * power);
+    virtual void setPower(Compiler::Value * power);
 
-    virtual inline Ast::Value * getPower() const {
+    virtual inline Compiler::Value * getPower() const {
         return powerAdd;
     }
 
@@ -963,18 +963,18 @@ public:
 
 protected:
     Type type;
-    Ast::Value * animation;
+    Compiler::Value * animation;
     bool changeControl;
-    Ast::Value * control;
+    Compiler::Value * control;
     std::vector<StateController*> controllers;
     bool changeVelocity;
-    Ast::Value * velocity_x, * velocity_y;
+    Compiler::Value * velocity_x, * velocity_y;
     bool changePhysics;
     Physics::Type physics;
     bool changePower;
-    Ast::Value * powerAdd;
+    Compiler::Value * powerAdd;
     std::string moveType;
-    Ast::Value * juggle;
+    Compiler::Value * juggle;
     bool hitDefPersist;
 };
 
