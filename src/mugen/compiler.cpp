@@ -1230,6 +1230,110 @@ public:
         compiled = compileKeyword(keyword);
     }
 
+    Value * compileExpressionInfix(const Ast::ExpressionInfix & expression){
+        // Global::debug(1) << "Evaluate expression " << expression.toString() << endl;
+        using namespace Ast;
+        class Infix: public Value {
+        public:
+            Infix(Value * left, Value * right, ExpressionInfix::InfixType type):
+                left(left),
+                right(right),
+                type(type){
+                }
+
+            Value * left;
+            Value * right;
+            ExpressionInfix::InfixType type;
+
+            virtual ~Infix(){
+                delete left;
+                delete right;
+            }
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                switch (type){
+                    case ExpressionInfix::Or : {
+                        return RuntimeValue(left->evaluate(environment).toBool() ||
+                                            right->evaluate(environment).toBool());
+                    }
+                    case ExpressionInfix::XOr : {
+                        return RuntimeValue(left->evaluate(environment).toBool() ^
+                                            right->evaluate(environment).toBool());
+                    }
+                    case ExpressionInfix::And : {
+                        return RuntimeValue(left->evaluate(environment).toBool() &&
+                                            right->evaluate(environment).toBool());
+                    }
+                    case ExpressionInfix::BitwiseOr : {
+                        return RuntimeValue(((int) left->evaluate(environment).toNumber()) |
+                                            ((int) right->evaluate(environment).toNumber()));
+                    }
+                    case ExpressionInfix::BitwiseXOr : {
+                        return RuntimeValue(((int) left->evaluate(environment).toNumber()) ^
+                                            ((int) right->evaluate(environment).toNumber()));
+                    }
+                    case ExpressionInfix::BitwiseAnd : {
+                        return RuntimeValue(((int) left->evaluate(environment).toNumber()) &
+                                            ((int) right->evaluate(environment).toNumber()));
+                    }
+                    case ExpressionInfix::Assignment : {
+                        /* FIXME: is this needed? */
+                        break;
+                    }
+                    case ExpressionInfix::Equals : {
+                        return RuntimeValue(left->evaluate(environment) == right->evaluate(environment));
+                        break;
+                    }
+                    case ExpressionInfix::Unequals : {
+                        return RuntimeValue(!toBool(left->evaluate(environment) == right->evaluate(environment)));
+                    }
+                    case ExpressionInfix::GreaterThanEquals : {
+                        return RuntimeValue(left->evaluate(environment).toNumber() >= right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::GreaterThan : {
+                        return RuntimeValue(left->evaluate(environment).toNumber() > right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::LessThanEquals : {
+                        return RuntimeValue(left->evaluate(environment).toNumber() <= right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::LessThan : {
+                        return RuntimeValue(left->evaluate(environment).toNumber() < right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::Add : {
+                        return RuntimeValue(left->evaluate(environment).toNumber() + right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::Subtract : {
+                        return RuntimeValue(left->evaluate(environment).toNumber() - right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::Multiply : {
+                        return RuntimeValue(left->evaluate(environment).toNumber() * right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::Divide : {
+                        /* FIXME: catch divide by 0 */
+                        return RuntimeValue(left->evaluate(environment).toNumber() / right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::Modulo : {
+                        return RuntimeValue((int) left->evaluate(environment).toNumber() % (int) right->evaluate(environment).toNumber());
+                    }
+                    case ExpressionInfix::Power : {
+                        return RuntimeValue(pow(left->evaluate(environment).toNumber(), right->evaluate(environment).toNumber()));
+                    }
+                    default : throw MugenException("Can't get here");
+                }
+            }
+        };
+
+        return new Infix(compile(expression.getLeft()), compile(expression.getRight()), expression.getExpressionType());
+
+        std::ostringstream out;
+        out << "Unknown expression: " << expression.toString();
+        throw MugenException(out.str());
+    }
+
+    virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
+        compiled = compileExpressionInfix(expression);
+    }
+
 };
 
 }

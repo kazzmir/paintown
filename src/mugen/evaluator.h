@@ -70,6 +70,8 @@ struct RuntimeValue{
     range(low, high){
     }
 
+    bool operator==(const RuntimeValue & other) const;
+
     inline bool isBool() const {
         return type == Bool;
     }

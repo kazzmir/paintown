@@ -96,8 +96,65 @@ int toRangeHigh(const RuntimeValue & value){
     return 0;
 }
 
+bool RuntimeValue::operator==(const RuntimeValue & value2) const {
+    const RuntimeValue & value1 = *this;
+    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
+        throw MugenException("invalid value");
+    }
+    switch (value1.type){
+        case RuntimeValue::ListOfString : {
+            switch (value2.type){
+                case RuntimeValue::String : {
+                    const vector<string> & strings = value1.strings_value;
+                    for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
+                        const string & check = *it;
+                        if (check == value2.string_value){
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                default: return false;
+            }
+            break;
+        }
+        case RuntimeValue::String : {
+            switch (value2.type){
+                case RuntimeValue::ListOfString : {
+                    return value2 == value1;
+                }
+                case RuntimeValue::String : {
+                    return toString(value1) == toString(value2);
+                }
+                default: return false;
+            }
+            break;
+        }
+        case RuntimeValue::RangeType : {
+            switch (value2.type){
+                case RuntimeValue::Double : return value2 == value1;
+                default: return false;
+            }
+        }
+        case RuntimeValue::Double : {
+            switch (value2.type){
+                case RuntimeValue::Double : {
+                    double epsilon = 0.0000001;
+                    return fabs(value1.getDoubleValue() - value2.getDoubleValue()) < epsilon;
+                }
+                case RuntimeValue::RangeType : {
+                    return value1.toNumber() > toRangeLow(value2) &&
+                           value1.toNumber() < toRangeHigh(value2);
+                }
+                default: return false;
+            }
+            break;
+        }
+        default: return false;
+    }
 
-
+    return false;
+}
 
 /* a meta-circular evaluator! */
 class Evaluator: public Ast::Walker {
@@ -111,62 +168,7 @@ public:
 
     /* value1 == value2 */
     RuntimeValue same(const RuntimeValue & value1, const RuntimeValue & value2){
-        if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
-            throw MugenException("invalid value");
-        }
-        switch (value1.type){
-            case RuntimeValue::ListOfString : {
-                switch (value2.type){
-                    case RuntimeValue::String : {
-                        const vector<string> & strings = value1.strings_value;
-                        for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
-                            const string & check = *it;
-                            if (check == value2.string_value){
-                                return RuntimeValue(true);
-                            }
-                        }
-                        return RuntimeValue(false);
-                    }
-                    default: return RuntimeValue(false);
-                }
-                break;
-            }
-            case RuntimeValue::String : {
-                switch (value2.type){
-                    case RuntimeValue::ListOfString : {
-                        return same(value2, value1);
-                    }
-                    case RuntimeValue::String : {
-                        return toString(value1) == toString(value2);
-                    }
-                    default: return RuntimeValue(false);
-                }
-                break;
-            }
-            case RuntimeValue::RangeType : {
-                switch (value2.type){
-                    case RuntimeValue::Double : return same(value2, value1);
-                    default: return RuntimeValue(false);
-                }
-            }
-            case RuntimeValue::Double : {
-                switch (value2.type){
-                    case RuntimeValue::Double : {
-                        double epsilon = 0.0000001;
-                        return RuntimeValue(fabs(value1.getDoubleValue() - value2.getDoubleValue()) < epsilon);
-                    }
-                    case RuntimeValue::RangeType : {
-                        return RuntimeValue(toNumber(value1) > toRangeLow(value2) &&
-                                            toNumber(value1) < toRangeHigh(value2));
-                    }
-                    default: return RuntimeValue(false);
-                }
-                break;
-            }
-            default: return RuntimeValue(false);
-        }
-
-        return RuntimeValue(false);
+        return RuntimeValue(value1 == value2);
     }
     
     RuntimeValue evalRange(const Ast::Range & range){
