@@ -1093,13 +1093,28 @@ public:
             return new FunctionVar(index);
         }
 
-#if 0
-        if (function == "numtarget"){
-            /* FIXME */
-            return RuntimeValue(0);
-        }
-
         if (function == "sysvar"){
+            class FunctionSysVar: public Value{
+            public:
+                FunctionSysVar(int index):
+                    index(index){
+                    }
+
+                int index;
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    Value * value = environment.getCharacter().getSystemVariable(index);
+                    if (value == 0){
+                        return RuntimeValue(false);
+                    }
+                    return value->evaluate(environment);
+                }
+            };
+            
+            int index = (int) compile(function.getArg1())->evaluate(EmptyEnvironment()).toNumber();
+            return new FunctionSysVar(index);
+
+#if 0
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getSystemVariable(index);
             if (value == 0){
@@ -1112,7 +1127,16 @@ public:
                 */
             }
             return evaluate(value);
+#endif
         }
+
+#if 0
+        if (function == "numtarget"){
+            /* FIXME */
+            return RuntimeValue(0);
+        }
+
+        
 
         if (function == "numexplod"){
             /* FIXME */

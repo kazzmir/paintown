@@ -11,6 +11,7 @@
 #include "mugen/exception.h"
 #include "mugen/parse-cache.h"
 #include "util/timedifference.h"
+#include "util/bitmap.h"
 
 using namespace std;
 
@@ -37,6 +38,7 @@ int main(int argc, char ** argv){
     set_color_conversion(COLORCONV_NONE);
 #elif USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
+    Bitmap::setFakeGraphicsMode(640, 480);
 #endif
 
     Mugen::ParseCache cache;
