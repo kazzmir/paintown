@@ -11,6 +11,7 @@ load.cpp
 init.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
+test/mugen/compiler.cpp
 test/mugen/sprite.cpp
 test/mugen/sound.cpp
 test/mugen/exception.cpp

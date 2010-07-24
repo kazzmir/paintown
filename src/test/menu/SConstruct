@@ -31,6 +31,7 @@ test/input/input-manager.cpp
 test/input/joystick.cpp
 test/debug.cpp
 test/openbor/pack-reader.cpp
+test/openbor/util.cpp
 test/openbor/mod.cpp
 test/configuration.cpp
 test/util/load_exception.cpp
@@ -62,11 +63,7 @@ test/object/buddy_player.cpp
 test/object/cat.cpp
 test/object/character.cpp
 test/object/display_character.cpp
-test/object/draw-countdown-effect.cpp
 test/object/draw-effect.cpp
-test/object/draw-glow-effect.cpp
-test/object/draw-normal-effect.cpp
-test/object/draw-until-effect.cpp
 test/object/effect.cpp
 test/object/enemy.cpp
 test/object/gib.cpp
@@ -154,6 +151,7 @@ test/gui/fadetool.cpp
 test/mugen/character-select.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
+test/mugen/compiler.cpp
 test/mugen/parse-cache.cpp
 test/mugen/command.cpp
 test/mugen/stage.cpp
@@ -172,6 +170,8 @@ test/loadpng/regpng.c
 test/loadpng/savepng.c
 test/factory/collector.cpp
 """)
+
+source.append(use.Peg('test/openbor/data.peg'))
 
 x = []
 x.append(testEnv.Program('menu', source))

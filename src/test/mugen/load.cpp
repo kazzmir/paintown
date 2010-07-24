@@ -1,4 +1,9 @@
+#ifdef USE_ALLEGRO
 #include <allegro.h>
+#endif
+#ifdef USE_SDL
+#include <SDL/SDL.h>
+#endif
 
 #include <iostream>
 #include "util/file-system.h"
@@ -26,9 +31,13 @@ static void load(const char * path){
 }
 
 int main(int argc, char ** argv){
+#ifdef USE_ALLEGRO
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
+#elif USE_SDL
+    SDL_Init(SDL_INIT_VIDEO);
+#endif
 
     Mugen::ParseCache cache;
 
@@ -41,4 +50,6 @@ int main(int argc, char ** argv){
     // for (int i = 0; i < 3; i++){
       // }
 }
+#ifdef USE_ALLEGRO
 END_OF_MAIN()
+#endif
