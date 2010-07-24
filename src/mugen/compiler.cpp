@@ -5,6 +5,7 @@
 #include "character.h"
 #include "stage.h"
 #include "util/funcs.h"
+#include <math.h>
 #include <sstream>
 #include <string>
 
@@ -872,20 +873,49 @@ public:
     }
 
     Value * compileFunction(const Ast::Function & function){
-#if 0
         if (function == "const"){
-            return evaluate(function.getArg1());
+            return compile(function.getArg1());
         }
 
         if (function == "abs"){
-            return RuntimeValue(fabs(toNumber(evaluate(function.getArg1()))));
+            class FunctionAbs: public Value {
+            public:
+                FunctionAbs(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(fabs(argument->evaluate(environment).toNumber()));
+                }
+            };
+
+            return new FunctionAbs(compile(function.getArg1()));
         }
 
         if (function == "floor"){
-            return RuntimeValue((int) toNumber(evaluate(function.getArg1())));
+            class FunctionFloor: public Value {
+            public:
+                FunctionFloor(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue((int) argument->evaluate(environment).toNumber());
+                }
+            };
+
+            return new FunctionFloor(compile(function.getArg1()));
         }
 
         if (function == "var"){
+            /*
+            int index = (int) compile(function.getArg1())->evaluate(empty).toNumber();
+            */
+#if 0
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getVariable(index);
             if (value == 0){
@@ -897,8 +927,10 @@ public:
                 */
             }
             return evaluate(value);
+#endif
         }
 
+#if 0
         if (function == "numtarget"){
             /* FIXME */
             return RuntimeValue(0);
