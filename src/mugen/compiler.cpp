@@ -886,6 +886,10 @@ public:
 
                 Value * argument;
 
+                virtual ~FunctionAbs(){
+                    delete argument;
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(fabs(argument->evaluate(environment).toNumber()));
                 }
@@ -903,12 +907,49 @@ public:
 
                 Value * argument;
 
+                virtual ~FunctionFloor(){
+                    delete argument;
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue((int) argument->evaluate(environment).toNumber());
                 }
             };
 
             return new FunctionFloor(compile(function.getArg1()));
+        }
+
+        if (function == "ifelse"){
+            class FunctionIfElse: public Value{
+            public:
+                FunctionIfElse(Value * condition, Value * then, Value * else_):
+                condition(condition),
+                then(then),
+                else_(else_){
+                }
+
+                Value * condition;
+                Value * then;
+                Value * else_;
+
+                virtual ~FunctionIfElse(){
+                    delete condition;
+                    delete then;
+                    delete else_;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    if (condition->evaluate(environment).toBool()){
+                        return then->evaluate(environment);
+                    } else {
+                        return else_->evaluate(environment);
+                    }
+                }
+            };
+
+            return new FunctionIfElse(compile(function.getArg1()),
+                                      compile(function.getArg2()),
+                                      compile(function.getArg3()));
         }
 
         if (function == "var"){
@@ -1031,14 +1072,6 @@ public:
             }
             return RuntimeValue(false);
             // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
-        }
-
-        if (function == "ifelse"){
-            if (toBool(evaluate(function.getArg1()))){
-                return evaluate(function.getArg2());
-            } else {
-                return evaluate(function.getArg3());
-            }
         }
 
         if (function == "animelemno"){

@@ -107,6 +107,7 @@ struct RuntimeValue{
     }
 
     double toNumber() const;
+    bool toBool() const;
 
     const char * canonicalName() const {
         switch (type){

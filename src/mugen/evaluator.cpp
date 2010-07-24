@@ -58,6 +58,22 @@ double RuntimeValue::toNumber() const {
     return 0;
 }
 
+bool RuntimeValue::toBool() const {
+    if (isBool()){
+        return getBoolValue();
+    }
+    if (isDouble()){
+        return getDoubleValue() != 0;
+    }
+    raise(*this, "bool");
+
+    return false;
+}
+
+bool toBool(const RuntimeValue & value){
+    return value.toBool();
+}
+
 double toNumber(const RuntimeValue & value){
     return value.toNumber();
 }
@@ -81,17 +97,7 @@ int toRangeHigh(const RuntimeValue & value){
 }
 
 
-bool toBool(const RuntimeValue & value){
-    if (value.isBool()){
-        return value.getBoolValue();
-    }
-    if (value.isDouble()){
-        return value.getDoubleValue() != 0;
-    }
-    raise(value, "bool");
 
-    return false;
-}
 
 /* a meta-circular evaluator! */
 class Evaluator: public Ast::Walker {
