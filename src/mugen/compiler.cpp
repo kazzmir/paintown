@@ -25,6 +25,19 @@ public:
     Value * compiled;
 
     Value * compileIdentifier(const Ast::Identifier & identifier){
+        class JustString: public Value {
+        public:
+            JustString(const std::string & value):
+                value(value){
+                }
+
+            std::string value;
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                return RuntimeValue(value);
+            }
+        };
+
         if (identifier == "command"){
             class Command: public Value {
             public:
@@ -466,48 +479,23 @@ public:
         }
 
         if (identifier == "A"){
-            class JustA: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(std::string("A"));
-                }
-            };
-
-            return new JustA();
+            return new JustString("A");
         }
         
         if (identifier == "S"){
-            class JustS: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    /* states are just strings */
-                    return RuntimeValue(std::string("S"));
-                }
-            };
-
-            return new JustS();
+            return new JustString("S");
         }
 
         if (identifier == "C"){
-            class JustC: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(std::string("C"));
-                }
-            };
-
-            return new JustC();
+            return new JustString("C");
         }
         
         if (identifier == "L"){
-            class JustL: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(std::string("L"));
-                }
-            };
+            return new JustString("L");
+        }
 
-            return new JustL();
+        if (identifier == "SCA"){
+            return new JustString("SCA");
         }
 
         if (identifier == "statetype"){
@@ -952,6 +940,129 @@ public:
                                       compile(function.getArg3()));
         }
 
+        if (function == "gethitvar"){
+            class HitVar: public Value {
+            public:
+                HitVar(){
+                }
+
+                virtual const HitState & state(const Environment & environment) const {
+                    return environment.getCharacter().getHitState();
+                }
+            };
+
+            if (function.getArg1() == 0){
+                throw MugenException("No argument given to gethitvar");
+            }
+
+            std::string var = function.getArg1()->toString();
+            if (var == "xveladd"){
+            } else if (var == "yveladd"){
+            } else if (var == "type"){
+            } else if (var == "animtype"){
+                class HitVarAnimType: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).animationType);
+                    }
+                };
+
+                return new HitVarAnimType();
+            } else if (var == "airtype"){
+            } else if (var == "groundtype"){
+                class HitVarGroundType: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).groundType);
+                    }
+                };
+
+                return new HitVarGroundType();
+            } else if (var == "damage"){
+            } else if (var == "hitcount"){
+                class HitVarHitCount: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).hits);
+                    }
+                };
+
+                return new HitVarHitCount();
+            } else if (var == "fallcount"){
+            } else if (var == "hitshaketime"){
+            } else if (var == "hittime"){
+            } else if (var == "slidetime"){
+                class HitVarSlideTime: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).slideTime);
+                    }
+                };
+
+                return new HitVarSlideTime();
+            } else if (var == "ctrltime"){
+            } else if (var == "recovertime"){
+            } else if (var == "xoff"){
+            } else if (var == "yoff"){
+            } else if (var == "zoff"){
+            } else if (var == "xvel"){
+                class HitVarXVel: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).xVelocity);
+                    }
+                };
+
+                return new HitVarXVel();
+            } else if (var == "yvel"){
+                class HitVarYVel: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).yVelocity);
+                    }
+                };
+
+                return new HitVarYVel();
+            } else if (var == "yaccel"){
+                class HitVarYAccel: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).yAcceleration);
+                    }
+                };
+
+                return new HitVarYAccel();
+            } else if (var == "hitid"){
+            } else if (var == "chainid"){
+            } else if (var == "guarded"){
+            } else if (var == "fall"){
+                class HitVarFall: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).fall.fall);
+                    }
+                };
+
+                return new HitVarFall();
+            } else if (var == "fall.damage"){
+            } else if (var == "fall.xvel"){
+            } else if (var == "fall.yvel"){
+                class HitVarFallYVel: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).fall.yVelocity);
+                    }
+                };
+
+                return new HitVarFallYVel();
+            } else if (var == "fall.recover"){
+            } else if (var == "fall.time"){
+            } else if (var == "fall.recovertime"){
+            }
+
+            throw MugenException("Unknown gethitvar variable " + var);
+        }
+
         if (function == "var"){
             class FunctionVar: public Value{
             public:
@@ -972,75 +1083,12 @@ public:
             
             int index = (int) compile(function.getArg1())->evaluate(EmptyEnvironment()).toNumber();
             return new FunctionVar(index);
-#if 0
-            int index = (int) toNumber(evaluate(function.getArg1()));
-            Ast::Value * value = environment.getCharacter().getVariable(index);
-            if (value == 0){
-                return RuntimeValue(false);
-                /*
-                ostringstream out;
-                out << "No variable for index " << index;
-                throw MugenException(out.str());
-                */
-            }
-            return evaluate(value);
-#endif
         }
 
 #if 0
         if (function == "numtarget"){
             /* FIXME */
             return RuntimeValue(0);
-        }
-
-        if (function == "gethitvar"){
-            const HitState & state = environment.getCharacter().getHitState();
-            if (function.getArg1() == 0){
-                throw MugenException("No argument given to gethitvar");
-            }
-            string var = function.getArg1()->toString();
-            if (var == "xveladd"){
-            } else if (var == "yveladd"){
-            } else if (var == "type"){
-            } else if (var == "animtype"){
-                return RuntimeValue(state.animationType);
-            } else if (var == "airtype"){
-            } else if (var == "groundtype"){
-                return RuntimeValue(state.groundType);
-            } else if (var == "damage"){
-            } else if (var == "hitcount"){
-                return RuntimeValue(state.hits);
-            } else if (var == "fallcount"){
-            } else if (var == "hitshaketime"){
-            } else if (var == "hittime"){
-            } else if (var == "slidetime"){
-                return RuntimeValue(state.slideTime);
-            } else if (var == "ctrltime"){
-            } else if (var == "recovertime"){
-            } else if (var == "xoff"){
-            } else if (var == "yoff"){
-            } else if (var == "zoff"){
-            } else if (var == "xvel"){
-                return RuntimeValue(state.xVelocity);
-            } else if (var == "yvel"){
-                return RuntimeValue(state.yVelocity);
-            } else if (var == "yaccel"){
-                return RuntimeValue(state.yAcceleration);
-            } else if (var == "hitid"){
-            } else if (var == "chainid"){
-            } else if (var == "guarded"){
-            } else if (var == "fall"){
-                return RuntimeValue(state.fall.fall);
-            } else if (var == "fall.damage"){
-            } else if (var == "fall.xvel"){
-            } else if (var == "fall.yvel"){
-                return RuntimeValue(state.fall.yVelocity);
-            } else if (var == "fall.recover"){
-            } else if (var == "fall.time"){
-            } else if (var == "fall.recovertime"){
-            }
-
-            throw MugenException("Unknown gethitvar variable " + var);
         }
 
         if (function == "sysvar"){
@@ -1318,8 +1366,9 @@ public:
                     case ExpressionInfix::Power : {
                         return RuntimeValue(pow(left->evaluate(environment).toNumber(), right->evaluate(environment).toNumber()));
                     }
-                    default : throw MugenException("Can't get here");
                 }
+
+                throw MugenException("Can't get here");
             }
         };
 
@@ -1334,6 +1383,21 @@ public:
         compiled = compileExpressionInfix(expression);
     }
 
+    Value * compileValueList(const Ast::ValueList & value){
+        class ValueList: public Value {
+        public:
+            RuntimeValue evaluate(const Environment & environment) const {
+                /* FIXME */
+                return RuntimeValue(false);
+            }
+        };
+
+        return new ValueList();
+    }
+
+    virtual void onValueList(const Ast::ValueList & value){
+        compiled = compileValueList(value);
+    }
 };
 
 }
