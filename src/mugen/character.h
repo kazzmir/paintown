@@ -21,6 +21,12 @@ namespace Ast{
     class Section;
 }
 
+namespace Mugen{
+namespace Compiler{
+    class Value;
+}
+}
+
 class Bitmap;
 class MugenItemContent;
 class MugenSprite;
@@ -762,8 +768,8 @@ public:
 
     virtual void setX(Ast::Value * value);
     virtual void setY(Ast::Value * value);
-    virtual void setValue(Ast::Value * value);
-    virtual void setVariable(Ast::Value * value);
+    virtual void setValue(Compiler::Value * value);
+    virtual void setVariable(Compiler::Value * value);
 
     virtual inline Ast::Value * getX() const {
         return this->x;
@@ -773,18 +779,18 @@ public:
         return this->y;
     }
 
-    virtual inline Ast::Value * getValue() const {
+    virtual inline Compiler::Value * getValue() const {
         return this->value;
     }
 
-    virtual inline Ast::Value * getVariable() const {
+    virtual inline Compiler::Value * getVariable() const {
         return this->variable;
     }
 
     virtual void addTriggerAll(Ast::Value * trigger);
     virtual void addTrigger(int number, Ast::Value * trigger);
-    virtual void addVariable(int number, Ast::Value * variable);
-    virtual void addSystemVariable(int number, Ast::Value * variable);
+    virtual void addVariable(int number, Compiler::Value * variable);
+    virtual void addSystemVariable(int number, Compiler::Value * variable);
 
     virtual inline HitDefinition & getHit(){
         return hit;
@@ -855,8 +861,10 @@ protected:
     Ast::Value * control;
     Ast::Value * x;
     Ast::Value * y;
-    Ast::Value * value;
-    Ast::Value * variable;
+    Compiler::Value * value;
+
+    /* how is this different from the `variables' map? */
+    Compiler::Value * variable;
     Ast::Value * posX;
     Ast::Value * posY;
 
@@ -871,10 +879,10 @@ protected:
     std::map<int, std::vector<Ast::Value*> > triggers;
 
     /* var(1) and whatnot */
-    std::map<int, Ast::Value*> variables;
+    std::map<int, Compiler::Value*> variables;
     
     /* sysvar(1) and whatnot */
-    std::map<int, Ast::Value*> systemVariables;
+    std::map<int, Compiler::Value*> systemVariables;
 
     HitDefinition hit;
 
@@ -1251,10 +1259,10 @@ public:
 
         virtual void resetStateTime();
 
-        virtual void setVariable(int index, Ast::Value * value);
-        virtual void setSystemVariable(int index, Ast::Value * value);
-        virtual Ast::Value * getVariable(int index) const;
-        virtual Ast::Value * getSystemVariable(int index) const;
+        virtual void setVariable(int index, Compiler::Value * value);
+        virtual void setSystemVariable(int index, Compiler::Value * value);
+        virtual Compiler::Value * getVariable(int index) const;
+        virtual Compiler::Value * getSystemVariable(int index) const;
 
         virtual inline Physics::Type getCurrentPhysics() const {
             return currentPhysics;
@@ -1693,8 +1701,8 @@ protected:
         int stateTime;
     
         /* dont delete these in the destructor, the state controller will do that */
-        std::map<int, Ast::Value*> variables;
-        std::map<int, Ast::Value*> systemVariables;
+        std::map<int, Compiler::Value*> variables;
+        std::map<int, Compiler::Value*> systemVariables;
         Physics::Type currentPhysics;
 
         /* yaccel */
@@ -1721,7 +1729,7 @@ protected:
 
         int matchWins;
 
-        Ast::Value * internalJumpNumber;
+        Compiler::Value * internalJumpNumber;
 
         Behavior * behavior;
         bool blocking;

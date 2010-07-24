@@ -130,24 +130,50 @@ struct RuntimeValue{
 
 class Environment{
 public:
-    Environment(const MugenStage & stage, const Character & character, const std::vector<std::string> commands):
+    Environment(){
+    }
+
+    virtual const Character & getCharacter() const = 0;
+    virtual const MugenStage & getStage() const = 0;
+    virtual const std::vector<std::string> getCommands() const = 0;
+
+    virtual ~Environment(){
+    }
+};
+
+class EmptyEnvironment: public Environment {
+public:
+    EmptyEnvironment(){
+    }
+
+    virtual ~EmptyEnvironment(){
+    }
+
+    virtual const Character & getCharacter() const;
+    virtual const MugenStage & getStage() const;
+    virtual const std::vector<std::string> getCommands() const;
+};
+
+class FullEnvironment: public Environment {
+public:
+    FullEnvironment(const MugenStage & stage, const Character & character, const std::vector<std::string> commands):
     stage(stage),
     character(character),
     commands(commands){
     }
 
-    Environment(const MugenStage & stage, const Character & character):
+    FullEnvironment(const MugenStage & stage, const Character & character):
     stage(stage),
     character(character){
     }
 
-    Environment(const Environment & copy):
+    FullEnvironment(const FullEnvironment & copy):
     stage(copy.stage),
     character(copy.character),
     commands(copy.commands){
     }
 
-    virtual ~Environment(){
+    virtual ~FullEnvironment(){
     }
 
     virtual inline const Character & getCharacter() const {

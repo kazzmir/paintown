@@ -849,7 +849,7 @@ public:
         compiled = compileString(string);
     }
 
-    Value * compileNumber(const Ast::Number & number){
+    static Value * compileNumber(const Ast::Number & number){
         class JustNumber: public Value {
         public:
             JustNumber(double what):
@@ -912,9 +912,25 @@ public:
         }
 
         if (function == "var"){
-            /*
-            int index = (int) compile(function.getArg1())->evaluate(empty).toNumber();
-            */
+            class FunctionVar: public Value{
+            public:
+                FunctionVar(int index):
+                    index(index){
+                    }
+
+                int index;
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    Value * value = environment.getCharacter().getVariable(index);
+                    if (value == 0){
+                        return RuntimeValue(false);
+                    }
+                    return value->evaluate(environment);
+                }
+            };
+            
+            int index = (int) compile(function.getArg1())->evaluate(EmptyEnvironment()).toNumber();
+            return new FunctionVar(index);
 #if 0
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getVariable(index);
@@ -1203,6 +1219,11 @@ Value * compile(const Ast::Value * input){
         throw MugenException(out.str());
     }
     return compiler.compiled;
+}
+
+Value * compile(int immediate){
+    Ast::Number number(immediate);
+    return CompileWalker::compileNumber(number);
 }
 
 }

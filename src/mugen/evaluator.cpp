@@ -556,6 +556,7 @@ public:
         }
 
         if (function == "var"){
+#if 0
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getVariable(index);
             if (value == 0){
@@ -567,6 +568,8 @@ public:
                 */
             }
             return evaluate(value);
+#endif
+            throw MugenException("Doesnt work anymore");
         }
 
         if (function == "numtarget"){
@@ -625,6 +628,7 @@ public:
         }
 
         if (function == "sysvar"){
+#if 0
             int index = (int) toNumber(evaluate(function.getArg1()));
             Ast::Value * value = environment.getCharacter().getSystemVariable(index);
             if (value == 0){
@@ -637,6 +641,8 @@ public:
                 */
             }
             return evaluate(value);
+#endif
+            throw MugenException("Doesn't work anymore");
         }
 
         if (function == "numexplod"){
@@ -820,6 +826,18 @@ RuntimeValue evaluate(const Ast::Value * value, const Environment & environment)
         out << "Error while evaluating expression `" << value->toString() << "': " << e.getReason();
         throw MugenException(out.str());
     }
+}
+
+const Character & EmptyEnvironment::getCharacter() const {
+    throw MugenException("Cannot get a character from an empty environment");
+}
+
+const MugenStage & EmptyEnvironment::getStage() const {
+    throw MugenException("Cannot get a stage from an empty environment");
+}
+
+const std::vector<std::string> EmptyEnvironment::getCommands() const {
+    throw MugenException("Cannot get commands from an empty environment");
 }
 
 }

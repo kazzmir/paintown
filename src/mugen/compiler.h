@@ -19,6 +19,7 @@ namespace Compiler{
     };
 
     Value * compile(const Ast::Value * input);
+    Value * compile(int immediate);
 }
 
 }
