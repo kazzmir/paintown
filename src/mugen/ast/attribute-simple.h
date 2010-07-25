@@ -11,17 +11,28 @@ namespace Ast{
 
 class AttributeSimple: public Attribute {
 public:
+    AttributeSimple(int line, int column, const Identifier * name, const Value * value):
+    Attribute(Simple),
+    name(name),
+    value(value),
+    line(line),
+    column(column){
+    }
     
     AttributeSimple(const Identifier * name, const Value * value):
     Attribute(Simple),
     name(name),
-    value(value){
+    value(value),
+    line(-1),
+    column(-1){
     }
     
     AttributeSimple(const Identifier * name):
     Attribute(Simple),
     name(name),
-    value(0){
+    value(0),
+    line(-1),
+    column(-1){
     }
 
     virtual void walk(Walker & walker){
@@ -35,7 +46,7 @@ public:
 
     virtual Element * copy() const {
         if (value != 0){
-            return new AttributeSimple((Identifier*) name->copy(), (Value*) value->copy());
+            return new AttributeSimple(line, column, (Identifier*) name->copy(), (Value*) value->copy());
         } else {
             return new AttributeSimple((Identifier*) name->copy());
         }
@@ -57,7 +68,12 @@ public:
             try{
                 *value >> v;
             } catch (const Exception & ex){
-                throw Exception("tried to read the wrong type for '" + this->toString() + "' : " + ex.getReason());
+                std::ostringstream out;
+                out << "tried to read the wrong type for '" << this->toString() << "' : " << ex.getReason();
+                if (line != -1 && column != -1){
+                    out << " at line " << line << " column " << column;
+                }
+                throw Exception(out.str());
             }
         }
         return *this;
@@ -103,6 +119,8 @@ public:
 protected:
     const Identifier * name;
     const Value * value;
+    int line;
+    int column;
 };
 
 }

@@ -235,14 +235,20 @@ Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Valu
     return range;
 }
 
-Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
+Ast::Identifier * makeIdentifier(int line, int column, const Value & front, const Value & rest){
     std::list<std::string> ids;
     ids.push_back(*as<std::string*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
         /* this works becuase as() will coerce a void* into Value(void*) */
         ids.push_back(*as<std::string*>((*it).getValue()));
     }
-    Ast::Identifier * object = new Ast::Identifier(ids);
+    Ast::Identifier * object = new Ast::Identifier(line, column, ids);
+    GC::save(object);
+    return object;
+}
+
+Ast::Attribute * makeAttribute(int line, int column, const Value & id, const Value & data){
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(line, column, as<Ast::Identifier*>(id), as<Ast::Value*>(data));
     GC::save(object);
     return object;
 }
@@ -458,11 +464,11 @@ rules:
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
-               | name:identifier s "=" s exp:expr {{ value = makeAttribute(name, exp); }}
+               | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
                | name:identifier s "=" s &line_end {{ value = makeAttribute(name); }}
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
-	identifier = first:name rest:("." name)* {{ value = makeIdentifier(first, rest); }}
+	identifier = line:<line> first:name rest:("." name)* {{ value = makeIdentifier(getCurrentLine(line), getCurrentColumn(line), first, rest); }}
 	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
 	float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, parseDouble(left,right)); }}
           | sign? left:digit+ "." {{ value = makeNumber($1, parseDouble(left)); }}

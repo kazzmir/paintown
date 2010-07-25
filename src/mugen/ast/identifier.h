@@ -14,9 +14,16 @@ namespace Ast{
 
 class Identifier: public Value {
 public:
-    /* theres no real reason to use pointers to strings.. */
+    Identifier(int line, int column, const std::list<std::string> & names):
+    names(names),
+    line(line),
+    column(column){
+    }
+
     Identifier(const std::list<std::string> & names):
-    names(names){
+    names(names),
+    line(-1),
+    column(-1){
     }
 
     static int lowerCase( int c ){
@@ -24,7 +31,7 @@ public:
     }
     
     virtual Element * copy() const {
-        return new Identifier(names);
+        return new Identifier(line, column, names);
     }
 
     static std::string downcase(std::string str){
@@ -42,6 +49,14 @@ public:
     
     virtual std::string getType() const {
         return "identifier";
+    }
+
+    virtual int getLine() const {
+        return line;
+    }
+
+    virtual int getColumn() const {
+        return column;
     }
 
     virtual std::string toString() const {
@@ -83,6 +98,7 @@ public:
 
 protected:
     std::list<std::string> names;
+    int line, column;
 };
 
 static std::list<std::string> toList(const std::string & s){
@@ -94,7 +110,7 @@ static std::list<std::string> toList(const std::string & s){
 class SimpleIdentifier: public Identifier {
 public:
     SimpleIdentifier(const std::string & name):
-    Identifier(toList(name)){
+    Identifier(-1, -1, toList(name)){
     }
 };
 

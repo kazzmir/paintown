@@ -443,6 +443,15 @@ public:
         memo_size = newSize;
     }
 
+    /* I'm sure this can be optimized. It only takes into account
+     * the last position used to get line information rather than
+     * finding a position closest to the one asked for.
+     * So if the last position is 20 and the current position being requested
+     * is 15 then this function will compute the information starting from 0.
+     * If the information for 10 was computed then that should be used instead.
+     * Maybe something like, sort the positions, find closest match lower
+     * than the position and start from there.
+     */
     LineInfo makeLineInfo(int last_line_position, int position){
         int line = line_info[last_line_position].line;
         int column = line_info[last_line_position].column;
@@ -585,6 +594,16 @@ private:
     int last_line_info;
     std::map<int, LineInfo> line_info;
 };
+
+static int getCurrentLine(const Value & value){
+    Stream::LineInfo * info = (Stream::LineInfo*) value.getValue();
+    return info->line;
+}
+
+static int getCurrentColumn(const Value & value){
+    Stream::LineInfo * info = (Stream::LineInfo*) value.getValue();
+    return info->column;
+}
 
 class RuleTrace{
 public:

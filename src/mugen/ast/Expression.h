@@ -173,7 +173,7 @@ public:
             case BitwiseOr : return "|";
             case BitwiseXOr : return "^";
             case BitwiseAnd : return "&";
-            case Assignment : return "!=";
+            case Assignment : return ":=";
             case Equals : return "=";
             case Unequals : return "!=";
             case GreaterThanEquals : return ">=";
