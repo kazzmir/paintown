@@ -856,8 +856,10 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
             fall.fall |= hit.fall.fall->evaluate(FullEnvironment(stage, guy)).toBool();
         }
         fall.yVelocity = hit.fall.yVelocity;
+        returnControlTime = hit.airGuardControlTime == 0 ? hit.groundSlideTime : hit.airGuardControlTime;
     } else {
         animationType = hit.animationType;
+        returnControlTime = hit.guardControlTime == 0 ? hit.groundSlideTime : hit.guardControlTime;
         hitTime = hit.groundHitTime;
         slideTime = hit.groundSlideTime;
         xVelocity = hit.groundVelocity.x;

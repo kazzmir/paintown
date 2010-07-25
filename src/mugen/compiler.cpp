@@ -1009,6 +1009,17 @@ public:
 
                 return new HitVarSlideTime();
             } else if (var == "ctrltime"){
+                /* ctrltime: Returns time before player regains control
+                 * after guarding the hit. (int)
+                 */
+                class HitVarCtrlTime: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).returnControlTime);
+                    }
+                };
+
+                return new HitVarCtrlTime();
             } else if (var == "recovertime"){
             } else if (var == "xoff"){
             } else if (var == "yoff"){
@@ -1113,22 +1124,32 @@ public:
             
             int index = (int) compile(function.getArg1())->evaluate(EmptyEnvironment()).toNumber();
             return new FunctionSysVar(index);
-
-#if 0
-            int index = (int) toNumber(evaluate(function.getArg1()));
-            Ast::Value * value = environment.getCharacter().getSystemVariable(index);
-            if (value == 0){
-                /* non-existant variables are just false */
-                return RuntimeValue(false);
-                /*
-                ostringstream out;
-                out << "No system variable for index " << index;
-                throw MugenException(out.str());
-                */
-            }
-            return evaluate(value);
-#endif
         }
+
+        if (function == "selfanimexist"){
+            class SelfAnimExist: public Value {
+            public:
+                SelfAnimExist(Value * animation):
+                    animation(animation){
+                    }
+
+                Value * animation;
+
+                virtual ~SelfAnimExist(){
+                    delete animation;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME this should actually be animexist... self checks if player has animation.
+                       If the opponent had given animation it will not be checked */
+                    int animation = (int) this->animation->evaluate(environment).toNumber();
+                    return RuntimeValue(environment.getCharacter().hasAnimation(animation));
+                }
+            };
+
+            return new SelfAnimExist(compile(function.getArg1()));
+        }
+
 
 #if 0
         if (function == "numtarget"){
@@ -1160,13 +1181,7 @@ public:
             return RuntimeValue((int) (environment.getCharacter().getCurrentAnimation()->getPosition() + 1));
         }
 
-        if (function == "selfanimexist"){
-	    /* FIXME this should actually be animexist... self checks if player has animation.
-	    If the opponent had given animation it will not be checked */
-            int animation = (int) toNumber(evaluate(function.getArg1()));
-            return RuntimeValue(environment.getCharacter().hasAnimation(animation));
-        }
-
+        
         /* Gets the animation-time elapsed since the start of a specified element
          * of the current animation action. Useful for synchronizing events to
          * elements of an animation action.
