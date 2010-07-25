@@ -109,7 +109,7 @@ value(NULL),
 variable(NULL),
 posX(NULL),
 posY(NULL),
-time(30),
+time(NULL),
 animation(30),
 changeMoveType(false),
 changeStateType(false),
@@ -144,6 +144,7 @@ StateController::~StateController(){
     delete variable;
     delete posX;
     delete posY;
+    delete time;
 }
 
 /*
@@ -570,6 +571,11 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
             FullEnvironment env(stage, guy);
             int x = guy.getRX() + (int) posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
             int y = guy.getRY() + (int) posY->evaluate(env).toNumber();
+            /* 30 is the default I think.. */
+            int time = 30;
+            if (this->time != NULL){
+                time = (int) this->time->evaluate(env).toNumber();
+            }
             stage.doSuperPause(time, animation, x, y, sound.group, sound.item); 
             break;
         }
@@ -1747,9 +1753,9 @@ void Character::parseState(Ast::Section * section){
                     simple >> type;
                     controller->setStateType(type);
                 } else if (simple == "time"){
-                    int t;
-                    simple >> t;
-                    controller->setTime(t);
+                    const Ast::Value * time;
+                    simple >> time;
+                    controller->setTime(Compiler::compile(time));
                 } else if (simple == "anim"){
                     string what;
                     simple >> what;

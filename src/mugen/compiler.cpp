@@ -1424,24 +1424,33 @@ public:
             return compile(0);
         }
 
-#if 0
+        if (function == "animelemno"){
+            class AnimElemNo: public Value{
+            public:
+                AnimElemNo(Value * index):
+                    index(index){
+                    }
+
+                Value * index;
+
+                virtual ~AnimElemNo(){
+                    delete index;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
+                    return RuntimeValue((int) (environment.getCharacter().getCurrentAnimation()->getPosition() + 1));
+                }
+            };
+
+            return new AnimElemNo(compile(function.getArg1()));
+        }
+
         if (function == "numtarget"){
             /* FIXME */
-            return RuntimeValue(0);
+            return compile(0);
         }
-
-        
-
-        
-
-        
-        if (function == "animelemno"){
-            /* FIXME */
-            unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
-            return RuntimeValue((int) (environment.getCharacter().getCurrentAnimation()->getPosition() + 1));
-        }
-
-       #endif
 
         std::ostringstream out;
         out << "Unknown function '" << function.toString() << "'";

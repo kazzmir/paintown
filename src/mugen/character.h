@@ -832,8 +832,8 @@ public:
         return debug;
     }
 
-    virtual inline void setTime(int t){
-        time = t;
+    virtual inline void setTime(Compiler::Value * time){
+        this->time = time;
     }
 
     virtual inline void setAnimation(int a){
@@ -872,7 +872,7 @@ protected:
     Compiler::Value * posX;
     Compiler::Value * posY;
 
-    int time;
+    Compiler::Value * time;
     int animation;
     struct Sound {
         Sound():group(-1), item(-1){}
