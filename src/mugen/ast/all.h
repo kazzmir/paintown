@@ -23,5 +23,6 @@
 #include "extra.h"
 #include "function.h"
 #include "key.h"
+#include "helper.h"
 
 #endif

@@ -1486,15 +1486,16 @@ void Character::parseStateDefinition(Ast::Section * section){
                 if (simple == "type"){
                     string type;
                     simple >> type;
-                    if (type == "S"){
+                    type = PaintownUtil::lowerCaseAll(type);
+                    if (type == "s"){
                         definition->setType(State::Standing);
-                    } else if (type == "C"){
+                    } else if (type == "c"){
                         definition->setType(State::Crouching);
-                    } else if (type == "A"){
+                    } else if (type == "a"){
                         definition->setType(State::Air);
-                    } else if (type == "L"){
+                    } else if (type == "l"){
                         definition->setType(State::LyingDown);
-                    } else if (type == "U"){
+                    } else if (type == "u"){
                         definition->setType(State::Unchanged);
                     } else {
                         ostringstream out;

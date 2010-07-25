@@ -78,6 +78,12 @@ Ast::Value * makeExpression(){
     return object;
 }
 
+Ast::Value * makeHelper(const Value & name, const Value & id){
+    Ast::Value * helper = new Ast::Helper(std::string(as<const char*>(name)), as<Ast::Value*>(id));
+    GC::save(helper);
+    return helper;
+}
+
 Ast::Value * makeKeyword(const char * name){
     Ast::Value * keyword = new Ast::Keyword(name);
     GC::save(keyword);
@@ -619,11 +625,20 @@ rules:
 
 	value = float
 	      | integer
+          | helper
 	      | keyword
 	      | !keyword identifier
 	      | range
 	      | string
           | hitflag
+        
+    helper = name:helper-name s "," s id:helper-identifier {{
+        value = makeHelper(name, id);
+    }}
+
+    helper-name = "enemynear"
+    helper-identifier = keyword
+                      | !keyword identifier
 
     # FIXME: return proper hitflag
     hitflag = hitflag_char+ hitflag_modifier? {{ value = makeSimpleIdentifier("A"); }}

@@ -71,6 +71,51 @@ public:
             return new Alive();
         }
 
+        if (identifier == "numenemy"){
+            /* FIXME: return more than 1 in team mode */
+            return compile(1);
+        }
+
+        if (identifier == "numpartner"){
+            /* FIXME: return 1 in team mode */
+            return compile(1);
+        }
+
+        if (identifier == "p1name" ||
+            identifier == "name"){
+            class P1Name: public Value{
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getName());
+                }
+            };
+
+            return new P1Name();
+        }
+
+        if (identifier == "p2name"){
+            class P2Name: public Value{
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(enemy->getName());
+                }
+            };
+
+            return new P2Name();
+        }
+
+        if (identifier == "authorname"){
+            class AuthorName: public Value{
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getAuthor());
+                }
+            };
+
+            return new AuthorName();
+        }
+
         if (identifier == "facing"){
             class Facing: public Value {
             public:
@@ -818,6 +863,16 @@ public:
         std::ostringstream out;
         out << "Don't know how to compile identifier '" << identifier.toString() << "'";
         throw MugenException(out.str());
+    }
+
+    Value * compileHelper(const Ast::Helper & helper){
+        std::ostringstream out;
+        out << "Don't know how to compile helper '" << helper.toString() << "'";
+        throw MugenException(out.str());
+    }
+    
+    virtual void onHelper(const Ast::Helper & helper){
+        compiled = compileHelper(helper);
     }
     
     virtual void onIdentifier(const Ast::Identifier & identifier){
@@ -1651,7 +1706,14 @@ Value::~Value(){
  */
 Value * compile(const Ast::Value * input){
     CompileWalker compiler;
-    input->walk(compiler);
+    try{
+        input->walk(compiler);
+    } catch (const MugenException & e){
+        std::ostringstream out;
+        out << e.getReason() << " while compiling expression '" << input->toString() << "'";
+        throw MugenException(out.str());
+    }
+
     if (compiler.compiled == NULL){
         std::ostringstream out;
         out << "Unable to compile expression '" << input->toString() << "'";

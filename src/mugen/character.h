@@ -1004,8 +1004,12 @@ public:
 	virtual void nextPalette();
 	virtual void priorPalette();
 	
-	virtual inline const std::string &getName() const {
+	virtual inline const std::string & getName() const {
             return name;
+        }
+
+        virtual inline const std::string & getAuthor() const {
+            return author;
         }
 	
 	virtual inline const std::string &getDisplayName() const {
