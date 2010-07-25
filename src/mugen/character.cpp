@@ -1525,8 +1525,8 @@ void Character::parseStateDefinition(Ast::Section * section){
                 } else if (simple == "anim"){
                     definition->setAnimation(Compiler::compile(simple.getValue()));
                 } else if (simple == "velset"){
-                    Ast::Value * x;
-                    Ast::Value * y;
+                    const Ast::Value * x;
+                    const Ast::Value * y;
                     simple >> x >> y;
                     definition->setVelocity(Compiler::compile(x), Compiler::compile(y));
                 } else if (simple == "ctrl"){
@@ -1763,8 +1763,8 @@ void Character::parseState(Ast::Section * section){
                     }
                 } else if (simple == "pos"){
                     try{
-                        Ast::Value * x;
-                        Ast::Value * y;
+                        const Ast::Value * x;
+                        const Ast::Value * y;
                         simple >> x >> y;
                         controller->setPosition(Compiler::compile(x), Compiler::compile(y));
                     } catch (const Ast::Exception & e){
@@ -1847,7 +1847,7 @@ void Character::parseState(Ast::Section * section){
                         /* has guard */
                         if (container->hasMultiple()){
                             container->reset();
-                            Ast::Value * value;
+                            const Ast::Value * value;
                             *container >> value;
                             controller->getHit().damage.damage = Compiler::compile(value);
                             *container >> value;

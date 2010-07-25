@@ -40,8 +40,9 @@ public:
         std::cout << toString() << std::endl;
     }
     
-    virtual const Value & operator>>(Value *& value) const {
-        fail("value");
+    virtual const Value & operator>>(const Value *& value) const {
+        value = this;
+        // fail("value");
         return *this;
     }
 
