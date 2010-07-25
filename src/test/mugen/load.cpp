@@ -49,6 +49,10 @@ int main(int argc, char ** argv){
         load(argv[1]);
     }
 
+#ifdef USE_SDL
+    SDL_Quit();
+#endif
+
     // for (int i = 0; i < 3; i++){
       // }
 }

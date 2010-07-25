@@ -1169,7 +1169,9 @@ public:
                 }
             };
             
-            int index = (int) compile(function.getArg1())->evaluate(EmptyEnvironment()).toNumber();
+            Value * compiled = compile(function.getArg1());
+            int index = (int) compiled->evaluate(EmptyEnvironment()).toNumber();
+            delete compiled;
             return new FunctionVar(index);
         }
 
@@ -1191,7 +1193,9 @@ public:
                 }
             };
             
-            int index = (int) compile(function.getArg1())->evaluate(EmptyEnvironment()).toNumber();
+            Value * compiled = compile(function.getArg1());
+            int index = (int) compiled->evaluate(EmptyEnvironment()).toNumber();
+            delete compiled;
             return new FunctionSysVar(index);
         }
 
