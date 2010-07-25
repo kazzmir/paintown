@@ -1085,10 +1085,10 @@ else:
 # staticEnv.Append(CCFLAGS = ['-Werror'])
 
 use = env
-shared = SConscript( 'src/SConstruct', variant_dir = buildDir, exports = ['use'] );
+shared = SConscript('src/SConscript', variant_dir = buildDir, exports = ['use'] );
 
 use = staticEnv
-static = SConscript( 'src/SConstruct', variant_dir = buildDirStatic, exports = ['use'] )
+static = SConscript('src/SConscript', variant_dir = buildDirStatic, exports = ['use'] )
 
 scripts = Split("""
 src/script/modules/paintown.py
