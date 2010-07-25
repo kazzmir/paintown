@@ -262,11 +262,33 @@ protected:
 
 class Stream{
 public:
+    struct LineInfo{
+        LineInfo(int line, int column):
+        line(line),
+        column(column){
+        }
+
+        LineInfo(const LineInfo & copy):
+        line(copy.line),
+        column(copy.column){
+        }
+
+        LineInfo():
+        line(-1),
+        column(-1){
+        }
+
+        int line;
+        int column;
+    };
+
+public:
     /* read from a file */
     Stream(const std::string & filename):
     temp(0),
     buffer(0),
-    farthest(0){
+    farthest(0),
+    last_line_info(-1){
         std::ifstream stream;
         /* ios::binary is needed on windows */
         stream.open(filename.c_str(), std::ios::in | std::ios::binary);
@@ -283,6 +305,8 @@ public:
         buffer = temp;
         stream.close();
 
+        line_info[-1] = LineInfo(1, 1);
+
         createMemo();
     }
 
@@ -290,8 +314,10 @@ public:
     Stream(const char * in):
     temp(0),
     buffer(in),
-    farthest(0){
+    farthest(0),
+    last_line_info(-1){
         max = strlen(buffer);
+        line_info[-1] = LineInfo(1, 1);
         createMemo();
     }
 
@@ -299,11 +325,12 @@ public:
     Stream(const char * in, int length):
     temp(0),
     buffer(in),
-    farthest(0){
+    farthest(0),
+    last_line_info(-1){
         max = length;
+        line_info[-1] = LineInfo(1, 1);
         createMemo();
     }
-
 
     void createMemo(){
         memo_size = 1024 * 2;
@@ -375,6 +402,36 @@ public:
         delete[] memo;
         memo = newMemo;
         memo_size = newSize;
+    }
+
+    LineInfo makeLineInfo(int last_line_position, int position){
+        int line = line_info[last_line_position].line;
+        int column = line_info[last_line_position].column;
+        for (int i = last_line_position + 1; i < position; i++){
+            if (buffer[i] == '\\n'){
+                line += 1;
+                column = 1;
+            } else {
+                column += 1;
+            }
+        }
+        return LineInfo(line, column);
+    }
+
+    void updateLineInfo(int position){
+        if (line_info.find(position) == line_info.end()){
+            if (position > last_line_info){
+                line_info[position] = makeLineInfo(last_line_info, position);
+            } else {
+                line_info[position] = makeLineInfo(0, position);
+            }
+            last_line_info = position;
+        }
+    }
+
+    const LineInfo & getLineInfo(int position){
+        updateLineInfo(position);
+        return line_info[position];
     }
 
     std::string reportError(){
@@ -486,6 +543,8 @@ private:
     int farthest;
     std::vector<std::string> rule_backtrace;
     std::vector<std::string> last_trace;
+    int last_line_info;
+    std::map<int, LineInfo> line_info;
 };
 
 class RuleTrace{
@@ -860,6 +919,9 @@ class CodeGenerator:
         self.fail()
 
     def generate_verbatim(self, *args):
+        self.fail()
+
+    def generate_line(self, *args):
         self.fail()
     
     def generate_call_rule(self, *args):
@@ -1618,7 +1680,14 @@ goto %s;
         return data
 
     def generate_bind(me, pattern, peg, result, stream, failure, tail, peg_args):
-        data = """
+        if isinstance(pattern.pattern, PatternLine):
+            name = gensym("line_info");
+            data = """
+Stream::LineInfo %s = %s.getLineInfo(%s.getPosition());
+%s = &%s;
+""" % (name, stream, result, pattern.variable, name)
+        else:
+            data = """
 %s
 %s = %s.getValues();
 """ % (pattern.pattern.generate_cpp(peg, result, stream, failure, tail, peg_args).strip(), pattern.variable, result)
@@ -2121,6 +2190,33 @@ class PatternRange(Pattern):
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_range(self, result, previous_result, stream, failure)
+
+class PatternLine(Pattern):
+    def __init__(self):
+        Pattern.__init__(self)
+
+    def ensureRules(self, find):
+        pass
+
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
+    
+    def contains(self):
+        return 1
+
+    def generate_bnf(self):
+        return '<item>'
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_line(self, result, previous_result, stream, failure)
+
+    def generate_python(self, result, previous_result, stream, failure):
+        return PythonGenerator().generate_line(self, result, previous_result, stream, failure)
+        
+    def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
+        return CppGenerator().generate_line(self, peg, result, stream, failure, tail, peg_args)
         
 class PatternVerbatim(Pattern):
     def __init__(self, letters, options = None):
@@ -2947,6 +3043,7 @@ value = item
                         PatternRule("void"),
                         PatternRule("range"),
                         PatternRule("string"),
+                        PatternRule("line"),
                         PatternRule("ascii"),
                         PatternRule("call_rule"),
                         PatternRule("sub_pattern"),
@@ -2969,6 +3066,12 @@ value = pattern
                 PatternRule("spaces"),
                 PatternBind('code', PatternRule('code')),
                 PatternCode("""value = code.code"""),
+                ]),
+            ]),
+        Rule("line", [
+            PatternSequence([
+                PatternVerbatim("<line>"),
+                PatternCode("""value = peg.PatternLine()""")
                 ]),
             ]),
         Rule("ascii", [
