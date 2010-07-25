@@ -54,7 +54,7 @@ colors(0),
 offsetx(0),
 offsety(0),
 bmp(0),
-pcx(0),
+pcx(NULL),
 pcxsize(0),
 currentBank(0){
     std::string temp = file.path();
@@ -96,6 +96,7 @@ currentBank(0){
 }
 #endif
 
+/* is this constructor ever used? should it make deep copies of bmp and pcx? */
 MugenFont::MugenFont( const MugenFont &copy ){
     this->type = copy.type;
     this->width = copy.width;
@@ -106,11 +107,16 @@ MugenFont::MugenFont( const MugenFont &copy ){
     this->offsetx = copy.offsetx;
     this->offsety = copy.offsety;
     this->bmp = copy.bmp;
+    this->pcx = copy.pcx;
 }
 
 MugenFont::~MugenFont(){
-    if(bmp){
+    if (bmp){
         delete bmp;
+    }
+
+    if (pcx){
+        delete[] pcx;
     }
 }
     
