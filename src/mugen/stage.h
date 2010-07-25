@@ -61,11 +61,13 @@ public:
             return animations;
         }*/
 	
-	inline double getCameraX() { return camerax; }
-	inline double getCameraY() { return cameray; }
-	inline int getTension(){ return tension; }
-	inline int getFloorTension(){ return floortension; }
-	inline int getZ(){ return zoffset; }
+	inline double getCameraX() const { return camerax; }
+	inline double getCameraY() const { return cameray; }
+	inline int getTension() const { return tension; }
+	inline int getFloorTension() const { return floortension; }
+	inline int getZ() const { return zoffset; }
+        /* get position of the floor */
+        int getFloor() const;
 	
 	inline unsigned long int getTicks(){ return ticker; }
 	

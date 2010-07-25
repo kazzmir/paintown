@@ -445,6 +445,10 @@ void MugenStage::loadSectionReflection(Ast::Section * section){
     }
 }
 
+int MugenStage::getFloor() const {
+    return currentZOffset();
+}
+
 int MugenStage::currentZOffset() const {
     if (zoffsetlink != DEFAULT_BACKGROUND_ID){
 	// Link zoffset to id

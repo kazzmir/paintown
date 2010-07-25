@@ -87,7 +87,8 @@ public:
             return new Facing();
 	}
 
-        if (identifier == "backedgebodydist"){
+        if (identifier == "backedgebodydist" ||
+            identifier == "backedgedist"){
             class BackEdgeBodyDist: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -99,6 +100,16 @@ public:
 
             return new BackEdgeBodyDist();
         }
+
+        /*
+        if (identifier == "backedgedist"){
+            class BackEdgeDist: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                }
+            };
+        }
+        */
 
         if (identifier == "frontedgebodydist"){
             class FrontEdgeBodyDist: public Value {
@@ -1350,6 +1361,25 @@ public:
             };
 
             return new VelY();
+        }
+
+        if (keyword == "screenpos y"){
+            class ScreenPosY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* top of the screen is 0
+                     * floor is some positive integer below that.
+                     * character position: positive is above ground, negative below.
+                     * absolute position is floor - character - top
+                     */
+                    int floor = environment.getStage().getFloor();
+                    int y = environment.getCharacter().getYPosition();
+                    int position = floor - y;
+                    return RuntimeValue(position);
+                }
+            };
+
+            return new ScreenPosY();
         }
         
         if (keyword == "pos y"){
