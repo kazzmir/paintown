@@ -866,6 +866,28 @@ public:
     }
 
     Value * compileHelper(const Ast::Helper & helper){
+        if (helper == "enemynear"){
+            class EnemyNear: public Value {
+            public:
+                EnemyNear(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~EnemyNear(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    FullEnvironment redirected(environment.getStage(), *enemy, environment.getCommands());
+                    return argument->evaluate(redirected);
+                }
+            };
+            return new EnemyNear(compile(helper.getOriginal()));
+        }
+
         std::ostringstream out;
         out << "Don't know how to compile helper '" << helper.toString() << "'";
         throw MugenException(out.str());

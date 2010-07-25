@@ -41,7 +41,7 @@ public:
     }
 
     bool operator==(const std::string & str) const {
-        return downcase(toString()) == downcase(str);
+        return downcase(name) == downcase(str);
     }
     
     virtual std::string getType() const {
