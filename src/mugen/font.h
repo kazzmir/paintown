@@ -26,7 +26,9 @@ class MugenFont : public Font {
 public:
     MugenFont( const Filesystem::AbsolutePath & file );
     // MugenFont( const char * file );
+private:
     MugenFont( const MugenFont &copy );
+public:
     virtual ~MugenFont();
     
     MugenFont & operator=( const MugenFont &copy );
