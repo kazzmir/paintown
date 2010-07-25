@@ -4,6 +4,11 @@ all:
 	@scons -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
+# Same as `all' but shows time taken by scons
+time:
+	@scons --debug=time -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"
+	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
+
 test:
 	@scons -j `python misc/cores.py` test-all
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null
