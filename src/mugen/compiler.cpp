@@ -87,6 +87,32 @@ public:
             return new Facing();
 	}
 
+        if (identifier == "backedgebodydist"){
+            class BackEdgeBodyDist: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int x = environment.getCharacter().getBackX();
+                    return RuntimeValue(PaintownUtil::min(x - environment.getStage().maximumLeft(),
+                                                          environment.getStage().maximumRight() - x));
+                }
+            };
+
+            return new BackEdgeBodyDist();
+        }
+
+        if (identifier == "frontedgebodydist"){
+            class FrontEdgeBodyDist: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int x = environment.getCharacter().getFrontX();
+                    return RuntimeValue(PaintownUtil::min(x - environment.getStage().maximumLeft(),
+                                                          environment.getStage().maximumRight() - x));
+                }
+            };
+
+            return new FrontEdgeBodyDist();
+        }
+
         if (identifier == "life"){
             class Life: public Value {
             public:
@@ -958,7 +984,9 @@ public:
             std::string var = function.getArg1()->toString();
             if (var == "xveladd"){
             } else if (var == "yveladd"){
+                /* TODO */
             } else if (var == "type"){
+                /* TODO */
             } else if (var == "animtype"){
                 class HitVarAnimType: public HitVar {
                 public:
@@ -987,6 +1015,7 @@ public:
 
                 return new HitVarGroundType();
             } else if (var == "damage"){
+                /* TODO */
             } else if (var == "hitcount"){
                 class HitVarHitCount: public HitVar {
                 public:
@@ -997,8 +1026,11 @@ public:
 
                 return new HitVarHitCount();
             } else if (var == "fallcount"){
+                /* TODO */
             } else if (var == "hitshaketime"){
+                /* TODO */
             } else if (var == "hittime"){
+                /* TODO */
             } else if (var == "slidetime"){
                 class HitVarSlideTime: public HitVar {
                 public:
@@ -1021,9 +1053,27 @@ public:
 
                 return new HitVarCtrlTime();
             } else if (var == "recovertime"){
+                /* TODO */
+            } else if (var == "isbound"){
+                /* isbound: True if the player is the subject of an
+                 * attacker's TargetBind controller. Useful to prevent being stuck
+                 * in thrown states. (int)
+                 */
+                /* FIXME */
+                class HitVarIsBound: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(false);
+                    }
+                };
+
+                return new HitVarIsBound();
             } else if (var == "xoff"){
+                /* TODO */
             } else if (var == "yoff"){
+                /* TODO */
             } else if (var == "zoff"){
+                /* TODO */
             } else if (var == "xvel"){
                 class HitVarXVel: public HitVar {
                 public:
@@ -1052,8 +1102,11 @@ public:
 
                 return new HitVarYAccel();
             } else if (var == "hitid"){
+                /* TODO */
             } else if (var == "chainid"){
+                /* TODO */
             } else if (var == "guarded"){
+                /* TODO */
             } else if (var == "fall"){
                 class HitVarFall: public HitVar {
                 public:
@@ -1064,7 +1117,9 @@ public:
 
                 return new HitVarFall();
             } else if (var == "fall.damage"){
+                /* TODO */
             } else if (var == "fall.xvel"){
+                /* TODO */
             } else if (var == "fall.yvel"){
                 class HitVarFallYVel: public HitVar {
                 public:
@@ -1075,8 +1130,11 @@ public:
 
                 return new HitVarFallYVel();
             } else if (var == "fall.recover"){
+                /* TODO */
             } else if (var == "fall.time"){
+                /* TODO */
             } else if (var == "fall.recovertime"){
+                /* TODO */
             }
 
             throw MugenException("Unknown gethitvar variable " + var);
@@ -1150,6 +1208,44 @@ public:
             return new SelfAnimExist(compile(function.getArg1()));
         }
 
+        /* Gets the animation-time elapsed since the start of a specified element
+         * of the current animation action. Useful for synchronizing events to
+         * elements of an animation action.
+         *
+         * (reminder: first element of an action is element 1, not 0)
+         */
+        if (function == "animelemtime"){
+            /* FIXME */
+            return compile(0);
+        }
+
+        if (function == "animelem"){
+            class FunctionAnimElem: public Value {
+            public:
+                FunctionAnimElem(Value * index):
+                    index(index){
+                    }
+
+                Value * index;
+
+                virtual ~FunctionAnimElem(){
+                    delete index;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
+                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    if (animation->getPosition() + 1 == index){
+                        /* handle the second argument of animelem here */
+                        return RuntimeValue(animation->getTicks() == 0);
+                    }
+                    return RuntimeValue(false);
+
+                }
+            };
+            return new FunctionAnimElem(compile(function.getArg1()));
+            // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
+        }
 
 #if 0
         if (function == "numtarget"){
@@ -1164,35 +1260,14 @@ public:
             return RuntimeValue(0);
         }
 
-        if (function == "animelem"){
-            unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
-            MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
-            if (animation->getPosition() + 1 == index){
-                /* handle the second argument of animelem here */
-                return RuntimeValue(animation->getTicks() == 0);
-            }
-            return RuntimeValue(false);
-            // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
-        }
-
+        
         if (function == "animelemno"){
             /* FIXME */
             unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
             return RuntimeValue((int) (environment.getCharacter().getCurrentAnimation()->getPosition() + 1));
         }
 
-        
-        /* Gets the animation-time elapsed since the start of a specified element
-         * of the current animation action. Useful for synchronizing events to
-         * elements of an animation action.
-         *
-         * (reminder: first element of an action is element 1, not 0)
-         */
-        if (function == "animelemtime"){
-            /* FIXME */
-            return RuntimeValue(0);
-        }
-#endif
+       #endif
 
         std::ostringstream out;
         out << "Unknown function '" << function.toString() << "'";

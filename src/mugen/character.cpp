@@ -3177,8 +3177,26 @@ bool Character::isAttacking(){
     return false;
 }
 
-int Character::getWidth() const{
+int Character::getWidth() const {
     return groundfront;
+}
+
+int Character::getBackWidth() const {
+    return groundback;
+}
+        
+int Character::getBackX() const {
+    if (getFacing() == Object::FACING_LEFT){
+        return getRX() + getBackWidth();
+    }
+    return getRX() - getBackWidth();
+}
+
+int Character::getFrontX() const {
+    if (getFacing() == Object::FACING_LEFT){
+        return getRX() + getWidth();
+    }
+    return getRX() - getWidth();
 }
 
 Network::Message Character::getCreateMessage(){

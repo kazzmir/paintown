@@ -169,7 +169,8 @@ public:
         Player2Side
     };
 	
-
+    int maximumRight() const;
+    int maximumLeft() const;
 protected:
     struct cymk_holder{
         cymk_holder():c(0),m(0),y(0),k(0){}
@@ -189,9 +190,6 @@ protected:
     void physics(Object * o);
     bool doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2);
     bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
-
-    int maximumRight() const;
-    int maximumLeft() const;
 
 protected:
 

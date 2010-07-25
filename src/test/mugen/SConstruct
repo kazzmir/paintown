@@ -12,6 +12,7 @@ init.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
 test/mugen/compiler.cpp
+test/mugen/stage.cpp
 test/mugen/sprite.cpp
 test/mugen/sound.cpp
 test/mugen/exception.cpp
@@ -58,6 +59,15 @@ test/exceptions/exception.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
 test/windows/system.cpp
+test/game/console.cpp
+test/world.cpp
+test/mugen/config.cpp
+test/mugen/characterhud.cpp
+test/mugen/behavior.cpp
+test/gui/fadetool.cpp
+test/mugen/font.cpp
+test/mugen/reader.cpp
+test/mugen/section.cpp
 """)
 
 stage_source = Split("""

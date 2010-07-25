@@ -1059,6 +1059,12 @@ public:
 	virtual bool isGrabbable(Object*);
 	virtual bool isAttacking();
 	virtual int getWidth() const;
+        virtual int getBackWidth() const;
+
+        /* absolute X coordinate of the back of the character */
+        virtual int getBackX() const;
+        /* same thing for the front */
+        virtual int getFrontX() const;
 	virtual Network::Message getCreateMessage();
 	virtual void getAttackCoords(int&, int&);
 	virtual double minZDistance() const;
