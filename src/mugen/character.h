@@ -1337,7 +1337,10 @@ public:
         /* `this' character guarded `enemy' */
         void guarded(Character * enemy, const HitDefinition & hit);
 
+        /* true if the player is holding back */
         bool isBlocking(const HitDefinition & hit);
+        /* true if the player was attacked and blocked it */
+        bool isGuarding() const;
 
         virtual const HitState & getHitState() const {
             return hitState;
@@ -1742,6 +1745,8 @@ protected:
         Compiler::Value * internalJumpNumber;
 
         Behavior * behavior;
+
+        /* true if the player is holding the back button */
         bool blocking;
 
         //! regenerate health?
@@ -1749,7 +1754,12 @@ protected:
         bool regenerating;
         int regenerateTime;
         int regenerateHealthDifference;
+
+        /* used to communicate the need to guard in the engine */
         bool needToGuard;
+
+        /* true if the player is currently guarding an attack */
+        bool guarding;
 };
 
 }

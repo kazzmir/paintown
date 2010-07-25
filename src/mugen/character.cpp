@@ -962,6 +962,7 @@ void Character::initialize(){
     airjumpnum = 0;
     airjumpheight = 35;
     blocking = false;
+    guarding = false;
     behavior = NULL;
 
     sparkno = 0;
@@ -2450,6 +2451,7 @@ void Character::doubleJump(MugenStage & stage, const vector<string> & inputs){
 }
 
 void Character::stopGuarding(MugenStage & stage, const vector<string> & inputs){
+    guarding = false;
     if (stateType == StateType::Crouch){
         changeState(stage, Crouching, inputs);
     } else if (stateType == StateType::Air){
@@ -2864,6 +2866,10 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
 
     if (needToGuard){
         needToGuard = false;
+        /* misnamed state, but this is the first guard state and will
+         * eventually transition to stand/crouch/air guard
+         */
+        guarding = true;
         changeState(stage, Mugen::StartGuardStand, active);
     }
 
@@ -3239,12 +3245,17 @@ void Character::resetPlayer(){
 }
         
 bool Character::isBlocking(const HitDefinition & hit){
-    /* can only block if in the proper state relative to the hit def */
+    /* FIXME: can only block if in the proper state relative to the hit def */
     return hasControl() && blocking;
+}
+
+bool Character::isGuarding() const {
+    return guarding;
 }
         
 void Character::guarded(Character * enemy, const HitDefinition & hit){
     lastTicket = enemy->getTicket();
+    /* the character will transition to the guard state when he next acts */
     needToGuard = true;
     bool inAir = getY() > 0;
     if (inAir){

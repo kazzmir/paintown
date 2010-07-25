@@ -558,6 +558,18 @@ public:
             return new Ctrl();
         }
 
+        if (identifier == "MoveGuarded"){
+            class MoveGuarded: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(enemy->isGuarding());
+                }
+            };
+
+            return new MoveGuarded();
+        }
+
         /* god I need a drink */
 
         if (identifier == "stateno"){
