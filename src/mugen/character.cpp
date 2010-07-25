@@ -2785,6 +2785,10 @@ bool Character::isPaused(){
     return hitState.shakeTime > 0;
 }
 
+int Character::pauseTime() const {
+    return hitState.shakeTime;
+}
+
 /*
 InputMap<Mugen::Keys> & Character::getInput(){
     if (getFacing() == Object::FACING_RIGHT){

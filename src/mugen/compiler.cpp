@@ -111,7 +111,8 @@ public:
         }
         */
 
-        if (identifier == "frontedgebodydist"){
+        if (identifier == "frontedgebodydist" ||
+            identifier == "frontedgedist"){
             class FrontEdgeBodyDist: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -556,6 +557,17 @@ public:
             };
 
             return new Ctrl();
+        }
+
+        if (identifier == "HitPauseTime"){
+            class HitPauseTime: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().pauseTime());
+                }
+            };
+
+            return new HitPauseTime();
         }
 
         if (identifier == "MoveGuarded"){
@@ -1004,7 +1016,7 @@ public:
                 throw MugenException("No argument given to gethitvar");
             }
 
-            std::string var = function.getArg1()->toString();
+            std::string var = PaintownUtil::lowerCaseAll(function.getArg1()->toString());
             if (var == "xveladd"){
             } else if (var == "yveladd"){
                 /* TODO */
@@ -1051,7 +1063,13 @@ public:
             } else if (var == "fallcount"){
                 /* TODO */
             } else if (var == "hitshaketime"){
-                /* TODO */
+                class HitVarShakeTime: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(environment.getCharacter().pauseTime());
+                    }
+                };
+                return new HitVarShakeTime();
             } else if (var == "hittime"){
                 /* TODO */
             } else if (var == "slidetime"){
@@ -1235,6 +1253,28 @@ public:
             return new SelfAnimExist(compile(function.getArg1()));
         }
 
+        if (function == "animexist"){
+            class AnimExist: public Value {
+            public:
+                AnimExist(Value * animation):
+                    animation(animation){
+                    }
+
+                Value * animation;
+
+                virtual ~AnimExist(){
+                    delete animation;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int animation = (int) this->animation->evaluate(environment).toNumber();
+                    return RuntimeValue(environment.getCharacter().hasAnimation(animation));
+                }
+            };
+
+            return new AnimExist(compile(function.getArg1()));
+        }
+
         /* Gets the animation-time elapsed since the start of a specified element
          * of the current animation action. Useful for synchronizing events to
          * elements of an animation action.
@@ -1274,6 +1314,39 @@ public:
             // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
         }
 
+        if (function == "animelem<="){
+            class FunctionAnimElem: public Value {
+            public:
+                FunctionAnimElem(Value * index):
+                    index(index){
+                    }
+
+                Value * index;
+
+                virtual ~FunctionAnimElem(){
+                    delete index;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
+                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    if (animation->getPosition() + 1 <= index){
+                        /* handle the second argument of animelem here */
+                        return RuntimeValue(animation->getTicks() == 0);
+                    }
+                    return RuntimeValue(false);
+
+                }
+            };
+            return new FunctionAnimElem(compile(function.getArg1()));
+            // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
+        }
+
+        if (function == "numexplod"){
+            /* FIXME */
+            return compile(0);
+        }
+
 #if 0
         if (function == "numtarget"){
             /* FIXME */
@@ -1282,10 +1355,7 @@ public:
 
         
 
-        if (function == "numexplod"){
-            /* FIXME */
-            return RuntimeValue(0);
-        }
+        
 
         
         if (function == "animelemno"){

@@ -1351,6 +1351,8 @@ public:
 
         /* paused from an attack */
         virtual bool isPaused();
+        /* time left in the hitpause */
+        virtual int pauseTime() const;
 
         /* prevent character from being hit, like after a KO */
         virtual void setUnhurtable();
