@@ -76,7 +76,9 @@ init.cpp
 test/mugen/stage.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
+test/mugen/compiler.cpp
 test/mugen/sprite.cpp
+test/mugen/font.cpp
 test/mugen/sound.cpp
 test/mugen/exception.cpp
 test/mugen/util.cpp
@@ -99,8 +101,10 @@ test/network/network.cpp
 test/input/input-manager.cpp
 test/input/keyboard.cpp
 test/input/joystick.cpp
-test/input/allegro-joystick.cpp
+test/input/allegro/allegro-joystick.cpp
+test/input/sdl/joystick.cpp
 test/globals.cpp
+test/debug.cpp
 test/configuration.cpp
 test/util/bitmap.cpp
 test/util/timedifference.cpp
@@ -116,12 +120,21 @@ test/util/tokenreader.cpp
 test/util/token_exception.cpp
 test/world.cpp
 test/game/console.cpp
+test/exceptions/exception.cpp
+test/util/thread.cpp
+test/util/events.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
 test/windows/system.cpp
+test/mugen/config.cpp
+test/mugen/behavior.cpp
+test/gui/fadetool.cpp
+test/mugen/reader.cpp
+test/mugen/command.cpp
+test/mugen/section.cpp
 """)
 
 x = []
 x.append(testEnv.Program('load', load_source))
-# x.append(testEnv.Program('load-stage', stage_source))
+x.append(testEnv.Program('load-stage', stage_source))
 Return('x')
