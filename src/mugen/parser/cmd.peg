@@ -648,7 +648,7 @@ rules:
                 | "partner"{case}
                 | "enemy"{case}
                 | "enemyNear"{case}
-                | "playerID"{case}
+                | "playerid"{case}
     helper-identifier = function
                       | keyword
                       | !keyword identifier

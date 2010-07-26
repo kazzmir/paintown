@@ -925,50 +925,6 @@ public:
     }
 
     Value * compileHelper(const Ast::Helper & helper){
-        if (helper == "enemynear"){
-            class EnemyNear: public Value {
-            public:
-                EnemyNear(Value * argument):
-                    argument(argument){
-                    }
-
-                Value * argument;
-
-                virtual ~EnemyNear(){
-                    delete argument;
-                }
-
-                RuntimeValue evaluate(const Environment & environment) const {
-                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-                    FullEnvironment redirected(environment.getStage(), *enemy, environment.getCommands());
-                    return argument->evaluate(redirected);
-                }
-            };
-            return new EnemyNear(compile(helper.getOriginal()));
-        }
-
-        if (helper == "helper"){
-            class Helper: public Value {
-            public:
-                Helper(Value * argument):
-                    argument(argument){
-                    }
-
-                Value * argument;
-
-                virtual ~Helper(){
-                    delete argument;
-                }
-
-                RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
-                }
-            };
-
-            return new Helper(compile(helper.getOriginal()));
-        }
-
         if (helper == "parent"){
             class Parent: public Value {
             public:
@@ -991,6 +947,50 @@ public:
             return new Parent(compile(helper.getOriginal()));
         }
 
+        if (helper == "root"){
+            class Root: public Value {
+            public:
+                Root(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Root(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Root(compile(helper.getOriginal()));
+        }
+        
+        if (helper == "helper"){
+            class Helper: public Value {
+            public:
+                Helper(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Helper(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Helper(compile(helper.getOriginal()));
+        }
+
         if (helper == "target"){
             class Target: public Value {
             public:
@@ -1011,6 +1011,94 @@ public:
             };
             
             return new Target(compile(helper.getOriginal()));
+        }
+
+        if (helper == "partner"){
+            class Partner: public Value {
+            public:
+                Partner(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Partner(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Partner(compile(helper.getOriginal()));
+        }
+
+        if (helper == "enemy"){
+            class Enemy: public Value {
+            public:
+                Enemy(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Enemy(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Enemy(compile(helper.getOriginal()));
+        }
+
+        if (helper == "enemynear"){
+            class EnemyNear: public Value {
+            public:
+                EnemyNear(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~EnemyNear(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    FullEnvironment redirected(environment.getStage(), *enemy, environment.getCommands());
+                    return argument->evaluate(redirected);
+                }
+            };
+            return new EnemyNear(compile(helper.getOriginal()));
+        }
+        
+        if (helper == "playerid"){
+            class PlayerID: public Value {
+            public:
+                PlayerID(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~PlayerID(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new PlayerID(compile(helper.getOriginal()));
         }
 
         std::ostringstream out;
@@ -1177,6 +1265,11 @@ public:
         }
 
         if (function == "projhittime"){
+            /* FIXME */
+            return compile(-1);
+        }
+
+        if (function == "projcontacttime"){
             /* FIXME */
             return compile(-1);
         }
