@@ -2118,21 +2118,21 @@ void Character::parseState(Ast::Section * section){
             }
     };
 
-    StateController * controller = new StateController(name);
-    StateControllerWalker walker(controller);
-    section->walk(walker);
 
     if (states[state] == 0){
         ostringstream out;
-        out << "No StateDef for state " << state << " [" << name << "]";
-        delete controller;
-        throw MugenException(out.str());
+        out << "Warning! No StateDef for state " << state << " [" << name << "]";
+        // delete controller;
+        // throw MugenException(out.str());
+    } else {
+        StateController * controller = new StateController(name);
+        StateControllerWalker walker(controller);
+        section->walk(walker);
+
+        states[state]->addController(controller);
+
+        Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
     }
-
-    states[state]->addController(controller);
-
-    Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
-
 }
 
 static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & base, const string & path){
