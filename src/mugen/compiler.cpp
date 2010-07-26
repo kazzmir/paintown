@@ -783,6 +783,17 @@ public:
 
             return new PrevStateNo();
         }
+
+        if (identifier == "velocity.runjump.back.x"){
+            class RunBackJumpX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getRunJumpBack());
+                }
+            };
+
+            return new RunBackJumpX();
+        }
         
         if (identifier == "velocity.run.back.x"){
             class RunBackX: public Value {

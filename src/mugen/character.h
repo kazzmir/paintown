@@ -1222,6 +1222,10 @@ public:
             runjumpback = x;
         }
 
+        virtual inline int getRunJumpBack() const {
+            return runjumpback;
+        }
+
         virtual inline void setRunJumpForward(double x){
             runjumpfwd = x;
         }
