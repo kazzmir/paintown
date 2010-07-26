@@ -82,6 +82,7 @@ namespace PhysicalAttack{
 namespace PaintownUtil = ::Util;
 
 HitDefinition::~HitDefinition(){
+    delete player1SpritePriority;
     delete player1Facing;
     delete player2Facing;
     delete player1State;
@@ -1757,8 +1758,8 @@ void Character::parseState(Ast::Section * section){
                     controller->setValue(Compiler::compile(simple.getValue()));
                 } else if (simple == "triggerall"){
                     controller->addTriggerAll(Compiler::compile(simple.getValue()));
-                } else if (PaintownUtil::matchRegex(simple.idString(), "trigger[0-9]+")){
-                    int trigger = atoi(PaintownUtil::captureRegex(simple.idString(), "trigger([0-9]+)", 0).c_str());
+                } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger[0-9]+")){
+                    int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger([0-9]+)", 0).c_str());
                     controller->addTrigger(trigger, Compiler::compile(simple.getValue()));
                 } else if (simple == "x"){
                     controller->setX(Compiler::compile(simple.getValue()));
@@ -2064,7 +2065,7 @@ void Character::parseState(Ast::Section * section){
                     simple >> controller->getHit().snap.x;
                     simple >> controller->getHit().snap.y;
                 } else if (simple == "p1sprpriority"){
-                    simple >> controller->getHit().player1SpritePriority;
+                    controller->getHit().player1SpritePriority = Compiler::compile(simple.getValue());
                 } else if (simple == "p2sprpriority"){
                     simple >> controller->getHit().player2SpritePriority;
                 } else if (simple == "p1facing"){

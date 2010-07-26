@@ -1058,6 +1058,28 @@ public:
             return new FunctionAbs(compile(function.getArg1()));
         }
 
+        if (function == "numhelper"){
+            class NumHelper: public Value {
+            public:
+                NumHelper(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~NumHelper(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new NumHelper(compile(function.getArg1()));
+        }
+
         if (function == "floor"){
             class FunctionFloor: public Value {
             public:
@@ -1643,6 +1665,17 @@ public:
             };
 
             return new PosY();
+        }
+
+        if (keyword == "pos x"){
+            class PosX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getX());
+                }
+            };
+
+            return new PosX();
         }
         
         if (keyword == "p2bodydist x"){

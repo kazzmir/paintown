@@ -163,6 +163,7 @@ struct HitDefinition{
     yAcceleration(0.35),
     guardVelocity(0),
     airJuggle(0),
+    player1SpritePriority(NULL),
     player1Facing(NULL),
     player2Facing(NULL),
     player1State(NULL),
@@ -460,7 +461,7 @@ struct HitDefinition{
     /* p1sprpriority = drawing_priority (int)
     * This is the drawing priority of P1's sprite if the move hits or is guarded by P2. Together with the p2sprpriority parameter, it controls whether or not P1 is drawn in front of or behind P2. The default value is 1.
     */
-    int player1SpritePriority;
+    Compiler::Value * player1SpritePriority;
 
     /* p2sprpriority = drawing_priority (int)
     * This is the drawing priority of P2's sprite if the move hits or is guarded by P2. The default value is 0.
