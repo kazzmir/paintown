@@ -613,7 +613,8 @@ struct HitState{
         returnControlTime(0),
         yAcceleration(0),
         yVelocity(0),
-        xVelocity(0){
+        xVelocity(0),
+        guarded(false){
         }
 
     void update(MugenStage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
@@ -632,6 +633,7 @@ struct HitState{
     AttackType::Animation animationType;
     AttackType::Ground groundType;
     AttackType::Ground airType;
+    bool guarded;
 
     struct Fall{
         Fall():

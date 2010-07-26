@@ -842,9 +842,11 @@ State::~State(){
     delete velocity_y;
 }
 
+/* Called when the player was hit */
 void HitState::update(MugenStage & stage, const Character & guy, bool inAir, const HitDefinition & hit){
     /* FIXME: choose the proper ground/air/guard types */
 
+    guarded = false;
     shakeTime = hit.pause.player2;
     groundType = hit.groundType;
     airType = hit.airType;
@@ -3305,6 +3307,8 @@ bool Character::isGuarding() const {
 }
         
 void Character::guarded(Character * enemy, const HitDefinition & hit){
+    /* FIXME: call hitState.updateGuard */
+    hitState.guarded = true;
     lastTicket = enemy->getTicket();
     /* the character will transition to the guard state when he next acts */
     needToGuard = true;

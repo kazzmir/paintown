@@ -1204,7 +1204,14 @@ public:
                 };
                 return new HitVarShakeTime();
             } else if (var == "hittime"){
-                /* TODO */
+                class HitVarHitTime: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).hitTime);
+                    }
+                };
+
+                return new HitVarHitTime();
             } else if (var == "slidetime"){
                 class HitVarSlideTime: public HitVar {
                 public:
@@ -1280,7 +1287,14 @@ public:
             } else if (var == "chainid"){
                 /* TODO */
             } else if (var == "guarded"){
-                /* TODO */
+                class HitVarGuarded: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).guarded);
+                    }
+                };
+
+                return new HitVarGuarded();
             } else if (var == "fall"){
                 class HitVarFall: public HitVar {
                 public:
