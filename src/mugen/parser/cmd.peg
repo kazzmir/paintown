@@ -594,6 +594,7 @@ rules:
 		          | "projguarded"{case}
 		          | "projhittime"{case}
 		          | "projcontact"{case}
+		          | "projcontacttime"{case}
 		          | "numhelper"{case}
 
 	function_rest = s "," s all_compare? s value
