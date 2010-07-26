@@ -165,6 +165,7 @@ src/gui/keyinput_manager.cpp
 src/gui/lineedit.cpp
 src/gui/rectarea.cpp
 src/gui/popup-box.cpp
+src/gui/tabbed-box.cpp
 src/gui/timer.cpp
 src/gui/widget.cpp
 )
