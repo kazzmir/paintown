@@ -883,6 +883,20 @@ public:
             return new AirJumpForwardX();
         }
 
+        if (identifier == "ishometeam"){
+            /* FIXME */
+            return compile(0);
+        }
+
+        if (identifier == "teamside"){
+            /* FIXME */
+            return compile(1);
+        }
+
+        if (identifier == "pi"){
+            return compile(PaintownUtil::pi);
+        }
+
         if (identifier == "movement.yaccel"){
             class MovemntYAccel: public Value {
             public:
@@ -920,6 +934,71 @@ public:
                 }
             };
             return new EnemyNear(compile(helper.getOriginal()));
+        }
+
+        if (helper == "helper"){
+            class Helper: public Value {
+            public:
+                Helper(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Helper(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Helper(compile(helper.getOriginal()));
+        }
+
+        if (helper == "parent"){
+            class Parent: public Value {
+            public:
+                Parent(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Parent(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new Parent(compile(helper.getOriginal()));
+        }
+
+        if (helper == "target"){
+            class Target: public Value {
+            public:
+                Target(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Target(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(0);
+                }
+            };
+            
+            return new Target(compile(helper.getOriginal()));
         }
 
         std::ostringstream out;
@@ -1037,6 +1116,28 @@ public:
             return compile(function.getArg1());
         }
 
+        if (function == "sin"){
+            class Sin: public Value {
+            public:
+                Sin(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Sin(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    double result = argument->evaluate(environment).toNumber();
+                    return RuntimeValue(sin(result));
+                }
+            };
+
+            return new Sin(compile(function.getArg1()));
+        }
+
         if (function == "abs"){
             class FunctionAbs: public Value {
             public:
@@ -1056,6 +1157,16 @@ public:
             };
 
             return new FunctionAbs(compile(function.getArg1()));
+        }
+
+        if (function == "numprojid"){
+            /* FIXME */
+            return compile(0);
+        }
+
+        if (function == "projhittime"){
+            /* FIXME */
+            return compile(-1);
         }
 
         if (function == "numhelper"){
@@ -1675,6 +1786,17 @@ public:
 
             return new ScreenPosY();
         }
+
+        if (keyword == "screenpos x"){
+            class ScreenPosX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getX());
+                }
+            };
+
+            return new ScreenPosX();
+        }
         
         if (keyword == "pos y"){
             class PosY: public Value {
@@ -1698,8 +1820,37 @@ public:
             return new PosX();
         }
         
+        /* FIXME: verify p2bodydist is right. for now they are copy/pastes of p2dist */
         if (keyword == "p2bodydist x"){
             class P2BodyDistX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    /* FIXME: im not sure this is right, should it take into account
+                     * the facing direction?
+                     */
+                    return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
+
+                }
+            };
+
+            return new P2BodyDistX();
+        }
+
+        if (keyword == "p2bodydist y"){
+            class P2BodyDistY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(-enemy->getY() - (-environment.getCharacter().getY()));
+                }
+            };
+
+            return new P2BodyDistY();
+        }
+
+        if (keyword == "parentdist x"){
+            class ParentDistX: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
@@ -1707,7 +1858,7 @@ public:
                 }
             };
 
-            return new P2BodyDistX();
+            return new ParentDistX();
         }
 
         if (keyword == "p2dist x"){
@@ -1724,6 +1875,19 @@ public:
             };
 
             return new P2DistX();
+        }
+
+        if (keyword == "p2dist y"){
+            class P2DistY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(-enemy->getY() - (-environment.getCharacter().getY()));
+
+                }
+            };
+
+            return new P2DistY();
         }
 
         std::ostringstream out;
@@ -1894,6 +2058,11 @@ Value * compileAndDelete(const Ast::Value * input){
 }
 
 Value * compile(int immediate){
+    Ast::Number number(immediate);
+    return CompileWalker::compileNumber(number);
+}
+
+Value * compile(double immediate){
     Ast::Number number(immediate);
     return CompileWalker::compileNumber(number);
 }

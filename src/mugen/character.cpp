@@ -1389,14 +1389,23 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             simple >> x;
                             self.setMaxHealth(x);
                             self.setHealth(x);
-                        } else if (simple == "sparno"){
-                            int x;
-                            simple >> x;
-                            self.setDefaultSpark(x);
+                        } else if (simple == "sparkno"){
+                            string spark;
+                            simple >> spark;
+                            spark = PaintownUtil::lowerCaseAll(spark);
+                            if (PaintownUtil::matchRegex(spark, "s[0-9]+")){
+                                /* FIXME: handle S */
+                            } else {
+                                self.setDefaultSpark(atoi(spark.c_str()));
+                            }
                         } else if (simple == "guard.sparkno"){
-                            int x;
-                            simple >> x;
-                            self.setDefaultGuardSpark(x);
+                            string spark;
+                            simple >> spark;
+                            if (PaintownUtil::matchRegex(spark, "s[0-9]+")){
+                                /* FIXME: handle S */
+                            } else {
+                                self.setDefaultGuardSpark(atoi(spark.c_str()));
+                            }
                         }
                     }
 

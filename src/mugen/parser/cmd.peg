@@ -556,7 +556,8 @@ rules:
 	unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
 	      | "-" !digit {{ value = (void*) Ast::ExpressionUnary::Minus; }}
 	      | "~" !key !digit {{ value = (void*) Ast::ExpressionUnary::Negation; }}
-	expr13_real = function
+	expr13_real = helper
+                | function
 	            | value
 	            | "(" s e:expr s ")" {{ value = e; }}
 
@@ -584,10 +585,7 @@ rules:
 		          | "numexplod"{case}
 		          | "numhelper"{case}
 		          | "numprojid"{case}
-		          | "helper"{case}
 		          | "fvar"{case}
-		          | "enemynear"{case}
-		          | "target"{case}
 		          | "ishelper"{case}
 		          | "numtarget"{case}
 		          | "animelemtime"{case}
@@ -597,7 +595,6 @@ rules:
 		          | "projhittime"{case}
 		          | "projcontact"{case}
 		          | "numhelper"{case}
-		          | "helper"{case} s
 
 	function_rest = s "," s all_compare? s value
                   | <void>
@@ -631,19 +628,23 @@ rules:
 
 	value = float
 	      | integer
-          | helper
 	      | keyword
 	      | !keyword identifier
 	      | range
 	      | string
           | hitflag
         
-    helper = name:helper-name s "," s id:helper-identifier {{
+    helper = name:helper-name s helper-expression? s "," s id:helper-identifier {{
         value = makeHelper(name, id);
     }}
 
+    helper-expression = "(" s expr_c s ")"
     helper-name = "enemynear"{case}
-    helper-identifier = keyword
+                | "target"{case}
+                | "parent"{case}
+                | "helper"{case}
+    helper-identifier = function
+                      | keyword
                       | !keyword identifier
 
     # FIXME: return proper hitflag

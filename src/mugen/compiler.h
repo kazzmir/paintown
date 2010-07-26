@@ -24,6 +24,7 @@ namespace Compiler{
     /* does not delete `input' */
     Value * compile(const Ast::Value * input);
     Value * compile(int immediate);
+    Value * compile(double immediate);
 }
 
 }
