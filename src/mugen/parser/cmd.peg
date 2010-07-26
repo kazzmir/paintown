@@ -580,6 +580,7 @@ rules:
 		          | "floor"{case}
 		          | "ceil"{case}
 		          | "sin"{case}
+		          | "sysfvar"{case}
 		          | "sysvar"{case}
 		          | "var"{case}
 		          | "numexplod"{case}
@@ -593,8 +594,8 @@ rules:
 		          | "animexist"{case}
 		          | "projguarded"{case}
 		          | "projhittime"{case}
-		          | "projcontact"{case}
 		          | "projcontacttime"{case}
+		          | "projcontact"{case}
 		          | "numhelper"{case}
 
 	function_rest = s "," s all_compare? s value
@@ -640,10 +641,14 @@ rules:
     }}
 
     helper-expression = "(" s expr_c s ")"
-    helper-name = "enemynear"{case}
-                | "target"{case}
-                | "parent"{case}
+    helper-name = "parent"{case}
+                | "root"{case}
                 | "helper"{case}
+                | "target"{case}
+                | "partner"{case}
+                | "enemy"{case}
+                | "enemyNear"{case}
+                | "playerID"{case}
     helper-identifier = function
                       | keyword
                       | !keyword identifier
