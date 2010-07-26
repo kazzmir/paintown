@@ -721,6 +721,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
 }
 
 State::State():
+type(Unchanged),
 animation(NULL),
 changeControl(false),
 control(NULL),

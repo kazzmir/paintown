@@ -1354,16 +1354,22 @@ public:
         }
 
         if (function == "fvar"){
-            class FunctionFVar: public Value{
+            class FunctionFVar: public Value {
             public:
                 FunctionFVar(int index):
                     index(index){
                     }
 
-                int index;
+                const int index;
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     Value * value = environment.getCharacter().getFloatVariable(index);
+                    /*
+                    Value * value = 0;
+                    // Global::debug(0) << "Fvar value is " << value << std::endl;
+                    value = environment.getCharacter().getFloatVariable(index);
+                    // Global::debug(0) << "Fvar value is now " << value << std::endl;
+                    */
                     if (value == 0){
                         return RuntimeValue(false);
                     }
@@ -1777,6 +1783,7 @@ public:
                     }
                     case ExpressionInfix::Assignment : {
                         /* FIXME: is this needed? */
+                        return RuntimeValue(0);
                         break;
                     }
                     case ExpressionInfix::Equals : {
