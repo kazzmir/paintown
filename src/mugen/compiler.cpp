@@ -640,6 +640,40 @@ public:
             return new StateNo();
         }
 
+        if (identifier == "life"){
+            class Life: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getHealth());
+                }
+            };
+
+            return new Life();
+        }
+
+        if (identifier == "p2life"){
+            class P2Life: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
+                    return RuntimeValue(enemy->getHealth());
+                }
+            };
+
+            return new P2Life();
+        }
+
+        if (identifier == "lifemax"){
+            class LifeMax: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getMaxHealth());
+                }
+            };
+
+            return new LifeMax();
+        }
+
         if (identifier == "power"){
             class Power: public Value {
             public:
@@ -1258,6 +1292,7 @@ public:
             throw MugenException("Unknown gethitvar variable " + var);
         }
 
+        /* it would be nice to combine var/fvar/sysvar */
         if (function == "var"){
             class FunctionVar: public Value{
             public:
@@ -1280,6 +1315,30 @@ public:
             int index = (int) compiled->evaluate(EmptyEnvironment()).toNumber();
             delete compiled;
             return new FunctionVar(index);
+        }
+
+        if (function == "fvar"){
+            class FunctionFVar: public Value{
+            public:
+                FunctionFVar(int index):
+                    index(index){
+                    }
+
+                int index;
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    Value * value = environment.getCharacter().getFloatVariable(index);
+                    if (value == 0){
+                        return RuntimeValue(false);
+                    }
+                    return value->evaluate(environment);
+                }
+            };
+            
+            Value * compiled = compile(function.getArg1());
+            int index = (int) compiled->evaluate(EmptyEnvironment()).toNumber();
+            delete compiled;
+            return new FunctionFVar(index);
         }
 
         if (function == "sysvar"){
@@ -1328,6 +1387,27 @@ public:
             };
 
             return new SelfAnimExist(compile(function.getArg1()));
+        }
+
+        if (function == "ceil"){
+            class Ceil: public Value {
+            public:
+                Ceil(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Ceil(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(ceil(argument->evaluate(environment).toNumber()));
+                }
+            };
+
+            return new Ceil(compile(function.getArg1()));
         }
 
         if (function == "animexist"){

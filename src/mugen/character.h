@@ -794,6 +794,7 @@ public:
     virtual void addTriggerAll(Compiler::Value * trigger);
     virtual void addTrigger(int number, Compiler::Value * trigger);
     virtual void addVariable(int number, Compiler::Value * variable);
+    virtual void addFloatVariable(int number, Compiler::Value * variable);
     virtual void addSystemVariable(int number, Compiler::Value * variable);
 
     virtual inline HitDefinition & getHit(){
@@ -884,6 +885,9 @@ protected:
 
     /* var(1) and whatnot */
     std::map<int, Compiler::Value*> variables;
+    
+    /* fvar(1) and whatnot */
+    std::map<int, Compiler::Value*> floatVariables;
     
     /* sysvar(1) and whatnot */
     std::map<int, Compiler::Value*> systemVariables;
@@ -1274,8 +1278,10 @@ public:
         virtual void resetStateTime();
 
         virtual void setVariable(int index, Compiler::Value * value);
+        virtual void setFloatVariable(int index, Compiler::Value * value);
         virtual void setSystemVariable(int index, Compiler::Value * value);
         virtual Compiler::Value * getVariable(int index) const;
+        virtual Compiler::Value * getFloatVariable(int index) const;
         virtual Compiler::Value * getSystemVariable(int index) const;
 
         virtual inline Physics::Type getCurrentPhysics() const {
@@ -1721,6 +1727,7 @@ protected:
     
         /* dont delete these in the destructor, the state controller will do that */
         std::map<int, Compiler::Value*> variables;
+        std::map<int, Compiler::Value*> floatVariables;
         std::map<int, Compiler::Value*> systemVariables;
         Physics::Type currentPhysics;
 

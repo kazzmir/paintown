@@ -132,6 +132,11 @@ StateController::~StateController(){
         delete value;
     }
 
+    for (map<int, Compiler::Value*>::iterator it = floatVariables.begin(); it != floatVariables.end(); it++){
+        Compiler::Value * value = (*it).second;
+        delete value;
+    }
+
     for (map<int, Compiler::Value*>::iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
         Compiler::Value * value = (*it).second;
         delete value;
@@ -187,7 +192,14 @@ void StateController::addVariable(int number, Compiler::Value * variable){
     }
     variables[number] = variable;
 }
-    
+
+void StateController::addFloatVariable(int number, Compiler::Value * variable){
+    if (floatVariables[number] != 0){
+        delete floatVariables[number];
+    }
+    floatVariables[number] = variable;
+}
+
 void StateController::addSystemVariable(int number, Compiler::Value * variable){
     if (systemVariables[number] != 0){
         delete systemVariables[number];
@@ -623,6 +635,12 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
                 int index = (*it).first;
                 Compiler::Value * value = (*it).second;
                 guy.setVariable(index, value);
+            }
+
+            for (map<int, Compiler::Value*>::const_iterator it = floatVariables.begin(); it != floatVariables.end(); it++){
+                int index = (*it).first;
+                Compiler::Value * value = (*it).second;
+                guy.setFloatVariable(index, value);
             }
 
             for (map<int, Compiler::Value*>::const_iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
@@ -1178,13 +1196,25 @@ void Character::setConstant(std::string name, const vector<double> & values){
 void Character::setConstant(std::string name, double value){
     constants[name] = Constant(value);
 }
-        
+
+void Character::setFloatVariable(int index, Compiler::Value * value){
+    floatVariables[index] = value;
+}
+
 void Character::setVariable(int index, Compiler::Value * value){
     variables[index] = value;
 }
-        
+
 Compiler::Value * Character::getVariable(int index) const {
     map<int, Compiler::Value*>::const_iterator found = variables.find(index);
+    if (found != variables.end()){
+        return (*found).second;
+    }
+    return 0;
+}
+
+Compiler::Value * Character::getFloatVariable(int index) const {
+    map<int, Compiler::Value*>::const_iterator found = floatVariables.find(index);
     if (found != variables.end()){
         return (*found).second;
     }
@@ -1612,6 +1642,10 @@ void Character::parseState(Ast::Section * section){
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
                     controller->addVariable(index, Compiler::compile(value));
+                } else if (simple == "var"){
+                    int index = simple.getIndex();
+                    const Ast::Value * value = simple.getValue();
+                    controller->addFloatVariable(index, Compiler::compile(value));
                 } else if (simple == "sysvar"){
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
@@ -1902,9 +1936,13 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "hitsound"){
                     string first;
                     bool own = false;
-                    int group;
-                    int item;
-                    simple >> first >> item;
+                    int group = 0;
+                    int item = 0;
+                    /* If not specified, assume item 0 */
+                    simple >> first;
+                    if (simple.getValue()->hasMultiple()){
+                        simple >> item;
+                    }
                     if (first[0] == 'S'){
                         own = true;
                         group = atoi(first.substr(1).c_str());
@@ -2344,6 +2382,7 @@ void Character::load(int useAct){
         throw MugenException(out.str());
     }
 
+    /* Is this just for testing? */
     if (getMaxHealth() == 0 || getHealth() == 0){
         setHealth(1000);
         setMaxHealth(1000);
