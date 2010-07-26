@@ -158,6 +158,7 @@ struct HitDefinition{
     guardSpark(-1),
     groundType(AttackType::None),
     airType(AttackType::None),
+    groundSlideTime(NULL),
     groundHitTime(0),
     airHitTime(20),
     yAcceleration(0.35),
@@ -336,7 +337,7 @@ struct HitDefinition{
     /* ground.slidetime = slide_time (int)
      * This is the time in game-ticks that P2 will slide back for after being hit (this time does not include the pausetime for P2). Applicable only to hits that keep P2 on the ground. Defaults to 0 if omitted.
      */
-    int groundSlideTime;
+    Compiler::Value * groundSlideTime;
 
     /* guard.slidetime = slide_time (int)
      * Same as "ground.slidetime", but this is the value if P2 guards the hit. Defaults to same value as "guard.hittime".

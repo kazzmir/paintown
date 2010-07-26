@@ -82,6 +82,7 @@ namespace PhysicalAttack{
 namespace PaintownUtil = ::Util;
 
 HitDefinition::~HitDefinition(){
+    delete groundSlideTime;
     delete player1SpritePriority;
     delete player1Facing;
     delete player2Facing;
@@ -93,7 +94,6 @@ HitDefinition::Damage::~Damage(){
     delete damage;
     delete guardDamage;
 }
-
 
 HitDefinition::Fall::~Fall(){
     delete fall;
@@ -884,12 +884,20 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
             fall.fall |= hit.fall.fall->evaluate(FullEnvironment(stage, guy)).toBool();
         }
         fall.yVelocity = hit.fall.yVelocity;
-        returnControlTime = hit.airGuardControlTime == 0 ? hit.groundSlideTime : hit.airGuardControlTime;
+        int groundSlideTime = 0;
+        if (hit.groundSlideTime != NULL){
+            groundSlideTime = (int) hit.groundSlideTime->evaluate(FullEnvironment(stage, guy)).toNumber();
+        }
+        returnControlTime = hit.airGuardControlTime == 0 ? groundSlideTime : hit.airGuardControlTime;
     } else {
+        int groundSlideTime = 0;
+        if (hit.groundSlideTime != NULL){
+            groundSlideTime = (int) hit.groundSlideTime->evaluate(FullEnvironment(stage, guy)).toNumber();
+        }
         animationType = hit.animationType;
-        returnControlTime = hit.guardControlTime == 0 ? hit.groundSlideTime : hit.guardControlTime;
+        returnControlTime = hit.guardControlTime == 0 ? groundSlideTime : hit.guardControlTime;
         hitTime = hit.groundHitTime;
-        slideTime = hit.groundSlideTime;
+        slideTime = groundSlideTime;
         xVelocity = hit.groundVelocity.x;
         yVelocity = hit.groundVelocity.y;
         fall.fall = hit.fall.fall;
@@ -2003,7 +2011,7 @@ void Character::parseState(Ast::Section * section){
                         controller->getHit().airType = AttackType::Trip;
                     }
                 } else if (simple == "ground.slidetime"){
-                    simple >> controller->getHit().groundSlideTime;
+                    controller->getHit().groundSlideTime = Compiler::compile(simple.getValue());
                 } else if (simple == "guard.slidetime"){
                     simple >> controller->getHit().guardSlideTime;
                 } else if (simple == "ground.hittime"){
