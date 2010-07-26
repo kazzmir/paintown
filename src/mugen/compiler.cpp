@@ -105,6 +105,30 @@ public:
             return new P2Name();
         }
 
+        if (identifier == "p3name"){
+            class P3Name: public Value{
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(std::string());
+                }
+            };
+
+            return new P3Name();
+        }
+
+        if (identifier == "p4name"){
+            class P4Name: public Value{
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(std::string());
+                }
+            };
+
+            return new P4Name();
+        }
+
         if (identifier == "authorname"){
             class AuthorName: public Value{
             public:
