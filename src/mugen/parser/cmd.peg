@@ -674,4 +674,6 @@ rules:
                  | "screenpos"{case} s "y"{case} {{ value = makeKeyword("screenpos y"); }}
                  | "parentdist"{case} s "x"{case} {{ value = makeKeyword("parentdist x"); }}
                  | "parentdist"{case} s "y"{case} {{ value = makeKeyword("parentdist y"); }}
+                 | "rootdist"{case} s "x"{case} {{ value = makeKeyword("rootdist x"); }}
+                 | "rootdist"{case} s "y"{case} {{ value = makeKeyword("rootdist y"); }}
                  | hitflag
