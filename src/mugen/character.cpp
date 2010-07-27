@@ -82,12 +82,14 @@ namespace PhysicalAttack{
 namespace PaintownUtil = ::Util;
 
 HitDefinition::~HitDefinition(){
+    /*
     delete groundSlideTime;
     delete player1SpritePriority;
     delete player1Facing;
     delete player2Facing;
     delete player1State;
     delete player2State;
+    */
 }
 
 HitDefinition::Damage::~Damage(){
@@ -98,7 +100,7 @@ HitDefinition::Damage::~Damage(){
 }
 
 HitDefinition::Fall::~Fall(){
-    delete fall;
+    // delete fall;
 }
 
 StateController::StateController(const string & name):
@@ -902,7 +904,11 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
         slideTime = groundSlideTime;
         xVelocity = hit.groundVelocity.x;
         yVelocity = hit.groundVelocity.y;
-        fall.fall = hit.fall.fall;
+        fall.fall = false;
+        if (hit.fall.fall != NULL){
+            fall.fall = hit.fall.fall->evaluate(FullEnvironment(stage, guy)).toBool();
+        }
+
         fall.yVelocity = hit.fall.yVelocity;
     }
 
@@ -2117,7 +2123,7 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "fall.recovertime"){
                     simple >> controller->getHit().fall.recoverTime;
                 } else if (simple == "fall.damage"){
-                    simple >> controller->getHit().fall.damage;
+                    controller->getHit().fall.damage = Compiler::compile(simple.getValue());
                 } else if (simple == "air.fall"){
                     simple >> controller->getHit().fall.airFall;
                 } else if (simple == "forcenofall"){

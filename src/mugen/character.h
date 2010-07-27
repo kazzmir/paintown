@@ -164,17 +164,11 @@ struct HitDefinition{
     guardSpark(-1),
     groundType(AttackType::None),
     airType(AttackType::None),
-    groundSlideTime(NULL),
     groundHitTime(0),
     airHitTime(20),
     yAcceleration(0.35),
     guardVelocity(0),
-    airJuggle(0),
-    player1SpritePriority(NULL),
-    player1Facing(NULL),
-    player2Facing(NULL),
-    player1State(NULL),
-    player2State(NULL)
+    airJuggle(0)
     {}
 
     ~HitDefinition();
@@ -342,7 +336,7 @@ struct HitDefinition{
     /* ground.slidetime = slide_time (int)
      * This is the time in game-ticks that P2 will slide back for after being hit (this time does not include the pausetime for P2). Applicable only to hits that keep P2 on the ground. Defaults to 0 if omitted.
      */
-    Compiler::Value * groundSlideTime;
+    PaintownUtil::ClassPointer<Compiler::Value> groundSlideTime;
 
     /* guard.slidetime = slide_time (int)
      * Same as "ground.slidetime", but this is the value if P2 guards the hit. Defaults to same value as "guard.hittime".
@@ -467,7 +461,7 @@ struct HitDefinition{
     /* p1sprpriority = drawing_priority (int)
     * This is the drawing priority of P1's sprite if the move hits or is guarded by P2. Together with the p2sprpriority parameter, it controls whether or not P1 is drawn in front of or behind P2. The default value is 1.
     */
-    Compiler::Value * player1SpritePriority;
+    PaintownUtil::ClassPointer<Compiler::Value> player1SpritePriority;
 
     /* p2sprpriority = drawing_priority (int)
     * This is the drawing priority of P2's sprite if the move hits or is guarded by P2. The default value is 0.
@@ -477,27 +471,27 @@ struct HitDefinition{
     /* p1facing = facing (int)
     * Set to -1 to make P1 turn around if the hit is successful. The default value is no change in where P1 is facing.
     */
-    Compiler::Value * player1Facing;
+    PaintownUtil::ClassPointer<Compiler::Value> player1Facing;
 
     /* p1getp2facing = facing (int)
     * Set to 1 to have P1 face in the same direction as P2 is facing after the hit connects, and -1 to have P1 face the opposite direction from P2. Defaults to 0 (no change). If nonzero, this parameter takes precedence over p1facing.
     */
-    Compiler::Value * player1GetPlayer2Facing;
+    PaintownUtil::ClassPointer<Compiler::Value> player1GetPlayer2Facing;
 
     /* p2facing = facing (int)
     * Set to 1 to make P2 face the same direction as P1 if the hit is successful, -1 to make P2 face away. The default value is 0, no change in where P2 is facing.
     */
-    Compiler::Value * player2Facing;
+    PaintownUtil::ClassPointer<Compiler::Value> player2Facing;
 
     /* p1stateno = state_no (int)
     * This is the number of the state to set P1 to if the hit is successful. The state must be an attack state (movetype = A) for at least 1 tick. Used mainly for throws. Defaults to -1, no change.
     */
-    Compiler::Value * player1State;
+    PaintownUtil::ClassPointer<Compiler::Value> player1State;
 
     /* p2stateno = state_no (int)
     * This is the number of the state to set P2 to if the hit is successful. P2 will get P1's state and animation data. P2 will retain P1's states and animation data until P2 is hit, or a SelfState controller is used to return P2 to his own states. The state must be a get-hit state (movetype = H) for at least 1 tick. Used mainly for throws; can also be used for custom hit reactions. Defaults to -1, no change.
     */
-    Compiler::Value * player2State;
+    PaintownUtil::ClassPointer<Compiler::Value> player2State;
 
     /* p2getp1state = bvalue (boolean)
     * Set to 0 to prevent P2 from getting P1's state and animation data, in case you do not want that default behaviour of the "p2stateno" parameter. Defaults to 1 if the "p2stateno" parameter is used. Ignored otherwise.
@@ -511,7 +505,6 @@ struct HitDefinition{
 
     struct Fall{
         Fall():
-            fall(NULL),
             yVelocity(0){
             }
 
@@ -520,7 +513,7 @@ struct HitDefinition{
         /* fall = bvalue (boolean)
          * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air). Use if you want a move to "knock down" P2. Defaults to 0.
          */
-        Compiler::Value * fall;
+        PaintownUtil::ClassPointer<Compiler::Value> fall;
 
         /* fall.xvelocity = x_velocity (float)
          * This is the x-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to no change if omitted.
@@ -545,7 +538,7 @@ struct HitDefinition{
         /* fall.damage = damage_amt (int)
          * Indicates the amount of damage to deal when P2 hits the ground out of a falling state. Defaults to 0 if omitted.
          */
-        int damage;
+        PaintownUtil::ClassPointer<Compiler::Value> damage;
 
          /* air.fall = bvalue (boolean)
          * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air) if hit while P2 is in the air. Defaults to the same value as fall.
