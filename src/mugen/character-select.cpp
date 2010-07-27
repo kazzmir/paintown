@@ -921,6 +921,38 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     // Set game keys temporary
     InputMap<Mugen::Keys> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
+
+    class PlayerLoader: public PaintownUtil::Future<int>{
+    public:
+        PlayerLoader(CharacterInfo & player1, CharacterInfo & player2):
+            player1(player1),
+            player2(player2){
+                start();
+        }
+
+        CharacterInfo & player1;
+        CharacterInfo & player2;
+
+        virtual void compute(){
+            // Check acts lets make them use seperate ones
+            if (player1.getDefinitionFile() == player2.getDefinitionFile()){
+                if (player1.getPlayer1Act() == player2.getPlayer2Act()){
+                    int act = player1.getPlayer1Act()-1;
+                    if (act <= 0){
+                        act += 2;
+                    }
+                    player2.setPlayer2Act(act);
+                }
+            }
+            // Load player 1
+            player1.loadPlayer1();
+            // Load player 2
+            player2.loadPlayer2();
+
+        }
+    };
+
+    PlayerLoader playerLoader(player1, player2);
     
     while (!done || fader.getState() != Gui::FadeTool::EndFade){
     
@@ -958,22 +990,12 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			info.setLoadingMessage("Loading...");
                         info.setPosition(-1, 400);
 			Loader::startLoading(&loader, (void*) &info);
-                        // Check acts lets make them use seperate ones
-                        if (player1.getDefinitionFile() == player2.getDefinitionFile()){
-                            if (player1.getPlayer1Act() == player2.getPlayer2Act()){
-                                int act = player1.getPlayer1Act()-1;
-                                if (act <= 0){
-                                    act += 2;
-                                }
-                                player2.setPlayer2Act(act);
-                            }
-                        }
-			// Load player 1
-			player1.loadPlayer1();
-			// Load player 2
-			player2.loadPlayer2();
+
+                        /* future */
+                        int ok = playerLoader.get();
+
 			// Load stage
-			stage->addPlayer1(player1.getPlayer1());
+                        stage->addPlayer1(player1.getPlayer1());
 			stage->addPlayer2(player2.getPlayer2());
 			stage->load();
 			Loader::stopLoading(loader);
