@@ -922,7 +922,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     InputMap<Mugen::Keys> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
     
-    while (!done && fader.getState() != Gui::FadeTool::EndFade){
+    while (!done || fader.getState() != Gui::FadeTool::EndFade){
     
 	bool draw = false;
 	
@@ -949,7 +949,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 		}
 		
 		// Logic
-		if (ticker >= time){
+                /* if done, dont run the loader again, just wait for the fadeout */
+		if (ticker >= time && !done){
                     PaintownUtil::Thread::Id loader;
 		    try{
 			Level::LevelInfo info;
@@ -976,12 +977,12 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			stage->addPlayer2(player2.getPlayer2());
 			stage->load();
 			Loader::stopLoading(loader);
+                        done = true;
+                        fader.setState(Gui::FadeTool::FadeOut);
 		    } catch (const MugenException & e){
 			Loader::stopLoading(loader);
 			throw e;
 		    }
-		    done = true;
-		    fader.setState(Gui::FadeTool::FadeOut);
 		}
 		
 		// Fader
@@ -1022,7 +1023,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 	}
 
 	while (Global::speed_counter < 1){
-		PaintownUtil::rest( 1 );
+            PaintownUtil::rest(1);
 	}
     }
     

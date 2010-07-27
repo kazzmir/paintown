@@ -1019,7 +1019,7 @@ void MugenStage::logic( ){
                 // Debug crap put it on console
                 *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
             }
-            objects.insert(objects.end(),add.begin(),add.end());
+            objects.insert(objects.end(), add.begin(), add.end());
         }
     }
     
