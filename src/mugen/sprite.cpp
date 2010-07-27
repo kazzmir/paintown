@@ -20,7 +20,7 @@ imageNumber(0),
 prev(0),
 samePalette(0),
 pcx(NULL),
-bitmap(0){
+bitmap(NULL){
     //Nothing
 }
 
@@ -48,13 +48,13 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
         /* this line is right */
         memcpy(this->pcx, copy.pcx, this->reallength);
     } else {
-        this->pcx = 0;
+        this->pcx = NULL;
     }
 
     if (copy.bitmap){
 	this->bitmap = new Bitmap(*copy.bitmap);
     } else {
-        this->bitmap = 0;
+        this->bitmap = NULL;
     }
 }
 

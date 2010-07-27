@@ -71,6 +71,16 @@ public:
             return new Alive();
         }
 
+        if (identifier == "numproj"){
+            /* FIXME */
+            return compile(0);
+        }
+
+        if (identifier == "ishelper"){
+            /* FIXME */
+            return compile(0);
+        }
+
         if (identifier == "numenemy"){
             /* FIXME: return more than 1 in team mode */
             return compile(1);
@@ -390,6 +400,16 @@ public:
             };
 
             return new Win();
+        }
+
+        if (identifier == "lose"){
+            /* FIXME */
+            return compile(0);
+        }
+
+        if (identifier == "drawgame"){
+            /* FIXME */
+            return compile(0);
         }
 
         if (identifier == "roundstate"){
