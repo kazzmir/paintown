@@ -7,7 +7,20 @@
 #include "gui/widget.h"
 #include "util/file-system.h"
 
+class Token;
+
 namespace Gui{
+
+class ContextBox;
+class ContextItem;
+    
+class Tab{
+    public:
+        Tab();
+        ~Tab();
+        std::string name;
+        Gui::ContextBox * context;
+};
 
 class TabbedBox : public Widget{
     public:
@@ -15,14 +28,17 @@ class TabbedBox : public Widget{
         TabbedBox( const TabbedBox & );
         virtual ~TabbedBox();
         
-        // copy
+        //! copy
         TabbedBox &operator=( const TabbedBox &);
         
-        // Logic
+        //! Logic
         virtual void act();
         
-        // Render
+        //! Render
         virtual void render(const Bitmap &);
+        
+        //! Add tab
+        virtual void addTab(const std::vector<ContextItem *> & list);
         
         //! Set current font
         virtual inline void setFont(const Filesystem::RelativePath & font, int width, int height){
@@ -30,11 +46,22 @@ class TabbedBox : public Widget{
             this->fontWidth = width;
             this->fontHeight = height;
         }
+        
+        //! Get current tab
+        virtual inline unsigned int getCurrentTab() const {
+            return this->current;
+        }
+        
+        //! Get current index on selected tab
+        virtual unsigned int getCurrentIndex() const;
+        
+        //! Empty
+        virtual inline bool empty() const {
+            return this->tabs.empty();
+        }
     
     protected:
-        class Tab;
-        
-        std::vector<Tab *> tabs;
+        std::vector<Gui::Tab *> tabs;
         
         unsigned int current;
         

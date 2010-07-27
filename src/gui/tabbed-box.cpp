@@ -9,21 +9,19 @@
 
 using namespace Gui;
 
-class Tab{
-    public:
-        Tab():
-        context(new ContextBox()){
-        }
-        ~Tab(){
-            delete context;
-        }
-        
-        std::string name;
-        Gui::ContextBox * context;
-};
+Tab::Tab():
+context(new ContextBox()){
+    // Set alpha to 0 as we are not interested in the box
+    context->colors.borderAlpha = 0;
+    context->colors.bodyAlpha = 0;
+}
+Tab::~Tab(){
+    delete context;
+}
 
-TabbedBox::TabbedBox(){
-	// Nothing yet
+TabbedBox::TabbedBox():
+fontWidth(24),
+fontHeight(24){
 }
 
 TabbedBox::TabbedBox( const TabbedBox & b ){
@@ -32,7 +30,12 @@ TabbedBox::TabbedBox( const TabbedBox & b ){
 }
 
 TabbedBox::~TabbedBox(){
-	// Nothing yet
+    for (std::vector<Gui::Tab *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+        Gui::Tab * tab = *i;
+        if (tab){
+            delete tab;
+        }
+    }
 }
 
 TabbedBox &TabbedBox::operator=( const TabbedBox &copy){
@@ -44,7 +47,6 @@ TabbedBox &TabbedBox::operator=( const TabbedBox &copy){
 
 // Logic
 void TabbedBox::act(){
-	// Nothing yet
 }
 
 // Render
@@ -55,12 +57,19 @@ void TabbedBox::render(const Bitmap & work){
         //roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
         //roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     } else {
-        workArea->rectangleFill( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+        workArea->rectangleFill( 0, fontHeight, location.getWidth()-1, location.getHeight()-1, colors.body );
         workArea->rectangle( 0, fontHeight, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
     Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
-    // workArea->drawingMode( Bitmap::MODE_TRANS );
+    
     workArea->drawTrans(location.getX(), location.getY(), work);
-    // work.drawingMode( Bitmap::MODE_SOLID );
 }
 
+
+// Add tab
+void TabbedBox::addTab(const std::vector<ContextItem *> & list){
+}
+
+unsigned int TabbedBox::getCurrentIndex() const {
+    return this->tabs[current]->context->getCurrentIndex();
+}
