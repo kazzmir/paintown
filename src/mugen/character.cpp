@@ -314,6 +314,62 @@ StateController::CompiledController * StateController::doCompile(){
             return new ControllerChangeAnim(Compiler::compile(getValue()));
             break;
         }
+        case PlaySnd : {
+            class ControllerPlaySound: public CompiledController {
+            public:
+                ControllerPlaySound(const Ast::Value * value):
+                group(-1),
+                item(-1),
+                own(false){
+                    parseSound(value);
+                }
+
+                int group, item;
+                bool own;
+
+                virtual ~ControllerPlaySound(){
+                }
+
+                virtual void parseSound(const Ast::Value * value){
+                    try{
+                        string group;
+                        int item;
+                        *value >> group >> item;
+                        if (PaintownUtil::matchRegex(group, "F[0-9]+")){
+                            int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
+                            this->group = realGroup;
+                            this->item = item;
+                            own = true;
+                        } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
+                            this->group = atoi(group.c_str());
+                            this->item = item;
+                            own = false;
+                        }
+                    } catch (const MugenException & e){
+                        // Global::debug(0) << "Error with PlaySnd " << controller.name << ": " << e.getReason() << endl;
+                        Global::debug(0) << "Error with PlaySnd :" << e.getReason() << endl;
+                    }
+
+                }
+
+                virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
+                    MugenSound * sound;
+                    if (own){
+                        sound = guy.getCommonSound(group, item);
+                    } else {
+                        sound = guy.getSound(group, item);
+                    }
+
+                    if (sound != NULL){
+                        sound->play();
+                    }
+                }
+            };
+
+            return new ControllerPlaySound(getValue());
+            
+            break;
+        }
         default : {
             class DefaultController: public CompiledController {
             public:
@@ -531,35 +587,7 @@ StateController::CompiledController * StateController::doCompile(){
                         case PlayerPush : {
                             break;
                         }
-                        case PlaySnd : {
-                            try{
-                                /* FIXME!! */
-#if 0
-                                /* FIXME: group could start with F */
-                                string group;
-                                Compiler::Value * item = 0;
-                                getValue()->reset();
-                                *getValue() >> group >> item;
-                                int realItem = (int) toNumber(evaluate(item, FullEnvironment(stage, guy)));
-                                MugenSound * sound = 0;
-                                if (PaintownUtil::matchRegex(group, "F[0-9]+")){
-                                    int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
-                                    sound = guy.getCommonSound(realGroup, realItem);
-                                } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
-                                    sound = guy.getSound(atoi(group.c_str()), realItem);
-                                }
-
-                                if (sound != 0){
-                                    sound->play();
-                                } else {
-                                    Global::debug(0) << "Error with PlaySnd " << name << ": no sound for " << group << ", " << item->toString() << endl;
-                                }
-#endif
-                            } catch (const MugenException & e){
-                                Global::debug(0) << "Error with PlaySnd " << controller.name << ": " << e.getReason() << endl;
-                            }
-                            break;
-                        }
+                        
                         case PosAdd : {
                             if (getX() != NULL){
                                 RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
