@@ -1,6 +1,6 @@
+#include "util/bitmap.h"
 #include "mod.h"
 #include "level/utils.h"
-#include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util.h"
 #include "debug.h"
