@@ -43,7 +43,7 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
     }
 
     /* why do we need to copy the pcx data if we already have the bitmap? */
-    if (copy.pcx != 0){
+    if (copy.pcx != NULL){
         this->pcx = new char[this->reallength];
         /* this line is right */
         memcpy(this->pcx, copy.pcx, this->reallength);
