@@ -647,6 +647,14 @@ struct HitState{
 
 /* comes from a State */
 class StateController{
+protected:
+    class CompiledController{
+    public:
+        CompiledController();
+        virtual ~CompiledController();
+        virtual void execute(MugenStage & stage, Character & guy, const std::vector<std::string> & commands) = 0;
+    };
+
 public:
     StateController(const std::string & name);
 
@@ -750,6 +758,8 @@ public:
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<std::string> & commands) const;
     void activate(MugenStage & stage, Character & who, const std::vector<std::string> & commands) const;
 
+    virtual void compile();
+
     virtual inline void setType(Type type){
         this->type = type;
     }
@@ -774,7 +784,7 @@ public:
 
     virtual void setX(Compiler::Value * value);
     virtual void setY(Compiler::Value * value);
-    virtual void setValue(Compiler::Value * value);
+    virtual void setValue(const Ast::Value * value);
     virtual void setVariable(Compiler::Value * value);
 
     virtual inline Compiler::Value * getX() const {
@@ -785,7 +795,7 @@ public:
         return this->y;
     }
 
-    virtual inline Compiler::Value * getValue() const {
+    virtual inline const Ast::Value * getValue() const {
         return this->value;
     }
 
@@ -860,15 +870,17 @@ protected:
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<Compiler::Value*> & expressions, const std::vector<std::string> & commands) const;
     bool canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
+    CompiledController* doCompile();
 
 protected:
     Type type;
+    CompiledController * compiled;
     std::string name;
     bool changeControl;
     Compiler::Value * control;
     Compiler::Value * x;
     Compiler::Value * y;
-    Compiler::Value * value;
+    const Ast::Value * value;
 
     /* how is this different from the `variables' map? */
     Compiler::Value * variable;

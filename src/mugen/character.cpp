@@ -103,8 +103,15 @@ HitDefinition::Fall::~Fall(){
     // delete fall;
 }
 
+StateController::CompiledController::CompiledController(){
+}
+
+StateController::CompiledController::~CompiledController(){
+}
+
 StateController::StateController(const string & name):
 type(Unknown),
+compiled(NULL),
 name(name),
 changeControl(false),
 control(NULL),
@@ -150,7 +157,8 @@ StateController::~StateController(){
     delete x;
     delete y;
     delete control;
-    delete value;
+    // delete value;
+    delete compiled;
     delete variable;
     delete posX;
     delete posY;
@@ -175,7 +183,7 @@ void StateController::setY(Compiler::Value * value){
     this->y = value;
 }
 
-void StateController::setValue(Compiler::Value * value){
+void StateController::setValue(const Ast::Value * value){
     this->value = value;
 }
 
@@ -279,6 +287,512 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
     return false;
 }
 
+StateController::CompiledController * StateController::doCompile(){
+    switch (getType()){
+        case ChangeAnim: {
+            class ControllerChangeAnim: public CompiledController {
+            public:
+                ControllerChangeAnim(Compiler::Value * value):
+                    value(value){
+                    }
+
+                Compiler::Value * value;
+
+                virtual ~ControllerChangeAnim(){
+                    delete value;
+                }
+
+                virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
+                    RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
+                    if (result.isDouble()){
+                        int value = (int) result.getDoubleValue();
+                        guy.setAnimation(value);
+                    }
+                }
+            };
+
+            return new ControllerChangeAnim(Compiler::compile(getValue()));
+            break;
+        }
+        default : {
+            class DefaultController: public CompiledController {
+            public:
+                DefaultController(StateController & controller, const Ast::Value * value):
+                controller(controller),
+                value(NULL){
+                    if (value != NULL){
+                        this->value = Compiler::compile(value);
+                    }
+                }
+
+                StateController & controller;
+                Compiler::Value * value;
+
+                virtual ~DefaultController(){
+                    delete value;
+                }
+
+                virtual Compiler::Value * getX() const {
+                    return controller.getX();
+                }
+
+                virtual Compiler::Value * getVariable() const {
+                    return controller.getVariable();
+                }
+
+                virtual Compiler::Value * getY() const {
+                    return controller.getY();
+                }
+
+                virtual Compiler::Value * getValue() const {
+                    return value;
+                }
+
+                virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
+                    switch (controller.getType()){
+                        case AfterImage : {
+                            break;
+                        }
+                        case AfterImageTime : {
+                            break;
+                        }
+                        case AllPalFX : {
+                            break;
+                        }
+                        case AngleAdd : {
+                            break;
+                        }
+                        case AngleDraw : {
+                            break;
+                        }
+                        case AngleMul : {
+                            break;
+                        }
+                        case AngleSet : {
+                            break;
+                        }
+                        case AppendToClipboard : {
+                            break;
+                        }
+                        case AssertSpecial : {
+                            break;
+                        }
+                        case AttackDist : {
+                            break;
+                        }
+                        case AttackMulSet : {
+                            break;
+                        }
+                        case BGPalFX : {
+                            break;
+                        }
+                        case BindToParent : {
+                            break;
+                        }
+                        case BindToRoot : {
+                            break;
+                        }
+                        case BindToTarget : {
+                            break;
+                        }
+                        case ChangeAnim2 : {
+                            break;
+                        }
+                        case ChangeState : {
+                            RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
+                            if (result.isDouble()){
+                                int value = (int) result.getDoubleValue();
+                                guy.changeState(stage, value, commands);
+                            }
+                            break;
+                        }
+                        case ClearClipboard : {
+                            break;
+                        }
+                        case CtrlSet : {
+                            RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
+                            guy.setControl(toBool(result));
+                            break;
+                        }
+                        case DefenceMulSet : {
+                            break;
+                        }
+                        case DestroySelf : {
+                            break;
+                        }
+                        case DisplayToClipboard : {
+                            break;
+                        }
+                        case EnvColor : {
+                            break;
+                        }
+                        case EnvShake : {
+                            break;
+                        }
+                        case Explod : {
+                            break;
+                        }
+                        case ExplodBindTime : {
+                            break;
+                        }
+                        case ForceFeedback : {
+                            break;
+                        }
+                        case FallEnvShake : {
+                            break;
+                        }
+                        case GameMakeAnim : {
+                            break;
+                        }
+                        case Gravity : {
+                            break;
+                        }
+                        case Helper : {
+                            break;
+                        }
+                        case HitAdd : {
+                            break;
+                        }
+                        case HitBy : {
+                            break;
+                        }
+                        case HitDef : {
+                            /* prevent the same hitdef from being applied */
+                            if (guy.getHit() != &controller.getHit()){
+                                guy.setHitDef(&controller.getHit());
+                                guy.nextTicket();
+                            }
+                            break;
+                        }
+                        case HitFallDamage : {
+                            break;
+                        }
+                        case HitFallSet : {
+                            break;
+                        }
+                        case HitFallVel : {
+                            break;
+                        }
+                        case HitOverride : {
+                            break;
+                        }
+                        case HitVelSet : {
+                            if (getX() != NULL){
+                                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
+                                if (result.getBoolValue()){
+                                    guy.setXVelocity(guy.getHitState().xVelocity);
+                                }
+                            }
+
+                            if (getY() != NULL){
+                                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
+                                if (result.getBoolValue()){
+                                    guy.setYVelocity(guy.getHitState().yVelocity);
+                                }
+                            }
+                            break;
+                        }
+                        case LifeAdd : {
+                            break;
+                        }
+                        case LifeSet : {
+                            break;
+                        }
+                        case MakeDust : {
+                            break;
+                        }
+                        case ModifyExplod : {
+                            break;
+                        }
+                        case MoveHitReset : {
+                            break;
+                        }
+                        case NotHitBy : {
+                            break;
+                        }
+                        case Null : {
+                            break;
+                        }
+                        case Offset : {
+                            break;
+                        }
+                        case PalFX : {
+                            break;
+                        }
+                        case ParentVarAdd : {
+                            break;
+                        }
+                        case ParentVarSet : {
+                            break;
+                        }
+                        case Pause : {
+                            break;
+                        }
+                        case PlayerPush : {
+                            break;
+                        }
+                        case PlaySnd : {
+                            try{
+                                /* FIXME!! */
+#if 0
+                                /* FIXME: group could start with F */
+                                string group;
+                                Compiler::Value * item = 0;
+                                getValue()->reset();
+                                *getValue() >> group >> item;
+                                int realItem = (int) toNumber(evaluate(item, FullEnvironment(stage, guy)));
+                                MugenSound * sound = 0;
+                                if (PaintownUtil::matchRegex(group, "F[0-9]+")){
+                                    int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
+                                    sound = guy.getCommonSound(realGroup, realItem);
+                                } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
+                                    sound = guy.getSound(atoi(group.c_str()), realItem);
+                                }
+
+                                if (sound != 0){
+                                    sound->play();
+                                } else {
+                                    Global::debug(0) << "Error with PlaySnd " << name << ": no sound for " << group << ", " << item->toString() << endl;
+                                }
+#endif
+                            } catch (const MugenException & e){
+                                Global::debug(0) << "Error with PlaySnd " << controller.name << ": " << e.getReason() << endl;
+                            }
+                            break;
+                        }
+                        case PosAdd : {
+                            if (getX() != NULL){
+                                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.moveX(result.getDoubleValue());
+                                    // guy.setX(guy.getX() + result.getDoubleValue());
+                                }
+                            }
+                            if (getY() != NULL){
+                                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.moveYNoCheck(-result.getDoubleValue());
+                                    // guy.setY(guy.getY() + result.getDoubleValue());
+                                }
+                            }
+                            break;
+                        }
+                        case PosFreeze : {
+                            break;
+                        }
+                        case PosSet : {
+                            if (getX() != NULL){
+                                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setX(result.getDoubleValue());
+                                }
+                            }
+                            if (getY() != NULL){
+                                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setY(result.getDoubleValue());
+                                }
+                            }
+                            break;
+                        }
+                        case PowerAdd : {
+                            break;
+                        }
+                        case PowerSet : {
+                            break;
+                        }
+                        case Projectile : {
+                            break;
+                        }
+                        case RemoveExplod : {
+                            break;
+                        }
+                        case ReversalDef : {
+                            break;
+                        }
+                        case ScreenBound : {
+                            break;
+                        }
+                        case SelfState : {
+                            break;
+                        }
+                        case SprPriority : {
+                            break;
+                        }
+                        case StateTypeSet : {
+                            if (controller.changeMoveType){
+                                guy.setMoveType(controller.moveType);
+                            }
+
+                            if (controller.changeStateType){
+                                guy.setStateType(controller.stateType);
+                            }
+
+                            if (controller.changePhysics){
+                                guy.setCurrentPhysics(controller.physics);
+                            }
+                            break;
+                        }
+                        case SndPan : {
+                            break;
+                        }
+                        case StopSnd : {
+                            break;
+                        }
+                        case SuperPause : {
+                            FullEnvironment env(stage, guy);
+                            int x = guy.getRX() + (int) controller.posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
+                            int y = guy.getRY() + (int) controller.posY->evaluate(env).toNumber();
+                            /* 30 is the default I think.. */
+                            int time = 30;
+                            if (controller.time != NULL){
+                                time = (int) controller.time->evaluate(env).toNumber();
+                            }
+                            stage.doSuperPause(time, controller.animation, x, y, controller.sound.group, controller.sound.item); 
+                            break;
+                        }
+                        case TargetBind : {
+                            break;
+                        }
+                        case TargetDrop : {
+                            break;
+                        }
+                        case TargetFacing : {
+                            break;
+                        }
+                        case TargetLifeAdd : {
+                            break;
+                        }
+                        case TargetPowerAdd : {
+                            break;
+                        }
+                        case TargetState : {
+                            break;
+                        }
+                        case TargetVelAdd : {
+                            break;
+                        }
+                        case TargetVelSet : {
+                            break;
+                        }
+                        case Trans : {
+                            break;
+                        }
+                        case Turn : {
+                            break;
+                        }
+                        case VarAdd : {
+                            break;
+                        }
+                        case VarRandom : {
+                            break;
+                        }
+                        case VarRangeSet : {
+                            break;
+                        }
+                        case VarSet : {
+                            for (map<int, Compiler::Value*>::const_iterator it = controller.variables.begin(); it != controller.variables.end(); it++){
+                                int index = (*it).first;
+                                Compiler::Value * value = (*it).second;
+                                guy.setVariable(index, value);
+                            }
+
+                            for (map<int, Compiler::Value*>::const_iterator it = controller.floatVariables.begin(); it != controller.floatVariables.end(); it++){
+                                int index = (*it).first;
+                                Compiler::Value * value = (*it).second;
+                                guy.setFloatVariable(index, value);
+                            }
+
+                            for (map<int, Compiler::Value*>::const_iterator it = controller.systemVariables.begin(); it != controller.systemVariables.end(); it++){
+                                int index = (*it).first;
+                                Compiler::Value * value = (*it).second;
+                                guy.setSystemVariable(index, value);
+                            }
+
+                            if (getValue() != NULL && getVariable() != NULL){
+                                /* 'value = 23' is value1
+                                 * 'v = 9' is value2
+                                 */
+                                guy.setVariable((int) getVariable()->evaluate(FullEnvironment(stage, guy, commands)).toNumber(), getValue());
+                            }
+
+                            break;
+                        }
+                        case VelAdd : {
+                            if (getX() != NULL){
+                                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
+                                }
+                            }
+                            if (getY() != NULL){
+                                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setYVelocity(guy.getYVelocity() + result.getDoubleValue());
+                                }
+                            }
+                            break;
+                        }
+                        case VelMul : {
+                            if (getX() != NULL){
+                                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setXVelocity(guy.getXVelocity() * result.getDoubleValue());
+                                }
+                            }
+
+                            if (getY() != NULL){
+                                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setYVelocity(guy.getYVelocity() * result.getDoubleValue());
+                                }
+                            }
+                            break;
+                        }
+                        case VelSet : {
+                            if (getX() != NULL){
+                                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setXVelocity(result.getDoubleValue());
+                                }
+                            }
+                            if (getY() != NULL){
+                                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
+                                if (result.isDouble()){
+                                    guy.setYVelocity(result.getDoubleValue());
+                                }
+                            }
+                            break;
+                        }
+                        case Width : {
+                            break;
+                        }
+                        case Unknown : {
+                            break;
+                        }
+                        case InternalCommand : {
+                            typedef void (Character::*func)(const MugenStage & stage, const vector<string> & inputs);
+                            func f = (func) controller.internal;
+                            (guy.*f)(stage, commands);
+                            break;
+                        }
+                        default : break;
+                    }
+                }
+            };
+
+            return new DefaultController(*this, getValue());
+            break;
+        }
+    }
+
+    return NULL;
+}
+
+void StateController::compile(){
+    compiled = doCompile();
+}
+
 void StateController::activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
     Global::debug(1 * !debug) << "Activate controller " << name << endl;
 
@@ -286,442 +800,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
         guy.setControl(control->evaluate(FullEnvironment(stage, guy, commands)).toBool());
     }
 
-    switch (getType()){
-        case AfterImage : {
-            break;
-        }
-        case AfterImageTime : {
-            break;
-        }
-        case AllPalFX : {
-            break;
-        }
-        case AngleAdd : {
-            break;
-        }
-        case AngleDraw : {
-            break;
-        }
-        case AngleMul : {
-            break;
-        }
-        case AngleSet : {
-            break;
-        }
-        case AppendToClipboard : {
-            break;
-        }
-        case AssertSpecial : {
-            break;
-        }
-        case AttackDist : {
-            break;
-        }
-        case AttackMulSet : {
-            break;
-        }
-        case BGPalFX : {
-            break;
-        }
-        case BindToParent : {
-            break;
-        }
-        case BindToRoot : {
-            break;
-        }
-        case BindToTarget : {
-            break;
-        }
-        case ChangeAnim : {
-            RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
-            if (result.isDouble()){
-                int value = (int) result.getDoubleValue();
-                guy.setAnimation(value);
-            }
-            break;
-        }
-        case ChangeAnim2 : {
-            break;
-        }
-        case ChangeState : {
-            RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
-            if (result.isDouble()){
-                int value = (int) result.getDoubleValue();
-                guy.changeState(stage, value, commands);
-            }
-            break;
-        }
-        case ClearClipboard : {
-            break;
-        }
-        case CtrlSet : {
-            RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
-            guy.setControl(toBool(result));
-            break;
-        }
-        case DefenceMulSet : {
-            break;
-        }
-        case DestroySelf : {
-            break;
-        }
-        case DisplayToClipboard : {
-            break;
-        }
-        case EnvColor : {
-            break;
-        }
-        case EnvShake : {
-            break;
-        }
-        case Explod : {
-            break;
-        }
-        case ExplodBindTime : {
-            break;
-        }
-        case ForceFeedback : {
-            break;
-        }
-        case FallEnvShake : {
-            break;
-        }
-        case GameMakeAnim : {
-            break;
-        }
-        case Gravity : {
-            break;
-        }
-        case Helper : {
-            break;
-        }
-        case HitAdd : {
-            break;
-        }
-        case HitBy : {
-            break;
-        }
-        case HitDef : {
-            /* prevent the same hitdef from being applied */
-            if (guy.getHit() != &getHit()){
-                guy.setHitDef(&getHit());
-                guy.nextTicket();
-            }
-            break;
-        }
-        case HitFallDamage : {
-            break;
-        }
-        case HitFallSet : {
-            break;
-        }
-        case HitFallVel : {
-            break;
-        }
-        case HitOverride : {
-            break;
-        }
-        case HitVelSet : {
-            if (getX() != NULL){
-                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
-                if (result.getBoolValue()){
-                    guy.setXVelocity(guy.getHitState().xVelocity);
-                }
-            }
-
-            if (getY() != NULL){
-                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
-                if (result.getBoolValue()){
-                    guy.setYVelocity(guy.getHitState().yVelocity);
-                }
-            }
-            break;
-        }
-        case LifeAdd : {
-            break;
-        }
-        case LifeSet : {
-            break;
-        }
-        case MakeDust : {
-            break;
-        }
-        case ModifyExplod : {
-            break;
-        }
-        case MoveHitReset : {
-            break;
-        }
-        case NotHitBy : {
-            break;
-        }
-        case Null : {
-            break;
-        }
-        case Offset : {
-            break;
-        }
-        case PalFX : {
-            break;
-        }
-        case ParentVarAdd : {
-            break;
-        }
-        case ParentVarSet : {
-            break;
-        }
-        case Pause : {
-            break;
-        }
-        case PlayerPush : {
-            break;
-        }
-        case PlaySnd : {
-            try{
-                /* FIXME!! */
-#if 0
-                /* FIXME: group could start with F */
-                string group;
-                Compiler::Value * item = 0;
-                getValue()->reset();
-                *getValue() >> group >> item;
-                int realItem = (int) toNumber(evaluate(item, FullEnvironment(stage, guy)));
-                MugenSound * sound = 0;
-                if (PaintownUtil::matchRegex(group, "F[0-9]+")){
-                    int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
-                    sound = guy.getCommonSound(realGroup, realItem);
-                } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
-                    sound = guy.getSound(atoi(group.c_str()), realItem);
-                }
-
-                if (sound != 0){
-                    sound->play();
-                } else {
-                    Global::debug(0) << "Error with PlaySnd " << name << ": no sound for " << group << ", " << item->toString() << endl;
-                }
-#endif
-            } catch (const MugenException & e){
-                Global::debug(0) << "Error with PlaySnd " << name << ": " << e.getReason() << endl;
-            }
-            break;
-        }
-        case PosAdd : {
-            if (getX() != NULL){
-                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.moveX(result.getDoubleValue());
-                    // guy.setX(guy.getX() + result.getDoubleValue());
-                }
-            }
-            if (getY() != NULL){
-                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.moveYNoCheck(-result.getDoubleValue());
-                    // guy.setY(guy.getY() + result.getDoubleValue());
-                }
-            }
-            break;
-        }
-        case PosFreeze : {
-            break;
-        }
-        case PosSet : {
-            if (getX() != NULL){
-                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setX(result.getDoubleValue());
-                }
-            }
-            if (getY() != NULL){
-                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setY(result.getDoubleValue());
-                }
-            }
-            break;
-        }
-        case PowerAdd : {
-            break;
-        }
-        case PowerSet : {
-            break;
-        }
-        case Projectile : {
-            break;
-        }
-        case RemoveExplod : {
-            break;
-        }
-        case ReversalDef : {
-            break;
-        }
-        case ScreenBound : {
-            break;
-        }
-        case SelfState : {
-            break;
-        }
-        case SprPriority : {
-            break;
-        }
-        case StateTypeSet : {
-            if (changeMoveType){
-                guy.setMoveType(moveType);
-            }
-
-            if (changeStateType){
-                guy.setStateType(stateType);
-            }
-
-            if (changePhysics){
-                guy.setCurrentPhysics(physics);
-            }
-            break;
-        }
-        case SndPan : {
-            break;
-        }
-        case StopSnd : {
-            break;
-        }
-        case SuperPause : {
-            FullEnvironment env(stage, guy);
-            int x = guy.getRX() + (int) posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
-            int y = guy.getRY() + (int) posY->evaluate(env).toNumber();
-            /* 30 is the default I think.. */
-            int time = 30;
-            if (this->time != NULL){
-                time = (int) this->time->evaluate(env).toNumber();
-            }
-            stage.doSuperPause(time, animation, x, y, sound.group, sound.item); 
-            break;
-        }
-        case TargetBind : {
-            break;
-        }
-        case TargetDrop : {
-            break;
-        }
-        case TargetFacing : {
-            break;
-        }
-        case TargetLifeAdd : {
-            break;
-        }
-        case TargetPowerAdd : {
-            break;
-        }
-        case TargetState : {
-            break;
-        }
-        case TargetVelAdd : {
-            break;
-        }
-        case TargetVelSet : {
-            break;
-        }
-        case Trans : {
-            break;
-        }
-        case Turn : {
-            break;
-        }
-        case VarAdd : {
-            break;
-        }
-        case VarRandom : {
-            break;
-        }
-        case VarRangeSet : {
-            break;
-        }
-        case VarSet : {
-            for (map<int, Compiler::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
-                int index = (*it).first;
-                Compiler::Value * value = (*it).second;
-                guy.setVariable(index, value);
-            }
-
-            for (map<int, Compiler::Value*>::const_iterator it = floatVariables.begin(); it != floatVariables.end(); it++){
-                int index = (*it).first;
-                Compiler::Value * value = (*it).second;
-                guy.setFloatVariable(index, value);
-            }
-
-            for (map<int, Compiler::Value*>::const_iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
-                int index = (*it).first;
-                Compiler::Value * value = (*it).second;
-                guy.setSystemVariable(index, value);
-            }
-
-            if (getValue() != NULL && getVariable() != NULL){
-                /* 'value = 23' is value1
-                 * 'v = 9' is value2
-                 */
-                guy.setVariable((int) getVariable()->evaluate(FullEnvironment(stage, guy, commands)).toNumber(), getValue());
-            }
-
-            break;
-        }
-        case VelAdd : {
-            if (getX() != NULL){
-                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
-                }
-            }
-            if (getY() != NULL){
-                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setYVelocity(guy.getYVelocity() + result.getDoubleValue());
-                }
-            }
-            break;
-        }
-        case VelMul : {
-            if (getX() != NULL){
-                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setXVelocity(guy.getXVelocity() * result.getDoubleValue());
-                }
-            }
-
-            if (getY() != NULL){
-                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setYVelocity(guy.getYVelocity() * result.getDoubleValue());
-                }
-            }
-            break;
-        }
-        case VelSet : {
-            if (getX() != NULL){
-                RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setXVelocity(result.getDoubleValue());
-                }
-            }
-            if (getY() != NULL){
-                RuntimeValue result = getY()->evaluate(FullEnvironment(stage, guy));
-                if (result.isDouble()){
-                    guy.setYVelocity(result.getDoubleValue());
-                }
-            }
-            break;
-        }
-        case Width : {
-            break;
-        }
-        case Unknown : {
-            break;
-        }
-        case InternalCommand : {
-            typedef void (Character::*func)(const MugenStage & stage, const vector<string> & inputs);
-            func f = (func) internal;
-            (guy.*f)(stage, commands);
-            break;
-        }
-    }
+    compiled->execute(stage, guy, commands);
 }
 
 State::State():
@@ -1783,7 +1862,7 @@ void Character::parseState(Ast::Section * section){
                         Global::debug(0) << "Unknown state controller type " << type << endl;
                     }
                 } else if (simple == "value"){
-                    controller->setValue(Compiler::compile(simple.getValue()));
+                    controller->setValue(simple.getValue());
                 } else if (simple == "triggerall"){
                     controller->addTriggerAll(Compiler::compile(simple.getValue()));
                 } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger[0-9]+")){
@@ -2134,7 +2213,6 @@ void Character::parseState(Ast::Section * section){
             }
     };
 
-
     if (states[state] == 0){
         ostringstream out;
         out << "Warning! No StateDef for state " << state << " [" << name << "]";
@@ -2144,6 +2222,7 @@ void Character::parseState(Ast::Section * section){
         StateController * controller = new StateController(name);
         StateControllerWalker walker(controller);
         section->walk(walker);
+        controller->compile();
 
         states[state]->addController(controller);
 
@@ -2546,7 +2625,8 @@ void Character::fixAssumptions(){
         {
             StateController * controller = new StateController("walk");
             controller->setType(StateController::ChangeState);
-            controller->setValue(Compiler::compile(WalkingForwards));
+            Ast::Number value(WalkingForwards);
+            controller->setValue(&value);
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
                         new Ast::Number(0))));
@@ -2558,13 +2638,15 @@ void Character::fixAssumptions(){
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holdback")))));
             states[-1]->addController(controller);
+            controller->compile();
         }
 
         /* crouch */
         {
             StateController * controller = new StateController("crouch");
             controller->setType(StateController::ChangeState);
-            controller->setValue(Compiler::compile(StandToCrouch));
+            Ast::Number value(StandToCrouch);
+            controller->setValue(&value);
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("stateno"),
@@ -2576,6 +2658,7 @@ void Character::fixAssumptions(){
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holddown")))));
             states[-1]->addControllerFront(controller);
+            controller->compile();
         }
 
         /* jump */
@@ -2591,6 +2674,7 @@ void Character::fixAssumptions(){
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holdup")))));
             states[-1]->addController(controller);
+            controller->compile();
         }
 
         {
@@ -2625,6 +2709,7 @@ void Character::fixAssumptions(){
                         new Ast::String(new string(jumpCommand)
                             ))));
             states[-1]->addController(controller);
+            controller->compile();
         }
 
     }
@@ -2638,6 +2723,7 @@ void Character::fixAssumptions(){
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
                     new Ast::Number(0))));
+            controller->compile();
         }
     }
 
@@ -2647,7 +2733,8 @@ void Character::fixAssumptions(){
     if (states[20] != 0){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
-        controller->setValue(Compiler::compile(Standing));
+        Ast::Number value(Standing);
+        controller->setValue(&value);
         controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holdfwd")))));
@@ -2655,6 +2742,7 @@ void Character::fixAssumptions(){
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holdback")))));
         states[20]->addController(controller);
+        controller->compile();
     }
 
     if (states[Standing] != 0){
@@ -2665,24 +2753,28 @@ void Character::fixAssumptions(){
     if (states[11] != 0){
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
-        controller->setValue(Compiler::compile(CrouchToStand));
+        Ast::Number value(CrouchToStand);
+        controller->setValue(&value);
         controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
                     new Ast::SimpleIdentifier("command"),
                     new Ast::String(new string("holddown")))));
         states[11]->addController(controller);
+        controller->compile();
     }
 
     /* get up kids */
     if (states[Liedown] != 0){
         StateController * controller = new StateController("get up");
         controller->setType(StateController::ChangeState);
-        controller->setValue(Compiler::compile(GetUpFromLiedown));
+        Ast::Number value(GetUpFromLiedown);
+        controller->setValue(&value);
 
         controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
                     new Ast::SimpleIdentifier("time"),
                     new Ast::Number(getLieDownTime()))));
 
         states[Liedown]->addController(controller);
+        controller->compile();
     }
 
     /* standing turn state */
@@ -2694,11 +2786,13 @@ void Character::fixAssumptions(){
 
         StateController * controller = new StateController("stand");
         controller->setType(StateController::ChangeState);
-        controller->setValue(Compiler::compile(Standing));
+        Ast::Number value(Standing);
+        controller->setValue(&value);
         controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
                     new Ast::Number(0))));
         turn->addController(controller);
+        controller->compile();
     }
 
 #if 0
@@ -3088,7 +3182,7 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
                 }
             }
             if (stateNumber == -1 && controller->getName() == "jump" && hasFF){
-            // if (controller->getName() == "run fwd"){
+            if (controller->getName() == "run fwd"){
                 int x = 2;
             }
             /* for debugging

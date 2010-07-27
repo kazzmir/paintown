@@ -451,7 +451,7 @@ protected:
 
 void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites){
     SffReader reader(filename, palette);
-    /* were replaced sprites go */
+    /* where replaced sprites go */
     vector<MugenSprite*> unused;
     while (reader.moreSprites()){
         try{
@@ -463,7 +463,6 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
                 if (it != first_it->second.end()){
                     Global::debug(0) << "Warning: replacing sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << endl;
                     unused.push_back(it->second);
-                    // delete it->second;
                 }
             }
             sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
@@ -472,6 +471,7 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
         }
     }
 
+    /* delete all replaced sprites */
     for (vector<MugenSprite*>::iterator it = unused.begin(); it != unused.end(); it++){
         delete (*it);
     }
