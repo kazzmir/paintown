@@ -1,10 +1,10 @@
 #ifndef mugen_exception_h
 #define mugen_exception_h
 
-#include <exception>
+#include "exceptions/exception.h"
 #include <string>
 
-class MugenException: public std::exception {
+class MugenException: public Exception::Base {
 public:
 	MugenException();
 	MugenException(const std::string & reason, const std::string & where = "?", int line = 0);
@@ -13,7 +13,7 @@ public:
 
         const std::string getFullReason() const;
 
-	inline const std::string & getReason() const{
+	inline const std::string getReason() const{
             return reason;
 	}
 

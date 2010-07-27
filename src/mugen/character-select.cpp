@@ -962,8 +962,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                         if (player1.getDefinitionFile() == player2.getDefinitionFile()){
                             if (player1.getPlayer1Act() == player2.getPlayer2Act()){
                                 int act = player1.getPlayer1Act()-1;
-                                if (act <=0){
-                                    act+=2;
+                                if (act <= 0){
+                                    act += 2;
                                 }
                                 player2.setPlayer2Act(act);
                             }

@@ -1,17 +1,16 @@
-#include <exception>
 #include <string>
 #include <sstream>
 #include "exception.h"
 	
 MugenException::MugenException():
-std::exception(),
+Exception::Base("", -1),
 reason("unspecified"),
 where("?"),
 line(0){
 }
 
 MugenException::MugenException(const std::string & reason, const std::string & where, int line):
-std::exception(),
+Exception::Base("", line),
 reason(reason),
 where(where),
 line(line){
