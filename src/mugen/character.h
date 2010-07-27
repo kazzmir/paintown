@@ -5,14 +5,16 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "mugen/exception.h"
+#include "exception.h"
 
 // Implement object_attack
 #include "object/object_attack.h"
 #include "network/network.h"
+#include "util/pointer.h"
 #include "input/input-map.h"
-#include "mugen/animation.h"
-#include "mugen/util.h"
+#include "animation.h"
+#include "util.h"
+#include "compiler.h"
 
 namespace Ast{
     class KeyList;
@@ -21,11 +23,15 @@ namespace Ast{
     class Section;
 }
 
+/*
 namespace Mugen{
 namespace Compiler{
     class Value;
 }
 }
+*/
+
+namespace PaintownUtil = Util;
 
 class Bitmap;
 class MugenItemContent;
@@ -254,14 +260,13 @@ struct HitDefinition{
      * hit_damage is the damage that P2 takes when hit by P2. The optional guard_damage parameter is the damage taken by P2 if the hit is guarded. Both default to zero if omitted.
      */
     struct Damage{
-        Damage():
-            damage(NULL), guardDamage(NULL){
-            }
+        Damage(){
+        }
 
         ~Damage();
 
-        Compiler::Value * damage;
-        Compiler::Value * guardDamage;
+        PaintownUtil::ClassPointer<Compiler::Value> damage;
+        PaintownUtil::ClassPointer<Compiler::Value> guardDamage;
     } damage;
 
     /* pausetime = p1_pausetime, p2_shaketime (int, int)

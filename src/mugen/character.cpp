@@ -91,8 +91,10 @@ HitDefinition::~HitDefinition(){
 }
 
 HitDefinition::Damage::~Damage(){
+    /*
     delete damage;
     delete guardDamage;
+    */
 }
 
 HitDefinition::Fall::~Fall(){
