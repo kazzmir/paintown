@@ -9029,14 +9029,14 @@ Result rule_helper__name(Stream & stream, const int position){
     out_peg_955:
     Result result_peg_956(myposition);
     
-    for (int i = 0; i < 5; i++){
-        if (compareCharCase("enemy"[i], stream.get(result_peg_956.getPosition()))){
+    for (int i = 0; i < 9; i++){
+        if (compareCharCase("enemyNear"[i], stream.get(result_peg_956.getPosition()))){
             result_peg_956.nextPosition();
         } else {
             goto out_peg_957;
         }
     }
-    result_peg_956.setValue((void*) "enemy");
+    result_peg_956.setValue((void*) "enemyNear");
     
     if (column_peg_945.chunk12 == 0){
         column_peg_945.chunk12 = new Chunk12();
@@ -9049,14 +9049,14 @@ Result rule_helper__name(Stream & stream, const int position){
     out_peg_957:
     Result result_peg_958(myposition);
     
-    for (int i = 0; i < 9; i++){
-        if (compareCharCase("enemyNear"[i], stream.get(result_peg_958.getPosition()))){
+    for (int i = 0; i < 5; i++){
+        if (compareCharCase("enemy"[i], stream.get(result_peg_958.getPosition()))){
             result_peg_958.nextPosition();
         } else {
             goto out_peg_959;
         }
     }
-    result_peg_958.setValue((void*) "enemyNear");
+    result_peg_958.setValue((void*) "enemy");
     
     if (column_peg_945.chunk12 == 0){
         column_peg_945.chunk12 = new Chunk12();
@@ -9070,13 +9070,13 @@ Result rule_helper__name(Stream & stream, const int position){
     Result result_peg_960(myposition);
     
     for (int i = 0; i < 8; i++){
-        if (compareCharCase("playerID"[i], stream.get(result_peg_960.getPosition()))){
+        if (compareCharCase("playerid"[i], stream.get(result_peg_960.getPosition()))){
             result_peg_960.nextPosition();
         } else {
             goto out_peg_961;
         }
     }
-    result_peg_960.setValue((void*) "playerID");
+    result_peg_960.setValue((void*) "playerid");
     
     if (column_peg_945.chunk12 == 0){
         column_peg_945.chunk12 = new Chunk12();
