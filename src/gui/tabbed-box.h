@@ -20,6 +20,7 @@ class Tab{
         ~Tab();
         std::string name;
         Gui::ContextBox * context;
+        bool active;
 };
 
 class TabbedBox : public Widget{
@@ -38,10 +39,10 @@ class TabbedBox : public Widget{
         virtual void render(const Bitmap &);
         
         //! Add tab
-        virtual void addTab(const std::vector<ContextItem *> & list);
+        virtual void addTab(const std::string &, const std::vector<ContextItem *> & list);
         
         //! Set current font
-        virtual inline void setFont(const Filesystem::RelativePath & font, int width, int height){
+        virtual inline void setFont(const Filesystem::RelativePath &, int width, int height){
             this->font = font;
             this->fontWidth = width;
             this->fontHeight = height;
@@ -68,6 +69,12 @@ class TabbedBox : public Widget{
         Filesystem::RelativePath font;
         int fontWidth;
         int fontHeight;
+        
+        /*! Is in tab */
+        bool inTab;
+        
+        /*! Render tab */
+        void renderTabs(const Bitmap &);
 };
 
 }
