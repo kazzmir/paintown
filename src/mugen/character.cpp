@@ -904,6 +904,10 @@ void State::transitionTo(const MugenStage & stage, Character & who){
      * activated a few times (like 3-4).
      * Resetting the hitdef to NULL allows the hitdef controller to ensure only
      * unique hitdef's get set as well as repeat the same hitdef in sequence.
+     *
+     * Update: 7/28/2010: I don't think this is true anymore because `animelem'
+     * is only true for the first tick of an animation. `animelem = 3' won't be true
+     * for as long as the animation is 3, just the first tick of the game that its 3.
      */
     if (!doesHitDefPersist()){
         who.setHitDef(NULL);
@@ -1169,11 +1173,15 @@ void Character::loadSelectData(){
 	    Global::debug(1) << "Cannot locate player definition file for: " << location.path() << endl;
 	}
 	
+        /* FIXME: 3 probedef's is slow because it runs the parser each time.
+         * Parse once and walk it 3 times instead.
+         */
 	// Set name of character
 	this->name = Mugen::Util::probeDef(ourDefFile, "info", "name");
 	this->displayName = Mugen::Util::probeDef(ourDefFile, "info", "displayname");
 	this->sffFile = Mugen::Util::probeDef(ourDefFile, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
+        /* FIXME: replace 9000 with some readable constant */
 	this->sprites[9000][0] = Mugen::Util::probeSff(Util::fixFileName(baseDir, this->sffFile), 9000,0);
 	this->sprites[9000][1] = Mugen::Util::probeSff(Util::fixFileName(baseDir, this->sffFile), 9000,1);
 	

@@ -16,7 +16,6 @@
 # Todo (finished items at bottom)
 # add generator for scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
 # add header (.h) generator for C/C++
-# getter for the current line and column
 # fix error message reporting
 # inline rules + semantic actions are broken (in C++ at least)
 # Don't memoize if a rule accepts parameters (ruby, python)
@@ -3433,3 +3432,4 @@ if __name__ == '__main__':
 # add helper function section
 # error reporting for c++
 # generator for python, ruby, c++
+# getter for the current line and column

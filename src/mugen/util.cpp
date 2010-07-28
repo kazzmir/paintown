@@ -311,7 +311,7 @@ public:
 
         Global::debug(2) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
-        spriteIndex = new MugenSprite*[totalImages + 1];
+        // spriteIndex = new MugenSprite*[totalImages + 1];
 
         // Palette related
         useact = false;
@@ -326,7 +326,7 @@ public:
 
     virtual ~SffReader(){
         sffStream.close();
-        delete[] spriteIndex;
+        // delete[] spriteIndex;
     }
 
     MugenSprite * readSprite(){
@@ -438,7 +438,7 @@ protected:
     ifstream sffStream;
     unsigned long currentSprite;
     int totalSprites;
-    MugenSprite ** spriteIndex;
+    map<int, MugenSprite*> spriteIndex;
     bool useact;
     int filesize;
     int location;
@@ -1026,8 +1026,8 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
     throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file.path() + "'");
 }
 
-/* clean this function up */
-MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, const Filesystem::AbsolutePath &actFile){
+/* TODO: clean this function up */
+MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, const Filesystem::AbsolutePath & actFile){
     SffReader reader(file, actFile);
     vector<MugenSprite*> sprites;
     while (reader.moreSprites()){
