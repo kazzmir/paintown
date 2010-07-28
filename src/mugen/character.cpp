@@ -1173,13 +1173,11 @@ void Character::loadSelectData(){
 	    Global::debug(1) << "Cannot locate player definition file for: " << location.path() << endl;
 	}
 	
-        /* FIXME: 3 probedef's is slow because it runs the parser each time.
-         * Parse once and walk it 3 times instead.
-         */
+        Ast::AstParse parsed(Mugen::Util::parseDef(ourDefFile.path()));
 	// Set name of character
-	this->name = Mugen::Util::probeDef(ourDefFile, "info", "name");
-	this->displayName = Mugen::Util::probeDef(ourDefFile, "info", "displayname");
-	this->sffFile = Mugen::Util::probeDef(ourDefFile, "files", "sprite");
+	this->name = Mugen::Util::probeDef(parsed, "info", "name");
+	this->displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
+	this->sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
         /* FIXME: replace 9000 with some readable constant */
 	this->sprites[9000][0] = Mugen::Util::probeSff(Util::fixFileName(baseDir, this->sffFile), 9000,0);

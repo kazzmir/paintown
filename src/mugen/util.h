@@ -19,6 +19,7 @@ class MugenSection;
 class MugenCharacterSelect;
 namespace Ast{
     class Section;
+    class AstParse;
 }
 
 namespace Mugen{
@@ -52,6 +53,7 @@ namespace Util{
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
     const std::string probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search);
+    const std::string probeDef(const Ast::AstParse & parsed, const std::string & section, const std::string & search);
     /*! Use to probe a SFF file for a specific sprite without loading the whole sprite list
        Throws exception if not found
     */

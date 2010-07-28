@@ -370,6 +370,7 @@ public:
                 return new MugenSprite(*loadSprite(sprite));
             }
         }
+        return NULL;
     }
 
     /* deletes all sprites, only call this if you don't want them! */
@@ -958,13 +959,7 @@ const Filesystem::AbsolutePath Mugen::Util::getCorrectFileLocation(const Filesys
     return dir.join(Filesystem::RelativePath(ourFile));
 }
 
-const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search){
-    TimeDifference diff;
-    diff.startTime();
-    Ast::AstParse parsed(parseDef(file.path()));
-    diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
-    
+const std::string Mugen::Util::probeDef(const Ast::AstParse & parsed, const std::string & section, const std::string & search){
     std::string ourSection = fixCase(section);;
     std::string ourSearch = fixCase(search);;
    
@@ -996,13 +991,23 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
 	    astSection->walk(walk);
 	    
 	    if (!result.empty()){
-		Global::debug(1) << "Found '" << search << "' in Section '" << section << "' in Definition file '" << file.path() << "'" << endl;
+		// Global::debug(1) << "Found '" << search << "' in Section '" << section << "' in Definition file '" << file.path() << "'" << endl;
 		return result;
 	    }
 	}
     }
     // Couldn't find search item throw exception
-    throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file.path() + "'");
+    // throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file.path() + "'");
+    throw MugenException("Couldn't find '" + search + "' in section '" + section + "'");
+}
+
+const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search){
+    TimeDifference diff;
+    diff.startTime();
+    Ast::AstParse parsed(parseDef(file.path()));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
+    return probeDef(parsed, section, search);
 }
 
 /* TODO: clean this function up */
