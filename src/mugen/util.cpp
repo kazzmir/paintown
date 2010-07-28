@@ -329,6 +329,57 @@ public:
         // delete[] spriteIndex;
     }
 
+    /* gets all the sprite headers without loading the pcx information */
+    void quickReadSprites(){
+        for (unsigned int index = 0; index < totalImages; index++){
+            MugenSprite * sprite = new MugenSprite();
+            sprite->read(sffStream, location);
+            spriteIndex[index] = sprite;
+            location = sprite->getNext();
+        }
+    }
+
+    /* Actually loads the pcx data */
+    MugenSprite * loadSprite(MugenSprite * sprite){
+        if (sprite->getBitmap() == NULL){
+            if (sprite->getLength() == 0){
+                const MugenSprite * temp = loadSprite(spriteIndex[sprite->getPrevious()]);
+                if (!temp){
+                    ostringstream out;
+                    out << "Unknown linked sprite " << sprite->getPrevious() << endl;
+                    throw MugenException(out.str());
+                }
+                sprite->copyImage(temp);
+            } else {
+                bool islinked = false;
+                sprite->loadPCX(sffStream, islinked, useact, palsave1);
+            }
+        }
+        return sprite;
+    }
+
+    MugenSprite * findSprite(int group, int item){
+        if (spriteIndex.size() == 0){
+            quickReadSprites();
+        }
+        for (map<int, MugenSprite *>::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
+            MugenSprite * sprite = it->second;
+            if (sprite->getGroupNumber() == group &&
+                sprite->getImageNumber() == item){
+                /* make a deep copy */
+                return new MugenSprite(*loadSprite(sprite));
+            }
+        }
+    }
+
+    /* deletes all sprites, only call this if you don't want them! */
+    void cleanup(){
+        for (map<int, MugenSprite *>::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
+            MugenSprite * sprite = it->second;
+            delete sprite;
+        }
+    }
+
     MugenSprite * readSprite(){
         bool islinked = false;
         if (location > filesize){
@@ -355,78 +406,6 @@ public:
         currentSprite += 1;
 
         return sprite;
-
-#if 0
-        if (sprite->getLength() == 0){ // Lets get the linked sprite
-            // This is linked
-            islinked = true;
-            /* Lets check if this is a duplicate sprite if so copy it
-             * if prev is larger than index then this file is corrupt
-             */
-            if (sprite->getPrevious() >= currentSprite){
-                throw MugenException("Error in SFF file: " + filename + ". Incorrect reference to sprite.");
-            }
-
-            if (sprite->getPrevious() > 32767){
-                throw MugenException("Error in SFF file: " + filename + ". Reference too large in image.");
-            }
-
-            while (sprite->getLength() == 0){
-                const MugenSprite * temp = spriteIndex[sprite->getPrevious()];
-                if (!temp){
-                    throw MugenException("Error in SFF file: " + filename + ". Referenced sprite is NULL.");
-                }
-
-                // Seek to the location of the pcx data
-                sffStream.seekg(temp->getLocation() + 32, ios::beg);
-                sprite->setLocation(temp->getLocation());
-                sprite->setLength(temp->getNext() - temp->getLocation() - 32);
-
-                if ((sprite->getPrevious() <= temp->getPrevious()) &&
-                    ((sprite->getPrevious() != 0) || (currentSprite == 0)) &&
-                    temp->getLength()==0){
-
-                    std::ostringstream st;
-                    st << "Image " << currentSprite << "(" << sprite->getGroupNumber() << "," << sprite->getImageNumber() << ") : circular definition or forward linking. Aborting.\n"; 
-                    throw MugenException(st.str());
-                } else {
-                    if(sprite->getLength() == 0){
-                        sprite->setPrevious(temp->getPrevious());
-                    } else {
-                        sprite->setNewLength(temp->getNext() - temp->getLocation() -32);
-                        sprite->setRealLength(sprite->getNewLength());
-                    }
-                }
-
-                Global::debug(2) << "Referenced Sprite Location: " << temp->getLocation() << " | Group: " << temp->getGroupNumber() << " | Sprite: " << temp->getGroupNumber() << " | at index: " << sprite->getPrevious() << endl;
-            }
-        }
-
-        try{
-            sprite->loadPCX(sffStream, islinked, useact, palsave1);
-            spriteIndex[currentSprite] = sprite;
-            location = sprite->getNext();
-
-            if (!location){
-                Global::debug(1) << "End of Sprites or File. Continuing...." << endl;
-                throw MugenException("No sprites left");
-            }
-
-            Global::debug(2) << "Index: " << currentSprite << ", Location: " << sprite->getLocation()  << ", Next Sprite: "  << sprite->getNext() << ", Length: " << sprite->getRealLength() << ", x|y: " << sprite->getX() << "|" << sprite->getY() << ", Group|Image Number: " << sprite->getGroupNumber() << "|" << sprite->getImageNumber() << ", Prev: " << sprite->getPrevious() << ", Same Pal: " << sprite->getSamePalette() << ", Comments: " << sprite->getComments() << endl;
-
-            currentSprite += 1;
-            return sprite;
-        } catch (const LoadException & le){
-            /* ignore this error?? */
-            location = sprite->getNext();
-            spriteIndex[currentSprite] = 0;
-            currentSprite += 1;
-            ostringstream out;
-            out << "Could not load sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << ": " << le.getReason() << endl;
-            delete sprite;
-            throw MugenException(out.str());
-        }
-#endif
     }
 
     bool moreSprites(){
@@ -1029,6 +1008,15 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
 /* TODO: clean this function up */
 MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, const Filesystem::AbsolutePath & actFile){
     SffReader reader(file, actFile);
+    MugenSprite * found = reader.findSprite(groupNumber, spriteNumber);
+    reader.cleanup();
+    if (found != NULL){
+        return found;
+    }
+    ostringstream out;
+    out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file.path();
+    throw MugenException(out.str());
+    /*
     vector<MugenSprite*> sprites;
     while (reader.moreSprites()){
         try{
@@ -1051,10 +1039,10 @@ MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int gro
     for (vector<MugenSprite*>::iterator it = sprites.begin(); it != sprites.end(); it++){
         delete *it;
     }
-    /* Not found */
     ostringstream out;
     out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file.path();
     throw MugenException(out.str());
+    */
 }
 
 Mugen::Point::Point():
