@@ -649,7 +649,7 @@ public:
                 column += 1;
             }
         }
-        int context = 15;
+        int context = 20;
         int left = farthest - context;
         int right = farthest + context;
         if (left < 0){

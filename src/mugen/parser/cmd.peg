@@ -1,5 +1,5 @@
 start-symbol: start
-options: debug0
+options: debug0, error-length 20
 module: Mugen.Cmd
 include: {{
 #include "mugen/ast/all.h"

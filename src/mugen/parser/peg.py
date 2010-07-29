@@ -456,7 +456,7 @@ public:
                 column += 1;
             }
         }
-        int context = 15;
+        int context = %d;
         int left = farthest - context;
         int right = farthest + context;
         if (left < 0){
@@ -2536,6 +2536,14 @@ class Peg:
             self.module = ['Parser']
         if 'no-memo' in self.options:
             self.memo = False
+        # Default error length
+        self.error_size = 15
+        for option in self.options:
+            import re
+            length = re.compile('error-length (\d+)')
+            match = length.match(option)
+            if match:
+                self.error_size = int(match.group(1))
 
         for rule in self.rules:
             rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
@@ -2795,7 +2803,7 @@ const void * parse(const char * in, int length, bool stats = false){
 }
 
 %s
-        """ % (top_code, namespace_start, start_cpp_code % chunks, '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, self.start, self.start, namespace_end)
+        """ % (top_code, namespace_start, start_cpp_code % (chunks, self.error_size), '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, self.start, self.start, namespace_end)
 
         return data
 
@@ -2936,6 +2944,8 @@ for option in ([option1] + option_rest):
             value.append('debug%d' % x)
     elif option == 'no-memo':
         value.append(option)
+    else:
+        value.append(option)
 """),
                     ]),
             ]),
@@ -2948,6 +2958,17 @@ value = 'debug%s' % number
 """),
                 ]),
             PatternVerbatim('no-memo'),
+            PatternRule('error_option')
+            ]),
+        Rule('error_option', [
+            PatternSequence([
+                PatternVerbatim('error-length'),
+                PatternRule('whitespace'),
+                PatternBind('number', PatternRule("number")),
+                PatternCode("""
+value = 'error-length %s' % number
+""")
+                ]),
             ]),
         Rule("word", [
             PatternSequence([
@@ -3435,3 +3456,4 @@ if __name__ == '__main__':
 # error reporting for c++
 # generator for python, ruby, c++
 # getter for the current line and column
+# custom error reporting length, options: error-length 40
