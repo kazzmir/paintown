@@ -20,6 +20,8 @@
 # inline rules + semantic actions are broken (in C++ at least)
 # Don't memoize if a rule accepts parameters (ruby, python)
 # If a rule has a <fail> then catch a parsing exception and call the fail function
+# Predicates: sequences of host code that evaluate to true/false where the current
+#   rule stops on false and continues on true.
 
 # create a variable name
 next_var = 0
