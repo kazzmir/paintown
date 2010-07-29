@@ -319,30 +319,32 @@ StateController::CompiledController * StateController::doCompile(){
             public:
                 ControllerPlaySound(const Ast::Value * value):
                 group(-1),
-                item(-1),
-                own(false){
+                own(false),
+                item(NULL){
                     parseSound(value);
                 }
 
-                int group, item;
+                int group;
                 bool own;
+                Compiler::Value * item;
 
                 virtual ~ControllerPlaySound(){
+                    delete item;
                 }
 
                 virtual void parseSound(const Ast::Value * value){
                     try{
                         string group;
-                        int item;
+                        const Ast::Value * item;
                         *value >> group >> item;
                         if (PaintownUtil::matchRegex(group, "F[0-9]+")){
                             int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
                             this->group = realGroup;
-                            this->item = item;
+                            this->item = Compiler::compile(item);
                             own = true;
                         } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
                             this->group = atoi(group.c_str());
-                            this->item = item;
+                            this->item = Compiler::compile(item);
                             own = false;
                         }
                     } catch (const MugenException & e){
@@ -353,11 +355,14 @@ StateController::CompiledController * StateController::doCompile(){
                 }
 
                 virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
-                    MugenSound * sound;
-                    if (own){
-                        sound = guy.getCommonSound(group, item);
-                    } else {
-                        sound = guy.getSound(group, item);
+                    MugenSound * sound = NULL;
+                    if (item != NULL){
+                        int itemNumber = (int) item->evaluate(FullEnvironment(stage, guy)).toNumber();
+                        if (own){
+                            sound = guy.getCommonSound(group, itemNumber);
+                        } else {
+                            sound = guy.getSound(group, itemNumber);
+                        }
                     }
 
                     if (sound != NULL){
