@@ -267,6 +267,7 @@ rules:
             | "add"
             | "sub"
 	date = digit+ "." digit+ "." digit+ {{ value = makeDate($1,$3,$5); }}
+         | digit+ "/" digit+ "/" digit+ {{ value = makeDate($1,$3,$5); }}
 	string = <quote> data:(!<quote> !"\n" .)* <quote> {{ value = makeString(data); }}
 	number = sign? float_or_integer {{ value = makeNumber($1,$2); }}
 	inline sign = "+"

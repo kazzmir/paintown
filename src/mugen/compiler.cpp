@@ -5,6 +5,7 @@
 #include "character.h"
 #include "stage.h"
 #include "util/funcs.h"
+#include "util/regex.h"
 #include <math.h>
 #include <sstream>
 #include <string>
@@ -69,6 +70,16 @@ public:
             };
 
             return new Alive();
+        }
+
+        if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(identifier.toString()), "projhit\\d*")){
+            /* FIXME */
+            return compile(0);
+        }
+
+        if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(identifier.toString()), "projcontact\\d*")){
+            /* FIXME */
+            return compile(0);
         }
 
         if (identifier == "numproj"){
