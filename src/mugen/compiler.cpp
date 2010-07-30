@@ -2050,6 +2050,20 @@ public:
             return new P2DistY();
         }
 
+        if (keyword == "rootdist x"){
+            /* This trigger is only valid for helper-type characters. RootDist returns the distance from the helper to its root. The root is the main player character who owns the helper: for instance, if you select Kumquat to play with, and Kumquat spawns a helper named Kiwi, who in turn spawns a helper named Penguin, then Penguin's root is Kumquat, and Penguin is a descendant of Kumquat. RootDist works similarly to P2Dist.
+             * For comparing the Y-distance, RootDist gives the difference in the heights of the players' Y-axes. A negative value means that the root is above its descendant.
+             *
+             * For comparing the X-distance, ParentDist gives the X-distance of the root's axis from the descendant's axis. A positive value indicates the root is in front of its descendant.*/
+            /* FIXME! */
+            return compile(0);
+        }
+        
+        if (keyword == "rootdist y"){
+            /* FIXME! */
+            return compile(0);
+        }
+
         std::ostringstream out;
         out << "Unknown keyword '" << keyword.toString() << "'";
         throw MugenException(out.str());
