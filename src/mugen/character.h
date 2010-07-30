@@ -410,7 +410,7 @@ struct HitDefinition{
     /* ground.cornerpush.veloff = x_velocity (float)
     * Determines the additional velocity (velocity offset) to impart to the player if he lands a ground hit in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. If omitted, default value depends on the attr parameter. If arg1 of attr is "A", default value is 0. Otherwise, defaults to 1.3 * guard.velocity.
     */
-    double groundCornerPushoff;
+    PaintownUtil::ClassPointer<Compiler::Value> groundCornerPushoff;
 
     /* air.cornerpush.veloff = x_velocity (float)
     * Determines the additional velocity (velocity offset) to impart to the player if he lands a hit to an aerial opponent in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to ground.cornerpush.veloff if omitted.
@@ -496,7 +496,7 @@ struct HitDefinition{
     /* p2getp1state = bvalue (boolean)
     * Set to 0 to prevent P2 from getting P1's state and animation data, in case you do not want that default behaviour of the "p2stateno" parameter. Defaults to 1 if the "p2stateno" parameter is used. Ignored otherwise.
     */
-    int player2GetPlayer1State;
+    PaintownUtil::ClassPointer<Compiler::Value> player2GetPlayer1State;
 
     /* forcestand = bvalue (boolean)
     * Set to 1 to force P2 to a standing state-type if the hit is successful, and P2 is in a crouching state. Has no effect if P2 is in an air state. Normally defaults to 0, but if the y_velocity of the "ground.velocity" parameter is non-zero, it defaults to 1.
@@ -528,7 +528,7 @@ struct HitDefinition{
         /* fall.recover = bvalue (boolean)
          * Set to 0 if you do not want P2 to be able to recover from the "fall" state. Defaults to 1 if omitted (can recover).
          */
-        int recover;
+        PaintownUtil::ClassPointer<Compiler::Value> recover;
 
          /* fall.recovertime = recover_time (int)
          * This is the time that must pass before P2 is able to recover from the "fall" state by inputting his recovery command. Does not include the time that P2 is paused for while shaking from the hit. Defaults to 4 if omitted.
@@ -613,7 +613,8 @@ struct HitState{
         yAcceleration(0),
         yVelocity(0),
         xVelocity(0),
-        guarded(false){
+        guarded(false),
+        damage(0){
         }
 
     void update(MugenStage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
@@ -633,6 +634,7 @@ struct HitState{
     AttackType::Ground groundType;
     AttackType::Ground airType;
     bool guarded;
+    int damage;
 
     struct Fall{
         Fall():

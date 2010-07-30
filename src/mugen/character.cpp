@@ -972,6 +972,8 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
     groundType = hit.groundType;
     airType = hit.airType;
     yAcceleration = hit.yAcceleration;
+
+    /* FIXME: set damage */
     
     /* if in the air */
     if (inAir){
@@ -2181,7 +2183,7 @@ void Character::parseState(Ast::Section * section){
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "ground.cornerpush.veloff"){
-                    simple >> controller->getHit().groundCornerPushoff;
+                    controller->getHit().groundCornerPushoff = Compiler::compile(simple.getValue());
                 } else if (simple == "air.cornerpush.veloff"){
                     simple >> controller->getHit().airCornerPushoff;
                 } else if (simple == "down.cornerpush.veloff"){
@@ -2227,7 +2229,7 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "p2stateno"){
                     controller->getHit().player2State = Compiler::compile(simple.getValue());
                 } else if (simple == "p2getp1state"){
-                    simple >> controller->getHit().player2GetPlayer1State;
+                    controller->getHit().player2GetPlayer1State = Compiler::compile(simple.getValue());
                 } else if (simple == "forcestand"){
                     simple >> controller->getHit().forceStand;
                 } else if (simple == "fall"){
@@ -2237,7 +2239,7 @@ void Character::parseState(Ast::Section * section){
                 } else if (simple == "fall.yvelocity"){
                     simple >> controller->getHit().fall.yVelocity;
                 } else if (simple == "fall.recover"){
-                    simple >> controller->getHit().fall.recover;
+                    controller->getHit().fall.recover = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.recovertime"){
                     simple >> controller->getHit().fall.recoverTime;
                 } else if (simple == "fall.damage"){

@@ -476,6 +476,13 @@ public:
             return new InGuardDist();
         }
 
+        /* FIXME: remove this, it should be recognized exclusively in the a
+         * state controller.
+         */
+        if (identifier == "SAC"){
+            return new JustString("SAC");
+        }
+
         if (identifier == "animtime"){
             class AnimTime: public Value {
             public:
@@ -1454,7 +1461,14 @@ public:
 
                 return new HitVarGroundType();
             } else if (var == "damage"){
-                /* TODO */
+                class HitVarDamage: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).damage);
+                    }
+                };
+
+                return new HitVarDamage();
             } else if (var == "hitcount"){
                 class HitVarHitCount: public HitVar {
                 public:
