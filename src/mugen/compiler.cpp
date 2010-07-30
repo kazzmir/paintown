@@ -82,12 +82,22 @@ public:
             return compile(0);
         }
 
+        if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(identifier.toString()), "projguarded\\d*")){
+            /* FIXME */
+            return compile(0);
+        }
+
         if (identifier == "numproj"){
             /* FIXME */
             return compile(0);
         }
 
         if (identifier == "ishelper"){
+            /* FIXME */
+            return compile(0);
+        }
+        
+        if (identifier == "numhelper"){
             /* FIXME */
             return compile(0);
         }
@@ -1334,6 +1344,11 @@ public:
         if (function == "projcontacttime"){
             /* FIXME */
             return compile(-1);
+        }
+
+        if (function == "ishelper"){
+            /* FIXME */
+            return compile(0);
         }
 
         if (function == "numhelper"){
