@@ -658,6 +658,7 @@ rules:
     inline hitflag_char = "A"
                         | "M"
                         | "F"
+                        | "D"
 
     inline hitflag_modifier = "+"
                             | "-"
