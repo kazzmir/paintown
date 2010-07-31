@@ -15,9 +15,8 @@ public:
 
     using Value::operator>>;
 
-    virtual const Value & operator>>(Value *& v) const {
-        /* FIXME: should probably just make the parameter a `const Value *' */
-        v = (Value*) this;
+    virtual const Value & operator>>(const Value *& v) const {
+        v = this;
         return *this;
     }
 
