@@ -314,6 +314,61 @@ StateController::CompiledController * StateController::doCompile(){
             return new ControllerChangeAnim(Compiler::compile(getValue()));
             break;
         }
+        case ChangeState : {
+            class ControllerChangeState: public CompiledController {
+            public:
+                ControllerChangeState(const Ast::Value * value){
+                    this->value = Compiler::compile(value);
+                }
+
+                Compiler::Value * value;
+
+                inline Compiler::Value * getValue(){
+                    return value;
+                }
+
+                virtual ~ControllerChangeState(){
+                    delete value;
+                }
+                
+                virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
+                    RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
+                    if (result.isDouble()){
+                        int value = (int) result.getDoubleValue();
+                        guy.changeState(stage, value, commands);
+                    }
+                }
+            };
+
+            return new ControllerChangeState(getValue());
+            break;
+        }
+        case CtrlSet : {
+            class ControllerCtrlSet: public CompiledController {
+            public:
+                ControllerCtrlSet(const Ast::Value * value){
+                    this->value = Compiler::compile(value);
+                }
+
+                Compiler::Value * value;
+
+                virtual ~ControllerCtrlSet(){
+                    delete value;
+                }
+
+                Compiler::Value * getValue(){
+                    return value;
+                }
+
+                virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
+                    RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
+                    guy.setControl(toBool(result));
+                }
+            };
+
+            return new ControllerCtrlSet(getValue());
+            break;
+        }
         case PlaySnd : {
             class ControllerPlaySound: public CompiledController {
             public:
@@ -375,22 +430,84 @@ StateController::CompiledController * StateController::doCompile(){
             
             break;
         }
-        default : {
-            class DefaultController: public CompiledController {
+        case VarSet : {
+            class ControllerVarSet: public CompiledController {
             public:
-                DefaultController(StateController & controller, const Ast::Value * value):
-                controller(controller),
-                value(NULL){
+                ControllerVarSet(const Ast::Value * value,
+                                 const Compiler::Value * variable,
+                                 map<int, Compiler::Value*> variables,
+                                 map<int, Compiler::Value*> floatVariables,
+                                 map<int, Compiler::Value*> systemVariables):
+                value(NULL),
+                variable(variable),
+                variables(variables),
+                floatVariables(floatVariables),
+                systemVariables(systemVariables){
                     if (value != NULL){
                         this->value = Compiler::compile(value);
                     }
                 }
 
-                StateController & controller;
                 Compiler::Value * value;
+                const Compiler::Value * variable;
+                map<int, Compiler::Value*> variables;
+                map<int, Compiler::Value*> floatVariables;
+                map<int, Compiler::Value*> systemVariables;
+
+                virtual ~ControllerVarSet(){
+                    delete value;
+                }
+
+                Compiler::Value * getValue(){
+                    return value;
+                }
+
+                const Compiler::Value * getVariable(){
+                    return variable;
+                }
+
+                virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
+                    for (map<int, Compiler::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
+                        int index = (*it).first;
+                        Compiler::Value * value = (*it).second;
+                        guy.setVariable(index, value);
+                    }
+
+                    for (map<int, Compiler::Value*>::const_iterator it = floatVariables.begin(); it != floatVariables.end(); it++){
+                        int index = (*it).first;
+                        Compiler::Value * value = (*it).second;
+                        guy.setFloatVariable(index, value);
+                    }
+
+                    for (map<int, Compiler::Value*>::const_iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
+                        int index = (*it).first;
+                        Compiler::Value * value = (*it).second;
+                        guy.setSystemVariable(index, value);
+                    }
+
+                    if (getValue() != NULL && getVariable() != NULL){
+                        /* 'value = 23' is value1
+                         * 'v = 9' is value2
+                         */
+                        guy.setVariable((int) getVariable()->evaluate(FullEnvironment(stage, guy, commands)).toNumber(), getValue());
+                    }
+                }
+            };
+
+            return new ControllerVarSet(getValue(), getVariable(), variables, floatVariables, systemVariables);
+            
+            break;
+        }
+        default : {
+            class DefaultController: public CompiledController {
+            public:
+                DefaultController(StateController & controller):
+                controller(controller){
+                }
+
+                StateController & controller;
 
                 virtual ~DefaultController(){
-                    delete value;
                 }
 
                 virtual Compiler::Value * getX() const {
@@ -403,10 +520,6 @@ StateController::CompiledController * StateController::doCompile(){
 
                 virtual Compiler::Value * getY() const {
                     return controller.getY();
-                }
-
-                virtual Compiler::Value * getValue() const {
-                    return value;
                 }
 
                 virtual void execute(MugenStage & stage, Character & guy, const vector<string> & commands){
@@ -459,22 +572,10 @@ StateController::CompiledController * StateController::doCompile(){
                         case ChangeAnim2 : {
                             break;
                         }
-                        case ChangeState : {
-                            RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
-                            if (result.isDouble()){
-                                int value = (int) result.getDoubleValue();
-                                guy.changeState(stage, value, commands);
-                            }
-                            break;
-                        }
                         case ClearClipboard : {
                             break;
                         }
-                        case CtrlSet : {
-                            RuntimeValue result = getValue()->evaluate(FullEnvironment(stage, guy));
-                            guy.setControl(toBool(result));
-                            break;
-                        }
+                        
                         case DefenceMulSet : {
                             break;
                         }
@@ -723,34 +824,7 @@ StateController::CompiledController * StateController::doCompile(){
                         case VarRangeSet : {
                             break;
                         }
-                        case VarSet : {
-                            for (map<int, Compiler::Value*>::const_iterator it = controller.variables.begin(); it != controller.variables.end(); it++){
-                                int index = (*it).first;
-                                Compiler::Value * value = (*it).second;
-                                guy.setVariable(index, value);
-                            }
-
-                            for (map<int, Compiler::Value*>::const_iterator it = controller.floatVariables.begin(); it != controller.floatVariables.end(); it++){
-                                int index = (*it).first;
-                                Compiler::Value * value = (*it).second;
-                                guy.setFloatVariable(index, value);
-                            }
-
-                            for (map<int, Compiler::Value*>::const_iterator it = controller.systemVariables.begin(); it != controller.systemVariables.end(); it++){
-                                int index = (*it).first;
-                                Compiler::Value * value = (*it).second;
-                                guy.setSystemVariable(index, value);
-                            }
-
-                            if (getValue() != NULL && getVariable() != NULL){
-                                /* 'value = 23' is value1
-                                 * 'v = 9' is value2
-                                 */
-                                guy.setVariable((int) getVariable()->evaluate(FullEnvironment(stage, guy, commands)).toNumber(), getValue());
-                            }
-
-                            break;
-                        }
+                        
                         case VelAdd : {
                             if (getX() != NULL){
                                 RuntimeValue result = getX()->evaluate(FullEnvironment(stage, guy));
@@ -814,7 +888,8 @@ StateController::CompiledController * StateController::doCompile(){
                 }
             };
 
-            return new DefaultController(*this, getValue());
+            return new DefaultController(*this);
+
             break;
         }
     }
@@ -824,6 +899,11 @@ StateController::CompiledController * StateController::doCompile(){
 
 void StateController::compile(){
     compiled = doCompile();
+    if (compiled == NULL){
+        ostringstream out;
+        out << "Unable to compile state controller for type " << getType();
+        throw MugenException(out.str());
+    }
 }
 
 void StateController::activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -2248,6 +2328,8 @@ void Character::parseState(Ast::Section * section){
                     simple >> controller->getHit().fall.airFall;
                 } else if (simple == "forcenofall"){
                     simple >> controller->getHit().fall.forceNoFall;
+                // } else if (simple == "waveform"){
+                    /* FIXME */
                 } else {
                     Global::debug(0) << "Unhandled state controller '" << controller->getName() << "' attribute: " << simple.toString() << endl;
                 }
@@ -2263,11 +2345,14 @@ void Character::parseState(Ast::Section * section){
         StateController * controller = new StateController(name);
         StateControllerWalker walker(controller);
         section->walk(walker);
-        controller->compile();
-
-        states[state]->addController(controller);
-
-        Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
+        if (controller->getType() == StateController::Unknown){
+            delete controller;
+            Global::debug(0) << "Warning: no type given for controller " << section->getName() << endl;
+        } else {
+            controller->compile();
+            states[state]->addController(controller);
+            Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
+        }
     }
 }
 
