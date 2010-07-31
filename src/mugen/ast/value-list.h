@@ -56,7 +56,7 @@ public:
 
     using Value::operator>>;
     
-    virtual const Value & operator>>(Value *& value) const {
+    virtual const Value & operator>>(const Value *& value) const {
         if (current_value == this->values.end()){
             throw Exception("No more values in this value list: " + toString());
         }

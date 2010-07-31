@@ -1001,6 +1001,7 @@ void State::transitionTo(const MugenStage & stage, Character & who){
     if (changeVelocity){
         who.setXVelocity(velocity_x->evaluate(FullEnvironment(stage, who)).toNumber());
         who.setYVelocity(velocity_y->evaluate(FullEnvironment(stage, who)).toNumber());
+        // Global::debug(0) << "Velocity set to " << velocity_x->evaluate(FullEnvironment(stage, who)).toNumber() << ", " << velocity_y->evaluate(FullEnvironment(stage, who)).toNumber() << endl;
     }
 
     if (changePhysics){
