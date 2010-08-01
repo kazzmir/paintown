@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -4220,30 +4221,6 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
 }
 
 void Character::draw(Bitmap * work, int cameraX, int cameraY){
-
-    if (debug){
-        const Font & font = Font::getFont(Global::DEFAULT_FONT, 18, 18);
-        int x = 0;
-        if (getAlliance() == MugenStage::Player2Side){
-            x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
-        }
-        int y = 1;
-        FontRender * render = FontRender::getInstance();
-        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "State %d Animation %d", getCurrentState(), currentAnimation);
-        y += font.getHeight();
-        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Vx %f Vy %f", getXVelocity(), getYVelocity());
-        y += font.getHeight();
-        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "X %f Y %f", getX(), getY());
-        y += font.getHeight();
-        render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Time %d", getStateTime());
-        y += font.getHeight();
-        if (getMoveType() == Move::Hit){
-            render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
-            y += font.getHeight();
-            render->addMessage(font, x, y, Bitmap::makeColor(255, 255, 255), -1, "Hit velocity x %f y %f", getHitState().xVelocity, getHitState().yVelocity);
-        }
-    }
-
     /*
     int color = Bitmap::makeColor(255,255,255);
     font.printf( x, y, color, *work, "State %d Animation %d", 0,  getCurrentState(), currentAnimation);
@@ -4262,6 +4239,41 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         }
 
         animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
+    }
+
+    if (debug){
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 18, 18);
+        int x = 1;
+        if (getAlliance() == MugenStage::Player2Side){
+            x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
+        }
+        int y = 1;
+        int color = Bitmap::makeColor(255, 255, 255);
+        FontRender * render = FontRender::getInstance();
+        render->addMessage(font, x, y, color, -1, "State %d Animation %d", getCurrentState(), currentAnimation);
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, -1, "Vx %f Vy %f", getXVelocity(), getYVelocity());
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, -1, "X %f Y %f", getX(), getY());
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, -1, "Time %d", getStateTime());
+        y += font.getHeight();
+        if (getMoveType() == Move::Hit){
+            render->addMessage(font, x, y, color, -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
+            y += font.getHeight();
+            render->addMessage(font, x, y, color, -1, "Hit velocity x %f y %f", getHitState().xVelocity, getHitState().yVelocity);
+        }
+
+        int wx = 1;
+        int wy = 1;
+        int width = work->getWidth();
+        int height = 110;
+        if (getAlliance() == MugenStage::Player2Side){
+            wx = work->getWidth() - width - 1;
+        }
+        Bitmap::transBlender(0, 0, 0, 128);
+        work->translucent().rectangleFill(wx, wy, wx+width, wy+height, Bitmap::makeColor(0, 0, 0));
+        work->translucent().line(0, wy+height, wx+width, wy+height, Bitmap::makeColor(64, 64, 64));
     }
 }
 
