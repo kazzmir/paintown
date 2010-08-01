@@ -10,6 +10,8 @@ public:
 	MugenException(const std::string & reason, const std::string & where = "?", int line = 0);
 
 	virtual ~MugenException() throw();
+    
+        virtual Base * copy() const;
 
         const std::string getFullReason() const;
 

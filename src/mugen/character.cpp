@@ -2572,15 +2572,351 @@ static StateController * compileStateController(Ast::Section * section, const st
             return new VelMul(section, name);
             break;
         }
-#if 0
         case StateController::HitDef : {
-            /* prevent the same hitdef from being applied */
-            if (guy.getHit() != &controller.getHit()){
-                guy.setHitDef(&controller.getHit());
-                guy.nextTicket();
-            }
+            class HitDef: public StateController {
+            public:
+                HitDef(Ast::Section * section, const string & name):
+                StateController(name, section){
+                    parse(section);
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(HitDefinition & hit):
+                            hit(hit){
+                            }
+
+                        HitDefinition & hit;
+
+                        string toString(char x){
+                            ostringstream out;
+                            out << x;
+                            return out.str();
+                        }
+
+                        AttackType::Animation parseAnimationType(string type){
+                            type = Util::fixCase(type);
+                            if (type == "light"){
+                                return AttackType::Light;
+                            } else if (type == "medium" || type == "med"){
+                                return AttackType::Medium;
+                            } else if (type == "hard" || type == "heavy"){
+                                return AttackType::Hard;
+                            } else if (type == "back"){
+                                return AttackType::Back;
+                            } else if (type == "up"){
+                                return AttackType::Up;
+                            } else if (type == "diagup"){
+                                return AttackType::DiagonalUp;
+                            } else {
+                                Global::debug(0) << "Unknown hitdef animation type " << type << endl;
+                            }
+                            return AttackType::NoAnimation;
+                        }
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "attr"){
+                                string type, attack;
+                                simple >> type >> attack;
+                                if (type == StateType::Stand ||
+                                    type == StateType::Crouch ||
+                                    type == StateType::Air){
+                                    hit.attribute.state = type;
+                                }
+
+                                if (attack.size() >= 2){
+                                    string type = toString(attack[0]);
+                                    string physics = toString(attack[1]);
+                                    if (type == AttackType::Normal ||
+                                        type == AttackType::Special ||
+                                        type == AttackType::Hyper){
+                                        hit.attribute.attackType = type;
+                                    }
+                                    if (physics == PhysicalAttack::Normal ||
+                                        physics == PhysicalAttack::Throw ||
+                                        physics == PhysicalAttack::Projectile){
+                                        hit.attribute.physics = physics;
+                                    }
+                                }
+                            } else if (simple == "hitflag"){
+                                string flags;
+                                simple >> flags;
+                                hit.hitFlag = flags;
+                            } else if (simple == "guardflag"){
+                                string flags;
+                                simple >> flags;
+                                hit.guardFlag = flags;
+                            } else if (simple == "animtype"){
+                                string anim;
+                                simple >> anim;
+                                hit.animationType = parseAnimationType(anim);
+                            } else if (simple == "air.animtype"){
+                                string anim;
+                                simple >> anim;
+                                hit.animationTypeAir = parseAnimationType(anim);
+                            } else if (simple == "debug"){
+                                // setDebug(true);
+                            } else if (simple == "fall.animtype"){
+                                string anim;
+                                simple >> anim;
+                                hit.animationTypeFall = parseAnimationType(anim);
+                            } else if (simple == "priority"){
+                                int hit;
+                                simple >> hit;
+                                this->hit.priority.hit = hit;
+                                try{
+                                    string type;
+                                    simple >> type;
+                                    this->hit.priority.type = type;
+                                } catch (const Ast::Exception & e){
+                                }
+                            } else if (simple == "damage"){
+                                try{
+                                    const Ast::Value * container = simple.getValue();
+                                    /*
+                                       container->reset();
+                                       Ast::Value * value;
+                                     *container >> value;
+                                     controller->getHit().damage.damage = (Ast::Value*) value->copy();
+                                     */
+
+                                    /* has guard */
+                                    if (container->hasMultiple()){
+                                        container->reset();
+                                        const Ast::Value * value;
+                                        *container >> value;
+                                        hit.damage.damage = Compiler::compile(value);
+                                        *container >> value;
+                                        hit.damage.guardDamage = Compiler::compile(value);
+                                    } else {
+                                        /* otherwise its a single expression */
+                                        hit.damage.damage = Compiler::compile(container);
+                                    }
+                                } catch (const Ast::Exception & e){
+                                    ostringstream out;
+                                    out << "Could not read `damage' from '" << simple.toString() << "': " << e.getReason();
+                                    throw MugenException(out.str());
+                                }
+                            } else if (simple == "pausetime"){
+                                try{
+                                    simple >> hit.pause.player1;
+                                    simple >> hit.pause.player2;
+                                } catch (const Ast::Exception & e){
+                                }
+                            } else if (simple == "guard.pausetime"){
+                                try{
+                                    simple >> hit.guardPause.player1;
+                                    simple >> hit.guardPause.player2;
+                                } catch (const Ast::Exception & e){
+                                }
+                            } else if (simple == "sparkno"){
+                                string what;
+                                simple >> what;
+                                /* FIXME: either S123 or 123 */
+                                if (PaintownUtil::matchRegex(what, "[0-9]+")){
+                                    hit.spark = atoi(what.c_str());
+                                }
+                            } else if (simple == "guard.sparkno"){
+                                string what;
+                                simple >> what;
+                                /* FIXME: either S123 or 123 */
+                                if (PaintownUtil::matchRegex(what, "[0-9]+")){
+                                    hit.guardSpark = atoi(what.c_str());
+                                }
+                            } else if (simple == "sparkxy"){
+                                try{
+                                    simple >> hit.sparkPosition.x;
+                                    simple >> hit.sparkPosition.y;
+                                } catch (const Ast::Exception & e){
+                                }
+                            } else if (simple == "hitsound"){
+                                string first;
+                                bool own = false;
+                                int group = 0;
+                                int item = 0;
+                                /* If not specified, assume item 0 */
+                                simple >> first;
+                                if (simple.getValue()->hasMultiple()){
+                                    simple >> item;
+                                }
+                                if (first[0] == 'S'){
+                                    own = true;
+                                    group = atoi(first.substr(1).c_str());
+                                } else {
+                                    group = atoi(first.c_str());
+                                }
+                                hit.hitSound.own = own;
+                                hit.hitSound.group = group;
+                                hit.hitSound.item = item;
+                            } else if (simple == "guardsound"){
+                                string first;
+                                bool own = false;
+                                int group;
+                                int item;
+                                simple >> first >> item;
+                                if (first[0] == 'S'){
+                                    own = true;
+                                    group = atoi(first.substr(1).c_str());
+                                } else {
+                                    group = atoi(first.c_str());
+                                }
+                                hit.guardHitSound.own = own;
+                                hit.guardHitSound.group = group;
+                                hit.guardHitSound.item = item;
+                            } else if (simple == "ground.type"){
+                                string type;
+                                simple >> type;
+                                type = Util::fixCase(type);
+                                if (type == "low"){
+                                    hit.groundType = AttackType::Low;
+                                } else if (type == "high"){
+                                    hit.groundType = AttackType::High;
+                                } else if (type == "trip"){
+                                    hit.groundType = AttackType::Trip;
+                                }
+                            } else if (simple == "air.type"){
+                                string type;
+                                simple >> type;
+                                type = Util::fixCase(type);
+                                if (type == "low"){
+                                    hit.airType = AttackType::Low;
+                                } else if (type == "high"){
+                                    hit.airType = AttackType::High;
+                                } else if (type == "trip"){
+                                    hit.airType = AttackType::Trip;
+                                }
+                            } else if (simple == "ground.slidetime"){
+                                hit.groundSlideTime = Compiler::compile(simple.getValue());
+                            } else if (simple == "guard.slidetime"){
+                                simple >> hit.guardSlideTime;
+                            } else if (simple == "ground.hittime"){
+                                simple >> hit.groundHitTime;
+                            } else if (simple == "guard.hittime"){
+                                simple >> hit.guardGroundHitTime;
+                            } else if (simple == "air.hittime"){
+                                simple >> hit.airHitTime;
+                            } else if (simple == "guard.ctrltime"){
+                                simple >> hit.guardControlTime;
+                            } else if (simple == "guard.dist"){
+                                simple >> hit.guardDistance;
+                            } else if (simple == "yaccel"){
+                                simple >> hit.yAcceleration;
+                            } else if (simple == "ground.velocity"){
+                                if (simple.getValue()->hasMultiple()){
+                                    try{
+                                        simple >> hit.groundVelocity.x;
+                                        simple >> hit.groundVelocity.y;
+                                    } catch (const Ast::Exception & e){
+                                    }
+                                } else {
+                                    simple >> hit.groundVelocity.x;
+                                }
+                            } else if (simple == "guard.velocity"){
+                                simple >> hit.guardVelocity;
+                            } else if (simple == "air.velocity"){
+                                if (simple.getValue()->hasMultiple()){
+                                    try{
+                                        simple >> hit.airVelocity.x;
+                                        simple >> hit.airVelocity.y;
+                                    } catch (const Ast::Exception & e){
+                                    }
+                                } else {
+                                    simple >> hit.airVelocity.x;
+                                }
+                            } else if (simple == "airguard.velocity"){
+                                try{
+                                    simple >> hit.airGuardVelocity.x;
+                                    simple >> hit.airGuardVelocity.y;
+                                } catch (const Ast::Exception & e){
+                                }
+                            } else if (simple == "ground.cornerpush.veloff"){
+                                hit.groundCornerPushoff = Compiler::compile(simple.getValue());
+                            } else if (simple == "air.cornerpush.veloff"){
+                                simple >> hit.airCornerPushoff;
+                            } else if (simple == "down.cornerpush.veloff"){
+                                simple >> hit.downCornerPushoff;
+                            } else if (simple == "guard.cornerpush.veloff"){
+                                simple >> hit.guardCornerPushoff;
+                            } else if (simple == "airguard.cornerpush.veloff"){
+                                simple >> hit.airGuardCornerPushoff;
+                            } else if (simple == "airguard.ctrltime"){
+                                simple >> hit.airGuardControlTime;
+                            } else if (simple == "air.juggle"){
+                                simple >> hit.airJuggle;
+                            } else if (simple == "guardsound"){
+                                try{
+                                    /* FIXME: parse a string and then determine if its S# or just # */
+                                    simple >> hit.guardHitSound.group;
+                                    simple >> hit.guardHitSound.item;
+                                } catch (const Ast::Exception & e){
+                                }
+                            } else if (simple == "mindist"){
+                                simple >> hit.minimum.x;
+                                simple >> hit.minimum.y;
+                            } else if (simple == "maxdist"){
+                                simple >> hit.maximum.x;
+                                simple >> hit.maximum.y;
+                            } else if (simple == "snap"){
+                                simple >> hit.snap.x;
+                                simple >> hit.snap.y;
+                            } else if (simple == "p1sprpriority"){
+                                hit.player1SpritePriority = Compiler::compile(simple.getValue());
+                            } else if (simple == "p2sprpriority"){
+                                simple >> hit.player2SpritePriority;
+                            } else if (simple == "p1facing"){
+                                hit.player1Facing = Compiler::compile(simple.getValue());
+                            } else if (simple == "p2facing"){
+                                hit.player2Facing = Compiler::compile(simple.getValue());
+                            } else if (simple == "p1getp2facing"){
+                                hit.player1GetPlayer2Facing = Compiler::compile(simple.getValue());
+                            } else if (simple == "player2Facing"){
+                                hit.player2Facing = Compiler::compile(simple.getValue());
+                            } else if (simple == "p1stateno"){
+                                hit.player1State = Compiler::compile(simple.getValue());
+                            } else if (simple == "p2stateno"){
+                                hit.player2State = Compiler::compile(simple.getValue());
+                            } else if (simple == "p2getp1state"){
+                                hit.player2GetPlayer1State = Compiler::compile(simple.getValue());
+                            } else if (simple == "forcestand"){
+                                simple >> hit.forceStand;
+                            } else if (simple == "fall"){
+                                hit.fall.fall = Compiler::compile(simple.getValue());
+                            } else if (simple == "fall.xvelocity"){
+                                simple >> hit.fall.xVelocity;
+                            } else if (simple == "fall.yvelocity"){
+                                simple >> hit.fall.yVelocity;
+                            } else if (simple == "fall.recover"){
+                                hit.fall.recover = Compiler::compile(simple.getValue());
+                            } else if (simple == "fall.recovertime"){
+                                simple >> hit.fall.recoverTime;
+                            } else if (simple == "fall.damage"){
+                                hit.fall.damage = Compiler::compile(simple.getValue());
+                            } else if (simple == "air.fall"){
+                                simple >> hit.fall.airFall;
+                            } else if (simple == "forcenofall"){
+                                simple >> hit.fall.forceNoFall;
+                            } else {
+                                // Global::debug(0) << "Unhandled state controller '" << getName() << "' attribute: " << simple.toString() << endl;
+                            }
+                        }
+                    };
+
+                    Walker walker(hit);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    /* prevent the same hitdef from being applied */
+                    if (guy.getHit() != &getHit()){
+                        guy.setHitDef(&getHit());
+                        guy.nextTicket();
+                    }
+                }
+            };
             break;
         }
+#if 0
         case StateController::StateTypeSet : {
             if (controller.changeMoveType){
                 guy.setMoveType(controller.moveType);
@@ -2610,7 +2946,6 @@ static StateController * compileStateController(Ast::Section * section, const st
         
        
 #endif
-        case StateController::HitDef :
         case StateController::SuperPause :
         case StateController::StateTypeSet :
 

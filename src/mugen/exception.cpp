@@ -16,6 +16,10 @@ where(where),
 line(line){
 }
         
+Exception::Base * MugenException::copy() const {
+    return new MugenException(reason, where, line);
+}
+        
 const std::string MugenException::getFullReason() const {
     std::ostringstream out;
     out << where << ":" << line << " " << reason;
