@@ -768,10 +768,12 @@ public:
         this->type = type;
     }
 
+    /*
     virtual inline void setControl(Compiler::Value * value){
         changeControl = true;
         this->control = value;
     }
+    */
 
     virtual inline Type getType() const {
         return this->type;
@@ -786,11 +788,14 @@ public:
     virtual void setValue2(Compiler::Value * value);
     */
 
+    /*
     virtual void setX(Compiler::Value * value);
     virtual void setY(Compiler::Value * value);
     virtual void setValue(const Ast::Value * value);
     virtual void setVariable(Compiler::Value * value);
+    */
 
+    /*
     virtual inline Compiler::Value * getX() const {
         return this->x;
     }
@@ -806,22 +811,31 @@ public:
     virtual inline Compiler::Value * getVariable() const {
         return this->variable;
     }
+    */
 
     virtual void addTriggerAll(Compiler::Value * trigger);
     virtual void addTrigger(int number, Compiler::Value * trigger);
+
+    /*
     virtual void addVariable(int number, Compiler::Value * variable);
     virtual void addFloatVariable(int number, Compiler::Value * variable);
     virtual void addSystemVariable(int number, Compiler::Value * variable);
+    */
 
+    /*
     virtual inline HitDefinition & getHit(){
         return hit;
     }
+    */
     
     /* const */
+    /*
     virtual inline const HitDefinition & getHit() const {
         return hit;
     }
+    */
 
+    /*
     virtual inline void setMoveType(const std::string & str){
         changeMoveType = true;
         this->moveType = str;
@@ -844,11 +858,14 @@ public:
     virtual inline void setDebug(bool f){
         debug = f;
     }
+    */
 
     virtual inline bool getDebug() const {
-        return debug;
+        return false;
+        // return debug;
     }
 
+    /*
     virtual inline void setTime(Compiler::Value * time){
         this->time = time;
     }
@@ -866,6 +883,7 @@ public:
         sound.group = group;
         sound.item = item;
     }
+    */
 
     virtual ~StateController();
 
@@ -878,8 +896,11 @@ protected:
 
 protected:
     Type type;
-    CompiledController * compiled;
     std::string name;
+    
+    std::map<int, std::vector<Compiler::Value*> > triggers;
+#if 0
+    CompiledController * compiled;
     bool changeControl;
     Compiler::Value * control;
     Compiler::Value * x;
@@ -899,8 +920,6 @@ protected:
         int item;
     } sound;
 
-    std::map<int, std::vector<Compiler::Value*> > triggers;
-
     /* var(1) and whatnot */
     std::map<int, Compiler::Value*> variables;
     
@@ -910,7 +929,7 @@ protected:
     /* sysvar(1) and whatnot */
     std::map<int, Compiler::Value*> systemVariables;
 
-    HitDefinition hit;
+    // HitDefinition hit;
 
     bool changeMoveType;
     bool changeStateType;
@@ -922,6 +941,7 @@ protected:
     void (Character::*internal)(MugenStage & stage, const std::vector<std::string> & inputs);
 
     bool debug;
+#endif
 };
 
 /* comes from a StateDef */

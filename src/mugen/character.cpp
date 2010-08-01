@@ -111,43 +111,12 @@ StateController::CompiledController::~CompiledController(){
 
 StateController::StateController(const string & name):
 type(Unknown),
-compiled(NULL),
-name(name),
-changeControl(false),
-control(NULL),
-x(NULL),
-y(NULL),
-value(NULL),
-variable(NULL),
-posX(NULL),
-posY(NULL),
-time(NULL),
-animation(30),
-changeMoveType(false),
-changeStateType(false),
-changePhysics(false),
-internal(NULL),
-debug(false){
+name(name){
 }
 
 StateController::StateController(const string & name, Ast::Section * section):
-compiled(NULL),
-name(name),
-changeControl(false),
-control(NULL),
-x(NULL),
-y(NULL),
-value(NULL),
-variable(NULL),
-posX(NULL),
-posY(NULL),
-time(NULL),
-animation(30),
-changeMoveType(false),
-changeStateType(false),
-changePhysics(false),
-internal(NULL),
-debug(false){
+type(Unknown),
+name(name){
     class Walker: public Ast::Walker {
     public:
         Walker(StateController & controller):
@@ -178,6 +147,7 @@ StateController::~StateController(){
         }
     }
     
+    /*
     for (map<int, Compiler::Value*>::iterator it = variables.begin(); it != variables.end(); it++){
         Compiler::Value * value = (*it).second;
         delete value;
@@ -202,6 +172,7 @@ StateController::~StateController(){
     delete posX;
     delete posY;
     delete time;
+    */
 }
 
 /*
@@ -214,6 +185,7 @@ void StateController::setValue2(Compiler::Value * value){
 }
 */
 
+/*
 void StateController::setX(Compiler::Value * value){
     this->x = value;
 }
@@ -229,6 +201,7 @@ void StateController::setValue(const Ast::Value * value){
 void StateController::setVariable(Compiler::Value * value){
     this->variable = value;
 }
+*/
 
 void StateController::addTriggerAll(Compiler::Value * trigger){
     triggers[-1].push_back(trigger);
@@ -238,6 +211,7 @@ void StateController::addTrigger(int number, Compiler::Value * trigger){
     triggers[number].push_back(trigger);
 }
     
+/*
 void StateController::addVariable(int number, Compiler::Value * variable){
     if (variables[number] != 0){
         delete variables[number];
@@ -259,14 +233,17 @@ void StateController::addSystemVariable(int number, Compiler::Value * variable){
 
     systemVariables[number] = variable;
 }
+*/
 
 bool StateController::canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
     /* this makes it easy to break in gdb */
     try{
+        /*
         if (debug){
             int x = 2;
             x += 1;
         }
+        */
         RuntimeValue result = expression->evaluate(FullEnvironment(stage, character, commands));
         return result.toBool();
     } catch (const MugenException & e){
@@ -2580,6 +2557,12 @@ static StateController * compileStateController(Ast::Section * section, const st
                     parse(section);
                 }
 
+                HitDefinition hit;
+
+                const HitDefinition & getHit() const {
+                    return hit;
+                }
+
                 void parse(Ast::Section * section){
                     class Walker: public Ast::Walker {
                     public:
@@ -2945,8 +2928,6 @@ static StateController * compileStateController(Ast::Section * section, const st
             stage.doSuperPause(time, controller.animation, x, y, controller.sound.group, controller.sound.item); 
             break;
         }
-        
-       
 #endif
         case StateController::SuperPause :
         case StateController::StateTypeSet :
