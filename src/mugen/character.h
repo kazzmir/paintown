@@ -754,26 +754,14 @@ public:
         Width,
         /* Default type value. This value means the `type' attribute has not been set */
         Unknown,
-
-        /* only for internal use */
-        // InternalCommand,
     };
 
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<std::string> & commands) const;
     virtual void activate(MugenStage & stage, Character & who, const std::vector<std::string> & commands) const = 0;
 
-    // virtual void compile();
-
     virtual inline void setType(Type type){
         this->type = type;
     }
-
-    /*
-    virtual inline void setControl(Compiler::Value * value){
-        changeControl = true;
-        this->control = value;
-    }
-    */
 
     virtual inline Type getType() const {
         return this->type;
@@ -783,107 +771,13 @@ public:
         return name;
     }
 
-    /*
-    virtual void setValue1(Compiler::Value * value);
-    virtual void setValue2(Compiler::Value * value);
-    */
-
-    /*
-    virtual void setX(Compiler::Value * value);
-    virtual void setY(Compiler::Value * value);
-    virtual void setValue(const Ast::Value * value);
-    virtual void setVariable(Compiler::Value * value);
-    */
-
-    /*
-    virtual inline Compiler::Value * getX() const {
-        return this->x;
-    }
-
-    virtual inline Compiler::Value * getY() const {
-        return this->y;
-    }
-
-    virtual inline const Ast::Value * getValue() const {
-        return this->value;
-    }
-
-    virtual inline Compiler::Value * getVariable() const {
-        return this->variable;
-    }
-    */
-
     virtual void addTriggerAll(Compiler::Value * trigger);
     virtual void addTrigger(int number, Compiler::Value * trigger);
-
-    /*
-    virtual void addVariable(int number, Compiler::Value * variable);
-    virtual void addFloatVariable(int number, Compiler::Value * variable);
-    virtual void addSystemVariable(int number, Compiler::Value * variable);
-    */
-
-    /*
-    virtual inline HitDefinition & getHit(){
-        return hit;
-    }
-    */
-    
-    /* const */
-    /*
-    virtual inline const HitDefinition & getHit() const {
-        return hit;
-    }
-    */
-
-    /*
-    virtual inline void setMoveType(const std::string & str){
-        changeMoveType = true;
-        this->moveType = str;
-    }
-
-    virtual inline void setStateType(const std::string & str){
-        changeStateType = true;
-        this->stateType = str;
-    }
-    
-    virtual inline void setPhysics(Physics::Type p){
-        changePhysics = true;
-        this->physics = p;
-    }
-
-    virtual inline void setInternal(void (Character::*v)(MugenStage & stage, const std::vector<std::string> & inputs)){
-        internal = v;
-    }
-
-    virtual inline void setDebug(bool f){
-        debug = f;
-    }
-    */
 
     virtual inline bool getDebug() const {
         return false;
         // return debug;
     }
-
-    /*
-    virtual inline void setTime(Compiler::Value * time){
-        this->time = time;
-    }
-
-    virtual inline void setAnimation(int a){
-        animation = a;
-    }
-
-    virtual inline void setPosition(Compiler::Value * x, Compiler::Value * y){
-        posX = x;
-        posY = y;
-    }
-
-    virtual inline void setSound(int group, int item){
-        sound.group = group;
-        sound.item = item;
-    }
-    */
 
     virtual ~StateController();
 
@@ -892,56 +786,12 @@ protected:
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<Compiler::Value*> & expressions, const std::vector<std::string> & commands) const;
     bool canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
-    // CompiledController* doCompile();
 
 protected:
     Type type;
     std::string name;
     
     std::map<int, std::vector<Compiler::Value*> > triggers;
-#if 0
-    CompiledController * compiled;
-    bool changeControl;
-    Compiler::Value * control;
-    Compiler::Value * x;
-    Compiler::Value * y;
-    const Ast::Value * value;
-
-    /* how is this different from the `variables' map? */
-    Compiler::Value * variable;
-    Compiler::Value * posX;
-    Compiler::Value * posY;
-
-    Compiler::Value * time;
-    int animation;
-    struct Sound {
-        Sound():group(-1), item(-1){}
-        int group;
-        int item;
-    } sound;
-
-    /* var(1) and whatnot */
-    std::map<int, Compiler::Value*> variables;
-    
-    /* fvar(1) and whatnot */
-    std::map<int, Compiler::Value*> floatVariables;
-    
-    /* sysvar(1) and whatnot */
-    std::map<int, Compiler::Value*> systemVariables;
-
-    // HitDefinition hit;
-
-    bool changeMoveType;
-    bool changeStateType;
-    bool changePhysics;
-    std::string moveType;
-    std::string stateType;
-    Physics::Type physics;
-
-    void (Character::*internal)(MugenStage & stage, const std::vector<std::string> & inputs);
-
-    bool debug;
-#endif
 };
 
 /* comes from a StateDef */
