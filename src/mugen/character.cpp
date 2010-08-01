@@ -1878,9 +1878,35 @@ static StateController * compileStateController(Ast::Section * section, const st
                 ControllerChangeAnim(Ast::Section * section, const string & name):
                     StateController(name, section),
                     value(NULL){
+                        parse(section);
                     }
 
                 Compiler::Value * value;
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(Compiler::Value *& value):
+                            value(value){
+                            }
+
+                        Compiler::Value *& value;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "value"){
+                                value = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(value);
+                    section->walk(walker);
+                    if (value == NULL){
+                        ostringstream out;
+                        out << "Expected the `value' attribute for state " << name;
+                        throw MugenException(out.str());
+                    }
+                }
 
                 virtual ~ControllerChangeAnim(){
                     delete value;
@@ -3370,7 +3396,6 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
-        /* this should really be head = Mugen::Util::fixCase(head) */
         head = Util::fixCase(head);
         if (allowDefinitions && PaintownUtil::matchRegex(head, "statedef")){
             parseStateDefinition(section);
@@ -3726,10 +3751,16 @@ void Character::stopGuarding(MugenStage & stage, const vector<string> & inputs){
     }
 }
 
-static StateController * parseController(const string & input){
+static StateController * parseController(const string & input, const string & name, int state, StateController::Type type){
     try{
         list<Ast::Section*>* sections = (list<Ast::Section*>*) Mugen::Cmd::parse(input.c_str());
-        return NULL;
+        if (sections->size() == 0){
+            ostringstream out;
+            out << "Could not parse controller: " << input;
+            throw MugenException(out.str());
+        }
+        Ast::Section * first = sections->front();
+        return compileStateController(first, name, state, type);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Cmd::ParseException & e){
@@ -3753,7 +3784,7 @@ void Character::fixAssumptions(){
             raw << "trigger1 = command = \"holdfwd\"\n";
             raw << "trigger2 = command = \"holdback\"\n";
             raw << "value = " << WalkingForwards << "\n";
-            states[-1]->addController(parseController(raw.str()));
+            states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, StateController::ChangeState));
 
             /*
             StateController * controller = new StateController("walk");
@@ -3775,10 +3806,19 @@ void Character::fixAssumptions(){
             */
         }
 
-#if 0
 
         /* crouch */
         {
+            ostringstream raw;
+            raw << "[State -1, paintown-internal-crouch]\n";
+            raw << "value = " << StandToCrouch << "\n";
+            raw << "triggerall = ctrl\n";
+            raw << "trigger1 = stateno = 0\n";
+            raw << "trigger2 = stateno = " << WalkingForwards << "\n";
+            raw << "triggerall = command = \"holddown\"\n";
+
+            states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, StateController::ChangeState));
+            /*
             StateController * controller = new StateController("crouch");
             controller->setType(StateController::ChangeState);
             Ast::Number value(StandToCrouch);
@@ -3795,10 +3835,33 @@ void Character::fixAssumptions(){
                         new Ast::String(new string("holddown")))));
             states[-1]->addControllerFront(controller);
             controller->compile();
+            */
         }
 
         /* jump */
         {
+            class InternalJumpController: public StateController {
+            public:
+                InternalJumpController():
+                StateController("jump"){
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    guy.resetJump(stage, commands);
+                }
+            };
+
+            InternalJumpController * controller = new InternalJumpController();
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("statetype"),
+                        new Ast::String(new string("S")))));
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+                        new Ast::SimpleIdentifier("command"),
+                        new Ast::String(new string("holdup")))));
+            states[-1]->addController(controller);
+
+            /*
             StateController * controller = new StateController("jump");
             controller->setType(StateController::InternalCommand);
             controller->setInternal(&Mugen::Character::resetJump);
@@ -3811,10 +3874,11 @@ void Character::fixAssumptions(){
                         new Ast::String(new string("holdup")))));
             states[-1]->addController(controller);
             controller->compile();
+            */
         }
 
+        /* double jump */
         {
-
             string jumpCommand = "internal:double-jump-command";
             vector<Ast::Key*> keys;
             keys.push_back(new Ast::KeyModifier(Ast::KeyModifier::Release, new Ast::KeySingle("U")));
@@ -3825,9 +3889,18 @@ void Character::fixAssumptions(){
             internalJumpNumber = new MutableCompiledInteger(0);
             setSystemVariable(JumpIndex, internalJumpNumber);
 
-            StateController * controller = new StateController("double jump");
-            controller->setType(StateController::InternalCommand);
-            controller->setInternal(&Mugen::Character::doubleJump);
+            class InternalDoubleJumpController: public StateController {
+            public:
+                InternalDoubleJumpController():
+                StateController("double jump"){
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    guy.doubleJump(stage, commands);
+                }
+            };
+
+            InternalDoubleJumpController * controller = new InternalDoubleJumpController();
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
@@ -3845,23 +3918,27 @@ void Character::fixAssumptions(){
                         new Ast::String(new string(jumpCommand)
                             ))));
             states[-1]->addController(controller);
-            controller->compile();
         }
-#endif
     }
-
-#if 0
 
     {
         if (states[StopGuardStand] != 0){
-            StateController * controller = new StateController("stop guarding");
-            states[StopGuardStand]->addController(controller);
-            controller->setType(StateController::InternalCommand);
-            controller->setInternal(&Mugen::Character::stopGuarding);
+            class StopGuardStandController: public StateController {
+            public:
+                StopGuardStandController():
+                StateController("stop guarding"){
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    guy.stopGuarding(stage, commands);
+                }
+            };
+
+            StopGuardStandController * controller = new StopGuardStandController();
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
                     new Ast::Number(0))));
-            controller->compile();
+            states[StopGuardStand]->addController(controller);
         }
     }
 
@@ -3869,6 +3946,15 @@ void Character::fixAssumptions(){
      * or holdback is not pressed
      */
     if (states[20] != 0){
+        ostringstream raw;
+        raw << "[State 20, paintown-internal-stop-walking]\n";
+        raw << "value = " << Standing << "\n";
+        raw << "trigger1 = command != \"holdfwd\"\n";
+        raw << "trigger1 = command != \"holdback\"\n";
+
+        states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, StateController::ChangeState));
+
+        /*
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
         Ast::Number value(Standing);
@@ -3881,6 +3967,7 @@ void Character::fixAssumptions(){
                     new Ast::String(new string("holdback")))));
         states[20]->addController(controller);
         controller->compile();
+        */
     }
 
     if (states[Standing] != 0){
@@ -3889,6 +3976,14 @@ void Character::fixAssumptions(){
 
     /* stand after crouching */
     if (states[11] != 0){
+        ostringstream raw;
+        raw << "[State 11, paintown-internal-stand-after-crouching]\n";
+        raw << "value = " << CrouchToStand << "\n";
+        raw << "trigger1 = command != \"holddown\"\n";
+
+        states[11]->addController(parseController(raw.str(), "stand after crouching", 11, StateController::ChangeState));
+
+        /*
         StateController * controller = new StateController("stop walking");
         controller->setType(StateController::ChangeState);
         Ast::Number value(CrouchToStand);
@@ -3898,10 +3993,19 @@ void Character::fixAssumptions(){
                     new Ast::String(new string("holddown")))));
         states[11]->addController(controller);
         controller->compile();
+        */
     }
 
     /* get up kids */
     if (states[Liedown] != 0){
+        ostringstream raw;
+        raw << "[State " << Liedown << ", paintown-internal-get-up]\n";
+        raw << "value = " << GetUpFromLiedown << "\n";
+        raw << "trigger1 = time >= " << getLieDownTime() << "\n";
+
+        states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, StateController::ChangeState));
+
+        /*
         StateController * controller = new StateController("get up");
         controller->setType(StateController::ChangeState);
         Ast::Number value(GetUpFromLiedown);
@@ -3913,6 +4017,7 @@ void Character::fixAssumptions(){
 
         states[Liedown]->addController(controller);
         controller->compile();
+        */
     }
 
     /* standing turn state */
@@ -3922,6 +4027,14 @@ void Character::fixAssumptions(){
         turn->setAnimation(Compiler::compile(5));
         states[5] = turn;
 
+        ostringstream raw;
+        raw << "[State 5, paintown-internal-turn]\n";
+        raw << "value = " << Standing << "\n";
+        raw << "trigger1 = animtime = 0\n";
+
+        turn->addController(parseController(raw.str(), "turn", 5, StateController::ChangeState));
+
+        /*
         StateController * controller = new StateController("stand");
         controller->setType(StateController::ChangeState);
         Ast::Number value(Standing);
@@ -3931,9 +4044,8 @@ void Character::fixAssumptions(){
                     new Ast::Number(0))));
         turn->addController(controller);
         controller->compile();
+        */
     }
-
-#endif
 
 #if 0
     /* if y reaches 0 then auto-transition to state 52.
