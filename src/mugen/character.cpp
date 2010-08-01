@@ -2914,6 +2914,8 @@ static StateController * compileStateController(Ast::Section * section, const st
                     }
                 }
             };
+
+            return new HitDef(section, name);
             break;
         }
 #if 0
