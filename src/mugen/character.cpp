@@ -2267,28 +2267,96 @@ static StateController * compileStateController(Ast::Section * section, const st
             return new HitDef(section, name);
             break;
         }
-#if 0
         case StateController::StateTypeSet : {
-bool changeMoveType;
-    bool changeStateType;
-    bool changePhysics;
-    std::string moveType;
-    std::string stateType;
-    Physics::Type physics;
+            class StateTypeSet: public StateController {
+            public:
+                StateTypeSet(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    changeMoveType(false),
+                    changeStateType(false),
+                    changePhysics(false){
+                        parse(section);
+                    }
 
-            if (controller.changeMoveType){
-                guy.setMoveType(controller.moveType);
-            }
+                bool changeMoveType;
+                bool changeStateType;
+                bool changePhysics;
+                std::string moveType;
+                std::string stateType;
+                Physics::Type physics;
 
-            if (controller.changeStateType){
-                guy.setStateType(controller.stateType);
-            }
+                void setMoveType(const string & type){
+                    changeMoveType = true;
+                    moveType = type;
+                }
+                
+                void setStateType(const string & type){
+                    changeStateType = true;
+                    stateType = type;
+                }
+                
+                void setPhysics(Physics::Type type){
+                    changePhysics = true;
+                    physics = type;
+                }
 
-            if (controller.changePhysics){
-                guy.setCurrentPhysics(controller.physics);
-            }
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(StateTypeSet & controller):
+                            controller(controller){
+                            }
+
+                        StateTypeSet & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "movetype"){
+                                string type;
+                                simple >> type;
+                                controller.setMoveType(type);
+                            } else if (simple == "physics"){
+                                string type;
+                                simple >> type;
+                                if (type == "S"){
+                                    controller.setPhysics(Physics::Stand);
+                                } else if (type == "N"){
+                                    controller.setPhysics(Physics::None);
+                                } else if (type == "C"){
+                                    controller.setPhysics(Physics::Crouch);
+                                } else if (type == "A"){
+                                    controller.setPhysics(Physics::Air);
+                                }
+                            } else if (simple == "statetype"){
+                                string type;
+                                simple >> type;
+                                controller.setStateType(type);
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (changeMoveType){
+                        guy.setMoveType(moveType);
+                    }
+
+                    if (changeStateType){
+                        guy.setStateType(stateType);
+                    }
+
+                    if (changePhysics){
+                        guy.setCurrentPhysics(physics);
+                    }
+                }
+            };
+
+            return new StateTypeSet(section, name);
             break;
         }
+#if 0
         case StateController::SuperPause : {
             FullEnvironment env(stage, guy);
             int x = guy.getRX() + (int) controller.posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
@@ -2303,7 +2371,6 @@ bool changeMoveType;
         }
 #endif
         case StateController::SuperPause :
-        case StateController::StateTypeSet :
 
         case StateController::AfterImage :
         case StateController::AfterImageTime :
