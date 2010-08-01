@@ -659,6 +659,7 @@ protected:
 
 public:
     StateController(const std::string & name);
+    StateController(const std::string & name, Ast::Section * section);
 
     /* from scrtls.html or more recently
      * http://elecbyte.com/wiki/index.php/Category:State_Controllers
@@ -751,16 +752,17 @@ public:
         VelMul,
         VelSet,
         Width,
+        /* Default type value. This value means the `type' attribute has not been set */
         Unknown,
 
         /* only for internal use */
-        InternalCommand,
+        // InternalCommand,
     };
 
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<std::string> & commands) const;
-    void activate(MugenStage & stage, Character & who, const std::vector<std::string> & commands) const;
+    virtual void activate(MugenStage & stage, Character & who, const std::vector<std::string> & commands) const = 0;
 
-    virtual void compile();
+    // virtual void compile();
 
     virtual inline void setType(Type type){
         this->type = type;
@@ -872,7 +874,7 @@ protected:
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<Compiler::Value*> & expressions, const std::vector<std::string> & commands) const;
     bool canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
-    CompiledController* doCompile();
+    // CompiledController* doCompile();
 
 protected:
     Type type;

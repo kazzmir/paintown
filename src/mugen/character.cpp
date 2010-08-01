@@ -130,6 +130,45 @@ internal(NULL),
 debug(false){
 }
 
+StateController::StateController(const string & name, Ast::Section * section):
+compiled(NULL),
+name(name),
+changeControl(false),
+control(NULL),
+x(NULL),
+y(NULL),
+value(NULL),
+variable(NULL),
+posX(NULL),
+posY(NULL),
+time(NULL),
+animation(30),
+changeMoveType(false),
+changeStateType(false),
+changePhysics(false),
+internal(NULL),
+debug(false){
+    class Walker: public Ast::Walker {
+    public:
+        Walker(StateController & controller):
+            controller(controller){
+            }
+
+        StateController & controller;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "triggerall"){
+                controller.addTriggerAll(Compiler::compile(simple.getValue()));
+            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger[0-9]+")){
+                int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger([0-9]+)", 0).c_str());
+                controller.addTrigger(trigger, Compiler::compile(simple.getValue()));
+            }
+        }
+    };
+    Walker walker(*this);
+    section->walk(walker);
+}
+
 StateController::~StateController(){
     for (map<int, vector<Compiler::Value*> >::iterator it = triggers.begin(); it != triggers.end(); it++){
         vector<Compiler::Value*> values = (*it).second;
@@ -287,6 +326,7 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
     return false;
 }
 
+#if 0
 StateController::CompiledController * StateController::doCompile(){
     switch (getType()){
         case ChangeAnim: {
@@ -897,6 +937,7 @@ StateController::CompiledController * StateController::doCompile(){
     return NULL;
 }
 
+
 void StateController::compile(){
     compiled = doCompile();
     if (compiled == NULL){
@@ -905,7 +946,9 @@ void StateController::compile(){
         throw MugenException(out.str());
     }
 }
+#endif
 
+/*
 void StateController::activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
     Global::debug(1 * !debug) << "Activate controller " << name << endl;
 
@@ -915,6 +958,7 @@ void StateController::activate(MugenStage & stage, Character & guy, const vector
 
     compiled->execute(stage, guy, commands);
 }
+*/
 
 State::State():
 type(Unchanged),
@@ -1826,6 +1870,831 @@ void Character::parseStateDefinition(Ast::Section * section){
     states[state] = definition;
 }
 
+static StateController * compileStateController(Ast::Section * section, const string & name, int state, StateController::Type type){
+    switch (type){
+        case StateController::ChangeAnim: {
+            class ControllerChangeAnim: public StateController {
+            public:
+                ControllerChangeAnim(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    value(NULL){
+                    }
+
+                Compiler::Value * value;
+
+                virtual ~ControllerChangeAnim(){
+                    delete value;
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
+                    if (result.isDouble()){
+                        int value = (int) result.getDoubleValue();
+                        guy.setAnimation(value);
+                    }
+                }
+            };
+
+            return new ControllerChangeAnim(section, name);
+            break;
+        }
+        case StateController::ChangeState : {
+            class ControllerChangeState: public StateController {
+            public:
+                ControllerChangeState(Ast::Section * section, const std::string & name):
+                    StateController(name, section),
+                    value(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * value;
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(Compiler::Value *& value):
+                            value(value){
+                            }
+
+                        Compiler::Value *& value;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "value"){
+                                value = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(value);
+                    section->walk(walker);
+                    if (value == NULL){
+                        ostringstream out;
+                        out << "Expected the `value' attribute for state " << name;
+                        throw MugenException(out.str());
+                    }
+                }
+
+                virtual ~ControllerChangeState(){
+                    delete value;
+                }
+                
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
+                    if (result.isDouble()){
+                        int value = (int) result.getDoubleValue();
+                        guy.changeState(stage, value, commands);
+                    }
+                }
+            };
+
+            return new ControllerChangeState(section, name);
+            break;
+        }
+        case StateController::CtrlSet : {
+            class ControllerCtrlSet: public StateController {
+            public:
+                ControllerCtrlSet(Ast::Section * section, const string & name):
+                StateController(name, section),
+                value(NULL){
+                    parse(section);
+                }
+
+                Compiler::Value * value;
+
+                virtual ~ControllerCtrlSet(){
+                    delete value;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(Compiler::Value *& value):
+                            value(value){
+                            }
+
+                        Compiler::Value *& value;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "value"){
+                                value = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(value);
+                    section->walk(walker);
+                    if (value == NULL){
+                        ostringstream out;
+                        out << "Expected the `value' attribute for state " << name;
+                        throw MugenException(out.str());
+                    }
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
+                    guy.setControl(toBool(result));
+                }
+            };
+
+            return new ControllerCtrlSet(section, name);
+            break;
+        }
+        case StateController::PlaySnd : {
+            class ControllerPlaySound: public StateController {
+            public:
+                ControllerPlaySound(Ast::Section * section, const string & name):
+                StateController(name, section),
+                group(-1),
+                own(false),
+                item(NULL){
+                    parse(section);
+                }
+
+                int group;
+                bool own;
+                Compiler::Value * item;
+
+                virtual ~ControllerPlaySound(){
+                    delete item;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(ControllerPlaySound & controller):
+                            controller(controller){
+                            }
+
+                        ControllerPlaySound & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "value"){
+                                controller.parseSound(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void parseSound(const Ast::Value * value){
+                    try{
+                        string group;
+                        const Ast::Value * item;
+                        *value >> group >> item;
+                        if (PaintownUtil::matchRegex(group, "F[0-9]+")){
+                            int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
+                            this->group = realGroup;
+                            this->item = Compiler::compile(item);
+                            own = true;
+                        } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
+                            this->group = atoi(group.c_str());
+                            this->item = Compiler::compile(item);
+                            own = false;
+                        }
+                    } catch (const MugenException & e){
+                        // Global::debug(0) << "Error with PlaySnd " << controller.name << ": " << e.getReason() << endl;
+                        Global::debug(0) << "Error with PlaySnd :" << e.getReason() << endl;
+                    }
+
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    MugenSound * sound = NULL;
+                    if (item != NULL){
+                        int itemNumber = (int) item->evaluate(FullEnvironment(stage, guy)).toNumber();
+                        if (own){
+                            sound = guy.getCommonSound(group, itemNumber);
+                        } else {
+                            sound = guy.getSound(group, itemNumber);
+                        }
+                    }
+
+                    if (sound != NULL){
+                        sound->play();
+                    }
+                }
+            };
+
+            return new ControllerPlaySound(section, name);
+            break;
+        }
+        case StateController::VarSet : {
+            class ControllerVarSet: public StateController {
+            public:
+                ControllerVarSet(Ast::Section * section, const string & name):
+                StateController(name, section),
+                value(NULL),
+                variable(NULL){
+                    parse(section);
+                }
+
+                Compiler::Value * value;
+                Compiler::Value * variable;
+                map<int, Compiler::Value*> variables;
+                map<int, Compiler::Value*> floatVariables;
+                map<int, Compiler::Value*> systemVariables;
+
+                virtual ~ControllerVarSet(){
+                    delete value;
+                    delete variable;
+                    delete_map(variables);
+                    delete_map(floatVariables);
+                    delete_map(systemVariables);
+                }
+
+                void delete_map(const map<int, Compiler::Value*> & values){
+                    for (map<int, Compiler::Value*>::const_iterator it = values.begin(); it != values.end(); it++){
+                        Compiler::Value * value = (*it).second;
+                        delete value;
+                    }
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(ControllerVarSet & controller):
+                            controller(controller){
+                            }
+
+                        ControllerVarSet & controller;
+
+                        virtual void onAttributeArray(const Ast::AttributeArray & simple){
+                            if (simple == "var"){
+                                int index = simple.getIndex();
+                                const Ast::Value * value = simple.getValue();
+                                controller.variables[index] = Compiler::compile(value);
+                            } else if (simple == "fvar"){
+                                int index = simple.getIndex();
+                                const Ast::Value * value = simple.getValue();
+                                controller.floatVariables[index] = Compiler::compile(value);
+                            } else if (simple == "sysvar"){
+                                int index = simple.getIndex();
+                                const Ast::Value * value = simple.getValue();
+                                controller.systemVariables[index] = Compiler::compile(value);
+                            }
+                        }
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "value"){
+                                controller.value = Compiler::compile(simple.getValue());
+                            } else if (simple == "v"){
+                                controller.variable = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    for (map<int, Compiler::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
+                        int index = (*it).first;
+                        Compiler::Value * value = (*it).second;
+                        guy.setVariable(index, value);
+                    }
+
+                    for (map<int, Compiler::Value*>::const_iterator it = floatVariables.begin(); it != floatVariables.end(); it++){
+                        int index = (*it).first;
+                        Compiler::Value * value = (*it).second;
+                        guy.setFloatVariable(index, value);
+                    }
+
+                    for (map<int, Compiler::Value*>::const_iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
+                        int index = (*it).first;
+                        Compiler::Value * value = (*it).second;
+                        guy.setSystemVariable(index, value);
+                    }
+
+                    if (value != NULL && variable != NULL){
+                        /* 'value = 23' is value1
+                         * 'v = 9' is value2
+                         */
+                        guy.setVariable((int) variable->evaluate(FullEnvironment(stage, guy, commands)).toNumber(), value);
+                    }
+                }
+            };
+
+            return new ControllerVarSet(section, name);
+            
+            break;
+        }
+        case StateController::VelSet : {
+            class VelSet: public StateController {
+            public:
+                VelSet(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    x(NULL),
+                    y(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * x;
+                Compiler::Value * y;
+
+                virtual ~VelSet(){
+                    delete x;
+                    delete y;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(VelSet & controller):
+                            controller(controller){
+                            }
+
+                        VelSet & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "x"){
+                                controller.x = Compiler::compile(simple.getValue());
+                            } else if (simple == "y"){
+                                controller.y = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (x != NULL){
+                        RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setXVelocity(result.getDoubleValue());
+                        }
+                    }
+                    if (y != NULL){
+                        RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setYVelocity(result.getDoubleValue());
+                        }
+                    }
+                }
+            };
+
+            return new VelSet(section, name);
+            break;
+        }
+        case StateController::HitVelSet : {
+            class HitVelSet: public StateController {
+            public:
+                HitVelSet(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    x(NULL),
+                    y(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * x;
+                Compiler::Value * y;
+
+                virtual ~HitVelSet(){
+                    delete x;
+                    delete y;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(HitVelSet & controller):
+                            controller(controller){
+                            }
+
+                        HitVelSet & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "x"){
+                                controller.x = Compiler::compile(simple.getValue());
+                            } else if (simple == "y"){
+                                controller.y = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (x != NULL){
+                        RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
+                        if (result.getBoolValue()){
+                            guy.setXVelocity(guy.getHitState().xVelocity);
+                        }
+                    }
+
+                    if (y != NULL){
+                        RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
+                        if (result.getBoolValue()){
+                            guy.setYVelocity(guy.getHitState().yVelocity);
+                        }
+                    }
+                }
+
+            };
+
+            return new HitVelSet(section, name);
+            
+            break;
+        }
+        case StateController::PosAdd : {
+            class PosAdd: public StateController {
+            public:
+                PosAdd(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    x(NULL),
+                    y(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * x;
+                Compiler::Value * y;
+
+                virtual ~PosAdd(){
+                    delete x;
+                    delete y;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(PosAdd & controller):
+                            controller(controller){
+                            }
+
+                        PosAdd & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "x"){
+                                controller.x = Compiler::compile(simple.getValue());
+                            } else if (simple == "y"){
+                                controller.y = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (x != NULL){
+                        RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.moveX(result.getDoubleValue());
+                            // guy.setX(guy.getX() + result.getDoubleValue());
+                        }
+                    }
+                    if (y != NULL){
+                        RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.moveYNoCheck(-result.getDoubleValue());
+                            // guy.setY(guy.getY() + result.getDoubleValue());
+                        }
+                    }
+                }
+
+            };
+
+            return new PosAdd(section, name);
+
+            break;
+        }
+        case StateController::PosSet : {
+            class PosSet: public StateController {
+            public:
+                PosSet(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    x(NULL),
+                    y(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * x;
+                Compiler::Value * y;
+
+                virtual ~PosSet(){
+                    delete x;
+                    delete y;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(PosSet & controller):
+                            controller(controller){
+                            }
+
+                        PosSet & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "x"){
+                                controller.x = Compiler::compile(simple.getValue());
+                            } else if (simple == "y"){
+                                controller.y = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (x != NULL){
+                        RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setX(result.getDoubleValue());
+                        }
+                    }
+                    if (y != NULL){
+                        RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setY(result.getDoubleValue());
+                        }
+                    }
+                }
+
+            };
+
+            return new PosSet(section, name);
+
+            break;
+        }
+        case StateController::VelAdd : {
+            class VelAdd: public StateController {
+            public:
+                VelAdd(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    x(NULL),
+                    y(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * x;
+                Compiler::Value * y;
+
+                virtual ~VelAdd(){
+                    delete x;
+                    delete y;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(VelAdd & controller):
+                            controller(controller){
+                            }
+
+                        VelAdd & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "x"){
+                                controller.x = Compiler::compile(simple.getValue());
+                            } else if (simple == "y"){
+                                controller.y = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (x != NULL){
+                        RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
+                        }
+                    }
+                    if (y != NULL){
+                        RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setYVelocity(guy.getYVelocity() + result.getDoubleValue());
+                        }
+                    }
+                }
+            };
+
+            return new VelAdd(section, name);
+
+            break;
+        }
+        case StateController::VelMul : {
+            class VelMul: public StateController {
+            public:
+                VelMul(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    x(NULL),
+                    y(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * x;
+                Compiler::Value * y;
+
+                virtual ~VelMul(){
+                    delete x;
+                    delete y;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(VelMul & controller):
+                            controller(controller){
+                            }
+
+                        VelMul & controller;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "x"){
+                                controller.x = Compiler::compile(simple.getValue());
+                            } else if (simple == "y"){
+                                controller.y = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (x != NULL){
+                        RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setXVelocity(guy.getXVelocity() * result.getDoubleValue());
+                        }
+                    }
+
+                    if (y != NULL){
+                        RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
+                        if (result.isDouble()){
+                            guy.setYVelocity(guy.getYVelocity() * result.getDoubleValue());
+                        }
+                    }
+                }
+            };
+
+            return new VelMul(section, name);
+            break;
+        }
+#if 0
+        case StateController::HitDef : {
+            /* prevent the same hitdef from being applied */
+            if (guy.getHit() != &controller.getHit()){
+                guy.setHitDef(&controller.getHit());
+                guy.nextTicket();
+            }
+            break;
+        }
+        case StateController::StateTypeSet : {
+            if (controller.changeMoveType){
+                guy.setMoveType(controller.moveType);
+            }
+
+            if (controller.changeStateType){
+                guy.setStateType(controller.stateType);
+            }
+
+            if (controller.changePhysics){
+                guy.setCurrentPhysics(controller.physics);
+            }
+            break;
+        }
+        case StateController::SuperPause : {
+            FullEnvironment env(stage, guy);
+            int x = guy.getRX() + (int) controller.posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
+            int y = guy.getRY() + (int) controller.posY->evaluate(env).toNumber();
+            /* 30 is the default I think.. */
+            int time = 30;
+            if (controller.time != NULL){
+                time = (int) controller.time->evaluate(env).toNumber();
+            }
+            stage.doSuperPause(time, controller.animation, x, y, controller.sound.group, controller.sound.item); 
+            break;
+        }
+        
+       
+#endif
+        case StateController::HitDef :
+        case StateController::SuperPause :
+        case StateController::StateTypeSet :
+
+        case StateController::AfterImage :
+        case StateController::AfterImageTime :
+        case StateController::AllPalFX :
+        case StateController::AngleAdd :
+        case StateController::AngleDraw :
+        case StateController::AngleMul :
+        case StateController::AngleSet :
+        case StateController::AppendToClipboard :
+        case StateController::AssertSpecial :
+        case StateController::AttackDist :
+        case StateController::AttackMulSet :
+        case StateController::BGPalFX :
+        case StateController::BindToParent :
+        case StateController::BindToRoot :
+        case StateController::BindToTarget :
+        case StateController::ChangeAnim2 :
+        case StateController::ClearClipboard :
+        case StateController::DefenceMulSet :
+        case StateController::DestroySelf :
+        case StateController::DisplayToClipboard :
+        case StateController::EnvColor :
+        case StateController::EnvShake :
+        case StateController::Explod :
+        case StateController::ExplodBindTime :
+        case StateController::ForceFeedback :
+        case StateController::FallEnvShake :
+        case StateController::GameMakeAnim :
+        case StateController::Gravity :
+        case StateController::Helper :
+        case StateController::HitAdd :
+        case StateController::HitBy :
+        case StateController::HitFallDamage :
+        case StateController::HitFallSet :
+        case StateController::HitFallVel :
+        case StateController::HitOverride :
+        case StateController::LifeAdd :
+        case StateController::LifeSet :
+        case StateController::MakeDust :
+        case StateController::ModifyExplod :
+        case StateController::MoveHitReset :
+        case StateController::NotHitBy :
+        case StateController::Null :
+        case StateController::Offset :
+        case StateController::PalFX :
+        case StateController::ParentVarAdd :
+        case StateController::ParentVarSet :
+        case StateController::Pause :
+        case StateController::PlayerPush :
+        case StateController::PosFreeze :
+        case StateController::PowerAdd :
+        case StateController::PowerSet :
+        case StateController::Projectile :
+        case StateController::RemoveExplod :
+        case StateController::ReversalDef :
+        case StateController::ScreenBound :
+        case StateController::SelfState :
+        case StateController::SprPriority :
+        case StateController::SndPan :
+        case StateController::StopSnd :
+        case StateController::TargetBind :
+        case StateController::TargetDrop :
+        case StateController::TargetFacing :
+        case StateController::TargetLifeAdd :
+        case StateController::TargetPowerAdd :
+        case StateController::TargetState :
+        case StateController::TargetVelAdd :
+        case StateController::TargetVelSet :
+        case StateController::Trans :
+        case StateController::Turn :
+        case StateController::VarAdd :
+        case StateController::VarRandom :
+        case StateController::VarRangeSet :
+        case StateController::Width : {
+            class DefaultController: public StateController {
+            public:
+                DefaultController(Ast::Section * section, const string & name):
+                StateController(name, section){
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    /* nothing */
+                }
+            };
+
+            return new DefaultController(section, name);
+        }
+        case StateController::Unknown : {
+            ostringstream out;
+            out << "Unknown state controller for " << state << " " << name;
+            throw MugenException(out.str());
+            break;
+        }
+        /*
+        case InternalCommand : {
+            typedef void (Character::*func)(const MugenStage & stage, const vector<string> & inputs);
+            func f = (func) controller.internal;
+            (guy.*f)(stage, commands);
+            break;
+        }
+        */
+    };
+
+    ostringstream out;
+    out << "Unknown state controller for " << state << " " << name << " type (" << type << ")";
+    throw MugenException(out.str());
+}
+
 void Character::parseState(Ast::Section * section){
     std::string head = section->getName();
     head = Util::fixCase(head);
@@ -1833,6 +2702,7 @@ void Character::parseState(Ast::Section * section){
     int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
     string name = PaintownUtil::captureRegex(head, "state *-?[0-9]+ *, *(.*)", 0);
 
+#if 0
     class StateControllerWalker: public Ast::Walker {
         public:
             StateControllerWalker(StateController * controller):
@@ -2336,6 +3206,119 @@ void Character::parseState(Ast::Section * section){
                 }
             }
     };
+#endif
+
+    class StateControllerWalker: public Ast::Walker {
+    public:
+        StateControllerWalker():
+        type(StateController::Unknown){
+        }
+
+        StateController::Type type;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "type"){
+                string type;
+                simple >> type;
+                type = Mugen::Util::fixCase(type);
+                map<string, StateController::Type> types;
+                types["afterimage"] = StateController::AfterImage;
+                types["afterimagetime"] = StateController::AfterImageTime;
+                types["allpalfx"] = StateController::AllPalFX;
+                types["angleadd"] = StateController::AngleAdd;
+                types["angledraw"] = StateController::AngleDraw;
+                types["anglemul"] = StateController::AngleMul;
+                types["angleset"] = StateController::AngleSet;
+                types["appendtoclipboard"] = StateController::AppendToClipboard;
+                types["assertspecial"] = StateController::AssertSpecial;
+                types["attackdist"] = StateController::AttackDist;
+                types["attackmulset"] = StateController::AttackMulSet;
+                types["bgpalfx"] = StateController::BGPalFX;
+                types["bindtoparent"] = StateController::BindToParent;
+                types["bindtoroot"] = StateController::BindToRoot;
+                types["bindtotarget"] = StateController::BindToTarget;
+                types["changeanim"] = StateController::ChangeAnim;
+                types["changeanim2"] = StateController::ChangeAnim2;
+                types["changestate"] = StateController::ChangeState;
+                types["clearclipboard"] = StateController::ClearClipboard;
+                types["ctrlset"] = StateController::CtrlSet;
+                types["defencemulset"] = StateController::DefenceMulSet;
+                types["destroyself"] = StateController::DestroySelf;
+                types["displaytoclipboard"] = StateController::DisplayToClipboard;
+                types["envcolor"] = StateController::EnvColor;
+                types["envshake"] = StateController::EnvShake;
+                types["explod"] = StateController::Explod;
+                types["explodbindtime"] = StateController::ExplodBindTime;
+                types["forcefeedback"] = StateController::ForceFeedback;
+                types["fallenvshake"] = StateController::FallEnvShake;
+                types["gamemakeanim"] = StateController::GameMakeAnim;
+                types["gravity"] = StateController::Gravity;
+                types["helper"] = StateController::Helper;
+                types["hitadd"] = StateController::HitAdd;
+                types["hitby"] = StateController::HitBy;
+                types["hitdef"] = StateController::HitDef;
+                types["hitfalldamage"] = StateController::HitFallDamage;
+                types["hitfallset"] = StateController::HitFallSet;
+                types["hitfallvel"] = StateController::HitFallVel;
+                types["hitoverride"] = StateController::HitOverride;
+                types["hitvelset"] = StateController::HitVelSet;
+                types["lifeadd"] = StateController::LifeAdd;
+                types["lifeset"] = StateController::LifeSet;
+                types["makedust"] = StateController::MakeDust;
+                types["modifyexplod"] = StateController::ModifyExplod;
+                types["movehitreset"] = StateController::MoveHitReset;
+                types["nothitby"] = StateController::NotHitBy;
+                types["null"] = StateController::Null;
+                types["offset"] = StateController::Offset;
+                types["palfx"] = StateController::PalFX;
+                types["parentvaradd"] = StateController::ParentVarAdd;
+                types["parentvarset"] = StateController::ParentVarSet;
+                types["pause"] = StateController::Pause;
+                types["playerpush"] = StateController::PlayerPush;
+                types["playsnd"] = StateController::PlaySnd;
+                types["posadd"] = StateController::PosAdd;
+                types["posfreeze"] = StateController::PosFreeze;
+                types["posset"] = StateController::PosSet;
+                types["poweradd"] = StateController::PowerAdd;
+                types["powerset"] = StateController::PowerSet;
+                types["projectile"] = StateController::Projectile;
+                types["removeexplod"] = StateController::RemoveExplod;
+                types["reversaldef"] = StateController::ReversalDef;
+                types["screenbound"] = StateController::ScreenBound;
+                types["selfstate"] = StateController::SelfState;
+                types["sprpriority"] = StateController::SprPriority;
+                types["statetypeset"] = StateController::StateTypeSet;
+                types["sndpan"] = StateController::SndPan;
+                types["stopsnd"] = StateController::StopSnd;
+                types["superpause"] = StateController::SuperPause;
+                types["targetbind"] = StateController::TargetBind;
+                types["targetdrop"] = StateController::TargetDrop;
+                types["targetfacing"] = StateController::TargetFacing;
+                types["targetlifeadd"] = StateController::TargetLifeAdd;
+                types["targetpoweradd"] = StateController::TargetPowerAdd;
+                types["targetstate"] = StateController::TargetState;
+                types["targetveladd"] = StateController::TargetVelAdd;
+                types["targetvelset"] = StateController::TargetVelSet;
+                types["trans"] = StateController::Trans;
+                types["turn"] = StateController::Turn;
+                types["varadd"] = StateController::VarAdd;
+                types["varrandom"] = StateController::VarRandom;
+                types["varrangeset"] = StateController::VarRangeSet;
+                types["varset"] = StateController::VarSet;
+                types["veladd"] = StateController::VelAdd;
+                types["velmul"] = StateController::VelMul;
+                types["velset"] = StateController::VelSet;
+                types["width"] = StateController::Width;
+
+                if (types.find(type) != types.end()){
+                    map<string, StateController::Type>::iterator what = types.find(type);
+                    this->type = (*what).second;
+                } else {
+                    Global::debug(0) << "Unknown state controller type " << type << endl;
+                }
+            }
+        }
+    };
 
     if (states[state] == 0){
         ostringstream out;
@@ -2343,14 +3326,15 @@ void Character::parseState(Ast::Section * section){
         // delete controller;
         // throw MugenException(out.str());
     } else {
-        StateController * controller = new StateController(name);
-        StateControllerWalker walker(controller);
+        // StateController * controller = new StateController(name);
+        StateControllerWalker walker;
         section->walk(walker);
-        if (controller->getType() == StateController::Unknown){
-            delete controller;
+        StateController::Type type = walker.type;
+        if (type == StateController::Unknown){
             Global::debug(0) << "Warning: no type given for controller " << section->getName() << endl;
         } else {
-            controller->compile();
+            StateController * controller = compileStateController(section, name, state, type);
+            // controller->compile();
             states[state]->addController(controller);
             Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
         }
@@ -2742,6 +3726,19 @@ void Character::stopGuarding(MugenStage & stage, const vector<string> & inputs){
     }
 }
 
+static StateController * parseController(const string & input){
+    try{
+        list<Ast::Section*>* sections = (list<Ast::Section*>*) Mugen::Cmd::parse(input.c_str());
+        return NULL;
+    } catch (const Ast::Exception & e){
+        throw MugenException(e.getReason());
+    } catch (const Mugen::Cmd::ParseException & e){
+        ostringstream out;
+        out << "Could not parse " << input << " because " << e.getReason();
+        throw MugenException(out.str());
+    }
+}
+
 void Character::fixAssumptions(){
     /* need a -1 state controller that changes to state 20 if holdfwd
      * or holdback is pressed
@@ -2750,6 +3747,15 @@ void Character::fixAssumptions(){
     if (states[-1] != 0){
         /* walk */
         {
+            ostringstream raw;
+            raw << "[State -1, paintown-internal-walk]\n";
+            raw << "triggerall = stateno = 0\n";
+            raw << "trigger1 = command = \"holdfwd\"\n";
+            raw << "trigger2 = command = \"holdback\"\n";
+            raw << "value = " << WalkingForwards << "\n";
+            states[-1]->addController(parseController(raw.str()));
+
+            /*
             StateController * controller = new StateController("walk");
             controller->setType(StateController::ChangeState);
             Ast::Number value(WalkingForwards);
@@ -2766,7 +3772,10 @@ void Character::fixAssumptions(){
                         new Ast::String(new string("holdback")))));
             states[-1]->addController(controller);
             controller->compile();
+            */
         }
+
+#if 0
 
         /* crouch */
         {
@@ -2838,8 +3847,10 @@ void Character::fixAssumptions(){
             states[-1]->addController(controller);
             controller->compile();
         }
-
+#endif
     }
+
+#if 0
 
     {
         if (states[StopGuardStand] != 0){
@@ -2921,6 +3932,8 @@ void Character::fixAssumptions(){
         turn->addController(controller);
         controller->compile();
     }
+
+#endif
 
 #if 0
     /* if y reaches 0 then auto-transition to state 52.
