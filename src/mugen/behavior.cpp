@@ -118,7 +118,6 @@ dontMove(0){
  *  - subtract points if the move has been done recently
  */
 string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*> & commands){
-
     Move * currentMove = NULL;
     string what = "";
     double points = 0;

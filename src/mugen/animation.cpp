@@ -288,6 +288,16 @@ void MugenAnimation::render(int xaxis, int yaxis, const Bitmap &work, double sca
 #endif
 }
 
+Mugen::Effects MugenAnimation::getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley){
+    MugenFrame * frame = frames[position];
+    Mugen::Effects effects = frame->effects;
+    effects.scalex = scalex;
+    effects.scaley = scaley;
+    effects.facing = (facing ? -1 : 1);
+    effects.vfacing = (vfacing ? -1 : 1);
+    return effects;
+}
+
 void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex, const double scaley ){
     if (position >= frames.size()){
         return;

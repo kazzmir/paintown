@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <deque>
 #include <map>
 #include "exception.h"
 
@@ -1363,6 +1364,9 @@ public:
 	    return this->attackdist;
 	}
 
+        virtual void setAfterImage(int time, int length, int timegap, int framegap);
+        virtual void setAfterImageTime(int time);
+
 protected:
     void initialize();
 
@@ -1665,6 +1669,43 @@ protected:
 
         /* true if the player is currently guarding an attack */
         bool guarding;
+
+        struct AfterImage{
+            AfterImage():
+                show(false){
+                }
+
+            struct Frame{
+                Frame():
+                    sprite(NULL),
+                    life(0){
+                    }
+
+                Frame(MugenFrame * sprite, Effects effects, int life, int x, int y):
+                    sprite(sprite),
+                    effects(effects),
+                    life(life),
+                    x(x),
+                    y(y){
+                    }
+
+                MugenFrame * sprite;
+                Effects effects;
+                int life;
+                int x;
+                int y;
+            };
+
+            /* true if after images are being shown */
+            bool show;
+            int currentTime;
+            int timegap;
+            int framegap;
+            int lifetime;
+            unsigned int length;
+
+            std::deque<Frame> frames;
+        } afterImage;
 };
 
 }

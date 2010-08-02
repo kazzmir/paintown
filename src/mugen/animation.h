@@ -148,6 +148,7 @@ class MugenAnimation{
 	
 	inline unsigned int getCurrentPosition() { return position; }
 	inline MugenFrame *getCurrentFrame(){ return frames[position]; }
+        Mugen::Effects getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley);
 	
 	// Set type number
 	inline void setType(const Mugen::AnimationType t){ type = t; }

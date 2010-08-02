@@ -768,6 +768,9 @@ void Character::resetStateTime(){
 }
         
 void Character::changeState(MugenStage & stage, int stateNumber, const vector<string> & inputs){
+    /* dont let after images carry over to the next state */
+    afterImage.show = false;
+
     /* reset juggle points once the player gets up */
     if (stateNumber == GetUpFromLiedown){
         juggleRemaining = getJugglePoints();
@@ -2453,8 +2456,177 @@ static StateController * compileStateController(Ast::Section * section, const st
             return new SuperPause(section, name);
             break;
         }
-        case StateController::AfterImage :
-        case StateController::AfterImageTime :
+        case StateController::AfterImage : {
+            class AfterImage: public StateController {
+            public:
+                AfterImage(Ast::Section * section, const string & name):
+                StateController(name, section),
+                time(NULL),
+                length(NULL),
+                timeGap(NULL),
+                frameGap(NULL){
+                    parse(section);
+                }
+
+                Compiler::Value * time;
+                Compiler::Value * length;
+                Compiler::Value * timeGap;
+                Compiler::Value * frameGap;
+
+                virtual ~AfterImage(){
+                    delete time;
+                    delete length;
+                    delete timeGap;
+                    delete frameGap;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(AfterImage & image):
+                            image(image){
+                            }
+
+                        AfterImage & image;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "time"){
+                                image.time = Compiler::compile(simple.getValue());
+                            } else if (simple == "length"){
+                                image.length = Compiler::compile(simple.getValue());
+                            } else if (simple == "palcolor"){
+                            } else if (simple == "palinvertall"){
+                            } else if (simple == "palbright"){
+                            } else if (simple == "palcontrast"){
+                            } else if (simple == "palpostbright"){
+                            } else if (simple == "paladd"){
+                            } else if (simple == "palmul"){
+                            } else if (simple == "timegap"){
+                                image.timeGap = Compiler::compile(simple.getValue());
+                            } else if (simple == "framegap"){
+                                image.frameGap = Compiler::compile(simple.getValue());
+                            } else if (simple == "trans"){
+                            }
+                            /* time = duration (int)
+                             * Specifies the number of ticks that the afterimages should be displayed for. Set to -1 to display indefinitely. Defaults to 1.
+                             * length = no_of_frames (int)
+                             * Sets the capacity of the frame history buffer. The history will hold up to no_of_frames of the character's most recently saved frames. Assuming constant values for timegap and framegap, increasing the length can increase the number and "age" (for lack of a better term) of afterimages displayed at one time. The maximum length is 60, and the default is 20.
+                             * palcolor = col (int)
+                             * See below.
+                             * palinvertall = invertall (bool)
+                             * See below.
+                             * palbright = add_r, add_g, add_b (int)
+                             * See below.
+                             * palcontrast = mul_r, mul_g, mul_b (int)
+                             * See below.
+                             * palpostbright = add2_r, add2_g, add2_b (int)
+                             * These parameters determine palette effects to be applied to all afterimages. First the color level is adjusted according to the palcolor value, then if invertall is non-zero the colors are inverted. Afterwards, the palbright components are added to the corresponding component of the player's palette, then each component is multiplied by the corresponding palcontrast component divided by 256, then the palpostbright components are added to the result. The value of palcolor ranges from 0 (greyscale) to 256 (normal color). For instance, if the red component of the character's palette is denoted pal_r, then the red component of the afterimage palette is given by (pal_r + add_r) * mul_r / 256 + add2_r, assuming palcolor and palinvert are left at their default values. Valid values are 0-256 for palcolor, 0-255 for palbright and palpostbright components, and any non-negative integer for palcontrast components. The defaults are:
+                             *
+                             * palcolor = 256
+                             * palinvertall = 0
+                             * palbright = 30,30,30
+                             * palcontrast = 120,120,220
+                             * palpostbright = 0,0,0
+                             * paladd = add_r, add_g, add_b (int)
+                             * See below.
+                             * palmul = mul_r, mul_g, mul_b (float)
+                             * These parameters specify palette effects that are applied repeatedly to successive frames in the afterimage. In one application of these palette effects, first the paladd components are added to the afterimage palette, then the components are multiplied by the palmul multipliers. These effects are applied zero times to the most recent afterimage frame, once to the second-newest afterimage frame, twice in succession to the third-newest afterimage frame, etc. Valid values are 0-255 for the paladd components, and any non-negative float value for the palmul multipliers. The defaults are:
+                             *
+                             * paladd = 10,10,25
+                             * palmul = .65,.65,.75
+                             * timegap = value (int)
+                             * This parameter controls how many frames to skip between saving player frames to the history buffer for afterimage display. The default is 1 (skip no frames). To save every third frame (for example), you would use timegap = 3.
+                             * framegap = value (int)
+                             * Every value'th frame in the history buffer will be displayed as an afterimage. For instance, if framegap = 4 (the default), then the first, fifth, ninth, ... frames of the history buffer will be displayed as afterimages.
+                             * trans = type (string)
+                             * Specifies the transparency type for the afterimages. Valid values for type are "none" for an opaque afterimage, "add", "add1", and "sub". Defaults to "none".
+                             */
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    FullEnvironment environment(stage, guy, commands);
+                    int timegap = 1;
+                    if (this->timeGap != NULL){
+                        timegap = this->timeGap->evaluate(environment).toNumber();
+                    }
+
+                    int framegap = 1;
+                    if (this->frameGap != NULL){
+                        framegap = this->frameGap->evaluate(environment).toNumber();
+                    }
+
+                    int time = 1;
+                    if (this->time != NULL){
+                        time = this->time->evaluate(environment).toNumber();
+                    }
+
+                    int length = 20;
+                    if (this->length != NULL){
+                        length = this->length->evaluate(environment).toNumber();
+                    }
+                    
+                    guy.setAfterImage(time, length, timegap, framegap);
+                }
+            };
+
+            return new AfterImage(section, name);
+            break;
+        }
+        case StateController::AfterImageTime : {
+            class AfterImageTime: public StateController {
+            public:
+                AfterImageTime(Ast::Section * section, const string & name):
+                    StateController(name, section),
+                    time(NULL){
+                        parse(section);
+                    }
+
+                Compiler::Value * time;
+
+                virtual ~AfterImageTime(){
+                    delete time;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(Compiler::Value *& time):
+                            time(time){
+                            }
+
+                        Compiler::Value *& time;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "time"){
+                                time = Compiler::compile(simple.getValue());
+                            } else if (simple == "value"){
+                                time = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(time);
+                    section->walk(walker);
+                    if (time == NULL){
+                        throw MugenException("Time not specified for AfterImageTime");
+                    }
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    FullEnvironment environment(stage, guy);
+                    int time = this->time->evaluate(environment).toNumber();
+                    guy.setAfterImageTime(time);
+                }
+            };
+
+            return new AfterImageTime(section, name);
+            break;
+        }
         case StateController::AllPalFX :
         case StateController::AngleAdd :
         case StateController::AngleDraw :
@@ -4318,6 +4490,34 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             x += PaintownUtil::rnd(3) - 1;
         }
 
+        if (afterImage.show){
+            afterImage.currentTime += 1;
+            if (afterImage.currentTime >= afterImage.timegap){
+                MugenFrame * currentSprite = animation->getCurrentFrame();
+                afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == Object::FACING_LEFT, false, xscale, yscale), afterImage.lifetime, x, y));
+            }
+
+            for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
+                const AfterImage::Frame & frame = afterImage.frames[index];
+                frame.sprite->render(frame.x, frame.y, *work, frame.effects);
+            }
+
+            for (deque<AfterImage::Frame>::iterator it = afterImage.frames.begin(); it != afterImage.frames.end(); /**/ ){
+                AfterImage::Frame & frame = *it;
+                frame.life -= 1;
+                /* negative lifetimes mean indefinite frames */
+                if (frame.life == 0){
+                    it = afterImage.frames.erase(it);
+                } else {
+                    it++;
+                }
+            }
+
+            if (afterImage.frames.size() > afterImage.length){
+                afterImage.frames.resize(afterImage.length);
+            }
+        }
+
         animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
     }
 
@@ -4543,6 +4743,20 @@ void Character::guarded(Character * enemy, const HitDefinition & hit){
     } else {
         setXVelocity(hit.guardVelocity);
     }
+}
+
+void Character::setAfterImage(int time, int length, int timegap, int framegap){
+    afterImage.show = true;
+    afterImage.currentTime = 0;
+    afterImage.timegap = timegap;
+    afterImage.framegap = framegap;
+    afterImage.lifetime = time;
+    afterImage.length = length;
+    afterImage.frames.clear();
+}
+        
+void Character::setAfterImageTime(int time){
+    afterImage.lifetime = time;
 }
 
 }
