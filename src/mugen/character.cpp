@@ -1273,29 +1273,35 @@ static StateController * compileStateController(Ast::Section * section, const st
             public:
                 ControllerChangeState(Ast::Section * section, const std::string & name):
                     StateController(name, section),
-                    value(NULL){
+                    value(NULL),
+                    control(NULL){
                         parse(section);
                     }
 
                 Compiler::Value * value;
+                Compiler::Value * control;
 
                 void parse(Ast::Section * section){
                     class Walker: public Ast::Walker {
                     public:
-                        Walker(Compiler::Value *& value):
-                            value(value){
+                        Walker(Compiler::Value *& value, Compiler::Value *& control):
+                            value(value),
+                            control(control){
                             }
 
                         Compiler::Value *& value;
+                        Compiler::Value *& control;
 
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "value"){
                                 value = Compiler::compile(simple.getValue());
+                            } else if (simple == "ctrl"){
+                                control = Compiler::compile(simple.getValue());
                             }
                         }
                     };
 
-                    Walker walker(value);
+                    Walker walker(value, control);
                     section->walk(walker);
                     if (value == NULL){
                         ostringstream out;
@@ -1306,9 +1312,14 @@ static StateController * compileStateController(Ast::Section * section, const st
 
                 virtual ~ControllerChangeState(){
                     delete value;
+                    delete control;
                 }
                 
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    if (control != NULL){
+                        guy.setControl(control->evaluate(FullEnvironment(stage, guy)).toBool());
+                    }
+
                     RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
                     if (result.isDouble()){
                         int value = (int) result.getDoubleValue();
@@ -4257,6 +4268,10 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         render->addMessage(font, x, y, color, -1, "X %f Y %f", getX(), getY());
         y += font.getHeight();
         render->addMessage(font, x, y, color, -1, "Time %d", getStateTime());
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, -1, "State type %s", getStateType().c_str());
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, -1, "Control %d", hasControl());
         y += font.getHeight();
         if (getMoveType() == Move::Hit){
             render->addMessage(font, x, y, color, -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);

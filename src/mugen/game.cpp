@@ -249,7 +249,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
             if (difference == 0){
                 difference = 1;
             }
-            fps = (0.75 * fps) + (0.25 * (double) frames / difference);
+            fps = (0.8 * fps) + (0.2 * (double) frames / difference);
             // fps[fps_index] = (double) frames / (double) difference;
             // fps_index = (fps_index+1) % max_fps_index;
             second_counter = Global::second_counter;
