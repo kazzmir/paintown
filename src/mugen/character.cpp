@@ -2351,32 +2351,9 @@ static StateController * compileStateController(Ast::Section * section, const st
 
                         SuperPause & super;
 
-                        virtual void onAttributeArray(const Ast::AttributeArray & simple){
-                            if (simple == "sound"){
-                                string first;
-                                bool own = false;
-                                int group;
-                                const Ast::Value * item;
-                                simple >> first >> item;
-                                if (first[0] == 'S'){
-                                    own = true;
-                                    group = atoi(first.substr(1).c_str());
-                                } else {
-                                    group = atoi(first.c_str());
-                                }
-                                super.sound.own = own;
-                                super.sound.group = group;
-                                super.sound.item = Compiler::compile(item);
-                            }
-                        }
-
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "time"){
                                 super.time = Compiler::compile(simple.getValue());
-                            } else if (simple == "posx"){
-                                super.posX = Compiler::compile(simple.getValue());
-                            } else if (simple == "posy"){
-                                super.posY = Compiler::compile(simple.getValue());
                             } else if (simple == "anim"){
                                 super.animation = Compiler::compile(simple.getValue());
                             } else if (simple == "darken"){
@@ -2387,6 +2364,31 @@ static StateController * compileStateController(Ast::Section * section, const st
                                 super.poweradd = Compiler::compile(simple.getValue());
                             } else if (simple == "unhittable"){
                                 super.unhittable = Compiler::compile(simple.getValue());
+                            } else if (simple == "sound"){
+                                if (simple.getValue()->hasMultiple()){
+                                    string first;
+                                    bool own = false;
+                                    int group;
+                                    const Ast::Value * item;
+                                    simple >> first >> item;
+                                    if (first[0] == 'S'){
+                                        own = true;
+                                        group = atoi(first.substr(1).c_str());
+                                    } else {
+                                        group = atoi(first.c_str());
+                                    }
+                                    super.sound.own = own;
+                                    super.sound.group = group;
+                                    super.sound.item = Compiler::compile(item);
+                                }
+                            } else if (simple == "pos"){
+                                if (simple.getValue()->hasMultiple()){
+                                    const Ast::Value * posX;
+                                    const Ast::Value * posY;
+                                    simple >> posX >> posY;
+                                    super.posX = Compiler::compile(posX);
+                                    super.posY = Compiler::compile(posY);
+                                }
                             }
                         }
                     };
