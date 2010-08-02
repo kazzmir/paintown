@@ -1790,10 +1790,9 @@ int MugenStage::getGameTime() const {
     return 0;
 }
     
-void MugenStage::doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundItem){
+void MugenStage::doSuperPause(int time, int animation, int positionX, int positionY){
     superPause.time = time;
     if (animation != -1){
         addSpark(positionX, positionY, animation);
     }
-    playSound(soundGroup, soundItem, false);
 }

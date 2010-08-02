@@ -147,62 +147,7 @@ StateController::~StateController(){
             delete value;
         }
     }
-    
-    /*
-    for (map<int, Compiler::Value*>::iterator it = variables.begin(); it != variables.end(); it++){
-        Compiler::Value * value = (*it).second;
-        delete value;
-    }
-
-    for (map<int, Compiler::Value*>::iterator it = floatVariables.begin(); it != floatVariables.end(); it++){
-        Compiler::Value * value = (*it).second;
-        delete value;
-    }
-
-    for (map<int, Compiler::Value*>::iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
-        Compiler::Value * value = (*it).second;
-        delete value;
-    }
-
-    delete x;
-    delete y;
-    delete control;
-    // delete value;
-    delete compiled;
-    delete variable;
-    delete posX;
-    delete posY;
-    delete time;
-    */
 }
-
-/*
-void StateController::setValue1(Compiler::Value * value){
-    this->value1 = value;
-}
-
-void StateController::setValue2(Compiler::Value * value){
-    this->value2 = value;
-}
-*/
-
-/*
-void StateController::setX(Compiler::Value * value){
-    this->x = value;
-}
-
-void StateController::setY(Compiler::Value * value){
-    this->y = value;
-}
-
-void StateController::setValue(const Ast::Value * value){
-    this->value = value;
-}
-
-void StateController::setVariable(Compiler::Value * value){
-    this->variable = value;
-}
-*/
 
 void StateController::addTriggerAll(Compiler::Value * trigger){
     triggers[-1].push_back(trigger);
@@ -211,30 +156,6 @@ void StateController::addTriggerAll(Compiler::Value * trigger){
 void StateController::addTrigger(int number, Compiler::Value * trigger){
     triggers[number].push_back(trigger);
 }
-    
-/*
-void StateController::addVariable(int number, Compiler::Value * variable){
-    if (variables[number] != 0){
-        delete variables[number];
-    }
-    variables[number] = variable;
-}
-
-void StateController::addFloatVariable(int number, Compiler::Value * variable){
-    if (floatVariables[number] != 0){
-        delete floatVariables[number];
-    }
-    floatVariables[number] = variable;
-}
-
-void StateController::addSystemVariable(int number, Compiler::Value * variable){
-    if (systemVariables[number] != 0){
-        delete systemVariables[number];
-    }
-
-    systemVariables[number] = variable;
-}
-*/
 
 bool StateController::canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
     /* this makes it easy to break in gdb */
@@ -2368,22 +2289,168 @@ static StateController * compileStateController(Ast::Section * section, const st
             return new StateTypeSet(section, name);
             break;
         }
-#if 0
         case StateController::SuperPause : {
-            FullEnvironment env(stage, guy);
-            int x = guy.getRX() + (int) controller.posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
-            int y = guy.getRY() + (int) controller.posY->evaluate(env).toNumber();
-            /* 30 is the default I think.. */
-            int time = 30;
-            if (controller.time != NULL){
-                time = (int) controller.time->evaluate(env).toNumber();
-            }
-            stage.doSuperPause(time, controller.animation, x, y, controller.sound.group, controller.sound.item); 
+            class SuperPause: public StateController {
+            public:
+                SuperPause(Ast::Section * section, const string & name):
+                StateController(name, section),
+                time(NULL),
+                posX(NULL),
+                posY(NULL),
+                animation(NULL),
+                darken(NULL),
+                p2defmul(NULL),
+                poweradd(NULL),
+                unhittable(NULL){
+                    parse(section);
+                }
+
+                struct Sound{
+                    Sound():
+                    group(-1),
+                    item(NULL),
+                    own(false){
+                    }
+
+                    ~Sound(){
+                        delete item;
+                    }
+
+                    int group;
+                    Compiler::Value * item;
+                    bool own;
+                };
+
+                Compiler::Value * time;
+                Compiler::Value * posX;
+                Compiler::Value * posY;
+                Compiler::Value * animation;
+                Compiler::Value * darken;
+                Compiler::Value * p2defmul;
+                Compiler::Value * poweradd;
+                Compiler::Value * unhittable;
+                Sound sound;
+
+                virtual ~SuperPause(){
+                    delete time;
+                    delete posX;
+                    delete posY;
+                    delete animation;
+                    delete darken;
+                    delete p2defmul;
+                    delete poweradd;
+                    delete unhittable;
+                }
+
+                void parse(Ast::Section * section){
+                    class Walker: public Ast::Walker {
+                    public:
+                        Walker(SuperPause & super):
+                        super(super){
+                        }
+
+                        SuperPause & super;
+
+                        virtual void onAttributeArray(const Ast::AttributeArray & simple){
+                            if (simple == "sound"){
+                                string first;
+                                bool own = false;
+                                int group;
+                                const Ast::Value * item;
+                                simple >> first >> item;
+                                if (first[0] == 'S'){
+                                    own = true;
+                                    group = atoi(first.substr(1).c_str());
+                                } else {
+                                    group = atoi(first.c_str());
+                                }
+                                super.sound.own = own;
+                                super.sound.group = group;
+                                super.sound.item = Compiler::compile(item);
+                            }
+                        }
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "time"){
+                                super.time = Compiler::compile(simple.getValue());
+                            } else if (simple == "posx"){
+                                super.posX = Compiler::compile(simple.getValue());
+                            } else if (simple == "posy"){
+                                super.posY = Compiler::compile(simple.getValue());
+                            } else if (simple == "anim"){
+                                super.animation = Compiler::compile(simple.getValue());
+                            } else if (simple == "darken"){
+                                super.darken = Compiler::compile(simple.getValue());
+                            } else if (simple == "p2defmul"){
+                                super.p2defmul = Compiler::compile(simple.getValue());
+                            } else if (simple == "poweradd"){
+                                super.poweradd = Compiler::compile(simple.getValue());
+                            } else if (simple == "unhittable"){
+                                super.unhittable = Compiler::compile(simple.getValue());
+                            }
+                        }
+                    };
+
+                    Walker walker(*this);
+                    section->walk(walker);
+                }
+
+                int computeX(Character & guy, const Environment & env) const {
+                    int pos = 0;
+                    if (posX != NULL){
+                        pos = (int) posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
+                    }
+                    return guy.getRX() + pos;
+                }
+
+                int computeY(Character & guy, const Environment & env) const {
+                    int pos = 0;
+                    if (posY != NULL){
+                        pos = (int) posY->evaluate(env).toNumber();
+                    }
+                    return guy.getRY() + pos;
+                }
+
+                void playSound(Character & guy, const Environment & environment) const {
+                    MugenSound * sound = NULL;
+                    if (this->sound.item != NULL){
+                        int itemNumber = (int) this->sound.item->evaluate(environment).toNumber();
+                        if (this->sound.own){
+                            sound = guy.getCommonSound(this->sound.group, itemNumber);
+                        } else {
+                            sound = guy.getSound(this->sound.group, itemNumber);
+                        }
+                    }
+
+                    if (sound != NULL){
+                        sound->play();
+                    }
+                }
+
+                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                    FullEnvironment env(stage, guy);
+                    int x = computeX(guy, env);
+                    int y = computeY(guy, env);
+                    /* 30 is the default */
+                    int time = 30;
+                    if (this->time != NULL){
+                        time = (int) this->time->evaluate(env).toNumber();
+                    }
+                    int animation = 30;
+                    if (this->animation != NULL){
+                        animation = (int) this->animation->evaluate(env).toNumber();
+                    }
+
+                    /* FIXME: handle darken, p2defmul, unhittable */
+
+                    playSound(guy, env);
+                    stage.doSuperPause(time, animation, x, y);
+                }
+            };
+
+            return new SuperPause(section, name);
             break;
         }
-#endif
-        case StateController::SuperPause :
-
         case StateController::AfterImage :
         case StateController::AfterImageTime :
         case StateController::AllPalFX :

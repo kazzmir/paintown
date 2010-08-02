@@ -163,7 +163,7 @@ public:
     virtual int getGameTime() const;
 
     /* pause for dramatic effect */
-    virtual void doSuperPause(int time, int animation, int positionX, int positionY, int soundGroup, int soundOwner);
+    virtual void doSuperPause(int time, int animation, int positionX, int positionY);
 
     // Alliance setting
     enum teams{
