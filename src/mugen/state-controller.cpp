@@ -1544,6 +1544,49 @@ public:
     }
 };
 
+class ControllerAngleAdd: public StateController {
+public:
+    ControllerAngleAdd(Ast::Section * section, const string & name):
+    StateController(name, section),
+    value(NULL){
+        parse(section);
+    }
+
+    Compiler::Value * value;
+
+    virtual ~ControllerAngleAdd(){
+        delete value;
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value *& value):
+                value(value){
+                }
+
+            Compiler::Value *& value;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    value = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(value);
+        section->walk(walker);
+        if (value == NULL){
+            throw MugenException("`value' is a required attribute of AngleAdd");
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
+        guy.addAngleEffect(value);
+    }
+};
+
 StateController * StateController::compile(Ast::Section * section, const string & name, int state, StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return new ControllerChangeAnim(section, name);
@@ -1563,7 +1606,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AfterImage : return new ControllerAfterImage(section, name);
         case StateController::AfterImageTime : return new ControllerAfterImageTime(section, name);
         case StateController::AllPalFX :
-        case StateController::AngleAdd :
+        case StateController::AngleAdd : return new ControllerAngleAdd(section, name);
         case StateController::AngleDraw :
         case StateController::AngleMul :
         case StateController::AngleSet :

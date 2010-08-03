@@ -3053,5 +3053,9 @@ void Character::setAfterImage(int time, int length, int timegap, int framegap){
 void Character::setAfterImageTime(int time){
     afterImage.lifetime = time;
 }
+        
+void Character::addAngleEffect(double angle){
+    /* TODO */
+}
 
 }
