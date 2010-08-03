@@ -195,6 +195,7 @@ src/mugen/sound.cpp
 src/mugen/sprite.cpp
 src/mugen/stage.cpp
 src/mugen/util.cpp
+src/mugen/state-controller.cpp
 src/mugen/option-arcade.cpp
 src/mugen/option-options.cpp
 src/mugen/option-versus.cpp
