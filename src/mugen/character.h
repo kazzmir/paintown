@@ -740,6 +740,28 @@ public:
 	Character(const Character &copy );
 
 	virtual ~Character();
+
+        enum Specials{
+            Intro,
+            Invisible,
+            RoundNotOver,
+            NoBarDisplay,
+            NoBG,
+            NoFG,
+            NoStandGuard,
+            NoCrouchGuard,
+            NoAirGuard,
+            NoAutoTurn,
+            NoJuggleCheck,
+            NoKOSnd,
+            NoKOSlow,
+            NoShadow,
+            GlobalNoShadow,
+            NoMusic,
+            NoWalk,
+            TimerFreeze,
+            UnGuardable
+        };
 	
 	// Convert to paintown character or whatever
 	// Do code
@@ -1225,6 +1247,8 @@ public:
         virtual void updateAngleEffect(double angle);
         virtual double getAngleEffect() const;
         virtual void drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY);
+
+        virtual void assertSpecial(Specials special);
 
 protected:
     void initialize();

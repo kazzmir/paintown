@@ -12,6 +12,7 @@ init.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
 test/mugen/compiler.cpp
+test/mugen/state-controller.cpp
 test/mugen/stage.cpp
 test/mugen/sprite.cpp
 test/mugen/sound.cpp
@@ -78,6 +79,7 @@ test/mugen/character.cpp
 test/mugen/evaluator.cpp
 test/mugen/compiler.cpp
 test/mugen/sprite.cpp
+test/mugen/state-controller.cpp
 test/mugen/font.cpp
 test/mugen/sound.cpp
 test/mugen/exception.cpp

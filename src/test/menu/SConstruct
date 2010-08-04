@@ -152,6 +152,7 @@ test/mugen/character-select.cpp
 test/mugen/character.cpp
 test/mugen/evaluator.cpp
 test/mugen/compiler.cpp
+test/mugen/state-controller.cpp
 test/mugen/parse-cache.cpp
 test/mugen/command.cpp
 test/mugen/stage.cpp

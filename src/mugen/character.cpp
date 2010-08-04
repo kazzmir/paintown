@@ -3066,5 +3066,9 @@ double Character::getAngleEffect() const {
 void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY){
     /* TODO */
 }
+        
+void Character::assertSpecial(Specials special){
+    /* TODO */
+}
 
 }

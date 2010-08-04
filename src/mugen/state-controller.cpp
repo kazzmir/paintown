@@ -1744,6 +1744,70 @@ public:
     }
 };
 
+class ControllerAssertSpecial: public StateController {
+public:
+    ControllerAssertSpecial(Ast::Section * section, const string & name):
+    StateController(name, section){
+        parse(section);
+    }
+
+    vector<Character::Specials> asserts;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(vector<Character::Specials> & asserts):
+                asserts(asserts){
+                        names["intro"] = Character::Intro;
+                        names["invisible"] = Character::Invisible;
+                        names["roundnotover"] = Character::RoundNotOver;
+                        names["nobardisplay"] = Character::NoBarDisplay;
+                        names["nobg"] = Character::NoBG;
+                        names["nofg"] = Character::NoFG;
+                        names["nostandguard"] = Character::NoStandGuard;
+                        names["nocrouchguard"] = Character::NoCrouchGuard;
+                        names["noairguard"] = Character::NoAirGuard;
+                        names["noautoturn"] = Character::NoAutoTurn;
+                        names["nojugglecheck"] = Character::NoJuggleCheck;
+                        names["nokosnd"] = Character::NoKOSnd;
+                        names["nokoslow"] = Character::NoKOSlow;
+                        names["noshadow"] = Character::NoShadow;
+                        names["globalnoshadow"] = Character::GlobalNoShadow;
+                        names["nomusic"] = Character::NoMusic;
+                        names["nowalk"] = Character::NoWalk;
+                        names["timerfreeze"] = Character::TimerFreeze;
+                        names["unguardable"] = Character::UnGuardable;
+                }
+
+            vector<Character::Specials> & asserts;
+            map<string, Character::Specials> names;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "flag" || simple == "flag2" || simple == "flag3"){
+                    string what;
+                    simple >> what;
+                    what = Util::fixCase(what);
+                    if (names.find(what) != names.end()){
+                        asserts.push_back(names[what]);
+                    } else {
+                        Global::debug(0) << "Warning: unknown special '" << what << "'" << endl;
+                    }
+                }
+            }
+        };
+
+        Walker walker(asserts);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        for (vector<Character::Specials>::const_iterator it = asserts.begin(); it != asserts.end(); it++){
+            Character::Specials special = *it;
+            guy.assertSpecial(special);
+        }
+    }
+};
+
 StateController * StateController::compile(Ast::Section * section, const string & name, int state, StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return new ControllerChangeAnim(section, name);
@@ -1768,7 +1832,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AngleSet : return new ControllerAngleSet(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
-        case StateController::AssertSpecial :
+        case StateController::AssertSpecial : return new ControllerAssertSpecial(section, name);
         case StateController::AttackDist :
         case StateController::AttackMulSet :
         case StateController::BGPalFX :
