@@ -1630,6 +1630,49 @@ public:
     }
 };
 
+class ControllerAngleSet: public StateController {
+public:
+    ControllerAngleSet(Ast::Section * section, const string & name):
+    StateController(name, section),
+    value(NULL){
+        parse(section);
+    }
+
+    Compiler::Value * value;
+
+    virtual ~ControllerAngleSet(){
+        delete value;
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value *& value):
+                value(value){
+                }
+
+            Compiler::Value *& value;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    value = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(value);
+        section->walk(walker);
+        if (value == NULL){
+            throw MugenException("`value' is a required attribute of AngleMul");
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        double value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
+        guy.updateAngleEffect(value);
+    }
+};
+
 class ControllerAngleDraw: public StateController {
 public:
     ControllerAngleDraw(Ast::Section * section, const string & name):
@@ -1719,11 +1762,11 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::SuperPause : return new ControllerSuperPause(section, name);
         case StateController::AfterImage : return new ControllerAfterImage(section, name);
         case StateController::AfterImageTime : return new ControllerAfterImageTime(section, name);
-        case StateController::AllPalFX :
         case StateController::AngleAdd : return new ControllerAngleAdd(section, name);
         case StateController::AngleDraw : return new ControllerAngleDraw(section, name);
         case StateController::AngleMul : return new ControllerAngleMul(section, name);
-        case StateController::AngleSet :
+        case StateController::AngleSet : return new ControllerAngleSet(section, name);
+        case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AssertSpecial :
         case StateController::AttackDist :
