@@ -1808,6 +1808,100 @@ public:
     }
 };
 
+static string toString(StateController::Type type){
+    switch (type){
+        case StateController::ChangeAnim : return "ChangeAnim";
+        case StateController::ChangeState : return "ChangeState";
+        case StateController::CtrlSet : return "CtrlSet";
+        case StateController::PlaySnd : return "PlaySnd";
+        case StateController::VarSet : return "VarSet";
+        case StateController::VelSet : return "VelSet";
+        case StateController::HitVelSet : return "HitVelSet";
+        case StateController::PosAdd : return "PosAdd";
+        case StateController::PosSet : return "PosSet";
+        case StateController::VelAdd : return "VelAdd";
+        case StateController::VelMul : return "VelMul";
+        case StateController::HitDef : return "HitDef";
+        case StateController::StateTypeSet : return "StateTypeSet";
+        case StateController::SuperPause : return "SuperPause";
+        case StateController::AfterImage : return "AfterImage";
+        case StateController::AfterImageTime : return "AfterImageTime";
+        case StateController::AngleAdd : return "AngleAdd";
+        case StateController::AngleDraw : return "AngleDraw";
+        case StateController::AngleMul : return "AngleMul";
+        case StateController::AngleSet : return "AngleSet";
+        case StateController::AllPalFX : return "AllPalFX";
+        case StateController::AppendToClipboard : return "AppendToClipboard";
+        case StateController::AssertSpecial : return "AssertSpecial";
+        case StateController::AttackDist : return "AttackDist";
+        case StateController::AttackMulSet : return "AttackMulSet";
+        case StateController::BGPalFX : return "BGPalFX";
+        case StateController::BindToParent : return "BindToParent";
+        case StateController::BindToRoot : return "BindToRoot";
+        case StateController::BindToTarget : return "BindToTarget";
+        case StateController::ChangeAnim2 : return "ChangeAnim2";
+        case StateController::ClearClipboard : return "ClearClipboard";
+        case StateController::DefenceMulSet : return "DefenceMulSet";
+        case StateController::DestroySelf : return "DestroySelf";
+        case StateController::DisplayToClipboard : return "DisplayToClipboard";
+        case StateController::EnvColor : return "EnvColor";
+        case StateController::EnvShake : return "EnvShake";
+        case StateController::Explod : return "Explod";
+        case StateController::ExplodBindTime : return "ExplodBindTime";
+        case StateController::ForceFeedback : return "ForceFeedback";
+        case StateController::FallEnvShake : return "FallEnvShake";
+        case StateController::GameMakeAnim : return "GameMakeAnim";
+        case StateController::Gravity : return "Gravity";
+        case StateController::Helper : return "Helper";
+        case StateController::HitAdd : return "HitAdd";
+        case StateController::HitBy : return "HitBy";
+        case StateController::HitFallDamage : return "HitFallDamage";
+        case StateController::HitFallSet : return "HitFallSet";
+        case StateController::HitFallVel : return "HitFallVel";
+        case StateController::HitOverride : return "HitOverride";
+        case StateController::LifeAdd : return "LifeAdd";
+        case StateController::LifeSet : return "LifeSet";
+        case StateController::MakeDust : return "MakeDust";
+        case StateController::ModifyExplod : return "ModifyExplod";
+        case StateController::MoveHitReset : return "MoveHitReset";
+        case StateController::NotHitBy : return "NotHitBy";
+        case StateController::Null : return "Null";
+        case StateController::Offset : return "Offset";
+        case StateController::PalFX : return "PalFX";
+        case StateController::ParentVarAdd : return "ParentVarAdd";
+        case StateController::ParentVarSet : return "ParentVarSet";
+        case StateController::Pause : return "Pause";
+        case StateController::PlayerPush : return "PlayerPush";
+        case StateController::PosFreeze : return "PosFreeze";
+        case StateController::PowerAdd : return "PowerAdd";
+        case StateController::PowerSet : return "PowerSet";
+        case StateController::Projectile : return "Projectile";
+        case StateController::RemoveExplod : return "RemoveExplod";
+        case StateController::ReversalDef : return "ReversalDef";
+        case StateController::ScreenBound : return "ScreenBound";
+        case StateController::SelfState : return "SelfState";
+        case StateController::SprPriority : return "SprPriority";
+        case StateController::SndPan : return "SndPan";
+        case StateController::StopSnd : return "StopSnd";
+        case StateController::TargetBind : return "TargetBind";
+        case StateController::TargetDrop : return "TargetDrop";
+        case StateController::TargetFacing : return "TargetFacing";
+        case StateController::TargetLifeAdd : return "TargetLifeAdd";
+        case StateController::TargetPowerAdd : return "TargetPowerAdd";
+        case StateController::TargetState : return "TargetState";
+        case StateController::TargetVelAdd : return "TargetVelAdd";
+        case StateController::TargetVelSet : return "TargetVelSet";
+        case StateController::Trans : return "Trans";
+        case StateController::Turn : return "Turn";
+        case StateController::VarAdd : return "VarAdd";
+        case StateController::VarRandom : return "VarRandom";
+        case StateController::VarRangeSet : return "VarRangeSet";
+        case StateController::Width :  return "Width";
+        case StateController::Unknown :  return "Unknown";
+    }
+    return "???";
+}
+
 StateController * StateController::compile(Ast::Section * section, const string & name, int state, StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return new ControllerChangeAnim(section, name);
@@ -1830,9 +1924,9 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AngleDraw : return new ControllerAngleDraw(section, name);
         case StateController::AngleMul : return new ControllerAngleMul(section, name);
         case StateController::AngleSet : return new ControllerAngleSet(section, name);
+        case StateController::AssertSpecial : return new ControllerAssertSpecial(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
-        case StateController::AssertSpecial : return new ControllerAssertSpecial(section, name);
         case StateController::AttackDist :
         case StateController::AttackMulSet :
         case StateController::BGPalFX :
@@ -1908,6 +2002,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
                 }
             };
 
+            Global::debug(0) << "Warning: unhandled state controller for " << toString(type) << " " << name << endl;
             return new DefaultController(section, name);
         }
         case StateController::Unknown : {
