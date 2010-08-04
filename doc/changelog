@@ -1,3 +1,9 @@
+3.3.1
+-----
+
+Paintown Engine:
+ - removed versus mode completely (it was still referenced by the menu)
+
 3.3
 ---
 
@@ -10,7 +16,7 @@ Paintown Menus:
  - Added Animations
  - Added Tabbed Menus
  - Clean ups removing most things from global space ie:
- -　Removed option info box from global space and made it part of menu.
+ - Removed option info box from global space and made it part of menu.
  - Made menu info and option info default to specific locations
  - Added static doDialog to Box
  - Use return exception in menus
@@ -30,3 +36,15 @@ Mugen Engine:
  - Characters
  - Game
  - Parser
+
+3.2
+---
+add stuff
+
+3.1
+---
+add stuff
+
+3.0
+---
+add stuff
