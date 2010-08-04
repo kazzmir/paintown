@@ -3054,8 +3054,13 @@ void Character::setAfterImageTime(int time){
     afterImage.lifetime = time;
 }
         
-void Character::addAngleEffect(double angle){
+void Character::updateAngleEffect(double angle){
     /* TODO */
+}
+
+double Character::getAngleEffect() const {
+    /* FIXME */
+    return 0;
 }
         
 void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY){

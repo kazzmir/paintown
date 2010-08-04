@@ -1222,7 +1222,8 @@ public:
         virtual void setAfterImage(int time, int length, int timegap, int framegap);
         virtual void setAfterImageTime(int time);
 
-        virtual void addAngleEffect(double angle);
+        virtual void updateAngleEffect(double angle);
+        virtual double getAngleEffect() const;
         virtual void drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY);
 
 protected:

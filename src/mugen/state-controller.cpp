@@ -1583,7 +1583,50 @@ public:
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         int value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
-        guy.addAngleEffect(value);
+        guy.updateAngleEffect(value + guy.getAngleEffect());
+    }
+};
+
+class ControllerAngleMul: public StateController {
+public:
+    ControllerAngleMul(Ast::Section * section, const string & name):
+    StateController(name, section),
+    value(NULL){
+        parse(section);
+    }
+
+    Compiler::Value * value;
+
+    virtual ~ControllerAngleMul(){
+        delete value;
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value *& value):
+                value(value){
+                }
+
+            Compiler::Value *& value;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    value = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(value);
+        section->walk(walker);
+        if (value == NULL){
+            throw MugenException("`value' is a required attribute of AngleMul");
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        double value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
+        guy.updateAngleEffect(guy.getAngleEffect() * value);
     }
 };
 
@@ -1679,7 +1722,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AllPalFX :
         case StateController::AngleAdd : return new ControllerAngleAdd(section, name);
         case StateController::AngleDraw : return new ControllerAngleDraw(section, name);
-        case StateController::AngleMul :
+        case StateController::AngleMul : return new ControllerAngleMul(section, name);
         case StateController::AngleSet :
         case StateController::AppendToClipboard :
         case StateController::AssertSpecial :
