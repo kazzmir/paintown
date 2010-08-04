@@ -1587,6 +1587,77 @@ public:
     }
 };
 
+class ControllerAngleDraw: public StateController {
+public:
+    ControllerAngleDraw(Ast::Section * section, const string & name):
+    StateController(name, section),
+    value(NULL),
+    scaleX(NULL),
+    scaleY(NULL){
+        parse(section);
+    }
+
+    Compiler::Value * value;
+    Compiler::Value * scaleX;
+    Compiler::Value * scaleY;
+
+    virtual ~ControllerAngleDraw(){
+        delete value;
+        delete scaleX;
+        delete scaleY;
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value *& value, Compiler::Value *& scaleX, Compiler::Value *& scaleY):
+                value(value),
+                scaleX(scaleX),
+                scaleY(scaleY){
+                }
+
+            Compiler::Value *& value;
+            Compiler::Value *& scaleX;
+            Compiler::Value *& scaleY;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    value = Compiler::compile(simple.getValue());
+                } else if (simple == "scale"){
+                    const Ast::Value * x = NULL;
+                    const Ast::Value * y = NULL;
+                    simple >> x >> y;
+                    scaleX = Compiler::compile(x);
+                    scaleY = Compiler::compile(y);
+                }
+            }
+        };
+
+        Walker walker(value, scaleX, scaleY);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        double value = 0;
+        bool setValue = false;
+        if (this->value != NULL){
+            value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
+            setValue = true;
+        }
+
+        double scaleX = 1;
+        double scaleY = 1;
+        if (this->scaleX != NULL){
+            scaleX = this->scaleX->evaluate(FullEnvironment(stage, guy)).toNumber();
+        }
+        if (this->scaleY != NULL){
+            scaleY = this->scaleY->evaluate(FullEnvironment(stage, guy)).toNumber();
+        }
+        
+        guy.drawAngleEffect(value, setValue, scaleX, scaleY);
+    }
+};
+
 StateController * StateController::compile(Ast::Section * section, const string & name, int state, StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return new ControllerChangeAnim(section, name);
@@ -1607,7 +1678,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AfterImageTime : return new ControllerAfterImageTime(section, name);
         case StateController::AllPalFX :
         case StateController::AngleAdd : return new ControllerAngleAdd(section, name);
-        case StateController::AngleDraw :
+        case StateController::AngleDraw : return new ControllerAngleDraw(section, name);
         case StateController::AngleMul :
         case StateController::AngleSet :
         case StateController::AppendToClipboard :

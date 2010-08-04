@@ -3057,5 +3057,9 @@ void Character::setAfterImageTime(int time){
 void Character::addAngleEffect(double angle){
     /* TODO */
 }
+        
+void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY){
+    /* TODO */
+}
 
 }
