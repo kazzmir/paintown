@@ -83,37 +83,6 @@ namespace PhysicalAttack{
 
 namespace PaintownUtil = ::Util;
 
-HitDefinition::~HitDefinition(){
-    /*
-    delete groundSlideTime;
-    delete player1SpritePriority;
-    delete player1Facing;
-    delete player2Facing;
-    delete player1State;
-    delete player2State;
-    */
-}
-
-HitDefinition::Damage::~Damage(){
-    /*
-    delete damage;
-    delete guardDamage;
-    */
-}
-
-HitDefinition::Fall::~Fall(){
-    // delete fall;
-}
-
-/*
-StateController::CompiledController::CompiledController(){
-}
-
-StateController::CompiledController::~CompiledController(){
-}
-*/
-
-
 State::State():
 type(Unchanged),
 animation(NULL),
@@ -193,7 +162,10 @@ void State::transitionTo(const MugenStage & stage, Character & who){
      * for as long as the animation is 3, just the first tick of the game that its 3.
      */
     if (!doesHitDefPersist()){
+        who.disableHit();
+        /*
         who.setHitDef(NULL);
+        */
     }
 
     if (changeVelocity){
@@ -314,8 +286,7 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
 
 Character::Character(const Filesystem::AbsolutePath & s ):
 ObjectAttack(0),
-commonSounds(NULL),
-hit(NULL){
+commonSounds(NULL){
     this->location = s;
     initialize();
 }
@@ -332,24 +303,21 @@ hit(NULL){
 
 Character::Character( const Filesystem::AbsolutePath & s, int alliance ):
 ObjectAttack(alliance),
-commonSounds(NULL),
-hit(NULL){
+commonSounds(NULL){
     this->location = s;
     initialize();
 }
 
 Character::Character( const Filesystem::AbsolutePath & s, const int x, const int y, int alliance ):
 ObjectAttack(x,y,alliance),
-commonSounds(NULL),
-hit(NULL){
+commonSounds(NULL){
     this->location = s;
     initialize();
 }
 
 Character::Character( const Character & copy ):
 ObjectAttack(copy),
-commonSounds(NULL),
-hit(NULL){
+commonSounds(NULL){
 }
 
 Character::~Character(){
@@ -2669,9 +2637,7 @@ void Character::addPower(double d){
 }
         
 void Character::didHit(Character * enemy, MugenStage & stage){
-    if (getHit() != NULL){
-        hitState.shakeTime = getHit()->pause.player1;
-    }
+    hitState.shakeTime = getHit().pause.player1;
 
     if (states[getCurrentState()]->powerChanged()){
         addPower(states[getCurrentState()]->getPower()->evaluate(FullEnvironment(stage, *this)).toNumber());
@@ -3069,6 +3035,14 @@ void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, doub
         
 void Character::assertSpecial(Specials special){
     /* TODO */
+}
+
+void Character::enableHit(){
+    hit.enable();
+}
+
+void Character::disableHit(){
+    hit.disable();
 }
 
 }

@@ -758,7 +758,7 @@ void MugenStage::physics(Object * player){
         }
     }
 
-    if (mugen->getMoveType() == Mugen::Move::Attack && mugen->getHit() != NULL){
+    if (mugen->getMoveType() == Mugen::Move::Attack && mugen->getHit().isEnabled()){
 
         for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
@@ -775,17 +775,17 @@ void MugenStage::physics(Object * player){
                 bool blockingCollision = doBlockingDetection(mugen, enemy);
 
                 /* guarding */
-                if ((collision || blockingCollision) && enemy->isBlocking(*mugen->getHit())){
+                if ((collision || blockingCollision) && enemy->isBlocking(mugen->getHit())){
                     if (collision){
                         /* add guard spark and play guard sound */
-                        int spark = mugen->getHit()->guardSpark;
+                        int spark = mugen->getHit().guardSpark;
                         if (spark == -1){
                             spark = mugen->getDefaultGuardSpark();
                         }
-                        addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
-                        playSound(mugen->getHit()->guardHitSound.group, mugen->getHit()->guardHitSound.item, mugen->getHit()->guardHitSound.own);
+                        addSpark(mugen->getHit().sparkPosition.x + enemy->getRX(), mugen->getHit().sparkPosition.y + mugen->getRY(), spark);
+                        playSound(mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
                     }
-                    enemy->guarded(mugen, *mugen->getHit());
+                    enemy->guarded(mugen, mugen->getHit());
                     /*
                        vector<string> empty;
                        enemy->changeState(*this, Mugen::StartGuardStand, empty);
@@ -794,18 +794,18 @@ void MugenStage::physics(Object * player){
                     /* do hitdef stuff */
                     // Global::debug(0) << "Collision!" << endl;
                     /* the hit state */
-                    int spark = mugen->getHit()->spark;
+                    int spark = mugen->getHit().spark;
                     if (spark == -1){
                         spark = mugen->getDefaultSpark();
                     }
-                    addSpark(mugen->getHit()->sparkPosition.x + enemy->getRX(), mugen->getHit()->sparkPosition.y + mugen->getRY(), spark);
-                    playSound(mugen->getHit()->hitSound.group, mugen->getHit()->hitSound.item, mugen->getHit()->hitSound.own);
+                    addSpark(mugen->getHit().sparkPosition.x + enemy->getRX(), mugen->getHit().sparkPosition.y + mugen->getRY(), spark);
+                    playSound(mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
 
                     /* order matters here, the guy attacking needs to know that
                      * he hit enemy so the guy can update his combo stuff.
                      */
                     mugen->didHit(enemy, *this);
-                    enemy->wasHit(*this, mugen, *mugen->getHit());
+                    enemy->wasHit(*this, mugen, mugen->getHit());
                     // enemy->changeState(5000);
                 }
             }
