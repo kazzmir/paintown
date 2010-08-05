@@ -253,20 +253,14 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
         xVelocity = hit.airVelocity.x;
         yVelocity = hit.airVelocity.y;
 
-        if (hit.fall.fall != NULL){
-            fall.fall |= hit.fall.fall->evaluate(FullEnvironment(stage, guy)).toBool();
-        }
+        fall.fall |= hit.fall.fall;
         fall.yVelocity = hit.fall.yVelocity;
         int groundSlideTime = 0;
-        if (hit.groundSlideTime != NULL){
-            groundSlideTime = (int) hit.groundSlideTime->evaluate(FullEnvironment(stage, guy)).toNumber();
-        }
+        groundSlideTime = (int) hit.groundSlideTime;
         returnControlTime = hit.airGuardControlTime == 0 ? groundSlideTime : hit.airGuardControlTime;
     } else {
         int groundSlideTime = 0;
-        if (hit.groundSlideTime != NULL){
-            groundSlideTime = (int) hit.groundSlideTime->evaluate(FullEnvironment(stage, guy)).toNumber();
-        }
+        groundSlideTime = (int) hit.groundSlideTime;
         animationType = hit.animationType;
         returnControlTime = hit.guardControlTime == 0 ? groundSlideTime : hit.guardControlTime;
         hitTime = hit.groundHitTime;
@@ -274,10 +268,7 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
         xVelocity = hit.groundVelocity.x;
         yVelocity = hit.groundVelocity.y;
         fall.fall = false;
-        if (hit.fall.fall != NULL){
-            fall.fall = hit.fall.fall->evaluate(FullEnvironment(stage, guy)).toBool();
-        }
-
+        fall.fall = hit.fall.fall;
         fall.yVelocity = hit.fall.yVelocity;
     }
 
@@ -2666,7 +2657,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     lastTicket = enemy->getTicket();
 
     if (hisHit.damage.damage != 0){
-        takeDamage(stage, enemy, (int) hisHit.damage.damage->evaluate(FullEnvironment(stage, *this)).toNumber());
+        takeDamage(stage, enemy, (int) hisHit.damage.damage);
     }
 
     /*

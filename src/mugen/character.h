@@ -211,8 +211,8 @@ struct HitDefinition{
         Damage(){
         }
 
-        PaintownUtil::ClassPointer<Compiler::Value> damage;
-        PaintownUtil::ClassPointer<Compiler::Value> guardDamage;
+        int damage;
+        int guardDamage;
     } damage;
 
     struct PauseTime{
@@ -254,7 +254,7 @@ struct HitDefinition{
 
     AttackType::Ground groundType;
     AttackType::Ground airType;
-    PaintownUtil::ClassPointer<Compiler::Value> groundSlideTime;
+    int groundSlideTime;
     int guardSlideTime;
     int groundHitTime;
     int guardGroundHitTime;
@@ -285,7 +285,7 @@ struct HitDefinition{
         double x, y;
     } airGuardVelocity;
 
-    PaintownUtil::ClassPointer<Compiler::Value> groundCornerPushoff;
+    double groundCornerPushoff;
     double airCornerPushoff;
     double downCornerPushoff;
     double guardCornerPushoff;
@@ -299,15 +299,14 @@ struct HitDefinition{
 
     Distance minimum, maximum;
     Distance snap;
-    PaintownUtil::ClassPointer<Compiler::Value> player1SpritePriority;
-    
+    int player1SpritePriority;
     int player2SpritePriority;
-    PaintownUtil::ClassPointer<Compiler::Value> player1Facing;
-    PaintownUtil::ClassPointer<Compiler::Value> player1GetPlayer2Facing;
-    PaintownUtil::ClassPointer<Compiler::Value> player2Facing;
-    PaintownUtil::ClassPointer<Compiler::Value> player1State;
-    PaintownUtil::ClassPointer<Compiler::Value> player2State;
-    PaintownUtil::ClassPointer<Compiler::Value> player2GetPlayer1State;
+    int player1Facing;
+    int player1GetPlayer2Facing;
+    int player2Facing;
+    int player1State;
+    int player2State;
+    int player2GetPlayer1State;
     int forceStand;
 
     struct Fall{
@@ -315,12 +314,12 @@ struct HitDefinition{
             yVelocity(0){
             }
 
-        PaintownUtil::ClassPointer<Compiler::Value> fall;
+        int fall;
         double xVelocity;
         double yVelocity;
-        PaintownUtil::ClassPointer<Compiler::Value> recover;
+        int recover;
         int recoverTime;
-        PaintownUtil::ClassPointer<Compiler::Value> damage;
+        int damage;
         int airFall;
         int forceNoFall;
     } fall;
