@@ -784,6 +784,7 @@ public:
         }
 
     struct Data{
+        typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
         /*
          * Required parameters:
          * attr = hit_attribute (string)
@@ -795,14 +796,13 @@ public:
          *
          * arg2 is a 2-character string. The first character is either "N" for "normal", "S" for "special", or "H" for "hyper" (or "super", as it is commonly known). The second character must be either "A" for "attack" (a normal hit attack), "T" for "throw", or "P" for projectile.
          */
-
         struct Attribute{
             /* StateType */
-            std::string state;
+            string state;
             /* AttackType */
-            std::string attackType;
+            string attackType;
             /* PhysicalAttack */
-            std::string physics;
+            string physics;
         } attribute;
 
         /* Optional parameters:
@@ -816,7 +816,7 @@ public:
          * If omitted, this defaults to "MAF".
          */
         /* HitFlag */
-        std::string hitFlag;
+        string hitFlag;
 
         /* guardflag = hit_flags (string)
          * This determines how P2 may guard the attack. hit_flags is a string containing a combination of the following characters:
@@ -825,7 +825,7 @@ public:
          * affectteam = team_type (string)
          * team_type specifies which team's players can be hit by this HitDef. Use B for both teams (all players), E for enemy team (opponents), or F for friendly team (your own team). The default is E.
          */
-        std::string guardFlag;
+        string guardFlag;
 
         /* animtype = anim_type (string)
          * This refers to the type of animation that P2 will go into when hit by the attack. Choose from "light", "medium", "hard", "back", "up", or "diagup". The first three are self-explanatory. "Back" is the animation where P2 is knocked off her feet. "Up" should be used when the character is knocked straight up in the air (for instance, by an uppercut), and "DiagUp" should be used when the character is knocked up and backwards in the air, eventually landing on his head. The default is "Light".
@@ -857,8 +857,8 @@ public:
          * In the case of a no-hit tie, the respective HitDefs stay enabled. "Miss" or "Dodge" are typically used for throws, where P1 and P2 should not be able to simultaneously hit each other. The default for hit_type is "Hit".
          */
         struct Priority{
-            int hit;
-            std::string type;
+            Value hit;
+            string type;
         } priority;
 
         /* damage = hit_damage, guard_damage (int, int)
@@ -868,26 +868,24 @@ public:
             Damage(){
             }
 
-            PaintownUtil::ClassPointer<Compiler::Value> damage;
-            PaintownUtil::ClassPointer<Compiler::Value> guardDamage;
+            Value damage;
+            Value guardDamage;
         } damage;
 
         /* pausetime = p1_pausetime, p2_shaketime (int, int)
          * This is the time that each player will pause on the hit. p1_pausetime is the time to freeze P1, measured in game-ticks. p2_pausetime is the time to make P2 shake before recoiling from the hit. Defaults to 0,0 if omitted.
          */
         struct PauseTime{
-            PauseTime():
-                player1(0), player2(0){}
-            int player1;
-            int player2;
+            Value player1;
+            Value player2;
         } pause;
 
         /* guard.pausetime = p1_pausetime, p2_shaketime (int, int)
          * Similar to the "pausetime" parameter, these are the times to pause each player if the hit was guarded. Defaults to the same values as the "pausetime" parameter if omitted.
          */
         struct GuardPauseTime{
-            int player1;
-            int player2;
+            Value player1;
+            Value player2;
         } guardPause;
 
         /* sparkno = action_no (int)
@@ -904,13 +902,19 @@ public:
          * This is where to make the hit/guard spark. spark_x is a coordinate relative to the front of P2. A negative value makes the spark deeper inside P2. "Front" refers to the x- position at P2's axis offset towards P1 by the corresponding width value in the [Size] group in P2's player variables. spark_y is relative to P1. A negative value makes a spark higher up. You can use a tool like AirView to determine this value by positioning the cursor at the "attack spot" and reading off the value of the y-position. Defaults to 0,0 if omitted.
          */
         struct SparkPosition{
-            int x, y;
+            Value x, y;
         } sparkPosition;
 
         /* hitsound = snd_grp, snd_item (int, int)
          * This is the sound to play on hit (from common.snd). The included fight.snd lets you choose from 5,0 (light hit sound) through to 5,4 (painful whack). To play a sound from the player's own SND file, precede the first number with an "S". For example, "hitsound = S1,0". Defaults to the value set in the player variables if omitted.
          */
         struct HitSound{
+            HitSound():
+                own(false),
+                group(-1),
+                item(-1){
+                }
+
             bool own;
             int group;
             int item;
@@ -922,8 +926,8 @@ public:
         struct GuardHitSound{
             GuardHitSound():
                 own(false),
-                group(0),
-                item(0){
+                group(-1),
+                item(-1){
                 }
 
             bool own;
@@ -945,111 +949,103 @@ public:
         /* ground.slidetime = slide_time (int)
          * This is the time in game-ticks that P2 will slide back for after being hit (this time does not include the pausetime for P2). Applicable only to hits that keep P2 on the ground. Defaults to 0 if omitted.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> groundSlideTime;
+        Value groundSlideTime;
 
         /* guard.slidetime = slide_time (int)
          * Same as "ground.slidetime", but this is the value if P2 guards the hit. Defaults to same value as "guard.hittime".
          */
-        int guardSlideTime;
+        Value guardSlideTime;
 
         /* ground.hittime = hit_time (int)
          * Time that P2 stays in the hit state after being hit. Adjust this value carefully, to make combos possible. Applicable only to hits that keep P2 on the ground. Defaults to 0 if omitted.
          */
-        int groundHitTime;
+        Value groundHitTime;
 
         /* guard.hittime = hit_time (int)
          * Same as "ground.hittime", but this is the value if P2 guards the hit. Defaults to same value as "ground.hittime".
          */
-        int guardGroundHitTime;
+        Value guardGroundHitTime;
 
         /* air.hittime = hit_time (int)
          * Time that p2 stays in the hit state after being hit in or into the air, before being able to guard again. This parameter has no effect if the "fall" parameter is set to 1. Defaults to 20 if omitted.
          */
-        int airHitTime;
+        Value airHitTime;
 
         /* guard.ctrltime = ctrl_time (int)
          * This is the time before p2 regains control in the ground guard state. Defaults to the same value as "guard.slidetime" if omitted.
          */
-        int guardControlTime;
+        Value guardControlTime;
 
         /* guard.dist = x_dist (int)
          * This is the x-distance from P1 in which P2 will go into a guard state if P2 is holding the direction away from P1. Defaults to the value in the player variables if omitted. You normally do not need to use this parameter.
          */
-        int guardDistance;
+        Value guardDistance;
 
         /* yaccel = accel (float)
          * Specifies the y acceleration to impart to P2 if the hit connects. Defaults to .35 in 240p, .7 in 480p, 1.4 in 720p.
          */
-        double yAcceleration;
+        Value yAcceleration;
 
         /* ground.velocity = x_velocity, y_velocity (float, float)
          * Initial velocity to give P2 after being hit, if P2 is on the ground. If y_velocity is not zero, P2 will be knocked into the air. Both values default to 0 if omitted. You can leave out the y_velocity if you want P2 to remain on the ground.
          */
         struct GroundVelocity{
-            GroundVelocity():
-                x(0), y(0){}
-            double x, y;
+            Value x, y;
         } groundVelocity;
 
         /* guard.velocity = x_velocity (float)
          * Velocity to give P2 if P2 guards the hit on the ground. Defaults to the x_velocity value of the "ground.velocity" parameter if omitted.
          */
-        double guardVelocity;
+        Value guardVelocity;
 
         /* air.velocity = x_velocity, y_velocity (float, float)
          * Initial velocity to give P2 if P2 is hit in the air. Defaults to 0,0 if omitted.
          */
         struct AirVelocity{
-            AirVelocity():
-                x(0), y(0){}
-
-            double x, y;
+            Value x, y;
         } airVelocity;
 
         /* airguard.velocity = x_velocity, y_velocity (float float)
          * Velocity to give P2 if P2 guards the hit in the air. Defaults to x_velocity * 1.5, y_velocity / 2, where x_velocity and y_velocity are values of the "air.velocity" parameter.
          */
         struct AirGuardVelocity{
-            AirGuardVelocity():
-                x(0), y(0){}
-
-            double x, y;
+            Value x, y;
         } airGuardVelocity;
 
         /* ground.cornerpush.veloff = x_velocity (float)
          * Determines the additional velocity (velocity offset) to impart to the player if he lands a ground hit in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. If omitted, default value depends on the attr parameter. If arg1 of attr is "A", default value is 0. Otherwise, defaults to 1.3 * guard.velocity.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> groundCornerPushoff;
+        Value groundCornerPushoff;
 
         /* air.cornerpush.veloff = x_velocity (float)
          * Determines the additional velocity (velocity offset) to impart to the player if he lands a hit to an aerial opponent in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to ground.cornerpush.veloff if omitted.
          */
-        double airCornerPushoff;
+        Value airCornerPushoff;
 
         /* down.cornerpush.veloff = x_velocity (float)
          * Determines the additional velocity (velocity offset) to impart to the player if he lands a hit on a downed opponent in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to ground.cornerpush.veloff if omitted.
          */
-        double downCornerPushoff;
+        Value downCornerPushoff;
 
         /* guard.cornerpush.veloff = x_velocity (float)
          * Determines the additional velocity (velocity offset) to impart to the player if his hit is guarded in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to ground.cornerpush.veloff if omitted.
          */
-        double guardCornerPushoff;
+        Value guardCornerPushoff;
 
         /* airguard.cornerpush.veloff = x_velocity (float)
          * Determines the additional velocity (velocity offset) to impart to the player if his hit is guarded in the corner. Setting this to a higher value will cause the player to be "pushed back" farther out of the corner. Defaults to guard.cornerpush.veloff if omitted.
          */
-        double airGuardCornerPushoff;
+        Value airGuardCornerPushoff;
 
         /* airguard.ctrltime = ctrl_time (int)
          * This is the time before p2 regains control in the air guard state. Defaults to the same value as "guard.ctrltime" if omitted.
          */
-        int airGuardControlTime;
+        Value airGuardControlTime;
 
         /* air.juggle = juggle_points (int)
          * The amount of additional juggle points the hit requires. Not to be confused with the "juggle" parameter in the StateDef. You typically do not need this parameter, except for HitDefs of projectiles. Defaults to 0 if omitted.
          */
-        int airJuggle;
+        Value airJuggle;
 
         /* mindist = x_pos, y_pos (int, int)
          * See below.
@@ -1057,7 +1053,7 @@ public:
          * These let you control the minimum and maximum distance of P2 relative to P1, after P2 has been hit. These parameters are not commonly used. Defaults to no change in P2's position if omitted.
          */
         struct Distance{
-            int x, y;
+            Value x, y;
         };
 
         Distance minimum, maximum;
@@ -1070,92 +1066,88 @@ public:
         /* p1sprpriority = drawing_priority (int)
          * This is the drawing priority of P1's sprite if the move hits or is guarded by P2. Together with the p2sprpriority parameter, it controls whether or not P1 is drawn in front of or behind P2. The default value is 1.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> player1SpritePriority;
+        Value player1SpritePriority;
 
         /* p2sprpriority = drawing_priority (int)
          * This is the drawing priority of P2's sprite if the move hits or is guarded by P2. The default value is 0.
          */
-        int player2SpritePriority;
+        Value player2SpritePriority;
 
         /* p1facing = facing (int)
          * Set to -1 to make P1 turn around if the hit is successful. The default value is no change in where P1 is facing.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> player1Facing;
+        Value player1Facing;
 
         /* p1getp2facing = facing (int)
          * Set to 1 to have P1 face in the same direction as P2 is facing after the hit connects, and -1 to have P1 face the opposite direction from P2. Defaults to 0 (no change). If nonzero, this parameter takes precedence over p1facing.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> player1GetPlayer2Facing;
+        Value player1GetPlayer2Facing;
 
         /* p2facing = facing (int)
          * Set to 1 to make P2 face the same direction as P1 if the hit is successful, -1 to make P2 face away. The default value is 0, no change in where P2 is facing.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> player2Facing;
+        Value player2Facing;
 
         /* p1stateno = state_no (int)
          * This is the number of the state to set P1 to if the hit is successful. The state must be an attack state (movetype = A) for at least 1 tick. Used mainly for throws. Defaults to -1, no change.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> player1State;
+        Value player1State;
 
         /* p2stateno = state_no (int)
          * This is the number of the state to set P2 to if the hit is successful. P2 will get P1's state and animation data. P2 will retain P1's states and animation data until P2 is hit, or a SelfState controller is used to return P2 to his own states. The state must be a get-hit state (movetype = H) for at least 1 tick. Used mainly for throws; can also be used for custom hit reactions. Defaults to -1, no change.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> player2State;
+        Value player2State;
 
         /* p2getp1state = bvalue (boolean)
          * Set to 0 to prevent P2 from getting P1's state and animation data, in case you do not want that default behaviour of the "p2stateno" parameter. Defaults to 1 if the "p2stateno" parameter is used. Ignored otherwise.
          */
-        PaintownUtil::ClassPointer<Compiler::Value> player2GetPlayer1State;
+        Value player2GetPlayer1State;
 
         /* forcestand = bvalue (boolean)
          * Set to 1 to force P2 to a standing state-type if the hit is successful, and P2 is in a crouching state. Has no effect if P2 is in an air state. Normally defaults to 0, but if the y_velocity of the "ground.velocity" parameter is non-zero, it defaults to 1.
          */
-        int forceStand;
+        Value forceStand;
 
         struct Fall{
-            Fall():
-                yVelocity(0){
-                }
-
             /* fall = bvalue (boolean)
              * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air). Use if you want a move to "knock down" P2. Defaults to 0.
              */
-            PaintownUtil::ClassPointer<Compiler::Value> fall;
+            Value fall;
 
             /* fall.xvelocity = x_velocity (float)
              * This is the x-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to no change if omitted.
              */
-            double xVelocity;
+            Value xVelocity;
 
             /* fall.yvelocity = y_velocity (float)
              * This is the y-velocity that P2 gets when bouncing off the ground in the "fall" state. Defaults to -4.5 in 240p, -9 in 480p, -18 in 720p.
              */
-            double yVelocity;
+            Value yVelocity;
 
             /* fall.recover = bvalue (boolean)
              * Set to 0 if you do not want P2 to be able to recover from the "fall" state. Defaults to 1 if omitted (can recover).
              */
-            PaintownUtil::ClassPointer<Compiler::Value> recover;
+            Value recover;
 
             /* fall.recovertime = recover_time (int)
              * This is the time that must pass before P2 is able to recover from the "fall" state by inputting his recovery command. Does not include the time that P2 is paused for while shaking from the hit. Defaults to 4 if omitted.
              */
-            int recoverTime;
+            Value recoverTime;
 
             /* fall.damage = damage_amt (int)
              * Indicates the amount of damage to deal when P2 hits the ground out of a falling state. Defaults to 0 if omitted.
              */
-            PaintownUtil::ClassPointer<Compiler::Value> damage;
+            Value damage;
 
             /* air.fall = bvalue (boolean)
              * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air) if hit while P2 is in the air. Defaults to the same value as fall.
              */
-            int airFall;
+            Value airFall;
 
             /* forcenofall = bvalue (boolean)
              * Set to 1 to force P2 out of a "fall" state, if he is in one. This parameter has no effect on P2 if he is not in a "fall" state. This parameter is ignored if the "fall" parameter is set to 1. Defaults to 0 if omitted.
              */
-            int forceNoFall;
+            Value forceNoFall;
         } fall;
 
         /* down.velocity = x_velocity, y_velocity (float, float)
@@ -1294,9 +1286,9 @@ public:
                     simple >> anim;
                     hit.animationTypeFall = parseAnimationType(anim);
                 } else if (simple == "priority"){
-                    int hit;
+                    const Ast::Value * hit;
                     simple >> hit;
-                    this->hit.priority.hit = hit;
+                    this->hit.priority.hit = Compiler::compile(hit);
                     try{
                         string type;
                         simple >> type;
@@ -1332,14 +1324,21 @@ public:
                     }
                 } else if (simple == "pausetime"){
                     try{
-                        simple >> hit.pause.player1;
-                        simple >> hit.pause.player2;
+                        const Ast::Value * player1;
+                        const Ast::Value * player2;
+                        simple >> player1;
+                        simple >> player2;
+                        hit.pause.player1 = Compiler::compile(player1);
+                        hit.pause.player2 = Compiler::compile(player2);
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "guard.pausetime"){
                     try{
-                        simple >> hit.guardPause.player1;
-                        simple >> hit.guardPause.player2;
+                        const Ast::Value * player1;
+                        const Ast::Value * player2;
+                        simple >> player1 >> player2;
+                        hit.guardPause.player1 = Compiler::compile(player1);
+                        hit.guardPause.player2 = Compiler::compile(player2);
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "sparkno"){
@@ -1358,8 +1357,11 @@ public:
                     }
                 } else if (simple == "sparkxy"){
                     try{
-                        simple >> hit.sparkPosition.x;
-                        simple >> hit.sparkPosition.y;
+                        const Ast::Value * x;
+                        const Ast::Value * y;
+                        simple >> x >> y;
+                        hit.sparkPosition.x = Compiler::compile(x);
+                        hit.sparkPosition.y = Compiler::compile(y);
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "hitsound"){
@@ -1421,61 +1423,70 @@ public:
                 } else if (simple == "ground.slidetime"){
                     hit.groundSlideTime = Compiler::compile(simple.getValue());
                 } else if (simple == "guard.slidetime"){
-                    simple >> hit.guardSlideTime;
+                    hit.guardSlideTime = Compiler::compile(simple.getValue());
                 } else if (simple == "ground.hittime"){
-                    simple >> hit.groundHitTime;
+                    hit.groundHitTime = Compiler::compile(simple.getValue());
                 } else if (simple == "guard.hittime"){
-                    simple >> hit.guardGroundHitTime;
+                    hit.guardGroundHitTime = Compiler::compile(simple.getValue());
                 } else if (simple == "air.hittime"){
-                    simple >> hit.airHitTime;
+                    hit.airHitTime = Compiler::compile(simple.getValue());
                 } else if (simple == "guard.ctrltime"){
-                    simple >> hit.guardControlTime;
+                    hit.guardControlTime = Compiler::compile(simple.getValue());
                 } else if (simple == "guard.dist"){
-                    simple >> hit.guardDistance;
+                    hit.guardDistance = Compiler::compile(simple.getValue());
                 } else if (simple == "yaccel"){
-                    simple >> hit.yAcceleration;
+                    hit.yAcceleration = Compiler::compile(simple.getValue());
                 } else if (simple == "ground.velocity"){
                     if (simple.getValue()->hasMultiple()){
                         try{
-                            simple >> hit.groundVelocity.x;
-                            simple >> hit.groundVelocity.y;
+                            const Ast::Value * x;
+                            const Ast::Value * y;
+                            simple >> x >> y;
+                            hit.groundVelocity.x = Compiler::compile(x);
+                            hit.groundVelocity.y = Compiler::compile(y);
                         } catch (const Ast::Exception & e){
                         }
                     } else {
-                        simple >> hit.groundVelocity.x;
+                        hit.groundVelocity.x = Compiler::compile(simple.getValue());
                     }
                 } else if (simple == "guard.velocity"){
-                    simple >> hit.guardVelocity;
+                    hit.guardVelocity = Compiler::compile(simple.getValue());
                 } else if (simple == "air.velocity"){
                     if (simple.getValue()->hasMultiple()){
                         try{
-                            simple >> hit.airVelocity.x;
-                            simple >> hit.airVelocity.y;
+                            const Ast::Value * x;
+                            const Ast::Value * y;
+                            simple >> x >> y;
+                            hit.airVelocity.x = Compiler::compile(x);
+                            hit.airVelocity.y = Compiler::compile(y);
                         } catch (const Ast::Exception & e){
                         }
                     } else {
-                        simple >> hit.airVelocity.x;
+                        hit.airVelocity.x = Compiler::compile(simple.getValue());
                     }
                 } else if (simple == "airguard.velocity"){
                     try{
-                        simple >> hit.airGuardVelocity.x;
-                        simple >> hit.airGuardVelocity.y;
+                        const Ast::Value * x;
+                        const Ast::Value * y;
+                        simple >> x >> y;
+                        hit.airGuardVelocity.x = Compiler::compile(x);
+                        hit.airGuardVelocity.y = Compiler::compile(y);
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "ground.cornerpush.veloff"){
                     hit.groundCornerPushoff = Compiler::compile(simple.getValue());
                 } else if (simple == "air.cornerpush.veloff"){
-                    simple >> hit.airCornerPushoff;
+                    hit.airCornerPushoff = Compiler::compile(simple.getValue());
                 } else if (simple == "down.cornerpush.veloff"){
-                    simple >> hit.downCornerPushoff;
+                    hit.downCornerPushoff = Compiler::compile(simple.getValue());
                 } else if (simple == "guard.cornerpush.veloff"){
-                    simple >> hit.guardCornerPushoff;
+                    hit.guardCornerPushoff = Compiler::compile(simple.getValue());
                 } else if (simple == "airguard.cornerpush.veloff"){
-                    simple >> hit.airGuardCornerPushoff;
+                    hit.airGuardCornerPushoff = Compiler::compile(simple.getValue());
                 } else if (simple == "airguard.ctrltime"){
-                    simple >> hit.airGuardControlTime;
+                    hit.airGuardControlTime = Compiler::compile(simple.getValue());
                 } else if (simple == "air.juggle"){
-                    simple >> hit.airJuggle;
+                    hit.airJuggle = Compiler::compile(simple.getValue());
                 } else if (simple == "guardsound"){
                     try{
                         /* FIXME: parse a string and then determine if its S# or just # */
@@ -1484,18 +1495,27 @@ public:
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "mindist"){
-                    simple >> hit.minimum.x;
-                    simple >> hit.minimum.y;
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    hit.minimum.x = Compiler::compile(x);
+                    hit.minimum.y = Compiler::compile(y);
                 } else if (simple == "maxdist"){
-                    simple >> hit.maximum.x;
-                    simple >> hit.maximum.y;
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    hit.maximum.x = Compiler::compile(x);
+                    hit.maximum.y = Compiler::compile(y);
                 } else if (simple == "snap"){
-                    simple >> hit.snap.x;
-                    simple >> hit.snap.y;
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    hit.snap.x = Compiler::compile(x);
+                    hit.snap.y = Compiler::compile(y);
                 } else if (simple == "p1sprpriority"){
                     hit.player1SpritePriority = Compiler::compile(simple.getValue());
                 } else if (simple == "p2sprpriority"){
-                    simple >> hit.player2SpritePriority;
+                    hit.player2SpritePriority = Compiler::compile(simple.getValue());
                 } else if (simple == "p1facing"){
                     hit.player1Facing = Compiler::compile(simple.getValue());
                 } else if (simple == "p2facing"){
@@ -1511,23 +1531,23 @@ public:
                 } else if (simple == "p2getp1state"){
                     hit.player2GetPlayer1State = Compiler::compile(simple.getValue());
                 } else if (simple == "forcestand"){
-                    simple >> hit.forceStand;
+                    hit.forceStand = Compiler::compile(simple.getValue());
                 } else if (simple == "fall"){
                     hit.fall.fall = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.xvelocity"){
-                    simple >> hit.fall.xVelocity;
+                    hit.fall.xVelocity = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.yvelocity"){
-                    simple >> hit.fall.yVelocity;
+                    hit.fall.yVelocity = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.recover"){
                     hit.fall.recover = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.recovertime"){
-                    simple >> hit.fall.recoverTime;
+                    hit.fall.recoverTime = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.damage"){
                     hit.fall.damage = Compiler::compile(simple.getValue());
                 } else if (simple == "air.fall"){
-                    simple >> hit.fall.airFall;
+                    hit.fall.airFall = Compiler::compile(simple.getValue());
                 } else if (simple == "forcenofall"){
-                    simple >> hit.fall.forceNoFall;
+                    hit.fall.forceNoFall = Compiler::compile(simple.getValue());
                 } else {
                     // Global::debug(0) << "Unhandled state controller '" << getName() << "' attribute: " << simple.toString() << endl;
                 }
