@@ -784,6 +784,18 @@ public:
         }
 
     struct Data{
+        Data():
+            hitFlag("MAF"),
+            guardFlag(),
+            animationType(AttackType::Light),
+            animationTypeAir(AttackType::NoAnimation),
+            animationTypeFall(AttackType::NoAnimation),
+            spark(-1),
+            guardSpark(-1),
+            groundType(AttackType::High),
+            airType(AttackType::None){
+            }
+
         typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
         /*
          * Required parameters:
@@ -857,6 +869,9 @@ public:
          * In the case of a no-hit tie, the respective HitDefs stay enabled. "Miss" or "Dodge" are typically used for throws, where P1 and P2 should not be able to simultaneously hit each other. The default for hit_type is "Hit".
          */
         struct Priority{
+            Priority():
+                type("Hit"){
+                }
             Value hit;
             string type;
         } priority;
