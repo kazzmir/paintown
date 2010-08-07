@@ -1584,7 +1584,7 @@ public:
         his.pause.player2 = evaluateNumber(hit.pause.player2, 0);
         his.groundType = hit.groundType;
         his.airType = hit.airType;
-        his.yAcceleration = evaluateNumber(hit.yAcceleration, 0);
+        his.yAcceleration = evaluateNumber(hit.yAcceleration, 0.35);
         his.animationTypeFall = hit.animationTypeFall;
         his.airHitTime = evaluateNumber(hit.airHitTime, 20);
         his.airVelocity.x = evaluateNumber(hit.airVelocity.x, 0);
@@ -1613,22 +1613,6 @@ public:
 #undef evaluateNumber
 #undef evaluateBool
 
-#if 0
-        int groundSlideTime = 0;
-        groundSlideTime = (int) hit.groundSlideTime;
-        animationType = hit.animationType;
-        returnControlTime = hit.guardControlTime == 0 ? groundSlideTime : hit.guardControlTime;
-        hitTime = hit.groundHitTime;
-        slideTime = groundSlideTime;
-        xVelocity = hit.groundVelocity.x;
-        yVelocity = hit.groundVelocity.y;
-        fall.fall = false;
-        fall.fall = hit.fall.fall;
-        fall.yVelocity = hit.fall.yVelocity;
-    }
-
-    // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
-#endif
     }
 };
 
