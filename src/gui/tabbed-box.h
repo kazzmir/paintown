@@ -73,6 +73,15 @@ class TabbedBox : public Widget{
         /*! Is in tab */
         bool inTab;
         
+        /*! Max Width of tabs */
+        int tabWidthMax;
+        
+        /*! Tab Colors */
+        ColorInfo tabColors;
+        
+        /*! Selected Tab Colors */
+        ColorInfo selectedTabColors;
+        
         /*! Render tab */
         void renderTabs(const Bitmap &);
 };

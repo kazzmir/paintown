@@ -24,7 +24,8 @@ TabbedBox::TabbedBox():
 current(0),
 fontWidth(24),
 fontHeight(24),
-inTab(false){
+inTab(false),
+tabWidthMax(0){
 }
 
 TabbedBox::TabbedBox( const TabbedBox & b ){
@@ -96,10 +97,17 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
     
         if (tab->context->location.getRadius() > 0){
         } else {
-            bmp.rectangleFill( x, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
-            bmp.vLine(0, x, tabHeight, colors.border);
-            bmp.hLine(x, 0, width, colors.border); 
-            bmp.vLine(0, x + width, tabHeight, colors.border);
+            if (tab->active){
+                bmp.rectangleFill( x, 0, location.getWidth()-1, location.getHeight()-1, selectedTabColors.body );
+                bmp.vLine(0, x, tabHeight, selectedTabColors.border);
+                bmp.hLine(x, 0, width, selectedTabColors.border); 
+                bmp.vLine(0, x + width, tabHeight, selectedTabColors.border);
+            } else {
+                bmp.rectangleFill( x, 0, location.getWidth()-1, location.getHeight()-2, tabColors.body );
+                bmp.vLine(0, x, tabHeight, tabColors.border);
+                bmp.hLine(x, 0, width, tabColors.border); 
+                bmp.vLine(0, x + width, tabHeight, tabColors.border);
+            }
         }
         
         x+=width;
