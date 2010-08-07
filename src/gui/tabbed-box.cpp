@@ -51,6 +51,7 @@ TabbedBox &TabbedBox::operator=( const TabbedBox &copy){
 
 // Logic
 void TabbedBox::act(){
+    tabWidthMax = location.getWidth()/tabs.size();
 }
 
 // Render
@@ -65,6 +66,9 @@ void TabbedBox::render(const Bitmap & work){
         workArea->rectangleFill( 0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.body );
         workArea->rectangle( 0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
+    
+    renderTabs(*workArea);
+    
     Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
     
     workArea->drawTrans(location.getX(), location.getY(), work);
@@ -78,7 +82,78 @@ void TabbedBox::addTab(const std::string & name, const std::vector<ContextItem *
     tab->context->setList(list);
 }
 
+void TabbedBox::up(){
+    if (tabs.size() == 0){
+        return;
+    }
+    if (!inTab){
+        tabs[current]->context->close();
+        if (current == 0){
+            current = tabs.size()-1;
+        } else {
+            current--;
+        }
+        tabs[current]->context->open();
+    } else {
+        tabs[current]->context->previous();
+    }
+}
+
+void TabbedBox::down(){
+    if (tabs.size() == 0){
+        return;
+    }
+    if (!inTab){
+        tabs[current]->context->close();
+        if (current == tabs.size()-1){
+            current = 0;
+        } else {
+            current++;
+        }
+        tabs[current]->context->open();
+    } else {
+        tabs[current]->context->next();
+    }
+}
+
+void TabbedBox::left(){
+    if (tabs.size() == 0){
+        return;
+    }
+    if (!inTab){
+        tabs[current]->context->close();
+        if (current == 0){
+            current = tabs.size()-1;
+        } else {
+            current--;
+        }
+        tabs[current]->context->open();
+    } else {
+        tabs[current]->context->adjustLeft();
+    }
+}
+
+void TabbedBox::right(){
+    if (tabs.size() == 0){
+        return;
+    }
+    if (!inTab){
+        tabs[current]->context->close();
+        if (current == tabs.size()-1){
+            current = 0;
+        } else {
+            current++;
+        }
+        tabs[current]->context->open();
+    } else {
+        tabs[current]->context->adjustRight();
+    }
+}
+
 unsigned int TabbedBox::getCurrentIndex() const {
+    if (tabs.size() == 0){
+        return 0;
+    }
     return this->tabs[current]->context->getCurrentIndex();
 }
 
@@ -87,27 +162,27 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     
     int x = 0;
-    /* FIXME calculate in act */
-    int maxWidth = location.getWidth()/4;
     
     for (std::vector<Gui::Tab *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         Gui::Tab * tab = *i;
         const int textWidth = vFont.textLength(tab->name.c_str()) + 5;
-        const int width = (textWidth) > maxWidth ? maxWidth : textWidth;
-    
+        const int width = (textWidth) > tabWidthMax ? tabWidthMax : textWidth;
+        
         if (tab->context->location.getRadius() > 0){
         } else {
             if (tab->active){
-                bmp.rectangleFill( x, 0, location.getWidth()-1, location.getHeight()-1, selectedTabColors.body );
+                bmp.rectangleFill( x, 0, location.getWidth()-1, tabHeight, selectedTabColors.body );
                 bmp.vLine(0, x, tabHeight, selectedTabColors.border);
                 bmp.hLine(x, 0, width, selectedTabColors.border); 
                 bmp.vLine(0, x + width, tabHeight, selectedTabColors.border);
             } else {
-                bmp.rectangleFill( x, 0, location.getWidth()-1, location.getHeight()-2, tabColors.body );
+                bmp.rectangleFill( x, 0, location.getWidth()-1, tabHeight-1, tabColors.body );
                 bmp.vLine(0, x, tabHeight, tabColors.border);
                 bmp.hLine(x, 0, width, tabColors.border); 
                 bmp.vLine(0, x + width, tabHeight, tabColors.border);
             }
+            /* FIXME font color */
+            vFont.printf(x + ((width/2)-(textWidth/2)), 0, Bitmap::makeColor(255,255,255), bmp, tab->name, 0 );
         }
         
         x+=width;

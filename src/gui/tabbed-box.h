@@ -41,6 +41,18 @@ class TabbedBox : public Widget{
         //! Add tab
         virtual void addTab(const std::string &, const std::vector<ContextItem *> & list);
         
+        //! Up
+        virtual void up();
+        
+        //! Down
+        virtual void down();
+        
+        //! Left 
+        virtual void left();
+        
+        //! Right
+        virtual void right();
+        
         //! Set current font
         virtual inline void setFont(const Filesystem::RelativePath &, int width, int height){
             this->font = font;
