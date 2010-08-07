@@ -1574,9 +1574,61 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+#define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
+#define evaluateBool(value, default_) (value != NULL ? value->evaluate(env).toBool() : default_)
         guy.enableHit();
         guy.nextTicket();
         /* set all the hitdef crap */
+        FullEnvironment env(stage, guy, commands);
+        HitDefinition & his = guy.getHit();
+        his.pause.player2 = evaluateNumber(hit.pause.player2, 0);
+        his.groundType = hit.groundType;
+        his.airType = hit.airType;
+        his.yAcceleration = evaluateNumber(hit.yAcceleration, 0);
+        his.animationTypeFall = hit.animationTypeFall;
+        his.airHitTime = evaluateNumber(hit.airHitTime, 20);
+        his.airVelocity.x = evaluateNumber(hit.airVelocity.x, 0);
+        his.airVelocity.y = evaluateNumber(hit.airVelocity.y, 0);
+        his.fall.fall = evaluateBool(hit.fall.fall, false);
+        his.fall.yVelocity = evaluateNumber(hit.fall.yVelocity, -4.5);
+        his.groundSlideTime = evaluateNumber(hit.groundSlideTime, 0);
+        his.guardControlTime = evaluateNumber(hit.guardControlTime, his.groundSlideTime);
+        his.airGuardControlTime = evaluateNumber(hit.airGuardControlTime, his.guardControlTime);
+        his.groundVelocity.x = evaluateNumber(hit.groundVelocity.x, 0);
+        his.groundVelocity.y = evaluateNumber(hit.groundVelocity.y, 0);
+        his.damage.damage = evaluateNumber(hit.damage.damage, 0);
+        his.damage.guardDamage = evaluateNumber(hit.damage.guardDamage, 0);
+        his.airJuggle = evaluateNumber(hit.airJuggle, 0);
+        his.hitSound.own = hit.hitSound.own;
+        his.hitSound.group = hit.hitSound.group;
+        his.hitSound.item = hit.hitSound.item;
+        his.guardHitSound.own = hit.guardHitSound.own;
+        his.guardHitSound.group = hit.guardHitSound.group;
+        his.guardHitSound.item = hit.guardHitSound.item;
+        his.sparkPosition.x = evaluateNumber(hit.sparkPosition.x, 0);
+        his.sparkPosition.y = evaluateNumber(hit.sparkPosition.y, 0);
+        his.spark = hit.spark;
+        his.guardSpark = hit.guardSpark;
+
+#undef evaluateNumber
+#undef evaluateBool
+
+#if 0
+        int groundSlideTime = 0;
+        groundSlideTime = (int) hit.groundSlideTime;
+        animationType = hit.animationType;
+        returnControlTime = hit.guardControlTime == 0 ? groundSlideTime : hit.guardControlTime;
+        hitTime = hit.groundHitTime;
+        slideTime = groundSlideTime;
+        xVelocity = hit.groundVelocity.x;
+        yVelocity = hit.groundVelocity.y;
+        fall.fall = false;
+        fall.fall = hit.fall.fall;
+        fall.yVelocity = hit.fall.yVelocity;
+    }
+
+    // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
+#endif
     }
 };
 
