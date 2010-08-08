@@ -16,7 +16,7 @@ def gnome(arg):
 
 def kde(arg):
     import os
-    os.system("kdialog --title 'Paintown' --passivepopup '%s' 1" % arg)
+    os.system("kdialog --title 'Paintown' --passivepopup '%s' 2" % arg)
 
 arg = ""
 import sys
