@@ -351,6 +351,53 @@ void Menu::Background::add(Gui::Animation * anim){
 Menu::Renderer::Renderer(){
 }
 Menu::Renderer::~Renderer(){
+    // Kill info boxes
+    for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end();++i){
+        if (*i){
+            delete *i;
+        }
+    }
+}
+
+void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defaults, Context & context){
+    if (text.empty()){
+        return;
+    }
+    if (!info.empty()){
+        info.back()->close();
+    }
+    ::Menu::InfoBox * temp = new ::Menu::InfoBox();
+    temp->setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
+    temp->setText(text);
+    const int width = temp->location.getWidth();
+    const int height = temp->location.getHeight();
+    temp->location.setPosition(Gui::AbsolutePoint(context.getInfoLocation().getX() - width/2, context.getInfoLocation().getY() - height/2));
+    // have to pass the dimensions back in to correct proper placement
+    temp->location.setPosition2(Gui::AbsolutePoint(temp->location.getX() + width,temp->location.getY() + height));
+    temp->location.setRadius(defaults.location.getRadius());
+    temp->colors = defaults.colors;
+    temp->open();
+    info.push_back(temp);
+}
+
+void Menu::Renderer::actInfo(){
+    for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end();){
+        ::Menu::InfoBox *box = *i;
+        box->act();
+        if (!box->isActive()){
+            delete box;
+            i = info.erase(i);
+        } else {
+            i++;
+        }
+    }
+}
+
+void Menu::Renderer::renderInfo(const Bitmap & work){
+    for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end(); ++i){
+        ::Menu::InfoBox *box = *i;
+        box->render(work);
+    }
 }
 
 Menu::DefaultRenderer::DefaultRenderer(){
@@ -438,7 +485,7 @@ void Menu::DefaultRenderer::initialize(Context & context){
     menuInfo.open();
     
     // Add first info option
-    addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
+    addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
     
 }
 void Menu::DefaultRenderer::finish(){
@@ -471,13 +518,13 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
         case Up:
             if (menu.previous()){
                 context.playSound(Up);
-                addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
+                addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
             }
             break;
         case Down:
             if (menu.next()){
                 context.playSound(Down);
-                addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
+                addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
             }
             break;
         case Left:
@@ -499,7 +546,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
                 menuInfo.open();
             }
             context.playMusic();
-            addInfo(options[menu.getCurrentIndex()]->getInfoText(), context); 
+            addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
             break;
         case Cancel:
             context.playSound(Cancel);
@@ -510,47 +557,184 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
     }
 }
 
-void Menu::DefaultRenderer::addInfo(const std::string & text, Context & context){
-    if (text.empty()){
-        return;
-    }
-    if (!info.empty()){
-        info.back()->close();
-    }
-    ::Menu::InfoBox * temp = new ::Menu::InfoBox();
-    temp->setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
-    temp->setText(text);
-    const int width = temp->location.getWidth();
-    const int height = temp->location.getHeight();
-    temp->location.setPosition(Gui::AbsolutePoint(context.getInfoLocation().getX() - width/2, context.getInfoLocation().getY() - height/2));
-    // have to pass the dimensions back in to correct proper placement
-    temp->location.setPosition2(Gui::AbsolutePoint(temp->location.getX() + width,temp->location.getY() + height));
-    temp->location.setRadius(menu.location.getRadius());
-    temp->colors = menu.colors;
-    temp->open();
-    info.push_back(temp);
+Menu::TabInfo::TabInfo(){
 }
 
-void Menu::DefaultRenderer::actInfo(){
-    for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end();){
-        ::Menu::InfoBox *box = *i;
-        box->act();
-        if (!box->isActive()){
-            delete box;
-            i = info.erase(i);
-        } else {
-            i++;
+Menu::TabInfo::~TabInfo(){
+    // Kill options
+    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
+        if (*i){
+            delete *i;
         }
     }
 }
 
-void Menu::DefaultRenderer::renderInfo(const Bitmap & work){
-    for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end(); ++i){
-        ::Menu::InfoBox *box = *i;
-        box->render(work);
+void Menu::TabInfo::act(){
+    // FIXME find a better way to get options to update this is a waste
+    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
+        MenuOption * option = *i;
+        option->logic();
     }
 }
 
+Menu::TabRenderer::TabRenderer(){
+    
+    // Default the menu to a certain size and details
+    //menu.location.setRadius(15);
+    menu.location.set(-.6, -.3, .6, .8);
+    menu.colors.body = Bitmap::makeColor(0,0,0);
+    menu.colors.bodyAlpha = 128;
+    menu.colors.border = Bitmap::makeColor(200,200,200);
+    menu.colors.borderAlpha = 255;
+}
+Menu::TabRenderer::~TabRenderer(){
+    // Kill tabs
+    for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+        if (*i){
+            delete *i;
+        }
+    }
+}
+bool Menu::TabRenderer::readToken(Token * token){
+    if( *token == "option" ) {
+        try{
+            /*
+            MenuOption *temp = OptionFactory::getOption(token);
+            if (temp){
+                options.push_back(temp);
+            }*/
+        } catch (const LoadException & le){
+            Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
+            token->print(" ");
+        }
+    } else if ( *token == "position" ) {
+        // This handles the placement of the menu list and surrounding box
+        menu.setCoordinates(token);
+    } else if ( *token == "relative-position"){
+        menu.setCoordinates(token);
+    } else if ( *token == "coordinate"){
+        menu.setCoordinates(token);
+    } else if ( *token == "position-body" ) {
+        // This handles the body color of the menu box
+        menu.setColors(token);
+    } else if ( *token == "position-border" ) {
+        // This handles the border color of the menu box
+        menu.setColors(token);
+    } else if ( *token == "fade-speed" ) {
+        // Menu fade in speed
+        int speed;
+        *token >> speed;
+        //menu.setFadeSpeed(speed);
+    } else {
+        return false;
+    }
+    
+    return true;
+}
+void Menu::TabRenderer::initialize(Context & context){
+    // Setup menu fonts etc
+    Filesystem::RelativePath localFont("fonts/arial.ttf");
+    int width = 24, height = 24;
+    if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
+        localFont = Filesystem::RelativePath(Configuration::getMenuFont());
+        width = Configuration::getMenuFontWidth();
+        height = Configuration::getMenuFontHeight();
+    } else if (Filesystem::exists(context.getFont())){
+        localFont = context.getFont();
+        width = context.getFontWidth();
+        height = context.getFontHeight();
+    }
+    menu.setFont(localFont, width, height);
+    for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+        TabInfo * tab = *i;
+        menu.addTab(tab->name, toContextList(tab->options));
+    }
+    //menu.open();
+    
+    // Menu info
+    if (!context.getMenuInfoText().empty()){
+        menuInfo.setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
+        menuInfo.setText(context.getMenuInfoText());
+        const int width = menuInfo.location.getWidth();
+        const int height = menuInfo.location.getHeight();
+        menuInfo.location.setPosition(Gui::AbsolutePoint(context.getMenuInfoLocation().getX() - width/2, context.getMenuInfoLocation().getY() - height/2));
+        // have to pass the dimensions back in to correct proper placement
+        menuInfo.location.setPosition2(Gui::AbsolutePoint(menuInfo.location.getX() + width,menuInfo.location.getY() + height));
+        menuInfo.location.setRadius(menu.location.getRadius());
+        menuInfo.colors = menu.colors;
+    }
+    menuInfo.open();
+    
+    // Add first info option
+    addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+    
+}
+void Menu::TabRenderer::finish(){
+    //menu.close();
+    menuInfo.close();
+}
+bool Menu::TabRenderer::active(){
+    return true;//menu.isActive();
+}
+void Menu::TabRenderer::act(){
+    // FIXME find a better way to get options to update this is a waste
+    for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+        TabInfo * tab = *i;
+        tab->act();
+    }
+    menu.act();
+    menuInfo.act();
+    actInfo();
+}
+void Menu::TabRenderer::render(const Bitmap & bmp){
+    menu.render(bmp);
+    menuInfo.render(bmp);
+    renderInfo(bmp);
+}
+void Menu::TabRenderer::addOption(MenuOption * opt){
+    //this->options.push_back(opt);
+}
+void Menu::TabRenderer::doAction(const Actions & action, Context & context){
+    switch(action){
+        case Up:
+            menu.up();
+            context.playSound(Up);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
+            break;
+        case Down:
+            menu.down();
+            context.playSound(Down);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
+            break;
+        case Left:
+            /*if (options[menu.getCurrentIndex()]->leftKey()){
+                context.playSound(Left);
+            }*/
+            break;
+        case Right:
+            /*if (options[menu.getCurrentIndex()]->rightKey()){
+                context.playSound(Right);
+            }*/
+            break;
+        case Select:
+            try{
+                context.playSound(Select);
+                //options[menu.getCurrentIndex()]->run(context);
+            } catch (const Exception::Return & ex){
+                //menu.open();
+                menuInfo.open();
+            }
+            context.playMusic();
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+            break;
+        case Cancel:
+            context.playSound(Cancel);
+            throw Exception::Return(__FILE__, __LINE__);
+            break;
+        default:
+            break;
+    }
+}
 
 Menu::Context::Context():
 cleanup(true),

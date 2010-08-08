@@ -14,6 +14,7 @@
 #include "gui/context-box.h"
 #include "gui/fadetool.h"
 #include "gui/popup-box.h"
+#include "gui/tabbed-box.h"
 #include "gui/widget.h"
 
 #ifdef _MSC_VER
@@ -186,6 +187,22 @@ class Renderer{
         /*! Handle action, with access to context
         */
         virtual void doAction(const Actions &, Context &)=0;
+        
+    protected:
+        /*! Info boxes */
+        std::vector <InfoBox *> info;
+        
+        /*! Menu info box */
+        InfoBox menuInfo;
+        
+        /*! Add info box */
+        virtual void addInfo(const std::string &, const Gui::Widget &, Context &);
+        
+        /*! act info box */
+        virtual void actInfo();
+        
+        /*! render info box */
+        virtual void renderInfo(const Bitmap &);
 };
 
 /*! Regular Menu */
@@ -210,21 +227,43 @@ class DefaultRenderer : public Renderer {
         
         /*! Context Box */
         Gui::ContextBox menu;
+};
+
+/*! Tabbed Menu */
+class TabInfo {
+    public:
+        TabInfo();
+        ~TabInfo();
+        std::string name;
+        std::string info;
+        std::string menuInfo;
         
-        /*! Info boxes */
-        std::vector <InfoBox *> info;
+        void act();
         
-        /*! Menu info box */
-        InfoBox menuInfo;
+        /*! Options */
+        std::vector <MenuOption *> options;
+};
+class TabRenderer : public Renderer {
+    public:
+        TabRenderer();
+        virtual ~TabRenderer();
         
-        /*! Add info box */
-        void addInfo(const std::string &, Context &);
+        virtual bool readToken(Token *);
+        virtual void initialize(Context &);
+        virtual void finish();
+        virtual bool active();
+        virtual void act();
+        virtual void render(const Bitmap &);
+        virtual void addOption(MenuOption *);
+        virtual void doAction(const Actions &, Context &);
         
-        /*! act info box */
-        void actInfo();
+    private:
+
+        /*! Tabs */
+        std::vector <TabInfo *> tabs;
         
-        /*! render info box */
-        void renderInfo(const Bitmap &);
+        /*! Tabbed Box */
+        Gui::TabbedBox menu;
         
 };
 

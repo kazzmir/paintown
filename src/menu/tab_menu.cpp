@@ -287,7 +287,7 @@ void TabMenu::load(const Filesystem::AbsolutePath & filename) throw (LoadExcepti
 /* c++ isn't smart enough for me to put the enum inside a function, run(),
  * so I have to put it in the global scope wrapped with a namespace.
  */
-namespace Tab{
+namespace TabInput{
     enum Input{
         Up,
         Down,
@@ -318,20 +318,20 @@ void TabMenu::run(){
     Global::speed_counter = 0;
     int scrollCounter = 0;
 
-    InputMap<Tab::Input> input;
-    input.set(Keyboard::Key_UP, 0, true, Tab::Up);
-    input.set(Keyboard::Key_DOWN, 0, true, Tab::Down);
-    input.set(Keyboard::Key_H, 0, true, Tab::Left);
-    input.set(Keyboard::Key_L, 0, true, Tab::Right);
-    input.set(Keyboard::Key_LEFT, 0, true, Tab::Left);
-    input.set(Keyboard::Key_RIGHT, 0, true, Tab::Right);
-    input.set(Keyboard::Key_ENTER, 0, true, Tab::Select);
-    input.set(Keyboard::Key_SPACE, 0, true, Tab::Select);
-    input.set(Keyboard::Key_ESC, 0, true, Tab::Exit);
-    input.set(Joystick::Left, 0, true, Tab::Left);
-    input.set(Joystick::Right, 0, true, Tab::Right);
-    input.set(Joystick::Button1, 0, true, Tab::Select);
-    input.set(Joystick::Button2, 0, true, Tab::Exit);
+    InputMap<TabInput::Input> input;
+    input.set(Keyboard::Key_UP, 0, true, TabInput::Up);
+    input.set(Keyboard::Key_DOWN, 0, true, TabInput::Down);
+    input.set(Keyboard::Key_H, 0, true, TabInput::Left);
+    input.set(Keyboard::Key_L, 0, true, TabInput::Right);
+    input.set(Keyboard::Key_LEFT, 0, true, TabInput::Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, TabInput::Right);
+    input.set(Keyboard::Key_ENTER, 0, true, TabInput::Select);
+    input.set(Keyboard::Key_SPACE, 0, true, TabInput::Select);
+    input.set(Keyboard::Key_ESC, 0, true, TabInput::Exit);
+    input.set(Joystick::Left, 0, true, TabInput::Left);
+    input.set(Joystick::Right, 0, true, TabInput::Right);
+    input.set(Joystick::Button1, 0, true, TabInput::Select);
+    input.set(Joystick::Button2, 0, true, TabInput::Exit);
 
     // Color effects
     ColorBuffer fontBuffer(selectedFontColor,runningFontColor);
@@ -404,10 +404,10 @@ void TabMenu::run(){
             runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
             while ( runCounter >= 1.0 ){
                 runCounter -= 1;
-                InputMap<Tab::Input>::Output inputState = InputManager::getMap(input);
+                InputMap<TabInput::Input>::Output inputState = InputManager::getMap(input);
                 // Keys
                 if (!(*currentTab)->running){
-                    if (inputState[Tab::Left]){
+                    if (inputState[TabInput::Left]){
                         MenuGlobals::playSelectSound();
                         // Reset color
                         (*currentTab)->setColors(tabColors,fontColor);
@@ -425,7 +425,7 @@ void TabMenu::run(){
                         (*currentTab)->setColors(selectedTabColors,selectedFontColor);
                     }
 
-                    if (inputState[Tab::Right]){
+                    if (inputState[TabInput::Right]){
                         MenuGlobals::playSelectSound();
                         // Reset color
                         (*currentTab)->setColors(tabColors,fontColor);
@@ -442,7 +442,7 @@ void TabMenu::run(){
                         (*currentTab)->setColors(selectedTabColors,selectedFontColor);
                     }
                     
-                    if (inputState[Tab::Select]){
+                    if (inputState[TabInput::Select]){
                         (*currentTab)->running = true;
                         backgroundBuffer.reset();
                         borderBuffer.reset();
@@ -452,37 +452,37 @@ void TabMenu::run(){
                         addInfoBox(opt->getInfoText());
                     }
 
-                    if (inputState[Tab::Exit]){
+                    if (inputState[TabInput::Exit]){
                         /* is there a reason to set done = true ? */
                         done = true;
-                        InputManager::waitForRelease(input, Tab::Exit);
+                        InputManager::waitForRelease(input, TabInput::Exit);
                         throw Exception::Return(__FILE__, __LINE__);
                     }
                 } else {
                     try{
-                        if (inputState[Tab::Up]){
+                        if (inputState[TabInput::Up]){
                             if ((*currentTab)->context.previous()){
                                 MenuGlobals::playSelectSound();
                                 MenuOption *opt = (*currentTab)->menu.getOption((*currentTab)->context.getCurrentIndex());
                                 addInfoBox(opt->getInfoText());
                             }
                         }
-                        if (inputState[Tab::Down]){
+                        if (inputState[TabInput::Down]){
                             if ((*currentTab)->context.next()){
                                 MenuGlobals::playSelectSound();
                                 MenuOption *opt = (*currentTab)->menu.getOption((*currentTab)->context.getCurrentIndex());
                                 addInfoBox(opt->getInfoText());
                             }
                         }
-                        if (inputState[Tab::Select]){
-                            InputManager::waitForRelease(input, Tab::Select);
+                        if (inputState[TabInput::Select]){
+                            InputManager::waitForRelease(input, TabInput::Select);
                             // Run menu
                             (*currentTab)->menu.runOption((*currentTab)->context.getCurrentIndex());
                         }
 
-                        if (inputState[Tab::Exit]){
+                        if (inputState[TabInput::Exit]){
                             /* is there a reason to set done = true ? */
-                            InputManager::waitForRelease(input, Tab::Exit);
+                            InputManager::waitForRelease(input, TabInput::Exit);
                             throw Exception::Return(__FILE__, __LINE__);
                         }
                         (*currentTab)->context.act();
