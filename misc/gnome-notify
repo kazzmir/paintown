@@ -3,16 +3,26 @@
 # taken from
 # http://blogs.divisibleprime.com/ronin/articles/2008/03/10/command-line-gnome-notification
 
-from pynotify import *
+def gnome(arg):
+    import pynotify
+    import sys
+    
+    def notify(message=""):
+        n = pynotify.Notification("Paintown", message)
+        n.show()
+    
+    pynotify.init("cli notify")
+    notify(arg)
+
+def kde(arg):
+    import os
+    os.system("kdialog --title 'Paintown' --passivepopup '%s' 1" % arg)
+
+arg = ""
 import sys
-
-def notify(message=""):
-    n = Notification("Paintown", message)
-    n.show()
-
-init("cli notify")
 if len(sys.argv) > 1:
-    notify(sys.argv[1])
-else:
-    notify()
-
+    arg = sys.argv[1]
+try:
+    gnome(arg)
+except:
+    kde(arg)
