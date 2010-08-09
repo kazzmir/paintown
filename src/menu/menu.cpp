@@ -596,17 +596,34 @@ Menu::TabRenderer::~TabRenderer(){
     }
 }
 bool Menu::TabRenderer::readToken(Token * token){
-    if( *token == "option" ) {
-        try{
-            /*
-            MenuOption *temp = OptionFactory::getOption(token);
-            if (temp){
-                options.push_back(temp);
-            }*/
-        } catch (const LoadException & le){
-            Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
-            token->print(" ");
-        }
+    
+    if( *token == "menu" ) {
+	TabInfo * tabInfo = new TabInfo();
+	while (token->hasTokens()){
+	    Token * tok;
+	    *token >> tok;
+	    try{
+		if (*tok == "name"){
+		    *tok >> tabInfo->name;
+		} else if (*tok == "info"){
+		    *tok >> tabInfo->info;
+		} else if (*tok == "menuinfo"){
+		    *tok >> tabInfo->menuInfo;
+		} else if (*tok == "option"){
+		    try {
+			MenuOption *temp = OptionFactory::getOption(tok);
+			if (temp){
+			    tabInfo->options.push_back(temp);
+			}
+		    } catch (const LoadException & le){
+			tok->print(" ");
+		    } 
+		}
+	    } catch (const TokenException & ex){
+		// Output something
+	    }
+	}
+	tabs.push_back(tabInfo);
     } else if ( *token == "position" ) {
         // This handles the placement of the menu list and surrounding box
         menu.setCoordinates(token);
@@ -620,6 +637,36 @@ bool Menu::TabRenderer::readToken(Token * token){
     } else if ( *token == "position-border" ) {
         // This handles the border color of the menu box
         menu.setColors(token);
+    } else if ( *token == "tab-body" ) {
+        int r,g,b;
+        *token >> r >> g >> b >> menu.tabColors.bodyAlpha;
+        menu.tabColors.body = Bitmap::makeColor(r,g,b);
+    } else if ( *token == "tab-border" ) {
+        int r,g,b;
+        *token >> r >> g >> b >> menu.tabColors.borderAlpha;
+        menu.tabColors.border = Bitmap::makeColor(r,g,b);
+    } else if ( *token == "selectedtab-body" ) {
+        int r,g,b;
+        *token >> r >> g >> b >> menu.selectedTabColors.bodyAlpha;
+        menu.selectedTabColors.body = Bitmap::makeColor(r,g,b);
+    } else if ( *token == "selectedtab-border" ) {
+        int r,g,b;
+        *token >> r >> g >> b >> menu.selectedTabColors.borderAlpha;
+        menu.selectedTabColors.border = Bitmap::makeColor(r,g,b);
+    } else if ( *token == "runningtab-body" ) {
+        int r,g,b;
+        *token >> r >> g >> b >> menu.runningTabColors.bodyAlpha;
+        menu.runningTabColors.body = Bitmap::makeColor(r,g,b);
+    } else if ( *token == "runningtab-border" ) {
+        int r,g,b;
+        *token >> r >> g >> b >> menu.runningTabColors.borderAlpha;
+        menu.runningTabColors.border = Bitmap::makeColor(r,g,b);
+    } else if ( *token == "font-color" ) {
+        
+    } else if ( *token == "selectedfont-color" ) {
+        
+    } else if ( *token == "runningfont-color" ) {
+        
     } else if ( *token == "fade-speed" ) {
         // Menu fade in speed
         int speed;
@@ -707,19 +754,23 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
             break;
         case Left:
-            /*if (options[menu.getCurrentIndex()]->leftKey()){
-                context.playSound(Left);
-            }*/
+            menu.left();
+            context.playSound(Up);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
             break;
         case Right:
-            /*if (options[menu.getCurrentIndex()]->rightKey()){
-                context.playSound(Right);
-            }*/
+            menu.right();
+            context.playSound(Down);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
             break;
         case Select:
             try{
+		if (!menu.isInTab()){
+		    menu.toggleTabSelect();
+		} else {
+		    tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->run(context);
+		}
                 context.playSound(Select);
-                //options[menu.getCurrentIndex()]->run(context);
             } catch (const Exception::Return & ex){
                 //menu.open();
                 menuInfo.open();
@@ -729,7 +780,11 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
             break;
         case Cancel:
             context.playSound(Cancel);
-            throw Exception::Return(__FILE__, __LINE__);
+	    if (menu.isInTab()){
+		menu.toggleTabSelect();
+	    } else {
+		throw Exception::Return(__FILE__, __LINE__);
+	    }
             break;
         default:
             break;
@@ -957,11 +1012,13 @@ void Menu::Context::setBackground(Background *bg){
 /* New Menu */
 
 // Utilizes default renderer
-Menu::Menu::Menu():
-renderer(new DefaultRenderer()){
+Menu::Menu::Menu(const Type & type):
+renderer(0),
+type(type){
 }
-Menu::Menu::Menu(const Filesystem::AbsolutePath & filename):
-renderer(0){
+Menu::Menu::Menu(const Filesystem::AbsolutePath & filename, const Type & type):
+renderer(0),
+type(type){
     // Load up tokenizer
     try{
         Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
@@ -973,8 +1030,9 @@ renderer(0){
     }
 }
 
-Menu::Menu::Menu(Token * token):
-renderer(0){
+Menu::Menu::Menu(Token * token, const Type & type):
+renderer(0),
+type(type){
     load(token);
 }
 
@@ -1003,7 +1061,20 @@ void Menu::Menu::load(Token * token){
         // Get version
         Token * tok;
         *token >> tok;
-        Token *ourToken = tok->findToken("version");
+	Token *ourToken = tok->findToken("type");
+        if (ourToken != NULL){
+	    try {
+		std::string menuType;
+		*ourToken >> menuType;
+		if (menuType == "default"){
+		    type = Default;
+		} else if (menuType == "tabbed"){
+		    type = Tabbed;
+		}
+	    } catch (const TokenException & ex){
+	    }
+	}
+	ourToken = tok->findToken("version");
         if (ourToken != NULL){
             try {
                 *ourToken >> major >> minor >> micro;
@@ -1013,11 +1084,11 @@ void Menu::Menu::load(Token * token){
                 Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
                 major = 3;
                 minor = 3;
-                micro = 1; 
-                // Create default rendere which is compatible with 3.3.1 and below
-                renderer = new DefaultRenderer();
+                micro = 1;
         }
     }
+    
+    checkType(type);
 
     while ( token->hasTokens() ){
         try{
@@ -1331,7 +1402,17 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
     }
 }
 
-
+void Menu::Menu::checkType(const Type & type){
+    switch (type){
+	case Tabbed:
+	    renderer = new TabRenderer();
+	    break;
+	case Default:
+	default:
+	    renderer = new DefaultRenderer();
+	    break;
+    }
+}
 
 /* Old Menu */
 OldMenu::Menu::Menu(const Filesystem::AbsolutePath & str){

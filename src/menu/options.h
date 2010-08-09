@@ -511,8 +511,6 @@ class OptionSpeed : public MenuOption
 		int rblue, rgreen;
 };
 
-class TabMenu;
-
 /*! Handles sub menus */
 class OptionTabMenu : public MenuOption
 {
@@ -529,7 +527,7 @@ class OptionTabMenu : public MenuOption
 		virtual ~OptionTabMenu();
 		
 	private:
-		TabMenu *_menu;
+		Menu::Menu *menu;
 };
 
 /** Handles key reconfiguration */

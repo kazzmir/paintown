@@ -52,9 +52,12 @@ class TabbedBox : public Widget{
         
         //! Right
         virtual void right();
+	
+	//! Virtual
+	virtual void toggleTabSelect();
         
         //! Set current font
-        virtual inline void setFont(const Filesystem::RelativePath &, int width, int height){
+        virtual inline void setFont(const Filesystem::RelativePath & font, int width, int height){
             this->font = font;
             this->fontWidth = width;
             this->fontHeight = height;
@@ -72,6 +75,19 @@ class TabbedBox : public Widget{
         virtual inline bool empty() const {
             return this->tabs.empty();
         }
+        
+        virtual inline bool isInTab() const {
+	    return this->inTab;
+	}
+        
+        /*! Tab Colors */
+        ColorInfo tabColors;
+        
+        /*! Selected Tab Colors */
+        ColorInfo selectedTabColors;
+	
+        /*! Selected Tab Colors */
+        ColorInfo runningTabColors;
     
     protected:
         std::vector<Gui::Tab *> tabs;
@@ -87,12 +103,6 @@ class TabbedBox : public Widget{
         
         /*! Max Width of tabs */
         int tabWidthMax;
-        
-        /*! Tab Colors */
-        ColorInfo tabColors;
-        
-        /*! Selected Tab Colors */
-        ColorInfo selectedTabColors;
         
         /*! Render tab */
         void renderTabs(const Bitmap &);

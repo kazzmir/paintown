@@ -243,6 +243,7 @@ class TabInfo {
         /*! Options */
         std::vector <MenuOption *> options;
 };
+
 class TabRenderer : public Renderer {
     public:
         TabRenderer();
@@ -420,9 +421,13 @@ class Context{
 /*! New Menu class */
 class Menu{
     public:
-        Menu();
-        Menu(const Filesystem::AbsolutePath &);
-        Menu(Token *);
+	enum Type{
+	    Default,
+	    Tabbed,
+	};
+        Menu(const Type & type = Default);
+        Menu(const Filesystem::AbsolutePath &, const Type & type = Default);
+        Menu(Token *, const Type & type = Default);
         virtual ~Menu();
 
         /*! Run Menu pass parent context */
@@ -443,10 +448,10 @@ class Menu{
                 this->renderer->addOption(opt);
             }
         }
-    
-    static const int Width = 640;
-    static const int Height = 480;
-
+        
+	static const int Width = 640;
+	static const int Height = 480;
+	
     protected:
         
         /*! Context */
@@ -469,6 +474,12 @@ class Menu{
 
         /*! Keys */
         InputMap<Actions> input;
+	
+	/*! Type */
+	Type type;
+	
+	/*! Check type */
+	virtual void checkType(const Type &);
     
 };
 

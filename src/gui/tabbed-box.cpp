@@ -51,7 +51,10 @@ TabbedBox &TabbedBox::operator=( const TabbedBox &copy){
 
 // Logic
 void TabbedBox::act(){
-    tabWidthMax = location.getWidth()/tabs.size();
+    if (!tabs.empty()){
+	tabWidthMax = location.getWidth()/tabs.size();
+    }
+    tabs[current]->context->act();
 }
 
 // Render
@@ -67,6 +70,8 @@ void TabbedBox::render(const Bitmap & work){
         workArea->rectangle( 0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
     
+    tabs[current]->context->render(*workArea);
+    
     renderTabs(*workArea);
     
     Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
@@ -77,9 +82,20 @@ void TabbedBox::render(const Bitmap & work){
 
 // Add tab
 void TabbedBox::addTab(const std::string & name, const std::vector<ContextItem *> & list){
+    for (std::vector<Tab *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
+	Tab * tab = *i;
+	if (tab->name == name){
+	    return;
+	}
+    }
     Tab * tab = new Tab();
     tab->name = name;
     tab->context->setList(list);
+    tab->context->setFont(font, fontWidth, fontHeight);
+    tab->context->location.setPosition(Gui::AbsolutePoint(0, fontHeight));
+    tab->context->location.setPosition2(Gui::AbsolutePoint(location.getWidth(), location.getHeight()));
+    tab->context->open();
+    tabs.push_back(tab);
 }
 
 void TabbedBox::up(){
@@ -148,6 +164,10 @@ void TabbedBox::right(){
     } else {
         tabs[current]->context->adjustRight();
     }
+}
+
+void TabbedBox::toggleTabSelect(){
+    inTab = !inTab;
 }
 
 unsigned int TabbedBox::getCurrentIndex() const {

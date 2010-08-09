@@ -2036,7 +2036,8 @@ bool OptionSpeed::rightKey()
 
 OptionTabMenu::OptionTabMenu(Token *token):
 MenuOption(token, Event),
-_menu(0){
+menu(0){
+#if 0
     // Check whether we have a menu or tabmenu
     if (*token == "tabmenu"){
 	_menu = new TabMenu();
@@ -2044,7 +2045,7 @@ _menu(0){
 	throw LoadException(__FILE__, __LINE__, "Not a tabbed menu");
     }
     // Set this menu as an option
-    _menu->setAsOption(true);
+    //_menu->setAsOption(true);
     
     /*
     // Lets try loading from a file
@@ -2065,12 +2066,38 @@ _menu(0){
     
     // Lets check if this menu is going bye bye
     if ( _menu->checkRemoval() ) setForRemoval(true);
+#endif
+
+    if (*token != "menu"){
+        throw LoadException(__FILE__, __LINE__, "Not a tabbed menu");
+    }
+
+    if (token->numTokens() == 1){
+        std::string temp;
+        *token >> temp;
+        menu = new Menu::Menu(Filesystem::find(Filesystem::RelativePath(temp)), Menu::Menu::Tabbed);
+    } else {
+        menu = new Menu::Menu(token, Menu::Menu::Tabbed);
+    }
+
+    // this->setText(menu->getName());
+    // token->print("Menu: ");
+    Token * tok = token->findToken("_/name");
+    if (tok != NULL){
+        std::string name;
+        *tok >> name;
+        // Global::debug(0, "menu") << "Menu name: " << name << endl;
+        this->setText(name);
+    } else {
+        // No name?
+        throw LoadException(__FILE__, __LINE__, "Menu has no name");
+    }
 }
 
 OptionTabMenu::~OptionTabMenu()
 {
 	// Delete our menu
-	if(_menu)delete _menu;
+	if(menu)delete menu;
 }
 
 void OptionTabMenu::logic()
@@ -2080,7 +2107,7 @@ void OptionTabMenu::logic()
 
 void OptionTabMenu::run(const Menu::Context & context){
 	// Do our new menu
-	_menu->run();
+	menu->run(context);
 }
 
 OptionVersus::OptionVersus( Token *token ):

@@ -12,6 +12,14 @@ MenuOption * OptionFactory::getOption(Token *token){
     *token >> tok;
     if ( *tok == "menu" ){
         // Create a sub menu
+	Token * typeTok = tok->findToken("_/type");
+	if (typeTok != NULL){
+	    std::string type;
+	    *typeTok >> type;
+	    if (type == "tabbed"){
+		return new OptionTabMenu(tok);
+	    }
+	}
         return new OptionMenu(tok);
     } else if (*tok == "tabmenu" ){
         // Create a tab menu
