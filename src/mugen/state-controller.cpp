@@ -2327,6 +2327,17 @@ public:
     }
 };
 
+class ControllerTurn: public StateController {
+public:
+    ControllerTurn(Ast::Section * section, const string & name):
+    StateController(name, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        guy.doTurn(stage);
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -2446,6 +2457,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AssertSpecial : return new ControllerAssertSpecial(section, name);
         case StateController::AttackDist : return new ControllerAttackDist(section, name);
         case StateController::Null : return new ControllerNull(name);
+        case StateController::Turn : return new ControllerTurn(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -2505,7 +2517,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetVelAdd :
         case StateController::TargetVelSet :
         case StateController::Trans :
-        case StateController::Turn :
         case StateController::VarAdd :
         case StateController::VarRandom :
         case StateController::VarRangeSet :

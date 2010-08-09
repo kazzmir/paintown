@@ -87,6 +87,7 @@ test/network/network.cpp
 test/util/system.cpp
 test/factory/font_factory.cpp
 test/gui/context-box.cpp
+test/gui/tabbed-box.cpp
 test/gui/animation.cpp
 test/gui/widget.cpp
 test/gui/popup-box.cpp

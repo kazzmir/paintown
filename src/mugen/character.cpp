@@ -2350,9 +2350,9 @@ MugenSound * Character::getSound(int group, int item) const {
 void Character::doTurn(MugenStage & stage){
     vector<string> active;
     if (getCurrentState() != Mugen::Crouching){
-	changeState(stage, Mugen::StandTurning, active);
+        changeState(stage, Mugen::StandTurning, active);
     } else {
-	changeState(stage, Mugen::CrouchTurning, active);
+        changeState(stage, Mugen::CrouchTurning, active);
     }
     reverseFacing();
 }
