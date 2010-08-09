@@ -53,6 +53,11 @@ TabbedBox &TabbedBox::operator=( const TabbedBox &copy){
 void TabbedBox::act(){
     if (!tabs.empty()){
 	tabWidthMax = location.getWidth()/tabs.size();
+    } else {
+	return;
+    }
+    if (!tabs[current]->active){
+	tabs[current]->active = true;
     }
     tabs[current]->context->act();
 }
@@ -104,12 +109,14 @@ void TabbedBox::up(){
     }
     if (!inTab){
         tabs[current]->context->close();
+	tabs[current]->active = false;
         if (current == 0){
             current = tabs.size()-1;
         } else {
             current--;
         }
         tabs[current]->context->open();
+	tabs[current]->active = true;
     } else {
         tabs[current]->context->previous();
     }
@@ -121,12 +128,14 @@ void TabbedBox::down(){
     }
     if (!inTab){
         tabs[current]->context->close();
+	tabs[current]->active = false;
         if (current == tabs.size()-1){
             current = 0;
         } else {
             current++;
         }
         tabs[current]->context->open();
+	tabs[current]->active = true;
     } else {
         tabs[current]->context->next();
     }
@@ -138,12 +147,14 @@ void TabbedBox::left(){
     }
     if (!inTab){
         tabs[current]->context->close();
+	tabs[current]->active = false;
         if (current == 0){
             current = tabs.size()-1;
         } else {
             current--;
         }
         tabs[current]->context->open();
+	tabs[current]->active = true;
     } else {
         tabs[current]->context->adjustLeft();
     }
@@ -155,12 +166,14 @@ void TabbedBox::right(){
     }
     if (!inTab){
         tabs[current]->context->close();
+	tabs[current]->active = false;
         if (current == tabs.size()-1){
             current = 0;
         } else {
             current++;
         }
         tabs[current]->context->open();
+	tabs[current]->active = true;
     } else {
         tabs[current]->context->adjustRight();
     }
@@ -188,21 +201,30 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
         const int textWidth = vFont.textLength(tab->name.c_str()) + 5;
         const int width = (textWidth) > tabWidthMax ? tabWidthMax : textWidth;
         
-        if (tab->context->location.getRadius() > 0){
+	if (tab->context->location.getRadius() > 0){
         } else {
             if (tab->active){
-                bmp.rectangleFill( x, 0, location.getWidth()-1, tabHeight, selectedTabColors.body );
-                bmp.vLine(0, x, tabHeight, selectedTabColors.border);
-                bmp.hLine(x, 0, width, selectedTabColors.border); 
-                bmp.vLine(0, x + width, tabHeight, selectedTabColors.border);
+		if (!inTab){
+		    bmp.rectangleFill( x, 1, x+width-1, tabHeight-1, selectedTabColors.body );
+		    bmp.vLine(1, x, tabHeight, selectedTabColors.border);
+		    bmp.hLine(x, 1, width-1, selectedTabColors.border); 
+		    bmp.vLine(1, x + width-1, tabHeight, selectedTabColors.border);
+		} else {
+		    bmp.rectangleFill( x, 1, x+width-1, tabHeight-1, runningTabColors.body );
+		    bmp.vLine(1, x, tabHeight, runningTabColors.border);
+		    bmp.hLine(x, 1, width-1, runningTabColors.border); 
+		    bmp.vLine(1, x + width-1, tabHeight, runningTabColors.border);
+		}
             } else {
-                bmp.rectangleFill( x, 0, location.getWidth()-1, tabHeight-1, tabColors.body );
-                bmp.vLine(0, x, tabHeight, tabColors.border);
-                bmp.hLine(x, 0, width, tabColors.border); 
-                bmp.vLine(0, x + width, tabHeight, tabColors.border);
+                bmp.rectangleFill( x, 1, x+width-1, tabHeight-1, tabColors.body );
+                bmp.vLine(1, x, tabHeight-1, tabColors.border);
+                bmp.hLine(x, 1, width-1, tabColors.border); 
+                bmp.vLine(1, x + width-1, tabHeight, tabColors.border);
             }
             /* FIXME font color */
+	    bmp.setClipRect(x, 0, x+width, tabHeight);
             vFont.printf(x + ((width/2)-(textWidth/2)), 0, Bitmap::makeColor(255,255,255), bmp, tab->name, 0 );
+	    bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
         }
         
         x+=width;
