@@ -77,6 +77,9 @@ bool toBool(const RuntimeValue & value){
 double toNumber(const RuntimeValue & value){
     return value.toNumber();
 }
+    
+RuntimeValue::RuntimeValue(Compiler::Value * value){
+}
 
 int toRangeLow(const RuntimeValue & value){
     if (value.isRange()){

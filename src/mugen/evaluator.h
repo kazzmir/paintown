@@ -12,6 +12,10 @@ class MugenStage;
 
 namespace Mugen{
 
+namespace Compiler{
+    class Value;
+}
+
 class Character;
 
 struct Range{
@@ -27,6 +31,9 @@ struct Range{
 };
 
 struct RuntimeValue{
+private:
+    explicit RuntimeValue(Compiler::Value * value);
+public:
     enum Type{
         Invalid,
         Bool,

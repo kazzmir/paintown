@@ -412,22 +412,23 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
         for (map<int, Compiler::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
             int index = (*it).first;
             Compiler::Value * value = (*it).second;
-            guy.setVariable(index, value);
+            guy.setVariable(index, value->evaluate(environment));
         }
 
         for (map<int, Compiler::Value*>::const_iterator it = floatVariables.begin(); it != floatVariables.end(); it++){
             int index = (*it).first;
             Compiler::Value * value = (*it).second;
-            guy.setFloatVariable(index, value);
+            guy.setFloatVariable(index, value->evaluate(environment));
         }
 
         for (map<int, Compiler::Value*>::const_iterator it = systemVariables.begin(); it != systemVariables.end(); it++){
             int index = (*it).first;
             Compiler::Value * value = (*it).second;
-            guy.setSystemVariable(index, value);
+            guy.setSystemVariable(index, value->evaluate(environment));
         }
 
         if (value != NULL && variable != NULL){
