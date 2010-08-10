@@ -538,47 +538,47 @@ public:
         MugenAnimation * getCurrentAnimation() const;
 
         virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
-	
-	/*! This all the inherited members */
-	virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       
-	virtual void draw(Bitmap*, int cameraX, int cameraY);
-	virtual void grabbed(Object*);
-	virtual void unGrab();
-	virtual bool isGrabbed();
-	virtual Object* copy();
-	virtual const std::string& getAttackName();
-	virtual bool collision(ObjectAttack*);
-	virtual int getDamage() const;
-	virtual bool isCollidable(Object*);
-	virtual bool isGettable();
-	virtual bool isGrabbable(Object*);
-	virtual bool isAttacking();
-	virtual int getWidth() const;
-        virtual int getBackWidth() const;
 
-        /* absolute X coordinate of the back of the character */
-        virtual int getBackX() const;
-        /* same thing for the front */
-        virtual int getFrontX() const;
-	virtual Network::Message getCreateMessage();
-	virtual void getAttackCoords(int&, int&);
-	virtual double minZDistance() const;
-	virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
+    /*! This all the inherited members */
+    virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       
+    virtual void draw(Bitmap*, int cameraX, int cameraY);
+    virtual void grabbed(Object*);
+    virtual void unGrab();
+    virtual bool isGrabbed();
+    virtual Object* copy();
+    virtual const std::string& getAttackName();
+    virtual bool collision(ObjectAttack*);
+    virtual int getDamage() const;
+    virtual bool isCollidable(Object*);
+    virtual bool isGettable();
+    virtual bool isGrabbable(Object*);
+    virtual bool isAttacking();
+    virtual int getWidth() const;
+    virtual int getBackWidth() const;
 
-        virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
+    /* absolute X coordinate of the back of the character */
+    virtual int getBackX() const;
+    /* same thing for the front */
+    virtual int getFrontX() const;
+    virtual Network::Message getCreateMessage();
+    virtual void getAttackCoords(int&, int&);
+    virtual double minZDistance() const;
+    virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
-        virtual void setAnimation(int animation);
-
-        /* true if enemy can hit this */
-        virtual bool canBeHit(Character * enemy);
-        
-        virtual inline int getAnimation() const {
-            return this->currentAnimation;
-        }
-
-        virtual inline int getCurrentState() const {
-            return this->currentState;
-        }
+    virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
+    
+    virtual void setAnimation(int animation);
+    
+    /* true if enemy can hit this */
+    virtual bool canBeHit(Character * enemy);
+    
+    virtual inline int getAnimation() const {
+        return this->currentAnimation;
+    }
+    
+    virtual inline int getCurrentState() const {
+        return this->currentState;
+    }
 
         virtual inline std::string getStateType() const {
             return stateType;
@@ -808,10 +808,10 @@ public:
         }
 
         virtual bool hasAnimation(int index) const;
-	
-	virtual inline void toggleDebug(){
-	    debug = !debug;
-	}
+
+        virtual inline void toggleDebug(){
+            debug = !debug;
+        }
 
         virtual HitDefinition & getHit(){
             return this->hit;
@@ -969,6 +969,8 @@ public:
         virtual void drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY);
 
         virtual void assertSpecial(Specials special);
+
+        virtual void setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack);
 
 protected:
     void initialize();
@@ -1309,6 +1311,20 @@ protected:
 
             std::deque<Frame> frames;
         } afterImage;
+
+        struct WidthOverride{
+            WidthOverride():
+                enabled(false),
+                edgeFront(0),
+                edgeBack(0),
+                playerFront(0),
+                playerBack(0){
+                }
+
+            bool enabled;
+            int edgeFront, edgeBack;
+            int playerFront, playerBack;
+        } widthOverride;
 };
 
 }

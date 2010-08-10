@@ -2468,6 +2468,99 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        /* TODO, if we care about this controller */
+    }
+};
+
+class ControllerWidth: public StateController {
+public:
+    ControllerWidth(Ast::Section * section, const string & name):
+    StateController(name, section),
+    edgeFront(NULL),
+    edgeBack(NULL),
+    playerFront(NULL),
+    playerBack(NULL){
+        parse(section);
+    }
+
+    Compiler::Value * edgeFront;
+    Compiler::Value * edgeBack;
+    Compiler::Value * playerFront;
+    Compiler::Value * playerBack;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value * edgeFront,
+                   Compiler::Value * edgeBack,
+                   Compiler::Value * playerFront,
+                   Compiler::Value * playerBack):
+                   edgeFront(edgeFront),
+                   edgeBack(edgeBack),
+                   playerFront(playerFront),
+                   playerBack(playerBack){
+                   }
+
+            Compiler::Value *& edgeFront;
+            Compiler::Value *& edgeBack;
+            Compiler::Value *& playerFront;
+            Compiler::Value *& playerBack;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "edge"){
+                    const Ast::Value * front;
+                    const Ast::Value * back;
+                    simple >> front >> back;
+                    edgeFront = Compiler::compile(front);
+                    edgeBack = Compiler::compile(back);
+                } else if (simple == "player"){
+                    const Ast::Value * front;
+                    const Ast::Value * back;
+                    simple >> front >> back;
+                    playerFront = Compiler::compile(front);
+                    playerBack = Compiler::compile(back);
+                } else if (simple == "value"){
+                    const Ast::Value * front;
+                    const Ast::Value * back;
+                    simple >> front >> back;
+                    edgeFront = Compiler::compile(front);
+                    edgeBack = Compiler::compile(back);
+                    playerFront = Compiler::compile(front);
+                    playerBack = Compiler::compile(back);
+                }
+            }
+        };
+
+        Walker walker(edgeFront, edgeBack, playerFront, playerBack);
+        section->walk(walker);
+    }
+
+    virtual ~ControllerWidth(){
+        delete edgeFront;
+        delete edgeBack;
+        delete playerFront;
+        delete playerBack;
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int edgeFront = 0;
+        int edgeBack = 0;
+        int playerFront = 0;
+        int playerBack = 0;
+        FullEnvironment environment(stage, guy);
+        if (this->edgeFront != NULL){
+            edgeFront = (int) this->edgeFront->evaluate(environment).toNumber();
+        }
+        if (this->edgeBack != NULL){
+            edgeBack = (int) this->edgeBack->evaluate(environment).toNumber();
+        }
+        if (this->playerFront != NULL){
+            playerFront = (int) this->playerFront->evaluate(environment).toNumber();
+        }
+        if (this->playerBack != NULL){
+            playerBack = (int) this->playerBack->evaluate(environment).toNumber();
+        }
+        guy.setWidthOverride(edgeFront, edgeBack, playerFront, playerBack);
     }
 };
 
@@ -2593,6 +2686,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Turn : return new ControllerTurn(section, name);
         case StateController::VarAdd : return new ControllerVarAdd(section, name);
         case StateController::ForceFeedback : return new ControllerForceFeedback(section, name);
+        case StateController::Width : return new ControllerWidth(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -2652,8 +2746,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetVelSet :
         case StateController::Trans :
         case StateController::VarRandom :
-        case StateController::VarRangeSet :
-        case StateController::Width : {
+        case StateController::VarRangeSet : {
             class DefaultController: public StateController {
             public:
                 DefaultController(Ast::Section * section, const string & name):

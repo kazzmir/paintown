@@ -2534,5 +2534,13 @@ void Character::enableHit(){
 void Character::disableHit(){
     hit.disable();
 }
+        
+void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack){
+    widthOverride.enabled = true;
+    widthOverride.edgeFront = edgeFront;
+    widthOverride.edgeBack = edgeBack;
+    widthOverride.playerFront = playerFront;
+    widthOverride.playerBack = playerBack;
+}
 
 }
