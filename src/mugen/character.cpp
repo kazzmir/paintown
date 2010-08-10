@@ -1996,7 +1996,9 @@ static bool holdingBlock(const vector<string> & commands){
 /* Inherited members */
 void Character::act(vector<Object*>* others, World* world, vector<Object*>* add){
 
+    /* reset some stuff */
     blocking = false;
+    widthOverride.enabled = false;
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (hitState.shakeTime > 0){
@@ -2414,25 +2416,39 @@ bool Character::isAttacking(){
 }
 
 int Character::getWidth() const {
+    if (widthOverride.enabled){
+        return widthOverride.playerFront;
+    }
     return groundfront;
 }
 
 int Character::getBackWidth() const {
+    if (widthOverride.enabled){
+        return widthOverride.playerBack;
+    }
     return groundback;
 }
         
 int Character::getBackX() const {
-    if (getFacing() == Object::FACING_LEFT){
-        return getRX() + getBackWidth();
+    int width = getBackWidth();
+    if (widthOverride.enabled){
+        width = widthOverride.edgeBack;
     }
-    return getRX() - getBackWidth();
+    if (getFacing() == Object::FACING_LEFT){
+        return getRX() + width;
+    }
+    return getRX() - width;
 }
 
 int Character::getFrontX() const {
-    if (getFacing() == Object::FACING_LEFT){
-        return getRX() + getWidth();
+    int width = getWidth();
+    if (widthOverride.enabled){
+        width = widthOverride.edgeFront;
     }
-    return getRX() - getWidth();
+    if (getFacing() == Object::FACING_LEFT){
+        return getRX() + width;
+    }
+    return getRX() - width;
 }
 
 Network::Message Character::getCreateMessage(){
