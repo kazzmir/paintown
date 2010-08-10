@@ -346,7 +346,7 @@ Character::~Character(){
         delete state;
     }
 
-    delete internalJumpNumber;
+    // delete internalJumpNumber;
 }
 
 void Character::initialize(){
@@ -574,40 +574,40 @@ void Character::setConstant(std::string name, double value){
     constants[name] = Constant(value);
 }
 
-void Character::setFloatVariable(int index, Compiler::Value * value){
+void Character::setFloatVariable(int index, const RuntimeValue & value){
     floatVariables[index] = value;
 }
 
-void Character::setVariable(int index, Compiler::Value * value){
+void Character::setVariable(int index, const RuntimeValue & value){
     variables[index] = value;
 }
 
-Compiler::Value * Character::getVariable(int index) const {
-    map<int, Compiler::Value*>::const_iterator found = variables.find(index);
+RuntimeValue Character::getVariable(int index) const {
+    map<int, RuntimeValue>::const_iterator found = variables.find(index);
     if (found != variables.end()){
         return (*found).second;
     }
-    return 0;
+    return RuntimeValue(0);
 }
 
-Compiler::Value * Character::getFloatVariable(int index) const {
-    map<int, Compiler::Value*>::const_iterator found = floatVariables.find(index);
+RuntimeValue Character::getFloatVariable(int index) const {
+    map<int, RuntimeValue>::const_iterator found = floatVariables.find(index);
     if (found != variables.end()){
         return (*found).second;
     }
-    return 0;
+    return RuntimeValue(0);
 }
         
-void Character::setSystemVariable(int index, Compiler::Value * value){
+void Character::setSystemVariable(int index, const RuntimeValue & value){
     variables[index] = value;
 }
 
-Compiler::Value * Character::getSystemVariable(int index) const {
-    map<int, Compiler::Value*>::const_iterator found = variables.find(index);
+RuntimeValue Character::getSystemVariable(int index) const {
+    map<int, RuntimeValue>::const_iterator found = variables.find(index);
     if (found != variables.end()){
         return (*found).second;
     }
-    return 0;
+    return RuntimeValue(0);
 }
         
 void Character::resetStateTime(){
@@ -1487,14 +1487,20 @@ public:
 };
 
 void Character::resetJump(MugenStage & stage, const vector<string> & inputs){
-    MutableCompiledInteger * number = (MutableCompiledInteger*) getSystemVariable(JumpIndex);
+    setSystemVariable(JumpIndex, RuntimeValue(0));
+    /*
+    RuntimeValue number = getSystemVariable(JumpIndex);
     number->set(0);
+    */
     changeState(stage, JumpStart, inputs);
 }
 
 void Character::doubleJump(MugenStage & stage, const vector<string> & inputs){
+    /*
     MutableCompiledInteger * number = (MutableCompiledInteger*) getSystemVariable(JumpIndex);
     number->set(number->get() + 1);
+    */
+    setSystemVariable(JumpIndex, RuntimeValue(getSystemVariable(JumpIndex).toNumber() + 1));
     changeState(stage, AirJumpStart, inputs);
 }
 
@@ -1644,8 +1650,8 @@ void Character::fixAssumptions(){
             Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(keys), 5, 0);
             addCommand(doubleJumpCommand);
 
-            internalJumpNumber = new MutableCompiledInteger(0);
-            setSystemVariable(JumpIndex, internalJumpNumber);
+            // internalJumpNumber = new MutableCompiledInteger(0);
+            setSystemVariable(JumpIndex, RuntimeValue(0));
 
             class InternalDoubleJumpController: public StateController {
             public:

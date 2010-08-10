@@ -2338,6 +2338,138 @@ public:
     }
 };
 
+class ControllerVarAdd: public StateController {
+public:
+    ControllerVarAdd(Ast::Section * section, const string & name):
+    StateController(name, section),
+    integerIndex(NULL),
+    floatIndex(NULL),
+    sysIndex(NULL),
+    value(NULL){
+        parse(section, name);
+    }
+
+    Compiler::Value * integerIndex;
+    Compiler::Value * floatIndex;
+    Compiler::Value * sysIndex;
+    Compiler::Value * value;
+
+    virtual ~ControllerVarAdd(){
+        delete integerIndex;
+        delete floatIndex;
+        delete sysIndex;
+        delete value;
+    }
+
+    void parse(Ast::Section * section, const string & name){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value *& integerIndex, Compiler::Value *& floatIndex, Compiler::Value *& sysIndex, Compiler::Value *& value):
+            integerIndex(integerIndex),
+            floatIndex(floatIndex),
+            sysIndex(sysIndex),
+            value(value){
+            }
+
+            Compiler::Value *& integerIndex;
+            Compiler::Value *& floatIndex;
+            Compiler::Value *& sysIndex;
+            Compiler::Value *& value;
+
+            virtual void onAttributeArray(const Ast::AttributeArray & simple){
+                if (simple == "var"){
+                    if (value != NULL){
+                        delete value;
+                    }
+                    if (integerIndex != NULL){
+                        delete integerIndex;
+                    }
+                    int index = simple.getIndex();
+                    const Ast::Value * value = simple.getValue();
+                    this->value = Compiler::compile(value);
+                    this->integerIndex = Compiler::compile(index);
+                } else if (simple == "fvar"){
+                    if (value != NULL){
+                        delete value;
+                    }
+                    if (floatIndex != NULL){
+                        delete floatIndex;
+                    }
+                    int index = simple.getIndex();
+                    const Ast::Value * value = simple.getValue();
+                    this->value = Compiler::compile(value);
+                    this->floatIndex = Compiler::compile(index);
+                } else if (simple == "sysvar"){
+                    if (value != NULL){
+                        delete value;
+                    }
+                    if (sysIndex != NULL){
+                        delete sysIndex;
+                    }
+                    int index = simple.getIndex();
+                    const Ast::Value * value = simple.getValue();
+                    this->value = Compiler::compile(value);
+                    this->sysIndex = Compiler::compile(index);
+                }
+            }
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "v"){
+                    if (integerIndex != NULL){
+                        delete integerIndex;
+                    }
+                    integerIndex = Compiler::compile(simple.getValue());
+                } else if (simple == "fv"){
+                    if (floatIndex != NULL){
+                        delete floatIndex;
+                    }
+                    floatIndex = Compiler::compile(simple.getValue());
+                } else if (simple == "value"){
+                    if (value != NULL){
+                        delete value;
+                    }
+                    value = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(integerIndex, floatIndex, sysIndex, value);
+        section->walk(walker);
+        if (value == NULL){
+            throw MugenException("Must set `value' for controller VarAdd " + name);
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (integerIndex != NULL){
+            int index = (int)integerIndex->evaluate(FullEnvironment(stage, guy)).toNumber();
+            double old = guy.getVariable(index).toNumber();
+            double new_ = value->evaluate(FullEnvironment(stage, guy)).toNumber();
+            guy.setVariable(index, RuntimeValue(old + new_));
+        } else if (floatIndex != NULL){
+            int index = (int) floatIndex->evaluate(FullEnvironment(stage, guy)).toNumber();
+            double old = guy.getFloatVariable(index).toNumber();
+            double new_ = value->evaluate(FullEnvironment(stage, guy)).toNumber();
+            guy.setFloatVariable(index, RuntimeValue(old + new_));
+        } else if (sysIndex != NULL){
+            int index = (int) sysIndex->evaluate(FullEnvironment(stage, guy)).toNumber();
+            double old = guy.getSystemVariable(index).toNumber();
+            double new_ = value->evaluate(FullEnvironment(stage, guy)).toNumber();
+            guy.setSystemVariable(index, RuntimeValue(old + new_));
+        }
+    }
+};
+
+class ControllerForceFeedback: public StateController {
+public:
+    ControllerForceFeedback(Ast::Section * section, const string & name):
+    StateController(name){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -2458,6 +2590,8 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AttackDist : return new ControllerAttackDist(section, name);
         case StateController::Null : return new ControllerNull(name);
         case StateController::Turn : return new ControllerTurn(section, name);
+        case StateController::VarAdd : return new ControllerVarAdd(section, name);
+        case StateController::ForceFeedback : return new ControllerForceFeedback(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -2474,7 +2608,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::EnvShake :
         case StateController::Explod :
         case StateController::ExplodBindTime :
-        case StateController::ForceFeedback :
         case StateController::FallEnvShake :
         case StateController::GameMakeAnim :
         case StateController::Gravity :
@@ -2517,7 +2650,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetVelAdd :
         case StateController::TargetVelSet :
         case StateController::Trans :
-        case StateController::VarAdd :
         case StateController::VarRandom :
         case StateController::VarRangeSet :
         case StateController::Width : {

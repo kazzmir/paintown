@@ -1639,11 +1639,7 @@ public:
                 int index;
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    Value * value = environment.getCharacter().getVariable(index);
-                    if (value == 0){
-                        return RuntimeValue(false);
-                    }
-                    return value->evaluate(environment);
+                    return environment.getCharacter().getVariable(index);
                 }
             };
             
@@ -1663,17 +1659,13 @@ public:
                 const int index;
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    Value * value = environment.getCharacter().getFloatVariable(index);
+                    return environment.getCharacter().getFloatVariable(index);
                     /*
                     Value * value = 0;
                     // Global::debug(0) << "Fvar value is " << value << std::endl;
                     value = environment.getCharacter().getFloatVariable(index);
                     // Global::debug(0) << "Fvar value is now " << value << std::endl;
                     */
-                    if (value == 0){
-                        return RuntimeValue(false);
-                    }
-                    return value->evaluate(environment);
                 }
             };
             
@@ -1693,11 +1685,7 @@ public:
                 int index;
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    Value * value = environment.getCharacter().getSystemVariable(index);
-                    if (value == 0){
-                        return RuntimeValue(false);
-                    }
-                    return value->evaluate(environment);
+                    return environment.getCharacter().getSystemVariable(index);
                 }
             };
             

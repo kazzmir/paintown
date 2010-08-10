@@ -768,12 +768,12 @@ public:
 
         virtual void resetStateTime();
 
-        virtual void setVariable(int index, Compiler::Value * value);
-        virtual void setFloatVariable(int index, Compiler::Value * value);
-        virtual void setSystemVariable(int index, Compiler::Value * value);
-        virtual Compiler::Value * getVariable(int index) const;
-        virtual Compiler::Value * getFloatVariable(int index) const;
-        virtual Compiler::Value * getSystemVariable(int index) const;
+        virtual void setVariable(int index, const RuntimeValue & value);
+        virtual void setFloatVariable(int index, const RuntimeValue & value);
+        virtual void setSystemVariable(int index, const RuntimeValue & value);
+        virtual RuntimeValue getVariable(int index) const;
+        virtual RuntimeValue getFloatVariable(int index) const;
+        virtual RuntimeValue getSystemVariable(int index) const;
 
         virtual inline Physics::Type getCurrentPhysics() const {
             return currentPhysics;
@@ -1225,9 +1225,9 @@ protected:
         int stateTime;
     
         /* dont delete these in the destructor, the state controller will do that */
-        std::map<int, Compiler::Value*> variables;
-        std::map<int, Compiler::Value*> floatVariables;
-        std::map<int, Compiler::Value*> systemVariables;
+        std::map<int, RuntimeValue> variables;
+        std::map<int, RuntimeValue> floatVariables;
+        std::map<int, RuntimeValue> systemVariables;
         Physics::Type currentPhysics;
 
         /* yaccel */
