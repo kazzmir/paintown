@@ -12,12 +12,14 @@ namespace Mugen{
 
 StateController::StateController(const string & name):
 type(Unknown),
-name(name){
+name(name),
+debug(false){
 }
 
 StateController::StateController(const string & name, Ast::Section * section):
 type(Unknown),
-name(name){
+name(name),
+debug(false){
     class Walker: public Ast::Walker {
     public:
         Walker(StateController & controller):
@@ -32,6 +34,8 @@ name(name){
             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger[0-9]+")){
                 int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger([0-9]+)", 0).c_str());
                 controller.addTrigger(trigger, Compiler::compile(simple.getValue()));
+            } else if (simple == "debug"){
+                controller.debug = true;
             }
         }
     };
@@ -80,9 +84,11 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
         const Compiler::Value * value = *it;
         if (!canTrigger(stage, character, value, commands)){
             // Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
+            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
             return false;
         } else {
             // Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
+            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
         }
     }
     return true;
@@ -2593,11 +2599,11 @@ public:
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value * posX,
-                   Compiler::Value * posY,
-                   Compiler::Value * posX2,
-                   Compiler::Value * posY2,
-                   Compiler::Value * spacing):
+            Walker(Compiler::Value *& posX,
+                   Compiler::Value *& posY,
+                   Compiler::Value *& posX2,
+                   Compiler::Value *& posY2,
+                   Compiler::Value *& spacing):
                    posX(posX),
                    posY(posY),
                    posX2(posX2),
@@ -2642,7 +2648,6 @@ public:
             x = (int) posX->evaluate(environment).toNumber();
             y = (int) posY->evaluate(environment).toNumber();
         }
-        Global::debug(0) << "Make dust at " << guy.getRX() + x << ", " << guy.getRY() + y << endl;
         stage.createDust(guy.getRX() + x, guy.getRY() + y);
     }
 };

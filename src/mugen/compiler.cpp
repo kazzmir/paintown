@@ -1940,6 +1940,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getYVelocity());
                 }
+
+                std::string toString() const {
+                    return "vel y";
+                }
             };
 
             return new VelY();
@@ -1980,6 +1984,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(-environment.getCharacter().getYPosition());
+                }
+
+                virtual std::string toString() const {
+                    return "pos y";
                 }
             };
 
@@ -2110,6 +2118,24 @@ public:
                 delete right;
             }
 
+            std::string toString() const {
+                std::ostringstream out;
+                out << left->toString();
+                switch (type){
+                    case ExpressionInfix::GreaterThanEquals : {
+                        out << " >= ";
+                        break;
+                    }
+                    case ExpressionInfix::GreaterThan : {
+                        out << " > ";
+                        break;
+                    }
+                    default : break;
+                }
+                out << right->toString();
+                return out.str();
+            }
+
             RuntimeValue evaluate(const Environment & environment) const {
                 switch (type){
                     case ExpressionInfix::Or : {
@@ -2216,6 +2242,12 @@ public:
 }
         
 Value::Value(){
+}
+
+std::string Value::toString() const {
+    std::ostringstream out;
+    out << this;
+    return out.str();
 }
 
 Value::~Value(){

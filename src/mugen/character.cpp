@@ -1811,11 +1811,21 @@ void Character::fixAssumptions(){
         */
     }
 
-#if 0
     /* if y reaches 0 then auto-transition to state 52.
      * probably just add a trigger to state 50
      */
     if (states[50] != 0){
+        /*
+        ostringstream raw;
+        raw << "[State 50, paintown-internal-land]\n";
+        raw << "value = 52\n";
+        raw << "trigger1 = pos y >= 0\n";
+        raw << "trigger1 = vel y >= 0\n";
+
+        states[50]->addController(parseController(raw.str(), "land", 50, StateController::ChangeState));
+        */
+
+        /*
         StateController * controller = new StateController("jump land");
         controller->setType(StateController::ChangeState);
         controller->setValue1(new Ast::Number(52));
@@ -1826,9 +1836,9 @@ void Character::fixAssumptions(){
                     new Ast::Keyword("vel y"),
                     new Ast::Number(0)));
         states[50]->addController(controller);
+        */
 
     }
-#endif
 }
 
 // Render sprite

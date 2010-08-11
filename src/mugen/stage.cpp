@@ -727,6 +727,20 @@ void MugenStage::physics(Object * player){
         return;
     }
 
+    if (mugen->getCurrentPhysics() == Mugen::Physics::Air){
+        /* gravity */
+        if (mugen->getY() > 0){
+            double gravity = mugen->getGravity();
+            mugen->setYVelocity(mugen->getYVelocity() + gravity);
+        } else if (mugen->getYVelocity() > 0){
+            /* change to the landing state */
+            // mugen->setXVelocity(0);
+            vector<string> inputs;
+            /* FIXME: replace 52 with a constant */
+            mugen->changeState(*this, 52, inputs);
+        }
+    }
+
     mugen->moveX(mugen->getXVelocity());
     mugen->moveYNoCheck(-mugen->getYVelocity());
 
@@ -812,19 +826,7 @@ void MugenStage::physics(Object * player){
         }
     }
 
-    if (mugen->getCurrentPhysics() == Mugen::Physics::Air){
-        /* gravity */
-        if (mugen->getY() > 0){
-            double gravity = mugen->getGravity();
-            mugen->setYVelocity(mugen->getYVelocity() + gravity);
-        } else if (mugen->getYVelocity() > 0){
-            /* change to the landing state */
-            // mugen->setXVelocity(0);
-            vector<string> inputs;
-            /* FIXME: replace 52 with a constant */
-            mugen->changeState(*this, 52, inputs);
-        }
-    }
+    
 
     // Check collisions
     for (vector<Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){

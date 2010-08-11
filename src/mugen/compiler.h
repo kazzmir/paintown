@@ -2,6 +2,7 @@
 #define _paintown_mugen_compiler_h
 
 #include "evaluator.h"
+#include <string>
 
 namespace Ast{
     class Value;
@@ -15,6 +16,7 @@ namespace Compiler{
     public:
         Value();
         virtual RuntimeValue evaluate(const Environment & environment) const = 0;
+        virtual std::string toString() const;
         virtual ~Value();
     };
 

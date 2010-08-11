@@ -151,8 +151,7 @@ public:
     virtual void addTrigger(int number, Compiler::Value * trigger);
 
     virtual inline bool getDebug() const {
-        return false;
-        // return debug;
+        return debug;
     }
 
     virtual ~StateController();
@@ -166,6 +165,7 @@ protected:
 protected:
     Type type;
     std::string name;
+    bool debug;
     
     std::map<int, std::vector<Compiler::Value*> > triggers;
 };
