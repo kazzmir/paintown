@@ -2649,6 +2649,14 @@ public:
             y = (int) posY->evaluate(environment).toNumber();
         }
         stage.createDust(guy.getRX() + x, guy.getRY() + y);
+
+        if (posX2 != NULL && posY2 != NULL){
+            x = (int) posX2->evaluate(environment).toNumber();
+            y = (int) posY2->evaluate(environment).toNumber();
+            stage.createDust(guy.getRX() + x, guy.getRY() + y);
+        }
+
+        /* FIXME: use spacing somehow */
     }
 };
 
