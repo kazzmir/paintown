@@ -52,7 +52,10 @@ TabbedBox &TabbedBox::operator=( const TabbedBox &copy){
 // Logic
 void TabbedBox::act(){
     if (!tabs.empty()){
-	tabWidthMax = location.getWidth()/tabs.size();
+	const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+	//tabWidthMax = location.getWidth()/tabs.size();
+	const int width = vFont.textLength(tabs[current]->name.c_str()) + 5;
+	tabWidthMax = (location.getWidth() - width) / (tabs.size() - 1);
     } else {
 	return;
     }
@@ -199,34 +202,37 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
     for (std::vector<Gui::Tab *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         Gui::Tab * tab = *i;
         const int textWidth = vFont.textLength(tab->name.c_str()) + 5;
-        const int width = (textWidth) > tabWidthMax ? tabWidthMax : textWidth;
-        
+        //const int width = (textWidth) > tabWidthMax ? tabWidthMax : textWidth;
+	
 	if (tab->context->location.getRadius() > 0){
         } else {
             if (tab->active){
 		if (!inTab){
-		    bmp.rectangleFill( x, 1, x+width-1, tabHeight-1, selectedTabColors.body );
+		    bmp.rectangleFill( x, 1, x+textWidth-1, tabHeight, colors.body );
 		    bmp.vLine(1, x, tabHeight, selectedTabColors.border);
-		    bmp.hLine(x, 1, width-1, selectedTabColors.border); 
-		    bmp.vLine(1, x + width-1, tabHeight, selectedTabColors.border);
+		    bmp.hLine(x, 1, textWidth-1, selectedTabColors.border); 
+		    //bmp.vLine(1, x + width-1, tabHeight, selectedTabColors.border);
 		} else {
-		    bmp.rectangleFill( x, 1, x+width-1, tabHeight-1, runningTabColors.body );
+		    bmp.rectangleFill( x, 1, x+textWidth-1, tabHeight, colors.body );
 		    bmp.vLine(1, x, tabHeight, runningTabColors.border);
-		    bmp.hLine(x, 1, width-1, runningTabColors.border); 
-		    bmp.vLine(1, x + width-1, tabHeight, runningTabColors.border);
+		    bmp.hLine(x, 1, textWidth-1, runningTabColors.border); 
+		    //bmp.vLine(1, x + width-1, tabHeight, runningTabColors.border);
 		}
+		/* FIXME font color */
+		bmp.setClipRect(x, 0, x+textWidth, tabHeight-1);
+		vFont.printf(x + ((textWidth/2)-((textWidth - 5)/2)), 0, Bitmap::makeColor(255,255,255), bmp, tab->name, 0 );
+		x+=textWidth;
             } else {
-                bmp.rectangleFill( x, 1, x+width-1, tabHeight-1, tabColors.body );
+                bmp.rectangleFill( x, 1, x+tabWidthMax-1, tabHeight-1, tabColors.body );
                 bmp.vLine(1, x, tabHeight-1, tabColors.border);
-                bmp.hLine(x, 1, width-1, tabColors.border); 
-                bmp.vLine(1, x + width-1, tabHeight, tabColors.border);
+                bmp.hLine(x, 1, tabWidthMax-1, tabColors.border); 
+                bmp.vLine(1, x + tabWidthMax-1, tabHeight, tabColors.border);
+		/* FIXME font color */
+		bmp.setClipRect(x+2, 0, x+tabWidthMax-2, tabHeight-1);
+		vFont.printf(x + ((tabWidthMax/2)-(textWidth/2)), 0, Bitmap::makeColor(255,255,255), bmp, tab->name, 0 );
+		x+=tabWidthMax;
             }
-            /* FIXME font color */
-	    bmp.setClipRect(x, 0, x+width, tabHeight);
-            vFont.printf(x + ((width/2)-(textWidth/2)), 0, Bitmap::makeColor(255,255,255), bmp, tab->name, 0 );
 	    bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
         }
-        
-        x+=width;
     }
 }
