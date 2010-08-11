@@ -427,6 +427,16 @@ public:
             /* FIXME */
             return compile(0);
         }
+        
+        if (identifier == "loseko"){
+            /* FIXME */
+            return compile(0);
+        }
+        
+        if (identifier == "losetime"){
+            /* FIXME */
+            return compile(0);
+        }
 
         if (identifier == "drawgame"){
             /* FIXME */
