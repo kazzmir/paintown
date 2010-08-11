@@ -2564,6 +2564,89 @@ public:
     }
 };
 
+class ControllerMakeDust: public StateController {
+public:
+    ControllerMakeDust(Ast::Section * section, const string & name):
+    StateController(name, section),
+    posX(NULL),
+    posY(NULL),
+    posX2(NULL),
+    posY2(NULL),
+    spacing(NULL){
+        parse(section);
+    }
+
+    Compiler::Value * posX;
+    Compiler::Value * posY;
+    Compiler::Value * posX2;
+    Compiler::Value * posY2;
+    Compiler::Value * spacing;
+
+    virtual ~ControllerMakeDust(){
+        delete posX;
+        delete posY;
+        delete posX2;
+        delete posY2;
+        delete spacing;
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value * posX,
+                   Compiler::Value * posY,
+                   Compiler::Value * posX2,
+                   Compiler::Value * posY2,
+                   Compiler::Value * spacing):
+                   posX(posX),
+                   posY(posY),
+                   posX2(posX2),
+                   posY2(posY2),
+                   spacing(spacing){
+            }
+
+            Compiler::Value *& posX;
+            Compiler::Value *& posY;
+            Compiler::Value *& posX2;
+            Compiler::Value *& posY2;
+            Compiler::Value *& spacing;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "pos"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    posX = Compiler::compile(x);
+                    posY = Compiler::compile(y);
+                } else if (simple == "pos2"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    posX2 = Compiler::compile(x);
+                    posY2 = Compiler::compile(y);
+                } else if (simple == "spacing"){
+                    spacing = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(posX, posY, posX2, posY2, spacing);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy);
+        int x = 0;
+        int y = 0;
+        if (posX != NULL && posY != NULL){
+            x = (int) posX->evaluate(environment).toNumber();
+            y = (int) posY->evaluate(environment).toNumber();
+        }
+        Global::debug(0) << "Make dust at " << guy.getRX() + x << ", " << guy.getRY() + y << endl;
+        stage.createDust(guy.getRX() + x, guy.getRY() + y);
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -2687,6 +2770,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::VarAdd : return new ControllerVarAdd(section, name);
         case StateController::ForceFeedback : return new ControllerForceFeedback(section, name);
         case StateController::Width : return new ControllerWidth(section, name);
+        case StateController::MakeDust : return new ControllerMakeDust(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -2715,7 +2799,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::HitOverride :
         case StateController::LifeAdd :
         case StateController::LifeSet :
-        case StateController::MakeDust :
         case StateController::ModifyExplod :
         case StateController::MoveHitReset :
         case StateController::NotHitBy :

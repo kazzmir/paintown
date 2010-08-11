@@ -164,6 +164,9 @@ public:
 
     /* pause for dramatic effect */
     virtual void doSuperPause(int time, int animation, int positionX, int positionY);
+    
+    /* make dust effects */
+    virtual void createDust(int x, int y);
 
     // Alliance setting
     enum teams{
