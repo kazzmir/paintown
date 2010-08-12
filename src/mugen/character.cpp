@@ -271,6 +271,8 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
         fall.yVelocity = hit.fall.yVelocity;
     }
 
+    fall.envShake.time = hit.fall.envShake.time;
+
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
 

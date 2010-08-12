@@ -314,6 +314,10 @@ struct HitDefinition{
             yVelocity(0){
             }
 
+        struct Shake{
+            int time;
+        } envShake;
+
         int fall;
         double xVelocity;
         double yVelocity;
@@ -363,6 +367,10 @@ struct HitState{
             fall(false),
             yVelocity(0){
             }
+
+        struct Shake{
+            int time;
+        } envShake;
 
         bool fall;
         double yVelocity;
@@ -843,6 +851,10 @@ public:
         bool isGuarding() const;
 
         virtual const HitState & getHitState() const {
+            return hitState;
+        }
+
+        virtual HitState & getHitState(){
             return hitState;
         }
 

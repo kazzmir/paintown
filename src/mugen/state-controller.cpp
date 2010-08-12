@@ -1170,6 +1170,10 @@ public:
              * Set to 1 to force P2 out of a "fall" state, if he is in one. This parameter has no effect on P2 if he is not in a "fall" state. This parameter is ignored if the "fall" parameter is set to 1. Defaults to 0 if omitted.
              */
             Value forceNoFall;
+
+            struct Shake{
+                Value time;
+            } envShake;
         } fall;
 
         /* down.velocity = x_velocity, y_velocity (float, float)
@@ -1566,6 +1570,8 @@ public:
                     hit.fall.recoverTime = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.damage"){
                     hit.fall.damage = Compiler::compile(simple.getValue());
+                } else if (simple == "fall.envshake.time"){
+                    hit.fall.envShake.time = Compiler::compile(simple.getValue());
                 } else if (simple == "air.fall"){
                     hit.fall.airFall = Compiler::compile(simple.getValue());
                 } else if (simple == "forcenofall"){
@@ -1598,6 +1604,7 @@ public:
         his.airVelocity.y = evaluateNumber(hit.airVelocity.y, 0);
         his.fall.fall = evaluateBool(hit.fall.fall, false);
         his.fall.yVelocity = evaluateNumber(hit.fall.yVelocity, -4.5);
+        his.fall.envShake.time = evaluateNumber(hit.fall.envShake.time, 0);
         his.groundSlideTime = evaluateNumber(hit.groundSlideTime, 0);
         his.guardControlTime = evaluateNumber(hit.guardControlTime, his.groundSlideTime);
         his.airGuardControlTime = evaluateNumber(hit.airGuardControlTime, his.guardControlTime);
@@ -2660,6 +2667,21 @@ public:
     }
 };
 
+class ControllerFallEnvShake: public StateController {
+public:
+    ControllerFallEnvShake(Ast::Section * section, const string & name):
+    StateController(name, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        HitState & state = guy.getHitState();
+        if (state.fall.envShake.time != 0){
+            stage.Quake(state.fall.envShake.time);
+            state.fall.envShake.time = 0;
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -2784,6 +2806,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ForceFeedback : return new ControllerForceFeedback(section, name);
         case StateController::Width : return new ControllerWidth(section, name);
         case StateController::MakeDust : return new ControllerMakeDust(section, name);
+        case StateController::FallEnvShake : return new ControllerFallEnvShake(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -2800,7 +2823,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::EnvShake :
         case StateController::Explod :
         case StateController::ExplodBindTime :
-        case StateController::FallEnvShake :
         case StateController::GameMakeAnim :
         case StateController::Gravity :
         case StateController::Helper :
