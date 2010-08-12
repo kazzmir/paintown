@@ -1084,9 +1084,11 @@ else:
 #    env.Append(CCFLAGS = ['-Werror'])
 # staticEnv.Append(CCFLAGS = ['-Werror'])
 
+env['PAINTOWN_BUILD_TESTS'] = True
 use = env
 shared = SConscript('src/SConscript', variant_dir = buildDir, exports = ['use'] );
 
+staticEnv['PAINTOWN_BUILD_TESTS'] = False
 use = staticEnv
 static = SConscript('src/SConscript', variant_dir = buildDirStatic, exports = ['use'] )
 

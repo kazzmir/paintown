@@ -1,10 +1,11 @@
 Import('use')
 
-all = []
-all.extend(SConscript('token/SConstruct', exports = ['use']))
-all.extend(SConscript('regex/SConstruct', exports = ['use']))
-all.extend(SConscript('mugen/SConstruct', exports = ['use']))
-all.extend(SConscript('menu/SConstruct', exports = ['use']))
-all.extend(SConscript('thread/SConstruct', exports = ['use']))
+if use['PAINTOWN_BUILD_TESTS']:
+    all = []
+    all.extend(SConscript('token/SConstruct', exports = ['use']))
+    all.extend(SConscript('regex/SConstruct', exports = ['use']))
+    all.extend(SConscript('mugen/SConstruct', exports = ['use']))
+    all.extend(SConscript('menu/SConstruct', exports = ['use']))
+    all.extend(SConscript('thread/SConstruct', exports = ['use']))
 
-Alias('test-all', all)
+    Alias('test-all', all)
