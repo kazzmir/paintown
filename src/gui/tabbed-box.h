@@ -7,13 +7,15 @@
 #include "gui/widget.h"
 #include "util/file-system.h"
 
+#include "util/gradient.h"
+
 class Token;
 
 namespace Gui{
 
 class ContextBox;
 class ContextItem;
-    
+
 class Tab{
     public:
         Tab();
@@ -70,6 +72,12 @@ class TabbedBox : public Widget{
         
         //! Get current index on selected tab
         virtual unsigned int getCurrentIndex() const;
+	
+	//! Set tab font colors
+	virtual void setTabFontColor(int color);
+	
+	//! Set selected tab font color
+	virtual void setSelectedTabFontColor(int color);
         
         //! Empty
         virtual inline bool empty() const {
@@ -88,7 +96,7 @@ class TabbedBox : public Widget{
 	
         /*! Selected Tab Colors */
         ColorInfo runningTabColors;
-    
+	
     protected:
         std::vector<Gui::Tab *> tabs;
         
@@ -106,6 +114,15 @@ class TabbedBox : public Widget{
         
         /*! Render tab */
         void renderTabs(const Bitmap &);
+	
+	/*! Font Color */
+	int tabFontColor;
+	
+	/*! Current Tab Font Color */
+	int currentTabFontColor;
+	
+	/*! Gradient for selected Font */
+	Effects::Gradient  * activeTabFontColor;
 };
 
 }

@@ -662,9 +662,13 @@ bool Menu::TabRenderer::readToken(Token * token){
         *token >> r >> g >> b >> menu.runningTabColors.borderAlpha;
         menu.runningTabColors.border = Bitmap::makeColor(r,g,b);
     } else if ( *token == "font-color" ) {
-        
+	int r,g,b;
+        *token >> r >> g >> b;
+	menu.setTabFontColor(Bitmap::makeColor(r,g,b));
     } else if ( *token == "selectedfont-color" ) {
-        
+	int r,g,b;
+        *token >> r >> g >> b;
+	menu.setSelectedTabFontColor(Bitmap::makeColor(r,g,b));
     } else if ( *token == "runningfont-color" ) {
         
     } else if ( *token == "fade-speed" ) {
