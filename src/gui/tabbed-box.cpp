@@ -58,7 +58,8 @@ currentTabFontColor(Bitmap::makeColor(0,0,255)){
     activeTabFontColor = new Effects::Gradient(50, tabFontColor, currentTabFontColor);
 }
 
-TabbedBox::TabbedBox( const TabbedBox & b ){
+TabbedBox::TabbedBox(const TabbedBox & b):
+activeTabFontColor(NULL){
     this->location = b.location;
     this->workArea = b.workArea;
 }
@@ -113,8 +114,8 @@ void TabbedBox::render(const Bitmap & work){
         //roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
         //roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     } else {
-        workArea->rectangleFill( 0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.body );
-        workArea->rectangle( 0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.border );
+        workArea->rectangleFill(0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.body );
+        workArea->rectangle(0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
     
     tabs[current]->context->render(*workArea);
@@ -123,9 +124,11 @@ void TabbedBox::render(const Bitmap & work){
     
     Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
     
+    /* FIXME: only render the background in translucent mode, the text should
+     * not be translucent
+     */
     workArea->drawTrans(location.getX(), location.getY(), work);
 }
-
 
 // Add tab
 void TabbedBox::addTab(const std::string & name, const std::vector<ContextItem *> & list){
@@ -145,20 +148,27 @@ void TabbedBox::addTab(const std::string & name, const std::vector<ContextItem *
     tabs.push_back(tab);
 }
 
+void TabbedBox::moveTab(int direction){
+    tabs[current]->context->close();
+    tabs[current]->active = false;
+    current = (current + direction + tabs.size()) % tabs.size();
+    /*
+    if (current == 0){
+        current = tabs.size()-1;
+    } else {
+        current--;
+    }
+    */
+    tabs[current]->context->open();
+    tabs[current]->active = true;
+}
+
 void TabbedBox::up(){
     if (tabs.size() == 0){
         return;
     }
     if (!inTab){
-        tabs[current]->context->close();
-	tabs[current]->active = false;
-        if (current == 0){
-            current = tabs.size()-1;
-        } else {
-            current--;
-        }
-        tabs[current]->context->open();
-	tabs[current]->active = true;
+        moveTab(-1);
     } else {
         tabs[current]->context->previous();
     }
@@ -169,15 +179,7 @@ void TabbedBox::down(){
         return;
     }
     if (!inTab){
-        tabs[current]->context->close();
-	tabs[current]->active = false;
-        if (current == tabs.size()-1){
-            current = 0;
-        } else {
-            current++;
-        }
-        tabs[current]->context->open();
-	tabs[current]->active = true;
+        moveTab(1);
     } else {
         tabs[current]->context->next();
     }
@@ -188,15 +190,7 @@ void TabbedBox::left(){
         return;
     }
     if (!inTab){
-        tabs[current]->context->close();
-	tabs[current]->active = false;
-        if (current == 0){
-            current = tabs.size()-1;
-        } else {
-            current--;
-        }
-        tabs[current]->context->open();
-	tabs[current]->active = true;
+        moveTab(-1);
     } else {
         tabs[current]->context->adjustLeft();
     }
@@ -207,15 +201,7 @@ void TabbedBox::right(){
         return;
     }
     if (!inTab){
-        tabs[current]->context->close();
-	tabs[current]->active = false;
-        if (current == tabs.size()-1){
-            current = 0;
-        } else {
-            current++;
-        }
-        tabs[current]->context->open();
-	tabs[current]->active = true;
+        moveTab(1);
     } else {
         tabs[current]->context->adjustRight();
     }
@@ -282,6 +268,7 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
 		    bmp.setClipRect(x, 0, x+textWidth + modifier, tabHeight-1);
 		    vFont.printf(x + (((textWidth + modifier)/2)-(((textWidth + modifier) - 5)/2)), 0, activeTabFontColor->current(), bmp, tab->name, 0 );
 		}
+
 		x+=textWidth + modifier;
             } else {
 		bmp.rectangle(x, 0, x+tabWidthMax + modifier -1, tabHeight, tabColors.border);

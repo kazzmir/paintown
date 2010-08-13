@@ -98,6 +98,8 @@ class TabbedBox : public Widget{
         ColorInfo runningTabColors;
 	
     protected:
+        void moveTab(int direction);
+
         std::vector<Gui::Tab *> tabs;
         
         unsigned int current;
