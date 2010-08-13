@@ -789,72 +789,6 @@ public:
             return new AirJump();
         }
 
-        if (identifier == "velocity.walk.back.x"){
-            class VelocityBackX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getWalkBackX());
-                }
-            };
-
-            return new VelocityBackX();
-        }
-
-        if (identifier == "velocity.walk.fwd.x"){
-            class VelocityForwardX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getWalkForwardX());
-                }
-            };
-
-            return new VelocityForwardX();
-        }
-
-        if (identifier == "velocity.run.fwd.x"){
-            class RunForwardX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getRunForwardX());
-                }
-            };
-
-            return new RunForwardX();
-        }
-        
-        if (identifier == "velocity.run.fwd.y"){
-            class RunForwardY: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getRunForwardY());
-                }
-            };
-
-            return new RunForwardY();
-        }
-        
-        if (identifier == "velocity.jump.neu.x"){
-            class JumpX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getNeutralJumpingX());
-                }
-            };
-
-            return new JumpX();
-        }
-        
-        if (identifier == "velocity.jump.y"){
-            class JumpY: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
-                }
-            };
-
-            return new JumpY();
-        }
-
         if (identifier == "prevstateno"){
             class PrevStateNo: public Value {
             public:
@@ -864,116 +798,6 @@ public:
             };
 
             return new PrevStateNo();
-        }
-
-        if (identifier == "velocity.runjump.back.x"){
-            class RunBackJumpX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getRunJumpBack());
-                }
-            };
-
-            return new RunBackJumpX();
-        }
-        
-        if (identifier == "velocity.run.back.x"){
-            class RunBackX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getRunBackX());
-                }
-            };
-
-            return new RunBackX();
-        }
-        
-        if (identifier == "velocity.run.back.y"){
-            class RunBackY: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getRunBackY());
-                }
-            };
-
-            return new RunBackY();
-        }
-
-        if (identifier == "velocity.jump.back.x"){
-            class JumpBackX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getJumpBack());
-                }
-            };
-
-            return new JumpBackX();
-        }
-
-        if (identifier == "velocity.jump.fwd.x"){
-            class JumpForwardX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getJumpForward());
-                }
-            };
-
-            return new JumpForwardX();
-        }
-
-        if (identifier == "velocity.runjump.fwd.x"){
-            class RunJumpForwardX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getRunJumpForward());
-                }
-            };
-
-            return new RunJumpForwardX();
-        }
-
-        if (identifier == "velocity.airjump.neu.x"){
-            class AirJumpX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getAirJumpNeutralX());
-                }
-            };
-
-            return new AirJumpX();
-        }
-        
-        if (identifier == "velocity.airjump.y"){
-            class AirJumpY: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getAirJumpNeutralY());
-                }
-            };
-
-            return new AirJumpY();
-        }
-        
-        if (identifier == "velocity.airjump.back.x"){
-            class AirJumpBackX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getAirJumpBack());
-                }
-            };
-
-            return new AirJumpBackX();
-        }
-        
-        if (identifier == "velocity.airjump.fwd.x"){
-            class AirJumpForwardX: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getAirJumpForward());
-                }
-            };
-
-            return new AirJumpForwardX();
         }
 
         if (identifier == "ishometeam"){
@@ -988,17 +812,6 @@ public:
 
         if (identifier == "pi"){
             return compile(PaintownUtil::pi);
-        }
-
-        if (identifier == "movement.yaccel"){
-            class MovemntYAccel: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getGravity());
-                }
-            };
-
-            return new MovemntYAccel();
         }
 
         std::ostringstream out;
@@ -1295,7 +1108,215 @@ public:
 
     Value * compileFunction(const Ast::Function & function){
         if (function == "const"){
-            return compile(function.getArg1());
+            class ConstWalker: public Ast::Walker {
+            public:
+                ConstWalker():
+                compiled(false){
+                }
+
+                Value * compiled;
+
+                Value * compileConst(const Ast::Identifier & identifier){
+                    if (identifier == "movement.yaccel"){
+                        class MovemntYAccel: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getGravity());
+                            }
+                        };
+
+                        return new MovemntYAccel();
+                    }
+
+                    if (identifier == "velocity.walk.back.x"){
+                        class VelocityBackX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getWalkBackX());
+                            }
+                        };
+
+                        return new VelocityBackX();
+                    }
+
+                    if (identifier == "velocity.walk.fwd.x"){
+                        class VelocityForwardX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getWalkForwardX());
+                            }
+                        };
+
+                        return new VelocityForwardX();
+                    }
+
+                    if (identifier == "velocity.run.fwd.x"){
+                        class RunForwardX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getRunForwardX());
+                            }
+                        };
+
+                        return new RunForwardX();
+                    }
+
+                    if (identifier == "velocity.run.fwd.y"){
+                        class RunForwardY: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getRunForwardY());
+                            }
+                        };
+
+                        return new RunForwardY();
+                    }
+
+                    if (identifier == "velocity.jump.neu.x"){
+                        class JumpX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getNeutralJumpingX());
+                            }
+                        };
+
+                        return new JumpX();
+                    }
+
+                    if (identifier == "velocity.jump.y"){
+                        class JumpY: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
+                            }
+                        };
+
+                        return new JumpY();
+                    }
+
+                    if (identifier == "velocity.runjump.back.x"){
+                        class RunBackJumpX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getRunJumpBack());
+                            }
+                        };
+
+                        return new RunBackJumpX();
+                    }
+
+                    if (identifier == "velocity.run.back.x"){
+                        class RunBackX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getRunBackX());
+                            }
+                        };
+
+                        return new RunBackX();
+                    }
+
+                    if (identifier == "velocity.run.back.y"){
+                        class RunBackY: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getRunBackY());
+                            }
+                        };
+
+                        return new RunBackY();
+                    }
+
+                    if (identifier == "velocity.jump.back.x"){
+                        class JumpBackX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getJumpBack());
+                            }
+                        };
+
+                        return new JumpBackX();
+                    }
+
+                    if (identifier == "velocity.jump.fwd.x"){
+                        class JumpForwardX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getJumpForward());
+                            }
+                        };
+
+                        return new JumpForwardX();
+                    }
+
+                    if (identifier == "velocity.runjump.fwd.x"){
+                        class RunJumpForwardX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getRunJumpForward());
+                            }
+                        };
+
+                        return new RunJumpForwardX();
+                    }
+
+                    if (identifier == "velocity.airjump.neu.x"){
+                        class AirJumpX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getAirJumpNeutralX());
+                            }
+                        };
+
+                        return new AirJumpX();
+                    }
+
+                    if (identifier == "velocity.airjump.y"){
+                        class AirJumpY: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getAirJumpNeutralY());
+                            }
+                        };
+
+                        return new AirJumpY();
+                    }
+
+                    if (identifier == "velocity.airjump.back.x"){
+                        class AirJumpBackX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getAirJumpBack());
+                            }
+                        };
+
+                        return new AirJumpBackX();
+                    }
+
+                    if (identifier == "velocity.airjump.fwd.x"){
+                        class AirJumpForwardX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getAirJumpForward());
+                            }
+                        };
+
+                        return new AirJumpForwardX();
+                    }
+
+                    return NULL;
+                }
+
+                virtual void onIdentifier(const Ast::Identifier & identifier){
+                    compiled = compileConst(identifier);
+                }
+            };
+            ConstWalker walker;
+            function.getArg1()->walk(walker);
+            if (walker.compiled == NULL){
+                throw MugenException("Unknown const value " + function.getArg1()->toString());
+            }
+            return walker.compiled;
         }
 
         if (function == "sin"){

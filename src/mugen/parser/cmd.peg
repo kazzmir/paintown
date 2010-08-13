@@ -451,7 +451,7 @@ rules:
 	whitespace = sw*
 	sw = space
 	   | comment
-	s = space*
+	inline s = space*
 	inline space = " "
 	             | "\t"
 	comment = ";" (!"\n" .)*
@@ -464,6 +464,7 @@ rules:
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
+               | line:<line> "sparkno"{case} s "=" s "s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
                | name:identifier s "=" s &line_end {{ value = makeAttribute(name); }}
