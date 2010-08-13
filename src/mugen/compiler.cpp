@@ -1304,6 +1304,11 @@ public:
                         return new AirJumpForwardX();
                     }
 
+                    if (identifier == "size.mid.pos.y"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+
                     return NULL;
                 }
 
