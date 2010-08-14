@@ -2682,6 +2682,51 @@ public:
     }
 };
 
+class ControllerExplod: public StateController {
+public:
+    ControllerExplod(Ast::Section * section, const string & name):
+    StateController(name, section){
+        parse(section);
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "anim"){
+                } else if (simple == "id"){
+                } else if (simple == "pos"){
+                } else if (simple == "postype"){
+                } else if (simple == "facing"){
+                } else if (simple == "vfacing"){
+                } else if (simple == "bindtime"){
+                } else if (simple == "vel"){
+                } else if (simple == "accel"){
+                } else if (simple == "random"){
+                } else if (simple == "removetime"){
+                } else if (simple == "supermove"){
+                } else if (simple == "supermovetime"){
+                } else if (simple == "pausemovetime"){
+                } else if (simple == "scale"){
+                } else if (simple == "sprpriority"){
+                } else if (simple == "ontop"){
+                } else if (simple == "shadow"){
+                } else if (simple == "ownpal"){
+                } else if (simple == "removeongethit"){
+                } else if (simple == "ignorehitpause"){
+                } else if (simple == "trans"){
+                }
+            }
+        };
+
+        Walker walker;
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -2807,6 +2852,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Width : return new ControllerWidth(section, name);
         case StateController::MakeDust : return new ControllerMakeDust(section, name);
         case StateController::FallEnvShake : return new ControllerFallEnvShake(section, name);
+        case StateController::Explod : return new ControllerExplod(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -2821,7 +2867,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::DisplayToClipboard :
         case StateController::EnvColor :
         case StateController::EnvShake :
-        case StateController::Explod :
         case StateController::ExplodBindTime :
         case StateController::GameMakeAnim :
         case StateController::Gravity :
