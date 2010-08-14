@@ -272,6 +272,7 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
 		x+=textWidth + modifier;
             } else {
 		bmp.rectangle(x, 0, x+tabWidthMax + modifier -1, tabHeight, tabColors.border);
+		bmp.hLine(x, tabHeight, x+textWidth + modifier - 1, colors.border);
                 bmp.rectangleFill( x+1, 1, x+tabWidthMax + modifier -2, tabHeight-2, tabColors.body );
 		
 		bmp.setClipRect(x+2, 1, x+tabWidthMax + modifier -3, tabHeight-1);
