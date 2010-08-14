@@ -1,7 +1,7 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
 
-#include "gui/context-box.h"
+#include "context-box.h"
 #include "util/font.h"
 
 static const double FONT_SPACER = 1.3;

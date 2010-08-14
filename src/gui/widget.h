@@ -10,6 +10,13 @@ class Token;
 namespace Gui{
     
 struct ColorInfo{
+    ColorInfo():
+        body(0),
+        bodyAlpha(0),
+        border(0),
+        borderAlpha(0){
+        }
+
     int body;
     int bodyAlpha;
     int border;

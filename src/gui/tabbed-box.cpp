@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "tabbed-box.h"
 
 #include "menu/menu.h"
@@ -43,6 +44,7 @@ active(false){
     context->colors.borderAlpha = 0;
     context->colors.bodyAlpha = 0;
 }
+
 Tab::~Tab(){
     delete context;
 }
@@ -108,26 +110,25 @@ void TabbedBox::act(){
 // Render
 void TabbedBox::render(const Bitmap & work){
     const int tabHeight = fontHeight + 5;
-    checkWorkArea();
+    // checkWorkArea();
+    Bitmap area(work, location.getX(), location.getY(), location.getWidth(), location.getHeight());
     // Check if we are using a rounded box
     if (location.getRadius() > 0){
         //roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
         //roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     } else {
-        workArea->rectangleFill(0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.body );
-        workArea->rectangle(0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.border );
+        area.translucent().rectangleFill(0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.body );
+        area.translucent().rectangle(0, tabHeight, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
     
-    tabs[current]->context->render(*workArea);
+    tabs[current]->context->render(area);
     
-    renderTabs(*workArea);
-    
-    Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
+    renderTabs(area);
     
     /* FIXME: only render the background in translucent mode, the text should
      * not be translucent
      */
-    workArea->drawTrans(location.getX(), location.getY(), work);
+    // workArea->draw(location.getX(), location.getY(), work);
 }
 
 // Add tab
@@ -239,6 +240,7 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     
     int x = 0;
+    Bitmap::transBlender(0, 0, 0, colors.bodyAlpha);
     
     for (std::vector<Gui::Tab *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         Gui::Tab * tab = *i;
@@ -256,14 +258,14 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
         } else {
             if (tab->active){
 		if (!inTab){
-		    bmp.rectangle(x, 0, x+textWidth + modifier - 1, tabHeight, colors.border);
-		    bmp.rectangleFill( x+1, 1, x+textWidth + modifier - 2, tabHeight, colors.body );
-		    
+		    bmp.translucent().rectangle(x, 0, x+textWidth + modifier - 1, tabHeight, colors.border);
+		    bmp.translucent().rectangleFill( x+1, 1, x+textWidth + modifier - 2, tabHeight, colors.body);
+
 		    bmp.setClipRect(x, 0, x+textWidth + modifier, tabHeight-1);
 		    vFont.printf(x + (((textWidth + modifier)/2)-(((textWidth + modifier) - 5)/2)), 0, currentTabFontColor, bmp, tab->name, 0 );
 		} else {
-		    bmp.rectangle(x, 0, x+textWidth + modifier -1, tabHeight, colors.border);
-		    bmp.rectangleFill( x+1, 1, x+textWidth-2 + modifier, tabHeight, colors.body );
+		    bmp.translucent().rectangle(x, 0, x+textWidth + modifier -1, tabHeight, colors.border);
+		    bmp.translucent().rectangleFill( x+1, 1, x+textWidth-2 + modifier, tabHeight, colors.body );
 		    
 		    bmp.setClipRect(x, 0, x+textWidth + modifier, tabHeight-1);
 		    vFont.printf(x + (((textWidth + modifier)/2)-(((textWidth + modifier) - 5)/2)), 0, activeTabFontColor->current(), bmp, tab->name, 0 );
@@ -271,13 +273,13 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
 
 		x+=textWidth + modifier;
             } else {
-		bmp.rectangle(x, 0, x+tabWidthMax + modifier -1, tabHeight, tabColors.border);
-		bmp.hLine(x, tabHeight, x+textWidth + modifier - 1, colors.border);
-                bmp.rectangleFill( x+1, 1, x+tabWidthMax + modifier -2, tabHeight-2, tabColors.body );
+		bmp.translucent().rectangle(x, 0, x+tabWidthMax + modifier -1, tabHeight, tabColors.border);
+		bmp.translucent().hLine(x, tabHeight, x+textWidth + modifier - 1, colors.border);
+                bmp.translucent().rectangleFill( x+1, 1, x+tabWidthMax + modifier -2, tabHeight-2, tabColors.body);
 		
 		bmp.setClipRect(x+2, 1, x+tabWidthMax + modifier -3, tabHeight-1);
 		vFont.printf(x + (((tabWidthMax + modifier)/2)-((textWidth + modifier)/2)), 0, tabFontColor, bmp, tab->name, 0 );
-		x+=tabWidthMax + modifier;
+		x += tabWidthMax + modifier;
             }
 	    bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
         }
