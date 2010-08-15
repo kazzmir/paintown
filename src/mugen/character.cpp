@@ -221,6 +221,11 @@ void State::transitionTo(const MugenStage & stage, Character & who){
             break;
         }
     }
+    
+    for (vector<StateController*>::iterator it = controllers.begin(); it != controllers.end(); it++){
+        StateController * controller = *it;
+        controller->resetPersistent();
+    }
 }
 
 State::~State(){
@@ -2220,7 +2225,7 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
     if (states[stateNumber] != 0){
         State * state = states[stateNumber];
         for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
-            const StateController * controller = *it;
+            StateController * controller = *it;
             Global::debug(2 * !controller->getDebug()) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
 
 #if 0
@@ -2244,11 +2249,16 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
 
             try{
                 if (controller->canTrigger(stage, *this, active)){
-                    /* activate may modify the current state */
-                    controller->activate(stage, *this, active);
+                    /* check if the controller's persistent values allow it
+                     * to be activated.
+                     */
+                    if (controller->persistentOk()){
+                        /* activate may modify the current state */
+                        controller->activate(stage, *this, active);
 
-                    if (stateNumber >= 0 && getCurrentState() != oldState){
-                        return true;
+                        if (stateNumber >= 0 && getCurrentState() != oldState){
+                            return true;
+                        }
                     }
                 }
             } catch (const MugenException & me){

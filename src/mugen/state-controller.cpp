@@ -13,13 +13,17 @@ namespace Mugen{
 StateController::StateController(const string & name):
 type(Unknown),
 name(name),
-debug(false){
+debug(false),
+persistent(1),
+currentPersistent(1){
 }
 
 StateController::StateController(const string & name, Ast::Section * section):
 type(Unknown),
 name(name),
-debug(false){
+debug(false),
+persistent(1),
+currentPersistent(1){
     class Walker: public Ast::Walker {
     public:
         Walker(StateController & controller):
@@ -34,6 +38,9 @@ debug(false){
             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger[0-9]+")){
                 int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger([0-9]+)", 0).c_str());
                 controller.addTrigger(trigger, Compiler::compile(simple.getValue()));
+            } else if (simple == "persistent"){
+                simple >> controller.persistent;
+                controller.currentPersistent = controller.persistent;
             } else if (simple == "debug"){
                 controller.debug = true;
             }
@@ -50,6 +57,27 @@ StateController::~StateController(){
             Compiler::Value * value = *value_it;
             delete value;
         }
+    }
+}
+    
+void StateController::resetPersistent(){
+    currentPersistent = persistent;
+}
+
+bool StateController::persistentOk(){
+    if (currentPersistent > 0){
+        currentPersistent -= 1;
+        bool b = currentPersistent == 0;
+        if (b){
+            currentPersistent = persistent;
+        }
+        return b;
+    } else {
+        bool b = currentPersistent == 0;
+        if (b){
+            currentPersistent -= 1;
+        }
+        return b;
     }
 }
 

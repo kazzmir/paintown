@@ -154,6 +154,9 @@ public:
         return debug;
     }
 
+    virtual void resetPersistent();
+    virtual bool persistentOk();
+
     virtual ~StateController();
 
 protected:
@@ -168,6 +171,11 @@ protected:
     bool debug;
     
     std::map<int, std::vector<Compiler::Value*> > triggers;
+
+    /* persistent value set in the controller */
+    int persistent;
+    /* countdown of persistent level */
+    int currentPersistent;
 };
 
 }
