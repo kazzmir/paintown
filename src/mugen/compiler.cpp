@@ -447,8 +447,22 @@ public:
             class RoundState: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
+                    switch (environment.getStage().getGameInfo()->getRound().getState()){
+                        case Round::WaitForIntro : return RuntimeValue(0);
+                        case Round::DisplayIntro : return RuntimeValue(1);
+                        case Round::WaitForRound : 
+                        case Round::DisplayRound :
+                        case Round::WaitForFight :
+                        case Round::DisplayFight :
+                        case Round::PlayingGame : return RuntimeValue(2);
+                        case Round::RoundOver : return RuntimeValue(3);
+                        case Round::DoTimeOver :
+                        case Round::DoWin :
+                        case Round::MatchOver : return RuntimeValue(4);
+                    }
                     /* FIXME */
-                    return RuntimeValue(2);
+                    // return RuntimeValue(2);
+                    return RuntimeValue(3);
                 }
             };
 

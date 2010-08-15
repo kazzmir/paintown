@@ -2750,7 +2750,7 @@ public:
                 } else if (simple == "facing"){
                 } else if (simple == "vfacing"){
                 } else if (simple == "bindtime"){
-                } else if (simple == "vel"){
+                } else if (simple == "velocity" || simple == "vel"){
                     const Ast::Value * x;
                     const Ast::Value * y;
                     simple >> x >> y;

@@ -4,11 +4,11 @@
 #include <string>
 #include <map>
 
-#include "mugen/util.h"
-#include "mugen/exception.h"
+#include "util.h"
+#include "exception.h"
 #include "gui/fadetool.h"
-#include "mugen/character.h"
-#include "mugen/behavior.h"
+#include "character.h"
+#include "behavior.h"
 
 class Bitmap;
 class MugenSprite;
