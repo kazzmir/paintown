@@ -65,6 +65,10 @@ void StateController::resetPersistent(){
 }
 
 bool StateController::persistentOk(){
+    /* count down from the persistent value to 0, then reset back to
+     * the persistent value. the controller can activate if the current
+     * persistent value reaches 0.
+     */
     if (currentPersistent > 0){
         currentPersistent -= 1;
         bool b = currentPersistent == 0;
@@ -73,6 +77,9 @@ bool StateController::persistentOk(){
         }
         return b;
     } else {
+        /* if the persistent value was originally 0 then it can only activate
+         * once while the state is active.
+         */
         bool b = currentPersistent == 0;
         if (b){
             currentPersistent -= 1;

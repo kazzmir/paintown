@@ -98,6 +98,10 @@ void Effect::draw(const Bitmap & work, int cameraX, int cameraY){
 
 void Effect::logic(){
     animation->logic();
+    x += velocityX;
+    y += velocityY;
+    velocityX += accelerationX;
+    velocityY += accelerationY;
 }
 
 bool Effect::isDead(){
