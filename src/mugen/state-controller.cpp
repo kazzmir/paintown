@@ -2721,7 +2721,7 @@ class ControllerExplod: public StateController {
 public:
     ControllerExplod(Ast::Section * section, const string & name):
     StateController(name, section),
-    animation(-1),
+    animation(NULL),
     ownAnimation(true),
     id(NULL),
     posX(NULL),
@@ -2734,7 +2734,7 @@ public:
         parse(section);
     }
 
-    int animation;
+    Compiler::Value * animation;
     bool ownAnimation;
     Compiler::Value * id;
     Compiler::Value * posX;
@@ -2767,11 +2767,12 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "anim"){
+                    /* FIXME: handle expressions after `f' */
                     if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.valueAsString()), "f[0-9]+")){
                         controller.ownAnimation = false;
-                        controller.animation = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.valueAsString()), "f([0-9]+)", 0).c_str());
+                        controller.animation = Compiler::compile(atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.valueAsString()), "f([0-9]+)", 0).c_str()));
                     } else {
-                        simple >> controller.animation;
+                        controller.animation = Compiler::compile(simple.getValue());
                     }
                 } else if (simple == "id"){
                     controller.id = Compiler::compile(simple.getValue());
@@ -2823,6 +2824,7 @@ public:
         int facingLeft = guy.getFacing() == Object::FACING_LEFT ? -1 : 1;
         FullEnvironment env(stage, guy);
 #define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
+        int animation_value = (int) evaluateNumber(this->animation, -1);
         int id_value = (int) evaluateNumber(id, -1);
         double posX_value = evaluateNumber(posX, 0) * facingLeft;
         double posY_value = evaluateNumber(posY, 0);
@@ -2835,9 +2837,9 @@ public:
 
         MugenAnimation * animation = NULL;
         if (ownAnimation){
-            animation = guy.getAnimation(this->animation);
+            animation = guy.getAnimation(animation_value);
         } else {
-            animation = stage.getFightAnimation(this->animation);
+            animation = stage.getFightAnimation(animation_value);
         }
 
         class ExplodeEffect: public Effect {
