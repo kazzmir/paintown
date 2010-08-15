@@ -99,6 +99,7 @@ enum AnimationType{
     GetUpFromLiedown3 = 5122, // opt  Get up from LieDown
     LiedeadFirstRounds3 = 5152, // opt  LieDead (first rounds)
     LiedeadFinalRound3 = 5157, // opt  LieDead (final round)
+    Initialize = 5900,
     Unknown = 99999999
 };
 

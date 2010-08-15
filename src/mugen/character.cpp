@@ -100,10 +100,32 @@ hitDefPersist(false){
 }
 
 void State::addController(StateController * controller){
+    for (vector<StateController*>::iterator it = controllers.begin(); it != controllers.end(); /**/ ){
+        StateController * mine = *it;
+        /* controllers must have unique names */
+        if (mine->getName() == controller->getName()){
+            delete mine;
+            it = controllers.erase(it);
+        } else {
+            it++;
+        }
+    }
+
     controllers.push_back(controller);
 }
 
 void State::addControllerFront(StateController * controller){
+    for (vector<StateController*>::iterator it = controllers.begin(); it != controllers.end(); /**/ ){
+        StateController * mine = *it;
+        /* controllers must have unique names */
+        if (mine->getName() == controller->getName()){
+            delete mine;
+            it = controllers.erase(it);
+        } else {
+            it++;
+        }
+    }
+
     controllers.insert(controllers.begin(), controller);
 }
 
@@ -2569,6 +2591,14 @@ void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, i
     widthOverride.edgeBack = edgeBack;
     widthOverride.playerFront = playerFront;
     widthOverride.playerBack = playerBack;
+}
+        
+MugenAnimation * Character::getAnimation(int id) const {
+    std::map<int, MugenAnimation*>::const_iterator where = getAnimations().find(id);
+    if (where != getAnimations().end()){
+        return where->second;
+    }
+    return NULL;
 }
 
 }

@@ -2685,25 +2685,86 @@ public:
 class ControllerExplod: public StateController {
 public:
     ControllerExplod(Ast::Section * section, const string & name):
-    StateController(name, section){
+    StateController(name, section),
+    animation(-1),
+    ownAnimation(true),
+    id(NULL),
+    posX(NULL),
+    posY(NULL),
+    velocityX(NULL),
+    velocityY(NULL),
+    accelerationX(NULL),
+    accelerationY(NULL),
+    removeTime(NULL){
         parse(section);
+    }
+
+    int animation;
+    bool ownAnimation;
+    Compiler::Value * id;
+    Compiler::Value * posX;
+    Compiler::Value * posY;
+    Compiler::Value * velocityX;
+    Compiler::Value * velocityY;
+    Compiler::Value * accelerationX;
+    Compiler::Value * accelerationY;
+    Compiler::Value * removeTime;
+
+    virtual ~ControllerExplod(){
+        delete id;
+        delete posX;
+        delete posY;
+        delete velocityX;
+        delete velocityY;
+        delete accelerationX;
+        delete accelerationY;
+        delete removeTime;
     }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
+            Walker(ControllerExplod & controller):
+                controller(controller){
+                }
+
+            ControllerExplod & controller;
+
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "anim"){
+                    if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.valueAsString()), "f[0-9]+")){
+                        controller.ownAnimation = false;
+                        controller.animation = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.valueAsString()), "f([0-9]+)", 0).c_str());
+                    } else {
+                        simple >> controller.animation;
+                    }
                 } else if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
                 } else if (simple == "pos"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.posX = Compiler::compile(x);
+                    controller.posY = Compiler::compile(y);
                 } else if (simple == "postype"){
                 } else if (simple == "facing"){
                 } else if (simple == "vfacing"){
                 } else if (simple == "bindtime"){
                 } else if (simple == "vel"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.velocityX = Compiler::compile(x);
+                    controller.velocityY = Compiler::compile(y);
                 } else if (simple == "accel"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.accelerationX = Compiler::compile(x);
+                    controller.accelerationY = Compiler::compile(y);
                 } else if (simple == "random"){
                 } else if (simple == "removetime"){
+                    controller.removeTime = Compiler::compile(simple.getValue());
                 } else if (simple == "supermove"){
                 } else if (simple == "supermovetime"){
                 } else if (simple == "pausemovetime"){
@@ -2719,11 +2780,31 @@ public:
             }
         };
 
-        Walker walker;
+        Walker walker(*this);
         section->walk(walker);
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment env(stage, guy);
+#define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
+        int id_value = (int) evaluateNumber(id, -1);
+        double posX_value = evaluateNumber(posX, 0);
+        double posY_value = evaluateNumber(posY, 0);
+        double velocityX_value = evaluateNumber(velocityX, 0);
+        double velocityY_value = evaluateNumber(velocityY, 0);
+        double accelerationX_value = evaluateNumber(accelerationX, 0);
+        double accelerationY_value = evaluateNumber(accelerationY, 0);
+        int removeTime_value = (int) evaluateNumber(removeTime, -2);
+#undef evaluateNumber
+
+        MugenAnimation * animation = NULL;
+        if (ownAnimation){
+            animation = guy.getAnimation(this->animation);
+        } else {
+            animation = stage.getFightAnimation(this->animation);
+        }
+
+        stage.createExplode(animation, id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value);
     }
 };
 

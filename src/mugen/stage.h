@@ -19,6 +19,7 @@ namespace Mugen{
     class Character;
     class Background;
     class Spark;
+    class Effect;
     class GameInfo;
 }
 
@@ -167,6 +168,11 @@ public:
     
     /* make dust effects */
     virtual void createDust(int x, int y);
+
+    /* get an animation from fightfx.sff */
+    virtual MugenAnimation * getFightAnimation(int id);
+
+    virtual void createExplode(MugenAnimation * animation, int id, double posX, double posY, double velocityX, double velocityY, double accelerationX, double accelerationY);
 
     // Alliance setting
     enum teams{
@@ -478,7 +484,7 @@ protected:
 
         Mugen::SpriteMap effects;
         std::map<int, MugenAnimation*> sparks;
-        std::vector<Mugen::Spark*> showSparks;
+        std::vector<Mugen::Effect*> showSparks;
         
         // Character huds
         Mugen::GameInfo *gameHUD;

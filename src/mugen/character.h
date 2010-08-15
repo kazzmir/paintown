@@ -523,6 +523,8 @@ public:
             return animations;
         }
 
+        virtual MugenAnimation * getAnimation(int id) const;
+
         /*
         virtual inline void setInput(const InputMap<Mugen::Keys> & inputLeft, const InputMap<Mugen::Keys> & inputRight){
             this->inputLeft = inputLeft;

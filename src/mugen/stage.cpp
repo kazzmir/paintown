@@ -61,38 +61,76 @@ static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
 
-class Spark{
+class Effect{
 public:
-    Spark(int x, int y, MugenAnimation * animation);
+    Effect(MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY);
+    
     virtual void draw(const Bitmap & work, int cameraX, int cameraY);
     virtual void logic();
     virtual bool isDead();
 
-    virtual ~Spark();
+    virtual ~Effect();
 protected:
-    int x;
-    int y;
     MugenAnimation * animation;
+    int id;
+    double x;
+    double y;
+    double velocityX;
+    double velocityY;
+    double accelerationX;
+    double accelerationY;
 };
 
-Spark::Spark(int x, int y, MugenAnimation * animation):
-x(x), y(y), animation(animation){
+Effect::Effect(MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY):
+animation(animation),
+id(id),
+x(x),
+y(y),
+velocityX(velocityX),
+velocityY(velocityY),
+accelerationX(accelerationX),
+accelerationY(accelerationY){
+}
+    
+void Effect::draw(const Bitmap & work, int cameraX, int cameraY){
+    animation->render((int)(x - cameraX), (int)(y - cameraY), work);
 }
 
-void Spark::draw(const Bitmap & work, int cameraX, int cameraY){
-    animation->render(x - cameraX, y - cameraY, work);
-}
-
-void Spark::logic(){
+void Effect::logic(){
     animation->logic();
 }
 
-bool Spark::isDead(){
+bool Effect::isDead(){
     return animation->hasLooped();
 }
 
-Spark::~Spark(){
+Effect::~Effect(){
     delete animation;
+}
+
+class Spark: public Effect {
+public:
+    Spark(int x, int y, MugenAnimation * animation);
+    /*
+    virtual void draw(const Bitmap & work, int cameraX, int cameraY);
+    virtual void logic();
+    virtual bool isDead();
+    */
+
+    virtual ~Spark();
+protected:
+    /*
+    int x;
+    int y;
+    MugenAnimation * animation;
+    */
+};
+
+Spark::Spark(int x, int y, MugenAnimation * animation):
+Effect(animation, -1, x, y, 0, 0, 0, 0){
+}
+
+Spark::~Spark(){
 }
 
 }
@@ -478,6 +516,10 @@ static list<Ast::Section*>* parseDef(const string & path){
     }
 }
 
+static Filesystem::AbsolutePath getMotifFile(const string & path){
+    return Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(path));
+}
+
 void MugenStage::load(){
     if (loaded){
         return;
@@ -605,10 +647,13 @@ void MugenStage::load(){
     shadowIntensity = Util::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 
-    Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.sff")), Filesystem::AbsolutePath(), effects);
-    sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.air")), effects);
+    // Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.sff")), Filesystem::AbsolutePath(), effects);
+    Mugen::Util::readSprites(getMotifFile("fightfx.sff"), Filesystem::AbsolutePath(), effects);
+    // sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.air")), effects);
+    sparks = Mugen::Util::loadAnimations(getMotifFile("fightfx.air"), effects);
 
-    Mugen::Util::readSounds(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("common.snd")), sounds);
+    // Mugen::Util::readSounds(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("common.snd")), sounds);
+    Mugen::Util::readSounds(getMotifFile("common.snd"), sounds);
 
     /*
     for (Mugen::SpriteMap::iterator it = effects.begin(); it != effects.end(); it++){
@@ -699,6 +744,16 @@ bool MugenStage::doBlockingDetection(Mugen::Character * obj1, Mugen::Character *
 
 bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
+}
+
+MugenAnimation * MugenStage::getFightAnimation(int id){
+    if (sparks[id] == 0){
+        ostringstream out;
+        out << "No fightfx animation for " << id;
+        throw MugenException(out.str());
+    }
+
+    return sparks[id];
 }
 
 void MugenStage::addSpark(int x, int y, int sparkNumber){
@@ -938,8 +993,8 @@ void MugenStage::logic( ){
             quake_time--;
         }
 
-        for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end();){ 
-            Mugen::Spark * spark = *it;
+        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end();){ 
+            Mugen::Effect * spark = *it;
             spark->logic();
 
             /* if the spark looped then kill it */
@@ -1094,8 +1149,8 @@ void MugenStage::render(Bitmap *work){
         obj->draw(board, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
-    for (vector<Mugen::Spark*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
-        Mugen::Spark * spark = *it;
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
+        Mugen::Effect * spark = *it;
         spark->draw(*board, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
@@ -1419,6 +1474,10 @@ void MugenStage::cleanup(){
         for (map<int, MugenAnimation*>::iterator it = sparks.begin(); it != sparks.end(); it++){
             MugenAnimation * animation = (*it).second;
             delete animation;
+        }
+
+        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end();){
+            delete *it;
         }
 
         for (map<unsigned int, map<unsigned int, MugenSound*> >::iterator it1 = sounds.begin(); it1 != sounds.end(); it1++){
@@ -1801,4 +1860,9 @@ void MugenStage::doSuperPause(int time, int animation, int positionX, int positi
     
 void MugenStage::createDust(int x, int y){
     addSpark(x, y, 120);
+}
+        
+void MugenStage::createExplode(MugenAnimation * animation, int id, double posX, double posY, double velocityX, double velocityY, double accelerationX, double accelerationY){
+    Mugen::Effect * spark = new Mugen::Effect(new MugenAnimation(*animation), id, posX, posY, velocityX, velocityY, accelerationX, accelerationY);
+    showSparks.push_back(spark);
 }
