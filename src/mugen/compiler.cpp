@@ -1322,6 +1322,16 @@ public:
                         return compile(0);
                     }
 
+                    if (identifier == "size.head.pos.x"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+
+                    if (identifier == "size.head.pos.y"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+
                     return NULL;
                 }
 
