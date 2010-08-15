@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "mugen/animation.h"
+#include "animation.h"
 #include "state.h"
 
 #include "globals.h"
@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "init.h"
-#include "mugen/sprite.h"
-#include "mugen/util.h"
+#include "sprite.h"
+#include "util.h"
+#include "exception.h"
 #include "util/load_exception.h"
+#include <sstream>
 
 using namespace std;
 
@@ -166,6 +168,32 @@ const MugenFrame * MugenAnimation::getNext(){
     }
     
     return frames[position];
+}
+
+/* time elapsed since a given element has been shown. negative if the
+ * element hasn't been shown yet, 0 if its being shown right now
+ */
+int MugenAnimation::animationElementElapsed(int position) const {
+    int total = 0;
+    if (position < 1 || position > (int) frames.size()){
+        ostringstream out;
+        out << "Invalid animation position: " << position;
+        throw MugenException(out.str());
+    }
+
+    for (int from = (int) this->position; from < position - 1; from++){
+        total -= frames[from]->time;
+    }
+
+    if (position - 1 == (int) this->position){
+        total += ticks;
+    }
+
+    for (int from = position - 1; from < (int) this->position; from++){
+        total += frames[from]->time;
+    }
+
+    return total;
 }
 
 /* time left in the animation */
@@ -360,6 +388,7 @@ void MugenAnimation::backFrame(){
     else position = frames.size() - 1;
 }
 
+/* who uses this function? */
 void MugenAnimation::reloadBitmaps(){
     for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
 	MugenFrame *frame = *i;

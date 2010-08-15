@@ -1819,8 +1819,26 @@ public:
          * (reminder: first element of an action is element 1, not 0)
          */
         if (function == "animelemtime"){
-            /* FIXME */
-            return compile(0);
+            class FunctionAnimElemTime: public Value {
+            public:
+                FunctionAnimElemTime(Value * index):
+                    index(index){
+                    }
+
+                Value * index;
+
+                virtual ~FunctionAnimElemTime(){
+                    delete index;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int index = (int) this->index->evaluate(environment).toNumber();
+                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    return RuntimeValue(animation->animationElementElapsed(index));
+                }
+            };
+
+            return new FunctionAnimElemTime(compile(function.getArg1()));
         }
 
         if (function == "animelem"){

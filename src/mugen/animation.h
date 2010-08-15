@@ -172,6 +172,7 @@ class MugenAnimation{
         }
 
         int animationTime() const;
+        int animationElementElapsed(int position) const;
 	
 	virtual inline void setAsOneTime(bool time){
 	    this->playOnce = time;
