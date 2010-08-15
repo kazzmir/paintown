@@ -61,7 +61,8 @@ static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
 
-Effect::Effect(MugenAnimation * animation, int id, int x, int y):
+Effect::Effect(const Character * owner, MugenAnimation * animation, int id, int x, int y):
+owner(owner),
 animation(animation),
 id(id),
 x(x),
@@ -91,7 +92,7 @@ public:
 };
 
 Spark::Spark(int x, int y, MugenAnimation * animation):
-Effect(animation, -1, x, y){
+Effect(NULL, animation, -1, x, y){
 }
 
 Spark::~Spark(){
@@ -1828,4 +1829,15 @@ void MugenStage::createDust(int x, int y){
         
 void MugenStage::addEffect(Mugen::Effect * effect){
     showSparks.push_back(effect);
+}
+                    
+int MugenStage::countMyEffects(const Mugen::Character * owner) const {
+    int total = 0;
+    for (vector<Mugen::Effect*>::const_iterator it = showSparks.begin(); it != showSparks.end();){ 
+        Mugen::Effect * effect = *it;
+        if (effect->getOwner() == owner){
+            total += 1;
+        }
+    }
+    return total;
 }

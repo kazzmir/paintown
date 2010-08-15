@@ -24,14 +24,19 @@ namespace Mugen{
 
 class Effect{
 public:
-    Effect(MugenAnimation * animation, int id, int x, int y);
+    Effect(const Character * owner, MugenAnimation * animation, int id, int x, int y);
     
     virtual void draw(const Bitmap & work, int cameraX, int cameraY);
     virtual void logic();
     virtual bool isDead();
 
+    virtual inline const Character * getOwner() const {
+        return owner;
+    }
+
     virtual ~Effect();
 protected:
+    const Character * owner;
     MugenAnimation * animation;
     int id;
     double x;
@@ -190,6 +195,7 @@ public:
     virtual MugenAnimation * getFightAnimation(int id);
 
     virtual void addEffect(Mugen::Effect * effect);
+    virtual int countMyEffects(const Mugen::Character * owner) const;
 
     // Alliance setting
     enum teams{

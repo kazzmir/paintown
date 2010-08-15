@@ -2842,8 +2842,8 @@ public:
 
         class ExplodeEffect: public Effect {
         public:
-            ExplodeEffect(MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime):
-            Effect(animation, id, x, y),
+            ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime):
+            Effect(owner, animation, id, x, y),
             velocityX(velocityX),
             velocityY(velocityY),
             accelerationX(accelerationX),
@@ -2867,7 +2867,7 @@ public:
                     removeTime -= 1;
                 }
             }
-    
+
             virtual bool isDead(){
                 switch (removeTime){
                     case -2: return Effect::isDead();
@@ -2879,7 +2879,7 @@ public:
             }
         };
 
-        ExplodeEffect * effect = new ExplodeEffect(new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value);
         stage.addEffect(effect);
     }
 };

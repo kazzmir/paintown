@@ -579,8 +579,7 @@ public:
             class NumExplod: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME: return total number of "explode" objects owned by the player */
-                    return RuntimeValue(0);
+                    return environment.getStage().countMyEffects(&environment.getCharacter());
                 }
             };
 
