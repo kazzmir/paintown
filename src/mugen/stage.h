@@ -21,6 +21,23 @@ namespace Mugen{
     class Spark;
     class Effect;
     class GameInfo;
+
+class Effect{
+public:
+    Effect(MugenAnimation * animation, int id, int x, int y);
+    
+    virtual void draw(const Bitmap & work, int cameraX, int cameraY);
+    virtual void logic();
+    virtual bool isDead();
+
+    virtual ~Effect();
+protected:
+    MugenAnimation * animation;
+    int id;
+    double x;
+    double y;
+};
+
 }
 
 namespace Ast{
@@ -172,7 +189,7 @@ public:
     /* get an animation from fightfx.sff */
     virtual MugenAnimation * getFightAnimation(int id);
 
-    virtual void createExplode(MugenAnimation * animation, int id, double posX, double posY, double velocityX, double velocityY, double accelerationX, double accelerationY);
+    virtual void addEffect(Mugen::Effect * effect);
 
     // Alliance setting
     enum teams{

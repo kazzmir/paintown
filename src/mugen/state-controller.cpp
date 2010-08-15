@@ -2820,14 +2820,15 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int facingLeft = guy.getFacing() == Object::FACING_LEFT ? -1 : 1;
         FullEnvironment env(stage, guy);
 #define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
         int id_value = (int) evaluateNumber(id, -1);
-        double posX_value = evaluateNumber(posX, 0);
+        double posX_value = evaluateNumber(posX, 0) * facingLeft;
         double posY_value = evaluateNumber(posY, 0);
-        double velocityX_value = evaluateNumber(velocityX, 0);
+        double velocityX_value = evaluateNumber(velocityX, 0) * facingLeft;
         double velocityY_value = evaluateNumber(velocityY, 0);
-        double accelerationX_value = evaluateNumber(accelerationX, 0);
+        double accelerationX_value = evaluateNumber(accelerationX, 0) * facingLeft;
         double accelerationY_value = evaluateNumber(accelerationY, 0);
         int removeTime_value = (int) evaluateNumber(removeTime, -2);
 #undef evaluateNumber
@@ -2839,7 +2840,47 @@ public:
             animation = stage.getFightAnimation(this->animation);
         }
 
-        stage.createExplode(animation, id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value);
+        class ExplodeEffect: public Effect {
+        public:
+            ExplodeEffect(MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime):
+            Effect(animation, id, x, y),
+            velocityX(velocityX),
+            velocityY(velocityY),
+            accelerationX(accelerationX),
+            accelerationY(accelerationY),
+            removeTime(removeTime){
+            }
+
+            double velocityX;
+            double velocityY;
+            double accelerationX;
+            double accelerationY;
+            int removeTime;
+    
+            virtual void logic(){
+                Effect::logic();
+                x += velocityX;
+                y += velocityY;
+                velocityX += accelerationX;
+                velocityY += accelerationY;
+                if (removeTime > 0){
+                    removeTime -= 1;
+                }
+            }
+    
+            virtual bool isDead(){
+                switch (removeTime){
+                    case -2: return Effect::isDead();
+                    case -1: return false;
+                    default : return removeTime == 0;
+                }
+
+                return true;
+            }
+        };
+
+        ExplodeEffect * effect = new ExplodeEffect(new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value);
+        stage.addEffect(effect);
     }
 };
 

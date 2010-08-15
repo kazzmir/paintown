@@ -61,35 +61,11 @@ static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
 
-class Effect{
-public:
-    Effect(MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY);
-    
-    virtual void draw(const Bitmap & work, int cameraX, int cameraY);
-    virtual void logic();
-    virtual bool isDead();
-
-    virtual ~Effect();
-protected:
-    MugenAnimation * animation;
-    int id;
-    double x;
-    double y;
-    double velocityX;
-    double velocityY;
-    double accelerationX;
-    double accelerationY;
-};
-
-Effect::Effect(MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY):
+Effect::Effect(MugenAnimation * animation, int id, int x, int y):
 animation(animation),
 id(id),
 x(x),
-y(y),
-velocityX(velocityX),
-velocityY(velocityY),
-accelerationX(accelerationX),
-accelerationY(accelerationY){
+y(y){
 }
     
 void Effect::draw(const Bitmap & work, int cameraX, int cameraY){
@@ -98,10 +74,6 @@ void Effect::draw(const Bitmap & work, int cameraX, int cameraY){
 
 void Effect::logic(){
     animation->logic();
-    x += velocityX;
-    y += velocityY;
-    velocityX += accelerationX;
-    velocityY += accelerationY;
 }
 
 bool Effect::isDead(){
@@ -115,23 +87,11 @@ Effect::~Effect(){
 class Spark: public Effect {
 public:
     Spark(int x, int y, MugenAnimation * animation);
-    /*
-    virtual void draw(const Bitmap & work, int cameraX, int cameraY);
-    virtual void logic();
-    virtual bool isDead();
-    */
-
     virtual ~Spark();
-protected:
-    /*
-    int x;
-    int y;
-    MugenAnimation * animation;
-    */
 };
 
 Spark::Spark(int x, int y, MugenAnimation * animation):
-Effect(animation, -1, x, y, 0, 0, 0, 0){
+Effect(animation, -1, x, y){
 }
 
 Spark::~Spark(){
@@ -1866,7 +1826,6 @@ void MugenStage::createDust(int x, int y){
     addSpark(x, y, 120);
 }
         
-void MugenStage::createExplode(MugenAnimation * animation, int id, double posX, double posY, double velocityX, double velocityY, double accelerationX, double accelerationY){
-    Mugen::Effect * spark = new Mugen::Effect(new MugenAnimation(*animation), id, posX, posY, velocityX, velocityY, accelerationX, accelerationY);
-    showSparks.push_back(spark);
+void MugenStage::addEffect(Mugen::Effect * effect){
+    showSparks.push_back(effect);
 }
