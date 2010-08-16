@@ -146,8 +146,9 @@ void TabbedBox::addTab(const std::string & name, const std::vector<ContextItem *
     tab->name = name;
     tab->context->setList(list);
     tab->context->setFont(font, fontWidth, fontHeight);
-    tab->context->location.setPosition(Gui::AbsolutePoint(0, fontHeight+5));
-    tab->context->location.setPosition2(Gui::AbsolutePoint(location.getWidth(), location.getHeight()));
+    const int modifier = fontHeight * .35;
+    tab->context->location.setPosition(Gui::AbsolutePoint(0, fontHeight + modifier));
+    tab->context->location.setPosition2(Gui::AbsolutePoint(location.getWidth(), location.getHeight()- modifier));
     tab->context->open();
     tabs.push_back(tab);
 }
@@ -282,11 +283,12 @@ void TabbedBox::renderTabs(const Bitmap & bmp){
 
 		x+=textWidth + modifier;
             } else {
-		bmp.translucent().rectangle(x, 5, x+tabWidthMax + modifier -1, tabHeight, tabColors.border);
+		const int heightMod = tabHeight * .15;
+		bmp.translucent().rectangle(x, 1 + heightMod, x+tabWidthMax + modifier -1, tabHeight, tabColors.border);
 		bmp.translucent().hLine(x,tabHeight,x+tabWidthMax+modifier-1,colors.border);
-		bmp.translucent().rectangleFill( x+1, 6, x+tabWidthMax + modifier -2, tabHeight-2, tabColors.body);
+		bmp.translucent().rectangleFill( x+1, 2 + heightMod, x+tabWidthMax + modifier -2, tabHeight-2, tabColors.body);
 		
-		bmp.setClipRect(x+2, 11, x+tabWidthMax + modifier -3, tabHeight-1);
+		bmp.setClipRect(x+2, 6 + heightMod, x+tabWidthMax + modifier -3, tabHeight-1);
 		vFont.printf(x + (((tabWidthMax + modifier)/2)-((textWidth + modifier)/2)), 0, tabFontColor, bmp, tab->name, 0 );
 		x += tabWidthMax + modifier;
             }
