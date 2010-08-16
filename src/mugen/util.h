@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 #include <list>
-#include "mugen/exception.h"
+#include "exception.h"
 
 #include "input/input-manager.h"
 

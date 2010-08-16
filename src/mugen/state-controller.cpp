@@ -2539,10 +2539,10 @@ public:
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value * edgeFront,
-                   Compiler::Value * edgeBack,
-                   Compiler::Value * playerFront,
-                   Compiler::Value * playerBack):
+            Walker(Compiler::Value *& edgeFront,
+                   Compiler::Value *& edgeBack,
+                   Compiler::Value *& playerFront,
+                   Compiler::Value *& playerBack):
                    edgeFront(edgeFront),
                    edgeBack(edgeBack),
                    playerFront(playerFront),
@@ -2559,18 +2559,42 @@ public:
                     const Ast::Value * front;
                     const Ast::Value * back;
                     simple >> front >> back;
+                    if (edgeFront != NULL){
+                        delete edgeFront;
+                    }
+                    if (edgeBack != NULL){
+                        delete edgeBack;
+                    }
                     edgeFront = Compiler::compile(front);
                     edgeBack = Compiler::compile(back);
                 } else if (simple == "player"){
                     const Ast::Value * front;
                     const Ast::Value * back;
                     simple >> front >> back;
+                    if (playerFront != NULL){
+                        delete playerFront;
+                    }
+                    if (playerBack != NULL){
+                        delete playerBack;
+                    }
                     playerFront = Compiler::compile(front);
                     playerBack = Compiler::compile(back);
                 } else if (simple == "value"){
                     const Ast::Value * front;
                     const Ast::Value * back;
                     simple >> front >> back;
+                    if (edgeFront != NULL){
+                        delete edgeFront;
+                    }
+                    if (edgeBack != NULL){
+                        delete edgeBack;
+                    }
+                    if (playerFront != NULL){
+                        delete playerFront;
+                    }
+                    if (playerBack != NULL){
+                        delete playerBack;
+                    }
                     edgeFront = Compiler::compile(front);
                     edgeBack = Compiler::compile(back);
                     playerFront = Compiler::compile(front);
@@ -2746,6 +2770,7 @@ public:
     Compiler::Value * removeTime;
 
     virtual ~ControllerExplod(){
+        delete animation;
         delete id;
         delete posX;
         delete posY;
@@ -2881,8 +2906,51 @@ public:
             }
         };
 
+        /* FIXME: handle rest of the explod parameters */
         ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value);
         stage.addEffect(effect);
+    }
+};
+
+class ControllerHitBy: public StateController {
+public:
+    ControllerHitBy(Ast::Section * section, const string & name):
+    StateController(name, section),
+    time(NULL){
+        parse(section);
+    }
+
+    Compiler::Value * time;
+    Compiler::Value * value;
+
+    virtual ~ControllerHitBy(){
+        delete time;
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Compiler::Value *& time, Compiler::Value *& value):
+            time(time),
+            value(value){
+            }
+
+            Compiler::Value *& time;
+            Compiler::Value *& value;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "time"){
+                    time = Compiler::compile(simple.getValue());
+                } else if (simple == "value"){
+                }
+            }
+        };
+
+        Walker walker(time, value);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
     }
 };
 
@@ -3012,6 +3080,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::MakeDust : return new ControllerMakeDust(section, name);
         case StateController::FallEnvShake : return new ControllerFallEnvShake(section, name);
         case StateController::Explod : return new ControllerExplod(section, name);
+        case StateController::HitBy : return new ControllerHitBy(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3031,7 +3100,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Gravity :
         case StateController::Helper :
         case StateController::HitAdd :
-        case StateController::HitBy :
         case StateController::HitFallDamage :
         case StateController::HitFallSet :
         case StateController::HitFallVel :

@@ -1546,13 +1546,13 @@ void Character::stopGuarding(MugenStage & stage, const vector<string> & inputs){
 
 static StateController * parseController(const string & input, const string & name, int state, StateController::Type type){
     try{
-        list<Ast::Section*>* sections = (list<Ast::Section*>*) Mugen::Cmd::parse(input.c_str());
-        if (sections->size() == 0){
+        Ast::AstParse sections((list<Ast::Section*>*) Mugen::Cmd::parse(input.c_str()));
+        if (sections.getSections()->size() == 0){
             ostringstream out;
             out << "Could not parse controller: " << input;
             throw MugenException(out.str());
         }
-        Ast::Section * first = sections->front();
+        Ast::Section * first = sections.getSections()->front();
         return StateController::compile(first, name, state, type);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
