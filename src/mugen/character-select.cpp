@@ -903,6 +903,7 @@ time(0){
 }
 
 VersusScreen::~VersusScreen(){
+    delete background;
 }
 
 void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, MugenStage * stage, const Bitmap &bmp){
@@ -1111,7 +1112,7 @@ grid.setGameType(gameType);
 
 CharacterSelect::~CharacterSelect(){
     // Get rid of sprites
-    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+    for( Mugen::SpriteMap::iterator i = sprites.begin(); i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
@@ -1126,6 +1127,11 @@ CharacterSelect::~CharacterSelect(){
     for (std::vector< MugenFont *>::iterator f = fonts.begin(); f != fonts.end(); ++f){
 	    if (*f) delete (*f);
     }
+
+    for (vector<CharacterInfo*>::iterator it = characters.begin(); it != characters.end(); it++){
+        delete *it;
+    }
+
     /* background */
     if (background){
 	delete background;

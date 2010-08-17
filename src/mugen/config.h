@@ -4,6 +4,8 @@
 #include <string>
 #include "util/file-system.h"
 
+class Collector;
+
 namespace Mugen{
 
 /*! Configuration for mugen includes the Options, Motif and Rules */
@@ -66,6 +68,9 @@ class Data{
         int getGameSpeed();
 
         bool getDrawShadows();
+    private:
+        friend class ::Collector;
+        static void destroy();
 
         /* *TODO add in remaining getters */ 
 

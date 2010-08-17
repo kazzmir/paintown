@@ -100,6 +100,13 @@ Data & Data::getInstance(){
     }
     return *data;
 }
+        
+void Data::destroy(){
+    if (data){
+        delete data;
+    }
+    data = NULL;
+}
 
 Filesystem::RelativePath Data::getDirectory(){
     // return Filesystem::find("mugen/");

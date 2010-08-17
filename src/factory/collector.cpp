@@ -7,6 +7,7 @@
 #include "object_factory.h"
 #include "resource.h"
 #include "shadow.h"
+#include "mugen/config.h"
 #include <iostream>
 
 using namespace std;
@@ -29,5 +30,6 @@ Collector::~Collector(){
 	FontRender::destroy();
         Bitmap::cleanupTemporaryBitmaps();
         Bitmap::shutdown();
+        Mugen::Data::destroy();
         delete resource;
 }

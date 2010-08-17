@@ -733,6 +733,15 @@ void MugenMenu::cleanup(){
 	  if( j->second )delete j->second;
       }
     }
+	
+    for (vector<MugenFont *>::iterator it = fonts.begin(); it != fonts.end(); it++){
+        delete *it;
+    }
+
+    for (vector<Mugen::ItemOption *>::iterator it = options.begin(); it != options.end(); it++){
+        delete *it;
+    }
+
 }
 
 void MugenMenu::cleanupSprites(){
