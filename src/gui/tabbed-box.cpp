@@ -156,7 +156,7 @@ void TabbedBox::addTab(const std::string & name, const std::vector<ContextItem *
 void TabbedBox::moveTab(int direction){
     tabs[current]->context->close();
     tabs[current]->active = false;
-    current = ((int)current + direction + tabs.size()) % tabs.size();
+    current = (unsigned int) ((int)current + direction + (int) tabs.size()) % tabs.size();
     /*
     if (current == 0){
         current = tabs.size()-1;
