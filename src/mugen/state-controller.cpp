@@ -2916,12 +2916,20 @@ class ControllerHitBy: public StateController {
 public:
     ControllerHitBy(Ast::Section * section, const string & name):
     StateController(name, section),
-    time(NULL){
+    time(NULL),
+    standing(false),
+    crouching(false),
+    aerial(false){
         parse(section);
     }
 
     Compiler::Value * time;
-    Compiler::Value * value;
+
+    bool standing;
+    bool crouching;
+    bool aerial;
+
+    vector<AttackType::Attribute> attributes;
 
     virtual ~ControllerHitBy(){
         delete time;
@@ -2930,23 +2938,69 @@ public:
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& time, Compiler::Value *& value):
-            time(time),
-            value(value){
+            Walker(ControllerHitBy & controller):
+            controller(controller){
             }
 
-            Compiler::Value *& time;
-            Compiler::Value *& value;
+            ControllerHitBy & controller;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
-                    time = Compiler::compile(simple.getValue());
+                    controller.time = Compiler::compile(simple.getValue());
                 } else if (simple == "value"){
+                    string type;
+                    vector<string> moreTypes;
+                    if (simple.getValue()->hasMultiple()){
+                        string type;
+                        simple >> type;
+                        type = PaintownUtil::lowerCaseAll(type);
+                    } else {
+                        simple >> type;
+                        try{
+                            while (true){
+                                string what;
+                                simple >> what;
+                                what = PaintownUtil::lowerCaseAll(what);
+                                moreTypes.push_back(what);
+                            }
+                        } catch (const Ast::Exception & e){
+                        }
+                    }
+
+                    if (type.find('s') != string::npos){
+                        controller.standing = true;
+                    }
+
+                    if (type.find('c') != string::npos){
+                        controller.crouching = true;
+                    }
+
+                    if (type.find('a') != string::npos){
+                        controller.aerial = true;
+                    }
+
+                    map<string, AttackType::Attribute> attributes;
+                    attributes["na"] = AttackType::NormalAttack;
+                    attributes["nt"] = AttackType::NormalThrow;
+                    attributes["np"] = AttackType::NormalProjectile;
+                    attributes["sa"] = AttackType::SpecialAttack;
+                    attributes["st"] = AttackType::SpecialThrow;
+                    attributes["sp"] = AttackType::SpecialProjectile;
+                    attributes["ha"] = AttackType::HyperAttack;
+                    attributes["ht"] = AttackType::HyperThrow;
+                    attributes["hp"] = AttackType::HyperProjectile;
+
+                    for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
+                        string what = *it;
+                        if (attributes.find(what) != attributes.end()){
+                            controller.attributes.push_back(attributes[what]);
+                        }
+                    }
                 }
             }
         };
 
-        Walker walker(time, value);
+        Walker walker(*this);
         section->walk(walker);
     }
 

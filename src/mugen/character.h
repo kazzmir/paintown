@@ -117,6 +117,18 @@ namespace AttackType{
         Low,
         Trip
     };
+
+    enum Attribute{
+        NormalAttack,
+        NormalThrow,
+        NormalProjectile,
+        SpecialAttack,
+        SpecialThrow,
+        SpecialProjectile,
+        HyperAttack,
+        HyperThrow,
+        HyperProjectile
+    };
 }
 
 struct WinGame{
