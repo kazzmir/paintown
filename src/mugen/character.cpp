@@ -2039,6 +2039,12 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
     blocking = false;
     widthOverride.enabled = false;
 
+    for (int slot = 0; slot < 2; slot++){
+        if (hitByOverride[slot].time > 0){
+            hitByOverride[slot].time -= 1;
+        }
+    }
+
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (hitState.shakeTime > 0){
         hitState.shakeTime -= 1;
@@ -2609,6 +2615,14 @@ MugenAnimation * Character::getAnimation(int id) const {
         return where->second;
     }
     return NULL;
+}
+        
+void Character::setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes){
+    hitByOverride[slot].time = time;
+    hitByOverride[slot].standing = standing;
+    hitByOverride[slot].crouching = crouching;
+    hitByOverride[slot].aerial = aerial;
+    hitByOverride[slot].attributes = attributes;
 }
 
 }

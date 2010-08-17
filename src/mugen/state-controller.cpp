@@ -59,6 +59,13 @@ StateController::~StateController(){
         }
     }
 }
+
+double evaluateNumber(Compiler::Value * value, const Environment & env, double default_){
+    if (value != NULL){
+        return value->evaluate(env).toNumber();
+    }
+    return default_;
+}
     
 void StateController::resetPersistent(){
     currentPersistent = persistent;
@@ -2917,6 +2924,7 @@ public:
     ControllerHitBy(Ast::Section * section, const string & name):
     StateController(name, section),
     time(NULL),
+    slot(-1),
     standing(false),
     crouching(false),
     aerial(false){
@@ -2925,6 +2933,7 @@ public:
 
     Compiler::Value * time;
 
+    int slot;
     bool standing;
     bool crouching;
     bool aerial;
@@ -2947,7 +2956,12 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
                     controller.time = Compiler::compile(simple.getValue());
-                } else if (simple == "value"){
+                } else if (simple == "value" || simple == "value2"){
+                    if (simple == "value"){
+                        controller.slot = 0;
+                    } else if (simple == "value2"){
+                        controller.slot = 1;
+                    }
                     string type;
                     vector<string> moreTypes;
                     if (simple.getValue()->hasMultiple()){
@@ -3005,6 +3019,9 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (slot != -1){
+            guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, attributes);
+        }
     }
 };
 

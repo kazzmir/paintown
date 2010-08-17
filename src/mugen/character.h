@@ -997,6 +997,7 @@ public:
         virtual void assertSpecial(Specials special);
 
         virtual void setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack);
+        virtual void setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes);
 
 protected:
     void initialize();
@@ -1351,6 +1352,18 @@ protected:
             int edgeFront, edgeBack;
             int playerFront, playerBack;
         } widthOverride;
+
+        struct HitByOverride{
+            HitByOverride():
+            time(0){
+            }
+
+            bool standing;
+            bool crouching;
+            bool aerial;
+            int time;
+            std::vector<AttackType::Attribute> attributes;
+        } hitByOverride[2];
 };
 
 }
