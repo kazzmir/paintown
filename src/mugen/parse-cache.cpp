@@ -20,6 +20,10 @@ list<Ast::Section*> * ParseCache::parseCmd(const string & path){
     return cache->doParseCmd(path);
 }
 
+void ParseCache::destroy(){
+    cache->destroyCache();
+}
+
 ParseCache::ParseCache(){
     cache = this;
 }
@@ -31,15 +35,19 @@ void ParseCache::destroySectionList(list<Ast::Section*> * sections){
     delete sections;
 }
 
-ParseCache::~ParseCache(){
-    cache = NULL;
-
+void ParseCache::destroyCache(){
     for (map<const string, list<Ast::Section*>* >::iterator it = cmdCache.begin(); it != cmdCache.end(); it++){
         list<Ast::Section*> * sections = (*it).second;
         if (sections != NULL){
             destroySectionList(sections);
         }
     }
+    cmdCache.clear();
+}
+
+ParseCache::~ParseCache(){
+    cache = NULL;
+    destroyCache();
 }
 
 static list<Ast::Section*> * reallyParseCmd(const std::string & path){

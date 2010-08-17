@@ -2,8 +2,8 @@
 #define _paintown_options_h
 
 #include "menu_option.h"
-
 #include "input/input-map.h"
+#include "util/file-system.h"
 
 class Token;
 
@@ -62,7 +62,7 @@ public:
 
     virtual ~OptionCredits();
 private:
-    Bitmap *background;
+    Filesystem::RelativePath background;
     std::vector<std::string> credits;
     std::string music;
     int color, title;

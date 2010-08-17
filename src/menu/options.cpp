@@ -445,7 +445,6 @@ static bool miguelBirthday(){
 
 OptionCredits::OptionCredits( Token * token ):
 MenuOption(token, Event),
-background(0),
 music(""),
 color(Bitmap::makeColor(255,255,255)),
 title(Bitmap::makeColor(0,255,255)){
@@ -501,14 +500,17 @@ title(Bitmap::makeColor(0,255,255)){
 				/* Create an image and push it back on to vector */
 				std::string temp;
 				*tok >> temp;
-				if ( background ){
-					delete background;
+                                background = Filesystem::RelativePath(temp);
+                                /*
+				if (background){
+                                    delete background;
 				}
 				background = new Bitmap(Filesystem::find(Filesystem::RelativePath(temp)).path());
 				if ( background->getError() ){
 					delete background;
 					background = NULL;
 				}
+                                */
 			} else if ( *tok == "additional" ) {
 				std::string str;
 				while ( tok->hasTokens() ){
@@ -541,9 +543,11 @@ title(Bitmap::makeColor(0,255,255)){
 }
 
 OptionCredits::~OptionCredits(){
+    /*
 	if ( background ){
 		delete background;
 	}
+        */
 }
 
 void OptionCredits::logic(){
@@ -551,6 +555,7 @@ void OptionCredits::logic(){
 
 void OptionCredits::run( const Menu::Context & context ){
     Keyboard key;
+    Bitmap backgroundImage(Filesystem::find(background).path());
 
     const int maxCredits = credits.size();
 
@@ -597,11 +602,14 @@ void OptionCredits::run( const Menu::Context & context ){
         }
 
         if (draw){
-            if (background ){
+            /*
+            if (background){
                 background->Blit(tmp);
             } else {
                 tmp.fill(Bitmap::makeColor(0,0,0));
             }
+            */
+            backgroundImage.Blit(tmp);
 
             /*
             fire.draw(fireWork);

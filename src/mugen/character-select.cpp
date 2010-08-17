@@ -44,6 +44,7 @@
 #include "sprite.h"
 #include "util.h"
 #include "font.h"
+#include "parse-cache.h"
 
 #include "ast/all.h"
 #include "parser/all.h"
@@ -998,6 +999,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                         stage->addPlayer1(player1.getPlayer1());
 			stage->addPlayer2(player2.getPlayer2());
 			stage->load();
+                        ParseCache::destroy();
 			Loader::stopLoading(loader);
                         done = true;
                         fader.setState(Gui::FadeTool::FadeOut);

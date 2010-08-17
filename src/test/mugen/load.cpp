@@ -13,9 +13,31 @@
 #include "util/timedifference.h"
 #include "util/bitmap.h"
 
+/*
+#include <sstream>
+#include <unistd.h>
+*/
+
 using namespace std;
 
+/*
+static int getPid(){
+    return getpid();
+}
+
+static void runPmap(int pid){
+    ostringstream out;
+    out << "pmap " << pid;
+    system(out.str().c_str());
+}
+
+static void showMemory(){
+    runPmap(getPid());
+}
+*/
+
 static void load(const char * path){
+    // showMemory();
     try{
         TimeDifference diff;
         diff.startTime();
@@ -29,6 +51,7 @@ static void load(const char * path){
     } catch (const Filesystem::NotFound & e){
         Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
     }
+    // showMemory();
 }
 
 int main(int argc, char ** argv){

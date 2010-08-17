@@ -160,7 +160,7 @@ rules:
 	whitespace = sw*
 	sw = space
 	   | comment
-	s = space*
+	inline s = space*
 	inline space = " "
 	      | "\t"
 	      | <ascii 255>

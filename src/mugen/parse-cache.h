@@ -19,6 +19,8 @@ class ParseCache{
 public:
     /* pass in the full path to the file */
     static std::list<Ast::Section*> * parseCmd(const std::string & path);
+    /* clear the cache */
+    static void destroy();
 
 protected:
     friend void run();
@@ -28,6 +30,7 @@ protected:
 
     std::list<Ast::Section*> * doParseCmd(const std::string & path);
     void destroySectionList(std::list<Ast::Section*> * sections);
+    void destroyCache();
 
     static ParseCache * cache;
     std::map<const std::string, std::list<Ast::Section*>* > cmdCache;
