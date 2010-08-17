@@ -7,9 +7,6 @@
 #include "level/utils.h"
 
 class Sound;
-namespace OldMenu{
-    class Menu;
-}
 
 namespace Menu{
     class Menu;

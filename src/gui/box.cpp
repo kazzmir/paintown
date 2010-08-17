@@ -50,6 +50,8 @@ void Box::render(const Bitmap & work){
 }
 
 void Box::messageDialog(int centerWidth, int centerHeight, const std::string & message, int radius){
+    /* FIXME Get rid of this */
+    #if 0
     const Font &vFont = Font::getFont(OldMenu::Menu::getFont(),OldMenu::Menu::getFontWidth(),OldMenu::Menu::getFontHeight());
     const int width = vFont.textLength(message.c_str()) + 10;
     const int height = vFont.getHeight() + 10;
@@ -66,4 +68,5 @@ void Box::messageDialog(int centerWidth, int centerHeight, const std::string & m
     dialog.render(temp);
     vFont.printf( 5, 5, Bitmap::makeColor(255,255,255), temp, message, -1);
     temp.BlitToScreen(x,y);
+    #endif
 }

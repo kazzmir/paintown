@@ -277,8 +277,6 @@ class OptionMenu : public MenuOption {
 
         OptionMenu(Token *token);
 
-        virtual  void setParent(OldMenu::Menu *menu);
-
         virtual ~OptionMenu();
 
     private:

@@ -21,7 +21,6 @@
 
 #include "input/keyboard.h"
 #include "game.h"
-#include "menu/tab_menu.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "globals.h"
@@ -68,7 +67,7 @@ static Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context &
 
     try{
         Menu::Menu temp;
-        //temp.setParent(parent);
+        
         int index = 0;
         for ( unsigned int i = 0; i < possible.size(); i++ ){
             OptionLevel *opt = new OptionLevel(0, &index, i);
@@ -110,10 +109,6 @@ void OptionAdventure::run(const Menu::Context & context){
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
         Level::LevelInfo info = doLevelMenu("/levels", context);
-
-        if (parent != NULL){
-            parent->waitForSelect();
-        }
 
         Global::debug(1) << "Selecting players" << endl;
         int remap = 0;
@@ -184,10 +179,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
     try{
         //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
         Level::LevelInfo info = doLevelMenu("/levels", context);
-        if (parent != NULL){
-            parent->waitForSelect();
-        }
-
+        
         /*
         player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
         player->setObjectId(-1);
@@ -964,8 +956,8 @@ void OptionJoystick::run(const Menu::Context & context){
     const int height = vFont.getHeight() + 10;
     // const int x = (getParent()->getWork()->getWidth()/2) - (width/2);
     // const int y = (getParent()->getWork()->getHeight()/2) - (height/2);
-    const int x = OldMenu::Menu::Width / 2 - width/2;
-    const int y = OldMenu::Menu::Height / 2 - height/2;
+    const int x = Menu::Menu::Width / 2 - width/2;
+    const int y = Menu::Menu::Height / 2 - height/2;
     Box dialog;
     dialog.location.setPosition(Gui::AbsolutePoint(0,0));
     dialog.location.setDimensions(vFont.textLength(message) + 10, vFont.getHeight() + 10);
@@ -1146,7 +1138,7 @@ void OptionKey::logic(){
 
 void OptionKey::run(const Menu::Context & context){
     // Do dialog
-    Box::messageDialog(OldMenu::Menu::Width, OldMenu::Menu::Height, "Press a Key!",2);
+    Box::messageDialog(Menu::Menu::Width, Menu::Menu::Height, "Press a Key!",2);
 
     Keyboard key;
     keyCode = readKey( key );
@@ -1299,11 +1291,6 @@ void OptionMenu::run(const Menu::Context & context){
     menu->run(context);
 }
 
-void OptionMenu::setParent(OldMenu::Menu *menu){
-    this->parent = menu;
-    //this->menu->setParent(menu);
-}
-
 OptionMugenMenu::OptionMugenMenu(Token *token):
 MenuOption(token, Event){
     if ( *token != "mugen" ){
@@ -1385,7 +1372,7 @@ void OptionNetworkHost::logic(){
 void OptionNetworkHost::run(const Menu::Context & context){
 	Keyboard key;
         try{
-            Network::networkServer(parent);
+            Network::networkServer(0);
         } catch (const Exception::Return &e){
         }
 	key.clear();
@@ -1874,6 +1861,8 @@ OptionSelectFont::~OptionSelectFont(){
 }
 
 void OptionSelectFont::logic(){
+    /* FIXME Get current font and display info */
+    #if 0
     switch (typeAdjust){
         case fontName:	  
             setText("Current Font: " + OldMenu::Menu::getFont().path());
@@ -1892,6 +1881,7 @@ void OptionSelectFont::logic(){
         }
         default: break;
     }
+    #endif
     if (lblue < 255){
         lblue += 5;
     }
@@ -1916,6 +1906,8 @@ void OptionSelectFont::run(const Menu::Context & context){
 }
 
 bool OptionSelectFont::leftKey(){
+    /* FIXME font info */
+    #if 0
     switch (typeAdjust){
         case fontName:
             nextIndex(false);
@@ -1929,12 +1921,15 @@ bool OptionSelectFont::leftKey(){
         default:
             break;
     }
+    #endif
     // Menu::setFont(current, width, height);
     lblue = lgreen = 0;
     return true;
 }
 
 bool OptionSelectFont::rightKey(){
+    /* FIXME font info */
+    #if 0
     switch (typeAdjust){
         case fontName:
             nextIndex(true);
@@ -1948,6 +1943,7 @@ bool OptionSelectFont::rightKey(){
         default:
             break;
     }
+    #endif
     // Menu::setFont(current, width, height);
     rblue = rgreen = 0;
     return true;
@@ -1957,7 +1953,8 @@ void OptionSelectFont::nextIndex(bool forward){
     if (fonts.size() == 0){
         return;
     }
-
+    /* FIXME fonts */
+    #if 0
     int index = 0;
     for (unsigned int i = 0 ; i < fonts.size() ; ++i){
         if (OldMenu::Menu::getFont().path() == fonts[i]){
@@ -1975,6 +1972,7 @@ void OptionSelectFont::nextIndex(bool forward){
         }    
     }
     OldMenu::Menu::setFontName(fonts[index]);
+    #endif
 }
 
 OptionSpeed::OptionSpeed(Token *token): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)

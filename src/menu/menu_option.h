@@ -13,9 +13,6 @@ class Token;
 namespace Menu {
     class Context;
 }
-namespace OldMenu{
-    class Menu;
-}
 class Point;
 
 namespace Gui{
@@ -48,9 +45,6 @@ public:
     // Update animations This is called regardless and only when the option is active
     virtual void updateAnimations();
 
-    //! Set parent
-    virtual void setParent(OldMenu::Menu *menu);
-
     enum state
     {
         Selected = 0,
@@ -69,9 +63,7 @@ public:
     virtual ~MenuOption();
 
 protected:
-
-    //! This is the owner of this option
-    OldMenu::Menu *parent;
+    
 private:
     state currentState;
     OptionType mType;
@@ -106,7 +98,6 @@ public:
     inline bool isRunnable() const { return runnable; }
     inline void setForRemoval(const bool r) { forRemoval = r; }
     inline bool scheduledForRemoval() const { return forRemoval; }
-    inline OldMenu::Menu *getParent() const { return parent; }
 
 public:
     inline const std::string getName(){ return this->getText(); }

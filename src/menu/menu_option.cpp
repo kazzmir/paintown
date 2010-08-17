@@ -9,7 +9,6 @@
 using namespace std;
 
 MenuOption::MenuOption(Token *token, const OptionType type) throw (LoadException):
-parent(0),
 currentState(Deselected),
 text(""),
 infoText(""),
@@ -181,8 +180,4 @@ void MenuOption::updateAnimations(){
 	    (*i)->act();
 	}
     }
-}
-
-void MenuOption::setParent(OldMenu::Menu *menu){
-    this->parent = menu;
 }

@@ -148,7 +148,6 @@ src/menu/menu_global.cpp
 src/menu/menu_option.cpp
 src/menu/options.cpp
 src/menu/optionfactory.cpp
-src/menu/tab_menu.cpp
 )
 
 set(GUI_SRC
