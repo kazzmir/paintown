@@ -94,8 +94,40 @@ test/gui/rectarea.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
+test/factory/collector.cpp
+test/factory/shadow.cpp
+test/factory/object_factory.cpp
+test/factory/heart_factory.cpp
+test/resource.cpp
+test/nameplacer.cpp
+test/game/mod.cpp
+test/util/ebox.cpp
+test/level/utils.cpp
+test/select_player.cpp
+test/openbor/mod.cpp
+test/openbor/util.cpp
+test/openbor/pack-reader.cpp
+test/object/item.cpp
+test/object/attack.cpp
+test/object/projectile.cpp
+test/object/animation_event.cpp
+test/object/animation_trail.cpp
+test/object/animation.cpp
+test/object/gib.cpp
+test/object/cat.cpp
+test/object/actor.cpp
+test/object/object_nonattack.cpp
+test/object/enemy.cpp
+test/object/draw-effect.cpp
+test/object/character.cpp
+test/object/display_character.cpp
+test/object/heart.cpp
+test/object/stimulation.cpp
+test/object/health_stimulation.cpp
 test/object/object.cpp
 test/object/object_attack.cpp
+test/object/network_player.cpp
+test/object/network_character.cpp
 test/util/sound.cpp
 test/script/script.cpp
 test/util/load_exception.cpp
@@ -135,6 +167,8 @@ test/mugen/reader.cpp
 test/mugen/command.cpp
 test/mugen/section.cpp
 """)
+
+stage_source.append(testEnv.Peg('test/openbor/data.peg'))
 
 x = []
 x.append(testEnv.Program('load', load_source))

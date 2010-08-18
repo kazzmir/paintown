@@ -10,12 +10,13 @@
 #include "mugen/exception.h"
 #include "globals.h"
 #include "input/input-manager.h"
+#include "factory/collector.h"
 
 #include <iostream>
 
 using namespace std;
 
-int main(int argc, char ** argv){
+int paintown_main(int argc, char ** argv){
 #ifdef USE_ALLEGRO
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
@@ -24,6 +25,7 @@ int main(int argc, char ** argv){
 #ifdef USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
 #endif
+    Collector janitor;
     Bitmap::setFakeGraphicsMode(640, 480);
     InputManager input;
 
@@ -43,6 +45,11 @@ int main(int argc, char ** argv){
 #ifdef USE_SDL
         SDL_Quit();
 #endif
+
+}
+
+int main(int argc, char ** argv){
+    paintown_main(argc, argv);
 }
 #ifdef USE_ALLEGRO
 END_OF_MAIN()

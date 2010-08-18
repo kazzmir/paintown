@@ -13,7 +13,6 @@ test/util/file-system.cpp
 test/menu/menu.cpp
 test/menu/actionfactory.cpp
 test/menu/menu_global.cpp
-test/menu/tab_menu.cpp
 test/menu/optionfactory.cpp
 test/menu/action_speed.cpp
 test/menu/menu_option.cpp
