@@ -912,6 +912,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     bool escaped = false;
     
     int ticker = 0;
+    ParseCache cache;
     
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
@@ -1000,7 +1001,6 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                         stage->addPlayer1(player1.getPlayer1());
 			stage->addPlayer2(player2.getPlayer2());
 			stage->load();
-                        ParseCache::destroy();
 			Loader::stopLoading(loader);
                         done = true;
                         fader.setState(Gui::FadeTool::FadeOut);

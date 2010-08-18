@@ -848,7 +848,6 @@ void MugenMenu::renderText(Bitmap *bmp){
 namespace Mugen{
 
 void run(){
-    ParseCache cache;
     // Load er up and throw up a load box to inform the user
     // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
     MugenMenu menu(Mugen::Data::getInstance().getMotif());

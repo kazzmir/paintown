@@ -12,10 +12,17 @@ namespace Mugen{
 
 ParseCache * ParseCache::cache = 0;
 
+static list<Ast::Section*> * reallyParseCmd(const std::string & path){
+    return (list<Ast::Section*>*) Cmd::parse(path);
+}
+
 list<Ast::Section*> * ParseCache::parseCmd(const string & path){
     if (cache == NULL){
+        return reallyParseCmd(path);
+        /*
         Global::debug(0) << "Error: accessing cache without instantiating it" << endl;
         throw exception();
+        */
     }
     return cache->doParseCmd(path);
 }
@@ -50,9 +57,6 @@ ParseCache::~ParseCache(){
     destroyCache();
 }
 
-static list<Ast::Section*> * reallyParseCmd(const std::string & path){
-    return (list<Ast::Section*>*) Cmd::parse(path);
-}
 
 static list<Ast::Section*> * copy(list<Ast::Section*> * input){
     list<Ast::Section*> * output = new list<Ast::Section*>();

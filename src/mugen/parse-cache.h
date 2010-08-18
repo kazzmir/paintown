@@ -17,16 +17,14 @@ namespace Mugen{
 
 class ParseCache{
 public:
+    ParseCache();
+    ~ParseCache();
+
     /* pass in the full path to the file */
     static std::list<Ast::Section*> * parseCmd(const std::string & path);
     /* clear the cache */
     static void destroy();
-
 protected:
-    friend void run();
-    friend int ::main(int argc, char ** argv);
-    ParseCache();
-    ~ParseCache();
 
     std::list<Ast::Section*> * doParseCmd(const std::string & path);
     void destroySectionList(std::list<Ast::Section*> * sections);
