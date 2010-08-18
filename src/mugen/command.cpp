@@ -199,7 +199,8 @@ protected:
 class CompiledKeyRelease: public CompiledKey {
 public:
     CompiledKeyRelease(const Ast::KeyModifier & ast, CompiledKey * key):
-    key(key){
+    key(key),
+    time(0){
         time = ast.getExtra();
     }
     

@@ -380,6 +380,7 @@ Character::~Character(){
 
 void Character::initialize(){
     currentState = Standing;
+    currentPhysics = Physics::Stand;
     moveType = Move::Idle;
     previousState = currentState;
     stateType = StateType::Stand;

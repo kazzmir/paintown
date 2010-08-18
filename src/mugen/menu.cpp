@@ -722,7 +722,9 @@ void MugenMenu::addMenuOption(Mugen::ItemOption * option){
 void MugenMenu::cleanup(){
     
     //Backgrounds
-    if (background) delete background;
+    if (background){
+        delete background;
+    }
     
     // Get rid of sprites
     cleanupSprites();
