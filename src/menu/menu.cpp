@@ -350,6 +350,7 @@ void Menu::Background::add(Gui::Animation * anim){
 
 Menu::Renderer::Renderer(){
 }
+
 Menu::Renderer::~Renderer(){
     // Kill info boxes
     for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end();++i){
@@ -1019,7 +1020,9 @@ void Menu::Context::setBackground(Background *bg){
 Menu::Menu::Menu(const Type & type):
 renderer(0),
 type(type){
+    setRenderer(type);
 }
+
 Menu::Menu::Menu(const Filesystem::AbsolutePath & filename, const Type & type):
 renderer(0),
 type(type){
@@ -1092,7 +1095,7 @@ void Menu::Menu::load(Token * token){
         }
     }
     
-    checkType(type);
+    setRenderer(type);
 
     while ( token->hasTokens() ){
         try{
@@ -1182,7 +1185,7 @@ void Menu::Menu::run(const Context & parentContext){
     bool specialExit = false;
     
     // Run while till the localContext is done
-    while( localContext.getState() != Context::Completed && (renderer && renderer->active()) ){
+    while (localContext.getState() != Context::Completed && (renderer && renderer->active())){
         bool draw = false;
 
         if ( Global::speed_counter > 0 ){
@@ -1405,15 +1408,24 @@ void Menu::Menu::handleCompatibility(Token * tok, int version){
         tok->print(" ");
     }
 }
+        
+void Menu::Menu::setRenderer(const Type & type){
+    if (renderer){
+        delete renderer;
+    }
+    renderer = rendererType(type);
+}
 
-void Menu::Menu::checkType(const Type & type){
+Menu::Renderer * Menu::Menu::rendererType(const Type & type){
     switch (type){
-	case Tabbed:
-	    renderer = new TabRenderer();
+	case Tabbed: {
+	    return new TabRenderer();
 	    break;
+        }
 	case Default:
-	default:
-	    renderer = new DefaultRenderer();
+	default: {
+	    return new DefaultRenderer();
 	    break;
+        }
     }
 }

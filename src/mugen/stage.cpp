@@ -1436,14 +1436,18 @@ void MugenStage::cleanup(){
                 delete sprite;
             }
         }
+        effects.clear();
+
         for (map<int, MugenAnimation*>::iterator it = sparks.begin(); it != sparks.end(); it++){
             MugenAnimation * animation = (*it).second;
             delete animation;
         }
+        sparks.clear();
 
         for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end();){
             delete *it;
         }
+        showSparks.clear();
 
         for (map<unsigned int, map<unsigned int, MugenSound*> >::iterator it1 = sounds.begin(); it1 != sounds.end(); it1++){
             map<unsigned int, MugenSound*> & group = (*it1).second;
@@ -1451,6 +1455,7 @@ void MugenStage::cleanup(){
                 delete (*it2).second;
             }
         }
+        sounds.clear();
     }
 }
 

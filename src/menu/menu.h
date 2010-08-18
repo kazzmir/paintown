@@ -438,6 +438,8 @@ class Menu{
 
         /*! render pass local context and work */
         virtual void render(Context &, const Bitmap &);
+
+        virtual void setRenderer(const Type & type);
         
         /*! Get Name */
         virtual std::string getName();
@@ -479,7 +481,7 @@ class Menu{
 	Type type;
 	
 	/*! Check type */
-	virtual void checkType(const Type &);
+	virtual Renderer * rendererType(const Type &);
     
 };
 
