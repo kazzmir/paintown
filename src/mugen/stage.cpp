@@ -1444,7 +1444,7 @@ void MugenStage::cleanup(){
         }
         sparks.clear();
 
-        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end();){
+        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
             delete *it;
         }
         showSparks.clear();
