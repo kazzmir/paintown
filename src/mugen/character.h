@@ -998,6 +998,7 @@ public:
 
         virtual void setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack);
         virtual void setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes);
+        virtual void setNotHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes);
 
 protected:
     void initialize();

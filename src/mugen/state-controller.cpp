@@ -2964,7 +2964,7 @@ public:
                     }
                     string type;
                     vector<string> moreTypes;
-                    if (simple.getValue()->hasMultiple()){
+                    if (! simple.getValue()->hasMultiple()){
                         string type;
                         simple >> type;
                         type = PaintownUtil::lowerCaseAll(type);
@@ -3021,6 +3021,112 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         if (slot != -1){
             guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, attributes);
+        }
+    }
+};
+
+class ControllerNotHitBy: public StateController {
+public:
+    ControllerNotHitBy(Ast::Section * section, const string & name):
+    StateController(name, section),
+    time(NULL),
+    slot(-1),
+    standing(false),
+    crouching(false),
+    aerial(false){
+        parse(section);
+    }
+
+    Compiler::Value * time;
+
+    int slot;
+    bool standing;
+    bool crouching;
+    bool aerial;
+
+    vector<AttackType::Attribute> attributes;
+
+    virtual ~ControllerNotHitBy(){
+        delete time;
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerNotHitBy & controller):
+            controller(controller){
+            }
+
+            ControllerNotHitBy & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "time"){
+                    controller.time = Compiler::compile(simple.getValue());
+                } else if (simple == "value" || simple == "value2"){
+                    if (simple == "value"){
+                        controller.slot = 0;
+                    } else if (simple == "value2"){
+                        controller.slot = 1;
+                    }
+                    string type;
+                    vector<string> moreTypes;
+                    if (! simple.getValue()->hasMultiple()){
+                        string type;
+                        simple >> type;
+                        type = PaintownUtil::lowerCaseAll(type);
+                    } else {
+                        simple >> type;
+                        try{
+                            while (true){
+                                string what;
+                                simple >> what;
+                                what = PaintownUtil::lowerCaseAll(what);
+                                moreTypes.push_back(what);
+                            }
+                        } catch (const Ast::Exception & e){
+                        }
+                    }
+
+                    if (type.find('s') != string::npos){
+                        controller.standing = true;
+                    }
+
+                    if (type.find('c') != string::npos){
+                        controller.crouching = true;
+                    }
+
+                    if (type.find('a') != string::npos){
+                        controller.aerial = true;
+                    }
+
+                    map<string, AttackType::Attribute> attributes;
+                    attributes["na"] = AttackType::NormalAttack;
+                    attributes["nt"] = AttackType::NormalThrow;
+                    attributes["np"] = AttackType::NormalProjectile;
+                    attributes["sa"] = AttackType::SpecialAttack;
+                    attributes["st"] = AttackType::SpecialThrow;
+                    attributes["sp"] = AttackType::SpecialProjectile;
+                    attributes["ha"] = AttackType::HyperAttack;
+                    attributes["ht"] = AttackType::HyperThrow;
+                    attributes["hp"] = AttackType::HyperProjectile;
+
+                    for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
+                        string what = *it;
+                        if (attributes.find(what) != attributes.end()){
+                            controller.attributes.push_back(attributes[what]);
+                        }
+                    }
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (slot != -1){
+            guy.setNotHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, attributes);
         }
     }
 };
@@ -3152,6 +3258,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::FallEnvShake : return new ControllerFallEnvShake(section, name);
         case StateController::Explod : return new ControllerExplod(section, name);
         case StateController::HitBy : return new ControllerHitBy(section, name);
+        case StateController::NotHitBy : return new ControllerNotHitBy(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3179,7 +3286,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::LifeSet :
         case StateController::ModifyExplod :
         case StateController::MoveHitReset :
-        case StateController::NotHitBy :
         case StateController::Offset :
         case StateController::PalFX :
         case StateController::ParentVarAdd :
