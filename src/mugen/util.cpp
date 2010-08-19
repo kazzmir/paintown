@@ -1001,6 +1001,15 @@ const std::string Mugen::Util::probeDef(const Ast::AstParse & parsed, const std:
     throw MugenException("Couldn't find '" + search + "' in section '" + section + "'");
 }
 
+void Mugen::Util::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
+    for (map< unsigned int, std::map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, MugenSprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            MugenSprite * sprite = j->second;
+            sprite->unloadRaw();
+        }
+    }
+}
+
 const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search){
     TimeDifference diff;
     diff.startTime();

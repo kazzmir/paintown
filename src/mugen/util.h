@@ -28,10 +28,16 @@ namespace Mugen{
 typedef std::map< unsigned int, MugenSprite *> GroupMap;
 typedef std::map< unsigned int, GroupMap> SpriteMap;
 typedef std::map< unsigned int, std::map< unsigned int, MugenSound * > > SoundMap;
-    
+
+/* FIXME: add descriptions of every function here */
 namespace Util{
+    /* Converts string to all lower case */
     const std::string fixCase (const std::string &str);
+
+    /* Removes extra whitespace at the front and end of a string */
     const std::string removeSpaces (const std::string &str);
+
+    /* Converts backslash \ to forward slash / */
     const std::string invertSlashes (const std::string &str);
     const std::string stripDir( const std::string &str );
     const Filesystem::AbsolutePath fixFileName( const Filesystem::AbsolutePath &dir, std::string str );
@@ -48,6 +54,9 @@ namespace Util{
     MugenAnimation *getAnimation( Ast::Section *section, const Mugen::SpriteMap &sprites );
 
     std::map<int, MugenAnimation *> loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites);
+
+    /* destroys raw pcx data in a MugenSprite */
+    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
 
     const Filesystem::AbsolutePath getCorrectFileLocation(const Filesystem::AbsolutePath & dir, const std::string &file );
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
