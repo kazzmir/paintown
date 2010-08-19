@@ -538,13 +538,11 @@ MugenMenu::~MugenMenu(){
 }
 
 void MugenMenu::run(){
-    Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
-    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool endGame = false;
     
-    if ( options.empty() ){
-	    return;
+    if (options.empty()){
+        return;
     }
     
     currentOption = options.begin();
@@ -564,11 +562,14 @@ void MugenMenu::run(){
     // Do we have logos or intros?
     // Logo run it no repeat
     if (logo){
+        Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         logo->setInput(player1Input);
 	logo->run(work, false);
     }
+
     // Intro run it no repeat
     if (intro){
+        Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         intro->setInput(player1Input);
 	intro->run(work, false);
     }
@@ -579,120 +580,125 @@ void MugenMenu::run(){
 	Global::second_counter = 0;
 	int game_time = 100;
     
-	while ( ! done && (*currentOption)->getState() != MenuOption::Run && fader.getState() != Gui::FadeTool::EndFade ){
+        /* Extra scope to force temporary bitmaps to be destroyed */
+        {
+            Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
+            Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+            while ( ! done && (*currentOption)->getState() != MenuOption::Run && fader.getState() != Gui::FadeTool::EndFade ){
 
-	    bool draw = false;
-	    
-	    //input
-	    InputManager::poll();
+                bool draw = false;
 
-	    if ( Global::speed_counter > 0 ){
-		draw = true;
-		runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-		while ( runCounter >= 1.0 ){
-		    ticker++;
-		    runCounter -= 1;
-		    // Keys
-		    InputMap<Mugen::Keys>::Output out1 = InputManager::getMap(player1Input);
-		    InputMap<Mugen::Keys>::Output out2 = InputManager::getMap(player2Input);
-		    
-		    if (fader.getState() == Gui::FadeTool::NoFade){
-			if ( out1[Mugen::Up] || out2[Mugen::Up]){	
-			    moveMenuUp();
-			}
+                //input
+                InputManager::poll();
 
-			if (out1[Mugen::Down] || out2[Mugen::Down]){
-			    moveMenuDown();
-			}
-			
-			Mugen::Keys selectable[] = {Mugen::A, Mugen::B, Mugen::C, Mugen::X, Mugen::Y, Mugen::Z, Mugen::Start};
-                        for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
-                            if (out1[selectable[key]]){
-                                if((*currentOption)->isRunnable()){
-                                    (*currentOption)->setState( MenuOption::Run );
-                                }
-			        // Set the fade state
-			        fader.setState(Gui::FadeTool::FadeOut);
-                                if (sounds[doneSound.x][doneSound.y] != 0){
-                                    sounds[doneSound.x][doneSound.y]->play();
-                                }
-                                selectingPlayer = Mugen::Player1;
+                if ( Global::speed_counter > 0 ){
+                    draw = true;
+                    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+                    while ( runCounter >= 1.0 ){
+                        ticker++;
+                        runCounter -= 1;
+                        // Keys
+                        InputMap<Mugen::Keys>::Output out1 = InputManager::getMap(player1Input);
+                        InputMap<Mugen::Keys>::Output out2 = InputManager::getMap(player2Input);
+
+                        if (fader.getState() == Gui::FadeTool::NoFade){
+                            if ( out1[Mugen::Up] || out2[Mugen::Up]){	
+                                moveMenuUp();
                             }
-                            if ( out2[selectable[key]] ){
-			        if((*currentOption)->isRunnable()){
-                                    (*currentOption)->setState( MenuOption::Run );
+
+                            if (out1[Mugen::Down] || out2[Mugen::Down]){
+                                moveMenuDown();
+                            }
+
+                            Mugen::Keys selectable[] = {Mugen::A, Mugen::B, Mugen::C, Mugen::X, Mugen::Y, Mugen::Z, Mugen::Start};
+                            for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
+                                if (out1[selectable[key]]){
+                                    if((*currentOption)->isRunnable()){
+                                        (*currentOption)->setState( MenuOption::Run );
+                                    }
+                                    // Set the fade state
+                                    fader.setState(Gui::FadeTool::FadeOut);
+                                    if (sounds[doneSound.x][doneSound.y] != 0){
+                                        sounds[doneSound.x][doneSound.y]->play();
+                                    }
+                                    selectingPlayer = Mugen::Player1;
                                 }
+                                if ( out2[selectable[key]] ){
+                                    if((*currentOption)->isRunnable()){
+                                        (*currentOption)->setState( MenuOption::Run );
+                                    }
+                                    // Set the fade state
+                                    fader.setState(Gui::FadeTool::FadeOut);
+                                    if (sounds[doneSound.x][doneSound.y] != 0){
+                                        sounds[doneSound.x][doneSound.y]->play();
+                                    }
+                                    selectingPlayer = Mugen::Player2;
+                                }
+                            }
+
+                            if ( out1[Mugen::Esc] || out2[Mugen::Esc] ){
+                                endGame = done = true;
                                 // Set the fade state
-			        fader.setState(Gui::FadeTool::FadeOut);
-                                if (sounds[doneSound.x][doneSound.y] != 0){
-                                    sounds[doneSound.x][doneSound.y]->play();
+                                fader.setState(Gui::FadeTool::FadeOut);
+                                (*currentOption)->setState(MenuOption::Deselected);
+                                InputManager::waitForRelease(player1Input, Mugen::Esc);
+                                if (sounds[cancelSound.x][cancelSound.y] != 0){
+                                    sounds[cancelSound.x][cancelSound.y]->play();
                                 }
-                                selectingPlayer = Mugen::Player2;
-			    }
-			}
-			
-                        if ( out1[Mugen::Esc] || out2[Mugen::Esc] ){
-			    endGame = done = true;
-			    // Set the fade state
-			    fader.setState(Gui::FadeTool::FadeOut);
-			    (*currentOption)->setState(MenuOption::Deselected);
-                            InputManager::waitForRelease(player1Input, Mugen::Esc);
-                            if (sounds[cancelSound.x][cancelSound.y] != 0){
-                                sounds[cancelSound.x][cancelSound.y]->play();
                             }
-			}
-		    }
-                    // Update menu position
-                    doMenuMovement(); 
+                        }
+                        // Update menu position
+                        doMenuMovement(); 
 
-		    // Font Cursor
-		    fontCursor.act();
-		    
-		    // Fader
-		    fader.act();
-		    
-		    // Backgrounds
-		    background->act();
-		}
-		    
-		Global::speed_counter = 0;
-	    }
-		
-	    while ( Global::second_counter > 0 ){
-		game_time--;
-		Global::second_counter--;
-		if ( game_time < 0 ){
-			game_time = 0;
-		}
-	    }
-	
-	    if ( draw ){
-                /* This logic doesn't make sense.. why does it draw to `work'
-                 * and then stretch blit `workArea' to `work'? That will just
-                 * clear anything drawn to `work', won't it?
-                 */
-		// backgrounds
-		background->renderBackground(0, 0, workArea);
+                        // Font Cursor
+                        fontCursor.act();
 
-		// Draw any misc stuff in the background of the menu of selected object 
-		(*currentOption)->drawBelow(&work);
-		// Draw text
-		renderText(&workArea);
-		// Foregrounds
-		background->renderForeground(0,0,workArea);
-		// Draw any misc stuff in the foreground of the menu of selected object 
-		(*currentOption)->drawAbove(&work);
-		// Do fades
-		fader.draw(workArea);
-		// Finally render to screen
-		workArea.Stretch(work);
-		work.BlitToScreen();
-	    }
+                        // Fader
+                        fader.act();
 
-	    while ( Global::speed_counter < 1 ){
-		Util::rest( 1 );
-	    }              
-	}
+                        // Backgrounds
+                        background->act();
+                    }
+
+                    Global::speed_counter = 0;
+                }
+
+                while ( Global::second_counter > 0 ){
+                    game_time--;
+                    Global::second_counter--;
+                    if ( game_time < 0 ){
+                        game_time = 0;
+                    }
+                }
+
+                if ( draw ){
+                    /* This logic doesn't make sense.. why does it draw to `work'
+                     * and then stretch blit `workArea' to `work'? That will just
+                     * clear anything drawn to `work', won't it?
+                     */
+                    // backgrounds
+                    background->renderBackground(0, 0, workArea);
+
+                    // Draw any misc stuff in the background of the menu of selected object 
+                    (*currentOption)->drawBelow(&work);
+                    // Draw text
+                    renderText(&workArea);
+                    // Foregrounds
+                    background->renderForeground(0,0,workArea);
+                    // Draw any misc stuff in the foreground of the menu of selected object 
+                    (*currentOption)->drawAbove(&work);
+                    // Do fades
+                    fader.draw(workArea);
+                    // Finally render to screen
+                    workArea.Stretch(work);
+                    work.BlitToScreen();
+                }
+
+                while ( Global::speed_counter < 1 ){
+                    Util::rest( 1 );
+                }              
+            }
+        }
 	    
 	// do we got an option to run, lets do it
 	if ((*currentOption)->getState() == MenuOption::Run){
@@ -709,6 +715,7 @@ void MugenMenu::run(){
 	    (*currentOption)->setState(MenuOption::Deselected);
 	}
     }
+
     throw Exception::Return(__FILE__, __LINE__);
 }
 
