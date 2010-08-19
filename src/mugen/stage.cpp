@@ -614,6 +614,7 @@ void MugenStage::load(){
 
     // Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.sff")), Filesystem::AbsolutePath(), effects);
     Mugen::Util::readSprites(getMotifFile("fightfx.sff"), Filesystem::AbsolutePath(), effects);
+    destroyRaw(effects);
     // sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.air")), effects);
     sparks = Mugen::Util::loadAnimations(getMotifFile("fightfx.air"), effects);
 
@@ -651,6 +652,15 @@ void MugenStage::load(){
 
     // Stage is loaded
     loaded = true;
+}
+
+void MugenStage::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
+    for (map< unsigned int, std::map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, MugenSprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            MugenSprite * sprite = j->second;
+            sprite->unloadRaw();
+        }
+    }
 }
 
 void MugenStage::setCamera( const double x, const double y ){ 

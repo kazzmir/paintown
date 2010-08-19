@@ -1720,8 +1720,19 @@ clearColor(-1){
             control->addController(controller);
 	}
     }
-    
+
+    destroyRaw(sprites);
 }
+
+void Background::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
+    for (map< unsigned int, std::map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, MugenSprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            MugenSprite * sprite = j->second;
+            sprite->unloadRaw();
+        }
+    }
+}
+
 Background::~Background(){
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){

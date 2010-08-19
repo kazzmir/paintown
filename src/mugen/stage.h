@@ -224,6 +224,7 @@ protected:
     void physics(Object * o);
     bool doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2);
     bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
+    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
 
 protected:
 

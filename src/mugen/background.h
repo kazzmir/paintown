@@ -431,6 +431,10 @@ class Background{
             return temp;
         }
 
+    protected:
+
+        void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
+
     private:
 	
 	//! File where background is in
