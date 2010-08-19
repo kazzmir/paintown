@@ -233,7 +233,6 @@ int paintown_main( int argc, char ** argv ){
             /* fadein from white */
             //Menu game(true, Bitmap::makeColor(255, 255, 255));
             //game.load(mainMenuPath());
-            Menu::Menu game(mainMenuPath());
             if (just_network_server){
 #ifdef HAVE_NETWORKING
                 //Network::networkServer(&game);
@@ -241,6 +240,7 @@ int paintown_main( int argc, char ** argv ){
             } else if (mugen){
                 Mugen::run();
             } else {
+                Menu::Menu game(mainMenuPath());
                 game.run(Menu::Context());
             }
         } catch (const Filesystem::Exception & ex){
