@@ -1021,16 +1021,17 @@ protected:
     virtual std::vector<std::string> doInput(const MugenStage & stage);
     virtual bool doStates(MugenStage & stage, const std::vector<std::string> & active, int state);
 
-    typedef void (internalCommand_t)(MugenStage & stage, const std::vector<std::string> & inputs);
+    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
+
+    void resetJump(MugenStage & stage, const std::vector<std::string> & inputs);
+    void doubleJump(MugenStage & stage, const std::vector<std::string> & inputs);
+    void stopGuarding(MugenStage & stage, const std::vector<std::string> & inputs);
 
     /*
-    void resetJump(const MugenStage & stage, const std::vector<std::string> & inputs);
-    void doubleJump(const MugenStage & stage, const std::vector<std::string> & inputs);
-    void stopGuarding(const MugenStage & stage, const std::vector<std::string> & inputs);
-    */
     internalCommand_t resetJump;
     internalCommand_t doubleJump;
     internalCommand_t stopGuarding;
+    */
 
     virtual void fixAssumptions();
     virtual void parseState(Ast::Section * section);

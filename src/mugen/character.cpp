@@ -1466,6 +1466,7 @@ void Character::load(int useAct){
     /* Sprites */
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
     Util::readSprites(baseDir.join(Filesystem::RelativePath(sffFile)), baseDir.join(Filesystem::RelativePath(paletteFile)), sprites);
+    destroyRaw(sprites);
     Global::debug(1) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
@@ -1479,6 +1480,15 @@ void Character::load(int useAct){
         Global::debug(0) << "State -1: '" << (*it)->getName() << "'" << endl;
     }
     */
+}
+
+void Character::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
+    for (map< unsigned int, std::map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, MugenSprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            MugenSprite * sprite = j->second;
+            sprite->unloadRaw();
+        }
+    }
 }
         
 bool Character::hasAnimation(int index) const {

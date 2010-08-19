@@ -223,7 +223,7 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
 }
 
 void MugenSprite::load(bool mask){
-    if (!bitmap){
+    if (!bitmap && pcx){
 	bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
     }
 }
@@ -231,12 +231,23 @@ void MugenSprite::load(bool mask){
 void MugenSprite::reload(bool mask){
     if (bitmap){
 	delete bitmap;
+        bitmap = NULL;
     }
-    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+    if (pcx){
+        bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+    }
 }
 
 Bitmap *MugenSprite::getBitmap() const {
     return bitmap;
+}
+
+/* deletes raw data */
+void MugenSprite::unloadRaw(){
+    if (pcx){
+        delete[] pcx;
+        pcx = NULL;
+    }
 }
 
 int MugenSprite::getWidth(){

@@ -31,6 +31,8 @@ class MugenSprite{
 	// load/reload sprite
 	void load(bool mask=true);
 	void reload(bool mask=true);
+        /* deletes raw pcx data */
+        void unloadRaw();
 
         /* just copies the bitmap */
         void copyImage(const MugenSprite * copy);
