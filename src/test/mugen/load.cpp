@@ -9,7 +9,6 @@
 #include "util/file-system.h"
 #include "mugen/character.h"
 #include "mugen/exception.h"
-#include "mugen/parse-cache.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
 
@@ -46,6 +45,10 @@ static void load(const char * path){
         kfm.load();
         diff.endTime();
         Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
+        /*
+        int * x = new int[1 << 21];
+        delete[] x;
+        */
     } catch (const MugenException & e){
         Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
     } catch (const Filesystem::NotFound & e){
@@ -63,8 +66,6 @@ int main(int argc, char ** argv){
     SDL_Init(SDL_INIT_VIDEO);
     Bitmap::setFakeGraphicsMode(640, 480);
 #endif
-
-    Mugen::ParseCache cache;
 
     if (argc < 2){
         load("mugen/chars/kfm/kfm.def");

@@ -32,6 +32,10 @@ void ParseCache::destroy(){
 }
 
 ParseCache::ParseCache(){
+    if (cache != NULL){
+        Global::debug(0) << "Only one parse cache is allowed" << endl;
+        throw exception();
+    }
     cache = this;
 }
 

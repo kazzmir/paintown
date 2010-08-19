@@ -930,6 +930,9 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
         PlayerLoader(CharacterInfo & player1, CharacterInfo & player2):
             player1(player1),
             player2(player2){
+                /* compute is a virtual function, is the virtual table set up
+                 * by the time start() tries to call it? or is that a race condition?
+                 */
                 start();
         }
 
@@ -951,7 +954,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
             player1.loadPlayer1();
             // Load player 2
             player2.loadPlayer2();
-
+            set(0);
         }
     };
 
@@ -1033,8 +1036,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 	    player2.getPortrait()->render(player2Position.x,player2Position.y,workArea,player2Effects);
 	    
 	    // render fonts
-	    player1Font.render(player1.getName(),workArea);
-	    player2Font.render(player2.getName(),workArea);
+	    player1Font.render(player1.getName(), workArea);
+	    player2Font.render(player2.getName(), workArea);
 	    
 	    // render Foregrounds
 	    background->renderForeground(0,0,workArea);
@@ -2110,7 +2113,7 @@ void CharacterSelect::reset(){
 }
 
 void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
-    versus.render(*currentPlayer1,*currentPlayer2, currentStage, bmp);
+    versus.render(*currentPlayer1, *currentPlayer2, currentStage, bmp);
 }
 
 bool CharacterSelect::setNextArcadeMatch(){

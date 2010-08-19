@@ -1,9 +1,9 @@
-#include "mugen/config.h"
+#include "config.h"
 
 #include <list>
 
-#include "mugen/util.h"
-#include "mugen/exception.h"
+#include "util.h"
+#include "exception.h"
 
 #include "globals.h"
 #include "util/file-system.h"

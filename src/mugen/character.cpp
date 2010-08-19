@@ -1340,7 +1340,7 @@ void Character::load(int useAct){
                         throw MugenException(out.str());
                     }
                 }
-                        
+
                 for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
                     Location & where = *it;
                     try{
