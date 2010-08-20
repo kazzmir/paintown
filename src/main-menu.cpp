@@ -133,7 +133,7 @@ static void hack(){
 */
 
 int paintown_main( int argc, char ** argv ){
-
+    
     bool music_on = true;
     bool joystick_on = true;
     bool mugen = false;

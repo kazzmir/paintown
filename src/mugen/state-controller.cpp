@@ -3031,9 +3031,9 @@ public:
     StateController(name, section),
     time(NULL),
     slot(-1),
-    standing(false),
-    crouching(false),
-    aerial(false){
+    standing(true),
+    crouching(true),
+    aerial(true){
         parse(section);
     }
 
@@ -3088,15 +3088,15 @@ public:
                     }
 
                     if (type.find('s') != string::npos){
-                        controller.standing = true;
+                        controller.standing = false;
                     }
 
                     if (type.find('c') != string::npos){
-                        controller.crouching = true;
+                        controller.crouching = false;
                     }
 
                     if (type.find('a') != string::npos){
-                        controller.aerial = true;
+                        controller.aerial = false;
                     }
 
                     map<string, AttackType::Attribute> attributes;
@@ -3124,9 +3124,44 @@ public:
         section->walk(walker);
     }
 
+    bool inSet(const vector<AttackType::Attribute> & set, AttackType::Attribute what) const {
+        for (vector<AttackType::Attribute>::const_iterator it = set.begin(); it != set.end(); it++){
+            if (*it == what){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    vector<AttackType::Attribute> difference(const vector<AttackType::Attribute> & all, const vector<AttackType::Attribute> & set) const {
+        vector<AttackType::Attribute> result;
+        for (vector<AttackType::Attribute>::const_iterator it = all.begin(); it != all.end(); it++){
+            if (!inSet(set, *it)){
+                result.push_back(*it);
+            }
+        }
+        return result;
+    }
+
+    vector<AttackType::Attribute> allAttributes() const {
+        vector<AttackType::Attribute> all;
+        all.push_back(AttackType::NormalAttack);
+        all.push_back(AttackType::NormalThrow);
+        all.push_back(AttackType::NormalProjectile);
+        all.push_back(AttackType::SpecialAttack);
+        all.push_back(AttackType::SpecialThrow);
+        all.push_back(AttackType::SpecialProjectile);
+        all.push_back(AttackType::HyperAttack);
+        all.push_back(AttackType::HyperThrow);
+        all.push_back(AttackType::HyperProjectile);
+        return all;
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         if (slot != -1){
-            guy.setNotHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, attributes);
+            vector<AttackType::Attribute> notAttributes = difference(allAttributes(), attributes);
+            guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, notAttributes);
         }
     }
 };
