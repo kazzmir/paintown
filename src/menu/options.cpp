@@ -120,10 +120,6 @@ void OptionAdventure::run(const Menu::Context & context){
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Error while loading: " << le.getTrace() << endl;
-    } catch ( const Exception::Return & r ){
-        /* Game::selectPlayer can throw ReturnException, he will wait
-         * for the keypress to be released, so we don't have to do it
-         */
     }
 
     /* player will be null if an exception occurred before selectPlayer was called */
@@ -215,12 +211,6 @@ void OptionAdventureCpu::run(const Menu::Context & context){
         Game::realGame(futures, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Could not load player: " << le.getTrace() << endl;
-    } catch ( const Exception::Return & r ){
-        /* replace this with parent->waitAll() or something. we only care that
-         * the player doesn't accidentally press some menu key, like esc or enter.
-         * but they can press other keys that were useful in game because those
-         * keys don't have any effect on the menu.
-         */
     }
 
     /*
@@ -643,6 +633,7 @@ void OptionCredits::run( const Menu::Context & context ){
     }
 
     InputManager::waitForRelease(input, Exit);
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionDummy::OptionDummy(Token *token):
@@ -1326,6 +1317,7 @@ void OptionMugenMenu::logic(){
 
 void OptionMugenMenu::run(const Menu::Context & context){
     Mugen::run();
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
 #ifdef HAVE_NETWORKING
@@ -1354,6 +1346,7 @@ void OptionNetworkHost::run(const Menu::Context & context){
 	key.clear();
 	key.poll();
 	key.wait();
+	throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionNetworkJoin::OptionNetworkJoin(Token *token):
@@ -1384,6 +1377,7 @@ void OptionNetworkJoin::run(const Menu::Context & context){
 	key.clear();
 	key.poll();
 	key.wait();
+	throw Exception::Return(__FILE__, __LINE__);
 }
 #endif
 
