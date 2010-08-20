@@ -89,7 +89,7 @@ static Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context &
 }
 
 OptionAdventure::OptionAdventure(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if ( *token != "adventure" ){
         throw LoadException(__FILE__, __LINE__, "Not an adventure");
     }
@@ -135,7 +135,7 @@ void OptionAdventure::run(const Menu::Context & context){
 }
 
 OptionAdventureCpu::OptionAdventureCpu(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if (*token != "adventure-cpu"){
         throw LoadException(__FILE__, __LINE__, "Not an adventure");
     }
@@ -238,7 +238,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
 }
 
 OptionChangeMod::OptionChangeMod(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if ( *token != "change-mod" ){
         throw LoadException(__FILE__, __LINE__, "Not a change mod");
     }
@@ -444,7 +444,7 @@ static bool miguelBirthday(){
 }
 
 OptionCredits::OptionCredits( Token * token ):
-MenuOption(token, Event),
+MenuOption(token),
 music(""),
 color(Bitmap::makeColor(255,255,255)),
 title(Bitmap::makeColor(0,255,255)){
@@ -646,7 +646,7 @@ void OptionCredits::run( const Menu::Context & context ){
 }
 
 OptionDummy::OptionDummy(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if ( *token != "dummy" ){
         throw LoadException(__FILE__, __LINE__, "Not dummy option");
     }
@@ -659,7 +659,7 @@ MenuOption(token, Event){
 }
 
 OptionDummy::OptionDummy( const std::string &name ):
-MenuOption(0, Event){
+MenuOption(0){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to dummy");
     }
@@ -676,7 +676,7 @@ void OptionDummy::run(const Menu::Context & context){
 }
 
 OptionFullscreen::OptionFullscreen(Token *token):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -700,14 +700,7 @@ std::string OptionFullscreen::getText(){
     return out.str();
 }
 
-void OptionFullscreen::logic(){
-	if(lblue < 255)lblue+=5;
-	if(rblue < 255)rblue+=5;
-	if(lgreen < 255)lgreen+=5;
-	if(rgreen < 255)rgreen+=5;
-	
-	setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
-	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
+void OptionFullscreen::logic(){;
 }
 
 void OptionFullscreen::run(const Menu::Context & context){
@@ -731,7 +724,7 @@ bool OptionFullscreen::rightKey()
 }
 
 OptionInvincible::OptionInvincible(Token *token):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -757,14 +750,7 @@ std::string OptionInvincible::getText(){
 
 void OptionInvincible::logic()
 {
-	
-	if(lblue < 255)lblue+=5;
-	if(rblue < 255)rblue+=5;
-	if(lgreen < 255)lgreen+=5;
-	if(rgreen < 255)rgreen+=5;
-	
-	setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
-	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
+
 }
 
 void OptionInvincible::run(const Menu::Context & context){
@@ -902,7 +888,7 @@ static Configuration::JoystickInput readJoystick(){
 }
 
 OptionJoystick::OptionJoystick(Token *token):
-MenuOption(token, Event),
+MenuOption(token),
 name(""),
 player(-1),
 type(Invalidkey),
@@ -1096,7 +1082,7 @@ static int readKey( Keyboard & key ){
 	return k;
 }
 
-OptionKey::OptionKey(Token *token): MenuOption(token, Event), name(""), player(-1), type(invalidkey), keyCode(0)
+OptionKey::OptionKey(Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0)
 {
     if ( *token != "key" )
         throw LoadException(__FILE__, __LINE__, "Not key option");
@@ -1154,7 +1140,7 @@ void OptionKey::run(const Menu::Context & context){
 }
 
 OptionLevel::OptionLevel(Token *token, int * set, int value):
-MenuOption(token, Event),
+MenuOption(token),
 set(set),
 value(value){
   // Nothing
@@ -1172,7 +1158,7 @@ void OptionLevel::run(const Menu::Context & context){
 }
 
 OptionLives::OptionLives( Token * token ):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -1197,24 +1183,6 @@ std::string OptionLives::getText(){
 
 void OptionLives::logic(){
 
-    if ( lblue < 255 ){
-        lblue += 5;
-    }
-
-    if ( rblue < 255 ){
-        rblue += 5;
-    }
-
-    if ( lgreen < 255 ){
-        lgreen += 5;
-    }
-
-    if ( rgreen < 255 ){
-        rgreen += 5;
-    }
-
-    setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
-    setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
 void OptionLives::run(const Menu::Context & context){
@@ -1237,7 +1205,7 @@ bool OptionLives::rightKey(){
 }
 
 OptionMenu::OptionMenu(Token *token):
-MenuOption(token, Event),
+MenuOption(token),
 menu(0){
     // Check whether we have a menu or tabmenu
     /*if ( *token == "menu" ){
@@ -1300,7 +1268,7 @@ void OptionMenu::run(const Menu::Context & context){
 }
 
 OptionMugenMenu::OptionMugenMenu(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if ( *token != "mugen" ){
         throw LoadException(__FILE__, __LINE__, "Not a mugen motif menu");
     }
@@ -1362,7 +1330,7 @@ void OptionMugenMenu::run(const Menu::Context & context){
 
 #ifdef HAVE_NETWORKING
 OptionNetworkHost::OptionNetworkHost(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if ( *token != "network-host" ){
         throw LoadException(__FILE__, __LINE__, "Not a network-host");
     }
@@ -1389,7 +1357,7 @@ void OptionNetworkHost::run(const Menu::Context & context){
 }
 
 OptionNetworkJoin::OptionNetworkJoin(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if ( *token != "network-join" ){
         throw LoadException(__FILE__, __LINE__, "Not a network-join");
     }
@@ -1420,7 +1388,7 @@ void OptionNetworkJoin::run(const Menu::Context & context){
 #endif
 
 OptionNpcBuddies::OptionNpcBuddies( Token * token ):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -1446,24 +1414,6 @@ std::string OptionNpcBuddies::getText(){
 
 void OptionNpcBuddies::logic(){
 
-    if ( lblue < 255 ){
-        lblue += 5;
-    }
-
-    if ( rblue < 255 ){
-        rblue += 5;
-    }
-
-    if ( lgreen < 255 ){
-        lgreen += 5;
-    }
-
-    if ( rgreen < 255 ){
-        rgreen += 5;
-    }
-
-    setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
-    setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
 void OptionNpcBuddies::run(const Menu::Context & context){
@@ -1486,7 +1436,7 @@ bool OptionNpcBuddies::rightKey(){
 }
 
 OptionPlayMode::OptionPlayMode(Token *token):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -1520,25 +1470,6 @@ std::string OptionPlayMode::getText(){
 
 void OptionPlayMode::logic(){
     
-
-    if (lblue < 255){
-        lblue += 5;
-    }
-
-    if (rblue < 255){
-        rblue += 5;
-    }
-
-    if (lgreen < 255){
-        lgreen += 5;
-    }
-
-    if (rgreen < 255){
-        rgreen += 5;
-    }
-
-    setLeftAdjustColor(Bitmap::makeColor(255, lblue, lgreen));
-    setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
 void OptionPlayMode::run(const Menu::Context & context){
@@ -1565,7 +1496,7 @@ bool OptionPlayMode::rightKey(){
 }
 
 OptionQuit::OptionQuit(Token *token):
-MenuOption(token, Event){
+MenuOption(token){
     if ( *token != "quit" ){
         throw LoadException(__FILE__, __LINE__, "Not quit option");
     }
@@ -1574,7 +1505,7 @@ MenuOption(token, Event){
 }
 
 OptionQuit::OptionQuit( const std::string &name ):
-MenuOption(0, Event){
+MenuOption(0){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to quit");
     }
@@ -1663,7 +1594,7 @@ static vector<ScreenSize> sortResolutions(const vector<ScreenSize> & modes){
 }
 
 OptionScreenSize::OptionScreenSize(Token *token):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 name(""),
 lblue(255),
 lgreen(255),
@@ -1696,24 +1627,6 @@ void OptionScreenSize::logic(){
     temp << "Screen size: " << Configuration::getScreenWidth() << " x " << Configuration::getScreenHeight();
     setText(temp.str());
 
-    if (lblue < 255){
-        lblue += 5;
-    }
-
-    if (rblue < 255){
-        rblue += 5;
-    }
-
-    if (lgreen < 255){
-        lgreen += 5;
-    }
-
-    if (rgreen < 255){
-        rgreen += 5;
-    }
-
-    setLeftAdjustColor(Bitmap::makeColor(255, lblue, lgreen));
-    setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
 void OptionScreenSize::run(const Menu::Context & context){
@@ -1792,7 +1705,7 @@ static string joinPaths(const vector<Filesystem::AbsolutePath> & strings, const 
 }
 
 OptionSelectFont::OptionSelectFont(Token *token):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 typeAdjust(fontName),
 lblue(255),
 lgreen(255),
@@ -1906,8 +1819,6 @@ void OptionSelectFont::logic(){
         rgreen += 5;
     }
 
-    setLeftAdjustColor(Bitmap::makeColor(255, lblue, lgreen));
-    setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
 void OptionSelectFont::run(const Menu::Context & context){
@@ -1983,7 +1894,7 @@ void OptionSelectFont::nextIndex(bool forward){
     #endif
 }
 
-OptionSpeed::OptionSpeed(Token *token): MenuOption(token, AdjustableOption), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
+OptionSpeed::OptionSpeed(Token *token): MenuOption(token), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
     setRunnable(false);
 
@@ -2012,13 +1923,6 @@ void OptionSpeed::logic(){
 	setText(std::string(temp));
         */
 	
-	if(lblue < 255)lblue+=5;
-	if(rblue < 255)rblue+=5;
-	if(lgreen < 255)lgreen+=5;
-	if(rgreen < 255)rgreen+=5;
-	
-	setLeftAdjustColor(Bitmap::makeColor( 255, lblue, lgreen ));
-	setRightAdjustColor(Bitmap::makeColor( 255, rblue, rgreen ));
 }
 
 void OptionSpeed::run(const Menu::Context & context){
@@ -2041,7 +1945,7 @@ bool OptionSpeed::rightKey()
 }
 
 OptionTabMenu::OptionTabMenu(Token *token):
-MenuOption(token, Event),
+MenuOption(token),
 menu(0){
 #if 0
     // Check whether we have a menu or tabmenu
@@ -2117,7 +2021,7 @@ void OptionTabMenu::run(const Menu::Context & context){
 }
 
 OptionVersus::OptionVersus( Token *token ):
-MenuOption(token, Event), human(false){
+MenuOption(token), human(false){
     if ( *token != "versus" ){
         throw LoadException(__FILE__, __LINE__, "Not versus");
     }
@@ -2249,7 +2153,7 @@ void OptionVersus::run(const Menu::Context & context){
 }
 
 OptionSound::OptionSound(Token *token):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -2270,25 +2174,6 @@ void OptionSound::logic(){
     ostringstream temp;
     temp << "Sound: " << Configuration::getSoundVolume();
     setText(temp.str());
-
-    if (lblue < 255){
-        lblue += 5;
-    }
-
-    if (rblue < 255){
-        rblue += 5;
-    }
-
-    if (lgreen < 255){
-        lgreen += 5;
-    }
-
-    if (rgreen < 255){
-        rgreen += 5;
-    }
-
-    setLeftAdjustColor(Bitmap::makeColor(255, lblue, lgreen));
-    setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
 void OptionSound::run(const Menu::Context & context){
@@ -2323,7 +2208,7 @@ bool OptionSound::rightKey(){
 }
 
 OptionMusic::OptionMusic(Token *token):
-MenuOption(token, AdjustableOption),
+MenuOption(token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -2341,25 +2226,6 @@ void OptionMusic::logic(){
     ostringstream temp;
     temp << "Music: " << Configuration::getMusicVolume();
     setText(temp.str());
-
-    if (lblue < 255){
-        lblue += 5;
-    }
-
-    if (rblue < 255){
-        rblue += 5;
-    }
-
-    if (lgreen < 255){
-        lgreen += 5;
-    }
-
-    if (rgreen < 255){
-        rgreen += 5;
-    }
-
-    setLeftAdjustColor(Bitmap::makeColor(255, lblue, lgreen));
-    setRightAdjustColor(Bitmap::makeColor(255, rblue, rgreen));
 }
 
 void OptionMusic::run(const Menu::Context & context){

@@ -8,16 +8,11 @@
 
 using namespace std;
 
-MenuOption::MenuOption(Token *token, const OptionType type) throw (LoadException):
+MenuOption::MenuOption(Token *token) throw (LoadException):
 currentState(Deselected),
 text(""),
 infoText(""),
-bmp(0),
-adjustLeftColor(Bitmap::makeColor( 255, 255, 255 )),
-adjustRightColor(Bitmap::makeColor( 255, 255, 255 )),
-runnable(true),
-forRemoval(false){
-    setType(type);
+runnable(true){
 
     if(token){
       Token tok(*token);
@@ -35,12 +30,7 @@ forRemoval(false){
 		  setInfoText(temp);
                   */
 	      } else if( *token == "option-anim" ) {
-		  Gui::Animation *animation = new Gui::Animation(token);
-		  if (animation->getDepth() == Gui::Animation::BackgroundBottom){
-		    backgroundAnimations.push_back(animation);
-		} else if (animation->getDepth() == Gui::Animation::ForegroundBottom){
-		    foregroundAnimations.push_back(animation);
-		}
+		  
 	      } 
 	      else {
 		  Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
@@ -118,33 +108,7 @@ void MenuOption::readInfo(Token * token){
 }
 
 MenuOption::~MenuOption(){
-    // Kill all animations
-    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	if (*i){
-	    delete *i;
-	}
-    }
-    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	if (*i){
-	    delete *i;
-	}
-    }
-}
-
-void MenuOption::drawBelow(Bitmap *work){
-    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	if (*i){
-	    (*i)->draw(*work);
-	}
-    }
-}
-
-void MenuOption::drawAbove(Bitmap *work){
-    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	if (*i){
-	    (*i)->draw(*work);
-	}
-    }
+    
 }
 
 // This is to pass paramaters to an option ie a bar or something
@@ -156,28 +120,4 @@ bool MenuOption::rightKey(){
     return false;
 }
 
-void MenuOption::resetAnimations(){
-    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	if (*i){
-	    (*i)->reset();
-	}
-    }
-    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	if (*i){
-	    (*i)->reset();
-	}
-    }
-}
 
-void MenuOption::updateAnimations(){
-    for (std::vector<Gui::Animation *>::iterator i = backgroundAnimations.begin(); i != backgroundAnimations.end(); ++i){
-	if (*i){
-	    (*i)->act();
-	}
-    }
-    for (std::vector<Gui::Animation *>::iterator i = foregroundAnimations.begin(); i != foregroundAnimations.end(); ++i){
-	if (*i){
-	    (*i)->act();
-	}
-    }
-}

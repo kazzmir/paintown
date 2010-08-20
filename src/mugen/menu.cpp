@@ -681,13 +681,13 @@ void MugenMenu::run(){
                     background->renderBackground(0, 0, workArea);
 
                     // Draw any misc stuff in the background of the menu of selected object 
-                    (*currentOption)->drawBelow(&work);
+                    //(*currentOption)->drawBelow(&work);
                     // Draw text
                     renderText(&workArea);
                     // Foregrounds
                     background->renderForeground(0,0,workArea);
                     // Draw any misc stuff in the foreground of the menu of selected object 
-                    (*currentOption)->drawAbove(&work);
+                    //(*currentOption)->drawAbove(&work);
                     // Do fades
                     fader.draw(workArea);
                     // Finally render to screen
