@@ -2636,8 +2636,4 @@ void Character::setHitByOverride(int slot, int time, bool standing, bool crouchi
     hitByOverride[slot].attributes = attributes;
 }
         
-void Character::setNotHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes){
-    /* TODO */
-}
-
 }
