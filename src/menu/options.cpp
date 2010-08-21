@@ -1066,8 +1066,6 @@ static void setKey(int player, OptionKey::keyType k, int key)
 }
 
 static int readKey( Keyboard & key ){
-	key.wait();
-	key.clear();
 	int k = key.readKey();
 	key.wait();
 	return k;
@@ -1123,9 +1121,39 @@ void OptionKey::logic(){
 
 void OptionKey::run(const Menu::Context & context){
     // Do dialog
-    Box::messageDialog(Menu::Menu::Width, Menu::Menu::Height, "Press a Key!",2);
+    //Box::messageDialog(Menu::Menu::Width, Menu::Menu::Height, "Press a Key!",2);
 
     Keyboard key;
+    key.wait();
+    Bitmap temp(Menu::Menu::Width, Menu::Menu::Height);
+    Menu::Context tempContext = context;
+    tempContext.initialize();
+    Menu::InfoBox keyDialog;
+    keyDialog.setFont(tempContext.getFont(), tempContext.getFontWidth(), tempContext.getFontHeight());
+    //keyDialog.location.set(-1,-1,1,1);
+    const int width = temp.getWidth();
+    const int height = temp.getHeight();
+    keyDialog.setText("Press a Key!");
+    keyDialog.location.setPosition(Gui::AbsolutePoint((width/2)-(keyDialog.location.getWidth()/2), (height/2)-(keyDialog.location.getHeight()/2)));
+    // Reset width
+    keyDialog.setText("Press a Key!");
+    keyDialog.location.setRadius(15);
+    keyDialog.colors.body = Bitmap::makeColor(0,0,0);
+    keyDialog.colors.bodyAlpha = 180;
+    keyDialog.colors.border = Bitmap::makeColor(255,255,255);
+    keyDialog.colors.borderAlpha = 255;
+    keyDialog.open();
+    while (!key.keypressed() && keyDialog.isActive()){
+	keyDialog.act();
+	if (keyDialog.isActive()){
+	    key.poll();
+	}
+	tempContext.act();
+	tempContext.render(0,temp);
+	keyDialog.render(temp);
+	temp.BlitToScreen();
+    }
+    tempContext.finish();
     keyCode = readKey( key );
     setKey(player,type, keyCode);
 }

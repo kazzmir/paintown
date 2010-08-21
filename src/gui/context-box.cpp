@@ -45,12 +45,14 @@ cursorCenter(0),
 cursorLocation(0),
 scrollWait(4),
 selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()),
-useGradient(true){
+useGradient(true),
+renderOnlyText(false){
 }
 ContextBox::ContextBox( const ContextBox & copy ):
 current(0),
 fadeState(NotActive),
-selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
+selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()),
+renderOnlyText(false){
     this->context = copy.context;
     this->font = copy.font;
     this->fontWidth = copy.fontWidth;
@@ -61,6 +63,7 @@ selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()){
     this->cursorLocation = copy.cursorLocation;
     this->scrollWait = copy.scrollWait;
     this->useGradient = copy.useGradient;
+    this->renderOnlyText = copy.renderOnlyText;
 }
 ContextBox::~ContextBox(){
 }
@@ -77,6 +80,7 @@ ContextBox & ContextBox::operator=( const ContextBox & copy){
     this->cursorLocation = copy.cursorLocation;
     this->scrollWait = copy.scrollWait;
     this->useGradient = copy.useGradient;
+    this->renderOnlyText = copy.renderOnlyText;
     return *this;
 }
 
@@ -95,7 +99,9 @@ void ContextBox::act(){
 }
 
 void ContextBox::render(const Bitmap & work){
-    board.render(work);
+    if (!renderOnlyText){
+	board.render(work);
+    }
     drawText(work);
 }
 

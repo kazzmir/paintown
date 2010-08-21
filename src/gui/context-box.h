@@ -80,6 +80,11 @@ class ContextBox : public Widget{
         virtual inline void setUseGradient(bool useGradient){
             this->useGradient = useGradient;
         }
+        
+        //! Set to use only text on background
+        virtual inline void setRenderOnlyText(bool render){
+	    this->renderOnlyText = render;
+	}
 
     private:
 	
@@ -130,6 +135,9 @@ class ContextBox : public Widget{
 
         //! Use gradient
         bool useGradient;
+	
+	//! Render Text only
+	bool renderOnlyText;
 };
 
 }

@@ -41,8 +41,7 @@ Tab::Tab():
 context(new ContextBox()),
 active(false){
     // Set alpha to 0 as we are not interested in the box
-    context->colors.borderAlpha = 0;
-    context->colors.bodyAlpha = 0;
+    context->setRenderOnlyText(true);
 }
 
 Tab::~Tab(){
