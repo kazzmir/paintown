@@ -7,12 +7,13 @@ Keyboard::Keyboard(){
 }
 
 void Keyboard::poll(){
-    /* TODO */
+    SDL_PumpEvents();
 }
 
 void Keyboard::wait(){
     while (keypressed()){
         Util::rest(1);
+        poll();
     }
 }
 
@@ -20,7 +21,7 @@ bool Keyboard::keypressed(){
     int keys = 0;
     Uint8 * state = SDL_GetKeyState(&keys);
     for (int i = 0; i < keys; i++){
-        if (state[i] == 1){
+        if (i != SDLK_NUMLOCK && state[i] == 1){
             return true;
         }
     }
@@ -42,8 +43,13 @@ void Keyboard::readKeys( std::vector<int> & all_keys ){
 }
 
 int Keyboard::readKey(){
-    /* TODO */
-    return 0;
+    std::vector<int> keys;
+    do{
+        readKeys(keys);
+        Util::rest(1);
+        poll();
+    } while (keys.size() == 0);
+    return keys.front();
 }
 
 void Keyboard::clear(){

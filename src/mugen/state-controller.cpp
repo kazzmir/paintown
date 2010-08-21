@@ -8,7 +8,11 @@
 
 using namespace std;
 
+/* TODO: go through each trigger and write how far done it is, 50% or 100% */
+
 namespace Mugen{
+        
+typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
 
 StateController::StateController(const string & name):
 type(Unknown),
@@ -61,6 +65,13 @@ StateController::~StateController(){
 }
 
 double evaluateNumber(Compiler::Value * value, const Environment & env, double default_){
+    if (value != NULL){
+        return value->evaluate(env).toNumber();
+    }
+    return default_;
+}
+
+double evaluateNumber(const Value & value, const Environment & env, double default_){
     if (value != NULL){
         return value->evaluate(env).toNumber();
     }
@@ -193,6 +204,7 @@ static void extractValue(Compiler::Value *& value, Ast::Section * section){
     section->walk(walker);
 }
 
+/* 50% */
 class ControllerChangeAnim: public StateController {
 public:
     ControllerChangeAnim(Ast::Section * section, const string & name):
@@ -2919,6 +2931,54 @@ public:
     }
 };
 
+class ControllerGameMakeAnim: public StateController {
+public:
+    ControllerGameMakeAnim(Ast::Section * section, const string & name):
+    StateController(name, section){
+        parse(section);
+    }
+
+    Value value;
+    Value under;
+    Value posX, posY;
+    Value random;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerGameMakeAnim & controller):
+            controller(controller){
+            }
+
+            ControllerGameMakeAnim & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "under"){
+                    controller.under = Compiler::compile(simple.getValue());
+                } else if (simple == "pos"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.posX = Compiler::compile(x);
+                    controller.posY = Compiler::compile(y);
+                } else if (simple == "random"){
+                    controller.random = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy);
+        int animation = evaluateNumber(value, environment, 0);
+    }
+};
+
 class ControllerHitBy: public StateController {
 public:
     ControllerHitBy(Ast::Section * section, const string & name):
@@ -3294,6 +3354,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Explod : return new ControllerExplod(section, name);
         case StateController::HitBy : return new ControllerHitBy(section, name);
         case StateController::NotHitBy : return new ControllerNotHitBy(section, name);
+        case StateController::GameMakeAnim : return new ControllerGameMakeAnim(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3309,7 +3370,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::EnvColor :
         case StateController::EnvShake :
         case StateController::ExplodBindTime :
-        case StateController::GameMakeAnim :
         case StateController::Gravity :
         case StateController::Helper :
         case StateController::HitAdd :
