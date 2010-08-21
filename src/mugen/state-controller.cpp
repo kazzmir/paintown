@@ -2975,7 +2975,30 @@ public:
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy);
-        int animation = evaluateNumber(value, environment, 0);
+        int animation_value = evaluateNumber(value, environment, 0);
+        int x = evaluateNumber(posX, environment, 0) + guy.getRX();
+        int y = evaluateNumber(posY, environment, 0) + guy.getRY();
+
+        int random = evaluateNumber(this->random, environment, 0);
+        x += PaintownUtil::rnd(random) - random / 2;
+        y += PaintownUtil::rnd(random) - random / 2;
+
+        MugenAnimation * animation = NULL;
+        animation = stage.getFightAnimation(animation_value);
+        if (animation == NULL){
+            ostringstream out;
+            out << "Cannot find animation for " << animation_value << endl;
+            throw MugenException(out.str());
+        }
+
+        class GameAnimation: public Effect {
+        public:
+            GameAnimation(MugenAnimation * animation, int x, int y):
+            Effect(NULL, animation, -1, x, y){
+            }
+        };
+
+        stage.addEffect(new GameAnimation(new MugenAnimation(*animation), x, y));
     }
 };
 
