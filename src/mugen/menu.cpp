@@ -32,7 +32,6 @@
 #include "factory/font_render.h"
 
 #include "menu/menu_option.h"
-#include "menu/menu_global.h"
 #include "menu/options.h"
 
 #include "input/input-manager.h"

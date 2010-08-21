@@ -23,7 +23,6 @@
 #include "exceptions/exception.h"
 #include "util/file-system.h"
 #include "util/events.h"
-#include "menu/menu_global.h"
 #include "loading.h"
 #include "network/network.h"
 #include "world.h"

@@ -32,7 +32,6 @@
 #include "exceptions/shutdown_exception.h"
 
 #include "menu/menu_option.h"
-#include "menu/menu_global.h"
 #include "menu/options.h"
 
 #include "animation.h"

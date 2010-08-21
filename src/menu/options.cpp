@@ -5,13 +5,13 @@
 #include "util/tokenreader.h"
 #include "menu.h"
 #include "configuration.h"
-#include "menu/menu_global.h"
 #include "menu/menu-exception.h"
 #include "mugen/menu.h"
 #include "mugen/config.h"
 #include "init.h"
 
-#include "level/utils.h"
+#include "music.h"
+
 #include "object/versus_player.h"
 #include "object/versus_enemy.h"
 
@@ -47,7 +47,7 @@
 using namespace std;
 using namespace Gui;
 
-static Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & context){
+Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & context){
     vector<Level::LevelInfo> possible = Paintown::Mod::getCurrentMod()->getLevels();
     if (possible.size() == 0){
         throw LoadException(__FILE__, __LINE__, "No level sets defined!");
@@ -114,7 +114,7 @@ void OptionAdventure::run(const Menu::Context & context){
         int remap = 0;
         Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
         
-        PlayerFuture future(path, MenuGlobals::getInvincible(), MenuGlobals::getLives(), remap);
+        PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap);
         vector<Util::Future<Object *> *> players;
         players.push_back(&future);
         Game::realGame(players, info);
@@ -166,27 +166,18 @@ static string nthWord(int i){
 }
 
 void OptionAdventureCpu::run(const Menu::Context & context){
-    int max_buddies = MenuGlobals::getNpcBuddies();
+    int max_buddies = Configuration::getNpcBuddies();
 
     Keyboard key;
     Object * player = NULL;
     vector<Util::Future<Object*>* > futures;
     vector< Object * > buddies;
     try{
-        //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
         Level::LevelInfo info = doLevelMenu("/levels", context);
         
-        /*
-        player = Game::selectPlayer(MenuGlobals::getInvincible(), "Pick a player", info);
-        player->setObjectId(-1);
-        ((Player *)player)->setLives( MenuGlobals::getLives() );
-        vector< Object * > players;
-        players.push_back( player );
-        */
-        
-        int remap;
+	int remap;
         Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
-        Util::Future<Object*> * player = new PlayerFuture(path, MenuGlobals::getInvincible(), MenuGlobals::getLives(), remap);
+        Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap);
         futures.push_back(player);
 
         for ( int i = 0; i < max_buddies; i++ ){
@@ -195,17 +186,6 @@ void OptionAdventureCpu::run(const Menu::Context & context){
             int remap;
             Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer(out.str(), info, remap);
             futures.push_back(new BuddyFuture(path, player, remap, -(i+2)));
-            /*
-            Object * b = Game::selectPlayer(false, out.str(), info);
-            // buddies.push_back( b );
-            Object * buddy = new BuddyPlayer( (Character *) player, *(Character *) b );
-            / * buddies start at -2 and go down * /
-            buddy->setObjectId(-(i + 2));
-            / *
-            buddies.push_back( buddy );
-            players.push_back( buddy );
-            * /
-            */
         }
 
         Game::realGame(futures, info);
@@ -213,15 +193,6 @@ void OptionAdventureCpu::run(const Menu::Context & context){
         Global::debug( 0 ) << "Could not load player: " << le.getTrace() << endl;
     }
 
-    /*
-    if ( player != NULL ){
-        delete player;
-    }
-    for ( vector< Object * >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
-        delete *it;
-    }
-    */
-    
     for (vector<Util::Future<Object*>*>::iterator it = futures.begin(); it != futures.end(); it++){
         delete *it;
     }
@@ -438,7 +409,7 @@ MenuOption(token),
 music(""),
 color(Bitmap::makeColor(255,255,255)),
 title(Bitmap::makeColor(0,255,255)){
-	/* Always */
+    /* Always */
     if (jonBirthday()){
         credits.push_back("Happy birthday, Jon!");
         credits.push_back("");
@@ -449,84 +420,75 @@ title(Bitmap::makeColor(0,255,255)){
         credits.push_back("");
     }
 
-	credits.push_back("Paintown");
-	credits.push_back("");
-	credits.push_back("Programming");
-	credits.push_back("Jon Rafkind");
-	credits.push_back("");
-	credits.push_back("Contributions");
-	credits.push_back("Miguel Gavidia");
-	credits.push_back("");
-	credits.push_back("Level design");
-	credits.push_back("Jon Rafkind");
-	credits.push_back("Miguel Gavidia");
-	credits.push_back("");
-	credits.push_back("Music");
-	credits.push_back("aqua.s3m - Purple Motion");
-	credits.push_back("c_heaven.xm - One Man Project");
-	credits.push_back("elw-sick.xm - elwood");
-	credits.push_back("experience.xm - elwood");
-	credits.push_back("fall.xm - elwood");
-	credits.push_back("kajahtaa.xm - cube");
-	credits.push_back("kilimanz.mod - ???");
-	credits.push_back("SM_TechTown.it - SaMPLeMaSTeR");
-	credits.push_back("");
-	credits.push_back("Email: jon@rafkind.com");
-	credits.push_back("");
-	
-	if ( *token != "credits" )
-		throw LoadException(__FILE__, __LINE__, "Not a credit menu");
+    credits.push_back("Paintown");
+    credits.push_back("");
+    credits.push_back("Programming");
+    credits.push_back("Jon Rafkind");
+    credits.push_back("");
+    credits.push_back("Contributions");
+    credits.push_back("Miguel Gavidia");
+    credits.push_back("");
+    credits.push_back("Level design");
+    credits.push_back("Jon Rafkind");
+    credits.push_back("Miguel Gavidia");
+    credits.push_back("");
+    credits.push_back("Music");
+    credits.push_back("aqua.s3m - Purple Motion");
+    credits.push_back("c_heaven.xm - One Man Project");
+    credits.push_back("elw-sick.xm - elwood");
+    credits.push_back("experience.xm - elwood");
+    credits.push_back("fall.xm - elwood");
+    credits.push_back("kajahtaa.xm - cube");
+    credits.push_back("kilimanz.mod - ???");
+    credits.push_back("SM_TechTown.it - SaMPLeMaSTeR");
+    credits.push_back("");
+    credits.push_back("Email: jon@rafkind.com");
+    credits.push_back("");
+    
+    if ( *token != "credits" ){
+	throw LoadException(__FILE__, __LINE__, "Not a credit menu");
+    }
 
-        readName(token);
-	
-	while ( token->hasTokens() ){
-		try{
-			Token * tok;
-			*token >> tok;
-			if ( *tok == "music" ) {
-				/* Set music for credits */
-				*tok >> music;
-			} else if ( *tok == "background" ) {
-				/* Create an image and push it back on to vector */
-				std::string temp;
-				*tok >> temp;
-                                background = Filesystem::RelativePath(temp);
-                                /*
-				if (background){
-                                    delete background;
-				}
-				background = new Bitmap(Filesystem::find(Filesystem::RelativePath(temp)).path());
-				if ( background->getError() ){
-					delete background;
-					background = NULL;
-				}
-                                */
-			} else if ( *tok == "additional" ) {
-				std::string str;
-				while ( tok->hasTokens() ){
-					*tok >> str;
-					credits.push_back(str);
-				}
-			} else if ( *tok == "titlecolor" ) {
-				int r,b,g;
-				*tok >> r >> g >> b;
-				title = Bitmap::makeColor( r, b, g );
-			} else if ( *tok == "color" ) {
-				int r,b,g;
-				*tok >> r >> g >> b;
-				color = Bitmap::makeColor( r, b, g );
-			} else {
-				Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-                                if (Global::getDebug() >= 3){
-                                    tok->print(" ");
-                                }
-			}
-		} catch ( const TokenException & ex ) {
-			throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-		} catch ( const LoadException & ex ) {
-			throw ex;
-		}
+    readName(token);
+    
+    while ( token->hasTokens() ){
+	try{
+	    Token * tok;
+	    *token >> tok;
+	    if ( *tok == "music" ) {
+		    /* Set music for credits */
+		    *tok >> music;
+	    } else if ( *tok == "background" ) {
+		    /* Create an image and push it back on to vector */
+		    std::string temp;
+		    *tok >> temp;
+		    background = Filesystem::RelativePath(temp);
+	    } else if ( *tok == "additional" ) {
+		    std::string str;
+		    while ( tok->hasTokens() ){
+			    *tok >> str;
+			    credits.push_back(str);
+		    }
+	    } else if ( *tok == "titlecolor" ) {
+		    int r,b,g;
+		    *tok >> r >> g >> b;
+		    title = Bitmap::makeColor( r, b, g );
+	    } else if ( *tok == "color" ) {
+		    int r,b,g;
+		    *tok >> r >> g >> b;
+		    color = Bitmap::makeColor( r, b, g );
+	    } else {
+		    Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+		    if (Global::getDebug() >= 3){
+			tok->print(" ");
+		    }
+	    }
+	} catch ( const TokenException & ex ) {
+		throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+	} catch ( const LoadException & ex ) {
+		throw ex;
 	}
+    }
 	
     input.set(Keyboard::Key_ESC, 0, true, Exit);
     input.set(Joystick::Button2, 0, true, Exit);
@@ -556,7 +518,11 @@ void OptionCredits::run( const Menu::Context & context ){
     Bitmap tmp(Menu::Menu::Width, Menu::Menu::Height);
     // Bitmap fireWork(GFX_X, GFX_Y);
     if (! music.empty()){
-        MenuGlobals::setMusic(music);
+        //MenuGlobals::setMusic(music);
+        if (Music::loadSong(Filesystem::find(Filesystem::RelativePath(music)).path())){
+	    Music::pause();
+	    Music::play();
+	}
     }
 
     Paintown::Fire fire;
@@ -687,7 +653,7 @@ OptionFullscreen::~OptionFullscreen()
     
 std::string OptionFullscreen::getText(){
     ostringstream out;
-    out << MenuOption::getText() << ": " << (MenuGlobals::getFullscreen() ? "Yes" : "No");
+    out << MenuOption::getText() << ": " << (Configuration::getFullscreen() ? "Yes" : "No");
     return out.str();
 }
 
@@ -697,21 +663,17 @@ void OptionFullscreen::logic(){;
 void OptionFullscreen::run(const Menu::Context & context){
 }
 
-bool OptionFullscreen::leftKey()
-{
-	MenuGlobals::setFullscreen(!MenuGlobals::getFullscreen());
-	lblue = lgreen = 0;
-	int gfx = (MenuGlobals::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-	Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
-	return true;
+bool OptionFullscreen::leftKey(){
+    Configuration::setFullscreen( !Configuration::getFullscreen() );
+    int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
+    Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
+    return true;
 }
-bool OptionFullscreen::rightKey()
-{
-	MenuGlobals::setFullscreen(!MenuGlobals::getFullscreen());
-	rblue = rgreen = 0;
-	int gfx = (MenuGlobals::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-	Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
-	return true;
+bool OptionFullscreen::rightKey(){
+    Configuration::setFullscreen( !Configuration::getFullscreen() );
+    int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
+    Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
+    return true;
 }
 
 OptionInvincible::OptionInvincible(Token *token):
@@ -735,7 +697,7 @@ OptionInvincible::~OptionInvincible()
                 
 std::string OptionInvincible::getText(){
     ostringstream out;
-    out << MenuOption::getText() << ": " << (MenuGlobals::getInvincible() ? "Yes" : "No");
+    out << MenuOption::getText() << ": " << (Configuration::getInvincible() ? "Yes" : "No");
     return out.str();
 }
 
@@ -747,16 +709,12 @@ void OptionInvincible::logic()
 void OptionInvincible::run(const Menu::Context & context){
 }
 
-bool OptionInvincible::leftKey()
-{
-	MenuGlobals::setInvincible(!MenuGlobals::getInvincible());
-	lblue = lgreen = 0;
+bool OptionInvincible::leftKey(){
+	Configuration::setInvincible(!Configuration::getInvincible());
 	return true;
 }
-bool OptionInvincible::rightKey()
-{
-	MenuGlobals::setInvincible(!MenuGlobals::getInvincible());
-	rblue = rgreen = 0;
+bool OptionInvincible::rightKey(){
+	Configuration::setInvincible(!Configuration::getInvincible());
 	return true;
 }
 
@@ -969,103 +927,110 @@ void OptionJoystick::run(const Menu::Context & context){
     */
 }
 
-static OptionKey::keyType convertToKeyboardKey(const std::string &k){
-    std::string temp = k;
-    for(unsigned int i=0;i<temp.length();i++){
-        temp[i] = tolower(temp[i]);
-    }
-    if (temp == "up") return OptionKey::up;
-    if (temp == "down") return OptionKey::down;
-    if (temp == "left") return OptionKey::left;
-    if (temp == "right") return OptionKey::right;
-    if (temp == "jump") return OptionKey::jump;
-    if (temp == "attack1") return OptionKey::attack1;
-    if (temp == "attack2") return OptionKey::attack2;
-    if (temp == "attack3") return OptionKey::attack3;
-    if (temp == "attack4") return OptionKey::attack4;
-    if (temp == "attack5") return OptionKey::attack5;
-    if (temp == "attack6") return OptionKey::attack6;
-
-    return OptionKey::invalidkey;
+static OptionKey::keyType convertToKeyboardKey(const std::string &k)
+{
+	std::string temp = k;
+	for(unsigned int i=0;i<temp.length();i++)
+	{
+		temp[i] = tolower(temp[i]);
+	}
+	if(temp == "up")return OptionKey::up;
+	if(temp == "down")return OptionKey::down;
+	if(temp == "left")return OptionKey::left;
+	if(temp == "right")return OptionKey::right;
+	if(temp == "jump")return OptionKey::jump;
+	if(temp == "attack1")return OptionKey::attack1;
+	if(temp == "attack2")return OptionKey::attack2;
+	if(temp == "attack3")return OptionKey::attack3;
+	if(temp == "attack4")return OptionKey::attack4;
+	if(temp == "attack5")return OptionKey::attack5;
+	if(temp == "attack6")return OptionKey::attack6;
+	
+	return OptionKey::invalidkey;
 }
 
-static int getKey(int player, OptionKey::keyType k){
-    switch(k){
-        case OptionKey::up:
-            return Configuration::config( player ).getUp();
-            break;
-        case OptionKey::down:
-            return Configuration::config( player ).getDown();
-            break;
-        case OptionKey::left:
-            return Configuration::config( player ).getLeft();
-            break;
-        case OptionKey::right:
-            return Configuration::config( player ).getRight();
-            break;
-        case OptionKey::jump:
-            return Configuration::config( player ).getJump();
-            break;
-        case OptionKey::attack1:
-            return Configuration::config( player ).getAttack1();
-            break;
-        case OptionKey::attack2:
-            return Configuration::config( player ).getAttack2();
-            break;
-        case OptionKey::attack3:
-            return Configuration::config( player ).getAttack3();
-            break;
-        case OptionKey::attack4:
-        case OptionKey::attack5:
-        case OptionKey::attack6:
-        default:
-            break;
-    }
+static int getKey(int player, OptionKey::keyType k)
+{
+	switch(k)
+	{
+		case OptionKey::up:
+			return Configuration::config( player ).getUp();
+			break;
+		case OptionKey::down:
+			return Configuration::config( player ).getDown();
+			break;
+		case OptionKey::left:
+			return Configuration::config( player ).getLeft();
+			break;
+		case OptionKey::right:
+			return Configuration::config( player ).getRight();
+			break;
+		case OptionKey::jump:
+			return Configuration::config( player ).getJump();
+			break;
+		case OptionKey::attack1:
+			return Configuration::config( player ).getAttack1();
+			break;
+		case OptionKey::attack2:
+			return Configuration::config( player ).getAttack2();
+			break;
+		case OptionKey::attack3:
+			return Configuration::config( player ).getAttack3();
+			break;
+		case OptionKey::attack4:
+		case OptionKey::attack5:
+		case OptionKey::attack6:
+		default:
+			break;
+	}
 	
 	return 0;
 }
 
-static void setKey(int player, OptionKey::keyType k, int key){
-    switch(k){
-        case OptionKey::up:
-            Configuration::config( player ).setUp( key );
-            break;
-        case OptionKey::down:
-            Configuration::config( player ).setDown( key );
-            break;
-        case OptionKey::left:
-            Configuration::config( player ).setLeft( key );
-            break;
-        case OptionKey::right:
-            Configuration::config( player ).setRight( key );
-            break;
-        case OptionKey::jump:
-            Configuration::config( player ).setJump( key );
-            break;
-        case OptionKey::attack1:
-            Configuration::config( player ).setAttack1( key );
-            break;
-        case OptionKey::attack2:
-            Configuration::config( player ).setAttack2( key );
-            break;
-        case OptionKey::attack3:
-            Configuration::config( player ).setAttack3( key );
-            break;
-        case OptionKey::attack4:
-        case OptionKey::attack5:
-        case OptionKey::attack6:
-        default:
-            break;
-    }
+static void setKey(int player, OptionKey::keyType k, int key)
+{
+	switch(k)
+	{
+		case OptionKey::up:
+			Configuration::config( player ).setUp( key );
+			break;
+		case OptionKey::down:
+			Configuration::config( player ).setDown( key );
+			break;
+		case OptionKey::left:
+			Configuration::config( player ).setLeft( key );
+			break;
+		case OptionKey::right:
+			Configuration::config( player ).setRight( key );
+			break;
+		case OptionKey::jump:
+			Configuration::config( player ).setJump( key );
+			break;
+		case OptionKey::attack1:
+			Configuration::config( player ).setAttack1( key );
+			break;
+		case OptionKey::attack2:
+			Configuration::config( player ).setAttack2( key );
+			break;
+		case OptionKey::attack3:
+			Configuration::config( player ).setAttack3( key );
+			break;
+		case OptionKey::attack4:
+		case OptionKey::attack5:
+		case OptionKey::attack6:
+		default:
+			break;
+	}
 }
 
-static int readKey(Keyboard & key){
-    int k = key.readKey();
-    key.wait();
-    return k;
+static int readKey( Keyboard & key ){
+	int k = key.readKey();
+	key.wait();
+	return k;
 }
 
-OptionKey::OptionKey(Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0){
+OptionKey::OptionKey(Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0)
+{
     if ( *token != "key" )
         throw LoadException(__FILE__, __LINE__, "Not key option");
 
@@ -1107,9 +1072,9 @@ OptionKey::~OptionKey(){
 }
 
 void OptionKey::logic(){
-    char temp[255];
-    sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
-    setText(std::string(temp));
+	char temp[255];
+	sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
+	setText(std::string(temp));
 }
 
 void OptionKey::run(const Menu::Context & context){
@@ -1147,7 +1112,7 @@ void OptionKey::run(const Menu::Context & context){
 	temp.BlitToScreen();
     }
     tempContext.finish();
-    keyCode = readKey(key);
+    keyCode = readKey( key );
     setKey(player,type, keyCode);
 }
 
@@ -1189,7 +1154,7 @@ OptionLives::~OptionLives(){
     
 std::string OptionLives::getText(){
     ostringstream out;
-    out << MenuOption::getText() << ": " << MenuGlobals::getLives();
+    out << MenuOption::getText() << ": " << Configuration::getLives();
     return out.str();
 }
 
@@ -1201,18 +1166,17 @@ void OptionLives::run(const Menu::Context & context){
 }
 
 bool OptionLives::leftKey(){
-	MenuGlobals::setLives(MenuGlobals::getLives() - 1);
-	if ( MenuGlobals::getLives() < 1 ){
-		MenuGlobals::setLives(1);
+	Configuration::setLives(Configuration::getLives() - 1);
+	if ( Configuration::getLives() < 1 ){
+		Configuration::setLives(1);
 	}
 	
-	lblue = lgreen = 0;
 	return false;
 }
 
 bool OptionLives::rightKey(){
-	MenuGlobals::setLives( MenuGlobals::getLives() + 1 );
-	rblue = rgreen = 0;
+	Configuration::setLives( Configuration::getLives() + 1 );
+	
 	return false;
 }
 
@@ -1359,15 +1323,15 @@ void OptionNetworkHost::logic(){
 }
 
 void OptionNetworkHost::run(const Menu::Context & context){
-    Keyboard key;
-    try{
-        Network::networkServer(0);
-    } catch (const Exception::Return &e){
-    }
-    key.clear();
-    key.poll();
-    key.wait();
-    throw Exception::Return(__FILE__, __LINE__);
+	Keyboard key;
+        try{
+            Network::networkServer();
+        } catch (const Exception::Return &e){
+        }
+	key.clear();
+	key.poll();
+	key.wait();
+	throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionNetworkJoin::OptionNetworkJoin(Token *token):
@@ -1387,18 +1351,18 @@ void OptionNetworkJoin::logic(){
 }
 
 void OptionNetworkJoin::run(const Menu::Context & context){
-    Keyboard key;
-    key.poll();
-    key.wait();
-    try{
-        Network::networkClient();
-    } catch (const Exception::Return &r){
-    }
+	Keyboard key;
+	key.poll();
+	key.wait();
+        try{
+            Network::networkClient();
+        } catch (const Exception::Return &r){
+        }
 
-    key.clear();
-    key.poll();
-    key.wait();
-    throw Exception::Return(__FILE__, __LINE__);
+	key.clear();
+	key.poll();
+	key.wait();
+	throw Exception::Return(__FILE__, __LINE__);
 }
 #endif
 
@@ -1423,7 +1387,7 @@ OptionNpcBuddies::~OptionNpcBuddies(){
         
 std::string OptionNpcBuddies::getText(){
     ostringstream out;
-    out << MenuOption::getText() << ": " << MenuGlobals::getNpcBuddies();
+    out << MenuOption::getText() << ": " << Configuration::getNpcBuddies();
     return out.str();
 }
 
@@ -1435,17 +1399,16 @@ void OptionNpcBuddies::run(const Menu::Context & context){
 }
 
 bool OptionNpcBuddies::leftKey(){
-	MenuGlobals::setNpcBuddies(MenuGlobals::getNpcBuddies() - 1);
-	if ( MenuGlobals::getNpcBuddies() < 1 ){
-		MenuGlobals::setNpcBuddies(1);
+	Configuration::setNpcBuddies(Configuration::getNpcBuddies() - 1);
+	if ( Configuration::getNpcBuddies() < 1 ){
+		Configuration::setNpcBuddies(1);
 	}
 	
-	lblue = lgreen = 0;
 	return false;
 }
 
 bool OptionNpcBuddies::rightKey(){
-	MenuGlobals::setNpcBuddies( MenuGlobals::getNpcBuddies() + 1 );
+	Configuration::setNpcBuddies( Configuration::getNpcBuddies() + 1 );
 	rblue = rgreen = 0;
 	return false;
 }
@@ -1474,9 +1437,9 @@ std::string OptionPlayMode::getText(){
     out << MenuOption::getText() << ": ";
 
     /* TODO: language translations of these */
-    if (MenuGlobals::freeForAll()){
+    if (Configuration::getPlayMode() == Configuration::FreeForAll){
         out << "Free for all";
-    } else if (MenuGlobals::cooperative()){
+    } else if (Configuration::getPlayMode() == Configuration::Cooperative){
         out << "Cooperative";
     }
 
@@ -1491,10 +1454,10 @@ void OptionPlayMode::run(const Menu::Context & context){
 }
     
 void OptionPlayMode::changeMode(){
-    if (MenuGlobals::freeForAll()){
-        MenuGlobals::setCooperative();
-    } else if (MenuGlobals::cooperative()){
-        MenuGlobals::setFreeForAll();
+    if (Configuration::getPlayMode() == Configuration::FreeForAll){
+        Configuration::setPlayMode(Configuration::Cooperative);
+    } else if (Configuration::getPlayMode() == Configuration::Cooperative){
+        Configuration::setPlayMode(Configuration::FreeForAll);
     }
 }
 
@@ -1926,7 +1889,7 @@ OptionSpeed::~OptionSpeed(){
 
 std::string OptionSpeed::getText(){
     ostringstream out;
-    out << MenuOption::getText() << ": " << MenuGlobals::getGameSpeed();
+    out << MenuOption::getText() << ": " << Configuration::getGameSpeed();
     return out.str();
 }
 
@@ -1945,15 +1908,15 @@ void OptionSpeed::run(const Menu::Context & context){
 
 bool OptionSpeed::leftKey()
 {
-	MenuGlobals::setGameSpeed(MenuGlobals::getGameSpeed() - 0.05);
-	if( MenuGlobals::getGameSpeed() < 0.1 )MenuGlobals::setGameSpeed(0.1);
-	
-	lblue = lgreen = 0;
+	Configuration::setGameSpeed(Configuration::getGameSpeed() - 0.05);
+	if( Configuration::getGameSpeed() < 0.1 ){
+	    Configuration::setGameSpeed(0.1);
+	}
 	return false;
 }
 bool OptionSpeed::rightKey()
 {
-	MenuGlobals::setGameSpeed(MenuGlobals::getGameSpeed() + 0.05);
+	Configuration::setGameSpeed(Configuration::getGameSpeed() + 0.05);
 	
 	rblue = rgreen = 0;
 	return false;

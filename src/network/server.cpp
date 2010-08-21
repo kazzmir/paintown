@@ -20,7 +20,6 @@
 #include "object/player.h"
 #include "game/mod.h"
 #include "exceptions/exception.h"
-#include "menu/menu_global.h"
 #include "menu/menu.h"
 #include "server.h"
 #include <sstream>
@@ -29,6 +28,10 @@
 #include "util/file-system.h"
 #include "util/system.h"
 #include "input/keyboard.h"
+
+#include "menu/options.h"
+
+#include "configuration.h"
 
 using namespace std;
 
@@ -444,7 +447,7 @@ static void playLevel( World & world, const vector< Object * > & players ){
 
 static int allAlliance = ALLIANCE_FREE_FOR_ALL;
 static int playerAlliance(){
-    if (MenuGlobals::freeForAll()){
+    if (Configuration::getPlayMode() == Configuration::FreeForAll){
         return allAlliance++;
     } else {
         return ALLIANCE_PLAYER;
@@ -495,7 +498,7 @@ static void sendAllOk(const vector<Socket> & sockets){
 }
 
 /* TODO: simplify this code */
-static void playGame(vector<Client*> & clients, OldMenu::Menu * menuParent){
+static void playGame(vector<Client*> & clients){
     vector< Object * > players;
     Util::Thread::Id loading_screen_thread;
     try{
@@ -509,7 +512,7 @@ static void playGame(vector<Client*> & clients, OldMenu::Menu * menuParent){
         players.push_back( player );
         /* then the user selects a set of levels to play */
         // Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
-        Level::LevelInfo levelInfo = MenuGlobals::doLevelMenu("/levels");
+        Level::LevelInfo levelInfo = doLevelMenu("/levels", Menu::Context());
 
         /* show the loading screen */
         Loader::startLoading( &loading_screen_thread );
@@ -741,7 +744,7 @@ static void popup( const Font & font, const string & message ){
         background.BlitToScreen();
 }
 
-void networkServer(OldMenu::Menu * menu){
+void networkServer(){
 
 	// const int startingLives = 4;
 	int port = getServerPort();
@@ -780,7 +783,7 @@ void networkServer(OldMenu::Menu * menu){
 		vector<Client*> clients = chat.getConnectedClients();
 		if (! clients.empty()){
 			debug( 1 ) << "Start game with " << clients.size() << " clients" << endl;
-			playGame(clients, menu);
+			playGame(clients);
 		} else {
 			key.poll();
 			popup( font, "No clients connected" );

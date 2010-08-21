@@ -1,7 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
 #include "menu.h"
-#include "menu_global.h"
 #include "menu_option.h"
 #include "util/funcs.h"
 #include "util/sound.h"
@@ -19,7 +18,6 @@
 
 #include "optionfactory.h"
 #include "actionfactory.h"
-#include "menu_global.h"
 
 #include "input/input-manager.h"
 #include "input/input-map.h"

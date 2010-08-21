@@ -8,7 +8,6 @@
 #include "mugen/menu.h"
 #include "music.h"
 #include "menu/menu.h"
-#include "menu/menu_global.h"
 #include "menu/menu-exception.h"
 #include "input/input-manager.h"
 #include "game/mod.h"
@@ -211,7 +210,7 @@ int paintown_main( int argc, char ** argv ){
         Global::debug( 0 ) << "Could not initialize system" << endl;
         return -1;
     } else {
-        MenuGlobals::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
+        Configuration::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
     }
     diff.endTime();
     Global::debug(0) << diff.printTime("Init took") << endl;
@@ -235,7 +234,7 @@ int paintown_main( int argc, char ** argv ){
             //game.load(mainMenuPath());
             if (just_network_server){
 #ifdef HAVE_NETWORKING
-                //Network::networkServer(&game);
+                Network::networkServer();
 #endif
             } else if (mugen){
                 Mugen::run();

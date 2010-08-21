@@ -144,7 +144,6 @@ src/menu/actionfactory.cpp
 src/menu/action_speed.cpp
 src/menu/menu.cpp
 src/menu/menu_action.cpp
-src/menu/menu_global.cpp
 src/menu/menu_option.cpp
 src/menu/options.cpp
 src/menu/optionfactory.cpp

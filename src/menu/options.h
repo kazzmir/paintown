@@ -5,7 +5,12 @@
 #include "input/input-map.h"
 #include "util/file-system.h"
 
+#include "level/utils.h"
+
 class Token;
+
+/* FIXME figure out what to do with this, since network depends on it." */
+Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & context);
 
 class OptionAdventure : public MenuOption{
     public:
