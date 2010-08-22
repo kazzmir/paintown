@@ -83,7 +83,8 @@ namespace PhysicalAttack{
 
 namespace PaintownUtil = ::Util;
 
-State::State():
+State::State(int id):
+id(id),
 type(Unchanged),
 animation(NULL),
 changeControl(false),
@@ -485,6 +486,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path, vector<StateC
         int defaultBufferTime = 1;
 
         Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
+        State * currentState = NULL;
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -565,9 +567,11 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path, vector<StateC
                 DefaultWalker walker(defaultTime, defaultBufferTime);
                 section->walk(walker);
             } else if (PaintownUtil::matchRegex(head, "statedef")){
-                parseStateDefinition(section);
+                currentState = parseStateDefinition(section);
             } else if (PaintownUtil::matchRegex(head, "state ")){
-                parseState(section, orphans);
+                if (currentState != NULL){
+                    currentState->addController(parseState(section));
+                }
             }
 
             /* [Defaults]
@@ -929,7 +933,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
     }
 }
 
-void Character::parseStateDefinition(Ast::Section * section){
+State * Character::parseStateDefinition(Ast::Section * section){
     std::string head = section->getName();
     /* this should really be head = Mugen::Util::fixCase(head) */
     head = Util::fixCase(head);
@@ -1010,7 +1014,7 @@ void Character::parseStateDefinition(Ast::Section * section){
             }
     };
 
-    State * definition = new State();
+    State * definition = new State(state);
     StateWalker walker(definition);
     section->walk(walker);
     if (states[state] != NULL){
@@ -1019,14 +1023,16 @@ void Character::parseStateDefinition(Ast::Section * section){
     }
     Global::debug(1) << "Adding state definition " << state << endl;
     states[state] = definition;
+
+    return definition;
 }
 
-void Character::parseState(Ast::Section * section, vector<StateController*> & orphans){
+StateController * Character::parseState(Ast::Section * section){
     std::string head = section->getName();
     head = Util::fixCase(head);
 
-    int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
     string name = PaintownUtil::captureRegex(head, "state *-?[0-9]+ *, *(.*)", 0);
+    int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
 
     class StateControllerWalker: public Ast::Walker {
     public:
@@ -1146,16 +1152,10 @@ void Character::parseState(Ast::Section * section, vector<StateController*> & or
     StateController::Type type = walker.type;
     if (type == StateController::Unknown){
         Global::debug(0) << "Warning: no type given for controller " << section->getName() << endl;
+        return NULL;
     } else {
         StateController * controller = StateController::compile(section, name, state, type);
-        // controller->compile();
-        if (states[state] != NULL){
-            states[state]->addController(controller);
-            Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
-        } else {
-            /* save it for later */
-            orphans.push_back(controller);
-        }
+        return controller;
     }
 }
 
@@ -1179,20 +1179,28 @@ static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & b
     }
 #endif
 }
-
+        
 void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path, bool allowDefinitions, bool allowStates, vector<StateController*> & orphans){
     Filesystem::AbsolutePath full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
     Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
+    State * currentState = NULL;
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
         head = Util::fixCase(head);
-        if (allowDefinitions && PaintownUtil::matchRegex(head, "statedef")){
-            parseStateDefinition(section);
-        } else if (allowStates && PaintownUtil::matchRegex(head, "state ")){
-            parseState(section, orphans);
+
+        if (PaintownUtil::matchRegex(head, "statedef")){
+            currentState = parseStateDefinition(section);
+        } else if (PaintownUtil::matchRegex(head, "state ")){
+            StateController * controller = parseState(section);
+            if (controller != NULL){
+                if (controller->getState() != currentState->getState()){
+                    Global::debug(0) << "Warning: controller '" << controller->getName() << "' specified state " << controller->getState() << " which does not match the most recent state definition " << currentState->getState() << " in file " << full.path() << endl;
+                }
+                currentState->addController(controller);
+            }
         }
     }
 }
@@ -1358,7 +1366,7 @@ void Character::load(int useAct){
                     if (states[state] != NULL){
                         states[state]->addController(controller);
                     } else {
-                        Global::debug(0) << "No statedef found for controller " << state << " " << controller->getName() << endl;
+                        Global::debug(0) << location.path() << ": No statedef found for controller " << state << " " << controller->getName() << endl;
                         delete controller;
                     }
                 }
@@ -1865,7 +1873,7 @@ void Character::fixAssumptions(){
 
     /* standing turn state */
     {
-        State * turn = new State();
+        State * turn = new State(5);
         turn->setType(State::Unchanged);
         turn->setAnimation(Compiler::compile(5));
         states[5] = turn;
@@ -2253,7 +2261,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     lastTicket = enemy->getTicket();
 
     if (hisHit.damage.damage != 0){
-        takeDamage(stage, enemy, (int) hisHit.damage.damage);
+        takeDamage(stage, enemy, (int) hisHit.damage.damage / defenseMultiplier);
     }
 
     /*

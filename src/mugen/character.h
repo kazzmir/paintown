@@ -394,7 +394,7 @@ class StateController;
 /* comes from a StateDef */
 class State{
 public:
-    State();
+    State(int id);
 
     enum Type{
         Standing,
@@ -410,6 +410,10 @@ public:
 
     virtual inline void setAnimation(Compiler::Value * animation){
         this->animation = animation;
+    }
+
+    virtual inline int getState() const {
+        return id;
     }
 
     virtual inline void setControl(Compiler::Value * control){
@@ -453,6 +457,7 @@ public:
     virtual ~State();
 
 protected:
+    int id;
     Type type;
     Compiler::Value * animation;
     bool changeControl;
@@ -1035,8 +1040,8 @@ protected:
     */
 
     virtual void fixAssumptions();
-    virtual void parseState(Ast::Section * section, std::vector<StateController*> & orphans);
-    virtual void parseStateDefinition(Ast::Section * section);
+    virtual StateController * parseState(Ast::Section * section);
+    virtual State * parseStateDefinition(Ast::Section * section);
 
     // InputMap<Mugen::Keys> & getInput();
 

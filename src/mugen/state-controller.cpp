@@ -3377,6 +3377,60 @@ public:
     }
 };
 
+class ControllerVarRandom: public StateController {
+public:
+    ControllerVarRandom(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value minimum;
+    Value maximum;
+    Value index;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerVarRandom & controller):
+            controller(controller){
+            }
+
+            ControllerVarRandom & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "v"){
+                    controller.index = Compiler::compile(simple.getValue());
+                } else if (simple == "range"){
+                    if (simple.getValue()->hasMultiple()){
+                        const Ast::Value * min;
+                        const Ast::Value * max;
+                        simple >> min >> max;
+                        controller.minimum = Compiler::compile(min);
+                        controller.maximum = Compiler::compile(max);
+                    } else {
+                        controller.minimum = Compiler::compile(0);
+                        controller.maximum = Compiler::compile(simple.getValue());
+                    }
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+        if (index == NULL){
+            throw MugenException("v not specified in the VarRandom controller");
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int index = (int) evaluateNumber(this->index, environment, 0);
+        int minimum = (int) evaluateNumber(this->minimum, environment, 0);
+        int maximum = (int) evaluateNumber(this->maximum, environment, 0);
+        guy.setVariable(index, PaintownUtil::rnd(minimum, maximum));
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3509,6 +3563,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::EnvShake : return new ControllerEnvShake(section, name, state);
         case StateController::TargetBind : return new ControllerTargetBind(section, name, state);
         case StateController::DefenceMulSet : return new ControllerDefenceMulSet(section, name, state);
+        case StateController::VarRandom : return new ControllerVarRandom(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3558,7 +3613,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetVelAdd :
         case StateController::TargetVelSet :
         case StateController::Trans :
-        case StateController::VarRandom :
         case StateController::VarRangeSet : {
             class DefaultController: public StateController {
             public:
