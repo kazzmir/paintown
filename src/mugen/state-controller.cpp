@@ -3542,6 +3542,7 @@ public:
     }
 };
 
+/* 90% */
 class ControllerSelfState: public ControllerChangeState {
 public:
     ControllerSelfState(Ast::Section * section, const string & name, int state):
@@ -3558,6 +3559,23 @@ public:
             int value = (int) result.getDoubleValue();
             guy.changeOwnState(stage, value, commands);
         }
+    }
+};
+
+/* 0% */
+class ControllerPalFX: public StateController {
+public:
+    ControllerPalFX(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    void parse(Ast::Section * section){
+        /* TODO */
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        /* TODO */
     }
 };
 
@@ -3699,6 +3717,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::HitFallVel : return new ControllerHitFallVel(section, name, state);
         case StateController::HitFallSet : return new ControllerHitFallSet(section, name, state);
         case StateController::SelfState : return new ControllerSelfState(section, name, state);
+        case StateController::PalFX : return new ControllerPalFX(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3721,7 +3740,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ModifyExplod :
         case StateController::MoveHitReset :
         case StateController::Offset :
-        case StateController::PalFX :
         case StateController::ParentVarAdd :
         case StateController::ParentVarSet :
         case StateController::Pause :
