@@ -3487,6 +3487,61 @@ public:
     }
 };
 
+class ControllerHitFallSet: public StateController {
+public:
+    ControllerHitFallSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+    Value xVelocity;
+    Value yVelocity;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerHitFallSet & controller):
+            controller(controller){
+            }
+
+            ControllerHitFallSet & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "xvel"){
+                    controller.xVelocity = Compiler::compile(simple.getValue());
+                } else if (simple == "yvel"){
+                    controller.yVelocity = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int set = evaluateNumber(value, environment, -1);
+        switch (set){
+            case -1 : break;
+            case 0 : guy.getHitState().fall.fall = false; break;
+            case 1 : guy.getHitState().fall.fall = true; break;
+            default : break;
+        }
+
+        if (xVelocity != NULL){
+            guy.getHitState().fall.xVelocity = evaluateNumber(xVelocity, environment, 0);
+        }
+
+        if (yVelocity != NULL){
+            guy.getHitState().fall.yVelocity = evaluateNumber(yVelocity, environment, 0);
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3623,6 +3678,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::HitFallDamage : return new ControllerHitFallDamage(section, name, state);
         case StateController::PosFreeze : return new ControllerPosFreeze(section, name, state);
         case StateController::HitFallVel : return new ControllerHitFallVel(section, name, state);
+        case StateController::HitFallSet : return new ControllerHitFallSet(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3639,7 +3695,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Gravity :
         case StateController::Helper :
         case StateController::HitAdd :
-        case StateController::HitFallSet :
         case StateController::HitOverride :
         case StateController::LifeAdd :
         case StateController::LifeSet :
