@@ -1772,30 +1772,42 @@ public:
 	    /* FIXME compare if current mode is single, simul or turns return 1 otherwise return 0 */
 	    class TeamMode: public Value {
             public:
-		TeamMode(const Ast::Function & function):
-		function(function){
-		}
-                RuntimeValue evaluate(const Environment & environment) const {
-		    int check = 0;
-		    std::string type;
-		    *function.getArg1() >> type;
-		    /* FIXME
-		     * is this in Environment ?
-		     */
-		    if (type == "single"){
-			check = 1;
+                enum Mode{
+                    Single,
+                    Turns,
+                    Simul
+                };
+
+		TeamMode(const std::string & type):
+                check(Single){
+                    if (type == "single"){
+			check = Single;
 		    } else if (type == "turns"){
-			check = 0;
+			check = Turns;
 		    } else if (type == "simul"){
-			check = 0;
+			check = Simul;
 		    }
+		}
+
+                Mode check;
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME: replace this with a check against the stage's
+                     * current mode. something like
+                     * check == environment.getStage().getMode()
+                     */
+
+                    switch (check){
+                        case Single : return RuntimeValue(true);
+                        case Turns : return RuntimeValue(false);
+                        case Simul : return RuntimeValue(false);
+                    } 
 		    
-		    return RuntimeValue(check);
+		    return RuntimeValue(false);
                 }
-                const Ast::Function & function;
             };
 	    
-	    return new TeamMode(function);
+	    return new TeamMode(function.getArg1()->toString());
 	}
 
         /* it would be nice to combine var/fvar/sysvar */
