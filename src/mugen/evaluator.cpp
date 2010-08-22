@@ -1,3 +1,8 @@
+/*
+ * THIS FILE WILL GO AWAY.
+ * You probably want to use compiler.cpp instead
+ */
+
 #include "evaluator.h"
 #include "exception.h"
 #include "character.h"

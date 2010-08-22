@@ -315,6 +315,12 @@ Ast::Attribute * makeAttribute(const char * name, const Value & data){
     return object;
 }
 
+Ast::Value * makeNumber(double value){
+    Ast::Number * object = new Ast::Number(value);
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeNumber(const Value & sign, const Value & number){
     double value = *(as<double*>(number));
     if (sign.getValue() != 0 && strcmp(as<const char *>(sign), "-") == 0){
@@ -469,6 +475,7 @@ rules:
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
                | name:identifier s "=" s &line_end {{ value = makeAttribute(name); }}
 	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
+               | "ctrl" {{ value = makeAttribute(makeSimpleIdentifier("ctrl"), makeNumber(1)); }}
 	identifier = line:<line> first:name rest:("." name)* {{ value = makeIdentifier(getCurrentLine(line), getCurrentColumn(line), first, rest); }}
 	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
 	float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, parseDouble(left,right)); }}
@@ -580,7 +587,14 @@ rules:
 		          | "gethitvar"{case}
 		          | "floor"{case}
 		          | "ceil"{case}
+                  | "acos"{case}
+                  | "asin"{case}
+                  | "atan"{case}
+                  | "tan"{case}
+                  | "cos"{case}
 		          | "sin"{case}
+                  | "log"{case}
+                  | "ln"{case}
 		          | "sysfvar"{case}
 		          | "sysvar"{case}
 		          | "var"{case}
