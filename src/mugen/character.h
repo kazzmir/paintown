@@ -999,6 +999,8 @@ public:
         virtual void setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack);
         virtual void setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes);
 
+        virtual void setDefenseMultiplier(double defense);
+
 protected:
     void initialize();
 
@@ -1365,6 +1367,9 @@ protected:
             int time;
             std::vector<AttackType::Attribute> attributes;
         } hitByOverride[2];
+
+        /* reduces damage taken */
+        double defenseMultiplier;
 };
 
 }

@@ -3339,6 +3339,41 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        /* FIXME */
+    }
+};
+
+class ControllerDefenceMulSet: public StateController {
+public:
+    ControllerDefenceMulSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value defense;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Value & defense):
+            defense(defense){
+            }
+
+            Value & defense;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    defense = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(defense);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        guy.setDefenseMultiplier(evaluateNumber(defense, FullEnvironment(stage, guy, commands), 1));
     }
 };
 
@@ -3473,6 +3508,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::GameMakeAnim : return new ControllerGameMakeAnim(section, name, state);
         case StateController::EnvShake : return new ControllerEnvShake(section, name, state);
         case StateController::TargetBind : return new ControllerTargetBind(section, name, state);
+        case StateController::DefenceMulSet : return new ControllerDefenceMulSet(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3482,7 +3518,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToTarget :
         case StateController::ChangeAnim2 :
         case StateController::ClearClipboard :
-        case StateController::DefenceMulSet :
         case StateController::DestroySelf :
         case StateController::DisplayToClipboard :
         case StateController::EnvColor :

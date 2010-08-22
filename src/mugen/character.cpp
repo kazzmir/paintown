@@ -390,6 +390,7 @@ void Character::initialize(){
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
+    defenseMultiplier = 1;
     lieDownTime = 0;
     debug = false;
     has_control = true;
@@ -2672,6 +2673,10 @@ void Character::setHitByOverride(int slot, int time, bool standing, bool crouchi
     hitByOverride[slot].crouching = crouching;
     hitByOverride[slot].aerial = aerial;
     hitByOverride[slot].attributes = attributes;
+}
+        
+void Character::setDefenseMultiplier(double defense){
+    defenseMultiplier = defense;
 }
         
 }
