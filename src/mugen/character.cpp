@@ -680,6 +680,11 @@ void Character::changeState(MugenStage & stage, int stateNumber, const vector<st
     }
 }
 
+void Character::changeOwnState(MugenStage & stage, int state, const std::vector<std::string> & inputs){
+    /* FIXME: change to states in the characters own cns file */
+    changeState(stage, state, inputs);
+}
+
 void Character::loadCnsFile(const Filesystem::RelativePath & path){
     Filesystem::AbsolutePath full = baseDir.join(path);
     try{

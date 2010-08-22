@@ -3542,6 +3542,25 @@ public:
     }
 };
 
+class ControllerSelfState: public ControllerChangeState {
+public:
+    ControllerSelfState(Ast::Section * section, const string & name, int state):
+    ControllerChangeState(section, name, state){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (control != NULL){
+            guy.setControl(control->evaluate(FullEnvironment(stage, guy)).toBool());
+        }
+
+        RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
+        if (result.isDouble()){
+            int value = (int) result.getDoubleValue();
+            guy.changeOwnState(stage, value, commands);
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3679,6 +3698,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::PosFreeze : return new ControllerPosFreeze(section, name, state);
         case StateController::HitFallVel : return new ControllerHitFallVel(section, name, state);
         case StateController::HitFallSet : return new ControllerHitFallSet(section, name, state);
+        case StateController::SelfState : return new ControllerSelfState(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3712,7 +3732,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::RemoveExplod :
         case StateController::ReversalDef :
         case StateController::ScreenBound :
-        case StateController::SelfState :
         case StateController::SprPriority :
         case StateController::SndPan :
         case StateController::StopSnd :

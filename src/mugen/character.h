@@ -597,6 +597,8 @@ public:
     virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
 
     virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
+    /* change back to states in the players own cns file */
+    virtual void changeOwnState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
     
     virtual void setAnimation(int animation);
     
