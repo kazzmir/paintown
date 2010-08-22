@@ -1347,6 +1347,28 @@ public:
             return walker.compiled;
         }
 
+	if (function == "asin"){
+            class Asin: public Value {
+            public:
+                Asin(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Asin(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    double result = argument->evaluate(environment).toNumber();
+                    return RuntimeValue(asin(result));
+                }
+            };
+
+            return new Asin(compile(function.getArg1()));
+        }
+        
         if (function == "sin"){
             class Sin: public Value {
             public:
@@ -1367,6 +1389,28 @@ public:
             };
 
             return new Sin(compile(function.getArg1()));
+        }
+        
+        if (function == "atan"){
+            class Atan: public Value {
+            public:
+                Atan(Value * argument):
+                    argument(argument){
+                    }
+
+                Value * argument;
+
+                virtual ~Atan(){
+                    delete argument;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    double result = argument->evaluate(environment).toNumber();
+                    return RuntimeValue(atan(result));
+                }
+            };
+
+            return new Atan(compile(function.getArg1()));
         }
 
         if (function == "abs"){
@@ -1798,6 +1842,48 @@ public:
 
             return new Ceil(compile(function.getArg1()));
         }
+        
+        if (function == "acos"){
+	    class Acos: public Value {
+	    public:
+		Acos(Value * argument):
+		    argument(argument){
+		    }
+		
+		Value * argument;
+		
+		virtual  ~Acos(){
+		    delete argument;
+		}
+		
+		RuntimeValue evaluate(const Environment & environment) const {
+		    return RuntimeValue(acos(argument->evaluate(environment).toNumber()));
+		}
+	    };
+	    
+	    return new Acos(compile(function.getArg1()));
+	}
+        
+        if (function == "cos"){
+	    class Cos: public Value {
+	    public:
+		Cos(Value * argument):
+		    argument(argument){
+		    }
+		
+		Value * argument;
+		
+		virtual  ~Cos(){
+		    delete argument;
+		}
+		
+		RuntimeValue evaluate(const Environment & environment) const {
+		    return RuntimeValue(cos(argument->evaluate(environment).toNumber()));
+		}
+	    };
+	    
+	    return new Cos(compile(function.getArg1()));
+	}
 
         if (function == "animexist"){
             class AnimExist: public Value {
