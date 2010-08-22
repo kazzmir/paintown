@@ -1120,6 +1120,29 @@ public:
     }
 
     Value * compileFunction(const Ast::Function & function){
+        /* For use when the function accepts one argument and passes it along
+         * to some C level function.
+         */
+        class MetaCircularArg1: public Value {
+        public:
+            MetaCircularArg1(double (*c_level)(double), Value * argument):
+                cFunction(c_level),
+                argument(argument){
+                }
+
+            double (*cFunction)(double);
+            Value * argument;
+
+            virtual ~MetaCircularArg1(){
+                delete argument;
+            }
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                double result = argument->evaluate(environment).toNumber();
+                return RuntimeValue(cFunction(result));
+            }
+        };
+
         if (function == "const"){
             class ConstWalker: public Ast::Walker {
             public:
@@ -1348,6 +1371,7 @@ public:
         }
 
 	if (function == "asin"){
+            /*
             class Asin: public Value {
             public:
                 Asin(Value * argument):
@@ -1367,9 +1391,12 @@ public:
             };
 
             return new Asin(compile(function.getArg1()));
+            */
+            return new MetaCircularArg1(asin, compile(function.getArg1()));
         }
         
         if (function == "sin"){
+            /*
             class Sin: public Value {
             public:
                 Sin(Value * argument):
@@ -1389,9 +1416,12 @@ public:
             };
 
             return new Sin(compile(function.getArg1()));
+            */
+            return new MetaCircularArg1(sin, compile(function.getArg1()));
         }
         
         if (function == "atan"){
+            /*
             class Atan: public Value {
             public:
                 Atan(Value * argument):
@@ -1411,9 +1441,13 @@ public:
             };
 
             return new Atan(compile(function.getArg1()));
+            */
+            
+            return new MetaCircularArg1(atan, compile(function.getArg1()));
         }
 
         if (function == "abs"){
+            /*
             class FunctionAbs: public Value {
             public:
                 FunctionAbs(Value * argument):
@@ -1432,6 +1466,9 @@ public:
             };
 
             return new FunctionAbs(compile(function.getArg1()));
+            */
+            
+            return new MetaCircularArg1(fabs, compile(function.getArg1()));
         }
 
         if (function == "numprojid"){
@@ -1844,6 +1881,7 @@ public:
         }
         
         if (function == "acos"){
+            /*
 	    class Acos: public Value {
 	    public:
 		Acos(Value * argument):
@@ -1862,9 +1900,12 @@ public:
 	    };
 	    
 	    return new Acos(compile(function.getArg1()));
+            */
+            return new MetaCircularArg1(acos, compile(function.getArg1()));
 	}
         
         if (function == "cos"){
+            /*
 	    class Cos: public Value {
 	    public:
 		Cos(Value * argument):
@@ -1883,6 +1924,9 @@ public:
 	    };
 	    
 	    return new Cos(compile(function.getArg1()));
+            */
+            
+            return new MetaCircularArg1(cos, compile(function.getArg1()));
 	}
 
         if (function == "animexist"){
