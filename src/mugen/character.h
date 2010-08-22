@@ -377,7 +377,8 @@ struct HitState{
     struct Fall{
         Fall():
             fall(false),
-            yVelocity(0){
+            yVelocity(0),
+            damage(0){
             }
 
         struct Shake{
@@ -386,6 +387,7 @@ struct HitState{
 
         bool fall;
         double yVelocity;
+        double damage;
     } fall;
 };
 

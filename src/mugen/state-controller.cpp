@@ -1661,6 +1661,7 @@ public:
         his.fall.fall = evaluateBool(hit.fall.fall, false);
         his.fall.yVelocity = evaluateNumber(hit.fall.yVelocity, -4.5);
         his.fall.envShake.time = evaluateNumber(hit.fall.envShake.time, 0);
+        his.fall.damage = evaluateNumber(hit.fall.damage, 0);
         his.groundSlideTime = evaluateNumber(hit.groundSlideTime, 0);
         his.guardControlTime = evaluateNumber(hit.guardControlTime, his.groundSlideTime);
         his.airGuardControlTime = evaluateNumber(hit.airGuardControlTime, his.guardControlTime);
@@ -3437,6 +3438,24 @@ public:
     }
 };
 
+class ControllerHitFallDamage: public StateController {
+public:
+    ControllerHitFallDamage(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    bool isFalling(const Character & guy) const {
+        /* FIXME */
+        return true;
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (isFalling(guy)){
+            guy.takeDamage(stage, (ObjectAttack*) stage.getEnemy(&guy), guy.getHitState().fall.damage);
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3570,6 +3589,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetBind : return new ControllerTargetBind(section, name, state);
         case StateController::DefenceMulSet : return new ControllerDefenceMulSet(section, name, state);
         case StateController::VarRandom : return new ControllerVarRandom(section, name, state);
+        case StateController::HitFallDamage : return new ControllerHitFallDamage(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3586,7 +3606,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Gravity :
         case StateController::Helper :
         case StateController::HitAdd :
-        case StateController::HitFallDamage :
         case StateController::HitFallSet :
         case StateController::HitFallVel :
         case StateController::HitOverride :
