@@ -2888,6 +2888,12 @@ public:
             animation = stage.getFightAnimation(animation_value);
         }
 
+        if (animation == NULL){
+            ostringstream out;
+            out << "Cannot find animation for " << animation_value << endl;
+            throw MugenException(out.str());
+        }
+
         class ExplodeEffect: public Effect {
         public:
             ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime):
