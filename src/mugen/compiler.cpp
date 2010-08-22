@@ -1142,8 +1142,8 @@ public:
                 return RuntimeValue(cFunction(result));
             }
         };
-
-        if (function == "const"){
+	
+	if (function == "const"){
             class ConstWalker: public Ast::Walker {
             public:
                 ConstWalker():
@@ -1153,6 +1153,56 @@ public:
                 Value * compiled;
 
                 Value * compileConst(const Ast::Identifier & identifier){
+		    if (identifier == "data.life"){
+                        class DataLife: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getMaxHealth());
+                            }
+                        };
+
+                        return new DataLife();
+                    }
+                    
+                    if (identifier == "data.power"){
+                        class DataPower: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getPower());
+                            }
+                        };
+
+                        return new DataPower();
+                    }
+                    /* TODO implement rest 
+                    if (identifier == "data.attack"){
+		    }
+                    if (identifier == "data.defence"){
+		    }
+                    if (identifier == "data.fall.defence_mul"){
+		    }
+                    if (identifier == "data.liedown.time"){
+		    }
+                    if (identifier == "data.airjuggle"){
+		    }
+                    if (identifier == "data.sparkno"){
+		    }
+                    if (identifier == "data.guard.sparkno"){
+		    }
+                    if (identifier == "data.ko.echo"){
+		    }
+                    if (identifier == "data.intpersistindex"){
+		    }
+                    if (identifier == "data.attack"){
+		    }
+		    
+                    if (identifier == "movement.airjump.num"){
+		    }
+		    
+                    if (identifier == "movement.airjump.height"){
+		    }
+                    */ 
+		    
                     if (identifier == "movement.yaccel"){
                         class MovemntYAccel: public Value {
                         public:
@@ -1163,6 +1213,25 @@ public:
 
                         return new MovemntYAccel();
                     }
+                    
+                    /* FIXME others
+		     *  movement.stand.friction: Returns value of the "stand.friction" parameter. (float)
+			movement.crouch.friction: Returns value of the "crouch.friction" parameter. (float)
+			movement.stand.friction.threshold: Returns value of the "stand.friction.threshold" parameter. (float)
+			movement.crouch.friction.threshold: Returns value of the "crouch.friction.threshold" parameter. (float)
+			movement.jump.changeanim.threshold: Returns value of the "jump.changeanim.threshold" parameter. (float)
+			movement.air.gethit.groundlevel: Returns value of the "air.gethit.groundlevel" parameter. (float)
+			movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
+			movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
+			movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
+			movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
+			movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
+			movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
+			movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
+			movement.down.bounce.yaccel: Returns value of the "down.bounce.yaccel" parameter. (float)
+			movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
+			movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
+		    */
 
                     if (identifier == "velocity.walk.back.x"){
                         class VelocityBackX: public Value {
