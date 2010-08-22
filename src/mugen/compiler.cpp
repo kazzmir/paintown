@@ -1408,12 +1408,57 @@ public:
 
                         return new AirJumpForwardX();
                     }
-
-                    if (identifier == "size.mid.pos.y"){
+                    
+                    if (identifier == "size.xscale"){
                         /* FIXME */
                         return compile(0);
                     }
-
+                    
+                    if (identifier == "size.yscale"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+                    
+                    if (identifier == "size.ground.back"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+		    
+                    if (identifier == "size.ground.front"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+		    
+                    if (identifier == "size.air.back"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+		    
+                    if (identifier == "size.air.front"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+		    
+                    if (identifier == "size.height"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+                    
+                    if (identifier == "size.attack.dist"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+		    
+                    if (identifier == "size.proj.attack.dist"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+                    
+                    if (identifier == "size.proj.doscale"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+		    
                     if (identifier == "size.head.pos.x"){
                         /* FIXME */
                         return compile(0);
@@ -1423,6 +1468,32 @@ public:
                         /* FIXME */
                         return compile(0);
                     }
+
+                    if (identifier == "size.mid.pos.x"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+                    
+                    if (identifier == "size.mid.pos.y"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+                    
+                    if (identifier == "size.shadowoffset"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+
+                    if (identifier == "size.draw.offset.x"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+
+                    if (identifier == "size.draw.offset.y"){
+                        /* FIXME */
+                        return compile(0);
+                    }
+
 
                     return NULL;
                 }
