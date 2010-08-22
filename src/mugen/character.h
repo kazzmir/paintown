@@ -1008,9 +1008,9 @@ protected:
     
     virtual void loadSelectData();
 
-    virtual void loadCmdFile(const Filesystem::RelativePath & path);
+    virtual void loadCmdFile(const Filesystem::RelativePath & path, std::vector<StateController*> & orphans);
     virtual void loadCnsFile(const Filesystem::RelativePath & path);
-    virtual void loadStateFile(const Filesystem::AbsolutePath & base, const std::string & path, bool allowDefinitions, bool allowStates);
+    virtual void loadStateFile(const Filesystem::AbsolutePath & base, const std::string & path, bool allowDefinitions, bool allowStates, std::vector<StateController*> & orphans);
 
     virtual void addCommand(Command * command);
 
@@ -1033,7 +1033,7 @@ protected:
     */
 
     virtual void fixAssumptions();
-    virtual void parseState(Ast::Section * section);
+    virtual void parseState(Ast::Section * section, std::vector<StateController*> & orphans);
     virtual void parseStateDefinition(Ast::Section * section);
 
     // InputMap<Mugen::Keys> & getInput();

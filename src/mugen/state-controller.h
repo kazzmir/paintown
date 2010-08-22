@@ -32,8 +32,8 @@ protected:
     */
 
 public:
-    StateController(const std::string & name);
-    StateController(const std::string & name, Ast::Section * section);
+    StateController(const std::string & name, int state);
+    StateController(const std::string & name, int state, Ast::Section * section);
 
     /* from scrtls.html or more recently
      * http://elecbyte.com/wiki/index.php/Category:State_Controllers
@@ -143,6 +143,10 @@ public:
         return this->type;
     }
 
+    virtual inline int getState() const {
+        return state;
+    }
+
     virtual inline const std::string & getName() const {
         return name;
     }
@@ -176,6 +180,9 @@ protected:
     int persistent;
     /* countdown of persistent level */
     int currentPersistent;
+
+    /* state number */
+    int state;
 };
 
 }

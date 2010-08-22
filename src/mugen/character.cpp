@@ -100,8 +100,10 @@ hitDefPersist(false){
 }
 
 void State::addController(StateController * controller){
+#if 0
     for (vector<StateController*>::iterator it = controllers.begin(); it != controllers.end(); /**/ ){
         StateController * mine = *it;
+
         /* controllers must have unique names */
         if (mine->getName() == controller->getName()){
             delete mine;
@@ -110,11 +112,13 @@ void State::addController(StateController * controller){
             it++;
         }
     }
+#endif
 
     controllers.push_back(controller);
 }
 
 void State::addControllerFront(StateController * controller){
+#if 0
     for (vector<StateController*>::iterator it = controllers.begin(); it != controllers.end(); /**/ ){
         StateController * mine = *it;
         /* controllers must have unique names */
@@ -125,6 +129,7 @@ void State::addControllerFront(StateController * controller){
             it++;
         }
     }
+#endif
 
     controllers.insert(controllers.begin(), controller);
 }
@@ -472,7 +477,7 @@ void Character::setAnimation(int animation){
     getCurrentAnimation()->reset();
 }
 
-void Character::loadCmdFile(const Filesystem::RelativePath & path){
+void Character::loadCmdFile(const Filesystem::RelativePath & path, vector<StateController*> & orphans){
     Filesystem::AbsolutePath full = baseDir.join(path);
     try{
         int defaultTime = 15;
@@ -561,7 +566,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
             } else if (PaintownUtil::matchRegex(head, "statedef")){
                 parseStateDefinition(section);
             } else if (PaintownUtil::matchRegex(head, "state ")){
-                parseState(section);
+                parseState(section, orphans);
             }
 
             /* [Defaults]
@@ -1007,7 +1012,7 @@ void Character::parseStateDefinition(Ast::Section * section){
     State * definition = new State();
     StateWalker walker(definition);
     section->walk(walker);
-    if (states[state] != 0){
+    if (states[state] != NULL){
         Global::debug(1) << "Overriding state " << state << endl;
         delete states[state];
     }
@@ -1015,7 +1020,7 @@ void Character::parseStateDefinition(Ast::Section * section){
     states[state] = definition;
 }
 
-void Character::parseState(Ast::Section * section){
+void Character::parseState(Ast::Section * section, vector<StateController*> & orphans){
     std::string head = section->getName();
     head = Util::fixCase(head);
 
@@ -1134,23 +1139,21 @@ void Character::parseState(Ast::Section * section){
         }
     };
 
-    if (states[state] == 0){
-        ostringstream out;
-        out << "Warning! No StateDef for state " << state << " [" << name << "]";
-        // delete controller;
-        // throw MugenException(out.str());
+    // StateController * controller = new StateController(name);
+    StateControllerWalker walker;
+    section->walk(walker);
+    StateController::Type type = walker.type;
+    if (type == StateController::Unknown){
+        Global::debug(0) << "Warning: no type given for controller " << section->getName() << endl;
     } else {
-        // StateController * controller = new StateController(name);
-        StateControllerWalker walker;
-        section->walk(walker);
-        StateController::Type type = walker.type;
-        if (type == StateController::Unknown){
-            Global::debug(0) << "Warning: no type given for controller " << section->getName() << endl;
-        } else {
-            StateController * controller = StateController::compile(section, name, state, type);
-            // controller->compile();
+        StateController * controller = StateController::compile(section, name, state, type);
+        // controller->compile();
+        if (states[state] != NULL){
             states[state]->addController(controller);
             Global::debug(1) << "Adding state controller '" << name << "' to state " << state << endl;
+        } else {
+            /* save it for later */
+            orphans.push_back(controller);
         }
     }
 }
@@ -1176,7 +1179,7 @@ static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & b
 #endif
 }
 
-void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path, bool allowDefinitions, bool allowStates){
+void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path, bool allowDefinitions, bool allowStates, vector<StateController*> & orphans){
     Filesystem::AbsolutePath full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
@@ -1188,7 +1191,7 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
         if (allowDefinitions && PaintownUtil::matchRegex(head, "statedef")){
             parseStateDefinition(section);
         } else if (allowStates && PaintownUtil::matchRegex(head, "state ")){
-            parseState(section);
+            parseState(section, orphans);
         }
     }
 }
@@ -1325,6 +1328,41 @@ void Character::load(int useAct){
                 Ast::Section * section = *section_it;
                 section->walk(walker);
 
+                /* state controllers with no obvious parent. after parsing all
+                 * the state files, go through this list and try to find the right parent
+                 */
+                vector<StateController*> orphanControllers;
+                for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
+                    Location & where = *it;
+                    try{
+                        /* load definitions first */
+                        loadStateFile(where.base, where.file, true, true, orphanControllers);
+                    } catch (const MugenException & e){
+                        ostringstream out;
+                        out << "Problem loading state file " << where.file << ": " << e.getReason();
+                        throw MugenException(out.str());
+                    } catch (const Mugen::Cmd::ParseException & e){
+                        ostringstream out;
+                        out << "Problem loading state file " << where.file << ": " << e.getReason();
+                        throw MugenException(out.str());
+                    }
+
+                }
+
+                loadCmdFile(cmdFile, orphanControllers);
+
+                for (vector<StateController*>::iterator it = orphanControllers.begin(); it != orphanControllers.end(); it++){
+                    StateController * controller = *it;
+                    int state = controller->getState();
+                    if (states[state] != NULL){
+                        states[state]->addController(controller);
+                    } else {
+                        Global::debug(0) << "No statedef found for controller " << state << " " << controller->getName() << endl;
+                        delete controller;
+                    }
+                }
+
+#if 0
                 for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
                     Location & where = *it;
                     try{
@@ -1356,8 +1394,8 @@ void Character::load(int useAct){
                         throw MugenException(out.str());
                     }
                 }
+#endif
 
-                loadCmdFile(cmdFile);
 
 #if 0
                 /* now just load the state controllers */
@@ -1647,7 +1685,7 @@ void Character::fixAssumptions(){
             class InternalJumpController: public StateController {
             public:
                 InternalJumpController():
-                StateController("jump"){
+                StateController("jump", -1){
                 }
 
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -1696,7 +1734,7 @@ void Character::fixAssumptions(){
             class InternalDoubleJumpController: public StateController {
             public:
                 InternalDoubleJumpController():
-                StateController("double jump"){
+                StateController("double jump", -1){
                 }
 
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -1730,7 +1768,7 @@ void Character::fixAssumptions(){
             class StopGuardStandController: public StateController {
             public:
                 StopGuardStandController():
-                StateController("stop guarding"){
+                StateController("stop guarding", StopGuardStand){
                 }
 
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {

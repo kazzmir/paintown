@@ -14,20 +14,22 @@ namespace Mugen{
         
 typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
 
-StateController::StateController(const string & name):
+StateController::StateController(const string & name, int state):
 type(Unknown),
 name(name),
 debug(false),
 persistent(1),
-currentPersistent(1){
+currentPersistent(1),
+state(state){
 }
 
-StateController::StateController(const string & name, Ast::Section * section):
+StateController::StateController(const string & name, int state, Ast::Section * section):
 type(Unknown),
 name(name),
 debug(false),
 persistent(1),
-currentPersistent(1){
+currentPersistent(1),
+state(state){
     class Walker: public Ast::Walker {
     public:
         Walker(StateController & controller):
@@ -207,8 +209,8 @@ static void extractValue(Compiler::Value *& value, Ast::Section * section){
 /* 50% */
 class ControllerChangeAnim: public StateController {
 public:
-    ControllerChangeAnim(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerChangeAnim(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         value(NULL){
             parse(section);
         }
@@ -240,8 +242,8 @@ public:
 
 class ControllerChangeState: public StateController {
 public:
-    ControllerChangeState(Ast::Section * section, const std::string & name):
-        StateController(name, section),
+    ControllerChangeState(Ast::Section * section, const std::string & name, int state):
+        StateController(name, state, section),
         value(NULL),
         control(NULL){
             parse(section);
@@ -299,8 +301,8 @@ public:
 
 class ControllerCtrlSet: public StateController {
 public:
-    ControllerCtrlSet(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerCtrlSet(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         value(NULL){
             parse(section);
         }
@@ -328,8 +330,8 @@ public:
 
 class ControllerPlaySound: public StateController {
 public:
-    ControllerPlaySound(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerPlaySound(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         group(-1),
         own(false),
         item(NULL){
@@ -405,8 +407,8 @@ public:
 
 class ControllerVarSet: public StateController {
 public:
-    ControllerVarSet(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerVarSet(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         value(NULL),
         variable(NULL){
             parse(section);
@@ -502,8 +504,8 @@ public:
 
 class ControllerVelSet: public StateController {
 public:
-    ControllerVelSet(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerVelSet(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         x(NULL),
         y(NULL){
             parse(section);
@@ -557,8 +559,8 @@ public:
 
 class ControllerHitVelSet: public StateController {
 public:
-    ControllerHitVelSet(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerHitVelSet(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         x(NULL),
         y(NULL){
             parse(section);
@@ -614,8 +616,8 @@ public:
 
 class ControllerPosAdd: public StateController {
 public:
-    ControllerPosAdd(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerPosAdd(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         x(NULL),
         y(NULL){
             parse(section);
@@ -672,8 +674,8 @@ public:
 
 class ControllerPosSet: public StateController {
 public:
-    ControllerPosSet(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerPosSet(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         x(NULL),
         y(NULL){
             parse(section);
@@ -728,8 +730,8 @@ public:
 
 class ControllerVelAdd: public StateController {
 public:
-    ControllerVelAdd(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerVelAdd(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         x(NULL),
         y(NULL){
             parse(section);
@@ -783,8 +785,8 @@ public:
 
 class ControllerVelMul: public StateController {
 public:
-    ControllerVelMul(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerVelMul(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         x(NULL),
         y(NULL){
             parse(section);
@@ -839,8 +841,8 @@ public:
 
 class ControllerHitDef: public StateController {
 public:
-    ControllerHitDef(Ast::Section * section, const string & name):
-        StateController(name, section){
+    ControllerHitDef(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section){
             parse(section);
         }
 
@@ -1686,8 +1688,8 @@ public:
 
 class ControllerStateTypeSet: public StateController {
 public:
-    ControllerStateTypeSet(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerStateTypeSet(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         changeMoveType(false),
         changeStateType(false),
         changePhysics(false){
@@ -1771,8 +1773,8 @@ public:
 
 class ControllerSuperPause: public StateController {
 public:
-    ControllerSuperPause(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerSuperPause(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         time(NULL),
         posX(NULL),
         posY(NULL),
@@ -1931,8 +1933,8 @@ public:
 
 class ControllerAfterImage: public StateController {
 public:
-    ControllerAfterImage(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerAfterImage(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         time(NULL),
         length(NULL),
         timeGap(NULL),
@@ -2049,8 +2051,8 @@ public:
 
 class ControllerAfterImageTime: public StateController {
 public:
-    ControllerAfterImageTime(Ast::Section * section, const string & name):
-        StateController(name, section),
+    ControllerAfterImageTime(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section),
         time(NULL){
             parse(section);
         }
@@ -2095,8 +2097,8 @@ public:
 
 class ControllerAngleAdd: public StateController {
 public:
-    ControllerAngleAdd(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerAngleAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     value(NULL){
         parse(section);
     }
@@ -2138,8 +2140,8 @@ public:
 
 class ControllerAngleMul: public StateController {
 public:
-    ControllerAngleMul(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerAngleMul(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     value(NULL){
         parse(section);
     }
@@ -2181,8 +2183,8 @@ public:
 
 class ControllerAngleSet: public StateController {
 public:
-    ControllerAngleSet(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerAngleSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     value(NULL){
         parse(section);
     }
@@ -2224,8 +2226,8 @@ public:
 
 class ControllerAngleDraw: public StateController {
 public:
-    ControllerAngleDraw(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerAngleDraw(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     value(NULL),
     scaleX(NULL),
     scaleY(NULL){
@@ -2295,8 +2297,8 @@ public:
 
 class ControllerAssertSpecial: public StateController {
 public:
-    ControllerAssertSpecial(Ast::Section * section, const string & name):
-    StateController(name, section){
+    ControllerAssertSpecial(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
         parse(section);
     }
 
@@ -2359,8 +2361,8 @@ public:
 
 class ControllerAttackDist: public StateController {
 public:
-    ControllerAttackDist(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerAttackDist(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     value(NULL){
         parse(section);
     }
@@ -2386,8 +2388,8 @@ public:
 
 class ControllerNull: public StateController {
 public:
-    ControllerNull(const string & name):
-    StateController(name){
+    ControllerNull(const string & name, int state):
+    StateController(name, state){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -2397,8 +2399,8 @@ public:
 
 class ControllerTurn: public StateController {
 public:
-    ControllerTurn(Ast::Section * section, const string & name):
-    StateController(name, section){
+    ControllerTurn(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -2408,8 +2410,8 @@ public:
 
 class ControllerVarAdd: public StateController {
 public:
-    ControllerVarAdd(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerVarAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     integerIndex(NULL),
     floatIndex(NULL),
     sysIndex(NULL),
@@ -2530,8 +2532,8 @@ public:
 
 class ControllerForceFeedback: public StateController {
 public:
-    ControllerForceFeedback(Ast::Section * section, const string & name):
-    StateController(name){
+    ControllerForceFeedback(Ast::Section * section, const string & name, int state):
+    StateController(name, state){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -2541,8 +2543,8 @@ public:
 
 class ControllerWidth: public StateController {
 public:
-    ControllerWidth(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerWidth(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     edgeFront(NULL),
     edgeBack(NULL),
     playerFront(NULL),
@@ -2657,8 +2659,8 @@ public:
 
 class ControllerMakeDust: public StateController {
 public:
-    ControllerMakeDust(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerMakeDust(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     posX(NULL),
     posY(NULL),
     posX2(NULL),
@@ -2747,8 +2749,8 @@ public:
 
 class ControllerFallEnvShake: public StateController {
 public:
-    ControllerFallEnvShake(Ast::Section * section, const string & name):
-    StateController(name, section){
+    ControllerFallEnvShake(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -2762,8 +2764,8 @@ public:
 
 class ControllerExplod: public StateController {
 public:
-    ControllerExplod(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerExplod(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     animation(NULL),
     ownAnimation(true),
     id(NULL),
@@ -2933,8 +2935,8 @@ public:
 
 class ControllerGameMakeAnim: public StateController {
 public:
-    ControllerGameMakeAnim(Ast::Section * section, const string & name):
-    StateController(name, section){
+    ControllerGameMakeAnim(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
         parse(section);
     }
 
@@ -3004,8 +3006,8 @@ public:
 
 class ControllerHitBy: public StateController {
 public:
-    ControllerHitBy(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerHitBy(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     time(NULL),
     slot(-1),
     standing(false),
@@ -3110,8 +3112,8 @@ public:
 
 class ControllerNotHitBy: public StateController {
 public:
-    ControllerNotHitBy(Ast::Section * section, const string & name):
-    StateController(name, section),
+    ControllerNotHitBy(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
     time(NULL),
     slot(-1),
     standing(true),
@@ -3251,8 +3253,8 @@ public:
 
 class ControllerEnvShake: public StateController {
 public:
-    ControllerEnvShake(Ast::Section * section, const string & name):
-    StateController(name, section){
+    ControllerEnvShake(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
         parse(section);
     }
 
@@ -3294,6 +3296,49 @@ public:
          */
         int quake = evaluateNumber(time, environment, 0);
         stage.Quake(quake);
+    }
+};
+
+class ControllerTargetBind: public StateController {
+public:
+    ControllerTargetBind(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value time;
+    Value id;
+    Value posX, posY;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetBind & controller):
+            controller(controller){
+            }
+
+            ControllerTargetBind & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "time"){
+                    controller.time = Compiler::compile(simple.getValue());
+                } else if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
+                } else if (simple == "pos"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.posX = Compiler::compile(x);
+                    controller.posY = Compiler::compile(y);
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
     }
 };
 
@@ -3393,40 +3438,41 @@ static string toString(StateController::Type type){
 
 StateController * StateController::compile(Ast::Section * section, const string & name, int state, StateController::Type type){
     switch (type){
-        case StateController::ChangeAnim : return new ControllerChangeAnim(section, name);
-        case StateController::ChangeState : return new ControllerChangeState(section, name);
-        case StateController::CtrlSet : return new ControllerCtrlSet(section, name);
-        case StateController::PlaySnd : return new ControllerPlaySound(section, name);
-        case StateController::VarSet : return new ControllerVarSet(section, name);
-        case StateController::VelSet : return new ControllerVelSet(section, name);
-        case StateController::HitVelSet : return new ControllerHitVelSet(section, name);
-        case StateController::PosAdd : return new ControllerPosAdd(section, name);
-        case StateController::PosSet : return new ControllerPosSet(section, name);
-        case StateController::VelAdd : return new ControllerVelAdd(section, name);
-        case StateController::VelMul : return new ControllerVelMul(section, name);
-        case StateController::HitDef : return new ControllerHitDef(section, name);
-        case StateController::StateTypeSet : return new ControllerStateTypeSet(section, name);
-        case StateController::SuperPause : return new ControllerSuperPause(section, name);
-        case StateController::AfterImage : return new ControllerAfterImage(section, name);
-        case StateController::AfterImageTime : return new ControllerAfterImageTime(section, name);
-        case StateController::AngleAdd : return new ControllerAngleAdd(section, name);
-        case StateController::AngleDraw : return new ControllerAngleDraw(section, name);
-        case StateController::AngleMul : return new ControllerAngleMul(section, name);
-        case StateController::AngleSet : return new ControllerAngleSet(section, name);
-        case StateController::AssertSpecial : return new ControllerAssertSpecial(section, name);
-        case StateController::AttackDist : return new ControllerAttackDist(section, name);
-        case StateController::Null : return new ControllerNull(name);
-        case StateController::Turn : return new ControllerTurn(section, name);
-        case StateController::VarAdd : return new ControllerVarAdd(section, name);
-        case StateController::ForceFeedback : return new ControllerForceFeedback(section, name);
-        case StateController::Width : return new ControllerWidth(section, name);
-        case StateController::MakeDust : return new ControllerMakeDust(section, name);
-        case StateController::FallEnvShake : return new ControllerFallEnvShake(section, name);
-        case StateController::Explod : return new ControllerExplod(section, name);
-        case StateController::HitBy : return new ControllerHitBy(section, name);
-        case StateController::NotHitBy : return new ControllerNotHitBy(section, name);
-        case StateController::GameMakeAnim : return new ControllerGameMakeAnim(section, name);
-        case StateController::EnvShake : return new ControllerEnvShake(section, name);
+        case StateController::ChangeAnim : return new ControllerChangeAnim(section, name, state);
+        case StateController::ChangeState : return new ControllerChangeState(section, name, state);
+        case StateController::CtrlSet : return new ControllerCtrlSet(section, name, state);
+        case StateController::PlaySnd : return new ControllerPlaySound(section, name, state);
+        case StateController::VarSet : return new ControllerVarSet(section, name, state);
+        case StateController::VelSet : return new ControllerVelSet(section, name, state);
+        case StateController::HitVelSet : return new ControllerHitVelSet(section, name, state);
+        case StateController::PosAdd : return new ControllerPosAdd(section, name, state);
+        case StateController::PosSet : return new ControllerPosSet(section, name, state);
+        case StateController::VelAdd : return new ControllerVelAdd(section, name, state);
+        case StateController::VelMul : return new ControllerVelMul(section, name, state);
+        case StateController::HitDef : return new ControllerHitDef(section, name, state);
+        case StateController::StateTypeSet : return new ControllerStateTypeSet(section, name, state);
+        case StateController::SuperPause : return new ControllerSuperPause(section, name, state);
+        case StateController::AfterImage : return new ControllerAfterImage(section, name, state);
+        case StateController::AfterImageTime : return new ControllerAfterImageTime(section, name, state);
+        case StateController::AngleAdd : return new ControllerAngleAdd(section, name, state);
+        case StateController::AngleDraw : return new ControllerAngleDraw(section, name, state);
+        case StateController::AngleMul : return new ControllerAngleMul(section, name, state);
+        case StateController::AngleSet : return new ControllerAngleSet(section, name, state);
+        case StateController::AssertSpecial : return new ControllerAssertSpecial(section, name, state);
+        case StateController::AttackDist : return new ControllerAttackDist(section, name, state);
+        case StateController::Null : return new ControllerNull(name, state);
+        case StateController::Turn : return new ControllerTurn(section, name, state);
+        case StateController::VarAdd : return new ControllerVarAdd(section, name, state);
+        case StateController::ForceFeedback : return new ControllerForceFeedback(section, name, state);
+        case StateController::Width : return new ControllerWidth(section, name, state);
+        case StateController::MakeDust : return new ControllerMakeDust(section, name, state);
+        case StateController::FallEnvShake : return new ControllerFallEnvShake(section, name, state);
+        case StateController::Explod : return new ControllerExplod(section, name, state);
+        case StateController::HitBy : return new ControllerHitBy(section, name, state);
+        case StateController::NotHitBy : return new ControllerNotHitBy(section, name, state);
+        case StateController::GameMakeAnim : return new ControllerGameMakeAnim(section, name, state);
+        case StateController::EnvShake : return new ControllerEnvShake(section, name, state);
+        case StateController::TargetBind : return new ControllerTargetBind(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3469,7 +3515,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::SprPriority :
         case StateController::SndPan :
         case StateController::StopSnd :
-        case StateController::TargetBind :
         case StateController::TargetDrop :
         case StateController::TargetFacing :
         case StateController::TargetLifeAdd :
@@ -3482,8 +3527,8 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::VarRangeSet : {
             class DefaultController: public StateController {
             public:
-                DefaultController(Ast::Section * section, const string & name):
-                    StateController(name, section){
+                DefaultController(Ast::Section * section, const string & name, int state):
+                    StateController(name, state, section){
                     }
 
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -3492,7 +3537,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
             };
 
             Global::debug(0) << "Warning: unhandled state controller for " << toString(type) << " " << name << endl;
-            return new DefaultController(section, name);
+            return new DefaultController(section, name, state);
         }
         case StateController::Unknown : {
             ostringstream out;
