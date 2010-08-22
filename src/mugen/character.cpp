@@ -388,6 +388,7 @@ void Character::initialize(){
     currentState = Standing;
     currentPhysics = Physics::Stand;
     moveType = Move::Idle;
+    frozen = false;
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
@@ -2081,6 +2082,10 @@ static bool holdingBlock(const vector<string> & commands){
 /* Inherited members */
 void Character::act(vector<Object*>* others, World* world, vector<Object*>* add){
 
+    if (frozen){
+        frozen = false;
+    }
+
     /* reset some stuff */
     blocking = false;
     widthOverride.enabled = false;
@@ -2673,6 +2678,22 @@ void Character::setHitByOverride(int slot, int time, bool standing, bool crouchi
         
 void Character::setDefenseMultiplier(double defense){
     defenseMultiplier = defense;
+}
+        
+void Character::doFreeze(){
+    frozen = true;
+}
+        
+void Character::moveX( const int x ){
+    if (!frozen){
+        ObjectAttack::moveX(x);
+    }
+}
+
+void Character::moveYNoCheck(double y){
+    if (!frozen){
+        ObjectAttack::moveYNoCheck(y);
+    }
 }
         
 }

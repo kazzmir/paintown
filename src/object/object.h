@@ -262,7 +262,7 @@ public:
         void moveRight(const double x);
         void moveLeft(const double x);
 
-	void moveX( const int x );
+	virtual void moveX( const int x );
 	void moveY( const int y );
 	void moveZ( const int z );
 	void moveX( const double x );
@@ -270,7 +270,7 @@ public:
 	void moveZ( const double z );
 
         /* for mugen support so we can have negative y values */
-        void moveYNoCheck(double y);
+        virtual void moveYNoCheck(double y);
 
 	void moveX( int dir, const int x );
         void moveX(int dir, const double x);

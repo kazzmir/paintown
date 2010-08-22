@@ -1008,6 +1008,11 @@ public:
 
         virtual void setDefenseMultiplier(double defense);
 
+        virtual void doFreeze();
+	
+        virtual void moveX( const int x );
+        virtual void moveYNoCheck(double y);
+
 protected:
     void initialize();
 
@@ -1377,6 +1382,9 @@ protected:
 
         /* reduces damage taken */
         double defenseMultiplier;
+
+        /* if frozen then the player won't move */
+        bool frozen;
 };
 
 }

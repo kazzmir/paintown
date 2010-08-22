@@ -3456,6 +3456,17 @@ public:
     }
 };
 
+class ControllerPosFreeze: public StateController {
+public:
+    ControllerPosFreeze(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        guy.doFreeze();
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3590,6 +3601,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::DefenceMulSet : return new ControllerDefenceMulSet(section, name, state);
         case StateController::VarRandom : return new ControllerVarRandom(section, name, state);
         case StateController::HitFallDamage : return new ControllerHitFallDamage(section, name, state);
+        case StateController::PosFreeze : return new ControllerPosFreeze(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3619,7 +3631,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ParentVarSet :
         case StateController::Pause :
         case StateController::PlayerPush :
-        case StateController::PosFreeze :
         case StateController::PowerAdd :
         case StateController::PowerSet :
         case StateController::Projectile :
