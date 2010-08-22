@@ -3249,6 +3249,54 @@ public:
     }
 };
 
+class ControllerEnvShake: public StateController {
+public:
+    ControllerEnvShake(Ast::Section * section, const string & name):
+    StateController(name, section){
+        parse(section);
+    }
+
+    Value time;
+    Value frequency;
+    Value amplitude;
+    Value phase;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerEnvShake & controller):
+                controller(controller){
+                }
+
+            ControllerEnvShake & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "time"){
+                    controller.time = Compiler::compile(simple.getValue());
+                } else if (simple == "freq"){
+                    controller.frequency = Compiler::compile(simple.getValue());
+                } else if (simple == "ampl"){
+                    controller.amplitude = Compiler::compile(simple.getValue());
+                } else if (simple == "phase"){
+                    controller.phase = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy);
+        /* FIXME: EnvShake is supposed to only shake in the vertical direction.
+         * Also handle frequency, amplitude, and phase here
+         */
+        int quake = evaluateNumber(time, environment, 0);
+        stage.Quake(quake);
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3378,6 +3426,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::HitBy : return new ControllerHitBy(section, name);
         case StateController::NotHitBy : return new ControllerNotHitBy(section, name);
         case StateController::GameMakeAnim : return new ControllerGameMakeAnim(section, name);
+        case StateController::EnvShake : return new ControllerEnvShake(section, name);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3391,7 +3440,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::DestroySelf :
         case StateController::DisplayToClipboard :
         case StateController::EnvColor :
-        case StateController::EnvShake :
         case StateController::ExplodBindTime :
         case StateController::Gravity :
         case StateController::Helper :
