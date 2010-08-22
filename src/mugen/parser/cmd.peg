@@ -570,6 +570,12 @@ rules:
 	            | "(" s e:expr s ")" {{ value = e; }}
 
     function = name:function_name s "(" s args:args s ")" {{ value = makeFunction(name, args); }}
+             | name:"teammode"{case} s "=" s arg1:identifier {{
+                 value = makeFunction1(name, arg1);
+             }}
+             | name:"teammode"{case} s "!=" s arg1:identifier {{
+                 value = makeFunction1("teammode!=", arg1); 
+             }}
 		     | name:"animelem"{case} s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
                 value = makeFunction1(name, arg1);
