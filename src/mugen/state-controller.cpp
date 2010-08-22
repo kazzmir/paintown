@@ -1660,6 +1660,7 @@ public:
         his.airVelocity.y = evaluateNumber(hit.airVelocity.y, 0);
         his.fall.fall = evaluateBool(hit.fall.fall, false);
         his.fall.yVelocity = evaluateNumber(hit.fall.yVelocity, -4.5);
+        his.fall.xVelocity = evaluateNumber(hit.fall.xVelocity, guy.getXVelocity());
         his.fall.envShake.time = evaluateNumber(hit.fall.envShake.time, 0);
         his.fall.damage = evaluateNumber(hit.fall.damage, 0);
         his.groundSlideTime = evaluateNumber(hit.groundSlideTime, 0);
@@ -3467,6 +3468,25 @@ public:
     }
 };
 
+class ControllerHitFallVel: public StateController {
+public:
+    ControllerHitFallVel(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    bool isFalling(const Character & guy) const {
+        /* FIXME */
+        return true;
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (isFalling(guy)){
+            guy.setXVelocity(guy.getHitState().fall.xVelocity);
+            guy.setYVelocity(guy.getHitState().fall.yVelocity);
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3602,6 +3622,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::VarRandom : return new ControllerVarRandom(section, name, state);
         case StateController::HitFallDamage : return new ControllerHitFallDamage(section, name, state);
         case StateController::PosFreeze : return new ControllerPosFreeze(section, name, state);
+        case StateController::HitFallVel : return new ControllerHitFallVel(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3619,7 +3640,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Helper :
         case StateController::HitAdd :
         case StateController::HitFallSet :
-        case StateController::HitFallVel :
         case StateController::HitOverride :
         case StateController::LifeAdd :
         case StateController::LifeSet :

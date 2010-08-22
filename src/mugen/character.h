@@ -377,6 +377,7 @@ struct HitState{
     struct Fall{
         Fall():
             fall(false),
+            xVelocity(0),
             yVelocity(0),
             damage(0){
             }
@@ -386,6 +387,7 @@ struct HitState{
         } envShake;
 
         bool fall;
+        double xVelocity;
         double yVelocity;
         double damage;
     } fall;
