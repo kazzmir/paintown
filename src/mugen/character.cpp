@@ -479,7 +479,7 @@ void Character::setAnimation(int animation){
     getCurrentAnimation()->reset();
 }
 
-void Character::loadCmdFile(const Filesystem::RelativePath & path, vector<StateController*> & orphans){
+void Character::loadCmdFile(const Filesystem::RelativePath & path){
     Filesystem::AbsolutePath full = baseDir.join(path);
     try{
         int defaultTime = 15;
@@ -1180,7 +1180,7 @@ static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & b
 #endif
 }
         
-void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path, bool allowDefinitions, bool allowStates, vector<StateController*> & orphans){
+void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path){
     Filesystem::AbsolutePath full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
@@ -1340,12 +1340,11 @@ void Character::load(int useAct){
                 /* state controllers with no obvious parent. after parsing all
                  * the state files, go through this list and try to find the right parent
                  */
-                vector<StateController*> orphanControllers;
                 for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
                     Location & where = *it;
                     try{
                         /* load definitions first */
-                        loadStateFile(where.base, where.file, true, true, orphanControllers);
+                        loadStateFile(where.base, where.file);
                     } catch (const MugenException & e){
                         ostringstream out;
                         out << "Problem loading state file " << where.file << ": " << e.getReason();
@@ -1358,18 +1357,7 @@ void Character::load(int useAct){
 
                 }
 
-                loadCmdFile(cmdFile, orphanControllers);
-
-                for (vector<StateController*>::iterator it = orphanControllers.begin(); it != orphanControllers.end(); it++){
-                    StateController * controller = *it;
-                    int state = controller->getState();
-                    if (states[state] != NULL){
-                        states[state]->addController(controller);
-                    } else {
-                        Global::debug(0) << location.path() << ": No statedef found for controller " << state << " " << controller->getName() << endl;
-                        delete controller;
-                    }
-                }
+                loadCmdFile(cmdFile);
 
 #if 0
                 for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){

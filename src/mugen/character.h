@@ -1015,9 +1015,9 @@ protected:
     
     virtual void loadSelectData();
 
-    virtual void loadCmdFile(const Filesystem::RelativePath & path, std::vector<StateController*> & orphans);
+    virtual void loadCmdFile(const Filesystem::RelativePath & path);
     virtual void loadCnsFile(const Filesystem::RelativePath & path);
-    virtual void loadStateFile(const Filesystem::AbsolutePath & base, const std::string & path, bool allowDefinitions, bool allowStates, std::vector<StateController*> & orphans);
+    virtual void loadStateFile(const Filesystem::AbsolutePath & base, const std::string & path);
 
     virtual void addCommand(Command * command);
 
