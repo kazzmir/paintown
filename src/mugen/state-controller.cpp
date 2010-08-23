@@ -79,6 +79,13 @@ double evaluateNumber(const Value & value, const Environment & env, double defau
     }
     return default_;
 }
+
+bool evaluateBool(const Value & value, const Environment & env, double default_){
+    if (value != NULL){
+        return value->evaluate(env).toBool();
+    }
+    return default_;
+}
     
 void StateController::resetPersistent(){
     currentPersistent = persistent;
@@ -3724,6 +3731,62 @@ public:
     }
 };
 
+class ControllerTargetLifeAdd: public StateController {
+public:
+    ControllerTargetLifeAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+    Value id;
+    Value kill;
+    Value absolute;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetLifeAdd & controller):
+            controller(controller){
+            }
+
+            ControllerTargetLifeAdd & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
+                } else if (simple == "kill"){
+                    controller.kill = Compiler::compile(simple.getValue());
+                } else if (simple == "absolute"){
+                    controller.absolute = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+        if (value == NULL){
+            throw MugenException("the `value' attribute must be specified for the TargetAddLife controller");
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        double amount = evaluateNumber(this->value, environment, 0);
+        int id = evaluateNumber(this->id, environment, -1);
+        bool kill = evaluateBool(this->kill, environment, true);
+        bool absolute = evaluateBool(this->absolute, environment, false);
+        vector<Character*> targets = stage.getTargets(id, &guy);
+        for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
+            Character * target = *it;
+            /* FIXME: handle kill and absolute */
+            target->takeDamage(stage, &guy, amount);
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3866,6 +3929,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::VarRangeSet : return new ControllerVarRangeSet(section, name, state);
         case StateController::SprPriority : return new ControllerSprPriority(section, name, state);
         case StateController::TargetFacing : return new ControllerTargetFacing(section, name, state);
+        case StateController::TargetLifeAdd : return new ControllerTargetLifeAdd(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3901,7 +3965,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::SndPan :
         case StateController::StopSnd :
         case StateController::TargetDrop :
-        case StateController::TargetLifeAdd :
         case StateController::TargetPowerAdd :
         case StateController::TargetState :
         case StateController::TargetVelAdd :
