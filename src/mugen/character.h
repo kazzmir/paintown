@@ -1017,6 +1017,8 @@ public:
         virtual void moveX( const int x );
         virtual void moveYNoCheck(double y);
 
+        virtual void setSpritePriority(int priority);
+
 protected:
     void initialize();
 

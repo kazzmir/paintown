@@ -2701,4 +2701,8 @@ void Character::moveYNoCheck(double y){
     }
 }
         
+void Character::setSpritePriority(int priority){
+    /* TODO */
+}
+        
 }

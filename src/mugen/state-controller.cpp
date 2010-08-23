@@ -3639,6 +3639,41 @@ public:
     }
 };
 
+class ControllerSprPriority: public StateController {
+public:
+    ControllerSprPriority(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerSprPriority & controller):
+            controller(controller){
+            }
+
+            ControllerSprPriority & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int priority = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
+        guy.setSpritePriority(priority);
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3779,6 +3814,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::SelfState : return new ControllerSelfState(section, name, state);
         case StateController::PalFX : return new ControllerPalFX(section, name, state);
         case StateController::VarRangeSet : return new ControllerVarRangeSet(section, name, state);
+        case StateController::SprPriority : return new ControllerSprPriority(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3811,7 +3847,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::RemoveExplod :
         case StateController::ReversalDef :
         case StateController::ScreenBound :
-        case StateController::SprPriority :
         case StateController::SndPan :
         case StateController::StopSnd :
         case StateController::TargetDrop :
