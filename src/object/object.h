@@ -382,7 +382,12 @@ public:
 	}
 
         /* set this object to face obj, basically auto-turn */
-	virtual void faceObject( const Object * obj );
+	virtual void faceObject(const Object * obj);
+
+        /* turn away from the object -- will be facing the same direction
+         * as obj.
+         */
+	virtual void faceObjectOpposite(const Object * obj);
 
 	/* hurt:
 	 * take some damage

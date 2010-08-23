@@ -120,11 +120,19 @@ void Object::moveX( int dir, const double x ){
 }
 
 void Object::faceObject( const Object * o ){
-	if ( o->getX() < getX() ){
-		setFacing( Object::FACING_LEFT );
-	} else {
-		setFacing( Object::FACING_RIGHT );
-	}
+    if ( o->getX() < getX() ){
+        setFacing( Object::FACING_LEFT );
+    } else {
+        setFacing( Object::FACING_RIGHT );
+    }
+}
+
+void Object::faceObjectOpposite( const Object * o ){
+    if (o->getX() < getX()){
+        setFacing(Object::FACING_LEFT);
+    } else {
+        setFacing(Object::FACING_RIGHT);
+    }
 }
 
 void Object::thrown(){

@@ -1856,3 +1856,9 @@ int MugenStage::countMyEffects(const Mugen::Character * owner) const {
     }
     return total;
 }
+    
+vector<Mugen::Character *> MugenStage::getTargets(int id, const Mugen::Character * from) const {
+    vector<Mugen::Character *> targets;
+    /* TODO */
+    return targets;
+}

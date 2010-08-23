@@ -3674,6 +3674,56 @@ public:
     }
 };
 
+class ControllerTargetFacing: public StateController {
+public:
+    ControllerTargetFacing(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+    Value id;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetFacing & controller):
+            controller(controller){
+            }
+
+            ControllerTargetFacing & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+        if (value == NULL){
+            throw MugenException("the `value' attribute must be provided for TargetFacing");
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        bool same = (int) evaluateNumber(value, environment, 1) > 0;
+        vector<Character*> targets = stage.getTargets((int) evaluateNumber(id, environment, -1), &guy);
+        for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
+            Character * target = *it;
+            if (same){
+                target->setFacing(guy.getFacing());
+            } else {
+                target->setFacing(guy.getOppositeFacing());
+            }
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3815,6 +3865,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::PalFX : return new ControllerPalFX(section, name, state);
         case StateController::VarRangeSet : return new ControllerVarRangeSet(section, name, state);
         case StateController::SprPriority : return new ControllerSprPriority(section, name, state);
+        case StateController::TargetFacing : return new ControllerTargetFacing(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3850,7 +3901,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::SndPan :
         case StateController::StopSnd :
         case StateController::TargetDrop :
-        case StateController::TargetFacing :
         case StateController::TargetLifeAdd :
         case StateController::TargetPowerAdd :
         case StateController::TargetState :
