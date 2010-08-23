@@ -517,7 +517,7 @@ rules:
 	expr10 = left:expr11 expr10_rest(left)
 	expr11 = left:expr12 expr11_rest(left)
 	expr12 = left:expr13 expr12_rest(left)
-	expr13 = unary* exp:expr13_real {{ value = makeUnaryExpression($1, exp); }}
+	expr13 = unary* s exp:expr13_real {{ value = makeUnaryExpression($1, exp); }}
 
 	expr_rest(left) = s "||" s right:expr2 new_left:{{ value = makeExpressionOr(left, right); }} expr_rest(new_left)
 	                | <void> {{ value = left; }}
