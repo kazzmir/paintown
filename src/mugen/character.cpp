@@ -1203,7 +1203,7 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
             StateController * controller = parseState(section);
             if (controller != NULL){
                 if (controller->getState() != currentState->getState()){
-                    Global::debug(0) << "Warning: controller '" << controller->getName() << "' specified state " << controller->getState() << " which does not match the most recent state definition " << currentState->getState() << " in file " << full.path() << endl;
+                    Global::debug(1) << "Warning: controller '" << controller->getName() << "' specified state " << controller->getState() << " which does not match the most recent state definition " << currentState->getState() << " in file " << full.path() << endl;
                 }
                 currentState->addController(controller);
             }
