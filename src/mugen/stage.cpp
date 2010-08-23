@@ -733,9 +733,13 @@ MugenAnimation * MugenStage::getFightAnimation(int id){
 
 void MugenStage::addSpark(int x, int y, int sparkNumber){
     if (sparks[sparkNumber] == 0){
+        /*
         ostringstream out;
-        out << "No spark number for " << sparkNumber;
+        out << "No spark animation for " << sparkNumber;
         throw MugenException(out.str());
+        */
+        Global::debug(0) << "No spark animation for " << sparkNumber << endl;
+        return;
     }
     Mugen::Spark * spark = new Mugen::Spark(x, y, new MugenAnimation(*sparks[sparkNumber]));
     showSparks.push_back(spark);
