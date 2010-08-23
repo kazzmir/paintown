@@ -3579,6 +3579,66 @@ public:
     }
 };
 
+class ControllerVarRangeSet: public StateController {
+public:
+    ControllerVarRangeSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+    Value floatValue;
+    Value start;
+    Value end;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerVarRangeSet & controller):
+            controller(controller){
+            }
+
+            ControllerVarRangeSet & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "fvalue"){
+                    controller.floatValue = Compiler::compile(simple.getValue());
+                } else if (simple == "first"){
+                    controller.start = Compiler::compile(simple.getValue());
+                } else if (simple == "last"){
+                    controller.end = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        if (value != NULL){
+            int minimum = (int) evaluateNumber(start, environment, 0);
+            int maximum = (int) evaluateNumber(end, environment, 59);
+            int value = (int) evaluateNumber(this->value, environment, 0);
+            for (int i = minimum; i < maximum; i++){
+                guy.setVariable(i, value);
+            }
+        }
+
+        if (floatValue != NULL){
+            int minimum = (int) evaluateNumber(start, environment, 0);
+            int maximum = (int) evaluateNumber(end, environment, 39);
+            double value = evaluateNumber(this->value, environment, 0);
+            for (int i = minimum; i < maximum; i++){
+                guy.setFloatVariable(i, value);
+            }
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3718,6 +3778,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::HitFallSet : return new ControllerHitFallSet(section, name, state);
         case StateController::SelfState : return new ControllerSelfState(section, name, state);
         case StateController::PalFX : return new ControllerPalFX(section, name, state);
+        case StateController::VarRangeSet : return new ControllerVarRangeSet(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3760,8 +3821,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetState :
         case StateController::TargetVelAdd :
         case StateController::TargetVelSet :
-        case StateController::Trans :
-        case StateController::VarRangeSet : {
+        case StateController::Trans : {
             class DefaultController: public StateController {
             public:
                 DefaultController(Ast::Section * section, const string & name, int state):
