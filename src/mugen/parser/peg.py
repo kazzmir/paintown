@@ -14,14 +14,14 @@
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 # Todo (finished items at bottom)
-# add generator for scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
-# add header (.h) generator for C/C++
-# fix error message reporting
-# inline rules + semantic actions are broken (in C++ at least)
-# Don't memoize if a rule accepts parameters (ruby, python)
 # If a rule has a <fail> then catch a parsing exception and call the fail function
 # Predicates: sequences of host code that evaluate to true/false where the current
 #   rule stops on false and continues on true.
+# inline rules + semantic actions are broken (in C++ at least)
+# add header (.h) generator for C/C++
+# add generator for scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
+# fix error message reporting (whats wrong with it?)
+# Don't memoize if a rule accepts parameters (ruby, python)
 
 # create a variable name
 next_var = 0

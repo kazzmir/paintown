@@ -411,6 +411,23 @@ public:
             return new WinTime();
         }
 
+        if (identifier == "winko"){
+            class Winko: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
+                    return RuntimeValue(false);
+                }
+            };
+
+            return new Winko();
+        }
+
+        if (identifier == "winperfect"){
+            /* FIXME */
+            return compile(0);
+        }
+
         if (identifier == "win"){
             class Win: public Value {
             public:
@@ -537,18 +554,6 @@ public:
             };
 
             return new PalNo();
-        }
-
-        if (identifier == "winko"){
-            class Winko: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(false);
-                }
-            };
-
-            return new Winko();
         }
 
         if (identifier == "movehit"){
@@ -1906,6 +1911,11 @@ public:
             }
 
             throw MugenException("Unknown gethitvar variable " + var);
+        }
+
+        if (function == "teammode!="){
+            /* FIXME */
+            return compile(0);
         }
         
         if (function == "teammode"){

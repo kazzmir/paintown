@@ -500,7 +500,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                         self(self),
                         time(defaultTime),
                         bufferTime(defaultBufferTime),
-                        key(0){
+                        key(NULL){
                         }
 
                     Character & self;
@@ -529,12 +529,12 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                         }
                     }
 
-                    virtual ~CommandWalker(){
+                    virtual void onSectionFinished(const Ast::Section & section){
                         if (name == ""){
                             throw MugenException("No name given for command");
                         }
 
-                        if (key == 0){
+                        if (key == NULL){
                             throw MugenException("No key sequence given for command");
                         }
 

@@ -470,6 +470,11 @@ rules:
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
+               | line:<line> "command"{case} s "=" {{
+                   std::ostringstream out;
+                   out << "command must be followed by some keys at line " << getCurrentLine(line) << " column " << getCurrentColumn(line);
+                   throw ParseException(out.str());
+               }}
                | line:<line> "sparkno"{case} s "=" s "s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}

@@ -72,6 +72,7 @@ public:
             value->walk(walker);
         }
         */
+        walker.onSectionFinished(*this);
     }
 
     std::string getName() const {

@@ -50,7 +50,12 @@ public:
     virtual void onKeyCombined(const KeyCombined & key){
     }
 
+    /* start a new section */
     virtual void onSection(const Section & section){
+    }
+    
+    /* end a section */
+    virtual void onSectionFinished(const Section & section){
     }
 
     virtual void onAttributeSimple(const AttributeSimple & simple){
