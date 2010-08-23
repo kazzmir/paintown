@@ -2705,4 +2705,9 @@ void Character::setSpritePriority(int priority){
     /* TODO */
 }
         
+void Character::setTemporaryAnimation(MugenAnimation * animation){
+    /* TODO */
+    delete animation;
+}
+        
 }

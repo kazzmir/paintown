@@ -1813,11 +1813,11 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
     return false;
 }
     
-const Mugen::Character * MugenStage::getEnemy(const Mugen::Character * who) const {
+Mugen::Character * MugenStage::getEnemy(const Mugen::Character * who) const {
     for (vector<Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
         Object * enemy = *enem;
         if (who->getAlliance() != enemy->getAlliance() && isaPlayer(enemy)){
-            return (const Mugen::Character*) enemy;
+            return (Mugen::Character*) enemy;
         }
     }
 

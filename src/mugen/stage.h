@@ -181,7 +181,7 @@ public:
 
     static const std::string getStageName(const std::string &filename) throw (MugenException);
 
-    virtual const Mugen::Character * getEnemy(const Mugen::Character * who) const;
+    virtual Mugen::Character * getEnemy(const Mugen::Character * who) const;
     virtual std::vector<Mugen::Character *> getTargets(int id, const Mugen::Character * from) const;
     
     virtual int getGameTime() const;

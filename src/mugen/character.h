@@ -1018,6 +1018,8 @@ public:
         virtual void moveYNoCheck(double y);
 
         virtual void setSpritePriority(int priority);
+        
+        virtual void setTemporaryAnimation(MugenAnimation * animation);
 
 protected:
     void initialize();

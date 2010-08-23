@@ -776,7 +776,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             // Add sprite
             frame->sprite = getSprite(group, spriteNumber);
             if (frame->sprite == 0){
-                Global::debug(0) << "No sprite for group " << group << " number " << spriteNumber << endl;
+                Global::debug(1) << "No sprite for group " << group << " number " << spriteNumber << endl;
             }
             // Add frame
             this->animation->addFrame(frame);

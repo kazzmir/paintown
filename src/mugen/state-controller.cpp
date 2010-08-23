@@ -3787,6 +3787,116 @@ public:
     }
 };
 
+class ControllerTargetState: public StateController {
+public:
+    ControllerTargetState(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+    Value id;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetState & controller):
+            controller(controller){
+            }
+
+            ControllerTargetState & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int state = (int) evaluateNumber(value, environment, 0);
+        int id = (int) evaluateNumber(this->id, environment, -1);
+        vector<Character*> targets = stage.getTargets(id, &guy);
+        vector<string> hisCommands;
+        for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
+            Character * target = *it;
+            target->changeState(stage, state, hisCommands);
+        }
+    }
+};
+
+class ControllerChangeAnim2: public ControllerChangeAnim {
+public:
+    ControllerChangeAnim2(Ast::Section * section, const string & name, int state):
+    ControllerChangeAnim(section, name, state){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int animation = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
+        MugenAnimation * show = guy.getAnimation(animation);
+        if (show != NULL){
+            stage.getEnemy(&guy)->setTemporaryAnimation(new MugenAnimation(*show));
+        } else {
+            ostringstream out;
+            out << "No animation found for " << animation;
+            throw MugenException(out.str());
+        }
+    }
+};
+
+class ControllerScreenBound: public StateController {
+public:
+    ControllerScreenBound(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+    Value moveCameraX;
+    Value moveCameraY;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerScreenBound & controller):
+            controller(controller){
+            }
+
+            ControllerScreenBound & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "movecamera"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.moveCameraX = Compiler::compile(x);
+                    controller.moveCameraY = Compiler::compile(y);
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        bool unbound = evaluateBool(value, environment, false);
+        bool cameraX = evaluateBool(moveCameraX, environment, false);
+        bool cameraY = evaluateBool(moveCameraY, environment, false);
+        /* TODO */
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -3930,6 +4040,9 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::SprPriority : return new ControllerSprPriority(section, name, state);
         case StateController::TargetFacing : return new ControllerTargetFacing(section, name, state);
         case StateController::TargetLifeAdd : return new ControllerTargetLifeAdd(section, name, state);
+        case StateController::TargetState : return new ControllerTargetState(section, name, state);
+        case StateController::ChangeAnim2 : return new ControllerChangeAnim2(section, name, state);
+        case StateController::ScreenBound : return new ControllerScreenBound(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -3937,7 +4050,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToParent :
         case StateController::BindToRoot :
         case StateController::BindToTarget :
-        case StateController::ChangeAnim2 :
         case StateController::ClearClipboard :
         case StateController::DestroySelf :
         case StateController::DisplayToClipboard :
@@ -3961,12 +4073,10 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Projectile :
         case StateController::RemoveExplod :
         case StateController::ReversalDef :
-        case StateController::ScreenBound :
         case StateController::SndPan :
         case StateController::StopSnd :
         case StateController::TargetDrop :
         case StateController::TargetPowerAdd :
-        case StateController::TargetState :
         case StateController::TargetVelAdd :
         case StateController::TargetVelSet :
         case StateController::Trans : {
