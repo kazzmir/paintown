@@ -358,6 +358,14 @@ Ast::Key * makeKeyCombined(const Value & left, const Value & right){
     GC::save(key);
     return key;
 }
+
+/* for commands with no keys listed */
+Ast::Key * makeEmptyKeyList(){
+    std::vector<Ast::Key*> all;
+    Ast::Key * object = new Ast::KeyList(all);
+    GC::save(object);
+    return object;
+}
     
 Ast::Key * makeKeyList(const Value & first, const Value & rest){
     std::vector<Ast::Key*> all;
@@ -470,11 +478,6 @@ rules:
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
 	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
 	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
-               | line:<line> "command"{case} s "=" {{
-                   std::ostringstream out;
-                   out << "command must be followed by some keys at line " << getCurrentLine(line) << " column " << getCurrentColumn(line);
-                   throw ParseException(out.str());
-               }}
                | line:<line> "sparkno"{case} s "=" s "s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
@@ -630,6 +633,7 @@ rules:
     # Keys and key modifiers need their own AST structures
     keys = key_value_list
     key_value_list = first:key rest:(s "," s key)* {{ value = makeKeyList(first, rest); }}
+                   | <void> {{ value = makeEmptyKeyList(); }}
 	key = key_real ok:key_rest($1) !identifier {{ value = ok; }}
 	key_rest(left) = s "+" s another:key_real new_left:{{ value = makeKeyCombined(left, another); }} key_rest(new_left)
 	               | <void> {{ value = left; }}
