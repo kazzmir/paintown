@@ -3897,6 +3897,7 @@ public:
     }
 };
         
+/* 100% */
 class ControllerPowerAdd: public StateController {
 public:
     ControllerPowerAdd(Ast::Section * section, const string & name, int state):
@@ -3933,6 +3934,57 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         int power = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
         guy.addPower(power);
+    }
+};
+
+class ControllerEnvColor: public StateController {
+public:
+    ControllerEnvColor(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value red, green, blue;
+    Value time;
+    Value under;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerEnvColor & controller):
+            controller(controller){
+            }
+
+            ControllerEnvColor & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    controller.red = Compiler::compile(red);
+                    controller.green = Compiler::compile(green);
+                    controller.blue = Compiler::compile(blue);
+                } else if (simple == "time"){
+                    controller.time = Compiler::compile(simple.getValue());
+                } else if (simple == "under"){
+                    controller.under = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int red = (int) evaluateNumber(this->red, environment, 0);
+        int green = (int) evaluateNumber(this->green, environment, 0);
+        int blue = (int) evaluateNumber(this->blue, environment, 0);
+
+        /* TODO */
     }
 };
 
@@ -4083,6 +4135,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ChangeAnim2 : return new ControllerChangeAnim2(section, name, state);
         case StateController::ScreenBound : return new ControllerScreenBound(section, name, state);
         case StateController::PowerAdd : return new ControllerPowerAdd(section, name, state);
+        case StateController::EnvColor : return new ControllerEnvColor(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4093,7 +4146,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ClearClipboard :
         case StateController::DestroySelf :
         case StateController::DisplayToClipboard :
-        case StateController::EnvColor :
         case StateController::ExplodBindTime :
         case StateController::Gravity :
         case StateController::Helper :
