@@ -1866,3 +1866,12 @@ vector<Mugen::Character *> MugenStage::getTargets(int id, const Mugen::Character
     /* TODO */
     return targets;
 }
+    
+/* Set the background to a solid color for some length of time */
+void MugenStage::setEnvironmentColor(int color, int time, bool under){
+    /* TODO */
+}
+    
+void MugenStage::removeHelper(Mugen::Character * who){
+    /* TODO */
+}

@@ -198,6 +198,10 @@ public:
     virtual void addEffect(Mugen::Effect * effect);
     virtual int countMyEffects(const Mugen::Character * owner) const;
 
+    virtual void setEnvironmentColor(int color, int time, bool under); 
+
+    virtual void removeHelper(Mugen::Character * who);
+
     // Alliance setting
     enum teams{
         Player1Side = 5,

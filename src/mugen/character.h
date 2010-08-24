@@ -1021,6 +1021,8 @@ public:
         
         virtual void setTemporaryAnimation(MugenAnimation * animation);
 
+        virtual bool isHelper();
+
 protected:
     void initialize();
 

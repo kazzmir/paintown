@@ -1,3 +1,4 @@
+#include "util/bitmap.h"
 #include "ast/all.h"
 #include "state-controller.h"
 #include "character.h"
@@ -3937,6 +3938,7 @@ public:
     }
 };
 
+/* 100% */
 class ControllerEnvColor: public StateController {
 public:
     ControllerEnvColor(Ast::Section * section, const string & name, int state):
@@ -3980,11 +3982,25 @@ public:
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
-        int red = (int) evaluateNumber(this->red, environment, 0);
-        int green = (int) evaluateNumber(this->green, environment, 0);
-        int blue = (int) evaluateNumber(this->blue, environment, 0);
+        int red = PaintownUtil::clamp((int) evaluateNumber(this->red, environment, 0), 0, 255);
+        int green = PaintownUtil::clamp((int) evaluateNumber(this->green, environment, 0), 0, 255);
+        int blue = PaintownUtil::clamp((int) evaluateNumber(this->blue, environment, 0), 0, 255);
+        int time = (int) evaluateNumber(this->time, environment, 1);
+        bool under = evaluateBool(this->under, environment, false);
+        stage.setEnvironmentColor(Bitmap::makeColor(red, green, blue), time, under);
+    }
+};
 
-        /* TODO */
+class ControllerDestroySelf: public StateController {
+public:
+    ControllerDestroySelf(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (guy.isHelper()){
+            stage.removeHelper(&guy);
+        }
     }
 };
 
@@ -4136,6 +4152,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ScreenBound : return new ControllerScreenBound(section, name, state);
         case StateController::PowerAdd : return new ControllerPowerAdd(section, name, state);
         case StateController::EnvColor : return new ControllerEnvColor(section, name, state);
+        case StateController::DestroySelf : return new ControllerDestroySelf(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4144,7 +4161,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToRoot :
         case StateController::BindToTarget :
         case StateController::ClearClipboard :
-        case StateController::DestroySelf :
         case StateController::DisplayToClipboard :
         case StateController::ExplodBindTime :
         case StateController::Gravity :

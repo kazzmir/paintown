@@ -2715,4 +2715,8 @@ void Character::setTemporaryAnimation(MugenAnimation * animation){
     delete animation;
 }
         
+bool Character::isHelper(){
+    return false;
+}
+        
 }
