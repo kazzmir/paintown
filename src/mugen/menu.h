@@ -231,6 +231,12 @@ class MugenMenu {
 	
 	// Draw text
 	void renderText(Bitmap *bmp);
+	
+	// Move text (for opening sequence where text scrolls into place from the sides)
+	bool moveText;
+	
+	// side position x left y right
+	Mugen::Point movePosition;
 
         Filesystem::AbsolutePath selectInfoFile;
 	

@@ -221,7 +221,9 @@ windowVisibleItems(5),
 ticker(0),
 background(0),
 logo(0),
-intro(0){
+intro(0),
+characterSelect(0),
+moveText(true){
 }
 
 void MugenMenu::loadData(){
@@ -575,6 +577,12 @@ void MugenMenu::run(){
     }
   
     double runCounter = 0;
+    
+    // Set move position info
+    moveText = true;
+    movePosition.x = 0;
+    movePosition.y = DEFAULT_WIDTH;
+    
     while( ! endGame ){
 	Global::speed_counter = 0;
 	Global::second_counter = 0;
@@ -837,18 +845,53 @@ void MugenMenu::renderText(Bitmap *bmp){
     
 
     int xplacement = position.x;
+    
     // Displace by the offset
     int yplacement = currentMenuPosition;
+    
+    bool alternate = false;
     
     for( std::vector <Mugen::ItemOption *>::iterator i = options.begin(); i != options.end(); ++i){
 	
 	Mugen::ItemOption *option = *i;
-	// Render
-	option->render(xplacement, yplacement, fontCursor, fonts, *bmp);
 	
+	// Render
+	if (moveText){
+	    if (!alternate){
+		option->render(movePosition.x, yplacement, fontCursor, fonts, *bmp);
+	    } else {
+		option->render(movePosition.y, yplacement, fontCursor, fonts, *bmp);
+	    }
+	    // Displacement
+	    movePosition.x += fontSpacing.x;
+	    movePosition.y += fontSpacing.x;
+	} else {
+	    option->render(xplacement, yplacement, fontCursor, fonts, *bmp);
+	}
 	// Displacement
 	xplacement += fontSpacing.x;
 	yplacement += fontSpacing.y;
+	
+	alternate = !alternate;
+    }
+    
+    // *FIXME This should be moved into its own function out of render
+    if (moveText){
+	if (movePosition.x < position.x){
+	    movePosition.x+=10;
+	    if (movePosition.x > position.x){
+		movePosition.x = position.x;
+	    }
+	}
+	if (movePosition.y > position.x){
+	    movePosition.y-=10;
+	    if (movePosition.y < position.x){
+		movePosition.y = position.x;
+	    }
+	}
+	if (movePosition.x == position.x && movePosition.y == position.x){
+	    moveText = false;
+	}
     }
     
     bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
