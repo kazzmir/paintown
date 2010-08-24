@@ -602,6 +602,7 @@ static bool isStateDefSection(string name){
 }
 
 bool Character::canBeHit(Character * enemy){
+    /* FIXME: handle the hit flags here */
     return (moveType != Move::Hit && lastTicket < enemy->getTicket()) ||
            (moveType == Move::Hit && lastTicket < enemy->getTicket() &&
             juggleRemaining >= enemy->getCurrentJuggle());

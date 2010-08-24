@@ -14,7 +14,6 @@
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 # Todo (finished items at bottom)
-# If a rule has a <fail> then catch a parsing exception and call the fail function
 # Predicates: sequences of host code that evaluate to true/false where the current
 #   rule stops on false and continues on true.
 # inline rules + semantic actions are broken (in C++ at least)
@@ -2487,19 +2486,32 @@ return %s;
 
         # Don't memoize if the rule accepts parameters
         do_memo = peg.memo and self.rules == None and self.parameters == None
+        body = """
+%s
+%s
+%s
+%s
+""" % (label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar, do_memo)))
+
+        if self.fail != None:
+            body = """
+try{
+    %s
+} catch (...){
+    %s
+    throw;
+}
+""" % (body, self.fail)
+
         data = """
 Result rule_%s(Stream & %s, const int %s%s%s){
     %s
     RuleTrace %s(%s, "%s");
     int %s = %s;
     %s
-    %s
-    %s
-    %s
-    %s
     return errorResult;
 }
-        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), gensym("trace"), stream, self.name, my_position, position, label(tail_loop[0]), indent(vars), pattern_results, indent(updateChunk("errorResult", columnVar, do_memo)), fail_code)
+        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), gensym("trace"), stream, self.name, my_position, position, indent(body))
 
         return data
 
@@ -3457,3 +3469,4 @@ if __name__ == '__main__':
 # generator for python, ruby, c++
 # getter for the current line and column
 # custom error reporting length, options: error-length 40
+# If a rule has a <fail> then catch a parsing exception and call the fail function
