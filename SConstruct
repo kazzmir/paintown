@@ -1113,10 +1113,16 @@ def psp_eboot(target, source, env):
         env.Execute("pack-pbp EBOOT.PBP PARAM.SFO data/psp/icon0.png NULL NULL data/psp/pic1.png NULL %s NULL" % file)
     return 0
 
+def wii_info(target, source, env):
+    print "Run elf2dol on %s to get a dol file" % source[0].name
+    return 0
+
 for i in shared:
     safe = env.Install('.', i)
     if useMinpspw():
         env.AddPostAction(safe, psp_eboot)
+    if useWii():
+        env.AddPostAction(safe, wii_info)
     Default(safe)
 
 for i in static:
