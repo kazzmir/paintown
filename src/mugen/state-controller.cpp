@@ -3580,6 +3580,31 @@ public:
 
     void parse(Ast::Section * section){
         /* TODO */
+        /*
+         * time = duration (int)
+         * Specifies the number of ticks that the palette effects should last. Specify -1 to have the palette effects last indefinitely. Specify 0 to stop any ongoing palette effects.
+         * add = add_r, add_g, add_b (int, int, int)
+         * See below.
+         * mul = mul_r, mul_g, mul_b (int, int, int)
+         * Each add component is added to the appropriate component of the player's palette, and the result is multiplied by the appropriate mul component divided by 256. For instance, if pal_r is the red component of the character's original palette, then the new red component is (pal_r + add_r) * mul_r / 256. The values for mul must be >= 0. The defaults for these parameters are for no change, i.e. add = 0,0,0 and mul = 256,256,256.
+         * sinadd = ampl_r, ampl_g, ampl_b, period (int, int, int, int)
+         * Creates an additional sine-wave palette addition effect. Period specifies the period of the sine wave in game ticks, and the amplitude parameters control the amplitude of the sine wave for the respective components. For instance, if t represents the number of ticks elapsed since the activation of the PalFX controller, and pal_r is the red component of the character's original palette, then the red component of the character's palette at time t is (pal_r + add_r + ampl_r * sin(2 * pi * t / period)) * mul_r / 256.
+         * invertall = bvalue (bool)
+         * If bvalue is non-zero, then the colors in the palette will be inverted, creating a "film negative" effect. Color inversion is applied before effects of add and mul. bvalue defaults to 0.
+         * color = value (int)
+         * This affects the color level of the palette. If value is 0, the palette will be greyscale. If value is 256, there is no change in palette. Values in between will have an intermediate effect. This parameter's effects are applied before invertall, add and mul. Values must be in range 0 to 256. Default value is 256.
+         */
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        /* TODO */
+    }
+};
+
+class ControllerBGPalFX: public ControllerPalFX {
+public:
+    ControllerBGPalFX(Ast::Section * section, const string & name, int state):
+    ControllerPalFX(section, name, state){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -4153,10 +4178,10 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::PowerAdd : return new ControllerPowerAdd(section, name, state);
         case StateController::EnvColor : return new ControllerEnvColor(section, name, state);
         case StateController::DestroySelf : return new ControllerDestroySelf(section, name, state);
+        case StateController::BGPalFX : return new ControllerBGPalFX(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
-        case StateController::BGPalFX :
         case StateController::BindToParent :
         case StateController::BindToRoot :
         case StateController::BindToTarget :
