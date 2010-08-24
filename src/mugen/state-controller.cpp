@@ -3896,6 +3896,45 @@ public:
         /* TODO */
     }
 };
+        
+class ControllerPowerAdd: public StateController {
+public:
+    ControllerPowerAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Value & value):
+            value(value){
+            }
+
+            Value & value;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    value = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(value);
+        section->walk(walker);
+
+        if (value == NULL){
+            throw MugenException("`value' is a required attribute of PowerAdd");
+        }
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int power = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
+        guy.addPower(power);
+    }
+};
 
 static string toString(StateController::Type type){
     switch (type){
@@ -4043,6 +4082,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetState : return new ControllerTargetState(section, name, state);
         case StateController::ChangeAnim2 : return new ControllerChangeAnim2(section, name, state);
         case StateController::ScreenBound : return new ControllerScreenBound(section, name, state);
+        case StateController::PowerAdd : return new ControllerPowerAdd(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4068,7 +4108,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ParentVarSet :
         case StateController::Pause :
         case StateController::PlayerPush :
-        case StateController::PowerAdd :
         case StateController::PowerSet :
         case StateController::Projectile :
         case StateController::RemoveExplod :

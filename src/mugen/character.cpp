@@ -2228,6 +2228,10 @@ void Character::addPower(double d){
     if (power > 3000){
         power = 3000;
     }
+
+    if (power < 0){
+        power = 0;
+    }
 }
         
 void Character::didHit(Character * enemy, MugenStage & stage){
