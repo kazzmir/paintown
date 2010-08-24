@@ -539,6 +539,10 @@ bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & ke
 }
 
 bool Command::handle(InputMap<Mugen::Keys>::Output keys){
+
+    if (compiledKeys.size() == 0){
+        return false;
+    }
     
     if (successTime > 0){
         successTime -= 1;
