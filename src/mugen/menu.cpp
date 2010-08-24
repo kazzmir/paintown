@@ -877,18 +877,21 @@ void MugenMenu::renderText(Bitmap *bmp){
     
     // *FIXME This should be moved into its own function out of render
     if (moveText){
+        int speed = bmp->getWidth() / 15;
 	if (movePosition.x < position.x){
-	    movePosition.x+=10;
+	    movePosition.x += speed;
 	    if (movePosition.x > position.x){
 		movePosition.x = position.x;
 	    }
 	}
+
 	if (movePosition.y > position.x){
-	    movePosition.y-=10;
+	    movePosition.y -= speed;
 	    if (movePosition.y < position.x){
 		movePosition.y = position.x;
 	    }
 	}
+
 	if (movePosition.x == position.x && movePosition.y == position.x){
 	    moveText = false;
 	}

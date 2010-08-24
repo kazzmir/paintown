@@ -235,6 +235,9 @@ class MugenMenu {
 	// Move text (for opening sequence where text scrolls into place from the sides)
 	bool moveText;
 	
+        /* FIXME: don't use Point, make up a new object so we can call the
+         * data 'left' and 'right' instead of 'x' and 'y'
+         */
 	// side position x left y right
 	Mugen::Point movePosition;
 
