@@ -3807,8 +3807,7 @@ public:
         vector<Character*> targets = stage.getTargets(id, &guy);
         for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
             Character * target = *it;
-            /* FIXME: handle kill and absolute */
-            target->takeDamage(stage, &guy, amount);
+            target->takeDamage(stage, &guy, amount, kill, absolute);
         }
     }
 };
@@ -4029,6 +4028,50 @@ public:
     }
 };
 
+class ControllerLifeAdd: public StateController {
+public:
+    ControllerLifeAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    Value value;
+    Value kill;
+    Value absolute;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerLifeAdd & controller):
+            controller(controller){
+            }
+
+            ControllerLifeAdd & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                } else if (simple == "kill"){
+                    controller.kill = Compiler::compile(simple.getValue());
+                } else if (simple == "absolute"){
+                    controller.absolute = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int value = (int) evaluateNumber(this->value, environment, 0);
+        bool kill = evaluateBool(this->kill, environment, true);
+        bool absolute = evaluateBool(this->absolute, environment, false);
+        guy.takeDamage(stage, &guy, value, kill, absolute);
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4179,6 +4222,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::EnvColor : return new ControllerEnvColor(section, name, state);
         case StateController::DestroySelf : return new ControllerDestroySelf(section, name, state);
         case StateController::BGPalFX : return new ControllerBGPalFX(section, name, state);
+        case StateController::LifeAdd : return new ControllerLifeAdd(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4192,7 +4236,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Helper :
         case StateController::HitAdd :
         case StateController::HitOverride :
-        case StateController::LifeAdd :
         case StateController::LifeSet :
         case StateController::ModifyExplod :
         case StateController::MoveHitReset :

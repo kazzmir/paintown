@@ -893,6 +893,15 @@ public:
 
         /* prevent character from being hit, like after a KO */
         virtual void setUnhurtable();
+	
+        using Object::takeDamage;
+        /* if kill is true then the damage can reduce health below 1, otherwise
+         * health cannot go below 1
+         * if defense is true then the defenseMultiplier is taken into account
+         */
+        virtual void takeDamage(World & world, ObjectAttack * obj, int amount, bool kill, bool defense);
+        /* passes true for kill and defense */
+        virtual void takeDamage(World & world, ObjectAttack * obj, int amount);
 
         /* character can be hit */
         virtual void setHurtable();

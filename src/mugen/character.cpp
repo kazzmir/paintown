@@ -2256,6 +2256,23 @@ void Character::didHit(Character * enemy, MugenStage & stage){
         behavior->hit(enemy);
     }
 }
+        
+void Character::takeDamage(World & world, ObjectAttack * obj, int amount, bool kill, bool defense){
+    if (defense){
+        Object::takeDamage(world, obj, (int)(amount / defenseMultiplier));
+    } else {
+        Object::takeDamage(world, obj, amount);
+    }
+    if (!kill){
+        if (getHealth() < 1){
+            setHealth(1);
+        }
+    }
+}
+        
+void Character::takeDamage(World & world, ObjectAttack * obj, int amount){
+    takeDamage(world, obj, amount, true, true);
+}
 
 void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){
     hitState.update(stage, *this, getY() > 0, hisHit);
@@ -2264,7 +2281,7 @@ void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinitio
     lastTicket = enemy->getTicket();
 
     if (hisHit.damage.damage != 0){
-        takeDamage(stage, enemy, (int) hisHit.damage.damage / defenseMultiplier);
+        takeDamage(stage, enemy, hisHit.damage.damage, true, true);
     }
 
     /*
