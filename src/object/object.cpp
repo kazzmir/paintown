@@ -251,7 +251,7 @@ Network::Message Object::movedMessage(){
 void Object::fall( double x_vel, double y_vel ){
 }
 	
-void Object::hurt( int x ){
+void Object::hurt(int x){
     setHealth(getHealth() - x);
 }
 	
@@ -263,15 +263,15 @@ void Object::reduceDamage( const double much ){
 }
 	
 void Object::takeDamage( World & world, ObjectAttack * obj, int x ){
-	this->hurt( x );
-	damage += x;
-        if (getScriptObject() != NULL){
-            void * him = NULL;
-            if (obj != NULL){
-                him = obj->getScriptObject();
-            }
-            Script::Engine::getEngine()->objectTakeDamage(getScriptObject(), him, x);
+    this->hurt( x );
+    damage += x;
+    if (getScriptObject() != NULL){
+        void * him = NULL;
+        if (obj != NULL){
+            him = obj->getScriptObject();
         }
+        Script::Engine::getEngine()->objectTakeDamage(getScriptObject(), him, x);
+    }
 }
 	
 void Object::drawFront(Bitmap * work, int rel_x){

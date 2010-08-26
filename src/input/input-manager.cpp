@@ -24,6 +24,30 @@ bufferKeys(false){
 InputManager::~InputManager(){
     delete joystick;
 }
+    
+bool InputManager::anyInput(){
+    if (manager == 0){
+        Global::debug(0) << "*BUG* Input manager not set up" << endl;
+        exit(0);
+    }
+
+    return manager->_anyInput();
+}
+
+bool InputManager::_anyInput(){
+    if (keyboard.keypressed()){
+        return true;
+    }
+
+    if (joystick){
+        JoystickInput all_joystick = joystick->readAll();
+        if (all_joystick.pressed()){
+            return true;
+        }
+    }
+
+    return false;
+}
 
 vector<Input::PaintownInput> InputManager::getInput(const Configuration & configuration, const int facing){
     if (manager == 0){

@@ -26,6 +26,12 @@ struct JoystickInput{
         button4(copy.button4){
     }
 
+    /* true if something is pressed */
+    bool pressed(){
+        return left || right || up || down ||
+               button1 || button2 || button3 || button4;
+    }
+
     bool left;
     bool right;
     bool up;

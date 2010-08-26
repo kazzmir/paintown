@@ -21,6 +21,9 @@ public:
     friend int paintown_main(int, char**);
     friend int main(int, char **);
 
+    /* returns true if any input device is activated (keys pressed, joystick button */
+    static bool anyInput();
+
     static std::vector<Input::PaintownInput> getInput(const Configuration & configuration, const int facing);
     static void poll();
     static void enableBufferInput();
@@ -78,6 +81,8 @@ public:
 protected:
     InputManager();
     virtual ~InputManager();
+    
+    virtual bool _anyInput();
     
     virtual std::vector<Input::PaintownInput> _getInput(const Configuration & configuration, const int facing);
 

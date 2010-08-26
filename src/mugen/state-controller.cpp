@@ -4072,6 +4072,16 @@ public:
     }
 };
 
+class ControllerLifeSet: public StateController {
+public:
+    ControllerLifeSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4223,6 +4233,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::DestroySelf : return new ControllerDestroySelf(section, name, state);
         case StateController::BGPalFX : return new ControllerBGPalFX(section, name, state);
         case StateController::LifeAdd : return new ControllerLifeAdd(section, name, state);
+        case StateController::LifeSet : return new ControllerLifeSet(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4236,7 +4247,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Helper :
         case StateController::HitAdd :
         case StateController::HitOverride :
-        case StateController::LifeSet :
         case StateController::ModifyExplod :
         case StateController::MoveHitReset :
         case StateController::Offset :

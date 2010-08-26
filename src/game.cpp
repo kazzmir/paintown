@@ -257,12 +257,14 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
         GameState():
             force_quit(false),
             helpTime(0),
+            pressed(0),
             done(false),
             show_fps(false){
             }
 
         bool force_quit;
         double helpTime;
+        int pressed;
         bool done;
         bool show_fps;
     };
@@ -303,6 +305,16 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
 
         void doInput(GameState & state, bool & takeScreenshot, bool & draw){
             InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
+
+            if (InputManager::anyInput()){
+                state.pressed = 0;
+            } else {
+                state.pressed += 1;
+                if (state.pressed > 100){
+                    state.pressed = 100;
+                    state.helpTime = 260;
+                }
+            }
 
             if (inputState[Game::ShowHelp]){
                 helped = true;
@@ -530,7 +542,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
     Logic logic(players, world, console);
     Draw drawer(console, world);
     GameState state;
-    state.helpTime = helpTime;
+    // state.helpTime = helpTime;
 
     /* don't put anything after these variables and before the while loop */
     Global::speed_counter = 0;
