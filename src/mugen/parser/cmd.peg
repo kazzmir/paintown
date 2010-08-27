@@ -454,128 +454,133 @@ Ast::Key * applyKeyModifiers(const Value & mods, Ast::Key * key){
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
-	line(current) = s comment
-	              | s section {{ addSection(current, $2); }}
+    start = current:{{ value = makeSectionList(); }} whitespace newline* (sn line(current) whitespace line_end?)* sn <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
+    line(current) = s comment &line_end
+                  | s section {{ addSection(current, $2); }}
                   | s newline
-	line_end = newline+
-	         | &<eof> <void>
-	inline newline = "\n"
-	               | "\r"
-	whitespace = sw*
-	sw = space
-	   | comment
-	inline s = space*
-	inline space = " "
-	             | "\t"
-	comment = ";" (!"\n" .)*
-	        | "=" (!"\n" .)*
-		    | "-" "-"+
-            | ":" ":"+
-    section = section_title ast:{{ value = makeSection($1); }} whitespace newline+ (section_item(ast) whitespace line_end)* {{ value = ast; }}
+    line_end = newline+
+             | &<eof> <void>
+    inline newline = "\n"
+                   | "\r"
+    whitespace = sw*
+    sw = space
+       | comment
+    inline s = space*
+    inline sn = space_newline*
+    inline space_newline = space
+                         | newline
+    inline s1 = space+
+    inline space = " "
+                 | "\t"
+    comment = ";" (!newline .)*
+            | "=" (!newline .)*
+            | "-" "-" (!newline .)*
+            | ":" ":" (!newline .)*
+    section = section_title ast:{{ value = makeSection($1); }} whitespace (sn section_item(ast) whitespace line_end)* {{ value = ast; }}
 
     section_item(ast) = s comment
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
-	section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
-	assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
+    section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
+    assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
                | line:<line> "sparkno"{case} s "=" s "s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
-               | name:identifier s "=" s &line_end {{ value = makeAttribute(name); }}
-	           | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
-               | "ctrl" {{ value = makeAttribute(makeSimpleIdentifier("ctrl"), makeNumber(1)); }}
-	identifier = line:<line> first:name rest:("." name)* {{ value = makeIdentifier(getCurrentLine(line), getCurrentColumn(line), first, rest); }}
-	integer = sign? digit+ {{ value = makeInteger($1, $2); }}
-	float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, parseDouble(left,right)); }}
+               | name:identifier s "=" whitespace &line_end {{ value = makeAttribute(name); }}
+               | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
+               | "ctrl"{case} {{ value = makeAttribute(makeSimpleIdentifier("ctrl"), makeNumber(1)); }}
+    identifier = line:<line> first:name rest:("." name)* {{ value = makeIdentifier(getCurrentLine(line), getCurrentColumn(line), first, rest); }}
+    integer = sign? digit+ {{ value = makeInteger($1, $2); }}
+    float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, parseDouble(left,right)); }}
           | sign? left:digit+ "." {{ value = makeNumber($1, parseDouble(left)); }}
-	string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = makeString(contents); }}
-	inline sign = "-"
-	            | "+"
+    string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = makeString(contents); }}
+    inline sign = "-"
+                | "+"
     # [,] is inclusive
     # (,) is exclusive
-	range = "[" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::AllInclusive, low, high); }}
-	      | "(" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::AllExclusive, low, high); }}
-	      | "(" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::LeftExclusiveRightInclusive, low, high); }}
-	      | "[" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::LeftInclusiveRightExclusive, low, high); }}
-	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
-	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
-	alpha_digit = letter
-	            | digit
-	inline digit = [0123456789]
-	
-	valuelist = first:expr_c rest:(s "," s expr_c)+ {{ value = makeValueList(first, rest); }}
-	          | s "," s first:expr_c rest:(s "," s expr_c)* {{ value = makeValueList(first, rest); }}
+    range = "[" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::AllInclusive, low, high); }}
+          | "(" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::AllExclusive, low, high); }}
+          | "(" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::LeftExclusiveRightInclusive, low, high); }}
+          | "[" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::LeftInclusiveRightExclusive, low, high); }}
+    name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
+    inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
+    alpha_digit = letter
+                | digit
+    inline digit = [0123456789]
+    
+    valuelist = first:expr_c rest:(s "," s expr_c)+ {{ value = makeValueList(first, rest); }}
+              | s "," s first:expr_c rest:(s "," s expr_c)* {{ value = makeValueList(first, rest); }}
 
-	expr = expr_c !(s ",") {{ value = $1; }}
-	     | valuelist expr2_rest($1)
+    expr = expr_c !(s ",") {{ value = $1; }}
+         | valuelist expr2_rest($1)
 
-	expr_c = left:expr2 expr_rest(left)
-	       # I dont think this is right
-	       # | expr2_rest
-	
+    expr_c = left:expr2 expr_rest(left)
+           # I dont think this is right
+           # | expr2_rest
+    
     # Increasing order of precedence
-	expr2 = left:expr3 expr2_rest(left)
-	expr3 = left:expr4 expr3_rest(left)
-	expr4 = left:expr5 expr4_rest(left)
-	expr5 = left:expr6 expr5_rest(left)
-	expr6 = left:expr7 expr6_rest(left)
-	expr7 = left:expr8 expr7_rest(left)
-	expr8 = left:expr9 expr8_rest(left)
-	expr9 = left:expr10 expr9_rest(left)
-	expr10 = left:expr11 expr10_rest(left)
-	expr11 = left:expr12 expr11_rest(left)
-	expr12 = left:expr13 expr12_rest(left)
-	expr13 = unary* s exp:expr13_real {{ value = makeUnaryExpression($1, exp); }}
+    expr2 = left:expr3 expr2_rest(left)
+    expr3 = left:expr4 expr3_rest(left)
+    expr4 = left:expr5 expr4_rest(left)
+    expr5 = left:expr6 expr5_rest(left)
+    expr6 = left:expr7 expr6_rest(left)
+    expr7 = left:expr8 expr7_rest(left)
+    expr8 = left:expr9 expr8_rest(left)
+    expr9 = left:expr10 expr9_rest(left)
+    expr10 = left:expr11 expr10_rest(left)
+    expr11 = left:expr12 expr11_rest(left)
+    expr12 = left:expr13 expr12_rest(left)
+    expr13 = unary* s exp:expr13_real {{ value = makeUnaryExpression($1, exp); }}
 
-	expr_rest(left) = s "||" s right:expr2 new_left:{{ value = makeExpressionOr(left, right); }} expr_rest(new_left)
-	                | <void> {{ value = left; }}
-	expr2_rest(left) = s "^^" s right:expr3 new_left:{{ value = makeExpressionXOr(left, right); }} expr2_rest(new_left)
-	                 | <void> {{ value = left; }}
-	expr3_rest(left) = s "&&" s right:expr4 new_left:{{ value = makeExpressionAnd(left, right); }} expr3_rest(new_left)
-	                 | <void> {{ value = left; }}
-	expr4_rest(left) = s "|" s right:expr5 new_left:{{ value = makeExpressionBitwiseOr(left, right); }} expr4_rest(new_left)
-	                 | <void> {{ value = left; }}
-	expr5_rest(left) = s "^" s right:expr6 new_left:{{ value = makeExpressionBitwiseXOr(left, right); }} expr5_rest(new_left)
-	                 | <void> {{ value = left; }}
-	expr6_rest(left) = s "&" s right:expr7 new_left:{{ value = makeExpressionBitwiseAnd(left, right); }} expr6_rest(new_left)
-	                 | <void> {{ value = left; }}
-	expr7_rest(left) = s ":=" s right:expr8 new_left:{{ value = makeExpressionAssignment(left, right); }} expr7_rest(new_left)
-	                 | <void> {{ value = left; }}
-	# todo: fix expr8_rest
-	expr8_rest(left) = s "=" s right:expr9 new_left:{{ value = makeExpressionEquals(left, right); }} expr8_rest(new_left)
-	                 | s "!=" s right:expr9 new_left:{{ value = makeExpressionUnequals(left, right); }} expr8_rest(new_left)
-		             # todo: intervals
-                             # but we have ranges.. dont need intervals
-	                 | <void> {{ value = left; }}
-	expr9_rest(left) = s maker:compare s right:expr10 new_left:{{ {
+    expr_rest(left) = s "||" s right:expr2 new_left:{{ value = makeExpressionOr(left, right); }} expr_rest(new_left)
+                    | <void> {{ value = left; }}
+    expr2_rest(left) = s "^^" s right:expr3 new_left:{{ value = makeExpressionXOr(left, right); }} expr2_rest(new_left)
+                     | <void> {{ value = left; }}
+    expr3_rest(left) = s "&&" s right:expr4 new_left:{{ value = makeExpressionAnd(left, right); }} expr3_rest(new_left)
+                     | <void> {{ value = left; }}
+    expr4_rest(left) = s "|" s right:expr5 new_left:{{ value = makeExpressionBitwiseOr(left, right); }} expr4_rest(new_left)
+                     | <void> {{ value = left; }}
+    expr5_rest(left) = s "^" s right:expr6 new_left:{{ value = makeExpressionBitwiseXOr(left, right); }} expr5_rest(new_left)
+                     | <void> {{ value = left; }}
+    expr6_rest(left) = s "&" s right:expr7 new_left:{{ value = makeExpressionBitwiseAnd(left, right); }} expr6_rest(new_left)
+                     | <void> {{ value = left; }}
+    expr7_rest(left) = s ":=" s right:expr8 new_left:{{ value = makeExpressionAssignment(left, right); }} expr7_rest(new_left)
+                     | <void> {{ value = left; }}
+    # todo: fix expr8_rest
+    expr8_rest(left) = s "=" s right:expr9 new_left:{{ value = makeExpressionEquals(left, right); }} expr8_rest(new_left)
+                     | s "!=" s right:expr9 new_left:{{ value = makeExpressionUnequals(left, right); }} expr8_rest(new_left)
+                         # todo: intervals
+                         # but we have ranges.. dont need intervals
+                     | <void> {{ value = left; }}
+    expr9_rest(left) = s maker:compare s right:expr10 new_left:{{ {
         typedef Ast::Value * (*compare_func)(const Value &, const Value &);
         value = as<compare_func>(maker)(left, right);
         }
     }} expr9_rest(new_left)
-	                 | <void> {{ value = left; }}
-	compare = "<=" {{ value = (void *) makeExpressionLessThanEquals; }}
-		    | ">=" {{ value = (void *) makeExpressionGreaterThanEquals; }}
-		    | "<" {{ value = (void *) makeExpressionLessThan; }}
-	        | ">" {{ value = (void *) makeExpressionGreaterThan; }}
-	all_compare = compare
-	            | "="
-		        | "!="
-	expr10_rest(left) = s "+" s right:expr11 new_left:{{ value = makeExpressionAdd(left, right); }} expr10_rest(new_left)
-	                  | s "-" s right:expr11 new_left:{{ value = makeExpressionSubtract(left, right); }} expr10_rest(new_left)
-		              | <void> {{ value = left; }}
-	expr11_rest(left) = s "*" s right:expr12 new_left:{{ value = makeExpressionMultiply(left, right); }} expr11_rest(new_left)
-	                  | s "/" s right:expr12 new_left:{{ value = makeExpressionDivide(left, right); }} expr11_rest(new_left)
-	                  | s "%" s right:expr12 new_left:{{ value = makeExpressionModulo(left, right); }} expr11_rest(new_left)
-		              | <void> {{ value = left; }}
-	expr12_rest(left) = s "**" s right:expr13 new_left:{{ value = makeExpressionPower(left, right); }} expr12_rest(new_left)
-	                  | <void> {{ value = left; }}
-	unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
-	      | "-" !digit {{ value = (void*) Ast::ExpressionUnary::Minus; }}
-	      | "~" !key !digit {{ value = (void*) Ast::ExpressionUnary::Negation; }}
-	expr13_real = helper
+                     | <void> {{ value = left; }}
+    compare = "<=" {{ value = (void *) makeExpressionLessThanEquals; }}
+            | ">=" {{ value = (void *) makeExpressionGreaterThanEquals; }}
+            | "<" {{ value = (void *) makeExpressionLessThan; }}
+            | ">" {{ value = (void *) makeExpressionGreaterThan; }}
+    all_compare = compare
+                | "="
+                | "!="
+    expr10_rest(left) = s "+" s right:expr11 new_left:{{ value = makeExpressionAdd(left, right); }} expr10_rest(new_left)
+                      | s "-" s right:expr11 new_left:{{ value = makeExpressionSubtract(left, right); }} expr10_rest(new_left)
+                      | <void> {{ value = left; }}
+    expr11_rest(left) = s "*" s right:expr12 new_left:{{ value = makeExpressionMultiply(left, right); }} expr11_rest(new_left)
+                      | s "/" s right:expr12 new_left:{{ value = makeExpressionDivide(left, right); }} expr11_rest(new_left)
+                      | s "%" s right:expr12 new_left:{{ value = makeExpressionModulo(left, right); }} expr11_rest(new_left)
+                      | <void> {{ value = left; }}
+    expr12_rest(left) = s "**" s right:expr13 new_left:{{ value = makeExpressionPower(left, right); }} expr12_rest(new_left)
+                      | <void> {{ value = left; }}
+    unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
+          | "-" !digit {{ value = (void*) Ast::ExpressionUnary::Minus; }}
+          | "~" {{ value = (void*) Ast::ExpressionUnary::Negation; }}
+          # | "~" !key !digit {{ value = (void*) Ast::ExpressionUnary::Negation; }}
+    expr13_real = helper
                 | function
-	            | value
-	            | "(" s e:expr s ")" {{ value = e; }}
+                | value
+                | "(" s e:expr s ")" {{ value = e; }}
 
     function = name:function_name s "(" s args:args s ")" {{ value = makeFunction(name, args); }}
              | name:"teammode"{case} s "=" s arg1:identifier {{
@@ -584,86 +589,86 @@ rules:
              | name:"teammode"{case} s "!=" s arg1:identifier {{
                  value = makeFunction1("teammode!=", arg1); 
              }}
-		     | name:"animelem"{case} s "=" s arg1:integer function_rest {{
+             | name:"animelem"{case} s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
                 value = makeFunction1(name, arg1);
              }}
-		     | name:"animelem"{case} s "<=" s arg1:integer function_rest {{
+             | name:"animelem"{case} s "<=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
                 value = makeFunction1("animelem<=", arg1);
              }}
 
     args = expr1:expr_c expr_rest:(s "," s expr_c)* {{ value = makeValueList(expr1, expr_rest); }}
     function_name = "abs"{case}
-	              | "const"{case}
-		          | "selfanimexist"{case}
-		          | "ifelse"{case}
-		          | "gethitvar"{case}
-		          | "floor"{case}
-		          | "ceil"{case}
+                  | "const"{case}
+                  | "selfanimexist"{case}
+                  | "ifelse"{case}
+                  | "gethitvar"{case}
+                  | "floor"{case}
+                  | "ceil"{case}
                   | "acos"{case}
                   | "asin"{case}
                   | "atan"{case}
                   | "tan"{case}
                   | "cos"{case}
-		          | "sin"{case}
+                  | "sin"{case}
                   | "log"{case}
                   | "ln"{case}
-		          | "sysfvar"{case}
-		          | "sysvar"{case}
-		          | "var"{case}
-		          | "numexplod"{case}
-		          | "numhelper"{case}
-		          | "numprojid"{case}
-		          | "fvar"{case}
-		          | "ishelper"{case}
-		          | "numtarget"{case}
-		          | "animelemtime"{case}
-		          | "animelemno"{case}
-		          | "animexist"{case}
-		          | "projguarded"{case}
-		          | "projhittime"{case}
-		          | "projcontacttime"{case}
-		          | "projcontact"{case}
-		          | "numhelper"{case}
+                  | "sysfvar"{case}
+                  | "sysvar"{case}
+                  | "var"{case}
+                  | "numexplod"{case}
+                  | "numhelper"{case}
+                  | "numprojid"{case}
+                  | "fvar"{case}
+                  | "ishelper"{case}
+                  | "numtarget"{case}
+                  | "animelemtime"{case}
+                  | "animelemno"{case}
+                  | "animexist"{case}
+                  | "projguarded"{case}
+                  | "projhittime"{case}
+                  | "projcontacttime"{case}
+                  | "projcontact"{case}
+                  | "numhelper"{case}
 
-	function_rest = s "," s all_compare? s value
+    function_rest = s "," s all_compare? s value
                   | <void>
 
     # Keys and key modifiers need their own AST structures
     keys = key_value_list
     key_value_list = first:key rest:(s "," s key)* {{ value = makeKeyList(first, rest); }}
                    | <void> {{ value = makeEmptyKeyList(); }}
-	key = key_real ok:key_rest($1) !identifier {{ value = ok; }}
-	key_rest(left) = s "+" s another:key_real new_left:{{ value = makeKeyCombined(left, another); }} key_rest(new_left)
-	               | <void> {{ value = left; }}
-	key_real = mods:key_modifier* name:key_name {{ value = applyKeyModifiers(mods, makeKey(name)); }}
-	key_modifier = "~" num:digit* {{ value = new ReleaseKeyModifier((int) *parseDouble(num)); }}
-	             | "$" {{ value = new DirectionKeyModifier(); }}
-		         | "/" {{ value = new HeldDownKeyModifier(); }}
-		         | ">" {{ value = new OnlyKeyModifier(); }}
-	key_name = "DB"
-		     | "B"
-		     | "DF"
-		     | "D"
-		     | "F"
-		     | "UF"
-		     | "UB"
-		     | "U"
-		     | "a"
-		     | "b"
-		     | "c"
-		     | "x"
-		     | "y"
-		     | "z"
-		     | "s"
+    key = key_real ok:key_rest($1) !identifier {{ value = ok; }}
+    key_rest(left) = s "+" s another:key_real new_left:{{ value = makeKeyCombined(left, another); }} key_rest(new_left)
+                   | <void> {{ value = left; }}
+    key_real = mods:key_modifier* name:key_name {{ value = applyKeyModifiers(mods, makeKey(name)); }}
+    key_modifier = "~" num:digit* {{ value = new ReleaseKeyModifier((int) *parseDouble(num)); }}
+                 | "$" {{ value = new DirectionKeyModifier(); }}
+                 | "/" {{ value = new HeldDownKeyModifier(); }}
+                 | ">" {{ value = new OnlyKeyModifier(); }}
+    key_name = "DB"
+             | "B"
+             | "DF"
+             | "D"
+             | "F"
+             | "UF"
+             | "UB"
+             | "U"
+             | "a"
+             | "b"
+             | "c"
+             | "x"
+             | "y"
+             | "z"
+             | "s"
 
-	value = float
-	      | integer
-	      | keyword
-	      | !keyword identifier
-	      | range
-	      | string
+    value = float
+          | integer
+          | keyword
+          | !keyword identifier
+          | range
+          | string
           | hitflag
         
     helper = name:helper-name s helper-expression? s "," s id:helper-identifier {{
@@ -684,7 +689,7 @@ rules:
                       | !keyword identifier
 
     # FIXME: return proper hitflag
-    hitflag = hitflag_char+ hitflag_modifier? {{ value = makeSimpleIdentifier("A"); }}
+    hitflag = hitflag_char+ hitflag_modifier? !"." {{ value = makeSimpleIdentifier("A"); }}
     inline hitflag_char = "A"
                         | "M"
                         | "F"
@@ -692,25 +697,25 @@ rules:
 
     inline hitflag_modifier = "+"
                             | "-"
-	
-	keyword = keyword_real !alpha_digit {{ value = $1; }}
-	keyword_real = "vel"{case} s "y"{case} {{ value = makeKeyword("vel y"); }}
-	             | "vel"{case} s "x"{case} {{ value = makeKeyword("vel x"); }}
-	             | "pos"{case} s "y"{case} {{ value = makeKeyword("pos y"); }}
-	             | "pos"{case} s "x"{case} {{ value = makeKeyword("pos x"); }}
-	             | "p2dist"{case} s "x"{case} {{ value = makeKeyword("p2dist x"); }}
-	             | "p2dist"{case} s "y"{case} {{ value = makeKeyword("p2dist y"); }}
-	             | "p1dist"{case} s "x"{case} {{ value = makeKeyword("p1dist x"); }}
-	             | "p1dist"{case} s "y"{case} {{ value = makeKeyword("p1dist y"); }}
-	             | "p2bodydist"{case} s "x"{case} {{ value = makeKeyword("p2bodydist x"); }}
-	             | "p2bodydist"{case} s "y"{case} {{ value = makeKeyword("p2bodydist y"); }}
-	             | "p1bodydist"{case} s "x"{case} {{ value = makeKeyword("p1bodydist x"); }}
-	             | "p1bodydist"{case} s "y"{case} {{ value = makeKeyword("p1bodydist y"); }}
-	             | "parentdist"{case} s "x"{case} {{ value = makeKeyword("parentdist x"); }}
-                 | "screenpos"{case} s "x"{case} {{ value = makeKeyword("screenpos x"); }}
-                 | "screenpos"{case} s "y"{case} {{ value = makeKeyword("screenpos y"); }}
-                 | "parentdist"{case} s "x"{case} {{ value = makeKeyword("parentdist x"); }}
-                 | "parentdist"{case} s "y"{case} {{ value = makeKeyword("parentdist y"); }}
-                 | "rootdist"{case} s "x"{case} {{ value = makeKeyword("rootdist x"); }}
-                 | "rootdist"{case} s "y"{case} {{ value = makeKeyword("rootdist y"); }}
+
+    keyword = keyword_real !alpha_digit {{ value = $1; }}
+    keyword_real = "vel"{case} s1 "y"{case} {{ value = makeKeyword("vel y"); }}
+                 | "vel"{case} s1 "x"{case} {{ value = makeKeyword("vel x"); }}
+                 | "pos"{case} s1 "y"{case} {{ value = makeKeyword("pos y"); }}
+                 | "pos"{case} s1 "x"{case} {{ value = makeKeyword("pos x"); }}
+                 | "p2dist"{case} s1 "x"{case} {{ value = makeKeyword("p2dist x"); }}
+                 | "p2dist"{case} s1 "y"{case} {{ value = makeKeyword("p2dist y"); }}
+                 | "p1dist"{case} s1 "x"{case} {{ value = makeKeyword("p1dist x"); }}
+                 | "p1dist"{case} s1 "y"{case} {{ value = makeKeyword("p1dist y"); }}
+                 | "p2bodydist"{case} s1 "x"{case} {{ value = makeKeyword("p2bodydist x"); }}
+                 | "p2bodydist"{case} s1 "y"{case} {{ value = makeKeyword("p2bodydist y"); }}
+                 | "p1bodydist"{case} s1 "x"{case} {{ value = makeKeyword("p1bodydist x"); }}
+                 | "p1bodydist"{case} s1 "y"{case} {{ value = makeKeyword("p1bodydist y"); }}
+                 | "parentdist"{case} s1 "x"{case} {{ value = makeKeyword("parentdist x"); }}
+                 | "screenpos"{case} s1 "x"{case} {{ value = makeKeyword("screenpos x"); }}
+                 | "screenpos"{case} s1 "y"{case} {{ value = makeKeyword("screenpos y"); }}
+                 | "parentdist"{case} s1 "x"{case} {{ value = makeKeyword("parentdist x"); }}
+                 | "parentdist"{case} s1 "y"{case} {{ value = makeKeyword("parentdist y"); }}
+                 | "rootdist"{case} s1 "x"{case} {{ value = makeKeyword("rootdist x"); }}
+                 | "rootdist"{case} s1 "y"{case} {{ value = makeKeyword("rootdist y"); }}
                  | hitflag
