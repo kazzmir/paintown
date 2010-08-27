@@ -1925,41 +1925,6 @@ bool OptionSpeed::rightKey()
 OptionTabMenu::OptionTabMenu(Token *token):
 MenuOption(token),
 menu(0){
-#if 0
-    // Check whether we have a menu or tabmenu
-    if (*token == "tabmenu"){
-	_menu = new TabMenu();
-    } else {
-	throw LoadException(__FILE__, __LINE__, "Not a tabbed menu");
-    }
-    // Set this menu as an option
-    //_menu->setAsOption(true);
-    
-    /*
-    // Lets try loading from a file
-    std::string temp;
-    // Filename
-    *token >> temp;
-    */
-
-    if (token->numTokens() == 1){
-        std::string temp;
-        *token >> temp;
-        _menu->load(Filesystem::find(Filesystem::RelativePath(temp)));
-    } else {
-        _menu->load(token);
-    }
-
-    this->setText(_menu->getName());
-    
-    // Lets check if this menu is going bye bye
-    if ( _menu->checkRemoval() ) setForRemoval(true);
-#endif
-
-    if (*token != "menu"){
-        throw LoadException(__FILE__, __LINE__, "Not a tabbed menu");
-    }
-
     if (token->numTokens() == 1){
         std::string temp;
         *token >> temp;

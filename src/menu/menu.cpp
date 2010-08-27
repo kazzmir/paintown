@@ -1058,10 +1058,8 @@ Menu::Menu::~Menu(){
 void Menu::Menu::load(Token * token){ 
     // version info;
     int major=0, minor=0, micro=0;
-    if ( *token != "menu" ){
-        throw LoadException(__FILE__, __LINE__, "Not a menu");
-    } else if (!token->hasTokens()){
-        return;
+    if (!token->hasTokens()){
+        throw LoadException(__FILE__, __LINE__, "Empty Menu");
     } else {
         // Get version
         Token * tok;
@@ -1094,43 +1092,14 @@ void Menu::Menu::load(Token * token){
     }
     
     setRenderer(type);
-
-    while ( token->hasTokens() ){
-        try{
-            Token * tok;
-            *token >> tok;
-            if (Global::getVersion(major, minor, micro) != Global::getVersion()){
-                // Do compatible translations if necessary
-                handleCompatibility(tok, Global::getVersion(major, minor, micro));
-            } 
-            // Newer items
-            else if (*tok == "val" || *tok == "value"){
-                Token * val;
-                *tok >> val;
-                ValueHolder * value = new ValueHolder(val->getName());
-                try {
-                    while (true){
-                        *value << val;
-                    }
-                } catch (const TokenException & ex){
-                }
-                addData(value);
-            } else if (*tok == "context"){
-                context.parseToken(tok);
-            } else {
-                Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
-                if (Global::getDebug() >= 3){
-                    tok->print(" ");
-                }
-            }
-        } catch ( const TokenException & ex ) {
-            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-        } catch (const LoadException & ex){
-            throw ex;
-        } catch (const Filesystem::NotFound & ex){
-            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-        }
+    
+    if (Global::getVersion(major, minor, micro) != Global::getVersion()){
+	// Do compatible translations if necessary
+	handleCompatibility(token, Global::getVersion(major, minor, micro));
+    } else {
+	handleCurrentVersion(token);
     }
+    
 }
 
 void Menu::Menu::run(const Context & parentContext){
@@ -1292,118 +1261,164 @@ void Menu::Menu::addData(ValueHolder * item){
     }
 }
 
-void Menu::Menu::handleCompatibility(Token * tok, int version){
+void Menu::Menu::handleCurrentVersion(Token * token){
+    while ( token->hasTokens() ){
+        try{
+            Token * tok;
+            *token >> tok;
+            // Newer items
+            if (*tok == "val" || *tok == "value"){
+                Token * val;
+                *tok >> val;
+                ValueHolder * value = new ValueHolder(val->getName());
+                try {
+                    while (true){
+                        *value << val;
+                    }
+                } catch (const TokenException & ex){
+                }
+                addData(value);
+            } else if (*tok == "context"){
+                context.parseToken(tok);
+            } else {
+                Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+        } catch (const LoadException & ex){
+            throw ex;
+        } catch (const Filesystem::NotFound & ex){
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+        }
+    }
+}
+
+void Menu::Menu::handleCompatibility(Token * token, int version){
     Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
-        if ( *tok == "name" ){
-            ValueHolder * value = new ValueHolder("name");
-            *value << tok;
-            addData(value);
-        } else if ( *tok == "music" ) {
-            ValueHolder * value = new ValueHolder("music");
-            *value << tok;
-            addData(value);
-            try {
-                std::string music;
-                *value >> music;
-                context.setMusic(Filesystem::RelativePath(music));
-            } catch (const MenuException & ex){
-            }
-        } else if( *tok == "select-sound" ) {
-            ValueHolder * value = new ValueHolder("select-sound");
-            *value << tok;
-            addData(value);
-            try{
-                std::string sound;
-                *value >> sound;
-                context.addSound(Up,Filesystem::RelativePath(sound));
-                context.addSound(Down,Filesystem::RelativePath(sound));
-            } catch (const MenuException & ex){
-            }
-        } else if (*tok == "back-sound"){
-            ValueHolder * value = new ValueHolder("back-sound");
-            *value << tok;
-            addData(value);
-            try{
-                std::string sound;
-                *value >> sound;
-                context.addSound(Back,Filesystem::RelativePath(sound));
-                context.addSound(Cancel,Filesystem::RelativePath(sound));
-            } catch (const MenuException & ex){
-            }
-        } else if (*tok == "ok-sound"){
-            ValueHolder * value = new ValueHolder("ok-sound");
-            *value << tok;
-            addData(value);
-            try{
-                std::string sound;
-                *value >> sound;
-                context.addSound(Select,Filesystem::RelativePath(sound));
-            } catch (const MenuException & ex){
-            }
-        } else if ( *tok == "background" ) {
-            std::string temp;
-            *tok >> temp;
-            context.addBackground(temp);
-        } else if (*tok == "anim"){
-            context.addBackground(tok);
-        } else if ( *tok == "clear-color" ) {
-            // Not necessary ignore
-        } else if ( renderer && renderer->readToken(tok) ) {
-            // Nothing checks compatible version of renderer
-        } else if ( *tok == "font" ) {
-            ValueHolder * value = new ValueHolder("font");
-            *value << tok << tok << tok;
-            addData(value);
-            try {
-                std::string font;
-                int w=24,h=24;
-                *value >> font >> w >> h;
-                context.setFont(Filesystem::RelativePath(font));
-                context.setFontWidth(w);
-                context.setFontHeight(h);
-            } catch (const MenuException & ex){
-            }
-        } else if (*tok == "action"){
-            // Set speed
-            //ActionAct(tok);
-        } else if (*tok == "info-position"){
-            ValueHolder * value = new ValueHolder("info-position");
-            *value << tok << tok;
-            addData(value);
-            try {
-                double x=0, y=-.5;
-                *value >> x >> y;
-                context.setInfoLocation(x,y);
-            } catch (const MenuException & ex){
-            } 
-        } else if (*tok == "menuinfo"){
-            ValueHolder * value = new ValueHolder("menuinfo");
-            *value << tok;
-            addData(value);
-            try {
-                std::string info;
-                *value >> info;
-                context.setMenuInfoText(info);
-            } catch (const MenuException & ex){
-            } 
-        } else if (*tok == "menuinfo-position"){
-            ValueHolder * value = new ValueHolder("menuinfo-position");
-            *value << tok << tok;
-            addData(value);
-            try {
-                double x=0, y=.95;
-                *value >> x >> y;
-                context.setMenuInfoLocation(x,y);
-            } catch (const MenuException & ex){
-            } 
-        } 
-    }
-    
-    
-    Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
-    if (Global::getDebug() >= 3){
-        tok->print(" ");
+	while ( token->hasTokens() ){
+	    try {
+		Token * tok;
+		*token >> tok;
+		if ( *tok == "name" ){
+		    ValueHolder * value = new ValueHolder("name");
+		    *value << tok;
+		    addData(value);
+		} else if ( *tok == "music" ) {
+		    ValueHolder * value = new ValueHolder("music");
+		    *value << tok;
+		    addData(value);
+		    try {
+			std::string music;
+			*value >> music;
+			context.setMusic(Filesystem::RelativePath(music));
+		    } catch (const MenuException & ex){
+		    }
+		} else if( *tok == "select-sound" ) {
+		    ValueHolder * value = new ValueHolder("select-sound");
+		    *value << tok;
+		    addData(value);
+		    try{
+			std::string sound;
+			*value >> sound;
+			context.addSound(Up,Filesystem::RelativePath(sound));
+			context.addSound(Down,Filesystem::RelativePath(sound));
+		    } catch (const MenuException & ex){
+		    }
+		} else if (*tok == "back-sound"){
+		    ValueHolder * value = new ValueHolder("back-sound");
+		    *value << tok;
+		    addData(value);
+		    try{
+			std::string sound;
+			*value >> sound;
+			context.addSound(Back,Filesystem::RelativePath(sound));
+			context.addSound(Cancel,Filesystem::RelativePath(sound));
+		    } catch (const MenuException & ex){
+		    }
+		} else if (*tok == "ok-sound"){
+		    ValueHolder * value = new ValueHolder("ok-sound");
+		    *value << tok;
+		    addData(value);
+		    try{
+			std::string sound;
+			*value >> sound;
+			context.addSound(Select,Filesystem::RelativePath(sound));
+		    } catch (const MenuException & ex){
+		    }
+		} else if ( *tok == "background" ) {
+		    std::string temp;
+		    *tok >> temp;
+		    context.addBackground(temp);
+		} else if (*tok == "anim"){
+		    context.addBackground(tok);
+		} else if ( *tok == "clear-color" ) {
+		    // Not necessary ignore
+		} else if ( renderer && renderer->readToken(tok) ) {
+		    // Nothing checks compatible version of renderer
+		} else if ( *tok == "font" ) {
+		    ValueHolder * value = new ValueHolder("font");
+		    *value << tok << tok << tok;
+		    addData(value);
+		    try {
+			std::string font;
+			int w=24,h=24;
+			*value >> font >> w >> h;
+			context.setFont(Filesystem::RelativePath(font));
+			context.setFontWidth(w);
+			context.setFontHeight(h);
+		    } catch (const MenuException & ex){
+		    }
+		} else if ( *tok == "action"){
+		    // Set speed
+		    //ActionAct(tok);
+		} else if ( *tok == "info-position"){
+		    ValueHolder * value = new ValueHolder("info-position");
+		    *value << tok << tok;
+		    addData(value);
+		    try {
+			double x=0, y=-.5;
+			*value >> x >> y;
+			context.setInfoLocation(x,y);
+		    } catch (const MenuException & ex){
+		    } 
+		} else if (*tok == "menuinfo"){
+		    ValueHolder * value = new ValueHolder("menuinfo");
+		    *value << tok;
+		    addData(value);
+		    try {
+			std::string info;
+			*value >> info;
+			context.setMenuInfoText(info);
+		    } catch (const MenuException & ex){
+		    } 
+		} else if (*tok == "menuinfo-position"){
+		    ValueHolder * value = new ValueHolder("menuinfo-position");
+		    *value << tok << tok;
+		    addData(value);
+		    try {
+			double x=0, y=.95;
+			*value >> x >> y;
+			context.setMenuInfoLocation(x,y);
+		    } catch (const MenuException & ex){
+		    } 
+		} else {
+		    Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+		    if (Global::getDebug() >= 3){
+			tok->print(" ");
+		    }
+		}
+	    } catch ( const TokenException & ex ) {
+		throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+	    } catch (const LoadException & ex){
+		throw ex;
+	    } catch (const Filesystem::NotFound & ex){
+		throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+	    }
+	}
     }
 }
         

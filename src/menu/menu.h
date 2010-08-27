@@ -439,7 +439,7 @@ class Menu{
         /*! render pass local context and work */
         virtual void render(Context &, const Bitmap &);
 
-        virtual void setRenderer(const Type & type);
+        virtual void setRenderer(const Type &);
         
         /*! Get Name */
         virtual std::string getName();
@@ -467,13 +467,16 @@ class Menu{
         
         /*! load token */
         void load(Token * token);
+	
+	/*! Do current version */
+	virtual void handleCurrentVersion(Token *);
+	
+        /*! Prior token compatibility based on version Global::getVersion() */
+        virtual void handleCompatibility(Token *, int version);
         
         /*! Add Data */
         void addData(ValueHolder *);
         
-        /*! Prior token compatibility based on version Global::getVersion() */
-        virtual void handleCompatibility(Token * token, int version);
-
         /*! Keys */
         InputMap<Actions> input;
 	
