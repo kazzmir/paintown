@@ -1762,6 +1762,107 @@ if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
         else:
             raise Exception("unknown verbatim value %s" % pattern.letters)
 
+class DoneGenerating(Exception):
+    pass
+
+class TestGenerator(CodeGenerator):
+    def generate_sequence(self, pattern, peg):
+        def make(p):
+            def doit(work):
+                return p.generate_v2(self, peg)
+            return doit
+        return [make(p) for p in pattern.patterns]
+        # return "".join([p.generate_v2(self, peg) for p in pattern.patterns])
+
+    def generate_verbatim(self, pattern, peg):
+        def make2(work):
+            if pattern.letters in ["\\r"]:
+                return "\n"
+            return pattern.letters
+        return [make2]
+
+    def generate_eof(self, pattern, peg):
+        def blah(work):
+            raise DoneGenerating()
+        return [blah]
+        # return ""
+
+    def generate_any(self, pattern, peg):
+        return [lambda work: 'x']
+        # return 'x'
+
+    def generate_ensure(self, pattern, peg):
+        def blah(work):
+            # Throw the result out, but generate it for eof
+            pattern.generate_v2(self, peg)
+            return ""
+        return [blah]
+        #return ""
+
+    def generate_rule(self, pattern, peg):
+        # print "Generating rule %s" % pattern.rule
+        def make3(work):
+            rule = peg.getRule(pattern.rule)
+            if work > 10 and rule.hasEmptyRule(peg):
+                # print "Skipping rule %s" % rule.name
+                return ""
+            else:
+                return rule.generate_test(self, peg)
+        return [make3]
+        # return peg.getRule(pattern.rule).generate_test(self, peg)
+
+    def generate_bind(self, pattern, peg):
+        def make4(work):
+            return pattern.pattern.generate_v2(self, peg)
+        return [make4]
+        # return pattern.pattern.generate_v2(self, peg)
+
+    def generate_range(self, pattern, peg):
+        def make5(work):
+            import random
+            return random.choice(pattern.range)
+        return [make5]
+
+    def generate_line(self, pattern, peg):
+        return [lambda work: ""]
+
+    def generate_void(self, pattern, peg):
+        return [lambda work: ""]
+
+    def generate_maybe(self, pattern, peg):
+        def make(work):
+            import random
+            if random.randint(0, 1) == 0:
+                return pattern.pattern.generate_v2(self, peg)
+            else:
+                return ""
+        return [make]
+
+    def generate_repeat_many(self, pattern, peg):
+        import random
+        def make(p):
+            def doit(work):
+                return p.generate_v2(self, peg)
+            return doit
+        return [make(pattern.next) for x in [1] * random.randint(0, 4)]
+
+        # return "".join([pattern.next.generate_v2(self, peg) for x in [1] * random.randint(0, 4)])
+
+    def generate_repeat_once(self, pattern, peg):
+        import random
+        def make(p):
+            def doit(work):
+                return p.generate_v2(self, peg)
+            return doit
+        return [make(pattern.next) for x in [1] * random.randint(1, 4)]
+        # return "".join([pattern.next.generate_v2(self, peg) for x in [1] * random.randint(1, 4)])
+
+    def generate_code(self, pattern, peg):
+        return [lambda work: ""]
+
+    def generate_not(self, pattern, peg):
+        return [lambda work: ""]
+
 class Pattern:
     def __init__(self):
         pass
@@ -1809,8 +1910,13 @@ class PatternEnsure(Pattern):
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_ensure(self, result, previous_result, stream, failure)
 
+    # Takes some arguments
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_ensure(self, result, previous_result, stream, failure)
+
+    # Takes no arguments other than the generator
+    def generate_v2(self, generator, peg):
+        return generator.generate_ensure(self, peg)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_ensure(self, peg, result, stream, failure, tail, peg_args)
@@ -1830,6 +1936,9 @@ class PatternNot(Pattern):
             return []
         return me() + self.next.find(proc)
 
+    def canBeEmpty(self, peg):
+        return True
+
     def generate_bnf(self):
         return "!" + self.next.generate_bnf()
 
@@ -1841,6 +1950,9 @@ class PatternNot(Pattern):
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_not(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_not(self, peg)
         
 class PatternRule(Pattern):
     def __init__(self, rule, rules = None, parameters = None):
@@ -1855,10 +1967,17 @@ class PatternRule(Pattern):
     def tailRecursive(self, rule):
         return self.rule == rule.name
 
+    def canBeEmpty(self, peg):
+        return peg.getRule(self.rule).hasEmptyRule(peg)
+
     def find(self, proc):
         if proc(self):
             return [self]
         return []
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_rule(self, peg)
+        # return peg.getRule(self.rule).generate_test(generator, peg)
 
     def ensureRules(self, find):
         if not find(self.rule):
@@ -1893,12 +2012,18 @@ class PatternVoid(Pattern):
         if proc(self):
             return [self]
         return []
+    
+    def canBeEmpty(self, peg):
+        return True
 
     def generate_bnf(self):
         return "<void>"
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_void(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_void(self, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return ""
@@ -1917,12 +2042,18 @@ class PatternEof(Pattern):
         if proc(self):
             return [self]
         return []
+    
+    def canBeEmpty(self, peg):
+        return True
 
     def generate_bnf(self):
         return "<eof>"
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_eof(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_eof(self, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_eof(self, result, previous_result, stream, failure)
@@ -1941,6 +2072,12 @@ class PatternSequence(Pattern):
     def tailRecursive(self, rule):
         return self.patterns[-1].tailRecursive(rule)
 
+    def canBeEmpty(self, peg):
+        for pattern in self.patterns:
+            if not pattern.canBeEmpty(peg):
+                return False
+        return True
+
     def find(self, proc):
         def me():
             if proc(self):
@@ -1958,9 +2095,12 @@ class PatternSequence(Pattern):
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_sequence(self, result, previous_result, stream, failure)
 
+    def generate_v2(self, generator, peg):
+        return generator.generate_sequence(self, peg)
+
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_sequence(self, result, previous_result, stream, failure)
-        
+
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_sequence(self, peg, result, stream, failure, tail, peg_args)
 
@@ -2012,11 +2152,17 @@ class PatternRepeatOnce(Pattern):
             return []
         return me() + self.next.find(proc)
 
+    def canBeEmpty(self, peg):
+        return False
+
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "+"
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_repeat_once(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_repeat_once(self, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_repeat_once(self, result, previous_result, stream, failure)
@@ -2037,11 +2183,17 @@ class PatternCode(Pattern):
             return [self]
         return []
 
+    def canBeEmpty(self, peg):
+        return True
+
     def ensureRules(self, find):
         pass
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_code(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_code(self, peg)
 
     def generate_bnf(self):
         return """{{%s}}""" % (self.code)
@@ -2066,9 +2218,15 @@ class PatternRepeatMany(Pattern):
                 return [self]
             return []
         return me() + self.next.find(proc)
+
+    def canBeEmpty(self, peg):
+        return True
     
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_repeat_many(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_repeat_many(self, peg)
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "*"
@@ -2097,6 +2255,9 @@ class PatternAny(Pattern):
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_any(self, result, previous_result, stream, failure)
 
+    def generate_v2(self, generator, peg):
+        return generator.generate_any(self, peg)
+
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_any(self, peg, result, stream, failure, tail, peg_args)
 
@@ -2117,9 +2278,15 @@ class PatternMaybe(Pattern):
                 return [self]
             return []
         return me() + self.pattern.find(proc)
+
+    def canBeEmpty(self, peg):
+        return True
     
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_maybe(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_maybe(self, peg)
 
     def generate_bnf(self):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
@@ -2167,8 +2334,14 @@ class PatternBind(Pattern):
             return []
         return me() + self.pattern.find(proc)
 
+    def canBeEmpty(self, peg):
+        return self.pattern.canBeEmpty(peg)
+
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_bind(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_bind(self, peg)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_bind(self, peg, result, stream, failure, tail, peg_args)
@@ -2198,8 +2371,14 @@ class PatternRange(Pattern):
     def ensureRules(self, find):
         pass
 
+    def canBeEmpty(self, peg):
+        return False
+
     def generate_bnf(self):
         return "[%s]" % self.range
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_range(self, peg)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_range(self, peg, result, stream, failure, tail, peg_args)
@@ -2225,11 +2404,17 @@ class PatternLine(Pattern):
     def contains(self):
         return 1
 
+    def canBeEmpty(self, peg):
+        return True
+
     def generate_bnf(self):
         return '<item>'
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_line(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_line(self, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_line(self, result, previous_result, stream, failure)
@@ -2251,6 +2436,9 @@ class PatternVerbatim(Pattern):
             return [self]
         return []
 
+    def canBeEmpty(self, peg):
+        return False
+
     def contains(self):
         return 1
 
@@ -2259,6 +2447,9 @@ class PatternVerbatim(Pattern):
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_verbatim(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_verbatim(self, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_verbatim(self, result, previous_result, stream, failure)
@@ -2330,6 +2521,19 @@ def rule_%s(%s, %s%s%s)
 end
 """ % (self.name, stream, position, rule_parameters, parameters, stream, rule_id, position, stream, rule_id, position, indent('\n'.join([newPattern(pattern, stream, position).strip() for pattern in self.patterns])), stream, rule_id, position)
         return data
+
+    def choosePattern(self):
+        import random
+        return random.choice(self.patterns)
+
+    def hasEmptyRule(self, peg):
+        for pattern in self.patterns:
+            if pattern.canBeEmpty(peg):
+                return True
+        return False
+
+    def generate_test(self, generator, peg):
+        return self.choosePattern().generate_v2(generator, peg)
 
     def generate_python(self):
         def newPattern(pattern, stream, position):
@@ -2585,6 +2789,27 @@ def parse(file)
     return out.getValues()
 end
 """ % (start_ruby, rule_numbers, '\n'.join([rule.generate_ruby() for rule in self.rules]), self.start)
+        return data
+
+    def generate_test(self):
+        # return self.getRule(self.start).generate_test(TestGenerator(), self)
+        work = self.getRule(self.start).generate_test(TestGenerator(), self)
+        data = ""
+        length = 0
+        while work:
+            head = work.pop()
+            length -= 1
+            try:
+                more = head(length)
+            except DoneGenerating:
+                more = ""
+                data = ""
+            # print "More is %s" % more
+            if type(more) == type([]):
+                work.extend(more)
+                length += len(more)
+            else:
+                data = more + data
         return data
 
     def generate_python(self):
@@ -3414,6 +3639,8 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_ruby())
         elif arg == '--python':
             doit.append(lambda p: p.generate_python())
+        elif arg == '--test':
+            doit.append(lambda p: p.generate_test())
         elif arg == '--parallel':
             parallel[0] = True
         elif arg == "--help-syntax":
