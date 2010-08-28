@@ -1778,7 +1778,10 @@ class TestGenerator(CodeGenerator):
         def make2(work):
             if pattern.letters in ["\\r"]:
                 return "\n"
-            return pattern.letters
+            if type(pattern.letters) == type(0):
+                return chr(pattern.letters)
+            else:
+                return pattern.letters
         return [make2]
 
     def generate_eof(self, pattern, peg):
