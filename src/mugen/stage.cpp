@@ -972,7 +972,7 @@ void MugenStage::logic( ){
             quake_time--;
         }
 
-        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end();){ 
+        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); /**/){ 
             Mugen::Effect * spark = *it;
             spark->logic();
 
@@ -1852,7 +1852,7 @@ void MugenStage::addEffect(Mugen::Effect * effect){
                     
 int MugenStage::countMyEffects(const Mugen::Character * owner) const {
     int total = 0;
-    for (vector<Mugen::Effect*>::const_iterator it = showSparks.begin(); it != showSparks.end();){ 
+    for (vector<Mugen::Effect*>::const_iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
         Mugen::Effect * effect = *it;
         if (effect->getOwner() == owner){
             total += 1;
@@ -1874,4 +1874,16 @@ void MugenStage::setEnvironmentColor(int color, int time, bool under){
     
 void MugenStage::removeHelper(Mugen::Character * who){
     /* TODO */
+}
+    
+void MugenStage::removeEffects(const Mugen::Character * owner, int id){
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); /**/ ){ 
+        Mugen::Effect * effect = *it;
+        if (effect->getOwner() == owner && (id == -1 || id == effect->getId())){
+            delete effect;
+            it = showSparks.erase(it);
+        } else {
+            it++;
+        }
+    }
 }

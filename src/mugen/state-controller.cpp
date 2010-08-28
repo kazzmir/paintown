@@ -4114,8 +4114,23 @@ public:
     Value value;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
-        int life = (int) value->evaluate(FullEnvironment(stage, guy, commands)).toNumber();
+        int life = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
         guy.setHealth(life);
+    }
+};
+
+class ControllerRemoveExplod: public StateController {
+public:
+    ControllerRemoveExplod(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        id = extractAttribute(section, "id");
+    }
+
+    Value id;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int id = evaluateNumber(this->id, FullEnvironment(stage, guy, commands), -1);
+        stage.removeEffects(&guy, id);
     }
 };
 
@@ -4271,6 +4286,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BGPalFX : return new ControllerBGPalFX(section, name, state);
         case StateController::LifeAdd : return new ControllerLifeAdd(section, name, state);
         case StateController::LifeSet : return new ControllerLifeSet(section, name, state);
+        case StateController::RemoveExplod : return new ControllerRemoveExplod(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4293,7 +4309,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::PlayerPush :
         case StateController::PowerSet :
         case StateController::Projectile :
-        case StateController::RemoveExplod :
         case StateController::ReversalDef :
         case StateController::SndPan :
         case StateController::StopSnd :

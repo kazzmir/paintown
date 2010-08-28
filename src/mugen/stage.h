@@ -34,6 +34,10 @@ public:
         return owner;
     }
 
+    virtual inline int getId() const {
+        return id;
+    }
+
     virtual ~Effect();
 protected:
     const Character * owner;
@@ -196,6 +200,7 @@ public:
     virtual MugenAnimation * getFightAnimation(int id);
 
     virtual void addEffect(Mugen::Effect * effect);
+    virtual void removeEffects(const Mugen::Character * owner, int id);
     virtual int countMyEffects(const Mugen::Character * owner) const;
 
     virtual void setEnvironmentColor(int color, int time, bool under); 
