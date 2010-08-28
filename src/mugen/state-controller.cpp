@@ -4072,13 +4072,50 @@ public:
     }
 };
 
+/* Compile a single value from some attribute in a section.
+ * [foo]
+ * x = 2
+ * 
+ * extractAttribute(foo, "x") -> 2
+ */
+Compiler::Value * extractAttribute(Ast::Section * section, const string & name){
+    class Walker: public Ast::Walker {
+    public:
+        Walker(const string & name):
+        name(name),
+        value(NULL){
+        }
+
+        const string & name;
+        Compiler::Value * value;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == name){
+                value = Compiler::compile(simple.getValue());
+            }
+        }
+    };
+
+    Walker walker(name);
+    section->walk(walker);
+    return walker.value;
+}
+
 class ControllerLifeSet: public StateController {
 public:
     ControllerLifeSet(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
+        value = extractAttribute(section, "value");
+        if (value == NULL){
+            throw MugenException("LifeSet controller must specify the `value' attribute");
+        }
     }
 
+    Value value;
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int life = (int) value->evaluate(FullEnvironment(stage, guy, commands)).toNumber();
+        guy.setHealth(life);
     }
 };
 
