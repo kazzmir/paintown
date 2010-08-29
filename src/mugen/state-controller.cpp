@@ -4243,6 +4243,109 @@ public:
     }
 };
 
+class ControllerGravity: public StateController {
+public:
+    ControllerGravity(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        guy.moveYNoCheck(-guy.getGravity());
+    }
+};
+
+class ControllerPlayerPush: public StateController {
+public:
+    ControllerPlayerPush(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        extractValue(value, section);
+        if (value == NULL){
+            throw MugenException("PlayerPush requires a `value' attribute");
+        }
+    }
+
+    Value value;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (!evaluateBool(value, FullEnvironment(stage, guy, commands), false)){
+            guy.disablePushCheck();
+        }
+    }
+};
+
+class ControllerPause: public StateController {
+public:
+    ControllerPause(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        time = extractAttribute(section, "time");
+        buffer = extractAttribute(section, "endcmdbuftime");
+        move = extractAttribute(section, "movetime");
+        background = extractAttribute(section, "pausebg");
+    }
+
+    Value time;
+    Value buffer;
+    Value move;
+    Value background;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        stage.doPause((int) evaluateNumber(time, environment, 0),
+                      (int) evaluateNumber(buffer, environment, 0),
+                      (int) evaluateNumber(move, environment, 0),
+                      evaluateBool(background, environment, true));
+    }
+};
+
+class ControllerParentVarSet: public StateController {
+public:
+    ControllerParentVarSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        integerIndex = extractAttribute(section, "v");
+        integerValue = extractAttribute(section, "value");
+        floatIndex = extractAttribute(section, "fv");
+        floatValue = extractAttribute(section, "value");
+        parse(section);
+    }
+
+    Value integerIndex;
+    Value floatIndex;
+    Value integerValue;
+    Value floatValue;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerParentVarSet & controller):
+            controller(controller){
+            }
+
+            ControllerParentVarSet & controller;
+
+            virtual void onAttributeArray(const Ast::AttributeArray & simple){
+                if (simple == "var"){
+                    controller.integerIndex = Compiler::compile(simple.getIndex());
+                    const Ast::Value * value = simple.getValue();
+                    controller.integerValue = Compiler::compile(value);
+                } else if (simple == "fvar"){
+                    controller.floatIndex = Compiler::compile(simple.getIndex());
+                    const Ast::Value * value = simple.getValue();
+                    controller.floatValue = Compiler::compile(value);
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (guy.isHelper()){
+            /* TODO */
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4400,6 +4503,10 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Helper : return new ControllerHelper(section, name, state);
         case StateController::StopSnd : return new ControllerStopSnd(section, name, state);
         case StateController::HitAdd : return new ControllerHitAdd(section, name, state);
+        case StateController::Gravity : return new ControllerGravity(section, name, state);
+        case StateController::PlayerPush : return new ControllerPlayerPush(section, name, state);
+        case StateController::Pause : return new ControllerPause(section, name, state);
+        case StateController::ParentVarSet : return new ControllerParentVarSet(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4409,14 +4516,10 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ClearClipboard :
         case StateController::DisplayToClipboard :
         case StateController::ExplodBindTime :
-        case StateController::Gravity :
         case StateController::HitOverride :
         case StateController::MoveHitReset :
         case StateController::Offset :
         case StateController::ParentVarAdd :
-        case StateController::ParentVarSet :
-        case StateController::Pause :
-        case StateController::PlayerPush :
         case StateController::PowerSet :
         case StateController::Projectile :
         case StateController::ReversalDef :

@@ -1841,6 +1841,10 @@ void MugenStage::doSuperPause(int time, int animation, int positionX, int positi
         addSpark(positionX, positionY, animation);
     }
 }
+   
+void MugenStage::doPause(int time, int buffer, int moveAllowed, bool pauseBackground){
+    /* TODO */
+}
     
 void MugenStage::createDust(int x, int y){
     addSpark(x, y, 120);

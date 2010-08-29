@@ -2753,4 +2753,8 @@ bool Character::isHelper(){
     return false;
 }
         
+void Character::disablePushCheck(){
+    /* TODO */
+}
+        
 }

@@ -1035,6 +1035,8 @@ public:
         /* increase combo count */
         virtual void addCombo(int combo);
 
+        virtual void disablePushCheck();
+
 protected:
     void initialize();
 
