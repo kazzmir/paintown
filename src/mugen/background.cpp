@@ -1626,7 +1626,7 @@ clearColor(-1){
 			    self.clearColor = Bitmap::makeColor(r,g,b);
 			} else {
 			    //throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
-                            Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__;
+                            Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
 			}
 		    }
             };
@@ -1714,7 +1714,7 @@ clearColor(-1){
                 ostringstream out;
                 out << "Unknown background type '" << type << "' in " << head;
                 //throw MugenException(out.str());
-                Global::debug(0) << out.str() << __FILE__ << __LINE__;
+                Global::debug(0) << out.str() << __FILE__ << __LINE__ << endl;
             }
             // Finally add it to our background controller
             control->addController(controller);
