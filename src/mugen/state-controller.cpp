@@ -4221,6 +4221,17 @@ public:
     }
 };
 
+class ControllerStopSnd: public StateController {
+public:
+    ControllerStopSnd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        /* TODO: but im not sure we care about this one */
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4376,6 +4387,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::RemoveExplod : return new ControllerRemoveExplod(section, name, state);
         case StateController::ModifyExplod : return new ControllerModifyExplod(section, name, state);
         case StateController::Helper : return new ControllerHelper(section, name, state);
+        case StateController::StopSnd : return new ControllerStopSnd(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4398,7 +4410,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Projectile :
         case StateController::ReversalDef :
         case StateController::SndPan :
-        case StateController::StopSnd :
         case StateController::TargetDrop :
         case StateController::TargetPowerAdd :
         case StateController::TargetVelAdd :
