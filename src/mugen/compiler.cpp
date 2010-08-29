@@ -439,42 +439,6 @@ public:
 
             return new Win();
         }
-        
-        if (identifier == "winko"){
-            class WinKO: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
-                }
-            };
-
-            return new WinKO();
-        }
-        
-        if (identifier == "wintime"){
-            class WinTime: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
-                }
-            };
-
-            return new WinTime();
-        }
-        
-        if (identifier == "winperfect"){
-            class WinPerfect: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
-                }
-            };
-
-            return new WinPerfect();
-        }
 
         if (identifier == "lose"){
             /* FIXME */
