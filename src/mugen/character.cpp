@@ -83,6 +83,12 @@ namespace PhysicalAttack{
 
 namespace PaintownUtil = ::Util;
 
+static string sourceLocation(const Ast::AttributeSimple & simple, const Filesystem::AbsolutePath & path){
+    ostringstream out;
+    out << "in " << path.path() << " at line " << simple.getLine() << " column " << simple.getColumn();
+    return out.str();
+}
+
 State::State(int id):
 id(id),
 type(Unchanged),
@@ -496,11 +502,12 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
             if (head == "command"){
                 class CommandWalker: public Ast::Walker {
                 public:
-                    CommandWalker(Character & self, const int defaultTime, const int defaultBufferTime):
+                    CommandWalker(Character & self, const int defaultTime, const int defaultBufferTime, const Filesystem::AbsolutePath & full):
                         self(self),
                         time(defaultTime),
                         bufferTime(defaultBufferTime),
-                        key(NULL){
+                        key(NULL),
+                        path(full){
                         }
 
                     Character & self;
@@ -508,6 +515,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                     int bufferTime;
                     string name;
                     Ast::Key * key;
+                    const Filesystem::AbsolutePath & path;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "name"){
@@ -543,7 +551,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                     }
                 };
 
-                CommandWalker walker(*this, defaultTime, defaultBufferTime);
+                CommandWalker walker(*this, defaultTime, defaultBufferTime, full);
                 section->walk(walker);
             } else if (head == "defaults"){
                 class DefaultWalker: public Ast::Walker {
@@ -568,7 +576,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                 DefaultWalker walker(defaultTime, defaultBufferTime);
                 section->walk(walker);
             } else if (PaintownUtil::matchRegex(head, "statedef")){
-                currentState = parseStateDefinition(section);
+                currentState = parseStateDefinition(section, full);
             } else if (PaintownUtil::matchRegex(head, "state ")){
                 if (currentState != NULL){
                     currentState->addController(parseState(section));
@@ -940,7 +948,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
     }
 }
 
-State * Character::parseStateDefinition(Ast::Section * section){
+State * Character::parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path){
     std::string head = section->getName();
     /* this should really be head = Mugen::Util::fixCase(head) */
     head = Util::fixCase(head);
@@ -948,11 +956,13 @@ State * Character::parseStateDefinition(Ast::Section * section){
     int state = atoi(PaintownUtil::captureRegex(head, "statedef *(-?[0-9]+)", 0).c_str());
     class StateWalker: public Ast::Walker {
         public:
-            StateWalker(State * definition):
-                definition(definition){
-                }
+            StateWalker(State * definition, const Filesystem::AbsolutePath & path):
+            definition(definition),
+            path(path){
+            }
 
             State * definition;
+            const Filesystem::AbsolutePath & path;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "type"){
@@ -1016,13 +1026,13 @@ State * Character::parseStateDefinition(Ast::Section * section){
                 } else if (simple == "hitcountpersist"){
                 } else if (simple == "sprpriority"){
                 } else {
-                    Global::debug(0) << "Unhandled statedef attribute: " << simple.toString() << endl;
+                    Global::debug(0) << "Unhandled statedef attribute: " << simple.toString() << " " << sourceLocation(simple, path) << endl;
                 }
             }
     };
 
     State * definition = new State(state);
-    StateWalker walker(definition);
+    StateWalker walker(definition, path);
     section->walk(walker);
     if (states[state] != NULL){
         Global::debug(1) << "Overriding state " << state << endl;
@@ -1199,7 +1209,7 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
         head = Util::fixCase(head);
 
         if (PaintownUtil::matchRegex(head, "statedef")){
-            currentState = parseStateDefinition(section);
+            currentState = parseStateDefinition(section, full);
         } else if (PaintownUtil::matchRegex(head, "state ")){
             StateController * controller = parseState(section);
             if (controller != NULL){
@@ -2231,6 +2241,13 @@ void Character::addPower(double d){
 
     if (power < 0){
         power = 0;
+    }
+}
+
+void Character::addCombo(int combo){
+    hitCount += combo;
+    if (hitCount < 0){
+        hitCount = 0;
     }
 }
         

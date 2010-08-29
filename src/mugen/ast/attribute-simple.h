@@ -52,6 +52,14 @@ public:
         }
     }
 
+    virtual int getLine() const {
+        return line;
+    }
+
+    virtual int getColumn() const {
+        return column;
+    }
+
     std::string valueAsString() const {
         std::string str;
         *this >> str;

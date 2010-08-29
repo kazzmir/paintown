@@ -195,35 +195,69 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
 }
 
 /* helpers */
-static void extractValue(Compiler::Value *& value, Ast::Section * section){
+
+/* Compile a single value from some attribute in a section.
+ * [foo]
+ * x = 2
+ * 
+ * extractAttribute(foo, "x") -> 2
+ */
+Compiler::Value * extractAttribute(Ast::Section * section, const string & name){
     class Walker: public Ast::Walker {
     public:
-        Walker(Compiler::Value *& value):
-            value(value){
-            }
+        Walker(const string & name):
+        name(name),
+        value(NULL){
+        }
 
-        Compiler::Value *& value;
+        const string & name;
+        Compiler::Value * value;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == "value"){
+            if (simple == name){
                 value = Compiler::compile(simple.getValue());
             }
         }
     };
-    Walker walker(value);
+
+    Walker walker(name);
     section->walk(walker);
+    return walker.value;
+}
+
+static void extractValue(Value & value, Ast::Section * section){
+    value = extractAttribute(section, "value");
+    /*
+    class Walker: public Ast::Walker {
+    public:
+        Walker(Compiler::Value *& value, name):
+        value(value),
+        name(name){
+        }
+
+        Compiler::Value *& value;
+        const string & name;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == name){
+                value = Compiler::compile(simple.getValue());
+            }
+        }
+    };
+    Walker walker(value, name);
+    section->walk(walker);
+    */
 }
 
 /* 50% */
 class ControllerChangeAnim: public StateController {
 public:
     ControllerChangeAnim(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        value(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * value;
+    Value value;
 
     void parse(Ast::Section * section){
         extractValue(value, section);
@@ -233,10 +267,6 @@ public:
             out << "Expected the `value' attribute for state " << name;
             throw MugenException(out.str());
         }
-    }
-
-    virtual ~ControllerChangeAnim(){
-        delete value;
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -310,16 +340,11 @@ public:
 class ControllerCtrlSet: public StateController {
 public:
     ControllerCtrlSet(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        value(NULL){
-            parse(section);
-        }
-
-    Compiler::Value * value;
-
-    virtual ~ControllerCtrlSet(){
-        delete value;
+    StateController(name, state, section){
+        parse(section);
     }
+
+    Value value;
 
     void parse(Ast::Section * section){
         extractValue(value, section);
@@ -2372,16 +2397,11 @@ public:
 class ControllerAttackDist: public StateController {
 public:
     ControllerAttackDist(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    value(NULL){
+    StateController(name, state, section){
         parse(section);
     }
 
-    Compiler::Value * value;
-
-    virtual ~ControllerAttackDist(){
-        delete value;
-    }
+    Value value;
 
     void parse(Ast::Section * section){
         extractValue(value, section);
@@ -4114,40 +4134,13 @@ public:
     }
 };
 
-/* Compile a single value from some attribute in a section.
- * [foo]
- * x = 2
- * 
- * extractAttribute(foo, "x") -> 2
- */
-Compiler::Value * extractAttribute(Ast::Section * section, const string & name){
-    class Walker: public Ast::Walker {
-    public:
-        Walker(const string & name):
-        name(name),
-        value(NULL){
-        }
-
-        const string & name;
-        Compiler::Value * value;
-
-        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            if (simple == name){
-                value = Compiler::compile(simple.getValue());
-            }
-        }
-    };
-
-    Walker walker(name);
-    section->walk(walker);
-    return walker.value;
-}
 
 class ControllerLifeSet: public StateController {
 public:
     ControllerLifeSet(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
-        value = extractAttribute(section, "value");
+        extractValue(value, section);
+        // value = extractAttribute(section, "value");
         if (value == NULL){
             throw MugenException("LifeSet controller must specify the `value' attribute");
         }
@@ -4229,6 +4222,24 @@ public:
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO: but im not sure we care about this one */
+    }
+};
+
+class ControllerHitAdd: public StateController {
+public:
+    ControllerHitAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        extractValue(value, section);
+        if (value == NULL){
+            throw MugenException("HitAdd requires a `value' attribute");
+        }
+    }
+
+    Value value;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int combo = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
+        guy.addCombo(combo);
     }
 };
 
@@ -4388,6 +4399,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ModifyExplod : return new ControllerModifyExplod(section, name, state);
         case StateController::Helper : return new ControllerHelper(section, name, state);
         case StateController::StopSnd : return new ControllerStopSnd(section, name, state);
+        case StateController::HitAdd : return new ControllerHitAdd(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4398,7 +4410,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::DisplayToClipboard :
         case StateController::ExplodBindTime :
         case StateController::Gravity :
-        case StateController::HitAdd :
         case StateController::HitOverride :
         case StateController::MoveHitReset :
         case StateController::Offset :

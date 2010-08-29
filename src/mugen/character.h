@@ -1032,6 +1032,9 @@ public:
 
         virtual bool isHelper();
 
+        /* increase combo count */
+        virtual void addCombo(int combo);
+
 protected:
     void initialize();
 
@@ -1067,7 +1070,7 @@ protected:
 
     virtual void fixAssumptions();
     virtual StateController * parseState(Ast::Section * section);
-    virtual State * parseStateDefinition(Ast::Section * section);
+    virtual State * parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path);
 
     // InputMap<Mugen::Keys> & getInput();
 
