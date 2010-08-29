@@ -1887,3 +1887,14 @@ void MugenStage::removeEffects(const Mugen::Character * owner, int id){
         }
     }
 }
+    
+Mugen::Effect * MugenStage::findEffect(const Mugen::Character * owner, int id){
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
+        Mugen::Effect * effect = *it;
+        if (effect->getOwner() == owner && id == effect->getId()){
+            return effect;
+        }
+    }
+
+    return NULL;
+}

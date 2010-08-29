@@ -34,6 +34,22 @@ public:
         return owner;
     }
 
+    virtual inline double getX() const {
+        return x;
+    }
+
+    virtual inline double getY() const {
+        return y;
+    }
+
+    virtual void setX(double x){
+        this->x = x;
+    }
+
+    virtual void setY(double y){
+        this->y = y;
+    }
+
     virtual inline int getId() const {
         return id;
     }
@@ -202,6 +218,7 @@ public:
     virtual void addEffect(Mugen::Effect * effect);
     virtual void removeEffects(const Mugen::Character * owner, int id);
     virtual int countMyEffects(const Mugen::Character * owner) const;
+    virtual Mugen::Effect * findEffect(const Mugen::Character * owner, int id);
 
     virtual void setEnvironmentColor(int color, int time, bool under); 
 

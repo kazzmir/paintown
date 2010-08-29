@@ -2800,6 +2800,85 @@ public:
     Compiler::Value * accelerationY;
     Compiler::Value * removeTime;
 
+    class ExplodeEffect: public Effect {
+    public:
+        ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime):
+            Effect(owner, animation, id, x, y),
+            velocityX(velocityX),
+            velocityY(velocityY),
+            accelerationX(accelerationX),
+            accelerationY(accelerationY),
+            removeTime(removeTime){
+            }
+
+        void setVelocityX(double x){
+            velocityX = x;
+        }
+
+        double getVelocityX() const {
+            return velocityX;
+        }
+
+        void setVelocityY(double y){
+            velocityY = y;
+        }
+        
+        double getVelocityY() const {
+            return velocityY;
+        }
+
+        void setAccelerationX(double x){
+            accelerationX = x;
+        }
+
+        double getAccelerationX() const {
+            return accelerationX;
+        }
+
+        void setAccelerationY(double y){
+            accelerationY = y;
+        }
+
+        double getAccelerationY() const {
+            return accelerationY;
+        }
+
+        void setRemoveTime(int time){
+            removeTime = time;
+        }
+
+        int getRemoveTime() const {
+            return removeTime;
+        }
+
+        double velocityX;
+        double velocityY;
+        double accelerationX;
+        double accelerationY;
+        int removeTime;
+
+        virtual void logic(){
+            Effect::logic();
+            x += velocityX;
+            y += velocityY;
+            velocityX += accelerationX;
+            velocityY += accelerationY;
+            if (removeTime > 0){
+                removeTime -= 1;
+            }
+        }
+
+        virtual bool isDead(){
+            switch (removeTime){
+                case -2: return Effect::isDead();
+                case -1: return false;
+                default : return removeTime == 0;
+            }
+
+            return true;
+        }
+    };
+
     virtual ~ControllerExplod(){
         delete animation;
         delete id;
@@ -2904,44 +2983,7 @@ public:
             throw MugenException(out.str());
         }
 
-        class ExplodeEffect: public Effect {
-        public:
-            ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime):
-            Effect(owner, animation, id, x, y),
-            velocityX(velocityX),
-            velocityY(velocityY),
-            accelerationX(accelerationX),
-            accelerationY(accelerationY),
-            removeTime(removeTime){
-            }
-
-            double velocityX;
-            double velocityY;
-            double accelerationX;
-            double accelerationY;
-            int removeTime;
-    
-            virtual void logic(){
-                Effect::logic();
-                x += velocityX;
-                y += velocityY;
-                velocityX += accelerationX;
-                velocityY += accelerationY;
-                if (removeTime > 0){
-                    removeTime -= 1;
-                }
-            }
-
-            virtual bool isDead(){
-                switch (removeTime){
-                    case -2: return Effect::isDead();
-                    case -1: return false;
-                    default : return removeTime == 0;
-                }
-
-                return true;
-            }
-        };
+        
 
         /* FIXME: handle rest of the explod parameters */
         ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value);
@@ -4133,6 +4175,35 @@ public:
         stage.removeEffects(&guy, id);
     }
 };
+        
+class ControllerModifyExplod: public ControllerExplod {
+public:
+    ControllerModifyExplod(Ast::Section * section, const string & name, int state):
+    ControllerExplod(section, name, state){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int id = (int) evaluateNumber(this->id, environment, -1);
+        /* this hopefully shouldn't be a dangerous cast because the only effects
+         * the character can add is ExplodeEffects
+         */
+        ExplodeEffect * effect = (ExplodeEffect*) stage.findEffect(&guy, id);
+        if (effect == NULL){
+            ostringstream out;
+            out << "No explode found for id " << id;
+            throw MugenException(out.str());
+        }
+
+        effect->setX((int) evaluateNumber(this->posX, environment, effect->getX()));
+        effect->setY((int) evaluateNumber(this->posY, environment, effect->getY()));
+        effect->setVelocityX(evaluateNumber(this->velocityX, environment, effect->getVelocityX()));
+        effect->setVelocityY(evaluateNumber(this->velocityY, environment, effect->getVelocityY()));
+        effect->setAccelerationX(evaluateNumber(this->accelerationX, environment, effect->getAccelerationX()));
+        effect->setAccelerationY(evaluateNumber(this->accelerationY, environment, effect->getAccelerationY()));
+        effect->setRemoveTime((int) evaluateNumber(this->removeTime, environment, effect->getRemoveTime()));
+    }
+};
 
 static string toString(StateController::Type type){
     switch (type){
@@ -4287,6 +4358,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::LifeAdd : return new ControllerLifeAdd(section, name, state);
         case StateController::LifeSet : return new ControllerLifeSet(section, name, state);
         case StateController::RemoveExplod : return new ControllerRemoveExplod(section, name, state);
+        case StateController::ModifyExplod : return new ControllerModifyExplod(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4300,7 +4372,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Helper :
         case StateController::HitAdd :
         case StateController::HitOverride :
-        case StateController::ModifyExplod :
         case StateController::MoveHitReset :
         case StateController::Offset :
         case StateController::ParentVarAdd :
