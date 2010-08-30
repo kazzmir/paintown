@@ -4345,6 +4345,23 @@ public:
         }
     }
 };
+        
+class ControllerDisplayToClipboard: public StateController {
+public:
+    ControllerDisplayToClipboard(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
+    message(false){
+    }
+
+    mutable bool message;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (!message){
+            Global::debug(0) << "Warning: DisplayToClipboard is unimplemented" << endl;
+            message = true;
+        }
+    }
+};
 
 static string toString(StateController::Type type){
     switch (type){
@@ -4507,6 +4524,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::PlayerPush : return new ControllerPlayerPush(section, name, state);
         case StateController::Pause : return new ControllerPause(section, name, state);
         case StateController::ParentVarSet : return new ControllerParentVarSet(section, name, state);
+        case StateController::DisplayToClipboard : return new ControllerDisplayToClipboard(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::AttackMulSet :
@@ -4514,7 +4532,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToRoot :
         case StateController::BindToTarget :
         case StateController::ClearClipboard :
-        case StateController::DisplayToClipboard :
         case StateController::ExplodBindTime :
         case StateController::HitOverride :
         case StateController::MoveHitReset :
