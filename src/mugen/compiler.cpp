@@ -2355,6 +2355,28 @@ public:
 
             return new VelY();
         }
+        
+        if (keyword == "hitvel x"){
+            class HitVelX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(- environment.getCharacter().getHitState().xVelocity);
+                }
+            };
+ 
+            return new HitVelX();
+        }
+        
+        if (keyword == "hitvel y"){
+            class HitVelY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(- environment.getCharacter().getHitState().yVelocity);
+                }
+            };
+ 
+            return new HitVelY();
+        }
 
         if (keyword == "screenpos y"){
             class ScreenPosY: public Value {
