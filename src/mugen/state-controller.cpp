@@ -4363,6 +4363,23 @@ public:
     }
 };
 
+class ControllerAttackMulSet: public StateController {
+public:
+    ControllerAttackMulSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        extractValue(value, section);
+        if (value == NULL){
+            throw MugenException("AttackMulSet requires the `value' attribute");
+        }
+    }
+
+    Value value;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        guy.setAttackMultiplier(evaluateNumber(value, FullEnvironment(stage, guy, commands), 1));
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4525,9 +4542,9 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Pause : return new ControllerPause(section, name, state);
         case StateController::ParentVarSet : return new ControllerParentVarSet(section, name, state);
         case StateController::DisplayToClipboard : return new ControllerDisplayToClipboard(section, name, state);
+        case StateController::AttackMulSet : return new ControllerAttackMulSet(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
-        case StateController::AttackMulSet :
         case StateController::BindToParent :
         case StateController::BindToRoot :
         case StateController::BindToTarget :

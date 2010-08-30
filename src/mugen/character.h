@@ -1020,6 +1020,7 @@ public:
         virtual void setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes);
 
         virtual void setDefenseMultiplier(double defense);
+        virtual void setAttackMultiplier(double attack);
 
         virtual void doFreeze();
 	
@@ -1406,6 +1407,8 @@ protected:
 
         /* reduces damage taken */
         double defenseMultiplier;
+        /* increase attack damage */
+        double attackMultiplier;
 
         /* if frozen then the player won't move */
         bool frozen;

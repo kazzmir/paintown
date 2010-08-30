@@ -399,6 +399,7 @@ void Character::initialize(){
     stateType = StateType::Stand;
     currentAnimation = Standing;
     defenseMultiplier = 1;
+    attackMultiplier = 1;
     lieDownTime = 0;
     debug = false;
     has_control = true;
@@ -2722,6 +2723,10 @@ void Character::setHitByOverride(int slot, int time, bool standing, bool crouchi
         
 void Character::setDefenseMultiplier(double defense){
     defenseMultiplier = defense;
+}
+
+void Character::setAttackMultiplier(double attack){
+    attackMultiplier = attack;
 }
         
 void Character::doFreeze(){
