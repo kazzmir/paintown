@@ -4427,6 +4427,51 @@ public:
     }
 };
 
+class ControllerBindToParent: public StateController {
+public:
+    ControllerBindToParent(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        time = extractAttribute(section, "time");
+        facing = extractAttribute(section, "facing");
+        parse(section);
+    }
+
+    Value time;
+    Value facing;
+    Value x;
+    Value y;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerBindToParent & controller):
+            controller(controller){
+            }
+
+            ControllerBindToParent & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "pos"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.x = Compiler::compile(x);
+                    controller.y = Compiler::compile(y);
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        if (guy.isHelper()){
+            /* TODO */
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4591,9 +4636,9 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::DisplayToClipboard : return new ControllerDisplayToClipboard(section, name, state);
         case StateController::AttackMulSet : return new ControllerAttackMulSet(section, name, state);
         case StateController::HitOverride : return new ControllerHitOverride(section, name, state);
+        case StateController::BindToParent : return new ControllerBindToParent(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
-        case StateController::BindToParent :
         case StateController::BindToRoot :
         case StateController::BindToTarget :
         case StateController::ClearClipboard :
