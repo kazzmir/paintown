@@ -4380,6 +4380,53 @@ public:
     }
 };
 
+class ControllerHitOverride: public StateController {
+public:
+    ControllerHitOverride(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        slot = extractAttribute(section, "slot");
+        this->state = extractAttribute(section, "stateno");
+        time = extractAttribute(section, "time");
+        forceAir = extractAttribute(section, "forceair");
+        parse(section);
+    }
+
+    string attribute;
+    Value slot;
+    Value state;
+    Value time;
+    Value forceAir;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerHitOverride & controller):
+            controller(controller){
+            }
+
+            ControllerHitOverride & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "attr"){
+                    simple >> controller.attribute;
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int slot = (int) evaluateNumber(this->slot, environment, 0);
+        int state = (int) evaluateNumber(this->state, environment, -1);
+        int time = (int) evaluateNumber(this->time, environment, 1);
+        bool air = evaluateBool(this->forceAir, environment, false);
+        guy.setHitOverride(slot, attribute, state, time, air);
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4543,6 +4590,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ParentVarSet : return new ControllerParentVarSet(section, name, state);
         case StateController::DisplayToClipboard : return new ControllerDisplayToClipboard(section, name, state);
         case StateController::AttackMulSet : return new ControllerAttackMulSet(section, name, state);
+        case StateController::HitOverride : return new ControllerHitOverride(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::BindToParent :
@@ -4550,7 +4598,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToTarget :
         case StateController::ClearClipboard :
         case StateController::ExplodBindTime :
-        case StateController::HitOverride :
         case StateController::MoveHitReset :
         case StateController::Offset :
         case StateController::ParentVarAdd :

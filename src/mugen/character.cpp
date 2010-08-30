@@ -2762,4 +2762,8 @@ void Character::disablePushCheck(){
     /* TODO */
 }
         
+void Character::setHitOverride(int slot, const string & attribute, int state, int time, bool air){
+    /* TODO */
+}
+        
 }
