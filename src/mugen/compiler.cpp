@@ -38,6 +38,10 @@ public:
                 return RuntimeValue(value);
             }
         };
+	
+	if (identifier == "e"){
+	    return compile(exp(1));
+	}
 
         if (identifier == "command"){
             class Command: public Value {
