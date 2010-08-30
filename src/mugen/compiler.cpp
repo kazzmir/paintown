@@ -42,6 +42,19 @@ public:
 	if (identifier == "e"){
 	    return compile(exp(1));
 	}
+	
+	if (identifier == "id"){
+	    /* FIXME add ID's to character
+	    class ID : public Value{
+	    public:
+		RuntimeValue evaluate(const Environment & environment) const {
+		    return RuntimeValue(environment.getCharacter().getID());
+		}
+	    };
+	    
+	    return new ID(); */
+	    return compile(0);
+	}
 
         if (identifier == "command"){
             class Command: public Value {
@@ -1623,6 +1636,40 @@ public:
         if (function == "exp"){
 	    return new MetaCircularArg1(exp, compile(function.getArg1()));
 	}
+	
+	if (function == "log"){
+	    class Log : public Value {
+	    public: 
+		Log(Value * arg1, Value * arg2):
+		arg1(arg1),
+		arg2(arg2){
+		}
+		Value * arg1;
+		Value * arg2;
+		virtual ~Log(){
+		    delete arg1;
+		    delete arg2;
+		}
+		
+                RuntimeValue evaluate(const Environment & environment) const {
+		    const double a = arg1->evaluate(environment).toNumber();
+		    const double b = arg2->evaluate(environment).toNumber();
+                    if (a <= 0){
+			throw MugenException("Argument 1 is negative or equal to 0");
+		    } else if (b <= 0){
+			throw MugenException("Argument 2 is negative or equal to 0");
+		    }
+		    const double value = log(a) / log(b);
+		    
+		    if (value <= 0){
+			throw MugenException("Value of base-a logarithm of b is negative or equal to 0");
+		    }
+		    
+                    return RuntimeValue(value);
+                }
+	    };
+	    return new Log(compile(function.getArg1()),compile(function.getArg2()));
+	}
 
         if (function == "numprojid"){
             /* FIXME */
@@ -2371,7 +2418,7 @@ public:
             class HitVelY: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(- environment.getCharacter().getHitState().yVelocity);
+                    return RuntimeValue(environment.getCharacter().getHitState().yVelocity);
                 }
             };
  
