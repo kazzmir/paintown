@@ -1615,6 +1615,10 @@ public:
             
             return new MetaCircularArg1(fabs, compile(function.getArg1()));
         }
+        
+        if (function == "exp"){
+	    return new MetaCircularArg1(exp, compile(function.getArg1()));
+	}
 
         if (function == "numprojid"){
             /* FIXME */
