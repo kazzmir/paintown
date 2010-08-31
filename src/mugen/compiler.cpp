@@ -1,141 +1,129 @@
 /*
 
-TODO Triggers
+Triggers
 
 A
 -----------------------
 AILevel
-Abs		- DONE
-Acos		- DONE
+Abs - done
+Acos - done
 Alive
-Anim
-AnimElem
-AnimElemNo
-AnimElemTime
-AnimExist
+Anim - done
+AnimElem - done
+AnimElemNo - done
+AnimElemTime - done
+AnimExist - done
 AnimTime
-Asin		- DONE
-Atan		- DONE
+Asin - done
+Atan - done
 AuthorName
------------------------
 
 B
 -----------------------
-BackEdgeBodyDist
-BackEdgeDist
------------------------
+BackEdgeBodyDist - done
+BackEdgeDist - done
 
 C
 -----------------------
-CanRecover
-Ceil
-Command
-Const
+CanRecover - done
+Ceil - done
+Command - done
+Const - partially done
 Const240p
 Const480p
 Const720p
-Cos		- DONE
-Ctrl
------------------------
+Cos - done
+Ctrl - done
 
 D
 -----------------------
 DrawGame
------------------------
 
 E
 -----------------------
-E		- DONE
-Exp
------------------------
+E - done
+Exp - done
 
 F
 -----------------------
-FVar
-Facing
-Floor
-FrontEdgeBodyDist
-FrontEdgeDist
------------------------
+FVar - done
+Facing - done
+Floor - done
+FrontEdgeBodyDist - done
+FrontEdgeDist - done
 
 G
 -----------------------
-GameTime
-GetHitVar
------------------------
+GameTime - done
+GetHitVar - partially done
 
 H
 -----------------------
-HitCount
+HitCount - done
 HitDefAttr
-HitFall
-HitOver
-HitPauseTime
-HitShakeOver
-HitVel
------------------------
+HitFall - done
+HitOver - done
+HitPauseTime - done
+HitShakeOver - done
+HitVel - done
 
 I
 -----------------------
 ID
-IfElse
-InGuardDist
-IsHelper
+IfElse - done
+InGuardDist - done
+IsHelper - done
 IsHomeTeam
------------------------
 
 L
 -----------------------
-Life
-LifeMax
-Ln		- DONE
-Log		- DONE
+Life - done
+LifeMax - done
+Ln - done
+Log - done
 Lose
------------------------
 
 M
 -----------------------
-MatchNo
-MatchOver
+MatchNo - done
+MatchOver - done
 MoveContact
-MoveGuarded
+MoveGuarded - done
 MoveHit
 MoveReversed
-MoveType
------------------------
+MoveType - done
 
 N
 -----------------------
-Name
+Name - done
 NumEnemy
-NumExplod
+NumExplod - done
 NumHelper
 NumPartner
 NumProj
 NumProjID
 NumTarget
------------------------
 
 P
 -----------------------
-P1Name
-P2BodyDist
-P2Dist
-P2Life
-P2MoveType
-P2Name
-P2StateNo
-P2StateType
+P1Name - done
+P2BodyDist - done
+P2Dist - done
+P2Life - done
+P2MoveType - done
+P2Name - done
+P2StateNo - done
+P2StateType - done
 P3Name
 P4Name
-PalNo
+PalNo - done
 ParentDist
-Pi		- DONE
+Pi - done
 PlayerIDExist
-Pos
-Power
-PowerMax
-PrevStateNo
+Pos - done
+Power - done
+PowerMax - done
+PrevStateNo - done
 ProjCancelTime
 ProjContact
 ProjContactTime
@@ -143,56 +131,48 @@ ProjGuarded
 ProjGuardedTime
 ProjHit
 ProjHitTime
------------------------
 
 R
 -----------------------
-Random
+Random - done
 RootDist
-RoundNo
-RoundState
+RoundNo - done
+RoundState - done
 RoundsExisted
------------------------
 
 S
 -----------------------
-ScreenPos
-SelfAnimExist
-Sin		- DONE
-StateNo
-StateType
-SysFVar
-SysVar
------------------------
+ScreenPos - done
+SelfAnimExist - done
+Sin - done
+StateNo - done
+StateType - done
+SysFVar - done
+SysVar - done
 
 T
 -----------------------
-Tan		- DONE
+Tan - done
 TeamMode
 TeamSide
-TicksPerSecond	- DONE
-Time
+TicksPerSecond - done
+Time - done
 TimeMod
------------------------
 
 U
 -----------------------
-UniqHitCount
------------------------
+UniqHitCount - done
 
 V
 -----------------------
-Var
-Vel
------------------------
+Var - done
+Vel - done
 
 W
 -----------------------
 Win
------------------------
 
 */
-
 
 
 #include "ast/all.h"
@@ -738,6 +718,7 @@ public:
             class NumTarget: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME */
                     return RuntimeValue(1);
                 }
             };
