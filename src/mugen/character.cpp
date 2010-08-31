@@ -395,6 +395,7 @@ void Character::initialize(){
     currentPhysics = Physics::Stand;
     moveType = Move::Idle;
     frozen = false;
+    reversalActive = false;
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
@@ -668,6 +669,8 @@ void Character::resetStateTime(){
 void Character::changeState(MugenStage & stage, int stateNumber, const vector<string> & inputs){
     /* dont let after images carry over to the next state */
     afterImage.show = false;
+
+    reversalActive = false;
 
     /* reset juggle points once the player gets up */
     if (stateNumber == GetUpFromLiedown){
@@ -2756,6 +2759,14 @@ void Character::setTemporaryAnimation(MugenAnimation * animation){
         
 bool Character::isHelper() const {
     return false;
+}
+        
+void Character::setReversalActive(){
+    reversalActive = true;
+}
+
+ReversalData & Character::getReversal(){
+    return reversal;
 }
         
 void Character::disablePushCheck(){

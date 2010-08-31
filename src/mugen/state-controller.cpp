@@ -4476,9 +4476,161 @@ class ControllerReversalDef: public StateController {
 public:
     ControllerReversalDef(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
+        parse(section);
+    }
+
+    struct Data{
+        struct Pause{
+            Value player1;
+            Value player2;
+        } pause;
+
+        int spark;
+
+        struct HitSound{
+            HitSound():
+                own(false),
+                group(-1),
+                item(-1){
+                }
+
+            bool own;
+            int group;
+            int item;
+        } hitSound;
+
+        Value player1State;
+        Value player2State;
+
+        bool standing;
+        bool crouching;
+        bool aerial;
+        std::vector<AttackType::Attribute> attributes;
+    } hit;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(Data & hit):
+            hit(hit){
+            }
+
+            Data & hit;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "pausetime"){
+                    try{
+                        const Ast::Value * player1;
+                        const Ast::Value * player2;
+                        simple >> player1;
+                        simple >> player2;
+                        hit.pause.player1 = Compiler::compile(player1);
+                        hit.pause.player2 = Compiler::compile(player2);
+                    } catch (const Ast::Exception & e){
+                    }
+                } else if (simple == "sparkno"){
+                    string what;
+                    simple >> what;
+                    /* FIXME: either S123 or 123 */
+                    if (PaintownUtil::matchRegex(what, "[0-9]+")){
+                        hit.spark = atoi(what.c_str());
+                    }
+                } else if (simple == "hitsound"){
+                    string first;
+                    bool own = false;
+                    int group = 0;
+                    int item = 0;
+                    /* If not specified, assume item 0 */
+                    simple >> first;
+                    if (simple.getValue()->hasMultiple()){
+                        simple >> item;
+                    }
+                    if (first[0] == 'S'){
+                        own = true;
+                        group = atoi(first.substr(1).c_str());
+                    } else {
+                        group = atoi(first.c_str());
+                    }
+                    hit.hitSound.own = own;
+                    hit.hitSound.group = group;
+                    hit.hitSound.item = item;
+                } else if (simple == "p1stateno"){
+                    hit.player1State = Compiler::compile(simple.getValue());
+                } else if (simple == "p2stateno"){
+                    hit.player2State = Compiler::compile(simple.getValue());
+                } else if (simple == "reversal.attr"){
+                    string type;
+                    vector<string> moreTypes;
+                    if (! simple.getValue()->hasMultiple()){
+                        string type;
+                        simple >> type;
+                        type = PaintownUtil::lowerCaseAll(type);
+                    } else {
+                        simple >> type;
+                        try{
+                            while (true){
+                                string what;
+                                simple >> what;
+                                what = PaintownUtil::lowerCaseAll(what);
+                                moreTypes.push_back(what);
+                            }
+                        } catch (const Ast::Exception & e){
+                        }
+                    }
+
+                    if (type.find('s') != string::npos){
+                        hit.standing = false;
+                    }
+
+                    if (type.find('c') != string::npos){
+                        hit.crouching = false;
+                    }
+
+                    if (type.find('a') != string::npos){
+                        hit.aerial = false;
+                    }
+
+                    map<string, AttackType::Attribute> attributes;
+                    attributes["na"] = AttackType::NormalAttack;
+                    attributes["nt"] = AttackType::NormalThrow;
+                    attributes["np"] = AttackType::NormalProjectile;
+                    attributes["sa"] = AttackType::SpecialAttack;
+                    attributes["st"] = AttackType::SpecialThrow;
+                    attributes["sp"] = AttackType::SpecialProjectile;
+                    attributes["ha"] = AttackType::HyperAttack;
+                    attributes["ht"] = AttackType::HyperThrow;
+                    attributes["hp"] = AttackType::HyperProjectile;
+
+                    for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
+                        string what = *it;
+                        if (attributes.find(what) != attributes.end()){
+                            hit.attributes.push_back(attributes[what]);
+                        }
+                    }
+                }
+            }
+        };
+
+        Walker walker(hit);
+        section->walk(walker);
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        guy.setReversalActive();
+        ReversalData & data = guy.getReversal();
+        data.pause.player1 = (int) evaluateNumber(hit.pause.player1, environment, 0);
+        data.pause.player2 = (int) evaluateNumber(hit.pause.player2, environment, 0);
+        data.spark = hit.spark;
+        data.hitSound.own = hit.hitSound.own;
+        data.hitSound.group = hit.hitSound.group;
+        data.hitSound.item = hit.hitSound.item;
+        data.player1State = (int) evaluateNumber(hit.player1State, environment, -1);
+        data.player2State = (int) evaluateNumber(hit.player1State, environment, -1);
+        data.standing = hit.standing;
+        data.crouching = hit.crouching;
+        data.aerial = hit.aerial;
+        data.attributes = hit.attributes;
     }
 };
 

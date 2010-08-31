@@ -341,6 +341,50 @@ struct HitDefinition{
     } fall;
 };
 
+/* subset of HitDefinition stuff, just for reversals */
+struct ReversalData{
+    ReversalData():
+        spark(-1),
+        player1State(-1),
+        player2State(-1),
+        standing(true),
+        crouching(true),
+        aerial(true){
+        }
+
+    struct PauseTime{
+        PauseTime():
+            player1(0),
+            player2(0){
+            }
+
+        int player1;
+        int player2;
+    } pause;
+
+    int spark;
+
+    struct HitSound{
+        HitSound():
+            own(false),
+            group(-1),
+            item(-1){
+            }
+
+        bool own;
+        int group;
+        int item;
+    } hitSound;
+
+    int player1State;
+    int player2State;
+
+    bool standing;
+    bool crouching;
+    bool aerial;
+    std::vector<AttackType::Attribute> attributes;
+};
+
 struct HitState{
     HitState():
         shakeTime(0),
@@ -1039,6 +1083,9 @@ public:
 
         virtual void disablePushCheck();
 
+        virtual void setReversalActive();
+        ReversalData & getReversal();
+
 protected:
     void initialize();
 
@@ -1413,6 +1460,9 @@ protected:
 
         /* if frozen then the player won't move */
         bool frozen;
+
+        ReversalData reversal;
+        bool reversalActive;
 };
 
 }
