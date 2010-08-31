@@ -9,6 +9,7 @@
 #include <math.h>
 #include <sstream>
 #include <string>
+#include "config.h"
 
 namespace PaintownUtil = ::Util;
     
@@ -514,6 +515,21 @@ public:
 
             return new MoveContact();
         }
+        
+        if (identifier == "movereversed"){
+            class MoveReversed: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* FIXME 
+		     This trigger is valid only when the player is in an attack state. 
+		     MoveReversed gives a non-zero value if P1's attack has been reversed by P2. It gives 0 otherwise.
+		     */
+                    return RuntimeValue(0);
+                }
+            };
+
+            return new MoveReversed();
+        }
 
         if (identifier == "numtarget"){
             class NumTarget: public Value {
@@ -802,6 +818,11 @@ public:
             return new Power();
         }
         
+        if (identifier == "powermax"){
+	    /* TODO Findout if there is a setting somewhere in MUGEN that contains this info */
+	    return compile(3000);
+	}
+        
         if (identifier == "internal:extra-jumps"){
             class ExtraJumps: public Value {
             public:
@@ -848,6 +869,10 @@ public:
         if (identifier == "pi"){
             return compile(PaintownUtil::pi);
         }
+        
+        if (identifier == "tickspersecond"){
+	    return compile(Mugen::Data::getInstance().getGameSpeed());
+	}
 
         std::ostringstream out;
         out << "Don't know how to compile identifier '" << identifier.toString() << "'";
@@ -1533,108 +1558,55 @@ public:
         }
 
 	if (function == "asin"){
-            /*
-            class Asin: public Value {
-            public:
-                Asin(Value * argument):
-                    argument(argument){
-                    }
-
-                Value * argument;
-
-                virtual ~Asin(){
-                    delete argument;
-                }
-
-                RuntimeValue evaluate(const Environment & environment) const {
-                    double result = argument->evaluate(environment).toNumber();
-                    return RuntimeValue(asin(result));
-                }
-            };
-
-            return new Asin(compile(function.getArg1()));
-            */
             return new MetaCircularArg1(asin, compile(function.getArg1()));
         }
         
         if (function == "sin"){
-            /*
-            class Sin: public Value {
-            public:
-                Sin(Value * argument):
-                    argument(argument){
-                    }
-
-                Value * argument;
-
-                virtual ~Sin(){
-                    delete argument;
-                }
-
-                RuntimeValue evaluate(const Environment & environment) const {
-                    double result = argument->evaluate(environment).toNumber();
-                    return RuntimeValue(sin(result));
-                }
-            };
-
-            return new Sin(compile(function.getArg1()));
-            */
             return new MetaCircularArg1(sin, compile(function.getArg1()));
         }
         
         if (function == "atan"){
-            /*
-            class Atan: public Value {
-            public:
-                Atan(Value * argument):
-                    argument(argument){
-                    }
-
-                Value * argument;
-
-                virtual ~Atan(){
-                    delete argument;
-                }
-
-                RuntimeValue evaluate(const Environment & environment) const {
-                    double result = argument->evaluate(environment).toNumber();
-                    return RuntimeValue(atan(result));
-                }
-            };
-
-            return new Atan(compile(function.getArg1()));
-            */
-            
             return new MetaCircularArg1(atan, compile(function.getArg1()));
+        }
+        
+        if (function == "tan"){
+            return new MetaCircularArg1(tan, compile(function.getArg1()));
         }
 
         if (function == "abs"){
-            /*
-            class FunctionAbs: public Value {
-            public:
-                FunctionAbs(Value * argument):
-                    argument(argument){
-                    }
-
-                Value * argument;
-
-                virtual ~FunctionAbs(){
-                    delete argument;
-                }
-
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(fabs(argument->evaluate(environment).toNumber()));
-                }
-            };
-
-            return new FunctionAbs(compile(function.getArg1()));
-            */
-            
             return new MetaCircularArg1(fabs, compile(function.getArg1()));
         }
         
         if (function == "exp"){
 	    return new MetaCircularArg1(exp, compile(function.getArg1()));
+	}
+	
+        if (function == "ln"){
+	    class Ln : public Value {
+	    public: 
+		Ln(Value * exprn):
+		exprn(exprn){
+		}
+		Value * exprn;
+		virtual ~Ln(){
+		    delete exprn;
+		}
+		
+                RuntimeValue evaluate(const Environment & environment) const {
+		    const double num = exprn->evaluate(environment).toNumber();
+                    if (num <= 0){
+			throw MugenException("Argument is negative or equal to 0");
+		    }
+		    const double value = log(num);
+		    
+		    if (value <= 0){
+			throw MugenException("Value of logarithm of exprn is negative or equal to 0");
+		    }
+		    
+                    return RuntimeValue(value);
+                }
+	    };
+	    return new Ln(compile(function.getArg1()));
 	}
 	
 	if (function == "log"){
@@ -1682,6 +1654,16 @@ public:
         }
 
         if (function == "projcontacttime"){
+            /* FIXME */
+            return compile(-1);
+        }
+        
+        if (function == "projcanceltime"){
+            /* FIXME */
+            return compile(-1);
+        }
+       
+        if (function == "projguardedtime"){
             /* FIXME */
             return compile(-1);
         }
@@ -2061,6 +2043,26 @@ public:
             delete compiled;
             return new FunctionFVar(index);
         }
+        
+        if (function == "sysfvar"){
+            class FunctionSysFVar: public Value{
+            public:
+                FunctionSysFVar(int index):
+                    index(index){
+                    }
+
+                int index;
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return environment.getCharacter().getSystemVariable(index);
+                }
+            };
+            
+            Value * compiled = compile(function.getArg1());
+            double index = (double) compiled->evaluate(EmptyEnvironment()).toNumber();
+            delete compiled;
+            return new FunctionSysFVar(index);
+        }
 
         if (function == "sysvar"){
             class FunctionSysVar: public Value{
@@ -2128,51 +2130,10 @@ public:
         }
         
         if (function == "acos"){
-            /*
-	    class Acos: public Value {
-	    public:
-		Acos(Value * argument):
-		    argument(argument){
-		    }
-		
-		Value * argument;
-		
-		virtual  ~Acos(){
-		    delete argument;
-		}
-		
-		RuntimeValue evaluate(const Environment & environment) const {
-		    return RuntimeValue(acos(argument->evaluate(environment).toNumber()));
-		}
-	    };
-	    
-	    return new Acos(compile(function.getArg1()));
-            */
             return new MetaCircularArg1(acos, compile(function.getArg1()));
 	}
         
         if (function == "cos"){
-            /*
-	    class Cos: public Value {
-	    public:
-		Cos(Value * argument):
-		    argument(argument){
-		    }
-		
-		Value * argument;
-		
-		virtual  ~Cos(){
-		    delete argument;
-		}
-		
-		RuntimeValue evaluate(const Environment & environment) const {
-		    return RuntimeValue(cos(argument->evaluate(environment).toNumber()));
-		}
-	    };
-	    
-	    return new Cos(compile(function.getArg1()));
-            */
-            
             return new MetaCircularArg1(cos, compile(function.getArg1()));
 	}
 
