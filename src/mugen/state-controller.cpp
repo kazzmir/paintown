@@ -4472,6 +4472,16 @@ public:
     }
 };
 
+class ControllerReversalDef: public StateController {
+public:
+    ControllerReversalDef(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4637,6 +4647,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AttackMulSet : return new ControllerAttackMulSet(section, name, state);
         case StateController::HitOverride : return new ControllerHitOverride(section, name, state);
         case StateController::BindToParent : return new ControllerBindToParent(section, name, state);
+        case StateController::ReversalDef : return new ControllerReversalDef(section, name, state);
         case StateController::AllPalFX :
         case StateController::AppendToClipboard :
         case StateController::BindToRoot :
@@ -4648,7 +4659,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ParentVarAdd :
         case StateController::PowerSet :
         case StateController::Projectile :
-        case StateController::ReversalDef :
         case StateController::SndPan :
         case StateController::TargetDrop :
         case StateController::TargetPowerAdd :

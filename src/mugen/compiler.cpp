@@ -111,8 +111,14 @@ public:
         }
 
         if (identifier == "ishelper"){
-            /* FIXME */
-            return compile(0);
+            class IsHelper: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().isHelper());
+                }
+            };
+
+            return new IsHelper();
         }
         
         if (identifier == "numhelper"){
@@ -553,18 +559,10 @@ public:
 
                     /* FIXME: deal with distance as well */
                     return RuntimeValue(out);
-
                 }
             };
 
             return new InGuardDist();
-        }
-
-        /* FIXME: remove this, it should be recognized exclusively in the a
-         * state controller.
-         */
-        if (identifier == "SAC"){
-            return new JustString("SAC");
         }
 
         if (identifier == "animtime"){
@@ -694,6 +692,9 @@ public:
             return new Time();
         }
 
+        /* TODO: these things might be able to go away. Check if the comparison
+         * operation can be parsed as a function
+         */
         if (identifier == "A"){
             return new JustString("A");
         }
@@ -713,6 +714,11 @@ public:
         if (identifier == "SCA"){
             return new JustString("SCA");
         }
+
+        if (identifier == "SAC"){
+            return new JustString("SAC");
+        }
+        /* end things that might go away */
 
         if (identifier == "statetype"){
             class StateType: public Value {
@@ -1582,26 +1588,28 @@ public:
 	}
 	
         if (function == "ln"){
-	    class Ln : public Value {
+	    class Ln: public Value {
 	    public: 
-		Ln(Value * exprn):
-		exprn(exprn){
+		Ln(Value * argument):
+		argument(argument){
 		}
-		Value * exprn;
+
+		Value * argument;
+
 		virtual ~Ln(){
-		    delete exprn;
+		    delete argument;
 		}
 		
                 RuntimeValue evaluate(const Environment & environment) const {
-		    const double num = exprn->evaluate(environment).toNumber();
+		    const double num = argument->evaluate(environment).toNumber();
+
                     if (num <= 0){
-			throw MugenException("Argument is negative or equal to 0");
+                        std::ostringstream out;
+                        out << "Argument to ln must be positive but was " << num;
+			throw MugenException(out.str());
 		    }
+
 		    const double value = log(num);
-		    
-		    if (value <= 0){
-			throw MugenException("Value of logarithm of exprn is negative or equal to 0");
-		    }
 		    
                     return RuntimeValue(value);
                 }
@@ -1616,30 +1624,34 @@ public:
 		arg1(arg1),
 		arg2(arg2){
 		}
+
 		Value * arg1;
 		Value * arg2;
+
 		virtual ~Log(){
 		    delete arg1;
 		    delete arg2;
 		}
 		
                 RuntimeValue evaluate(const Environment & environment) const {
-		    const double a = arg1->evaluate(environment).toNumber();
-		    const double b = arg2->evaluate(environment).toNumber();
-                    if (a <= 0){
-			throw MugenException("Argument 1 is negative or equal to 0");
-		    } else if (b <= 0){
-			throw MugenException("Argument 2 is negative or equal to 0");
+		    const double base = arg1->evaluate(environment).toNumber();
+		    const double value = arg2->evaluate(environment).toNumber();
+                    if (base <= 0){
+                        std::ostringstream out;
+                        out << "Base of log must be positive but was " << base;
+			throw MugenException(out.str());
+		    } else if (value <= 0){
+                        std::ostringstream out;
+                        out << "Value of log must be positive but was " << value;
+			throw MugenException(out.str());
 		    }
-		    const double value = log(a) / log(b);
+
+		    const double result = log(value) / log(base);
 		    
-		    if (value <= 0){
-			throw MugenException("Value of base-a logarithm of b is negative or equal to 0");
-		    }
-		    
-                    return RuntimeValue(value);
+                    return RuntimeValue(result);
                 }
 	    };
+
 	    return new Log(compile(function.getArg1()),compile(function.getArg2()));
 	}
 

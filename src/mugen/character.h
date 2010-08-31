@@ -1032,7 +1032,7 @@ public:
         
         virtual void setTemporaryAnimation(MugenAnimation * animation);
 
-        virtual bool isHelper();
+        virtual bool isHelper() const;
 
         /* increase combo count */
         virtual void addCombo(int combo);
