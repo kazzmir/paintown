@@ -7,16 +7,16 @@ A
 AILevel
 Abs - done
 Acos - done
-Alive
+Alive - done
 Anim - done
 AnimElem - done
 AnimElemNo - done
 AnimElemTime - done
 AnimExist - done
-AnimTime
+AnimTime - done
 Asin - done
 Atan - done
-AuthorName
+AuthorName - done
 
 B
 -----------------------
