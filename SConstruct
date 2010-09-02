@@ -19,6 +19,44 @@ def noColors():
     except KeyError:
         return False
 
+def xterm_color(string, color):
+    colors = {'none': "0",
+              'black': "0;30",
+              'red': "0;31",
+              'green': "0;32",
+              'brown': "0;33",
+              'blue': "0;34",
+              'purple': "0;35",
+              'cyan': "0;36",
+              'light-gray': "0;37",
+              'dark-grey': "1:30",
+              'light-red': "1;31",
+              'light-green': "1;32",
+              'yellow': "1;33",
+              'light-blue': "1;34",
+              'light-purple': "1;35",
+              'light-cyan': "1;36",
+              'white': "1;37"}
+    return "\033[%sm%s\033[0m" % (colors[color], string)
+
+# todo: figure out when we are on an xterm
+def isXterm():
+    # assume linux and osx are ok
+    return not isWindows()
+
+def colorize(string, color):
+    if noColors():
+        return string
+    if isXterm():
+        return xterm_color(string, color)
+    return string
+
+def colorResult(what):
+    if what != 0:
+        return colorize('yes', 'light-green')
+    else:
+        return colorize('no', 'light-red')
+
 def makeUseEnvironment(key, default):
     def use():
         import os
@@ -57,7 +95,7 @@ def checkLex(context):
     if out[0] != 1:
         print "Failed. Output was '%s'" % out[1]
     ret = out[0] == 1
-    context.Result(ret)
+    context.Result(colorResult(ret))
     return ret
 
 def checkYacc(context):
@@ -66,7 +104,7 @@ def checkYacc(context):
     if out[0] != 1:
         print "Failed. Output was '%s'" % out[1]
     ret = out[0] == 1
-    context.Result(ret)
+    context.Result(colorResult(ret))
     return ret
 
 rtti_counter = 0
@@ -117,7 +155,7 @@ def checkRTTI(context):
         context.sconf.env = tmp
         foo = 1
 
-    context.Result(foo)
+    context.Result(colorResult(foo))
     return foo
 
 def checkAllegro5(context):
@@ -127,11 +165,11 @@ def checkAllegro5(context):
     try:
         env.ParseConfig('pkg-config allegro-4.9 --cflags --libs')
         env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
-        context.Result(1)
+        context.Result(colorResult(1))
         return 1
     except:
         context.sconf.env = tmp
-    context.Result(0)
+    context.Result(colorResult(0))
     return 0
 
 def checkSDL(context):
@@ -181,7 +219,7 @@ def checkSDL(context):
             return False
 
     ok = int(tryNormal() or tryMoveLibs())
-    context.Result(ok)
+    context.Result(colorResult(ok))
     return ok
 
 def checkSDLMain(context):
@@ -200,7 +238,7 @@ int SDL_main(int argc, char ** argv){
     else:
         env.Append(CPPDEFINES = ['USE_SDL_MAIN'])
     
-    context.Result(ok)
+    context.Result(colorResult(ok))
     return ok
 
 def checkStaticSDL(context):
@@ -231,7 +269,7 @@ OpenGL
 """)
             # env.Append(LINKFLAGS = map(framework, frameworks))
             env.Append(FRAMEWORKS = frameworks)
-    context.Result(1)
+    context.Result(colorResult(1))
     return 1
 
 def checkAllegro(context):
@@ -262,7 +300,7 @@ def checkAllegro(context):
     if not ok:
         context.sconf.env = tmp
 
-    context.Result(ok)
+    context.Result(colorResult(ok))
     return ok
 
 def checkPthreads(context):
@@ -271,14 +309,14 @@ def checkPthreads(context):
         env = context.env
         env.Append(LIBS = ['pthread'])
         context.Message(" pthreads")
-        context.Result(1)
+        context.Result(colorResult(1))
         return 1
     if useSDL():
         context.Message(" SDL threads")
-        context.Result(1)
+        context.Result(colorResult(1))
         return 1
     context.Message(" defaulting to pthreads")
-    context.Result(1)
+    context.Result(colorResult(1))
     return 1
         #if not useWii() and not useMinpspw():
         #    env.Append(LIBS = [ 'pthread' ])
@@ -295,7 +333,7 @@ def checkNativeOgg(context):
             env.ParseConfig('pkg-config vorbisfile --libs --cflags')
         except OSError:
             context.sconf.env = tmp
-            context.Result(0)
+            context.Result(colorResult(0))
             return 0
 
     ret = context.TryLink("""
@@ -312,7 +350,7 @@ def checkNativeOgg(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(ret)
+    context.Result(colorResult(ret))
     return ret
 
 def checkPython(context):
@@ -365,7 +403,7 @@ def checkPython(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(ret)
+    context.Result(colorResult(ret))
     return ret
 
 def rubyConfigVariable(var):
@@ -398,7 +436,7 @@ def rubyStaticLib():
 def checkRuby(context):
     context.Message("Checking if ruby is embeddable... ")
     if not canRunRuby(context):
-        context.Result(0)
+        context.Result(colorResult(0))
         return 0
     tmp = context.env.Clone()
     env = context.env
@@ -420,13 +458,13 @@ def checkRuby(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(ret)
+    context.Result(colorResult(ret))
     return ret
 
 def checkStaticRuby(context):
     context.Message("Checking if ruby is statically embeddable... ")
     if not canRunRuby(context):
-        context.Result(0)
+        context.Result(colorResult(0))
         return 0
 
     tmp = context.env.Clone()
@@ -449,7 +487,7 @@ def checkStaticRuby(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(ret)
+    context.Result(colorResult(ret))
     return ret
 
 def canRunRuby(context):
@@ -458,11 +496,11 @@ def canRunRuby(context):
 
 def checkRunRuby(context):
     # just fail for now
-    context.Result(0)
+    context.Result(colorResult(0))
     return 0
     context.Message("Checking if we can run ruby... ")
     (ok, stuff) = context.TryAction(Action("ruby -v"))
-    context.Result(ok)
+    context.Result(colorResult(ok))
     return ok
 
 # find freetype in windows since we dont have freetype-config
@@ -485,14 +523,14 @@ int main(int argc, char ** argv){
             context.env.Append(CPPPATH = ["%s/include/freetype2" % mingw])
             if not build():
                 context.env = tmp
-                context.Result(0)
+                context.Result(colorResult(0))
                 return 0
         else:
             context.Message("don't know how to find freetype for a non-mingw compiler")
-            context.Result(0)
+            context.Result(colorResult(0))
             return 0
 
-    context.Result(1)
+    context.Result(colorResult(1))
     return 1
 
 def useSDL():
@@ -551,38 +589,6 @@ def getDebug():
         return int(os.environ[ 'DEBUG' ])
     except KeyError:
         return 0
-
-def xterm_color(string, color):
-    colors = {'none': "0",
-              'black': "0;30",
-              'red': "0;31",
-              'green': "0;32",
-              'brown': "0;33",
-              'blue': "0;34",
-              'purple': "0;35",
-              'cyan': "0;36",
-              'light-gray': "0;37",
-              'dark-grey': "1:30",
-              'light-red': "1;31",
-              'light-green': "1;32",
-              'yellow': "1;33",
-              'light-blue': "1;34",
-              'light-purple': "1;35",
-              'light-cyan': "1;36",
-              'white': "1;37"}
-    return "\033[%sm%s\033[0m" % (colors[color], string)
-
-# todo: figure out when we are on an xterm
-def isXterm():
-    # assume linux and osx are ok
-    return not isWindows()
-
-def colorize(string, color):
-    if noColors():
-        return string
-    if isXterm():
-        return xterm_color(string, color)
-    return string
 
 def less_verbose(env):
     link_color = 'light-red'
