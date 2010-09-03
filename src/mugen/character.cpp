@@ -670,8 +670,6 @@ void Character::changeState(MugenStage & stage, int stateNumber, const vector<st
     /* dont let after images carry over to the next state */
     afterImage.show = false;
 
-    reversalActive = false;
-
     /* reset juggle points once the player gets up */
     if (stateNumber == GetUpFromLiedown){
         juggleRemaining = getJugglePoints();
@@ -2101,6 +2099,8 @@ static bool holdingBlock(const vector<string> & commands){
 
 /* Inherited members */
 void Character::act(vector<Object*>* others, World* world, vector<Object*>* add){
+    
+    reversalActive = false;
 
     if (frozen){
         frozen = false;
