@@ -29,7 +29,7 @@ def xterm_color(string, color):
               'purple': "0;35",
               'cyan': "0;36",
               'light-gray': "0;37",
-              'dark-grey': "1:30",
+              'dark-gray': "1:30",
               'light-red': "1;31",
               'light-green': "1;32",
               'yellow': "1;33",
@@ -918,6 +918,30 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckSDLMain" : checkSDLMain,
                 "CheckOgg" : checkNativeOgg}
 
+def display_build_properties():
+    color = 'light-green'
+    properties = []
+    if useAllegro():
+        properties.append(colorize("Allegro", color))
+    if useSDL():
+        properties.append(colorize("SDL", color))
+    if getDebug():
+        properties.append(colorize("Debug", color))
+    if enableProfiled():
+        properties.append(colorize("Profiling", color))
+    if useWii():
+        properties.append(colorize("Wii", color))
+    if useMinpspw():
+        properties.append(colorize("PSP", color))
+    if useLLVM():
+        properties.append(colorize("LLVM", color))
+    if useIntel():
+        properties.append(colorize("Intel", color))
+    type = ' '.join(properties)
+    print "Build type: %s" % type
+
+display_build_properties()
+
 env['PAINTOWN_TESTS'] = custom_tests
 
 if isWindows():
@@ -1048,10 +1072,10 @@ else:
     #if not config.CheckHeader( 'allegro.h' ):
     #    print "You need the header files for Allegro. Get it from http://alleg.sf.net"
     #    Exit( 1 )
-    if not config.CheckHeader( 'ft2build.h' ):
+    if not config.CheckHeader('ft2build.h'):
         print "You need freetype. Install freetype and/or X11"
         Exit( 1 )
-    if not config.CheckHeader( 'png.h' ):
+    if not config.CheckHeader('png.h'):
         print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
         Exit(1)
     config.CheckRTTI()
