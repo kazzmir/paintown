@@ -37,6 +37,7 @@ bin(){
 	data_dir=$1
 	bin_dir=$2
 
+    mkdir -p $bin_dir
 	echo "$data_dir/paintown-bin -d $data_dir/data $*" >> $bin_dir/paintown
 	chmod +x $bin_dir/paintown
 }
