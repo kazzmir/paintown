@@ -31,6 +31,7 @@ Making a release
 ----------------
 tag trunk, svn cp trunk tags/x.y
 copy data into that tag, svn cp data tags/x.y/
+delete the externals property for that tag: svn propdel svn:externals tags/x.y/
 svn export the tag, tar and gzip it. result is .tar.gz
 svn co the tag in windows, build it. run the nsis builder. result is .exe
 svn co the tag in osx, run misc/make-osx-bundle. result is .dmg
