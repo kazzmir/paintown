@@ -373,8 +373,22 @@ rules:
     input = "xabce"
     test_all('test6', grammar, input)
 
+def test7():
+    grammar = """
+start-symbol: start
+rules:
+    start = x
+    x = "a" <predicate b>{{ b = false; }} {{ value = (void*) 1; }}
+      | "a" <predicate b>{{ b = true; }} {{ value = (void*) 2; }}
+"""
+    expected = "2"
+    input = """a"""
+    out = test_cpp('test7', grammar, input).strip()
+    if str(out) != str(expected):
+        raise TestException("Expected '%s' but got '%s'" % (expected, out))
+
 def run():
-    tests = [test1, test2, test3, test4, test5, test6]
+    tests = [test1, test2, test3, test4, test5, test6, test7]
     import sys
     failures = 0
     run = 0

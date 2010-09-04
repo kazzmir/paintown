@@ -14,8 +14,6 @@
 # 4. 171397b / 10.539s = 16263.1179428788 b/s
 
 # Todo (finished items at bottom)
-# Predicates: sequences of host code that evaluate to true/false where the current
-#   rule stops on false and continues on true.
 # inline rules + semantic actions are broken (in C++ at least)
 # add header (.h) generator for C/C++
 # add generator for scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
@@ -906,6 +904,9 @@ class CodeGenerator:
 
     def generate_void(self, *args):
         self.fail()
+    
+    def generate_predicate(me, *args):
+        self.fail()
 
     def generate_eof(self, *args):
         self.fail()
@@ -1472,6 +1473,18 @@ if (%s.error()){
 }
 """ % (result, cast, pattern.name, stream, result, rule_parameters, parameters, result, indent(failure()))
 
+        return data
+
+    def generate_predicate(me, pattern, peg, result, stream, failure, tail, peg_args):
+        data = """
+{
+    bool %s = true;
+    %s
+    if (!%s){
+        %s
+    }
+}
+""" % (pattern.variable, me.fixup_cpp(indent(pattern.code.strip()), peg_args), pattern.variable, failure())
         return data
 
     def generate_rule(me, pattern, peg, result, stream, failure, tail, peg_args):
@@ -2424,7 +2437,43 @@ class PatternLine(Pattern):
         
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_line(self, peg, result, stream, failure, tail, peg_args)
+
+class PatternPredicate(Pattern):
+    def __init__(self, variable, code):
+        Pattern.__init__(self)
+        self.variable = variable
+        self.code = code
+    
+    def ensureRules(self, find):
+        pass
+
+    def find(self, proc):
+        if proc(self):
+            return [self]
+        return []
+
+    def canBeEmpty(self, peg):
+        return True
+
+    def contains(self):
+        return 1
+
+    def generate_bnf(self):
+        return '<predicate %s> {{%s}}"' % (self.variable, self.code)
+
+    def generate_v1(self, generator, result, previous_result, stream, failure):
+        return generator.generate_predicate(self, result, previous_result, stream, failure)
+
+    def generate_v2(self, generator, peg):
+        return generator.generate_predicate(self, peg)
+
+    def generate_python(self, result, previous_result, stream, failure):
+        return PythonGenerator().generate_predicate(self, result, previous_result, stream, failure)
         
+    def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
+        return CppGenerator().generate_predicate(self, peg, result, stream, failure, tail, peg_args)
+
+
 class PatternVerbatim(Pattern):
     def __init__(self, letters, options = None):
         Pattern.__init__(self)
@@ -3326,6 +3375,7 @@ value = item
                         PatternRule("string"),
                         PatternRule("line"),
                         PatternRule("ascii"),
+                        PatternRule("predicate"),
                         PatternRule("call_rule"),
                         PatternRule("sub_pattern"),
                         PatternRule("code")])),
@@ -3355,6 +3405,18 @@ value = pattern
                 PatternCode("""value = peg.PatternLine()""")
                 ]),
             ]),
+        Rule("predicate", [
+            PatternSequence([
+                PatternVerbatim("<predicate"),
+                PatternRule("whitespace"),
+                PatternBind('variable', PatternRule('word')),
+                PatternRule("whitespace"),
+                PatternVerbatim(">"),
+                PatternRule("whitespace"),
+                PatternBind('code', PatternRule('code')),
+                PatternCode("value = peg.PatternPredicate(variable, code.code)"),
+            ]),
+        ]),
         Rule("ascii", [
             PatternSequence([
                 PatternVerbatim("<ascii"),
@@ -3700,3 +3762,5 @@ if __name__ == '__main__':
 # getter for the current line and column
 # custom error reporting length, options: error-length 40
 # If a rule has a <fail> then catch a parsing exception and call the fail function
+# Predicates: sequences of host code that evaluate to true/false where the current
+#   rule stops on false and continues on true.
