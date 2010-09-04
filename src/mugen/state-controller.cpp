@@ -1504,7 +1504,7 @@ public:
                     int group;
                     int item;
                     simple >> first >> item;
-                    if (first[0] == 'S'){
+                    if (tolower(first[0]) == 's'){
                         own = true;
                         group = atoi(first.substr(1).c_str());
                     } else {
@@ -1696,6 +1696,8 @@ public:
         his.fall.xVelocity = evaluateNumber(hit.fall.xVelocity, guy.getXVelocity());
         his.fall.envShake.time = evaluateNumber(hit.fall.envShake.time, 0);
         his.fall.damage = evaluateNumber(hit.fall.damage, 0);
+        his.fall.recover = evaluateBool(hit.fall.recover, true);
+        his.fall.recoverTime = (int) evaluateNumber(hit.fall.recoverTime, 4);
         his.groundSlideTime = evaluateNumber(hit.groundSlideTime, 0);
         his.guardControlTime = evaluateNumber(hit.guardControlTime, his.groundSlideTime);
         his.airGuardControlTime = evaluateNumber(hit.airGuardControlTime, his.guardControlTime);
@@ -1887,7 +1889,7 @@ public:
                         int group;
                         const Ast::Value * item;
                         simple >> first >> item;
-                        if (first[0] == 'S'){
+                        if (tolower(first[0]) == 's'){
                             own = true;
                             group = atoi(first.substr(1).c_str());
                         } else {
@@ -4545,7 +4547,7 @@ public:
                     if (simple.getValue()->hasMultiple()){
                         simple >> item;
                     }
-                    if (first[0] == 'S'){
+                    if (tolower(first[0]) == 's'){
                         own = true;
                         group = atoi(first.substr(1).c_str());
                     } else {

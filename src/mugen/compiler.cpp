@@ -1405,14 +1405,18 @@ public:
 
                         return new DataPower();
                     }
+
+                    if (identifier == "data.liedown.time"){
+                        /* FIXME */
+                        return compile(0);
+		    }
+
                     /* TODO implement rest 
                     if (identifier == "data.attack"){
 		    }
                     if (identifier == "data.defence"){
 		    }
                     if (identifier == "data.fall.defence_mul"){
-		    }
-                    if (identifier == "data.liedown.time"){
 		    }
                     if (identifier == "data.airjuggle"){
 		    }
@@ -1764,6 +1768,11 @@ public:
         if (function == "exp"){
 	    return new MetaCircularArg1(exp, compile(function.getArg1()));
 	}
+
+        if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(function.getName()), "projcontact\\d*")){
+            /* FIXME */
+            return compile(0);
+        }
 	
         if (function == "ln"){
 	    class Ln: public Value {
@@ -2119,7 +2128,14 @@ public:
             } else if (var == "fall.damage"){
                 /* TODO */
             } else if (var == "fall.xvel"){
-                /* TODO */
+                class HitVarFallXVel: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).fall.xVelocity);
+                    }
+                };
+
+                return new HitVarFallXVel();
             } else if (var == "fall.yvel"){
                 class HitVarFallYVel: public HitVar {
                 public:
@@ -2130,7 +2146,15 @@ public:
 
                 return new HitVarFallYVel();
             } else if (var == "fall.recover"){
-                /* TODO */
+                class HitVarFallRecover: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).fall.recover);
+                    }
+                };
+
+                return new HitVarFallRecover();
+
             } else if (var == "fall.time"){
                 /* TODO */
             } else if (var == "fall.recovertime"){

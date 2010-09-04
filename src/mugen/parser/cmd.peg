@@ -214,8 +214,24 @@ Ast::Value * makeFunction(const Value & name, const Value & arg1){
     return function;
 }
 
+Ast::Value * makeFunction(const std::string & name, const Value & arg1){
+    Ast::Value * function = new Ast::Function(name, as<Ast::ValueList*>(arg1));
+    GC::save(function);
+    return function;
+}
+
 Ast::Value * makeFunction1(const Value & name, const Value & arg1){
     return makeFunction(name, makeValueList(arg1, Value()));
+}
+
+std::string combine(const char * name, const Value & what){
+    if (what.getValue() != 0){
+        std::ostringstream out;
+        out << name << as<Ast::Number*>(what)->toString();
+        return out.str();
+    } else {
+        return std::string(name);
+    }
 }
 
 /*
@@ -482,6 +498,13 @@ rules:
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
     section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
     assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
+               | line:<line> "guardsound"{case} s "=" s own:"s"{case}? exp:expr {{
+                    if (own.getValue() != 0){
+                        value = makeAttribute("guardsound-own", exp);
+                    } else {
+                        value = makeAttribute("guardsound", exp);
+                    }
+               }}
                | line:<line> "sparkno"{case} s "=" s "s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
@@ -597,6 +620,11 @@ rules:
                 /* FIXME: handle function rest */
                 value = makeFunction1("animelem<=", arg1);
              }}
+             | name:"projcontact"{case} id:integer? s "=" s arg1:integer function_rest {{
+                /* FIXME: handle function rest */
+                std::string name = combine("projcontact", id);
+                value = makeFunction(name, arg1);
+             }}
 
     args = expr1:expr_c expr_rest:(s "," s expr_c)* {{ value = makeValueList(expr1, expr_rest); }}
     function_name = "abs"{case}
@@ -606,6 +634,7 @@ rules:
                   | "gethitvar"{case}
                   | "floor"{case}
                   | "ceil"{case}
+                  | "exp"{case}
                   | "acos"{case}
                   | "asin"{case}
                   | "atan"{case}
@@ -629,7 +658,6 @@ rules:
                   | "projguarded"{case}
                   | "projhittime"{case}
                   | "projcontacttime"{case}
-                  | "projcontact"{case}
                   | "numhelper"{case}
 
     function_rest = s "," s all_compare? s value

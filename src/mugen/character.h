@@ -333,7 +333,7 @@ struct HitDefinition{
         int fall;
         double xVelocity;
         double yVelocity;
-        int recover;
+        bool recover;
         int recoverTime;
         int damage;
         int airFall;
@@ -421,6 +421,8 @@ struct HitState{
     struct Fall{
         Fall():
             fall(false),
+            recover(true),
+            recoverTime(0),
             xVelocity(0),
             yVelocity(0),
             damage(0){
@@ -431,6 +433,8 @@ struct HitState{
         } envShake;
 
         bool fall;
+        bool recover;
+        int recoverTime;
         double xVelocity;
         double yVelocity;
         double damage;
