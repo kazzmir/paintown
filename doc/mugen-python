@@ -1,0 +1,25 @@
+# A specification for mugen characters in python:
+
+# This import will come from the paintown engine
+import mugen
+class MyCharacter(mugen.Character):
+    def __init__(self):
+        # Set up all [data], [velocity], ... stuff here
+        self.setHealth(10)
+        self.addCommand("TripleKFPalm", "~D, DF, F, D, DF, F, x")
+        ...
+
+        # A state consists of a function that is called every game tick
+        # and some data that the character is updated with when the state
+        # initially activates
+        self.states[191] = mugen.State(intro, {'animation' : 190,
+                                               'control' : True,
+                                               'velocity' : (0, 0)})
+
+    def intro(self, world):
+        world.assertSpecial('Intro')
+        if world.roundTime() == 0:
+            self.changeAnimation(190)
+        if self.animationTime() == 0:
+            self.changeState(0)
+            return
