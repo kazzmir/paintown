@@ -1884,7 +1884,9 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
 	CharacterCollect & character = *i;
 	if (character.random){
-	    grid.addCharacter(characters.front(), true);
+            if (characters.size() > 0){
+                grid.addCharacter(characters.front(), true);
+            }
 	} else {
 	    grid.addCharacter(*nextChar);
 	    nextChar++;
@@ -1898,7 +1900,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     
     // Setup arcade matches
     int order = 1;
-    for (std::vector<int>::iterator i =  arcadeMaxMatches.begin(); i != arcadeMaxMatches.end();++i){
+    for (std::vector<int>::iterator i = arcadeMaxMatches.begin(); i != arcadeMaxMatches.end();++i){
 	std::vector<CharacterInfo *> tempCharacters = getCharacterGroup(order);
 	std::random_shuffle(tempCharacters.begin(),tempCharacters.end());
 	std::vector<CharacterInfo *>::iterator currentCharacter = tempCharacters.begin();
