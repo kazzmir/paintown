@@ -163,6 +163,41 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
             }
             break;
         }
+        /* true if the first value is a subset of the second value */
+        case RuntimeValue::StateType : {
+            switch (value2.type){
+                case RuntimeValue::StateType : {
+                    return (!value1.attribute.standing || (value1.attribute.standing && value2.attribute.standing)) &&
+                           (!value1.attribute.crouching || (value1.attribute.crouching && value2.attribute.crouching)) &&
+                           (!value1.attribute.lying || (value1.attribute.lying && value2.attribute.lying)) &&
+                           (!value1.attribute.aerial || (value1.attribute.aerial && value2.attribute.aerial));
+                }
+                default : return false;
+            }
+            break;
+        }
+        case RuntimeValue::AttackAttribute : {
+            switch (value2.type){
+                case RuntimeValue::AttackAttribute : {
+                    vector<AttackType::Attribute> setLeft = value1.attackAttributes;
+                    vector<AttackType::Attribute> setRight = value2.attackAttributes;
+                    map<AttackType::Attribute, bool> all;
+                    for (vector<AttackType::Attribute>::iterator it = setRight.begin(); it != setRight.end(); it++){
+                        all[*it] = true;
+                    }
+                    
+                    for (vector<AttackType::Attribute>::iterator it = setLeft.begin(); it != setLeft.end(); it++){
+                        if (!all[*it]){
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+                default : return false;
+            }
+            break;
+        }
         default: return false;
     }
 
