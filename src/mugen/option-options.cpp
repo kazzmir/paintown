@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "configuration.h"
 #include "options.h"
 #include "game.h"
 #include "menu.h"
@@ -427,7 +428,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
     // Run options
     Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-    Bitmap screen(GFX_X, GFX_Y);
+    Bitmap screen(Configuration::getScreenWidth(), Configuration::getScreenHeight());
     bool done = false;
     bool escaped = false;
     
@@ -448,8 +449,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     // Box
     Box optionArea;
     
-    optionArea.location.setDimensions(260,210);
+    //optionArea.location.setDimensions(Gui::AbsolutePoint(260),210);
     optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
+    optionArea.location.setPosition2(Gui::AbsolutePoint(260,210));
     
     optionArea.location.setRadius(5);
     optionArea.colors.body = Bitmap::makeColor(0,0,60);
