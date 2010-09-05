@@ -227,62 +227,62 @@ moveText(true){
 }
 
 void MugenMenu::loadData(){
-     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath baseDir = Filesystem::find(Mugen::Data::getInstance().getDirectory().join(location.getDirectory()));
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, location.getFilename().path());
     // get real basedir
     //baseDir = Mugen::Util::getFileDir( ourDefFile );
     Global::debug(1) << baseDir.path() << endl;
-    
+
     if (ourDefFile.isEmpty()){
         throw MugenException( "Cannot locate menu definition file for: " + location.path() );
     }
 
-    TimeDifference diff;
-    diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(ourDefFile.path()));
-    diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
-    
-    /*
-    MugenReader reader( ourDefFile );
-    std::vector< MugenSection * > collection;
-    collection = reader.getCollection();
-    */
+    try{
+        TimeDifference diff;
+        diff.startTime();
+        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(ourDefFile.path()));
+        diff.endTime();
+        Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
-        Ast::Section * section = *section_it;
-	std::string head = section->getName();
-        /* this should really be head = Mugen::Util::fixCase(head) */
-	head = Mugen::Util::fixCase(head);
-        if (head == "info"){
-            class InfoWalker: public Ast::Walker{
-            public:
-                InfoWalker(MugenMenu & menu):
-                menu(menu){
-                }
+        /*
+           MugenReader reader( ourDefFile );
+           std::vector< MugenSection * > collection;
+           collection = reader.getCollection();
+           */
 
-                MugenMenu & menu;
+        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+            Ast::Section * section = *section_it;
+            std::string head = section->getName();
+            /* this should really be head = Mugen::Util::fixCase(head) */
+            head = Mugen::Util::fixCase(head);
+            if (head == "info"){
+                class InfoWalker: public Ast::Walker{
+                public:
+                    InfoWalker(MugenMenu & menu):
+                        menu(menu){
+                        }
 
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "name"){
-                        menu.setName(simple.valueAsString());
-                        Global::debug(1) << "Read name '" << menu.getName() << "'" << endl;
-                    } else if (simple == "author"){
-                        string temp;
-                        simple >> temp;
-                        Global::debug(1) << "Made by: '" << temp << "'" << endl;
-                    } else {
-                        //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
-                        Global::debug(0) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
+                    MugenMenu & menu;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "name"){
+                            menu.setName(simple.valueAsString());
+                            Global::debug(1) << "Read name '" << menu.getName() << "'" << endl;
+                        } else if (simple == "author"){
+                            string temp;
+                            simple >> temp;
+                            Global::debug(1) << "Made by: '" << temp << "'" << endl;
+                        } else {
+                            //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                            Global::debug(0) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
+                        }
                     }
-                }
-            };
+                };
 
-            InfoWalker walker(*this);
-            section->walk(walker);
-        } else if (head == "files"){
-            class FileWalker: public Ast::Walker{
+                InfoWalker walker(*this);
+                section->walk(walker);
+            } else if (head == "files"){
+                class FileWalker: public Ast::Walker{
                 public:
                     FileWalker(MugenMenu & menu, const Filesystem::AbsolutePath & baseDir):
                         menu(menu),
@@ -305,29 +305,29 @@ void MugenMenu::loadData(){
                         } else if (simple == "logo.storyboard"){
                             try{
                                 simple >> menu.logoFile;
-				if (!menu.logoFile.empty()){
-				    try{
-					Global::debug(1) << "Logo file " << baseDir.path() << "/" << menu.logoFile << endl;
-					menu.logo = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
-					Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
-				    } catch (const MugenException &ex){
-					throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
-				    }
-				}
+                                if (!menu.logoFile.empty()){
+                                    try{
+                                        Global::debug(1) << "Logo file " << baseDir.path() << "/" << menu.logoFile << endl;
+                                        menu.logo = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
+                                        Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
+                                    } catch (const MugenException &ex){
+                                        throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
+                                    }
+                                }
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "intro.storyboard"){
                             try{
                                 simple >> menu.introFile;
-				if (!menu.introFile.empty()){
-				    try{
-					Global::debug(1) << "Intro file " << baseDir.path() << "/" << menu.introFile << endl;
-					menu.intro = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.introFile));
-					Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
-				    } catch (const MugenException &ex){
-					throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
-				    }
-				}
+                                if (!menu.introFile.empty()){
+                                    try{
+                                        Global::debug(1) << "Intro file " << baseDir.path() << "/" << menu.introFile << endl;
+                                        menu.intro = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.introFile));
+                                        Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
+                                    } catch (const MugenException &ex){
+                                        throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
+                                    }
+                                }
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "select"){
@@ -347,191 +347,197 @@ void MugenMenu::loadData(){
                             Global::debug(0) << "Unhandled option in Files Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
                         }
                     }
-            };
-            
-            FileWalker walker(*this, baseDir);
-            section->walk(walker);
-        } else if (head == "music"){
-            /* FIXME! parse music here */
-        } else if (head == "title info"){
-            class TitleInfoWalker: public Ast::Walker{
-            public:
-                TitleInfoWalker(MugenMenu & menu):
-                menu(menu){
-                }
+                };
 
-                MugenMenu & menu;
-
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "fadein.time"){
-                        int time;
-                        simple >> time;
-                        menu.fader.setFadeInTime(time);
-                    } else if (simple == "fadein.color"){
-                        int r,g,b;
-                        simple >> r >> g >> b;
-                        menu.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
-                    } else if (simple == "fadeout.time"){
-                        int time;
-                        simple >> time;
-                        menu.fader.setFadeOutTime(time);
-                    } else if (simple == "fadeout.color"){
-                        int r,g,b;
-                        simple >> r >> g >> b;
-                        menu.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
-                    } else if (simple == "menu.pos"){
-                        simple >> menu.position.x;
-                        simple >> menu.position.y;
-                    } else if (simple == "menu.item.font"){
-                        int index=0,bank=0,position=0;
-			try{
-			    simple >> index >> bank >> position;
-			} catch (const Ast::Exception & e){
-			}
-                        menu.fontCursor.setItemFont(index,bank,position);
-                    } else if (simple == "menu.item.active.font"){
-			int index=0,bank=0,position=0;
-			try{
-			    simple >> index >> bank >> position;
-			} catch (const Ast::Exception & e){
-			}
-                        menu.fontCursor.setActiveFont(index,bank,position);
-                    } else if (simple == "menu.item.spacing"){
-                        simple >> menu.fontSpacing.x;
-                        simple >> menu.fontSpacing.y;
-		    } else if (simple == "menu.itemname.arcade"){
-                        try{
-                            menu.addMenuOption(new Mugen::OptionArcade(simple.valueAsString()));
-                        } catch (const Ast::Exception & e){
+                FileWalker walker(*this, baseDir);
+                section->walk(walker);
+            } else if (head == "music"){
+                /* FIXME! parse music here */
+            } else if (head == "title info"){
+                class TitleInfoWalker: public Ast::Walker{
+                public:
+                    TitleInfoWalker(MugenMenu & menu):
+                        menu(menu){
                         }
-                    } else if (simple == "menu.itemname.versus"){
-                        try{
-                            menu.addMenuOption(new Mugen::OptionVersus(simple.valueAsString()));
-                        } catch (const Ast::Exception & e){
-                        }
-		   } else if (simple == "menu.itemname.teamarcade"){
-                       try{
-                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.teamversus"){
-                       try{
-                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.teamcoop"){
-                       try{
-                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.survival"){
-                       try{
-                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.survivalcoop"){
-                       try{
-                           menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.training"){
-                       try{
-                           menu.addMenuOption(new Mugen::TrainingOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.watch"){
-                       try{
-                           menu.addMenuOption(new Mugen::WatchOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.options"){
-                       try{
-                           menu.addMenuOption(new Mugen::OptionOptions(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-		   } else if (simple == "menu.itemname.exit"){
-                       try{
-                           menu.addMenuOption(new Mugen::QuitOption(simple.valueAsString()));
-                       } catch (const Ast::Exception & e){
-                       }
-                   } else if (simple == "menu.window.margins.y"){
-                       simple >> menu.windowMargin.x;
-                       simple >> menu.windowMargin.y;
-		       // Undocumented but it defaults to 5 if it's 0 or not specified
-		       if (menu.windowMargin.y == 0){
-			   menu.windowMargin.y = 5;
-		       }
-                   } else if (simple == "menu.window.visibleitems"){
-                       simple >> menu.windowVisibleItems;
-                   } else if (simple == "menu.boxcursor.visible"){
-                       bool visible = false;
-		       simple >> visible;
-		       menu.fontCursor.setCursorVisible(visible);
-                   } else if (simple == "menu.boxcursor.coords"){
-		       int x1=0,y1=0,x2=0,y2=0;
-			try{
-			    simple >> x1 >> y1 >> x2 >> y2;
-			} catch (const Ast::Exception & e){
-			}
-                        menu.fontCursor.setCursor(x1,y1,x2,y2);
-                   } else if (simple == "cursor.move.snd"){
-                       try{
-                            simple >> menu.moveSound.x >> menu.moveSound.y;
-                       } catch (const Ast::Exception & e){
-                       }
-                   } else if (simple == "cursor.done.snd"){
-                       try{
-                            simple >> menu.doneSound.x >> menu.doneSound.y;
-                       } catch (const Ast::Exception & e){
-                       }
-                   } else if (simple == "cancel.snd"){
-                       int g=0,s=0;
-                       try{
-                            simple >> menu.cancelSound.x >> menu.cancelSound.y;
-                       } catch (const Ast::Exception & e){
-                       }
-                   } else {
-                       //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
-                       Global::debug(0) << "Unhandled option in Title Info Section: " << simple.toString() << __FILE__ << __LINE__;
-                   }
-                }
-	    };
-            
-            TitleInfoWalker walker(*this);
-            section->walk(walker);
-        } else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
-            Mugen::Background *manager = new Mugen::Background(ourDefFile, "titlebg");
-	    background = manager;
-	} else if (head == "select info"){ 
-	    selectInfoFile = ourDefFile;
-        } else if (head == "selectbgdef" ){ /* Ignore for now */ }
-	else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
-	else if (head == "vs screen" ){ /* Ignore for now */ }
-	else if (head == "versusbgdef" ){ /* Ignore for now */ }
-	else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
-	else if (head == "demo mode" ){ /* Ignore for now */ }
-	else if (head == "continue screen" ){ /* Ignore for now */ }
-	else if (head == "game over screen" ){ /* Ignore for now */ }
-	else if (head == "win screen" ){ /* Ignore for now */ }
-	else if (head == "default ending" ){ /* Ignore for now */ }
-	else if (head == "end credits" ){ /* Ignore for now */ }
-	else if (head == "survival results screen" ){ /* Ignore for now */ }
-	else if (head == "option info" ){ /* Ignore for now */ }
-	else if (head == "optionbgdef" ){ /* Ignore for now */ }
-	else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
-	else if (head == "music" ){ /* Ignore for now */ }
-	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
-        else {
-            //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ );
-            ostringstream context;
-            context << __FILE__ << ":" << __LINE__;
-            Global::debug(0, context.str()) << "Unhandled Section: " << head << endl;
-        }
-    } 
 
-    // Set defaults
-    currentMenuPosition = position.y;
-    menuRange.y = windowVisibleItems-1;
+                    MugenMenu & menu;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "fadein.time"){
+                            int time;
+                            simple >> time;
+                            menu.fader.setFadeInTime(time);
+                        } else if (simple == "fadein.color"){
+                            int r,g,b;
+                            simple >> r >> g >> b;
+                            menu.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                        } else if (simple == "fadeout.time"){
+                            int time;
+                            simple >> time;
+                            menu.fader.setFadeOutTime(time);
+                        } else if (simple == "fadeout.color"){
+                            int r,g,b;
+                            simple >> r >> g >> b;
+                            menu.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                        } else if (simple == "menu.pos"){
+                            simple >> menu.position.x;
+                            simple >> menu.position.y;
+                        } else if (simple == "menu.item.font"){
+                            int index=0,bank=0,position=0;
+                            try{
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                            }
+                            menu.fontCursor.setItemFont(index,bank,position);
+                        } else if (simple == "menu.item.active.font"){
+                            int index=0,bank=0,position=0;
+                            try{
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                            }
+                            menu.fontCursor.setActiveFont(index,bank,position);
+                        } else if (simple == "menu.item.spacing"){
+                            simple >> menu.fontSpacing.x;
+                            simple >> menu.fontSpacing.y;
+                        } else if (simple == "menu.itemname.arcade"){
+                            try{
+                                menu.addMenuOption(new Mugen::OptionArcade(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.versus"){
+                            try{
+                                menu.addMenuOption(new Mugen::OptionVersus(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.teamarcade"){
+                            try{
+                                menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.teamversus"){
+                            try{
+                                menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.teamcoop"){
+                            try{
+                                menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.survival"){
+                            try{
+                                menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.survivalcoop"){
+                            try{
+                                menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.training"){
+                            try{
+                                menu.addMenuOption(new Mugen::TrainingOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.watch"){
+                            try{
+                                menu.addMenuOption(new Mugen::WatchOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.options"){
+                            try{
+                                menu.addMenuOption(new Mugen::OptionOptions(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.itemname.exit"){
+                            try{
+                                menu.addMenuOption(new Mugen::QuitOption(simple.valueAsString()));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "menu.window.margins.y"){
+                            simple >> menu.windowMargin.x;
+                            simple >> menu.windowMargin.y;
+                            // Undocumented but it defaults to 5 if it's 0 or not specified
+                            if (menu.windowMargin.y == 0){
+                                menu.windowMargin.y = 5;
+                            }
+                        } else if (simple == "menu.window.visibleitems"){
+                            simple >> menu.windowVisibleItems;
+                        } else if (simple == "menu.boxcursor.visible"){
+                            bool visible = false;
+                            simple >> visible;
+                            menu.fontCursor.setCursorVisible(visible);
+                        } else if (simple == "menu.boxcursor.coords"){
+                            int x1=0,y1=0,x2=0,y2=0;
+                            try{
+                                simple >> x1 >> y1 >> x2 >> y2;
+                            } catch (const Ast::Exception & e){
+                            }
+                            menu.fontCursor.setCursor(x1,y1,x2,y2);
+                        } else if (simple == "cursor.move.snd"){
+                            try{
+                                simple >> menu.moveSound.x >> menu.moveSound.y;
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "cursor.done.snd"){
+                            try{
+                                simple >> menu.doneSound.x >> menu.doneSound.y;
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "cancel.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> menu.cancelSound.x >> menu.cancelSound.y;
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else {
+                            //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                            Global::debug(0) << "Unhandled option in Title Info Section: " << simple.toString() << __FILE__ << __LINE__;
+                        }
+                    }
+                };
+
+                TitleInfoWalker walker(*this);
+                section->walk(walker);
+            } else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
+                Mugen::Background *manager = new Mugen::Background(ourDefFile, "titlebg");
+                background = manager;
+            } else if (head == "select info"){ 
+                selectInfoFile = ourDefFile;
+            } else if (head == "selectbgdef" ){ /* Ignore for now */ }
+            else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "vs screen" ){ /* Ignore for now */ }
+            else if (head == "versusbgdef" ){ /* Ignore for now */ }
+            else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "demo mode" ){ /* Ignore for now */ }
+            else if (head == "continue screen" ){ /* Ignore for now */ }
+            else if (head == "game over screen" ){ /* Ignore for now */ }
+            else if (head == "win screen" ){ /* Ignore for now */ }
+            else if (head == "default ending" ){ /* Ignore for now */ }
+            else if (head == "end credits" ){ /* Ignore for now */ }
+            else if (head == "survival results screen" ){ /* Ignore for now */ }
+            else if (head == "option info" ){ /* Ignore for now */ }
+            else if (head == "optionbgdef" ){ /* Ignore for now */ }
+            else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "music" ){ /* Ignore for now */ }
+            else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
+            else {
+                //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ );
+                ostringstream context;
+                context << __FILE__ << ":" << __LINE__;
+                Global::debug(0, context.str()) << "Unhandled Section: " << head << endl;
+            }
+        } 
+
+        // Set defaults
+        currentMenuPosition = position.y;
+        menuRange.y = windowVisibleItems-1;
+
+    } catch (const Mugen::Def::ParseException & e){
+        ostringstream out;
+        out << "Could not parse " << ourDefFile.path() << ": " << e.getReason();
+        throw MugenException(out.str());
+    }
 }
 
 MugenMenu::~MugenMenu(){

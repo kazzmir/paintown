@@ -237,6 +237,7 @@ int paintown_main( int argc, char ** argv ){
                 Network::networkServer();
 #endif
             } else if (mugen){
+                /* FIXME: read the motif from the menu data */
                 Mugen::run();
             } else {
                 Menu::Menu game(mainMenuPath());
