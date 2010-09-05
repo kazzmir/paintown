@@ -431,6 +431,10 @@ void Game::doArcade(const Bitmap & bmp){
     try{
         while (!quit){
             select.renderVersusScreen(bmp);
+	    
+	    // Reset characters
+	    select.getPlayer1()->resetPlayer();
+	    select.getPlayer2()->resetPlayer();
 
             /* this is the guy thats in control */
             Mugen::Character * player = 0;
