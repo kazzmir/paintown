@@ -1613,7 +1613,10 @@ void CharacterSelect::load(){
 	else if (head == "music" ){ /* Ignore for now */ }
 	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
         else {
-            throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
+            // throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
+            ostringstream context;
+            context << __FILE__ << ":" << __LINE__;
+            Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + systemFile.path() + "': " + head << endl;
         }
     }
     
@@ -1720,6 +1723,12 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 		    // Grab Character
 		    std::string temp;
 		    list >> temp;
+
+                    if (temp == "blank"){
+                        /* ignore blank */
+                        return;
+                    }
+
 		    if (temp == "randomselect"){
 			character.random = true;
 		    } else {
@@ -1828,7 +1837,10 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 	    OptionWalker walk(arcadeMaxMatches,teamMaxMatches);
 	    section->walk(walk);
 	} else {
-	    throw MugenException("Unhandled Section in '" + file.path() + "': " + head, __FILE__, __LINE__); 
+	    // throw MugenException("Unhandled Section in '" + file.path() + "': " + head, __FILE__, __LINE__); 
+            ostringstream context;
+            context << __FILE__ << ":" << __LINE__;
+            Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << endl;
 	}
     }
     
