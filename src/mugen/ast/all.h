@@ -22,6 +22,7 @@
 #include "range.h"
 #include "extra.h"
 #include "function.h"
+#include "hitdef.h"
 #include "key.h"
 #include "helper.h"
 

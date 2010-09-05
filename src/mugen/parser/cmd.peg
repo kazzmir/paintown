@@ -467,6 +467,22 @@ Ast::Key * applyKeyModifiers(const Value & mods, Ast::Key * key){
     return key;
 }
 
+Ast::HitDefAttackAttribute * makeHitDefAttackAttribute(){
+    Ast::HitDefAttackAttribute * object = new Ast::HitDefAttackAttribute();
+    GC::save(object);
+    return object;
+}
+
+Ast::HitDefAttribute * makeHitDefAttribute(const Value & input){
+    std::ostringstream out;
+    for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
+        out << (char*) (*it).getValue();
+    }
+    Ast::HitDefAttribute * object = new Ast::HitDefAttribute(out.str());
+    GC::save(object);
+    return object;
+}
+
 }}
 
 rules:
@@ -625,6 +641,33 @@ rules:
                 std::string name = combine("projcontact", id);
                 value = makeFunction(name, arg1);
              }}
+             | name:"hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
+                 typedef Ast::Value * (*compare_func)(const Value &, const Value &);
+                 Ast::Value * compare_state = as<compare_func>(comparison)(makeSimpleIdentifier("hitdefattr:state"), state);
+                 Ast::Value * compare_attribute = as<compare_func>(comparison)(makeSimpleIdentifier("hitdefattr:attribute"), attributes);
+                 value = makeExpressionAnd(compare_state, compare_attribute);
+             }}
+
+    compare_equal = "=" {{ value = (void*) makeExpressionEquals; }}
+                  | "!=" {{ value = (void*) makeExpressionUnequals; }}
+
+    hitdef-attack-attribute = attribute:{{ value = makeHitDefAttackAttribute(); }} hitdef-attack-attribute-item(attribute) (s "," s hitdef-attack-attribute-item(attribute))* {{ as<Ast::HitDefAttackAttribute*>(attribute)->reset(); value = attribute; }}
+    hitdef-attack-attribute-item(attribute) = hitdef-attack-type hitdef-attack-movement {{
+        std::string * result = toString(as<const char *>($1));
+        std::string * other = toString(as<const char *>($2));
+        as<Ast::HitDefAttackAttribute*>(attribute)->addAttribute(*result + *other);
+    }}
+
+    hitdef-attack-type = "n"{case} # normal
+                       | "s"{case} # special
+                       | "h"{case} # hyper
+    hitdef-attack-movement = "a"{case} # attack
+                           | "t"{case} # throw
+
+    hitdef-attribute = hitdef-attribute-item+ {{ value = makeHitDefAttribute($1); }}
+    hitdef-attribute-item = "s"{case}
+                          | "c"{case}
+                          | "a"{case}
 
     args = expr1:expr_c expr_rest:(s "," s expr_c)* {{ value = makeValueList(expr1, expr_rest); }}
     function_name = "abs"{case}

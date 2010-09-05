@@ -883,9 +883,13 @@ class Stream
 end
 """
 
+# This function exists to fool vim into a coloring syntax properly. Otherwise
+# it might get stuck in string-mode due to the above code
 def _not_used_by_anything_or_anyone_please_ignore_me():
     pass
 
+# Default class that generates code given some Peg description. Sub-classes
+# should implement every generate_* method
 class CodeGenerator:
     def __init__(self):
         pass
@@ -1775,9 +1779,11 @@ if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
         else:
             raise Exception("unknown verbatim value %s" % pattern.letters)
 
+# Thrown when an eof rule is encountered
 class DoneGenerating(Exception):
     pass
 
+# Generates random input based on the Peg
 class TestGenerator(CodeGenerator):
     def generate_sequence(self, pattern, peg):
         def make(p):
@@ -1887,7 +1893,7 @@ class Pattern:
     def isFail(self):
         return False
     
-    # true if this pattern is a at the end of a sequence and calls a rule
+    # true if this pattern is at the end of a sequence and calls a rule
     def tailRecursive(self, rule):
         return False
 
@@ -1905,6 +1911,7 @@ class Pattern:
         else:
             return str
 
+# Continues to parse only if the sub-pattern can be parsed, but no input is consumed
 class PatternEnsure(Pattern):
     def __init__(self, next):
         Pattern.__init__(self)
@@ -3670,10 +3677,11 @@ def help_syntax():
 def help():
     print "Options:"
     print "-h,--help,help : Print this help"
-    print "--help-syntax : Explain syntax of BNF for grammar files"
-    print "--bnf : Generate BNF (grammar language)"
-    print "--python : Generate python parser"
-    print "--cpp,--c++ : Generate c++ parser"
+    print "--help-syntax : Explain syntax of BNF (Backus-Naur form) for grammar files"
+    print "--bnf : Generate BNF description (grammar language)"
+    print "--ruby : Generate Ruby parser"
+    print "--python : Generate Python parser"
+    print "--cpp,--c++ : Generate C++ parser"
     print "--save=filename : Save all generated parser output to a file, 'filename'"
     print "--peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'."
 

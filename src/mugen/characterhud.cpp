@@ -1578,14 +1578,17 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "pos"){
-			int x=0, y=0;
+			int x = 0, y = 0;
 			try{
 			    simple >> x >> y;
 			} catch (const Ast::Exception & e){
 			}
 			self.timer.setPosition(x,y);
 		    } else if (simple == "framespercount"){
-			int x=0;
+                        /* its very strange for this not to be 60, maybe print
+                         * a warning if its anything other than 60?
+                         */
+			int x = 0;
 			simple >> x;
 			self.timer.setFrameCount(x);
 		    } 

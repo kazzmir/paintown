@@ -8,6 +8,8 @@ class AttributeSimple;
 class AttributeKeyword;
 class AttributeArray;
 class Attribute;
+class HitDefAttribute;
+class HitDefAttackAttribute;
 class Value;
 class Range;
 class ValueList;
@@ -45,6 +47,12 @@ public:
     }
     
     virtual void onKeyModifier(const KeyModifier & key){
+    }
+
+    virtual void onHitDefAttribute(const HitDefAttribute & attribute){
+    }
+    
+    virtual void onHitDefAttackAttribute(const HitDefAttackAttribute & attribute){
     }
 
     virtual void onKeyCombined(const KeyCombined & key){

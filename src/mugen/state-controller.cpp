@@ -1358,6 +1358,7 @@ public:
                 if (simple == "attr"){
                     string type, attack;
                     simple >> type >> attack;
+                    type = PaintownUtil::upperCaseAll(type);
                     if (type == StateType::Stand ||
                         type == StateType::Crouch ||
                         type == StateType::Air){

@@ -16,6 +16,7 @@
 #include "animation.h"
 #include "util.h"
 #include "compiler.h"
+#include "definitions.h"
 
 namespace Ast{
     class KeyList;
@@ -116,18 +117,6 @@ namespace AttackType{
         High,
         Low,
         Trip
-    };
-
-    enum Attribute{
-        NormalAttack,
-        NormalThrow,
-        NormalProjectile,
-        SpecialAttack,
-        SpecialThrow,
-        SpecialProjectile,
-        HyperAttack,
-        HyperThrow,
-        HyperProjectile
     };
 }
 
@@ -895,6 +884,10 @@ public:
         }
 
         virtual HitDefinition & getHit(){
+            return this->hit;
+        }
+        
+        virtual const HitDefinition & getHit() const {
             return this->hit;
         }
         

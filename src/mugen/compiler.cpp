@@ -203,6 +203,134 @@ public:
 
     Value * compiled;
 
+    bool isStateType(const std::string & what){
+        for (unsigned int i = 0; i < what.size(); i++){
+            std::string id = what.substr(i, 1);
+            if (id == StateType::Stand ||
+                id == StateType::Crouch ||
+                id == StateType::Air || 
+                id == StateType::LyingDown){
+                /* */
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    Value * parseStateType(const std::string & what){
+        RuntimeValue::StateTypes state;
+
+        for (unsigned int i = 0; i < what.size(); i++){
+            std::string id = what.substr(i, 1);
+            if (id == StateType::Stand){
+                state.standing = true;
+            }
+            if (id == StateType::Crouch){
+                state.crouching = true;
+            }
+            if (id == StateType::Air){
+                state.aerial = true;
+            }
+            if (id == StateType::LyingDown){
+                state.lying = true;
+            }
+        }
+
+        class Result: public Value {
+        public:
+            Result(RuntimeValue value):
+            value(value){
+            }
+
+            RuntimeValue value;
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                return value;
+            }
+        };
+
+        return new Result(RuntimeValue(state));
+    }
+
+    static RuntimeValue convertStateType(const std::string & state){
+        RuntimeValue::StateTypes attribute;
+        if (state == StateType::Stand){
+            attribute.standing = true;
+        } else if (state == StateType::Crouch){
+            attribute.crouching = true;
+        } else if (state == StateType::Air){
+            attribute.aerial = true;
+        } else if (state == StateType::LyingDown){
+            attribute.lying = true;
+        }
+
+        return RuntimeValue(attribute);
+    }
+
+    static AttackType::Attribute convertAttackType(const std::string & attack){
+        std::map<std::string, AttackType::Attribute> attributes;
+        attributes["NA"] = AttackType::NormalAttack;
+        attributes["NT"] = AttackType::NormalThrow;
+        attributes["NP"] = AttackType::NormalProjectile;
+        attributes["SA"] = AttackType::SpecialAttack;
+        attributes["ST"] = AttackType::SpecialThrow;
+        attributes["SP"] = AttackType::SpecialProjectile;
+        attributes["HA"] = AttackType::HyperAttack;
+        attributes["HT"] = AttackType::HyperThrow;
+        attributes["HP"] = AttackType::HyperProjectile;
+        if (attributes.find(attack) != attributes.end()){
+            return attributes[attack];
+        }
+
+        throw MugenException(std::string("Invalid attack type '") + attack + "'");
+    }
+
+    Value * compileHitDefAttackAttribute(const Ast::HitDefAttackAttribute & attribute){
+        std::vector<AttackType::Attribute> attacks;
+        try{
+            while (true){
+                std::string type;
+                attribute >> type;
+                type = PaintownUtil::upperCaseAll(type);
+                attacks.push_back(convertAttackType(type));
+            }
+        } catch (const Ast::Exception & e){
+            /* */
+        }
+
+        class Result: public Value {
+        public:
+            Result(const std::vector<AttackType::Attribute> & attacks):
+            attacks(attacks){
+            }
+            
+            std::vector<AttackType::Attribute> attacks;
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                return RuntimeValue(attacks);
+            }
+        };
+
+        return new Result(attacks);
+    }
+    
+    virtual void onHitDefAttackAttribute(const Ast::HitDefAttackAttribute & attribute){
+        compiled = compileHitDefAttackAttribute(attribute);
+    }
+
+    Value * compileHitDefAttribute(const Ast::HitDefAttribute & attribute){
+        std::string stuff;
+        attribute >> stuff;
+        stuff = PaintownUtil::upperCaseAll(stuff);
+        return parseStateType(stuff);
+    }
+    
+    virtual void onHitDefAttribute(const Ast::HitDefAttribute & attribute){
+        compiled = compileHitDefAttribute(attribute);
+    }
+       
     Value * compileIdentifier(const Ast::Identifier & identifier){
         class JustString: public Value {
         public:
@@ -426,6 +554,35 @@ public:
             return new FrontEdgeBodyDist();
         }
 
+        if (identifier == "hitdefattr:state"){
+            class HitDefAttrState: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* TODO: check if the player is in an attack state */
+                    return convertStateType(environment.getCharacter().getHit().attribute.state);
+                }
+            };
+
+            return new HitDefAttrState();
+        }
+
+        if (identifier == "hitdefattr:attribute"){
+            class HitDefAttrAttribute: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* TODO: check if the player is in an attack state */
+
+                    const HitDefinition & hit = environment.getCharacter().getHit();
+
+                    std::vector<AttackType::Attribute> all;
+                    all.push_back(convertAttackType(PaintownUtil::upperCaseAll(hit.attribute.attackType) + PaintownUtil::upperCaseAll(hit.attribute.physics)));
+                    return RuntimeValue(all);
+                }
+            };
+
+            return new HitDefAttrAttribute();
+        }
+
         if (identifier == "life"){
             class Life: public Value {
             public:
@@ -593,7 +750,7 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-                    return RuntimeValue(enemy->getStateType());
+                    return RuntimeValue(convertStateType(enemy->getStateType()));
                 }
             };
 
@@ -870,39 +1027,18 @@ public:
             return new Time();
         }
 
-        /* TODO: these things might be able to go away. Check if the comparison
-         * operation can be parsed as a function
-         */
-        if (identifier == "A"){
-            return new JustString("A");
+        if (isStateType(PaintownUtil::upperCaseAll(identifier.toString()))){
+            return parseStateType(PaintownUtil::upperCaseAll(identifier.toString()));
         }
         
-        if (identifier == "S"){
-            return new JustString("S");
-        }
-
-        if (identifier == "C"){
-            return new JustString("C");
-        }
-        
-        if (identifier == "L"){
-            return new JustString("L");
-        }
-
-        if (identifier == "SCA"){
-            return new JustString("SCA");
-        }
-
-        if (identifier == "SAC"){
-            return new JustString("SAC");
-        }
         /* end things that might go away */
 
         if (identifier == "statetype"){
             class StateType: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getStateType());
+                    std::string state = environment.getCharacter().getStateType();
+                    return convertStateType(state);
                 }
             };
 

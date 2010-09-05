@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "definitions.h"
 
 namespace Ast{
     class Value;
@@ -41,7 +42,23 @@ public:
         Double,
         ListOfString,
         RangeType,
+        StateType,
+        AttackAttribute,
     };
+
+    struct StateTypes{
+        StateTypes():
+            standing(false),
+            crouching(false),
+            lying(false),
+            aerial(false){
+            }
+
+        bool standing;
+        bool crouching;
+        bool lying;
+        bool aerial;
+    } attribute;
 
     RuntimeValue():
     type(Invalid){
@@ -65,6 +82,16 @@ public:
     RuntimeValue(const std::string & str):
     type(String),
     string_value(str){
+    }
+
+    RuntimeValue(const StateTypes & attribute):
+    attribute(attribute),
+    type(StateType){
+    }
+
+    RuntimeValue(const std::vector<AttackType::Attribute> & attributes):
+    type(AttackAttribute),
+    attackAttributes(attributes){
     }
 
     RuntimeValue(const std::vector<std::string> & strings):
@@ -126,6 +153,8 @@ public:
             case Double : return "double";
             case ListOfString : return "list of string";
             case RangeType : return "range";
+            case StateType : return "state type";
+            case AttackAttribute : return "attack type";
             default : return "???";
         }
     }
@@ -135,6 +164,7 @@ public:
     bool bool_value;
     double double_value;
     std::vector<std::string> strings_value;
+    std::vector<AttackType::Attribute> attackAttributes;
     Range range;
 };
 
