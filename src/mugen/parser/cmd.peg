@@ -663,6 +663,7 @@ rules:
                        | "h"{case} # hyper
     hitdef-attack-movement = "a"{case} # attack
                            | "t"{case} # throw
+                           | "p"{case} # projectile
 
     hitdef-attribute = hitdef-attribute-item+ {{ value = makeHitDefAttribute($1); }}
     hitdef-attribute-item = "s"{case}

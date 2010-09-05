@@ -1195,7 +1195,7 @@ public:
 	}
 
         std::ostringstream out;
-        out << "Don't know how to compile identifier '" << identifier.toString() << "'";
+        out << "Don't know how to compile identifier '" << identifier.toString() << "' on line " << identifier.getLine() << " at column " << identifier.getColumn();
         throw MugenException(out.str());
     }
 
