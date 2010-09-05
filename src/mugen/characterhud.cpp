@@ -477,7 +477,7 @@ Name::~Name(){
 }
 
 void Name::act(Mugen::Character & character){
-    font.setText(character.getName());
+    font.setText(character.getDisplayName());
 }
 
 void Name::render(const Element::Layer & layer, const Bitmap & bmp){
@@ -988,9 +988,9 @@ void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character
 			    if (win.notStarted()){
 				std::string temp;
 				if (player1.getHealth() > player2.getHealth()){
-				    temp = replaceString("%s",player1.getName(),winText);
+				    temp = replaceString("%s",player1.getDisplayName(), winText);
 				} else if (player2.getHealth() > player1.getHealth()){
-				    temp = replaceString("%s",player2.getName(),winText);
+				    temp = replaceString("%s",player2.getDisplayName(), winText);
 				}
 				win.setText(temp);
 				win.play();
@@ -1540,9 +1540,9 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
 		std::vector<MugenFont *> & fonts;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (PaintownUtil::matchRegex(simple.toString(), "p1")){
-                        getName(simple,"p1",self.player1Name);
+                        getName(simple,"p1", self.player1Name);
                     } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
-                        getName(simple,"p2",self.player2Name);
+                        getName(simple,"p2", self.player2Name);
                     }
                 }
                 void getName(const Ast::AttributeSimple & simple, const std::string & component, Name & name){

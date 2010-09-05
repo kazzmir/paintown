@@ -848,7 +848,7 @@ void Cursor::renderPortrait(const Bitmap &bmp){
 	effects.scalex = faceScaleX;
 	effects.scaley = faceScaleY;
 	character->getPortrait()->render(faceOffset.x,faceOffset.y,bmp,effects);
-	font.render(character->getName(),bmp);
+	font.render(character->getDisplayName(),bmp);
     }
 }
 
@@ -1035,8 +1035,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 	    player2.getPortrait()->render(player2Position.x,player2Position.y,workArea,player2Effects);
 	    
 	    // render fonts
-	    player1Font.render(player1.getName(), workArea);
-	    player2Font.render(player2.getName(), workArea);
+	    player1Font.render(player1.getDisplayName(), workArea);
+	    player2Font.render(player2.getDisplayName(), workArea);
 	    
 	    // render Foregrounds
 	    background->renderForeground(0,0,workArea);

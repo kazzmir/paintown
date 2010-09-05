@@ -240,18 +240,18 @@ public:
 
         class Result: public Value {
         public:
-            Result(RuntimeValue value):
+            Result(RuntimeValue::StateTypes value):
             value(value){
             }
 
-            RuntimeValue value;
+            RuntimeValue::StateTypes value;
 
             RuntimeValue evaluate(const Environment & environment) const {
-                return value;
+                return RuntimeValue(value);
             }
         };
 
-        return new Result(RuntimeValue(state));
+        return new Result(state);
     }
 
     static RuntimeValue convertStateType(const std::string & state){
