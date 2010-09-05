@@ -1713,7 +1713,7 @@ void Character::fixAssumptions(){
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
-                        new Ast::String(new string("S")))));
+                        new Ast::SimpleIdentifier("S"))));
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holdup")))));
@@ -1762,7 +1762,7 @@ void Character::fixAssumptions(){
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
-                        new Ast::String(new string("A")))));
+                        new Ast::SimpleIdentifier("A"))));
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThan,
                                                                                           new Ast::ExpressionUnary(Ast::ExpressionUnary::Minus,
                                                                                                                    new Ast::Keyword("pos y")),
