@@ -432,7 +432,7 @@ void Game::doArcade(const Bitmap & bmp){
         while (!quit){
             select.renderVersusScreen(bmp);
 	    
-	    // Reset characters
+	    /* Reset characters. TODO: why? */
 	    select.getPlayer1()->resetPlayer();
 	    select.getPlayer2()->resetPlayer();
 

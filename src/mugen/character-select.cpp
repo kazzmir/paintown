@@ -1661,28 +1661,29 @@ std::vector<CharacterInfo *> CharacterSelect::getCharacterGroup(int orderNumber)
     return tempCharacters;
 }
 
+/* TODO: add a description of this structure */
 class CharacterCollect{
-    public:
-	CharacterCollect():
-	random(false),
-	randomStage(false),
-	name(""),
-	stage(""),
-	includeStage(true),
-	order(1),
-	song(""){
-	}
+public:
+    CharacterCollect():
+        random(false),
+        randomStage(false),
+        name(""),
+        stage(""),
+        includeStage(true),
+        order(1),
+        song(""){
+        }
 
-	~CharacterCollect(){
-	}
+    ~CharacterCollect(){
+    }
 
-	bool random;
-	bool randomStage;
-	std::string name;
-	std::string stage;
-	bool includeStage;
-	int order;
-	std::string song;
+    bool random;
+    bool randomStage;
+    std::string name;
+    std::string stage;
+    bool includeStage;
+    int order;
+    std::string song;
 };
 
 void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){

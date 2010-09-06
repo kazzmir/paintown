@@ -23,6 +23,7 @@
 #include "network/server.h"
 #include "configuration.h"
 #include "init.h"
+#include "mugen/config.h"
 
 #include <string.h>
 #include <vector>
@@ -101,6 +102,17 @@ static void showOptions(){
 static void addArgs(vector<const char *> & args, const char * strings[], int num){
     for (int i = 0; i < num; i++){
         args.push_back(strings[i]);
+    }
+}
+
+static void setMugenMotif(const Filesystem::AbsolutePath & path){
+    TokenReader reader;
+    Token * head = reader.readToken(path.path());
+    Token * motif = head->findToken("menu/option/mugen/motif");
+    if (motif != NULL){
+        string path;
+        *motif >> path;
+        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(path));
     }
 }
 
@@ -237,7 +249,7 @@ int paintown_main( int argc, char ** argv ){
                 Network::networkServer();
 #endif
             } else if (mugen){
-                /* FIXME: read the motif from the menu data */
+                setMugenMotif(mainMenuPath());
                 Mugen::run();
             } else {
                 Menu::Menu game(mainMenuPath());

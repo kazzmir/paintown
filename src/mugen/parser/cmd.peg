@@ -636,6 +636,7 @@ rules:
                 /* FIXME: handle function rest */
                 value = makeFunction1("animelem<=", arg1);
              }}
+             # FIXME: can any integer follow the = or just positive integers?
              | name:"projcontact"{case} id:integer? s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
                 std::string name = combine("projcontact", id);
@@ -647,6 +648,7 @@ rules:
                  Ast::Value * compare_attribute = as<compare_func>(comparison)(makeSimpleIdentifier("hitdefattr:attribute"), attributes);
                  value = makeExpressionAnd(compare_state, compare_attribute);
              }}
+             # FIXME: handle hitdefattr with no attack-attributes listed
 
     compare_equal = "=" {{ value = (void*) makeExpressionEquals; }}
                   | "!=" {{ value = (void*) makeExpressionUnequals; }}
