@@ -1381,6 +1381,23 @@ Ast::HitDefAttribute * makeHitDefAttribute(const Value & input){
     return object;
 }
 
+Ast::Value * makeAnimElem(const Value & line, const Value & arg1, const Value & comparison, const Value & arg2){
+    /* animelemno == arg1 && animelemtime(arg1) compare arg2 */
+    Ast::Value * element;
+    Ast::Value * time;
+    element = makeExpressionEquals(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim"), arg1);
+    /* make a copy of arg1 because values can only have one parent */
+    typedef Ast::Value * (*compare_func)(const Value &, const Value &);
+    time = as<compare_func>(comparison)(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1))), arg2);
+    return makeExpressionAnd(element, time);
+}
+
+Ast::Value * makeAnimElem(const Value & line, const Value & arg1){
+    Value comparison = Value((void*) makeExpressionEquals);
+    Value arg2 = Value(makeNumber(0));
+    return makeAnimElem(line, arg1, comparison, arg2);
+}
+
 
 
 
@@ -11573,15 +11590,7 @@ Result rule_function(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    /* animelemno == arg1 && animelemtime(arg1) compare arg2 */
-                                    Ast::Value * element;
-                                    Ast::Value * time;
-                                    element = makeExpressionEquals(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim"), arg1);
-                                    /* make a copy of arg1 because values can only have one parent */
-                                    typedef Ast::Value * (*compare_func)(const Value &, const Value &);
-                                    time = as<compare_func>(comparison)(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1))), arg2);
-                    
-                                    value = makeExpressionAnd(element, time);
+                    value = makeAnimElem(line, arg1, comparison, arg2);
                     result_peg_2322.setValue(value);
                 }
             
@@ -11736,14 +11745,7 @@ Result rule_function(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    /* animelemno == arg1 && animelemtime(arg1) compare arg2 */
-                                    Ast::Value * element;
-                                    Ast::Value * time;
-                                    element = makeExpressionEquals(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim"), arg1);
-                                    /* make a copy of arg1 because values can only have one parent */
-                                    time = makeExpressionEquals(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1))), Value(makeNumber(0)));
-                    
-                                    value = makeExpressionAnd(element, time);
+                    value = makeAnimElem(line, arg1);
                     result_peg_2417.setValue(value);
                 }
             

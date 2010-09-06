@@ -88,6 +88,7 @@ useMinpspw = makeUseEnvironment('minpspw', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
 enableProfiled = makeUseEnvironment('PROFILE', False)
+showTiming = makeUseEnvironment('timing', False)
 
 def checkLex(context):
     context.Message("Checking for flex... ")
@@ -813,6 +814,11 @@ def peg_to_cpp(target, source, env):
 env = getEnvironment(getDebug())
 peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']), suffix = '.cpp', src_suffix = '.peg')
 env.Append(BUILDERS = {'Peg' : peg_builder})
+if showTiming():
+    cxxcom = env['CXXCOM']
+    cccom = env['CCCOM']
+    env.Replace(CXXCOM = 'misc/show-current-time %s' % cxxcom)
+    env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = usePrx()
 if not useWii() and not useMinpspw():
