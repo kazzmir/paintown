@@ -1552,6 +1552,7 @@ static vector<ScreenSize> getScreenResolutions(){
 #else
 static vector<ScreenSize> getScreenResolutions(){
 	vector<ScreenSize> modes;
+	modes.push_back(ScreenSize(320, 240));
 	modes.push_back(ScreenSize(640, 480));
 	modes.push_back(ScreenSize(800, 600));
 	modes.push_back(ScreenSize(1024, 768));
