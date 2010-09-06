@@ -2538,6 +2538,7 @@ public:
             return new FunctionAnimElemTime(compile(function.getArg1()));
         }
 
+        /*
         if (function == "animelem"){
             class FunctionAnimElem: public Value {
             public:
@@ -2555,7 +2556,7 @@ public:
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
                     MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
                     if (animation->getPosition() + 1 == index){
-                        /* handle the second argument of animelem here */
+                        / * handle the second argument of animelem here * /
                         return RuntimeValue(animation->getTicks() == 0);
                     }
                     return RuntimeValue(false);
@@ -2565,7 +2566,9 @@ public:
             return new FunctionAnimElem(compile(function.getArg1()));
             // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
         }
+        */
 
+        /*
         if (function == "animelem<="){
             class FunctionAnimElem: public Value {
             public:
@@ -2583,7 +2586,7 @@ public:
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
                     MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
                     if (animation->getPosition() + 1 <= index){
-                        /* handle the second argument of animelem here */
+                        / * handle the second argument of animelem here * /
                         return RuntimeValue(animation->getTicks() == 0);
                     }
                     return RuntimeValue(false);
@@ -2593,6 +2596,7 @@ public:
             return new FunctionAnimElem(compile(function.getArg1()));
             // return RuntimeValue(environment.getCharacter().getCurrentAnimation()->getPosition() + 1 == index == 0);
         }
+        */
 
         if (function == "numexplod"){
             /* FIXME */
