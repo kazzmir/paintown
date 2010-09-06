@@ -3061,8 +3061,9 @@ const void * parse(const std::string & filename, bool stats = false){
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
+        std::ostringstream out;
+        out << "Error while parsing " << filename << " " << stream.reportError();
+        throw ParseException(out.str());
     }
     if (stats){
         stream.printStats();

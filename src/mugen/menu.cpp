@@ -535,7 +535,7 @@ void MugenMenu::loadData(){
 
     } catch (const Mugen::Def::ParseException & e){
         ostringstream out;
-        out << "Could not parse " << ourDefFile.path() << ": " << e.getReason();
+        out << "Error loading data: " << e.getReason();
         throw MugenException(out.str());
     }
 }
