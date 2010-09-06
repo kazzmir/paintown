@@ -46,14 +46,15 @@ namespace Util{
     MugenItemContent *parseOpt( const std::string &opt );
     std::vector<Ast::Section*> collectBackgroundStuff(std::list<Ast::Section*>::iterator & section_it, const std::list<Ast::Section*>::iterator & end, const std::string & name = "bg");
     bool readPalette(const Filesystem::AbsolutePath &filename, unsigned char *pal);
-    void readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites);
+    void readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites, bool sprite);
     void readSounds(const Filesystem::AbsolutePath & filename, SoundMap & sounds);
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)
     MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
-    MugenAnimation *getAnimation( Ast::Section *section, const Mugen::SpriteMap &sprites );
+    MugenAnimation *getAnimation( Ast::Section *section, const Mugen::SpriteMap &sprites, bool mask);
 
-    std::map<int, MugenAnimation *> loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites);
+    /* if mask is true, then effects.mask will be true by default */
+    std::map<int, MugenAnimation *> loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask);
 
     /* destroys raw pcx data in a MugenSprite */
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
@@ -66,7 +67,7 @@ namespace Util{
     /*! Use to probe a SFF file for a specific sprite without loading the whole sprite list
        Throws exception if not found
     */
-    MugenSprite *probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
+    MugenSprite *probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
 
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.
@@ -120,7 +121,7 @@ class Effects{
 	int alphalow;
 	int alphahigh;
 
-        /* ??? */
+        /* if the masking color should be shown or not, true is not shown */
 	bool mask;
 
         /* horizontal flip */

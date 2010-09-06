@@ -3,6 +3,7 @@
 #include "mugen/sprite.h"
 #include "util/funcs.h"
 #include "globals.h"
+#include <math.h>
 
 using namespace std;
 using namespace Mugen;
@@ -18,13 +19,16 @@ y(0),
 groupNumber(0),
 imageNumber(0),
 prev(0),
-samePalette(0),
+samePalette(false),
 pcx(NULL),
-bitmap(NULL){
+unmaskedBitmap(NULL),
+maskedBitmap(NULL){
     //Nothing
 }
 
-MugenSprite::MugenSprite( const MugenSprite &copy ){
+MugenSprite::MugenSprite( const MugenSprite &copy ):
+unmaskedBitmap(NULL),
+maskedBitmap(NULL){
     this->next = copy.next;
     this->location = copy.location;
     this->length = copy.length;
@@ -51,10 +55,12 @@ MugenSprite::MugenSprite( const MugenSprite &copy ){
         this->pcx = NULL;
     }
 
-    if (copy.bitmap){
-	this->bitmap = new Bitmap(*copy.bitmap);
-    } else {
-        this->bitmap = NULL;
+    if (copy.unmaskedBitmap){
+	this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
+    }
+
+    if (copy.maskedBitmap){
+	this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
     }
 }
 
@@ -81,21 +87,26 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
         memcpy(this->pcx, copy.pcx, this->reallength);
     }
 
-    if (copy.bitmap){
-	this->bitmap = new Bitmap(*copy.bitmap);
+    if (copy.unmaskedBitmap){
+	this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
+    }
+
+    if (copy.maskedBitmap){
+	this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
     }
     
     return *this;
 }
         
 void MugenSprite::copyImage(const MugenSprite * copy){
-    if (bitmap){
-        delete bitmap;
-        bitmap = NULL;
+    cleanup();
+
+    if (copy->unmaskedBitmap){
+	this->unmaskedBitmap = new Bitmap(*copy->unmaskedBitmap);
     }
 
-    if (copy->getBitmap() != NULL){
-        bitmap = new Bitmap(*copy->getBitmap());
+    if (copy->maskedBitmap){
+	this->maskedBitmap = new Bitmap(*copy->maskedBitmap);
     }
 }
 
@@ -110,9 +121,14 @@ void MugenSprite::cleanup(){
         pcx = NULL;
     }
 
-    if (bitmap){
-	delete bitmap;
-        bitmap = NULL;
+    if (unmaskedBitmap){
+	delete unmaskedBitmap;
+        unmaskedBitmap = NULL;
+    }
+
+    if (maskedBitmap){
+	delete maskedBitmap;
+        maskedBitmap = NULL;
     }
 }
 
@@ -181,10 +197,27 @@ void MugenSprite::render(int facing, int vfacing, const int xaxis, const int yax
     }
 }
 */
+
+static bool isScaled(const Mugen::Effects & effects){
+    double epsilon = 0.00001;
+    return fabs(effects.scalex - 1) > epsilon ||
+           fabs(effects.scaley - 1) > epsilon;
+}
+
 void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
     // temp for scaling
+    /*
     Bitmap modImage = Bitmap::temporaryBitmap((int) (bitmap->getWidth() * effects.scalex), (int) (bitmap->getHeight() * effects.scaley));
     bitmap->Stretch(modImage);
+    */
+
+    Bitmap * use = getBitmap(effects.mask);
+
+    Bitmap modImage = *use;
+    if (isScaled(effects)){
+        modImage = Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley));
+        use->Stretch(modImage);
+    }
     
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
     switch (effects.trans){
@@ -223,23 +256,47 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
 }
 
 void MugenSprite::load(bool mask){
-    if (!bitmap && pcx){
-	bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+    if (pcx){
+        if (mask){
+            maskedBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Bitmap::MaskColor());
+        } else {
+            unmaskedBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+        }
     }
 }
 
 void MugenSprite::reload(bool mask){
-    if (bitmap){
-	delete bitmap;
-        bitmap = NULL;
+    if (maskedBitmap){
+        delete maskedBitmap;
+        maskedBitmap = NULL;
     }
-    if (pcx){
-        bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+
+    if (unmaskedBitmap){
+        delete unmaskedBitmap;
+        unmaskedBitmap = NULL;
     }
+
+    load(mask);
 }
 
-Bitmap *MugenSprite::getBitmap() const {
-    return bitmap;
+Bitmap * MugenSprite::getBitmap(bool mask){
+    if (mask){
+        if (maskedBitmap){
+            return maskedBitmap;
+        }
+        if (unmaskedBitmap){
+            maskedBitmap = new Bitmap(*unmaskedBitmap, true);
+            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Bitmap::MaskColor());
+            return maskedBitmap;
+        }
+    } else {
+        if (unmaskedBitmap){
+            return unmaskedBitmap;
+        }
+        return maskedBitmap;
+    }
+    return NULL;
 }
 
 /* deletes raw data */
@@ -251,16 +308,23 @@ void MugenSprite::unloadRaw(){
 }
 
 int MugenSprite::getWidth(){
-    return bitmap->getWidth();
+    if (maskedBitmap){
+        return maskedBitmap->getWidth();
+    }
+    return unmaskedBitmap->getWidth();
 }
 
 int MugenSprite::getHeight(){
-    return bitmap->getHeight();
+    if (maskedBitmap){
+        return maskedBitmap->getHeight();
+    }
+    return unmaskedBitmap->getHeight();
 }
 
-void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[]){
+void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
     /* TODO: 768 is littered everywhere, replace with a constant */
     ifile.seekg(location + 32, ios::beg);
+    ifile.clear();
     if (samePalette){
 	// Lets give it space for the palette
 	Global::debug(1) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
@@ -272,6 +336,12 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
         memset(pcx, 0, reallength);
     }
     ifile.read((char *)pcx, reallength); 
+    if (ifile.eofbit || ifile.failbit){
+        int read = (int) ifile.tellg() - (location + 32);
+        if (read != (int) reallength){
+            Global::debug(0) << "Warning: could not read " << reallength << " bytes from pcx file, only read " << read << endl;
+        }
+    }
     if (!islinked){
 	if (!useact){
 	    if (samePalette){
@@ -282,7 +352,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 	    }
 	} else {
 	    // Replace all palettes with the one supplied in act
-	    if ( samePalette){
+	    if (samePalette){
 		memcpy(pcx + (reallength), palsave1, 768);
 	    } else {
                 /* TODO: add an explanation of what group 9000 means here */
@@ -292,8 +362,8 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 	    }
 	}
     }
-    
-    load(false);
+
+    load(mask);
 }
 
 void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){

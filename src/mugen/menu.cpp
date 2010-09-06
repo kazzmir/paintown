@@ -296,7 +296,7 @@ void MugenMenu::loadData(){
                         if (simple == "spr"){
                             simple >> menu.spriteFile;
                             Global::debug(1) << "Got Sprite File: '" << menu.spriteFile << "'" << endl;
-                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, menu.spriteFile), Filesystem::AbsolutePath(), menu.sprites);
+                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, menu.spriteFile), Filesystem::AbsolutePath(), menu.sprites, false);
                             Mugen::Util::destroyRaw(menu.sprites);
                         } else if (simple == "snd"){
                             simple >> menu.soundFile;

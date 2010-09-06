@@ -38,7 +38,7 @@ class MugenSprite{
         void copyImage(const MugenSprite * copy);
 	
 	// get sprite
-	Bitmap *getBitmap() const;
+	Bitmap * getBitmap(bool mask);
 	int getWidth();
 	int getHeight();
 	
@@ -56,7 +56,7 @@ class MugenSprite{
 	inline void setPrevious(const unsigned short p){ prev = p; }
 	inline void setSamePalette(const bool p){ samePalette = p; };
 	
-	void loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[]);
+	void loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask);
 	
 	inline unsigned long getNext() const { return next; }
 	inline unsigned long getLocation() const { return location; }
@@ -93,8 +93,10 @@ class MugenSprite{
 	bool samePalette;
 	char comments[12];
 	char * pcx;
+        int maskColor;
 	
-	Bitmap *bitmap;
+	Bitmap * unmaskedBitmap;
+        Bitmap * maskedBitmap;
 	
 	void draw(const Bitmap &, const int xaxis, const int yaxis, const Bitmap &, const Mugen::Effects &);
 };

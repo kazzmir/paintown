@@ -861,7 +861,7 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
     if (!getVisible()){
         return;
     }
-    const Bitmap & show = *sprite->getBitmap();
+    const Bitmap & show = *sprite->getBitmap(getMask());
     const int addw = show.getWidth() + getTileSpacing().x;
     const int addh = show.getHeight() + getTileSpacing().y;
     const int windowAddX = (int) (getWindowDeltaX() * cameraX);
@@ -1566,7 +1566,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
 			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
 			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites);
+			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, false);
 			} 
 		    }
             };
@@ -1590,7 +1590,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
 			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
 			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites);
+			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, false);
 			} 
 		    }
             };
@@ -1614,7 +1614,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
 			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
 			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites);
+			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, false);
 			} else if (simple == "debugbg"){
 			    simple >> self.debug;
 			} else if (simple == "bgclearcolor"){
@@ -1662,7 +1662,7 @@ clearColor(-1){
 	    int h;
             istringstream out(head);
 	    out >> h;
-	    animations[h] = Mugen::Util::getAnimation(section, sprites);
+	    animations[h] = Mugen::Util::getAnimation(section, sprites, false);
 	} else if (PaintownUtil::matchRegex(head, ".*bgctrldef")){
             // Grabs the Background Controller Definition so that we can go through the child controllers
             head.replace(0,10,"");

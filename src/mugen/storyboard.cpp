@@ -145,7 +145,7 @@ maxLayers(10){
 			std::string action;
 			simple >> action;
 			Ast::Section * section = parsed.findSection("begin action " + action);
-			scene.layers[num]->setAnimation(Util::getAnimation(section,sprites));
+			scene.layers[num]->setAnimation(Util::getAnimation(section,sprites, false));
 		    }
 		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
 		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
@@ -323,7 +323,7 @@ startscene(0){
                     if (simple == "spr"){
 			std::string temp;
                         simple >> temp;
-                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), Filesystem::AbsolutePath(), board.sprites);
+                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), Filesystem::AbsolutePath(), board.sprites, false);
                     } else if (simple == "startscene"){
                         simple >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;

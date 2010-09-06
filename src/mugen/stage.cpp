@@ -613,10 +613,10 @@ void MugenStage::load(){
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 
     // Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.sff")), Filesystem::AbsolutePath(), effects);
-    Mugen::Util::readSprites(getMotifFile("fightfx.sff"), Filesystem::AbsolutePath(), effects);
+    Mugen::Util::readSprites(getMotifFile("fightfx.sff"), Filesystem::AbsolutePath(), effects, true);
     destroyRaw(effects);
     // sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.air")), effects);
-    sparks = Mugen::Util::loadAnimations(getMotifFile("fightfx.air"), effects);
+    sparks = Mugen::Util::loadAnimations(getMotifFile("fightfx.air"), effects, true);
 
     // Mugen::Util::readSounds(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("common.snd")), sounds);
     Mugen::Util::readSounds(getMotifFile("common.snd"), sounds);

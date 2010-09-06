@@ -318,6 +318,8 @@ public:
 
         //unsigned char colorsave[3]; // rgb pal save
 
+        memset(palsave1, 0, sizeof(palsave1));
+
         // Load in first palette
         if (readPalette(palette, palsave1)){
             useact = true;
@@ -340,10 +342,10 @@ public:
     }
 
     /* Actually loads the pcx data */
-    MugenSprite * loadSprite(MugenSprite * sprite){
-        if (sprite->getBitmap() == NULL){
+    MugenSprite * loadSprite(MugenSprite * sprite, bool mask){
+        if (sprite->getBitmap(mask) == NULL){
             if (sprite->getLength() == 0){
-                const MugenSprite * temp = loadSprite(spriteIndex[sprite->getPrevious()]);
+                const MugenSprite * temp = loadSprite(spriteIndex[sprite->getPrevious()], mask);
                 if (!temp){
                     ostringstream out;
                     out << "Unknown linked sprite " << sprite->getPrevious() << endl;
@@ -352,13 +354,13 @@ public:
                 sprite->copyImage(temp);
             } else {
                 bool islinked = false;
-                sprite->loadPCX(sffStream, islinked, useact, palsave1);
+                sprite->loadPCX(sffStream, islinked, useact, palsave1, mask);
             }
         }
         return sprite;
     }
 
-    MugenSprite * findSprite(int group, int item){
+    MugenSprite * findSprite(int group, int item, bool mask){
         if (spriteIndex.size() == 0){
             quickReadSprites();
         }
@@ -367,7 +369,7 @@ public:
             if (sprite->getGroupNumber() == group &&
                 sprite->getImageNumber() == item){
                 /* make a deep copy */
-                return new MugenSprite(*loadSprite(sprite));
+                return new MugenSprite(*loadSprite(sprite, mask));
             }
         }
         return NULL;
@@ -381,7 +383,7 @@ public:
         }
     }
 
-    MugenSprite * readSprite(){
+    MugenSprite * readSprite(bool mask){
         bool islinked = false;
         if (location > filesize){
             throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.");
@@ -400,7 +402,7 @@ public:
             }
             sprite->copyImage(temp);
         } else {
-            sprite->loadPCX(sffStream, islinked, useact, palsave1);
+            sprite->loadPCX(sffStream, islinked, useact, palsave1, mask);
         }
             
         spriteIndex[currentSprite] = sprite;
@@ -429,13 +431,13 @@ protected:
     }
 }
 
-void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites){
+void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites, bool mask){
     SffReader reader(filename, palette);
     /* where replaced sprites go */
     vector<MugenSprite*> unused;
     while (reader.moreSprites()){
         try{
-            MugenSprite * sprite = reader.readSprite();
+            MugenSprite * sprite = reader.readSprite(mask);
 
             Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
             if (first_it != sprites.end()){
@@ -668,19 +670,20 @@ MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, As
 }
 #endif
 
-MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites ){
+MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites, bool mask){
     MugenAnimation *animation = new MugenAnimation();
 
     /* see parser/air.peg */
     class Walker: public Ast::Walker{
     public:
-        Walker(MugenAnimation * animation, const Mugen::SpriteMap & sprites):
+        Walker(MugenAnimation * animation, const Mugen::SpriteMap & sprites, bool mask):
         Ast::Walker(),
         animation(animation),
         sprites(sprites),
         clsn1Reset(false),
         clsn2Reset(false),
-        setloop(false){
+        setloop(false),
+        mask(mask){
         }
 
         /* data */
@@ -691,6 +694,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
         bool clsn1Reset;
         bool clsn2Reset;
         bool setloop;
+        bool mask;
 
         enum Expect{
             clsn1, clsn2
@@ -715,7 +719,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
         /* callbacks */
         virtual void onValueList(const Ast::ValueList & values){
             // This is the new frame
-            MugenFrame *frame = new MugenFrame();
+            MugenFrame *frame = new MugenFrame(mask);
             frame->defenseCollision = clsn2Holder;
             frame->attackCollision = clsn1Holder;
             frame->loopstart = setloop;
@@ -864,7 +868,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
         }
     };
 
-    Walker walker(animation, sprites);
+    Walker walker(animation, sprites, mask);
     section->walk(walker);
 
     /* FIXME!! use regex to get the number */
@@ -901,7 +905,7 @@ list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
     }
 }
 
-std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites){
+std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask){
     Ast::AstParse parsed(parseAir(filename.path()));
     Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
     
@@ -915,7 +919,7 @@ std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::Ab
         if (PaintownUtil::matchRegex(head, "begin action [0-9]+")){
             number = atoi(PaintownUtil::captureRegex(head, "begin action ([0-9]+)", 0).c_str());
             Global::debug(1, __FILE__) << "Parse animation " << number << endl;
-            animations[number] = Mugen::Util::getAnimation(section, sprites);
+            animations[number] = Mugen::Util::getAnimation(section, sprites, mask);
         }
     }
     return animations;
@@ -1019,10 +1023,9 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
     return probeDef(parsed, section, search);
 }
 
-/* TODO: clean this function up */
-MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, const Filesystem::AbsolutePath & actFile){
+MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){
     SffReader reader(file, actFile);
-    MugenSprite * found = reader.findSprite(groupNumber, spriteNumber);
+    MugenSprite * found = reader.findSprite(groupNumber, spriteNumber, mask);
     reader.cleanup();
     if (found != NULL){
         return found;
@@ -1030,33 +1033,6 @@ MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int gro
     ostringstream out;
     out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file.path();
     throw MugenException(out.str());
-    /*
-    vector<MugenSprite*> sprites;
-    while (reader.moreSprites()){
-        try{
-            MugenSprite * sprite = reader.readSprite();            
-            // Check if this is the sprite we're after
-	    Global::debug(1) << "Matching group: (" << groupNumber << ") with (" << sprite->getGroupNumber() << ") | sprite: (" << spriteNumber << ") with (" << sprite->getImageNumber() << ")" << endl;
-	    if ((sprite->getGroupNumber() == groupNumber) && (sprite->getImageNumber() == spriteNumber)){
-	        // we got it return it
-                for (vector<MugenSprite*>::iterator it = sprites.begin(); it != sprites.end(); it++){
-                    delete *it;
-                }
-                return sprite;
-	    } else {
-                sprites.push_back(sprite);
-            }
-        } catch (const MugenException & e){
-            Global::debug(0) << e.getReason() << endl;
-        }
-    }
-    for (vector<MugenSprite*>::iterator it = sprites.begin(); it != sprites.end(); it++){
-        delete *it;
-    }
-    ostringstream out;
-    out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file.path();
-    throw MugenException(out.str());
-    */
 }
 
 Mugen::Point::Point():

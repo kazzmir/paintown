@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "state.h"
-#include "mugen/util.h"
+#include "util.h"
 
 class Bitmap;
 class MugenSprite;
@@ -31,7 +31,7 @@ Frame
 */
 class MugenFrame{
     public:
-	MugenFrame();
+	MugenFrame(bool defaultMask);
 	MugenFrame( const MugenFrame &copy );
 	virtual ~MugenFrame();
 	

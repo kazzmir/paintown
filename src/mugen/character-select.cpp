@@ -164,8 +164,8 @@ character2(0){
     }
     // just a precaution
     // spriteFile = Util::removeSpaces(spriteFile);
-    icon = Util::probeSff(baseDirectory.join(spriteFile), 9000, 0, baseDirectory.join(actCollection[0]));
-    portrait = Util::probeSff(baseDirectory.join(spriteFile), 9000, 1, baseDirectory.join(actCollection[0]));
+    icon = Util::probeSff(baseDirectory.join(spriteFile), 9000, 0, true, baseDirectory.join(actCollection[0]));
+    portrait = Util::probeSff(baseDirectory.join(spriteFile), 9000, 1, true, baseDirectory.join(actCollection[0]));
 }
 
 CharacterInfo::~CharacterInfo(){
@@ -1182,7 +1182,7 @@ void CharacterSelect::load(){
                         if (simple == "spr"){
                             simple >> select.sffFile;
                             Global::debug(1) << "Got Sprite File: '" << select.sffFile << "'" << endl;
-                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, select.sffFile), Filesystem::AbsolutePath(), select.sprites);
+                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, select.sffFile), Filesystem::AbsolutePath(), select.sprites, true);
 			    for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
 				// Load these sprites so they are ready to use
 				for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){

@@ -75,12 +75,13 @@ bool MugenArea::collision(int mx, int my, const MugenArea & area, int ax, int ay
 /*
 Frame
 */
-MugenFrame::MugenFrame():
+MugenFrame::MugenFrame(bool mask):
 loopstart(false),
 sprite(0),
 xoffset(0),
 yoffset(0),
 time(0){
+    effects.mask = mask;
 }
 
 MugenFrame::MugenFrame( const MugenFrame &copy ){
@@ -139,7 +140,8 @@ looped(false){
     this->showDefense = copy.showDefense;
     this->showOffense = copy.showOffense;
     for (vector<MugenFrame*>::const_iterator it = copy.frames.begin(); it != copy.frames.end(); it++){
-        this->frames.push_back(new MugenFrame(*(*it)));
+        MugenFrame * old = *it;
+        this->frames.push_back(new MugenFrame(*old));
     }
     this->ticks = copy.ticks;
     this->started = copy.started;
