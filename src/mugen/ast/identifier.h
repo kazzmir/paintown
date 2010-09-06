@@ -112,6 +112,10 @@ public:
     SimpleIdentifier(const std::string & name):
     Identifier(-1, -1, toList(name)){
     }
+    
+    SimpleIdentifier(int line, int column, const std::string & name):
+    Identifier(line, column, toList(name)){
+    }
 };
 
 }

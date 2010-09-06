@@ -224,6 +224,10 @@ Ast::Value * makeFunction1(const Value & name, const Value & arg1){
     return makeFunction(name, makeValueList(arg1, Value()));
 }
 
+Ast::Value * makeFunction1(const std::string & name, const Value & arg1){
+    return makeFunction(name, makeValueList(arg1, Value()));
+}
+
 std::string combine(const char * name, const Value & what){
     if (what.getValue() != 0){
         std::ostringstream out;
@@ -293,6 +297,12 @@ Ast::Identifier * makeSimpleIdentifier(const Value & name){
     return identifier;
 }
 
+Ast::Identifier * makeSimpleIdentifier(int line, int column, const char * name){
+    Ast::Identifier * identifier = new Ast::SimpleIdentifier(line, column, name);
+    GC::save(identifier);
+    return identifier;
+}
+
 Ast::Identifier * makeSimpleIdentifier(const char * name){
     Ast::Identifier * identifier = new Ast::SimpleIdentifier(name);
     GC::save(identifier);
@@ -355,6 +365,12 @@ void addSection(const Value & section_list_value, const Value & section_value){
             throw ParseException("Cannot add null section");
     }
     sections->push_back(section);
+}
+
+Ast::Value * copyValue(const Value & value){
+    Ast::Value * copied = (Ast::Value*) as<Ast::Value*>(value)->copy();
+    GC::save(copied);
+    return copied;
 }
 
 Ast::Section * makeSection(const Value & str){
@@ -601,8 +617,7 @@ rules:
             | "<" {{ value = (void *) makeExpressionLessThan; }}
             | ">" {{ value = (void *) makeExpressionGreaterThan; }}
     all_compare = compare
-                | "="
-                | "!="
+                | compare_equal
     expr10_rest(left) = s "+" s right:expr11 new_left:{{ value = makeExpressionAdd(left, right); }} expr10_rest(new_left)
                       | s "-" s right:expr11 new_left:{{ value = makeExpressionSubtract(left, right); }} expr10_rest(new_left)
                       | <void> {{ value = left; }}
@@ -626,23 +641,44 @@ rules:
                  value = makeFunction1(name, arg1);
              }}
              | name:"teammode"{case} s "!=" s arg1:identifier {{
-                 value = makeFunction1("teammode!=", arg1); 
+                 value = makeFunction1(std::string("teammode!="), arg1); 
              }}
-             | name:"animelem"{case} s "=" s arg1:integer function_rest {{
-                /* FIXME: handle function rest */
-                value = makeFunction1(name, arg1);
+             | line:<line> "animelem"{case} s "=" s arg1:integer s "," s comparison:all_compare s arg2:integer {{
+                /* animelemno == arg1 && animelemtime(arg1) compare arg2 */
+                Ast::Value * element;
+                Ast::Value * time;
+                element = makeExpressionEquals(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim"), arg1);
+                /* make a copy of arg1 because values can only have one parent */
+                typedef Ast::Value * (*compare_func)(const Value &, const Value &);
+                time = as<compare_func>(comparison)(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1))), arg2);
+
+                value = makeExpressionAnd(element, time);
              }}
-             | name:"animelem"{case} s "<=" s arg1:integer function_rest {{
-                /* FIXME: handle function rest */
-                value = makeFunction1("animelem<=", arg1);
+             | line:<line> "animelem"{case} s "=" s arg1:integer {{
+                /* animelemno == arg1 && animelemtime(arg1) compare arg2 */
+                Ast::Value * element;
+                Ast::Value * time;
+                element = makeExpressionEquals(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim"), arg1);
+                /* make a copy of arg1 because values can only have one parent */
+                time = makeExpressionEquals(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1))), Value(makeNumber(0)));
+
+                value = makeExpressionAnd(element, time);
              }}
+             #| name:"animelem"{case} s "=" s arg1:integer function_rest {{
+             #   /* FIXME: handle function rest */
+             #   value = makeFunction1(name, arg1);
+             #}}
+             #| name:"animelem"{case} s "<=" s arg1:integer function_rest {{
+             #   /* FIXME: handle function rest */
+             #   value = makeFunction1("animelem<=", arg1);
+             #}}
              # FIXME: can any integer follow the = or just positive integers?
              | name:"projcontact"{case} id:integer? s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
                 std::string name = combine("projcontact", id);
                 value = makeFunction(name, arg1);
              }}
-             | name:"hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
+             | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
                  typedef Ast::Value * (*compare_func)(const Value &, const Value &);
                  Ast::Value * compare_state = as<compare_func>(comparison)(makeSimpleIdentifier("hitdefattr:state"), state);
                  Ast::Value * compare_attribute = as<compare_func>(comparison)(makeSimpleIdentifier("hitdefattr:attribute"), attributes);
