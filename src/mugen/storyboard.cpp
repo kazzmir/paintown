@@ -249,7 +249,7 @@ void Scene::reset(){
     }
 }
 
-Storyboard::Storyboard(const Filesystem::AbsolutePath & file):
+Storyboard::Storyboard(const Filesystem::AbsolutePath & file, bool mask):
 storyBoardFile(file),
 startscene(0){
     // Lets look for our def since some people think that all file systems are case insensitive
@@ -311,19 +311,21 @@ startscene(0){
         } else if (head == "scenedef"){
             class SceneWalk: public Ast::Walker{
             public:
-                SceneWalk(const Filesystem::AbsolutePath & baseDir, Storyboard & board):
+                SceneWalk(const Filesystem::AbsolutePath & baseDir, Storyboard & board, bool mask):
                     baseDir(baseDir),
-                    board(board){
+                    board(board),
+                    mask(mask){
                 }
 
                 const Filesystem::AbsolutePath & baseDir;
                 Storyboard & board;
+                bool mask;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "spr"){
 			std::string temp;
                         simple >> temp;
-                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), Filesystem::AbsolutePath(), board.sprites, true);
+                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), Filesystem::AbsolutePath(), board.sprites, mask);
                     } else if (simple == "startscene"){
                         simple >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;
@@ -333,7 +335,7 @@ startscene(0){
                 }
             };
 
-            SceneWalk walk(baseDir, *this);
+            SceneWalk walk(baseDir, *this, mask);
             section->walk(walk);
         } else if (PaintownUtil::matchRegex(head, "^scene")){
 	    Scene *scene = new Scene(section, ourDefFile, parsed, sprites);

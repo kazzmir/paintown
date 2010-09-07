@@ -141,7 +141,7 @@ class Scene {
 class Storyboard {
     public:
 	//! Location at dataPath() + "mugen/stages/"
-	Storyboard(const Filesystem::AbsolutePath & file);
+	Storyboard(const Filesystem::AbsolutePath & file, bool mask);
 
 	virtual ~Storyboard();
 	

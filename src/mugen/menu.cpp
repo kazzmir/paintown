@@ -308,7 +308,7 @@ void MugenMenu::loadData(){
                                 if (!menu.logoFile.empty()){
                                     try{
                                         Global::debug(1) << "Logo file " << baseDir.path() << "/" << menu.logoFile << endl;
-                                        menu.logo = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile));
+                                        menu.logo = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile), false);
                                         Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
                                     } catch (const MugenException &ex){
                                         throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
@@ -322,7 +322,7 @@ void MugenMenu::loadData(){
                                 if (!menu.introFile.empty()){
                                     try{
                                         Global::debug(1) << "Intro file " << baseDir.path() << "/" << menu.introFile << endl;
-                                        menu.intro = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.introFile));
+                                        menu.intro = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.introFile), true);
                                         Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
                                     } catch (const MugenException &ex){
                                         throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);

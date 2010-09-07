@@ -404,7 +404,7 @@ void Game::doArcade(const Bitmap & bmp){
 	
     // Run intro before we begin game
     if (!intro.isEmpty()){
-	Storyboard story(intro);
+	Storyboard story(intro, true);
 	story.setInput(input);
 	story.run(bmp);
     }
@@ -476,26 +476,26 @@ void Game::doArcade(const Bitmap & bmp){
                         // Show Default ending if enabled
                         if (defaultEndingEnabled){
                             if (!defaultEnding.isEmpty()){
-                                Storyboard story(defaultEnding);
+                                Storyboard story(defaultEnding, true);
                                 story.setInput(input);
                                 story.run(bmp);
                             }
                         }
                     } else if (defaultEndingEnabled && ending.isEmpty()){
                         if (!defaultEnding.isEmpty()){
-                            Storyboard story(defaultEnding);
+                            Storyboard story(defaultEnding, true);
                             story.setInput(input);
                             story.run(bmp);
                         }
                     } else if (!ending.isEmpty()){
-                        Storyboard story(ending);
+                        Storyboard story(ending, true);
                         story.setInput(input);
                         story.run(bmp);
                     } 
                     if (creditsEnabled){                    
                         // credits
                         if (!credits.isEmpty()){
-                            Storyboard story(defaultEnding);
+                            Storyboard story(defaultEnding, true);
                             story.setInput(input);
                             story.run(bmp);
                         }
@@ -520,7 +520,7 @@ void Game::doArcade(const Bitmap & bmp){
     // Show game over if ended through game otherwise just get out
     if (displayGameOver){
         if (!gameOver.isEmpty()){
-            Storyboard story(gameOver);
+            Storyboard story(gameOver, true);
             story.setInput(input);
             story.run(bmp);
         }
