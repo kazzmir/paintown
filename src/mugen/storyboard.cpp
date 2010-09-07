@@ -323,7 +323,7 @@ startscene(0){
                     if (simple == "spr"){
 			std::string temp;
                         simple >> temp;
-                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), Filesystem::AbsolutePath(), board.sprites, false);
+                        Util::readSprites(Util::getCorrectFileLocation(this->baseDir, temp), Filesystem::AbsolutePath(), board.sprites, true);
                     } else if (simple == "startscene"){
                         simple >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;
