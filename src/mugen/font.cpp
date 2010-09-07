@@ -259,6 +259,7 @@ void MugenFont::changeBank(int bank){
         delete bmp;
     }
     bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
+    bmp->replaceColor(bmp->get8BitMaskColor(), Bitmap::MaskColor());
 }
 
 void MugenFont::load(){
@@ -285,6 +286,7 @@ void MugenFont::load(){
     memcpy( palette, pcx+(pcxsize)-768, 768);
 
     bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
+    bmp->replaceColor(bmp->get8BitMaskColor(), Bitmap::MaskColor());
 
     // Get the text
     ifile.seekg(pcxlocation+pcxsize, ios::beg);
