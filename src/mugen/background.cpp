@@ -1566,7 +1566,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
 			    self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
 			    Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, false);
+			    Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, true);
 			} 
 		    }
             };
