@@ -28,6 +28,7 @@ public:
     static void poll();
     static void enableBufferInput();
     static void disableBufferInput();
+    static void waitForKeys(int key1, int key2);
 
     template <typename X>
     static typename InputMap<X>::Output getMap(InputMap<X> & input){

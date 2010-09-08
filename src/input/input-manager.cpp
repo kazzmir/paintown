@@ -66,6 +66,15 @@ void InputManager::disableBufferInput(){
     manager->bufferKeys = false;
 }
 
+void InputManager::waitForKeys(int key1, int key2){
+    InputMap<int> wait;
+    wait.set(key1, 0, false, 1);
+    wait.set(key2, 0, false, 1);
+    InputManager::waitForRelease(wait, 1);
+    InputManager::waitForPress(wait, 1);
+    InputManager::waitForRelease(wait, 1);
+}
+
 /* these mappings should agree with configuration.cpp:defaultJoystick1Keys,
  * but otherwise they are completely arbitrary
  */

@@ -1301,7 +1301,16 @@ void OptionMugenMenu::logic(){
 }
 
 void OptionMugenMenu::run(const Menu::Context & context){
-    Mugen::run();
+    try{
+        Mugen::run();
+    } catch (const LoadException & le){
+        ostringstream out;
+        out << "Press ENTER to continue\n";
+        out << "\n";
+        out << "We are very sorry but an error has occured while trying to load MUGEN.";
+        Util::showError(le, out.str());
+        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+    }
     throw Exception::Return(__FILE__, __LINE__);
 }
 
@@ -1323,15 +1332,15 @@ void OptionNetworkHost::logic(){
 }
 
 void OptionNetworkHost::run(const Menu::Context & context){
-	Keyboard key;
-        try{
-            Network::networkServer();
-        } catch (const Exception::Return &e){
-        }
-	key.clear();
-	key.poll();
-	key.wait();
-	throw Exception::Return(__FILE__, __LINE__);
+    Keyboard key;
+    try{
+        Network::networkServer();
+    } catch (const Exception::Return &e){
+    }
+    key.clear();
+    key.poll();
+    key.wait();
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionNetworkJoin::OptionNetworkJoin(Token *token):
@@ -1351,18 +1360,18 @@ void OptionNetworkJoin::logic(){
 }
 
 void OptionNetworkJoin::run(const Menu::Context & context){
-	Keyboard key;
-	key.poll();
-	key.wait();
-        try{
-            Network::networkClient();
-        } catch (const Exception::Return &r){
-        }
+    Keyboard key;
+    key.poll();
+    key.wait();
+    try{
+        Network::networkClient();
+    } catch (const Exception::Return &r){
+    }
 
-	key.clear();
-	key.poll();
-	key.wait();
-	throw Exception::Return(__FILE__, __LINE__);
+    key.clear();
+    key.poll();
+    key.wait();
+    throw Exception::Return(__FILE__, __LINE__);
 }
 #endif
 

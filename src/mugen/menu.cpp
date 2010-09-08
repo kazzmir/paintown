@@ -910,7 +910,6 @@ namespace Mugen{
 
 void run(){
     // Load er up and throw up a load box to inform the user
-    // Box::msgDialog(*getParent()->getWork(),"Loading M.U.G.E.N.!",2);
     MugenMenu menu(Mugen::Data::getInstance().getMotif());
     PaintownUtil::Thread::Id loading;
     Level::LevelInfo info;
@@ -924,6 +923,7 @@ void run(){
     } catch (const Exception::Return & re){
         // Say what?
         // Do not quit game
+        // Make waffles?
         Loader::stopLoading(loading);
     } catch (const MugenException & ex){
         string m("Problem with loading MUGEN menu: ");
