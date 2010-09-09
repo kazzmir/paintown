@@ -27,6 +27,10 @@ def nextVar():
     next_var += 1;
     return "peg_%d" % next_var
 
+def resetGensym():
+    global next_var
+    next_var = 0
+
 # substitute variables in a string named by $foo
 # "$foo + $bar - $foo" with {foo:1, bar:2} => "1 + 2 - 1"
 # this is orders of magnitude slower than normal python string
@@ -2631,6 +2635,7 @@ def rule_%s(%s, %s%s%s):
         return data
 
     def generate_cpp(self, peg, chunk_accessor):
+        resetGensym()
         rule_number = "RULE_%s" % self.name
         stream = "stream"
         position = "position"
