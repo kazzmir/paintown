@@ -1783,6 +1783,67 @@ if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
         else:
             raise Exception("unknown verbatim value %s" % pattern.letters)
 
+class CppInterpreterGenerator(CodeGenerator):
+    def generate_sequence(self, pattern, peg):
+        data = "new PegItem(PegItem::Sequence, %s)" % ", ".join([subpattern.generate_v2(self, peg) for subpattern in pattern.patterns])
+        return data
+
+    def generate_bind(self, pattern, peg):
+        data = "new PegItem(PegItem::Bind, %s, %s)" % (pattern.variable, pattern.pattern.generate_v2(self, peg))
+        return data
+
+    def generate_repeat_once(self, pattern, peg):
+        data = "new PegItem(PegItem::RepeatOnce, %s)" % pattern.next.generate_v2(self, peg)
+        return data
+
+    def generate_repeat_many(self, pattern, peg):
+        data = "new PegItem(PegItem::RepeatMany, %s)" % pattern.next.generate_v2(self, peg)
+        return data
+
+    def generate_maybe(self, pattern, peg):
+        data = "new PegItem(PegItem::Maybe, %s)" % pattern.pattern.generate_v2(self, peg)
+        return data
+
+    def generate_eof(self, pattern, peg):
+        data = "new PegItem(PegItem::Eof)"
+        return data
+    
+    def generate_void(self, pattern, peg):
+        data = "new PegItem(PegItem::Void)"
+        return data
+
+    def generate_ensure(self, pattern, peg):
+        data = "new PegItem(PegItem::Ensure, %s)" % pattern.next.generate_v2(self, peg)
+        return data
+    
+    def generate_not(self, pattern, peg):
+        data = "new PegItem(PegItem::Not, %s)" % pattern.next.generate_v2(self, peg)
+        return data
+    
+    def generate_any(self, pattern, peg):
+        data = "new PegItem(PegItem::Any)"
+        return data
+
+    def generate_line(self, pattern, peg):
+        data = "new PegItem(PegItem::Line)"
+        return data
+
+    def generate_range(self, pattern, peg):
+        data = "new PegItem(PegItem::Range, %s)" % pattern.range
+        return data
+
+    def generate_verbatim(self, pattern, peg):
+        data = 'new PegItem(PegItem::Verbatim, "%s"' % pattern.letters
+        return data
+
+    def generate_code(self, pattern, peg):
+        data = 'new PegItem(PegItem::Code, {{%s}})' % pattern.code
+        return data
+
+    def generate_rule(self, pattern, peg):
+        data = 'new PegItem(PegItem::Rule, %s)' % pattern.rule
+        return data
+
 # Thrown when an eof rule is encountered
 class DoneGenerating(Exception):
     pass
@@ -2634,6 +2695,9 @@ def rule_%s(%s, %s%s%s):
 
         return data
 
+    def generate_cpp_interpreter(self, peg):
+        return "\n".join([pattern.generate_v2(CppInterpreterGenerator(), peg) for pattern in self.patterns])
+
     def generate_cpp(self, peg, chunk_accessor):
         resetGensym()
         rule_number = "RULE_%s" % self.name
@@ -2937,6 +3001,9 @@ rules:
     %s
 """ % (self.start, more, code, indent('\n'.join([rule.generate_bnf() for rule in self.rules]).strip()))
         return data
+
+    def generate_cpp_interpreter(self):
+        return "\n".join([rule.generate_cpp_interpreter(self) for rule in self.rules])
 
     def generate_cpp(self, parallel = False):
         def prototype(rule):
@@ -3688,6 +3755,7 @@ def help():
     print "--ruby : Generate Ruby parser"
     print "--python : Generate Python parser"
     print "--cpp,--c++ : Generate C++ parser"
+    print "--c++-interpreter : Generate a C++ parser that uses an interpreter"
     print "--save=filename : Save all generated parser output to a file, 'filename'"
     print "--peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'."
 
@@ -3714,6 +3782,8 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_bnf())
         elif arg == '--cpp' or arg == '--c++':
             doit.append(lambda p: p.generate_cpp(parallel[0]))
+        elif arg == '--c++-interpreter':
+            doit.append(lambda p: p.generate_cpp_interpreter())
         elif arg == '--ruby':
             doit.append(lambda p: p.generate_ruby())
         elif arg == '--python':
