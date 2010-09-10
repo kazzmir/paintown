@@ -634,32 +634,51 @@ void Character::setVariable(int index, const RuntimeValue & value){
     variables[index] = value;
 }
 
+static RuntimeValue extractVariable(const map<int, RuntimeValue> & stuff, int index){
+    map<int, RuntimeValue>::const_iterator found = stuff.find(index);
+    if (found != stuff.end()){
+        return (*found).second;
+    }
+    return RuntimeValue(0);
+}
+
 RuntimeValue Character::getVariable(int index) const {
+    return extractVariable(variables, index);
+    /*
     map<int, RuntimeValue>::const_iterator found = variables.find(index);
     if (found != variables.end()){
         return (*found).second;
     }
     return RuntimeValue(0);
+    */
 }
 
 RuntimeValue Character::getFloatVariable(int index) const {
+    return extractVariable(floatVariables, index);
+
+    /*
     map<int, RuntimeValue>::const_iterator found = floatVariables.find(index);
-    if (found != variables.end()){
+    if (found != floatVariables.end()){
         return (*found).second;
     }
     return RuntimeValue(0);
+    */
 }
         
 void Character::setSystemVariable(int index, const RuntimeValue & value){
-    variables[index] = value;
+    systemVariables[index] = value;
 }
 
 RuntimeValue Character::getSystemVariable(int index) const {
-    map<int, RuntimeValue>::const_iterator found = variables.find(index);
-    if (found != variables.end()){
+    return extractVariable(systemVariables, index);
+
+    /*
+    map<int, RuntimeValue>::const_iterator found = systemVariables.find(index);
+    if (found != systemVariables.end()){
         return (*found).second;
     }
     return RuntimeValue(0);
+    */
 }
         
 void Character::resetStateTime(){
