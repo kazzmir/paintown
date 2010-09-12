@@ -92,8 +92,9 @@ struct Value{
         value(0){
     }
 
-    Value(const Value & him){
-        which = him.which;
+    Value(const Value & him):
+    which(him.which),
+    value(0){
         if (him.isData()){
             value = him.value;
         }
@@ -1795,8 +1796,9 @@ struct Value{
         value(0){
     }
 
-    Value(const Value & him){
-        which = him.which;
+    Value(const Value & him):
+    which(him.which),
+    value(0){
         if (him.isData()){
             value = him.value;
         }
@@ -2265,6 +2267,15 @@ public:
             delete memo[i];
         }
         delete[] memo;
+
+        for (std::map<RuleType, std::vector<Expression*>*>::iterator it = rules.begin(); it != rules.end(); it++){
+            std::vector<Expression*> * expressions = (*it).second;
+            for (std::vector<Expression*>::iterator expression_it = expressions->begin(); expression_it != expressions->end(); expression_it++){
+                Expression * expression = *expression_it;
+                delete expression;
+            }
+            delete expressions;
+        }
     }
 
 private:
@@ -2326,7 +2337,6 @@ std::string ParseException::getReason() const {
 
 Result errorResult(-1);
 
-
 class Failure: public std::exception {
 public:
     Failure(){
@@ -2338,11 +2348,30 @@ public:
 
 class Sequence: public Expression {
 public:
-    Sequence(int d, ...){
+    Sequence(int elements, ...){
+        va_list arguments;
+        va_start(arguments, elements);
+        for (int i = 0; i < elements; i++){
+            all.push_back(va_arg(arguments, Expression*));
+        }
+        va_end(arguments);
+    }
+
+    std::vector<Expression*> all;
+
+    virtual ~Sequence(){
+        for (std::vector<Expression*>::iterator it = all.begin(); it != all.end(); it++){
+            delete (*it);
+        }
     }
 
     virtual Result parse(Stream & stream, int position){
-        throw Failure();
+        Result out(position);
+        for (std::vector<Expression*>::iterator it = all.begin(); it != all.end(); it++){
+            Expression * expression = *it;
+            out.addResult(expression->parse(stream, out.getPosition()));
+        }
+        return out;
     }
 };
 
@@ -2365,6 +2394,9 @@ public:
                 throw Failure();
             }
         }
+        Result out(position + length);
+        out.setValue((void*) data.c_str());
+        return out;
     }
 };
 
@@ -2377,7 +2409,15 @@ public:
     Expression * next;
 
     virtual Result parse(Stream & stream, int position){
-        throw Failure();
+        Result out(position);
+        out.addResult(next->parse(stream, position));
+        try{
+            while (true){
+                out.addResult(next->parse(stream, out.getPosition()));
+            }
+        } catch (const Failure & ignore){
+        }
+        return out;
     }
 
     virtual ~RepeatOnce(){
@@ -2415,7 +2455,9 @@ class Range: public Expression {
 class Code: public Expression {
 public:
     virtual Result parse(Stream & stream, int position){
-        throw Failure();
+        // throw Failure();
+        Result out(position);
+        return out;
     }
 };
 
@@ -3759,14 +3801,16 @@ struct Column{
 
         data = (CppInterpreterGenerator.start_code % (chunks, rule_types, self.error_size)) + "\n" + "\n".join([rule.generate_cpp_interpreter(self) for rule in self.rules])
 
+        setup_rules = "\n".join(["stream.addRule(Peg::Rule_%s, create_rule_%s());" % (rule.name, rule.name) for rule in self.rules])
+
         main = """
-const void * parse(const std::string & filename, bool stats = false){
-    Stream stream(filename);
+static const void * doParse(Stream & stream, bool stats, const std::string & context){
+    %s
     Peg::errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::ostringstream out;
-        out << "Error while parsing " << filename << " " << stream.reportError();
+        out << "Error while parsing " << context << " " << stream.reportError();
         throw ParseException(out.str());
     }
     if (stats){
@@ -3775,39 +3819,27 @@ const void * parse(const std::string & filename, bool stats = false){
     return done.getValues().getValue();
 }
 
+const void * parse(const std::string & filename, bool stats = false){
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
+}
+
 const void * parse(const char * in, bool stats = false){
     Stream stream(in);
-    Peg::errorResult.setError();
-    Result done = rule_%s(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
     Stream stream(in, length);
-    Peg::errorResult.setError();
-    Result done = rule_%s(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
-""" % (self.start, self.start, self.start)
+""" % (setup_rules, self.start)
         namespace_start = self.cppNamespaceStart()
         namespace_end = self.cppNamespaceEnd()
         data = """
 #include <list>
+#include <stdarg.h>
 #include <string>
 #include <map>
 #include <fstream>
@@ -3937,13 +3969,12 @@ struct Column{
 
 %s
 
-const void * parse(const std::string & filename, bool stats = false){
-    Stream stream(filename);
+static const void * doParse(Stream & stream, bool stats, const std::string & context){
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
         std::ostringstream out;
-        out << "Error while parsing " << filename << " " << stream.reportError();
+        out << "Error while parsing " << context << " " << stream.reportError();
         throw ParseException(out.str());
     }
     if (stats){
@@ -3952,36 +3983,23 @@ const void * parse(const std::string & filename, bool stats = false){
     return done.getValues().getValue();
 }
 
+const void * parse(const std::string & filename, bool stats = false){
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
+}
+
 const void * parse(const char * in, bool stats = false){
     Stream stream(in);
-    errorResult.setError();
-    Result done = rule_%s(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
     Stream stream(in, length);
-    errorResult.setError();
-    Result done = rule_%s(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 %s
-        """ % (top_code, namespace_start, start_cpp_code % (chunks, self.error_size), '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, self.start, self.start, namespace_end)
+        """ % (top_code, namespace_start, start_cpp_code % (chunks, self.error_size), '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, namespace_end)
 
         return data
 
