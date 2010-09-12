@@ -1959,7 +1959,7 @@ enum RuleType{
 
 class Expression{
 public:
-    virtual Result parse(Stream & stream, int position) = 0;
+    virtual Result parse(Stream & stream, int position, Value ** arguments) = 0;
 };
 
 class ParseException: std::exception {
@@ -2365,17 +2365,35 @@ public:
         }
     }
 
-    virtual Result parse(Stream & stream, int position){
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
         Result out(position);
         for (std::vector<Expression*>::iterator it = all.begin(); it != all.end(); it++){
             Expression * expression = *it;
-            out.addResult(expression->parse(stream, out.getPosition()));
+            out.addResult(expression->parse(stream, out.getPosition(), arguments));
         }
         return out;
     }
 };
 
 class Bind: public Expression {
+public:
+    Bind(int index, Expression * next):
+    index(index),
+    next(next){
+    }
+
+    int index;
+    Expression * next;
+
+    virtual ~Bind(){
+        delete next;
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        Result out = next->parse(stream, position, arguments);
+        *(arguments[index]) = out.getValues();
+        return out;
+    }
 };
 
 class Verbatim: public Expression {
@@ -2388,7 +2406,7 @@ public:
     std::string data;
     int length;
 
-    virtual Result parse(Stream & stream, int position){
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
         for (int i = 0; i < length; i++){
             if (!compareChar(data[i], stream.get(position + i))){
                 throw Failure();
@@ -2408,12 +2426,12 @@ public:
 
     Expression * next;
 
-    virtual Result parse(Stream & stream, int position){
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
         Result out(position);
-        out.addResult(next->parse(stream, position));
+        out.addResult(next->parse(stream, position, arguments));
         try{
             while (true){
-                out.addResult(next->parse(stream, out.getPosition()));
+                out.addResult(next->parse(stream, out.getPosition(), arguments));
             }
         } catch (const Failure & ignore){
         }
@@ -2426,35 +2444,163 @@ public:
 };
 
 class RepeatMany: public Expression {
+public:
+    RepeatMany(Expression * next):
+    next(next){
+    }
+
+    Expression * next;
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        Result out(position);
+        try{
+            while (true){
+                out.addResult(next->parse(stream, out.getPosition(), arguments));
+            }
+        } catch (const Failure & ignore){
+        }
+        return out;
+    }
+
+    virtual ~RepeatMany(){
+        delete next;
+    }
 };
 
 class Maybe: public Expression {
+public:
+    Maybe(Expression * next):
+    next(next){
+    }
+
+    Expression * next;
+
+    virtual ~Maybe(){
+        delete next;
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        try{
+            return next->parse(stream, position, arguments);
+        } catch (const Failure & ignore){
+            return Result(position);
+        }
+    }
 };
 
 class Eof: public Expression {
+public:
+    Eof(){
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        if (stream.get(position) != 0){
+            throw Failure();
+        }
+        return Result(position + 1);
+    }
 };
 
 class Not: public Expression {
+public:
+    Not(Expression * next):
+    next(next){
+    }
+
+    Expression * next;
+
+    virtual ~Not(){
+        delete next;
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        try{
+            next->parse(stream, position, arguments);
+            throw Failure();
+        } catch (const Failure & fail){
+            return Result(position);
+        }
+    }
 };
 
 class Void: public Expression {
+public:
+    Void(){
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        return Result(position);
+    }
 };
 
 class Any: public Expression {
+public:
+    Any(){
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        if (stream.get(position) != 0){
+            Result out(position + 1);
+            out.setValue((void*) stream.get(position));
+            return out;
+        }
+
+        throw Failure();
+    }
 };
 
 class Ensure: public Expression {
+public:
+    Ensure(Expression * next):
+    next(next){
+    }
+
+    Expression * next;
+
+    virtual ~Ensure(){
+        delete next;
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        next->parse(stream, position, arguments);
+        return Result(position);
+    }
 };
 
 class Line: public Expression {
+public:
+    Line(){
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        /* FIXME */
+        return Result(position);
+    }
 };
 
 class Range: public Expression {
+public:
+    Range(const char * letters):
+    letters(letters){
+    }
+
+    const char * letters;
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        char get = stream.get(position);
+        if (strchr(letters, get) != NULL){
+            Result out(position + 1);
+            out.setValue((void*) get);
+            return out;
+        }
+
+        throw Failure();
+    }
 };
 
 class Code: public Expression {
 public:
-    virtual Result parse(Stream & stream, int position){
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
         // throw Failure();
         Result out(position);
         return out;
@@ -2462,6 +2608,17 @@ public:
 };
 
 class Rule: public Expression {
+public:
+    typedef Result (*rule_function)(Stream & stream, int position, Value ** arguments);
+    Rule(rule_function function, ...):
+    function(function){
+    }
+
+    rule_function function;
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        return function(stream, position, arguments);
+    }
 };
 
 } /* Peg */
@@ -2471,65 +2628,66 @@ typedef Peg::Stream Stream;
 typedef Peg::Value Value;
 typedef Peg::ParseException ParseException;
 """
-    def generate_sequence(self, pattern, peg):
-        data = "new Peg::Sequence(%d, %s)" % (len(pattern.patterns), ", ".join([subpattern.generate_v2(self, peg) for subpattern in pattern.patterns]))
+    def generate_sequence(self, pattern, rule, peg):
+        data = "new Peg::Sequence(%d, %s)" % (len(pattern.patterns), ", ".join([subpattern.generate_v3(self, rule, peg) for subpattern in pattern.patterns]))
         return data
 
-    def generate_bind(self, pattern, peg):
-        data = "new Peg::Bind(%s, %s)" % (pattern.variable, pattern.pattern.generate_v2(self, peg))
+    def generate_bind(self, pattern, rule, peg):
+        variable_index = 0
+        data = "new Peg::Bind(%s, %s)" % (variable_index, pattern.pattern.generate_v3(self, rule, peg))
         return data
 
-    def generate_repeat_once(self, pattern, peg):
-        data = "new Peg::RepeatOnce(%s)" % pattern.next.generate_v2(self, peg)
+    def generate_repeat_once(self, pattern, rule, peg):
+        data = "new Peg::RepeatOnce(%s)" % pattern.next.generate_v3(self, rule, peg)
         return data
 
-    def generate_repeat_many(self, pattern, peg):
-        data = "new Peg::RepeatMany(%s)" % pattern.next.generate_v2(self, peg)
+    def generate_repeat_many(self, pattern, rule, peg):
+        data = "new Peg::RepeatMany(%s)" % pattern.next.generate_v3(self, rule, peg)
         return data
 
-    def generate_maybe(self, pattern, peg):
-        data = "new Peg::Maybe(%s)" % pattern.pattern.generate_v2(self, peg)
+    def generate_maybe(self, pattern, rule, peg):
+        data = "new Peg::Maybe(%s)" % pattern.pattern.generate_v3(self, rule, peg)
         return data
 
-    def generate_eof(self, pattern, peg):
+    def generate_eof(self, pattern, rule, peg):
         data = "new Peg::Eof()"
         return data
     
-    def generate_void(self, pattern, peg):
+    def generate_void(self, pattern, rule, peg):
         data = "new Peg::Void()"
         return data
 
-    def generate_ensure(self, pattern, peg):
-        data = "new Peg::Ensure(%s)" % pattern.next.generate_v2(self, peg)
+    def generate_ensure(self, pattern, rule, peg):
+        data = "new Peg::Ensure(%s)" % pattern.next.generate_v3(self, rule, peg)
         return data
     
-    def generate_not(self, pattern, peg):
-        data = "new Peg::Not(%s)" % pattern.next.generate_v2(self, peg)
+    def generate_not(self, pattern, rule, peg):
+        data = "new Peg::Not(%s)" % pattern.next.generate_v3(self, rule, peg)
         return data
     
-    def generate_any(self, pattern, peg):
+    def generate_any(self, pattern, rule, peg):
         data = "new Peg::Any()"
         return data
 
-    def generate_line(self, pattern, peg):
+    def generate_line(self, pattern, rule, peg):
         data = "new Peg::Line()"
         return data
 
-    def generate_range(self, pattern, peg):
-        data = "new Peg::Range(%s)" % pattern.range
+    def generate_range(self, pattern, rule, peg):
+        data = 'new Peg::Range("%s")' % pattern.range
         return data
 
-    def generate_verbatim(self, pattern, peg):
-        data = 'new Peg::Verbatim("%s")' % pattern.letters
+    def generate_verbatim(self, pattern, rule, peg):
+        data = 'new Peg::Verbatim("%s")' % pattern.letters.replace('"', '\\"')
         return data
 
-    def generate_code(self, pattern, peg):
+    def generate_code(self, pattern, rule, peg):
         data = 'new Peg::Code({{%s}})' % pattern.code
         data = 'new Peg::Code()'
         return data
 
-    def generate_rule(self, pattern, peg):
-        data = 'new Peg::Rule(%s)' % pattern.rule
+    def generate_rule(self, pattern, rule, peg):
+        data = 'new Peg::Rule(rule_%s)' % pattern.rule
         return data
 
 # Thrown when an eof rule is encountered
@@ -2694,6 +2852,9 @@ class PatternEnsure(Pattern):
     def generate_v2(self, generator, peg):
         return generator.generate_ensure(self, peg)
 
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_ensure(self, rule, peg)
+
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_ensure(self, peg, result, stream, failure, tail, peg_args)
         
@@ -2729,6 +2890,9 @@ class PatternNot(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_not(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_not(self, rule, peg)
         
 class PatternRule(Pattern):
     def __init__(self, rule, rules = None, parameters = None):
@@ -2754,6 +2918,9 @@ class PatternRule(Pattern):
     def generate_v2(self, generator, peg):
         return generator.generate_rule(self, peg)
         # return peg.getRule(self.rule).generate_test(generator, peg)
+
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_rule(self, rule, peg)
 
     def ensureRules(self, find):
         if not find(self.rule):
@@ -2800,6 +2967,9 @@ class PatternVoid(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_void(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_void(self, rule, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return ""
@@ -2830,6 +3000,9 @@ class PatternEof(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_eof(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_eof(self, rule, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_eof(self, result, previous_result, stream, failure)
@@ -2873,6 +3046,9 @@ class PatternSequence(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_sequence(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_sequence(self, rule, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_sequence(self, result, previous_result, stream, failure)
@@ -2939,6 +3115,9 @@ class PatternRepeatOnce(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_repeat_once(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_repeat_once(self, rule, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_repeat_once(self, result, previous_result, stream, failure)
@@ -2970,6 +3149,9 @@ class PatternCode(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_code(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_code(self, rule, peg)
 
     def generate_bnf(self):
         return """{{%s}}""" % (self.code)
@@ -3003,6 +3185,9 @@ class PatternRepeatMany(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_repeat_many(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_repeat_many(self, rule, peg)
 
     def generate_bnf(self):
         return self.parens(self.next, self.next.generate_bnf()) + "*"
@@ -3033,6 +3218,9 @@ class PatternAny(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_any(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_any(self, rule, peg)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_any(self, peg, result, stream, failure, tail, peg_args)
@@ -3063,6 +3251,9 @@ class PatternMaybe(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_maybe(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_maybe(self, rule, peg)
 
     def generate_bnf(self):
         return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
@@ -3118,6 +3309,9 @@ class PatternBind(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_bind(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_bind(self, rule, peg)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_bind(self, peg, result, stream, failure, tail, peg_args)
@@ -3155,6 +3349,9 @@ class PatternRange(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_range(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_range(self, rule, peg)
 
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_range(self, peg, result, stream, failure, tail, peg_args)
@@ -3191,6 +3388,9 @@ class PatternLine(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_line(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_line(self, rule, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_line(self, result, previous_result, stream, failure)
@@ -3226,6 +3426,9 @@ class PatternPredicate(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_predicate(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_predicate(self, rule, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_predicate(self, result, previous_result, stream, failure)
@@ -3262,6 +3465,9 @@ class PatternVerbatim(Pattern):
 
     def generate_v2(self, generator, peg):
         return generator.generate_verbatim(self, peg)
+    
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_verbatim(self, rule, peg)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_verbatim(self, result, previous_result, stream, failure)
@@ -3385,7 +3591,7 @@ def rule_%s(%s, %s%s%s):
 
     def generate_cpp_interpreter(self, peg):
         resetGensym()
-        patterns = "\n".join(["expressions->push_back(%s);" % pattern.generate_v2(CppInterpreterGenerator(), peg) for pattern in self.patterns])
+        patterns = "\n".join(["expressions->push_back(%s);" % pattern.generate_v3(CppInterpreterGenerator(), self, peg) for pattern in self.patterns])
         data = """
 std::vector<Peg::Expression*> * create_rule_%s(){
     std::vector<Peg::Expression*> * expressions = new std::vector<Peg::Expression*>();
@@ -3393,19 +3599,19 @@ std::vector<Peg::Expression*> * create_rule_%s(){
     return expressions;
 }
 
-Result rule_%s(Stream & stream, int position){
+Result rule_%s(Stream & stream, int position, Value ** arguments){
     std::vector<Peg::Expression*> * expressions = stream.getRule(Peg::Rule_%s);
     for (std::vector<Peg::Expression*>::const_iterator it = expressions->begin(); it != expressions->end(); it++){
         try{
             Peg::Expression * expression = *it;
-            return expression->parse(stream, position);
+            return expression->parse(stream, position, arguments);
         } catch (const Peg::Failure & failure){
             /* try next rule.. */
         }
     }
     return Peg::errorResult;
 }
-""" % (self.name, patterns, self.name, self.name)
+""" % (self.name, indent(patterns), self.name, self.name)
         return data
 
     def generate_cpp(self, peg, chunk_accessor):
@@ -3799,7 +4005,13 @@ struct Column{
 
         rule_types = ",\n".join(["Rule_%s" % rule.name for rule in self.rules])
 
-        data = (CppInterpreterGenerator.start_code % (chunks, rule_types, self.error_size)) + "\n" + "\n".join([rule.generate_cpp_interpreter(self) for rule in self.rules])
+        prototypes = "\n".join(["Result rule_%s(Stream &, int, Value ** arguments);" % rule.name for rule in self.rules])
+
+        data = """
+%s
+%s
+%s
+""" % (CppInterpreterGenerator.start_code % (chunks, rule_types, self.error_size), prototypes, "\n".join([rule.generate_cpp_interpreter(self) for rule in self.rules]))
 
         setup_rules = "\n".join(["stream.addRule(Peg::Rule_%s, create_rule_%s());" % (rule.name, rule.name) for rule in self.rules])
 
@@ -3807,7 +4019,7 @@ struct Column{
 static const void * doParse(Stream & stream, bool stats, const std::string & context){
     %s
     Peg::errorResult.setError();
-    Result done = rule_%s(stream, 0);
+    Result done = rule_%s(stream, 0, NULL);
     if (done.error()){
         std::ostringstream out;
         out << "Error while parsing " << context << " " << stream.reportError();
@@ -3835,8 +4047,17 @@ const void * parse(const char * in, int length, bool stats = false){
 }
 
 """ % (setup_rules, self.start)
+
+        top_code = ""
+        if self.include_code != None:
+            top_code = self.include_code
+        more_code = ""
+        if self.more_code != None:
+            more_code = self.more_code
+
         namespace_start = self.cppNamespaceStart()
         namespace_end = self.cppNamespaceEnd()
+
         data = """
 #include <list>
 #include <stdarg.h>
@@ -3852,7 +4073,9 @@ const void * parse(const char * in, int length, bool stats = false){
 %s
 %s
 %s
-""" % (namespace_start, data, main, namespace_end)
+%s
+%s
+""" % (top_code, namespace_start, data, more_code, main, namespace_end)
         return data
 
     def generate_cpp(self, parallel = False):
