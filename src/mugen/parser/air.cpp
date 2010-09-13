@@ -23,7 +23,6 @@ namespace Mugen{
     
 
 
-
 struct Value{
     typedef std::list<Value>::const_iterator iterator;
 
@@ -32,8 +31,9 @@ struct Value{
         value(0){
     }
 
-    Value(const Value & him){
-        which = him.which;
+    Value(const Value & him):
+    which(him.which),
+    value(0){
         if (him.isData()){
             value = him.value;
         }
@@ -42,7 +42,7 @@ struct Value{
         }
     }
 
-    Value(const void * value):
+    explicit Value(const void * value):
         which(0),
         value(value){
     }
@@ -55,6 +55,11 @@ struct Value{
         if (him.isList()){
             values = him.values;
         }
+        return *this;
+    }
+
+    Value & operator=(const void * what){
+        this->value = what;
         return *this;
     }
 
@@ -615,12 +620,12 @@ static inline bool compareCharCase(const char a, const char b){
     return lower(a) == lower(b);
 }
 
+
 std::string ParseException::getReason() const {
     return message;
 }
 
 Result errorResult(-1);
-
 
 Result rule_start(Stream &, const int);
 Result rule_line(Stream &, const int, Value current);
@@ -695,10 +700,10 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
-        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        Ast::Value * value = as<Ast::Value*>(Value((*it).getValue()));
         if (value == 0){
             /* FIXME! replace empty with a new node */
-            value = makeKeyword("empty");
+            value = makeKeyword(Value("empty"));
             values.push_back(value);
         } else {
             values.push_back(value);
@@ -846,7 +851,7 @@ Result rule_start(Stream & stream, const int position){
                             if (result_peg_11.error()){
                                 
                                 result_peg_11 = Result(save_peg_14);
-                                result_peg_11.setValue((void*) 0);
+                                result_peg_11.setValue(Value((void*) 0));
                                 
                             }
                         
@@ -861,7 +866,7 @@ Result rule_start(Stream & stream, const int position){
             
             if ('\0' == stream.get(result_peg_2.getPosition())){
                     result_peg_2.nextPosition();
-                    result_peg_2.setValue((void *) '\0');
+                    result_peg_2.setValue(Value((void *) '\0'));
                 } else {
                     goto out_peg_5;
                 }
@@ -928,7 +933,7 @@ Result rule_line(Stream & stream, const int position, Value current){
                                     goto out_peg_19;
                                 }
                             }
-                            result_peg_16.setValue((void*) " ");
+                            result_peg_16.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_17;
@@ -942,7 +947,7 @@ Result rule_line(Stream & stream, const int position, Value current){
                                     goto out_peg_21;
                                 }
                             }
-                            result_peg_16.setValue((void*) "\t");
+                            result_peg_16.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_17;
@@ -954,7 +959,7 @@ Result rule_line(Stream & stream, const int position, Value current){
                             } else {
                                 goto out_peg_23;
                             }
-                            result_peg_16.setValue((void*) 255);
+                            result_peg_16.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_17;
@@ -1004,7 +1009,7 @@ Result rule_line(Stream & stream, const int position, Value current){
                                     goto out_peg_42;
                                 }
                             }
-                            result_peg_39.setValue((void*) " ");
+                            result_peg_39.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_40;
@@ -1018,7 +1023,7 @@ Result rule_line(Stream & stream, const int position, Value current){
                                     goto out_peg_44;
                                 }
                             }
-                            result_peg_39.setValue((void*) "\t");
+                            result_peg_39.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_40;
@@ -1030,7 +1035,7 @@ Result rule_line(Stream & stream, const int position, Value current){
                             } else {
                                 goto out_peg_46;
                             }
-                            result_peg_39.setValue((void*) 255);
+                            result_peg_39.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_40;
@@ -1219,7 +1224,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_19;
                                 }
                             }
-                            result_peg_16.setValue((void*) " ");
+                            result_peg_16.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_17;
@@ -1233,7 +1238,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_21;
                                 }
                             }
-                            result_peg_16.setValue((void*) "\t");
+                            result_peg_16.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_17;
@@ -1245,7 +1250,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                             } else {
                                 goto out_peg_23;
                             }
-                            result_peg_16.setValue((void*) 255);
+                            result_peg_16.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_17;
@@ -1295,7 +1300,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_42;
                                 }
                             }
-                            result_peg_39.setValue((void*) " ");
+                            result_peg_39.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_40;
@@ -1309,7 +1314,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_44;
                                 }
                             }
-                            result_peg_39.setValue((void*) "\t");
+                            result_peg_39.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_40;
@@ -1321,7 +1326,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                             } else {
                                 goto out_peg_46;
                             }
-                            result_peg_39.setValue((void*) 255);
+                            result_peg_39.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_40;
@@ -1380,7 +1385,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_66;
                                 }
                             }
-                            result_peg_63.setValue((void*) " ");
+                            result_peg_63.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_64;
@@ -1394,7 +1399,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_68;
                                 }
                             }
-                            result_peg_63.setValue((void*) "\t");
+                            result_peg_63.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_64;
@@ -1406,7 +1411,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                             } else {
                                 goto out_peg_70;
                             }
-                            result_peg_63.setValue((void*) 255);
+                            result_peg_63.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_64;
@@ -1465,7 +1470,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_90;
                                 }
                             }
-                            result_peg_87.setValue((void*) " ");
+                            result_peg_87.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_88;
@@ -1479,7 +1484,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_92;
                                 }
                             }
-                            result_peg_87.setValue((void*) "\t");
+                            result_peg_87.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_88;
@@ -1491,7 +1496,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                             } else {
                                 goto out_peg_94;
                             }
-                            result_peg_87.setValue((void*) 255);
+                            result_peg_87.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_88;
@@ -1550,7 +1555,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_114;
                                 }
                             }
-                            result_peg_111.setValue((void*) " ");
+                            result_peg_111.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_112;
@@ -1564,7 +1569,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                                     goto out_peg_116;
                                 }
                             }
-                            result_peg_111.setValue((void*) "\t");
+                            result_peg_111.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_112;
@@ -1576,7 +1581,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
                             } else {
                                 goto out_peg_118;
                             }
-                            result_peg_111.setValue((void*) 255);
+                            result_peg_111.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_112;
@@ -1667,7 +1672,7 @@ Result rule_line_end(Stream & stream, const int position){
             Result result_peg_8(result_peg_6.getPosition());
                 if ('\0' == stream.get(result_peg_8.getPosition())){
                     result_peg_8.nextPosition();
-                    result_peg_8.setValue((void *) '\0');
+                    result_peg_8.setValue(Value((void *) '\0'));
                 } else {
                     goto out_peg_9;
                 }
@@ -1721,7 +1726,7 @@ Result rule_newline(Stream & stream, const int position){
                 goto out_peg_3;
             }
         }
-        result_peg_2.setValue((void*) "\n");
+        result_peg_2.setValue(Value((void*) "\n"));
         
         if (column_peg_1.chunk1 == 0){
             column_peg_1.chunk1 = new Chunk1();
@@ -1741,7 +1746,7 @@ Result rule_newline(Stream & stream, const int position){
                 goto out_peg_5;
             }
         }
-        result_peg_4.setValue((void*) "\r");
+        result_peg_4.setValue(Value((void*) "\r"));
         
         if (column_peg_1.chunk1 == 0){
             column_peg_1.chunk1 = new Chunk1();
@@ -1787,13 +1792,13 @@ Result rule_loopstart(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "loopstart");
+                result_peg_2.setValue(Value((void*) "loopstart"));
             
             Result result_peg_3 = result_peg_2;
             
             {
                     Value value((void*) 0);
-                    value = makeAttributeKeyword(makeKeyword(result_peg_3.getValues()));
+                    value = makeAttributeKeyword(Value(makeKeyword(result_peg_3.getValues())));
                     result_peg_2.setValue(value);
                 }
             
@@ -1890,7 +1895,7 @@ Result rule_sw(Stream & stream, const int position){
                     goto out_peg_5;
                 }
             }
-            result_peg_2.setValue((void*) " ");
+            result_peg_2.setValue(Value((void*) " "));
                 
         }
         goto success_peg_3;
@@ -1904,7 +1909,7 @@ Result rule_sw(Stream & stream, const int position){
                     goto out_peg_7;
                 }
             }
-            result_peg_2.setValue((void*) "\t");
+            result_peg_2.setValue(Value((void*) "\t"));
                 
         }
         goto success_peg_3;
@@ -1916,7 +1921,7 @@ Result rule_sw(Stream & stream, const int position){
             } else {
                 goto out_peg_9;
             }
-            result_peg_2.setValue((void*) 255);
+            result_peg_2.setValue(Value((void*) 255));
             
         }
         goto success_peg_3;
@@ -1985,7 +1990,7 @@ Result rule_comment(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) ";");
+                result_peg_2.setValue(Value((void*) ";"));
             
             
             
@@ -2001,13 +2006,13 @@ Result rule_comment(Stream & stream, const int position){
                             }
                             goto loop_peg_5;
                             not_peg_8:
-                            result_peg_6.setValue((void*)0);
+                            result_peg_6.setValue(Value((void*)0));
                         
                         
                         
                         char temp_peg_10 = stream.get(result_peg_6.getPosition());
                             if (temp_peg_10 != '\0'){
-                                result_peg_6.setValue((void*) (long) temp_peg_10);
+                                result_peg_6.setValue(Value((void*) (long) temp_peg_10));
                                 result_peg_6.nextPosition();
                             } else {
                                 goto loop_peg_5;
@@ -2043,7 +2048,7 @@ Result rule_comment(Stream & stream, const int position){
                         goto out_peg_13;
                     }
                 }
-                result_peg_11.setValue((void*) "=");
+                result_peg_11.setValue(Value((void*) "="));
             
             
             
@@ -2059,13 +2064,13 @@ Result rule_comment(Stream & stream, const int position){
                             }
                             goto loop_peg_14;
                             not_peg_17:
-                            result_peg_15.setValue((void*)0);
+                            result_peg_15.setValue(Value((void*)0));
                         
                         
                         
                         char temp_peg_19 = stream.get(result_peg_15.getPosition());
                             if (temp_peg_19 != '\0'){
-                                result_peg_15.setValue((void*) (long) temp_peg_19);
+                                result_peg_15.setValue(Value((void*) (long) temp_peg_19));
                                 result_peg_15.nextPosition();
                             } else {
                                 goto loop_peg_14;
@@ -2101,7 +2106,7 @@ Result rule_comment(Stream & stream, const int position){
                         goto out_peg_22;
                     }
                 }
-                result_peg_20.setValue((void*) "-");
+                result_peg_20.setValue(Value((void*) "-"));
             
             
             
@@ -2112,7 +2117,7 @@ Result rule_comment(Stream & stream, const int position){
                         goto out_peg_22;
                     }
                 }
-                result_peg_20.setValue((void*) "-");
+                result_peg_20.setValue(Value((void*) "-"));
             
             
             
@@ -2128,13 +2133,13 @@ Result rule_comment(Stream & stream, const int position){
                             }
                             goto loop_peg_24;
                             not_peg_27:
-                            result_peg_25.setValue((void*)0);
+                            result_peg_25.setValue(Value((void*)0));
                         
                         
                         
                         char temp_peg_29 = stream.get(result_peg_25.getPosition());
                             if (temp_peg_29 != '\0'){
-                                result_peg_25.setValue((void*) (long) temp_peg_29);
+                                result_peg_25.setValue(Value((void*) (long) temp_peg_29));
                                 result_peg_25.nextPosition();
                             } else {
                                 goto loop_peg_24;
@@ -2194,7 +2199,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "Clsn2Default");
+                result_peg_2.setValue(Value((void*) "Clsn2Default"));
             
             Result result_peg_3 = result_peg_2;
             
@@ -2205,7 +2210,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) ":");
+                result_peg_2.setValue(Value((void*) ":"));
             
             
             
@@ -2223,7 +2228,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_22;
                                 }
                             }
-                            result_peg_19.setValue((void*) " ");
+                            result_peg_19.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_20;
@@ -2237,7 +2242,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_24;
                                 }
                             }
-                            result_peg_19.setValue((void*) "\t");
+                            result_peg_19.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_20;
@@ -2249,7 +2254,7 @@ Result rule_collision_default(Stream & stream, const int position){
                             } else {
                                 goto out_peg_26;
                             }
-                            result_peg_19.setValue((void*) 255);
+                            result_peg_19.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_20;
@@ -2280,7 +2285,7 @@ Result rule_collision_default(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = makeAttributeKeyword(makeKeyword(result_peg_3.getValues()), num);
+                    value = makeAttributeKeyword(Value(makeKeyword(result_peg_3.getValues())), num);
                     result_peg_2.setValue(value);
                 }
             
@@ -2307,7 +2312,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_30;
                     }
                 }
-                result_peg_28.setValue((void*) "Clsn1Default");
+                result_peg_28.setValue(Value((void*) "Clsn1Default"));
             
             Result result_peg_29 = result_peg_28;
             
@@ -2318,7 +2323,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_30;
                     }
                 }
-                result_peg_28.setValue((void*) ":");
+                result_peg_28.setValue(Value((void*) ":"));
             
             
             
@@ -2336,7 +2341,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_48;
                                 }
                             }
-                            result_peg_45.setValue((void*) " ");
+                            result_peg_45.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_46;
@@ -2350,7 +2355,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_50;
                                 }
                             }
-                            result_peg_45.setValue((void*) "\t");
+                            result_peg_45.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_46;
@@ -2362,7 +2367,7 @@ Result rule_collision_default(Stream & stream, const int position){
                             } else {
                                 goto out_peg_52;
                             }
-                            result_peg_45.setValue((void*) 255);
+                            result_peg_45.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_46;
@@ -2393,7 +2398,7 @@ Result rule_collision_default(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = makeAttributeKeyword(makeKeyword(result_peg_29.getValues()), num);
+                    value = makeAttributeKeyword(Value(makeKeyword(result_peg_29.getValues())), num);
                     result_peg_28.setValue(value);
                 }
             
@@ -2420,7 +2425,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_56;
                     }
                 }
-                result_peg_54.setValue((void*) "Clsn2");
+                result_peg_54.setValue(Value((void*) "Clsn2"));
             
             Result result_peg_55 = result_peg_54;
             
@@ -2431,7 +2436,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_56;
                     }
                 }
-                result_peg_54.setValue((void*) ":");
+                result_peg_54.setValue(Value((void*) ":"));
             
             
             
@@ -2449,7 +2454,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_74;
                                 }
                             }
-                            result_peg_71.setValue((void*) " ");
+                            result_peg_71.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_72;
@@ -2463,7 +2468,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_76;
                                 }
                             }
-                            result_peg_71.setValue((void*) "\t");
+                            result_peg_71.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_72;
@@ -2475,7 +2480,7 @@ Result rule_collision_default(Stream & stream, const int position){
                             } else {
                                 goto out_peg_78;
                             }
-                            result_peg_71.setValue((void*) 255);
+                            result_peg_71.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_72;
@@ -2506,7 +2511,7 @@ Result rule_collision_default(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = makeAttributeKeyword(makeKeyword(result_peg_55.getValues()), num);
+                    value = makeAttributeKeyword(Value(makeKeyword(result_peg_55.getValues())), num);
                     result_peg_54.setValue(value);
                 }
             
@@ -2533,7 +2538,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_82;
                     }
                 }
-                result_peg_80.setValue((void*) "Clsn1");
+                result_peg_80.setValue(Value((void*) "Clsn1"));
             
             Result result_peg_81 = result_peg_80;
             
@@ -2544,7 +2549,7 @@ Result rule_collision_default(Stream & stream, const int position){
                         goto out_peg_82;
                     }
                 }
-                result_peg_80.setValue((void*) ":");
+                result_peg_80.setValue(Value((void*) ":"));
             
             
             
@@ -2562,7 +2567,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_100;
                                 }
                             }
-                            result_peg_97.setValue((void*) " ");
+                            result_peg_97.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_98;
@@ -2576,7 +2581,7 @@ Result rule_collision_default(Stream & stream, const int position){
                                     goto out_peg_102;
                                 }
                             }
-                            result_peg_97.setValue((void*) "\t");
+                            result_peg_97.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_98;
@@ -2588,7 +2593,7 @@ Result rule_collision_default(Stream & stream, const int position){
                             } else {
                                 goto out_peg_104;
                             }
-                            result_peg_97.setValue((void*) 255);
+                            result_peg_97.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_98;
@@ -2619,7 +2624,7 @@ Result rule_collision_default(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = makeAttributeKeyword(makeKeyword(result_peg_81.getValues()), num);
+                    value = makeAttributeKeyword(Value(makeKeyword(result_peg_81.getValues())), num);
                     result_peg_80.setValue(value);
                 }
             
@@ -2675,7 +2680,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "Clsn2");
+                result_peg_2.setValue(Value((void*) "Clsn2"));
                 name = result_peg_2.getValues();
             
             
@@ -2694,7 +2699,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_21;
                                 }
                             }
-                            result_peg_18.setValue((void*) " ");
+                            result_peg_18.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_19;
@@ -2708,7 +2713,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_23;
                                 }
                             }
-                            result_peg_18.setValue((void*) "\t");
+                            result_peg_18.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_19;
@@ -2720,7 +2725,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_25;
                             }
-                            result_peg_18.setValue((void*) 255);
+                            result_peg_18.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_19;
@@ -2748,7 +2753,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "[");
+                result_peg_2.setValue(Value((void*) "["));
             
             
             
@@ -2766,7 +2771,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_43;
                                 }
                             }
-                            result_peg_40.setValue((void*) " ");
+                            result_peg_40.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_41;
@@ -2780,7 +2785,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_45;
                                 }
                             }
-                            result_peg_40.setValue((void*) "\t");
+                            result_peg_40.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_41;
@@ -2792,7 +2797,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_47;
                             }
-                            result_peg_40.setValue((void*) 255);
+                            result_peg_40.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_41;
@@ -2835,7 +2840,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_65;
                                 }
                             }
-                            result_peg_62.setValue((void*) " ");
+                            result_peg_62.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_63;
@@ -2849,7 +2854,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_67;
                                 }
                             }
-                            result_peg_62.setValue((void*) "\t");
+                            result_peg_62.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_63;
@@ -2861,7 +2866,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_69;
                             }
-                            result_peg_62.setValue((void*) 255);
+                            result_peg_62.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_63;
@@ -2889,7 +2894,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "]");
+                result_peg_2.setValue(Value((void*) "]"));
             
             
             
@@ -2907,7 +2912,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_87;
                                 }
                             }
-                            result_peg_84.setValue((void*) " ");
+                            result_peg_84.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_85;
@@ -2921,7 +2926,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_89;
                                 }
                             }
-                            result_peg_84.setValue((void*) "\t");
+                            result_peg_84.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_85;
@@ -2933,7 +2938,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_91;
                             }
-                            result_peg_84.setValue((void*) 255);
+                            result_peg_84.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_85;
@@ -2961,7 +2966,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "=");
+                result_peg_2.setValue(Value((void*) "="));
             
             
             
@@ -2979,7 +2984,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_109;
                                 }
                             }
-                            result_peg_106.setValue((void*) " ");
+                            result_peg_106.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_107;
@@ -2993,7 +2998,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_111;
                                 }
                             }
-                            result_peg_106.setValue((void*) "\t");
+                            result_peg_106.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_107;
@@ -3005,7 +3010,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_113;
                             }
-                            result_peg_106.setValue((void*) 255);
+                            result_peg_106.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_107;
@@ -3048,7 +3053,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_131;
                                 }
                             }
-                            result_peg_128.setValue((void*) " ");
+                            result_peg_128.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_129;
@@ -3062,7 +3067,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_133;
                                 }
                             }
-                            result_peg_128.setValue((void*) "\t");
+                            result_peg_128.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_129;
@@ -3074,7 +3079,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_135;
                             }
-                            result_peg_128.setValue((void*) 255);
+                            result_peg_128.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_129;
@@ -3102,7 +3107,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) ",");
+                result_peg_2.setValue(Value((void*) ","));
             
             
             
@@ -3120,7 +3125,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_153;
                                 }
                             }
-                            result_peg_150.setValue((void*) " ");
+                            result_peg_150.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_151;
@@ -3134,7 +3139,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_155;
                                 }
                             }
-                            result_peg_150.setValue((void*) "\t");
+                            result_peg_150.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_151;
@@ -3146,7 +3151,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_157;
                             }
-                            result_peg_150.setValue((void*) 255);
+                            result_peg_150.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_151;
@@ -3189,7 +3194,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_175;
                                 }
                             }
-                            result_peg_172.setValue((void*) " ");
+                            result_peg_172.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_173;
@@ -3203,7 +3208,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_177;
                                 }
                             }
-                            result_peg_172.setValue((void*) "\t");
+                            result_peg_172.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_173;
@@ -3215,7 +3220,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_179;
                             }
-                            result_peg_172.setValue((void*) 255);
+                            result_peg_172.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_173;
@@ -3243,7 +3248,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) ",");
+                result_peg_2.setValue(Value((void*) ","));
             
             
             
@@ -3261,7 +3266,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_197;
                                 }
                             }
-                            result_peg_194.setValue((void*) " ");
+                            result_peg_194.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_195;
@@ -3275,7 +3280,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_199;
                                 }
                             }
-                            result_peg_194.setValue((void*) "\t");
+                            result_peg_194.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_195;
@@ -3287,7 +3292,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_201;
                             }
-                            result_peg_194.setValue((void*) 255);
+                            result_peg_194.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_195;
@@ -3330,7 +3335,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_219;
                                 }
                             }
-                            result_peg_216.setValue((void*) " ");
+                            result_peg_216.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_217;
@@ -3344,7 +3349,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_221;
                                 }
                             }
-                            result_peg_216.setValue((void*) "\t");
+                            result_peg_216.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_217;
@@ -3356,7 +3361,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_223;
                             }
-                            result_peg_216.setValue((void*) 255);
+                            result_peg_216.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_217;
@@ -3384,7 +3389,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) ",");
+                result_peg_2.setValue(Value((void*) ","));
             
             
             
@@ -3402,7 +3407,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_241;
                                 }
                             }
-                            result_peg_238.setValue((void*) " ");
+                            result_peg_238.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_239;
@@ -3416,7 +3421,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_243;
                                 }
                             }
-                            result_peg_238.setValue((void*) "\t");
+                            result_peg_238.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_239;
@@ -3428,7 +3433,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_245;
                             }
-                            result_peg_238.setValue((void*) 255);
+                            result_peg_238.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_239;
@@ -3486,7 +3491,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_249;
                     }
                 }
-                result_peg_247.setValue((void*) "Clsn1");
+                result_peg_247.setValue(Value((void*) "Clsn1"));
                 name = result_peg_247.getValues();
             
             
@@ -3505,7 +3510,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_266;
                                 }
                             }
-                            result_peg_263.setValue((void*) " ");
+                            result_peg_263.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_264;
@@ -3519,7 +3524,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_268;
                                 }
                             }
-                            result_peg_263.setValue((void*) "\t");
+                            result_peg_263.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_264;
@@ -3531,7 +3536,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_270;
                             }
-                            result_peg_263.setValue((void*) 255);
+                            result_peg_263.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_264;
@@ -3559,7 +3564,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_249;
                     }
                 }
-                result_peg_247.setValue((void*) "[");
+                result_peg_247.setValue(Value((void*) "["));
             
             
             
@@ -3577,7 +3582,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_288;
                                 }
                             }
-                            result_peg_285.setValue((void*) " ");
+                            result_peg_285.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_286;
@@ -3591,7 +3596,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_290;
                                 }
                             }
-                            result_peg_285.setValue((void*) "\t");
+                            result_peg_285.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_286;
@@ -3603,7 +3608,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_292;
                             }
-                            result_peg_285.setValue((void*) 255);
+                            result_peg_285.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_286;
@@ -3646,7 +3651,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_310;
                                 }
                             }
-                            result_peg_307.setValue((void*) " ");
+                            result_peg_307.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_308;
@@ -3660,7 +3665,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_312;
                                 }
                             }
-                            result_peg_307.setValue((void*) "\t");
+                            result_peg_307.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_308;
@@ -3672,7 +3677,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_314;
                             }
-                            result_peg_307.setValue((void*) 255);
+                            result_peg_307.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_308;
@@ -3700,7 +3705,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_249;
                     }
                 }
-                result_peg_247.setValue((void*) "]");
+                result_peg_247.setValue(Value((void*) "]"));
             
             
             
@@ -3718,7 +3723,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_332;
                                 }
                             }
-                            result_peg_329.setValue((void*) " ");
+                            result_peg_329.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_330;
@@ -3732,7 +3737,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_334;
                                 }
                             }
-                            result_peg_329.setValue((void*) "\t");
+                            result_peg_329.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_330;
@@ -3744,7 +3749,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_336;
                             }
-                            result_peg_329.setValue((void*) 255);
+                            result_peg_329.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_330;
@@ -3772,7 +3777,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_249;
                     }
                 }
-                result_peg_247.setValue((void*) "=");
+                result_peg_247.setValue(Value((void*) "="));
             
             
             
@@ -3790,7 +3795,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_354;
                                 }
                             }
-                            result_peg_351.setValue((void*) " ");
+                            result_peg_351.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_352;
@@ -3804,7 +3809,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_356;
                                 }
                             }
-                            result_peg_351.setValue((void*) "\t");
+                            result_peg_351.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_352;
@@ -3816,7 +3821,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_358;
                             }
-                            result_peg_351.setValue((void*) 255);
+                            result_peg_351.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_352;
@@ -3859,7 +3864,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_376;
                                 }
                             }
-                            result_peg_373.setValue((void*) " ");
+                            result_peg_373.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_374;
@@ -3873,7 +3878,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_378;
                                 }
                             }
-                            result_peg_373.setValue((void*) "\t");
+                            result_peg_373.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_374;
@@ -3885,7 +3890,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_380;
                             }
-                            result_peg_373.setValue((void*) 255);
+                            result_peg_373.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_374;
@@ -3913,7 +3918,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_249;
                     }
                 }
-                result_peg_247.setValue((void*) ",");
+                result_peg_247.setValue(Value((void*) ","));
             
             
             
@@ -3931,7 +3936,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_398;
                                 }
                             }
-                            result_peg_395.setValue((void*) " ");
+                            result_peg_395.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_396;
@@ -3945,7 +3950,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_400;
                                 }
                             }
-                            result_peg_395.setValue((void*) "\t");
+                            result_peg_395.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_396;
@@ -3957,7 +3962,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_402;
                             }
-                            result_peg_395.setValue((void*) 255);
+                            result_peg_395.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_396;
@@ -4000,7 +4005,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_420;
                                 }
                             }
-                            result_peg_417.setValue((void*) " ");
+                            result_peg_417.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_418;
@@ -4014,7 +4019,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_422;
                                 }
                             }
-                            result_peg_417.setValue((void*) "\t");
+                            result_peg_417.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_418;
@@ -4026,7 +4031,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_424;
                             }
-                            result_peg_417.setValue((void*) 255);
+                            result_peg_417.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_418;
@@ -4054,7 +4059,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_249;
                     }
                 }
-                result_peg_247.setValue((void*) ",");
+                result_peg_247.setValue(Value((void*) ","));
             
             
             
@@ -4072,7 +4077,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_442;
                                 }
                             }
-                            result_peg_439.setValue((void*) " ");
+                            result_peg_439.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_440;
@@ -4086,7 +4091,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_444;
                                 }
                             }
-                            result_peg_439.setValue((void*) "\t");
+                            result_peg_439.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_440;
@@ -4098,7 +4103,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_446;
                             }
-                            result_peg_439.setValue((void*) 255);
+                            result_peg_439.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_440;
@@ -4141,7 +4146,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_464;
                                 }
                             }
-                            result_peg_461.setValue((void*) " ");
+                            result_peg_461.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_462;
@@ -4155,7 +4160,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_466;
                                 }
                             }
-                            result_peg_461.setValue((void*) "\t");
+                            result_peg_461.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_462;
@@ -4167,7 +4172,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_468;
                             }
-                            result_peg_461.setValue((void*) 255);
+                            result_peg_461.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_462;
@@ -4195,7 +4200,7 @@ Result rule_collision(Stream & stream, const int position){
                         goto out_peg_249;
                     }
                 }
-                result_peg_247.setValue((void*) ",");
+                result_peg_247.setValue(Value((void*) ","));
             
             
             
@@ -4213,7 +4218,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_486;
                                 }
                             }
-                            result_peg_483.setValue((void*) " ");
+                            result_peg_483.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_484;
@@ -4227,7 +4232,7 @@ Result rule_collision(Stream & stream, const int position){
                                     goto out_peg_488;
                                 }
                             }
-                            result_peg_483.setValue((void*) "\t");
+                            result_peg_483.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_484;
@@ -4239,7 +4244,7 @@ Result rule_collision(Stream & stream, const int position){
                             } else {
                                 goto out_peg_490;
                             }
-                            result_peg_483.setValue((void*) 255);
+                            result_peg_483.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_484;
@@ -4323,7 +4328,7 @@ Result rule_action_start(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "[");
+                result_peg_2.setValue(Value((void*) "["));
             
             
             
@@ -4341,7 +4346,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_21;
                                 }
                             }
-                            result_peg_18.setValue((void*) " ");
+                            result_peg_18.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_19;
@@ -4355,7 +4360,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_23;
                                 }
                             }
-                            result_peg_18.setValue((void*) "\t");
+                            result_peg_18.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_19;
@@ -4367,7 +4372,7 @@ Result rule_action_start(Stream & stream, const int position){
                             } else {
                                 goto out_peg_25;
                             }
-                            result_peg_18.setValue((void*) 255);
+                            result_peg_18.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_19;
@@ -4395,7 +4400,7 @@ Result rule_action_start(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "Begin");
+                result_peg_2.setValue(Value((void*) "Begin"));
                 begin = result_peg_2.getValues();
             
             
@@ -4414,7 +4419,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_43;
                                 }
                             }
-                            result_peg_40.setValue((void*) " ");
+                            result_peg_40.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_41;
@@ -4428,7 +4433,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_45;
                                 }
                             }
-                            result_peg_40.setValue((void*) "\t");
+                            result_peg_40.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_41;
@@ -4440,7 +4445,7 @@ Result rule_action_start(Stream & stream, const int position){
                             } else {
                                 goto out_peg_47;
                             }
-                            result_peg_40.setValue((void*) 255);
+                            result_peg_40.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_41;
@@ -4468,7 +4473,7 @@ Result rule_action_start(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "Action");
+                result_peg_2.setValue(Value((void*) "Action"));
                 action = result_peg_2.getValues();
             
             
@@ -4487,7 +4492,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_65;
                                 }
                             }
-                            result_peg_62.setValue((void*) " ");
+                            result_peg_62.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_63;
@@ -4501,7 +4506,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_67;
                                 }
                             }
-                            result_peg_62.setValue((void*) "\t");
+                            result_peg_62.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_63;
@@ -4513,7 +4518,7 @@ Result rule_action_start(Stream & stream, const int position){
                             } else {
                                 goto out_peg_69;
                             }
-                            result_peg_62.setValue((void*) 255);
+                            result_peg_62.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_63;
@@ -4556,7 +4561,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_87;
                                 }
                             }
-                            result_peg_84.setValue((void*) " ");
+                            result_peg_84.setValue(Value((void*) " "));
                                 
                         }
                         goto success_peg_85;
@@ -4570,7 +4575,7 @@ Result rule_action_start(Stream & stream, const int position){
                                     goto out_peg_89;
                                 }
                             }
-                            result_peg_84.setValue((void*) "\t");
+                            result_peg_84.setValue(Value((void*) "\t"));
                                 
                         }
                         goto success_peg_85;
@@ -4582,7 +4587,7 @@ Result rule_action_start(Stream & stream, const int position){
                             } else {
                                 goto out_peg_91;
                             }
-                            result_peg_84.setValue((void*) 255);
+                            result_peg_84.setValue(Value((void*) 255));
                             
                         }
                         goto success_peg_85;
@@ -4610,7 +4615,7 @@ Result rule_action_start(Stream & stream, const int position){
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "]");
+                result_peg_2.setValue(Value((void*) "]"));
             
             
             
@@ -4671,7 +4676,7 @@ Result rule_integer(Stream & stream, const int position){
                             goto out_peg_7;
                         }
                     }
-                    result_peg_2.setValue((void*) "-");
+                    result_peg_2.setValue(Value((void*) "-"));
                         
                 }
                 goto success_peg_5;
@@ -4685,14 +4690,14 @@ Result rule_integer(Stream & stream, const int position){
                             goto out_peg_9;
                         }
                     }
-                    result_peg_2.setValue((void*) "+");
+                    result_peg_2.setValue(Value((void*) "+"));
                         
                 }
                 goto success_peg_5;
                 out_peg_9:
                 
                 result_peg_2 = Result(save_peg_4);
-                result_peg_2.setValue((void*) 0);
+                result_peg_2.setValue(Value((void*) 0));
                 
                 success_peg_5:
                 ;
@@ -4707,7 +4712,7 @@ Result rule_integer(Stream & stream, const int position){
                         char letter_peg_17 = stream.get(result_peg_12.getPosition());
                         if (letter_peg_17 != '\0' && strchr("0123456789", letter_peg_17) != NULL){
                             result_peg_12.nextPosition();
-                            result_peg_12.setValue((void*) (long) letter_peg_17);
+                            result_peg_12.setValue(Value((void*) (long) letter_peg_17));
                         } else {
                             goto out_peg_16;
                         }
@@ -4799,7 +4804,7 @@ Result rule_valuelist(Stream & stream, const int position){
                                                 goto out_peg_24;
                                             }
                                         }
-                                        result_peg_21.setValue((void*) " ");
+                                        result_peg_21.setValue(Value((void*) " "));
                                             
                                     }
                                     goto success_peg_22;
@@ -4813,7 +4818,7 @@ Result rule_valuelist(Stream & stream, const int position){
                                                 goto out_peg_26;
                                             }
                                         }
-                                        result_peg_21.setValue((void*) "\t");
+                                        result_peg_21.setValue(Value((void*) "\t"));
                                             
                                     }
                                     goto success_peg_22;
@@ -4825,7 +4830,7 @@ Result rule_valuelist(Stream & stream, const int position){
                                         } else {
                                             goto out_peg_28;
                                         }
-                                        result_peg_21.setValue((void*) 255);
+                                        result_peg_21.setValue(Value((void*) 255));
                                         
                                     }
                                     goto success_peg_22;
@@ -4853,7 +4858,7 @@ Result rule_valuelist(Stream & stream, const int position){
                                     goto loop_peg_6;
                                 }
                             }
-                            result_peg_7.setValue((void*) ",");
+                            result_peg_7.setValue(Value((void*) ","));
                         
                         
                         
@@ -4871,7 +4876,7 @@ Result rule_valuelist(Stream & stream, const int position){
                                                 goto out_peg_46;
                                             }
                                         }
-                                        result_peg_43.setValue((void*) " ");
+                                        result_peg_43.setValue(Value((void*) " "));
                                             
                                     }
                                     goto success_peg_44;
@@ -4885,7 +4890,7 @@ Result rule_valuelist(Stream & stream, const int position){
                                                 goto out_peg_48;
                                             }
                                         }
-                                        result_peg_43.setValue((void*) "\t");
+                                        result_peg_43.setValue(Value((void*) "\t"));
                                             
                                     }
                                     goto success_peg_44;
@@ -4897,7 +4902,7 @@ Result rule_valuelist(Stream & stream, const int position){
                                         } else {
                                             goto out_peg_50;
                                         }
-                                        result_peg_43.setValue((void*) 255);
+                                        result_peg_43.setValue(Value((void*) 255));
                                         
                                     }
                                     goto success_peg_44;
@@ -4924,7 +4929,7 @@ Result rule_valuelist(Stream & stream, const int position){
                             if (result_peg_7.error()){
                                 
                                 result_peg_7 = Result(save_peg_51);
-                                result_peg_7.setValue((void*) 0);
+                                result_peg_7.setValue(Value((void*) 0));
                                 
                             }
                         
@@ -5006,7 +5011,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_6;
                     }
                 }
-                result_peg_4.setValue((void*) "as");
+                result_peg_4.setValue(Value((void*) "as"));
             
             Result result_peg_5 = result_peg_4;
             
@@ -5024,7 +5029,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_6;
                     }
                 }
-                result_peg_4.setValue((void*) "d");
+                result_peg_4.setValue(Value((void*) "d"));
             
             
             
@@ -5064,7 +5069,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_12;
                     }
                 }
-                result_peg_10.setValue((void*) "a");
+                result_peg_10.setValue(Value((void*) "a"));
             
             Result result_peg_11 = result_peg_10;
             
@@ -5104,7 +5109,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_16;
                     }
                 }
-                result_peg_14.setValue((void*) "a");
+                result_peg_14.setValue(Value((void*) "a"));
             
             Result result_peg_15 = result_peg_14;
             
@@ -5137,7 +5142,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_19;
                     }
                 }
-                result_peg_17.setValue((void*) "s");
+                result_peg_17.setValue(Value((void*) "s"));
             
             Result result_peg_18 = result_peg_17;
             
@@ -5170,7 +5175,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_22;
                     }
                 }
-                result_peg_20.setValue((void*) "vh");
+                result_peg_20.setValue(Value((void*) "vh"));
             
             Result result_peg_21 = result_peg_20;
             
@@ -5203,7 +5208,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_25;
                     }
                 }
-                result_peg_23.setValue((void*) "hv");
+                result_peg_23.setValue(Value((void*) "hv"));
             
             Result result_peg_24 = result_peg_23;
             
@@ -5236,7 +5241,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_28;
                     }
                 }
-                result_peg_26.setValue((void*) "v");
+                result_peg_26.setValue(Value((void*) "v"));
             
             Result result_peg_27 = result_peg_26;
             
@@ -5269,7 +5274,7 @@ Result rule_value(Stream & stream, const int position){
                         goto out_peg_31;
                     }
                 }
-                result_peg_29.setValue((void*) "h");
+                result_peg_29.setValue(Value((void*) "h"));
             
             Result result_peg_30 = result_peg_29;
             
@@ -5303,13 +5308,12 @@ Result rule_value(Stream & stream, const int position){
 }
         
 
-const void * parse(const std::string & filename, bool stats = false){
-    Stream stream(filename);
+static const void * doParse(Stream & stream, bool stats, const std::string & context){
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
         std::ostringstream out;
-        out << "Error while parsing " << filename << " " << stream.reportError();
+        out << "Error while parsing " << context << " " << stream.reportError();
         throw ParseException(out.str());
     }
     if (stats){
@@ -5318,39 +5322,26 @@ const void * parse(const std::string & filename, bool stats = false){
     return done.getValues().getValue();
 }
 
+const void * parse(const std::string & filename, bool stats = false){
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
+}
+
 const void * parse(const char * in, bool stats = false){
     Stream stream(in);
-    errorResult.setError();
-    Result done = rule_start(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
     Stream stream(in, length);
-    errorResult.setError();
-    Result done = rule_start(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 
 
     
-    } /* Air */
+    } /* Mugen */
     
-} /* Mugen */
+} /* Air */
 
         
