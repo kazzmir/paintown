@@ -103,7 +103,7 @@ struct Value{
         }
     }
 
-    Value(const void * value):
+    explicit Value(const void * value):
         which(0),
         value(value){
     }
@@ -116,6 +116,11 @@ struct Value{
         if (him.isList()){
             values = him.values;
         }
+        return *this;
+    }
+
+    Value & operator=(const void * what){
+        this->value = what;
         return *this;
     }
 
@@ -597,12 +602,6 @@ static inline char lower(const char x){
 static inline bool compareCharCase(const char a, const char b){
     return lower(a) == lower(b);
 }
-
-std::string ParseException::getReason() const {
-    return message;
-}
-
-Result errorResult(-1);
 """
 
 start_python = """
@@ -1441,7 +1440,7 @@ Result %s(%s);
 %s
 %s
 %s:
-%s.setValue((void*)0);
+%s.setValue(Value((void*)0));
         """ % (my_result, result, pattern.next.generate_cpp(peg, my_result, stream, my_fail, None, peg_args).strip(), failure(), not_label, result)
 
         return data
@@ -1581,7 +1580,7 @@ if (%s.error()){
         data = """
 if ('\\0' == %s.get(%s.getPosition())){
     %s.nextPosition();
-    %s.setValue((void *) '\\0');
+    %s.setValue(Value((void *) '\\0'));
 } else {
     %s
 }
@@ -1678,7 +1677,7 @@ do{
         data = """
 char %s = %s.get(%s.getPosition());
 if (%s != '\\0'){
-    %s.setValue((void*) (long) %s);
+    %s.setValue(Value((void*) (long) %s));
     %s.nextPosition();
 } else {
     %s
@@ -1690,7 +1689,7 @@ if (%s != '\\0'){
         save = gensym("save")
         fail = lambda : """
 %s = Result(%s);
-%s.setValue((void*) 0);
+%s.setValue(Value((void*) 0));
 """ % (result, save, result)
         data = """
 int %s = %s.getPosition();
@@ -1740,7 +1739,7 @@ Stream::LineInfo %s = %s.getLineInfo(%s.getPosition());
 char %s = %s.get(%s.getPosition());
 if (%s != '\\0' && strchr("%s", %s) != NULL){
     %s.nextPosition();
-    %s.setValue((void*) (long) %s);
+    %s.setValue(Value((void*) (long) %s));
 } else {
     %s
 }
@@ -1763,7 +1762,7 @@ for (int i = 0; i < %d; i++){
         %s
     }
 }
-%s.setValue((void*) "%s");
+%s.setValue(Value((void*) "%s"));
     """ % (length, comparison, pattern.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, pattern.letters.replace('"', '\\"'))
             return data
         def doAscii():
@@ -1773,7 +1772,7 @@ if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
 } else {
     %s
 }
-%s.setValue((void*) %s);
+%s.setValue(Value((void*) %s));
 """
             return data % (stream, result, pattern.letters, result, indent(failure()), result, pattern.letters)
 
@@ -4205,7 +4204,7 @@ const void * parse(const char * in, int length, bool stats = false){
 """ % (top_code, namespace_start, data, more_code, rules, main, namespace_end)
         return data
 
-    def generate_cpp(self, parallel = False):
+    def generate_cpp(self, parallel = False, separate = None):
         def prototype(rule):
             rule_parameters = ""
             if rule.rules != None:
@@ -4216,7 +4215,7 @@ const void * parse(const char * in, int length, bool stats = false){
                 parameters = ", " + ", ".join(["Value %s" % p for p in rule.parameters])
             return "Result rule_%s(Stream &, const int%s%s);" % (rule.name, rule_parameters, parameters)
 
-        r = 0
+        # r = 0
         use_rules = [rule for rule in self.rules if not rule.isInline()]
         # rule_numbers = '\n'.join(["const int RULE_%s = %d;" % (x[0].name, x[1]) for x in zip(use_rules, range(0, len(use_rules)))])
 
@@ -4297,7 +4296,8 @@ struct Column{
         namespace_start = self.cppNamespaceStart()
         namespace_end = self.cppNamespaceEnd()
 
-        data = """
+        def singleFile():
+            data = """
 %s
 
 #include <list>
@@ -4310,8 +4310,13 @@ struct Column{
 #include <string.h>
 
 %s
-
 %s
+
+std::string ParseException::getReason() const {
+    return message;
+}
+
+Result errorResult(-1);
 
 %s
 
@@ -4350,8 +4355,109 @@ const void * parse(const char * in, int length, bool stats = false){
 
 %s
         """ % (top_code, namespace_start, start_cpp_code % (chunks, self.error_size), '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, namespace_end)
+            return data
 
-        return data
+        def multipleFiles(name):
+            prototypes = '\n'.join([prototype(rule) for rule in use_rules])
+            for rule in use_rules:
+                rule_data = rule.generate_cpp(self, findAccessor(rule))
+                out = """
+%s
+#include "%s.h"
+%s
+%s
+%s
+""" % (top_code, name, namespace_start, rule_data, namespace_end)
+                file = open('%s-%s.cpp' % (name, rule.name), 'w')
+                file.write(out)
+                file.close()
+
+            header_guard = "_peg_%s_h_" % name
+            header_data = """
+#ifndef %s
+#define %s
+
+#include <list>
+#include <string>
+#include <vector>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <string.h>
+
+%s
+%s
+%s
+
+extern Result errorResult;
+%s
+#endif
+""" % (header_guard, header_guard, namespace_start, start_cpp_code % (chunks, self.error_size), prototypes, namespace_end)
+            header_file = open('%s.h' % name, 'w')
+            header_file.write(header_data)
+            header_file.close()
+
+            data = """
+%s
+
+#include <list>
+#include <string>
+#include <vector>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <string.h>
+#include "%s.h"
+
+%s
+%s
+
+std::string ParseException::getReason() const {
+    return message;
+}
+
+Result errorResult(-1);
+
+static const void * doParse(Stream & stream, bool stats, const std::string & context){
+    errorResult.setError();
+    Result done = rule_%s(stream, 0);
+    if (done.error()){
+        std::ostringstream out;
+        out << "Error while parsing " << context << " " << stream.reportError();
+        throw ParseException(out.str());
+    }
+    if (stats){
+        stream.printStats();
+    }
+    return done.getValues().getValue();
+}
+
+const void * parse(const std::string & filename, bool stats = false){
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
+}
+
+const void * parse(const char * in, bool stats = false){
+    Stream stream(in);
+    return doParse(stream, stats, "memory");
+}
+
+const void * parse(const char * in, int length, bool stats = false){
+    Stream stream(in, length);
+    return doParse(stream, stats, "memory");
+}
+
+%s
+"""
+
+            return data % (top_code, name, namespace_start, more_code, self.start, namespace_end)
+
+        if separate == None:
+            return singleFile()
+        else:
+            return multipleFiles(separate)
 
 def test():
     s_code = """
@@ -4947,6 +5053,7 @@ if __name__ == '__main__':
         return make_peg_parser()
     peg_maker = default_peg
     save_re = re.compile('--save=(.*)')
+    separate_rules_re = re.compile('--separate-rules=(.*)')
     peg_name_re = re.compile('--peg-name=(.*)')
     def print_it(p):
         print p
@@ -4954,11 +5061,12 @@ if __name__ == '__main__':
     do_close = lambda : 0
     return_code = 0
     parallel = [False]
+    separate = [None]
     for arg in sys.argv[1:]:
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
         elif arg == '--cpp' or arg == '--c++':
-            doit.append(lambda p: p.generate_cpp(parallel[0]))
+            doit.append(lambda p: p.generate_cpp(parallel[0], separate[0]))
         elif arg == '--c++-interpreter':
             doit.append(lambda p: p.generate_cpp_interpreter())
         elif arg == '--ruby':
@@ -4977,6 +5085,9 @@ if __name__ == '__main__':
             def make_peg():
                 return make_peg_parser(name)
             peg_maker = make_peg
+        elif separate_rules_re.match(arg):
+            all = separate_rules_re.match(arg)
+            separate[0] = all.group(1)
         elif save_re.match(arg):
             all = save_re.match(arg)
             fout = open(all.group(1), 'w')

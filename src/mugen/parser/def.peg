@@ -131,10 +131,10 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
-        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        Ast::Value * value = as<Ast::Value*>(Value((*it).getValue()));
         if (value == 0){
             /* FIXME! replace empty with a new node */
-            value = makeKeyword("empty");
+            value = makeKeyword(Value("empty"));
             values.push_back(value);
         } else {
             values.push_back(value);
@@ -150,7 +150,7 @@ Ast::Identifier * makeIdentifier(const Value & front, const Value & rest){
     std::list<std::string> ids;
     ids.push_back(*as<std::string*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
-        ids.push_back(*as<std::string*>((*it).getValue()));
+        ids.push_back(*as<std::string*>(Value((*it).getValue())));
     }
     Ast::Identifier * object = new Ast::Identifier(ids);
     GC::save(object);

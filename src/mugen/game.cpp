@@ -175,9 +175,11 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
 
         if (Global::speed_counter > 0){
             runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+            /*
             if (runCounter > 10){
                 runCounter = 10;
             }
+            */
 
             while (runCounter > 1){
                 InputManager::poll();

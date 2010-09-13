@@ -5,15 +5,76 @@ include: {{
 #include "mugen/ast/all.h"
 #include <map>
 #include "gc.h"
+// #include "cmd-functions.h"
 typedef std::list<Ast::Section*> SectionList;
 }}
 
 code: {{
 
+Ast::Key * makeKeyModifier(Ast::Key * in, Ast::KeyModifier::ModifierType type, int ticks = 0);
+
+/* in cmd-functions.h */
 template<class X>
 X as(const Value & value){
     return (X) value.getValue();
 }
+
+class KeyModifier{
+public:
+    virtual Ast::Key * apply(Ast::Key * in) = 0;
+    virtual ~KeyModifier(){
+    }
+};
+
+class ReleaseKeyModifier: public KeyModifier {
+public:
+    ReleaseKeyModifier(int ticks):
+    ticks(ticks){
+    }
+
+    virtual ~ReleaseKeyModifier(){
+    }
+
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::Release, ticks);
+    }
+
+protected:
+
+    int ticks;
+};
+
+class DirectionKeyModifier: public KeyModifier {
+public:
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::Direction);
+    }
+
+    virtual ~DirectionKeyModifier(){
+    }
+};
+
+class HeldDownKeyModifier: public KeyModifier {
+public:
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::MustBeHeldDown);
+    }
+
+    virtual ~HeldDownKeyModifier(){
+    }
+};
+
+class OnlyKeyModifier: public KeyModifier {
+public:
+    virtual Ast::Key * apply(Ast::Key * in){
+        return makeKeyModifier(in, Ast::KeyModifier::Only);
+    }
+
+    virtual ~OnlyKeyModifier(){
+    }
+};
+
+/* end in cmd-functions.h */
 
 std::string * toString(const Value & input){
   std::ostringstream out;
@@ -193,7 +254,7 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
-        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        Ast::Value * value = as<Ast::Value*>(Value((*it).getValue()));
         if (value == 0){
             /* FIXME! replace empty with a new node */
             value = makeKeyword("empty");
@@ -221,11 +282,11 @@ Ast::Value * makeFunction(const std::string & name, const Value & arg1){
 }
 
 Ast::Value * makeFunction1(const Value & name, const Value & arg1){
-    return makeFunction(name, makeValueList(arg1, Value()));
+    return makeFunction(name, Value(makeValueList(arg1, Value())));
 }
 
 Ast::Value * makeFunction1(const std::string & name, const Value & arg1){
-    return makeFunction(name, makeValueList(arg1, Value()));
+    return makeFunction(name, Value(makeValueList(arg1, Value())));
 }
 
 std::string combine(const char * name, const Value & what){
@@ -260,7 +321,7 @@ Ast::Identifier * makeIdentifier(int line, int column, const Value & front, cons
     ids.push_back(*as<std::string*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
         /* this works becuase as() will coerce a void* into Value(void*) */
-        ids.push_back(*as<std::string*>((*it).getValue()));
+        ids.push_back(*as<std::string*>(Value((*it).getValue())));
     }
     Ast::Identifier * object = new Ast::Identifier(line, column, ids);
     GC::save(object);
@@ -379,7 +440,7 @@ Ast::Section * makeSection(const Value & str){
     return object;
 }
 
-Ast::Key * makeKeyModifier(Ast::Key * in, Ast::KeyModifier::ModifierType type, int ticks = 0){
+Ast::Key * makeKeyModifier(Ast::Key * in, Ast::KeyModifier::ModifierType type, int ticks){
     Ast::Key * modded = new Ast::KeyModifier(type, in, ticks);
     GC::save(modded);
     return modded;
@@ -419,61 +480,6 @@ Ast::Key * makeKey(const Value & value){
     return key;
 }
 
-class KeyModifier{
-public:
-    virtual Ast::Key * apply(Ast::Key * in) = 0;
-    virtual ~KeyModifier(){
-    }
-};
-
-class ReleaseKeyModifier: public KeyModifier {
-public:
-    ReleaseKeyModifier(int ticks):
-    ticks(ticks){
-    }
-
-    virtual ~ReleaseKeyModifier(){
-    }
-
-    virtual Ast::Key * apply(Ast::Key * in){
-        return makeKeyModifier(in, Ast::KeyModifier::Release, ticks);
-    }
-
-protected:
-
-    int ticks;
-};
-
-class DirectionKeyModifier: public KeyModifier {
-public:
-    virtual Ast::Key * apply(Ast::Key * in){
-        return makeKeyModifier(in, Ast::KeyModifier::Direction);
-    }
-
-    virtual ~DirectionKeyModifier(){
-    }
-};
-
-class HeldDownKeyModifier: public KeyModifier {
-public:
-    virtual Ast::Key * apply(Ast::Key * in){
-        return makeKeyModifier(in, Ast::KeyModifier::MustBeHeldDown);
-    }
-
-    virtual ~HeldDownKeyModifier(){
-    }
-};
-
-class OnlyKeyModifier: public KeyModifier {
-public:
-    virtual Ast::Key * apply(Ast::Key * in){
-        return makeKeyModifier(in, Ast::KeyModifier::Only);
-    }
-
-    virtual ~OnlyKeyModifier(){
-    }
-};
-
 Ast::Key * applyKeyModifiers(const Value & mods, Ast::Key * key){
     for (Value::iterator it = mods.getValues().begin(); it != mods.getValues().end(); it++){
         KeyModifier * modifier = (KeyModifier*) (*it).getValue();
@@ -503,11 +509,11 @@ Ast::Value * makeAnimElem(const Value & line, const Value & arg1, const Value & 
     /* animelemno == arg1 && animelemtime(arg1) compare arg2 */
     Ast::Value * element;
     Ast::Value * time;
-    element = makeExpressionEquals(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim"), arg1);
+    element = makeExpressionEquals(Value(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim")), arg1);
     /* make a copy of arg1 because values can only have one parent */
     typedef Ast::Value * (*compare_func)(const Value &, const Value &);
-    time = as<compare_func>(comparison)(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1))), arg2);
-    return makeExpressionAnd(element, time);
+    time = as<compare_func>(comparison)(Value(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1)))), arg2);
+    return makeExpressionAnd(Value(element), Value(time));
 }
 
 Ast::Value * makeAnimElem(const Value & line, const Value & arg1){
@@ -556,14 +562,14 @@ rules:
                }}
                | line:<line> "sparkno"{case} s "=" s "s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
-               | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, negateExpression(exp)); }}
+               | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, Value(negateExpression(exp))); }}
                | name:identifier s "=" whitespace &line_end {{ value = makeAttribute(name); }}
                | name:identifier s "(" s index:integer s ")" s "=" s exp:expr {{ value = makeIndexedAttribute(name, index, exp); }}
-               | "ctrl"{case} {{ value = makeAttribute(makeSimpleIdentifier("ctrl"), makeNumber(1)); }}
+               | "ctrl"{case} {{ value = makeAttribute(Value(makeSimpleIdentifier("ctrl")), Value(makeNumber(1))); }}
     identifier = line:<line> first:name rest:("." name)* {{ value = makeIdentifier(getCurrentLine(line), getCurrentColumn(line), first, rest); }}
     integer = sign? digit+ {{ value = makeInteger($1, $2); }}
-    float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, parseDouble(left,right)); }}
-          | sign? left:digit+ "." {{ value = makeNumber($1, parseDouble(left)); }}
+    float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, Value(parseDouble(left,right))); }}
+          | sign? left:digit+ "." {{ value = makeNumber($1, Value(parseDouble(left))); }}
     string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = makeString(contents); }}
     inline sign = "-"
                 | "+"
@@ -682,9 +688,9 @@ rules:
              }}
              | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
                  typedef Ast::Value * (*compare_func)(const Value &, const Value &);
-                 Ast::Value * compare_state = as<compare_func>(comparison)(makeSimpleIdentifier("hitdefattr:state"), state);
-                 Ast::Value * compare_attribute = as<compare_func>(comparison)(makeSimpleIdentifier("hitdefattr:attribute"), attributes);
-                 value = makeExpressionAnd(compare_state, compare_attribute);
+                 Ast::Value * compare_state = as<compare_func>(comparison)(Value(makeSimpleIdentifier("hitdefattr:state")), state);
+                 Ast::Value * compare_attribute = as<compare_func>(comparison)(Value(makeSimpleIdentifier("hitdefattr:attribute")), attributes);
+                 value = makeExpressionAnd(Value(compare_state), Value(compare_attribute));
              }}
              # FIXME: handle hitdefattr with no attack-attributes listed
 

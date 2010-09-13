@@ -63,10 +63,10 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
-        Ast::Value * value = as<Ast::Value*>((*it).getValue());
+        Ast::Value * value = as<Ast::Value*>(Value((*it).getValue()));
         if (value == 0){
             /* FIXME! replace empty with a new node */
-            value = makeKeyword("empty");
+            value = makeKeyword(Value("empty"));
             values.push_back(value);
         } else {
             values.push_back(value);
@@ -156,7 +156,7 @@ rules:
 	         | &<eof> <void>
 	newline = "\n"
 	        | "\r"
-	loopstart = "loopstart"{case} {{ value = makeAttributeKeyword(makeKeyword($1)); }}
+	loopstart = "loopstart"{case} {{ value = makeAttributeKeyword(Value(makeKeyword($1))); }}
 	whitespace = sw*
 	sw = space
 	   | comment
@@ -167,10 +167,10 @@ rules:
 	comment = ";" (!newline .)*
 	        | "=" (!newline .)*
 		    | "-" "-" (!newline .)*
-	collision_default = "Clsn2Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
-	                  | "Clsn1Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
-	                  | "Clsn2"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
-			          | "Clsn1"{case} ":" s num:integer {{ value = makeAttributeKeyword(makeKeyword($1), num); }}
+	collision_default = "Clsn2Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(Value(makeKeyword($1)), num); }}
+	                  | "Clsn1Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(Value(makeKeyword($1)), num); }}
+	                  | "Clsn2"{case} ":" s num:integer {{ value = makeAttributeKeyword(Value(makeKeyword($1)), num); }}
+			          | "Clsn1"{case} ":" s num:integer {{ value = makeAttributeKeyword(Value(makeKeyword($1)), num); }}
 
     # change int,int,int,int to valuelist ?
 	collision = name:"Clsn2"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}

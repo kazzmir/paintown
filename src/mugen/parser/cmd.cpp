@@ -815,7 +815,6 @@ std::string ParseException::getReason() const {
 
 Result errorResult(-1);
 
-
 Result rule_start(Stream &, const int);
 Result rule_line(Stream &, const int, Value current);
 Result rule_line_end(Stream &, const int);
