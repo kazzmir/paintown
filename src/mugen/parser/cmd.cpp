@@ -32,8 +32,9 @@ struct Value{
         value(0){
     }
 
-    Value(const Value & him){
-        which = him.which;
+    Value(const Value & him):
+    which(him.which),
+    value(0){
         if (him.isData()){
             value = him.value;
         }
@@ -17915,13 +17916,12 @@ Result rule_keyword_real(Stream & stream, const int position){
 }
         
 
-const void * parse(const std::string & filename, bool stats = false){
-    Stream stream(filename);
+static const void * doParse(Stream & stream, bool stats, const std::string & context){
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
         std::ostringstream out;
-        out << "Error while parsing " << filename << " " << stream.reportError();
+        out << "Error while parsing " << context << " " << stream.reportError();
         throw ParseException(out.str());
     }
     if (stats){
@@ -17930,39 +17930,26 @@ const void * parse(const std::string & filename, bool stats = false){
     return done.getValues().getValue();
 }
 
+const void * parse(const std::string & filename, bool stats = false){
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
+}
+
 const void * parse(const char * in, bool stats = false){
     Stream stream(in);
-    errorResult.setError();
-    Result done = rule_start(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
     Stream stream(in, length);
-    errorResult.setError();
-    Result done = rule_start(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 
 
     
-    } /* Cmd */
+    } /* Mugen */
     
-} /* Mugen */
+} /* Cmd */
 
         

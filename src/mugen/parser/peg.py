@@ -1792,16 +1792,19 @@ struct Value{
     typedef std::list<Value>::const_iterator iterator;
 
     Value():
-        which(1),
-        value(0){
+        which(0),
+        value(0),
+        values(NULL){
     }
 
     Value(const Value & him):
     which(him.which),
-    value(0){
+    value(0),
+    values(NULL){
         if (him.isData()){
             value = him.value;
         }
+
         if (him.isList()){
             values = him.values;
         }
@@ -1809,7 +1812,8 @@ struct Value{
 
     Value(const void * value):
         which(0),
-        value(value){
+        value(value),
+        values(NULL){
     }
 
     Value & operator=(const Value & him){
@@ -1848,8 +1852,17 @@ struct Value{
         this->value = value;
     }
 
-    inline const std::list<Value> & getValues() const {
+    inline std::list<Value*> & getValues(){
+        which = 1;
         return values;
+    }
+
+    inline const std::list<Value> & getValues() const {
+        throw 1;
+        // return values;
+    }
+
+    ~Value(){
     }
 
     /*
@@ -1860,7 +1873,7 @@ struct Value{
     */
 
     const void * value;
-    std::list<Value> values;
+    std::list<Value*> values;
 };
 
 class Result{
@@ -1925,21 +1938,23 @@ public:
     }
     */
 
+    /*
     inline int matches() const {
         if (value.isList()){
-            return this->value.values.size();
+            return this->value.values->size();
         } else {
             return 1;
         }
     }
+    */
 
     inline const Value & getValues() const {
         return this->value;
     }
 
     void addResult(const Result & result){
-        std::list<Value> & mine = this->value.values;
-        mine.push_back(result.getValues());
+        std::list<Value*> & mine = this->value.getValues();
+        mine.push_back(new Value(result.getValues()));
         this->position = result.getPosition();
         this->value.which = 1;
     }
@@ -2346,6 +2361,37 @@ public:
     }
 };
 
+class Or: public Expression {
+public:
+    Or(int elements, ...){
+        va_list arguments;
+        va_start(arguments, elements);
+        for (int i = 0; i < elements; i++){
+            all.push_back(va_arg(arguments, Expression*));
+        }
+        va_end(arguments);
+    }
+
+    std::vector<Expression*> all;
+
+    virtual ~Or(){
+        for (std::vector<Expression*>::iterator it = all.begin(); it != all.end(); it++){
+            delete (*it);
+        }
+    }
+
+    virtual Result parse(Stream & stream, int position, Value ** arguments){
+        for (std::vector<Expression*>::iterator it = all.begin(); it != all.end(); it++){
+            try{
+                Expression * expression = *it;
+                return expression->parse(stream, position, arguments);
+            } catch (const Failure & ignore){
+            }
+        }
+        throw Failure();
+    }
+};
+
 class Sequence: public Expression {
 public:
     Sequence(int elements, ...){
@@ -2391,7 +2437,7 @@ public:
 
     virtual Result parse(Stream & stream, int position, Value ** arguments){
         Result out = next->parse(stream, position, arguments);
-        *(arguments[index]) = out.getValues();
+        // *(arguments[index]) = out.getValues();
         return out;
     }
 };
@@ -2600,9 +2646,18 @@ public:
 
 class Code: public Expression {
 public:
+    typedef Value (*function)(Value ** arguments);
+
+    Code(function call):
+    call(call){
+    }
+
+    function call;
+
     virtual Result parse(Stream & stream, int position, Value ** arguments){
-        // throw Failure();
+        // Value value = call(arguments);
         Result out(position);
+        // out.setValue(value);
         return out;
     }
 };
@@ -2627,9 +2682,37 @@ typedef Peg::Result Result;
 typedef Peg::Stream Stream;
 typedef Peg::Value Value;
 typedef Peg::ParseException ParseException;
+typedef Peg::Column Column;
 """
+
+    def __init__(self):
+        self.extra_codes = []
+
+    def addCode(self, name, code):
+        data = """
+Value %s(Value ** arguments){
+    Value value;
+    %s
+    return value;
+}
+""" % (name,
+       ""
+       #code
+       )
+        self.extra_codes.append(data)
+
+    def maybe_inline(self, pattern, rule, peg):
+        if isinstance(pattern, PatternRule) and peg.getRule(pattern.rule).inline and pattern.rule != rule.name:
+            return PatternOr(peg.getRule(pattern.rule).patterns)
+        return pattern
+
     def generate_sequence(self, pattern, rule, peg):
-        data = "new Peg::Sequence(%d, %s)" % (len(pattern.patterns), ", ".join([subpattern.generate_v3(self, rule, peg) for subpattern in pattern.patterns]))
+        real_patterns = []
+        for subpattern in pattern.patterns:
+            real_patterns.append(self.maybe_inline(subpattern, rule, peg))
+        if len(real_patterns) == 1:
+            return real_patterns[0].generate_v3(self, rule, peg)
+        data = "new Peg::Sequence(%d, %s)" % (len(pattern.patterns), ", ".join([subpattern.generate_v3(self, rule, peg) for subpattern in real_patterns]))
         return data
 
     def generate_bind(self, pattern, rule, peg):
@@ -2638,11 +2721,11 @@ typedef Peg::ParseException ParseException;
         return data
 
     def generate_repeat_once(self, pattern, rule, peg):
-        data = "new Peg::RepeatOnce(%s)" % pattern.next.generate_v3(self, rule, peg)
+        data = "new Peg::RepeatOnce(%s)" % self.maybe_inline(pattern.next, rule, peg).generate_v3(self, rule, peg)
         return data
 
     def generate_repeat_many(self, pattern, rule, peg):
-        data = "new Peg::RepeatMany(%s)" % pattern.next.generate_v3(self, rule, peg)
+        data = "new Peg::RepeatMany(%s)" % self.maybe_inline(pattern.next, rule, peg).generate_v3(self, rule, peg)
         return data
 
     def generate_maybe(self, pattern, rule, peg):
@@ -2662,7 +2745,7 @@ typedef Peg::ParseException ParseException;
         return data
     
     def generate_not(self, pattern, rule, peg):
-        data = "new Peg::Not(%s)" % pattern.next.generate_v3(self, rule, peg)
+        data = "new Peg::Not(%s)" % self.maybe_inline(pattern.next, rule, peg).generate_v3(self, rule, peg)
         return data
     
     def generate_any(self, pattern, rule, peg):
@@ -2682,12 +2765,17 @@ typedef Peg::ParseException ParseException;
         return data
 
     def generate_code(self, pattern, rule, peg):
-        data = 'new Peg::Code({{%s}})' % pattern.code
-        data = 'new Peg::Code()'
+        function = gensym('code')
+        self.addCode(function, pattern.code)
+        data = 'new Peg::Code(%s)' % function
         return data
 
     def generate_rule(self, pattern, rule, peg):
         data = 'new Peg::Rule(rule_%s)' % pattern.rule
+        return data
+
+    def generate_or(self, pattern, rule, peg):
+        data = 'new Peg::Or(%d, %s)' % (len(pattern.patterns), ", ".join([p.generate_v3(self, rule, peg) for p in pattern.patterns]))
         return data
 
 # Thrown when an eof rule is encountered
@@ -3284,6 +3372,9 @@ class PatternOr(Pattern):
         
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_or(self, peg, result, stream, failure, tail, peg_args)
+
+    def generate_v3(self, generator, rule, peg):
+        return generator.generate_or(self, rule, peg)
         
 class PatternBind(Pattern):
     def __init__(self, variable, pattern):
@@ -3589,10 +3680,41 @@ def rule_%s(%s, %s%s%s):
 
         return data
 
-    def generate_cpp_interpreter(self, peg):
-        resetGensym()
-        patterns = "\n".join(["expressions->push_back(%s);" % pattern.generate_v3(CppInterpreterGenerator(), self, peg) for pattern in self.patterns])
+    def generate_cpp_interpreter(self, peg, chunk_accessor):
+        def updateChunk(new, columnVar, memo):
+            if not memo:
+                return "%s.update(%s.getPosition());" % (stream, new)
+            chunk = chunk_accessor.getChunk(columnVar)
+            data = """
+if (%s == 0){
+    %s = new Peg::%s();
+}
+%s = %s;
+stream.update(%s.getPosition());
+""" % (chunk, chunk, chunk_accessor.getType(), chunk_accessor.getValue(chunk), new, new)
+            return data
+            
+        columnVar = gensym("column")
+
+        def hasChunk(memo):
+            if memo:
+                return """
+Column & %s = stream.getColumn(position);
+if (%s != 0 && %s.calculated()){
+    if (%s.error()){
+        throw Peg::Failure();
+    }
+    return %s;
+}
+""" % (columnVar, chunk_accessor.getChunk(columnVar), chunk_accessor.getValue(chunk_accessor.getChunk(columnVar)), chunk_accessor.getValue(chunk_accessor.getChunk(columnVar)), chunk_accessor.getValue(chunk_accessor.getChunk(columnVar)))
+            else:
+                return ""
+
+        generator = CppInterpreterGenerator()
+        patterns = "\n".join(["expressions->push_back(%s);" % pattern.generate_v3(generator, self, peg) for pattern in self.patterns])
+        extra = '\n'.join(generator.extra_codes)
         data = """
+%s
 std::vector<Peg::Expression*> * create_rule_%s(){
     std::vector<Peg::Expression*> * expressions = new std::vector<Peg::Expression*>();
     %s
@@ -3600,18 +3722,22 @@ std::vector<Peg::Expression*> * create_rule_%s(){
 }
 
 Result rule_%s(Stream & stream, int position, Value ** arguments){
+    %s
     std::vector<Peg::Expression*> * expressions = stream.getRule(Peg::Rule_%s);
     for (std::vector<Peg::Expression*>::const_iterator it = expressions->begin(); it != expressions->end(); it++){
         try{
             Peg::Expression * expression = *it;
-            return expression->parse(stream, position, arguments);
+            Result out = expression->parse(stream, position, arguments);
+            %s
+            return out;
         } catch (const Peg::Failure & failure){
             /* try next rule.. */
         }
     }
-    return Peg::errorResult;
+    throw Peg::Failure();
+    // return Peg::errorResult;
 }
-""" % (self.name, indent(patterns), self.name, self.name)
+""" % (extra, self.name, indent(patterns), self.name, indent(hasChunk(True)), self.name, indent(indent(indent(updateChunk('out', columnVar, True)))))
         return data
 
     def generate_cpp(self, peg, chunk_accessor):
@@ -4010,8 +4136,8 @@ struct Column{
         data = """
 %s
 %s
-%s
-""" % (CppInterpreterGenerator.start_code % (chunks, rule_types, self.error_size), prototypes, "\n".join([rule.generate_cpp_interpreter(self) for rule in self.rules]))
+""" % (CppInterpreterGenerator.start_code % (chunks, rule_types, self.error_size), prototypes)
+        rules = "\n".join([rule.generate_cpp_interpreter(self, findAccessor(rule)) for rule in self.rules])
 
         setup_rules = "\n".join(["stream.addRule(Peg::Rule_%s, create_rule_%s());" % (rule.name, rule.name) for rule in self.rules])
 
@@ -4046,7 +4172,7 @@ const void * parse(const char * in, int length, bool stats = false){
     return doParse(stream, stats, "memory");
 }
 
-""" % (setup_rules, self.start)
+""" % (indent(setup_rules), self.start)
 
         top_code = ""
         if self.include_code != None:
@@ -4075,7 +4201,8 @@ const void * parse(const char * in, int length, bool stats = false){
 %s
 %s
 %s
-""" % (top_code, namespace_start, data, more_code, main, namespace_end)
+%s
+""" % (top_code, namespace_start, data, more_code, rules, main, namespace_end)
         return data
 
     def generate_cpp(self, parallel = False):
