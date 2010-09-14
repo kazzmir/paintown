@@ -800,9 +800,9 @@ if isWindows():
         print "Cygwin detected"
 
 def peg_to_cpp(target, source, env):
-    #import sys
-    #sys.path.append("#src/mugen/parser")
-    #sys.path.append(".")
+    import sys
+    sys.path.append("src/mugen/parser")
+    sys.path.append(".")
     import peg, re
     name = source[0].name
     parser = peg.make_peg_parser(re.sub('\..*', '', name))
@@ -812,9 +812,9 @@ def peg_to_cpp(target, source, env):
     fout.close()
 
 def peg_to_cpp_multi(target, source, env):
-    #import sys
-    #sys.path.append("#src/mugen/parser")
-    #sys.path.append(".")
+    import sys
+    sys.path.append("src/mugen/parser")
+    sys.path.append(".")
     import peg, re, os
     name = re.sub('\..*', '', source[0].name)
     parser = peg.make_peg_parser(name)
