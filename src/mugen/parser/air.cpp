@@ -233,27 +233,7 @@ struct Column{
     Chunk3 * chunk3;
 
     int hitCount(){
-        return 
-(chunk3 != NULL ? ((chunk3->chunk_value.calculated() ? 1 : 0)) : 0)
-+
-(chunk2 != NULL ? ((chunk2->chunk_collision_default.calculated() ? 1 : 0)
-+ (chunk2->chunk_collision.calculated() ? 1 : 0)
-+ (chunk2->chunk_action_start.calculated() ? 1 : 0)
-+ (chunk2->chunk_integer.calculated() ? 1 : 0)
-+ (chunk2->chunk_valuelist.calculated() ? 1 : 0)) : 0)
-+
-(chunk1 != NULL ? ((chunk1->chunk_newline.calculated() ? 1 : 0)
-+ (chunk1->chunk_loopstart.calculated() ? 1 : 0)
-+ (chunk1->chunk_whitespace.calculated() ? 1 : 0)
-+ (chunk1->chunk_sw.calculated() ? 1 : 0)
-+ (chunk1->chunk_comment.calculated() ? 1 : 0)) : 0)
-+
-(chunk0 != NULL ? ((chunk0->chunk_start.calculated() ? 1 : 0)
-+ (chunk0->chunk_line.calculated() ? 1 : 0)
-+ (chunk0->chunk_action.calculated() ? 1 : 0)
-+ (chunk0->chunk_action_line.calculated() ? 1 : 0)
-+ (chunk0->chunk_line_end.calculated() ? 1 : 0)) : 0)
-;
+        return 0;
     }
 
     int maxHits(){

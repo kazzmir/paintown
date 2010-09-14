@@ -244,34 +244,7 @@ struct Column{
     Chunk4 * chunk4;
 
     int hitCount(){
-        return 
-(chunk3 != NULL ? ((chunk3->chunk_valuelist.calculated() ? 1 : 0)
-+ (chunk3->chunk_value.calculated() ? 1 : 0)
-+ (chunk3->chunk_keyword.calculated() ? 1 : 0)
-+ (chunk3->chunk_date.calculated() ? 1 : 0)
-+ (chunk3->chunk_string.calculated() ? 1 : 0)) : 0)
-+
-(chunk2 != NULL ? ((chunk2->chunk_filename_char.calculated() ? 1 : 0)
-+ (chunk2->chunk_attribute.calculated() ? 1 : 0)
-+ (chunk2->chunk_attribute_simple.calculated() ? 1 : 0)
-+ (chunk2->chunk_identifier.calculated() ? 1 : 0)
-+ (chunk2->chunk_identifier_list.calculated() ? 1 : 0)) : 0)
-+
-(chunk1 != NULL ? ((chunk1->chunk_section_start.calculated() ? 1 : 0)
-+ (chunk1->chunk_loopstart.calculated() ? 1 : 0)
-+ (chunk1->chunk_name.calculated() ? 1 : 0)
-+ (chunk1->chunk_line_end_or_comment.calculated() ? 1 : 0)
-+ (chunk1->chunk_filename.calculated() ? 1 : 0)) : 0)
-+
-(chunk0 != NULL ? ((chunk0->chunk_start.calculated() ? 1 : 0)
-+ (chunk0->chunk_line.calculated() ? 1 : 0)
-+ (chunk0->chunk_line_end.calculated() ? 1 : 0)
-+ (chunk0->chunk_section.calculated() ? 1 : 0)
-+ (chunk0->chunk_section_line.calculated() ? 1 : 0)) : 0)
-+
-(chunk4 != NULL ? ((chunk4->chunk_number.calculated() ? 1 : 0)
-+ (chunk4->chunk_float_or_integer.calculated() ? 1 : 0)) : 0)
-;
+        return 0;
     }
 
     int maxHits(){
