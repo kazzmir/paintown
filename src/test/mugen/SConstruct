@@ -3,8 +3,12 @@ Import('use')
 testEnv = use.Clone()
 testEnv.VariantDir('test', '../../', duplicate = False)
 
+more_source = []
+def addObjects(files):
+    more_source.extend(files)
+
 use = testEnv
-SConscript('../../mugen/parser/SConstruct', exports = ['use'], variant_dir = 'test-parser')
+SConscript('../../mugen/parser/SConstruct', exports = ['use', 'addObjects'], variant_dir = 'test-parser')
 
 load_source = Split("""
 load.cpp

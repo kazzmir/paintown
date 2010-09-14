@@ -24,8 +24,11 @@ def find_file(filename, paths, node_factory):
     retval = None
     for dir in paths:
         node = node_factory(filename, dir)
-        if node.rexists():
-            return node
+        try:
+            if node.exists():
+                return node
+        except OSError:
+            pass
     return None
 
 

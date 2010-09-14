@@ -800,9 +800,9 @@ if isWindows():
         print "Cygwin detected"
 
 def peg_to_cpp(target, source, env):
-    import sys
-    sys.path.append("src/mugen/parser")
-    sys.path.append(".")
+    #import sys
+    #sys.path.append("#src/mugen/parser")
+    #sys.path.append(".")
     import peg, re
     name = source[0].name
     parser = peg.make_peg_parser(re.sub('\..*', '', name))
@@ -811,9 +811,105 @@ def peg_to_cpp(target, source, env):
     fout.write('\n')
     fout.close()
 
+def peg_to_cpp_multi(target, source, env):
+    #import sys
+    #sys.path.append("#src/mugen/parser")
+    #sys.path.append(".")
+    import peg, re, os
+    name = re.sub('\..*', '', source[0].name)
+    parser = peg.make_peg_parser(name)
+    # print "Multi cpp %s" % target
+    # print "Target path is %s" % target[0].path
+    fout = open(target[0].path, 'w')
+    directory = os.path.dirname(target[0].path)
+    # fout.write(parser(source[0].path).generate_cpp(separate = name, directory = directory))
+    fout.write(parser(source[0].path).generate_cpp(separate = name, directory = directory))
+    # fout.write(parser(source[0].path).generate_cpp(separate = name, main = True))
+    fout.write('\n')
+    fout.close()
+    #print "Generated multi"
+    #import time
+    # time.sleep(10)
+
+def peg_scanner(node, env, path):
+    import sys
+    #sys.path.append("src/mugen/parser")
+    #sys.path.append('../../../src/mugen/parser')
+    #sys.path.append(".")
+    import peg, re, os
+    # print "Node is %s" % node
+    name = re.sub('\..*', '', str(os.path.basename(str(node))))
+    directory = os.path.dirname(str(node))
+    # print "Peg emitter source is '%s' %s" % (source[0].path, source[0].srcnode())
+    # print "Peg name is %s" % name
+    parser = peg.make_peg_parser(name)
+    # print "x1"
+    where = '/tmp/scanner.tmp'
+    stuff = open(where, 'w')
+    stuff.write(node.get_contents())
+    stuff.close()
+    final = parser(where)
+    files = final.list_files(name)
+    # print "Generating peg files to %s" % directory
+    # final.generate_cpp(separate = name, directory = directory)
+    final.generate_cpp(separate = name)
+    #print "Generated.."
+    #import time
+    #time.sleep(15)
+    return files
+
+def peg_emitter(target, source, env):
+    import sys
+    #sys.path.append("src/mugen/parser")
+    #sys.path.append('../../../src/mugen/parser')
+    #sys.path.append(".")
+    import peg, re, os
+    # print "Node is %s" % node
+    name = re.sub('\..*', '', str(os.path.basename(str(source[0].path))))
+    directory = os.path.dirname(str(target[0].path))
+    parser = peg.make_peg_parser(name)
+    # Hack! just make the parser read a string directly
+    where = '/tmp/scanner.tmp'
+    stuff = open(where, 'w')
+    stuff.write(source[0].get_contents())
+    stuff.close()
+    final = parser(where)
+    # files = final.list_files(name, directory = directory)
+    files = final.list_files(name)
+    # print "Generating peg files for %s from %s to %s" % (target[0], source[0], directory)
+    # print "Implicit dependancies %s" % ' '.join(files)
+    # final.generate_cpp(separate = name, directory = directory)
+    #print "Generated.."
+    #import time
+    #time.sleep(15)
+    # print "Emitted %s" % files
+    def isHeader(file):
+        return '.h' in file
+    return (target + [file for file in files if not isHeader(file)], source)
+    #return (target + files, source)
+
+import sys
+sys.path.append('src/mugen/parser')
+import peg
+
 env = getEnvironment(getDebug())
-peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']), suffix = '.cpp', src_suffix = '.peg')
+
+# Generates a single .cpp file from a .peg description
+peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']),
+                      suffix = '.cpp',
+                      src_suffix = '.peg')
+
+# Generates a .cpp file for each rule in the .peg description
+peg_multiple_builder = Builder(action = Action(peg_to_cpp_multi, env['PEG_MAKE']),
+                               suffix = '.cpp',
+                               src_suffix = '.peg',
+                               # source_scanner = Scanner(peg_scanner),
+                               emitter = peg_emitter
+                               )
+
 env.Append(BUILDERS = {'Peg' : peg_builder})
+env.Append(BUILDERS = {'PegMulti' : peg_multiple_builder})
+
 if showTiming():
     cxxcom = env['CXXCOM']
     cccom = env['CCCOM']

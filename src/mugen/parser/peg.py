@@ -4204,7 +4204,18 @@ const void * parse(const char * in, int length, bool stats = false){
 """ % (top_code, namespace_start, data, more_code, rules, main, namespace_end)
         return data
 
-    def generate_cpp(self, parallel = False, separate = None):
+    def list_files(self, name, directory = '.'):
+        use_rules = [rule for rule in self.rules if not rule.isInline()]
+        out = []
+        for rule in use_rules:
+            file = '%s/%s-%s.cpp' % (directory, name, rule.name)
+            out.append(file)
+        return out
+
+    def print_list_files(self, name):
+        return '\n'.join(self.list_files(name))
+
+    def generate_cpp(self, parallel = False, separate = None, directory = '.', main = False):
         def prototype(rule):
             rule_parameters = ""
             if rule.rules != None:
@@ -4359,18 +4370,19 @@ const void * parse(const char * in, int length, bool stats = false){
 
         def multipleFiles(name):
             prototypes = '\n'.join([prototype(rule) for rule in use_rules])
-            for rule in use_rules:
-                rule_data = rule.generate_cpp(self, findAccessor(rule))
-                out = """
+            if not main:
+                for rule in use_rules:
+                    rule_data = rule.generate_cpp(self, findAccessor(rule))
+                    out = """
 %s
 #include "%s.h"
 %s
 %s
 %s
 """ % (top_code, name, namespace_start, rule_data, namespace_end)
-                file = open('%s-%s.cpp' % (name, rule.name), 'w')
-                file.write(out)
-                file.close()
+                    file = open('%s/%s-%s.cpp' % (directory, name, rule.name), 'w')
+                    file.write(out)
+                    file.close()
 
             header_guard = "_peg_%s_h_" % name
             header_data = """
@@ -4394,9 +4406,10 @@ extern Result errorResult;
 %s
 #endif
 """ % (header_guard, header_guard, namespace_start, start_cpp_code % (chunks, self.error_size), prototypes, namespace_end)
-            header_file = open('%s.h' % name, 'w')
-            header_file.write(header_data)
-            header_file.close()
+            if not main:
+                header_file = open('%s/%s.h' % (directory, name), 'w')
+                header_file.write(header_data)
+                header_file.close()
 
             data = """
 %s
@@ -5054,6 +5067,7 @@ if __name__ == '__main__':
     peg_maker = default_peg
     save_re = re.compile('--save=(.*)')
     separate_rules_re = re.compile('--separate-rules=(.*)')
+    list_separate_rules_re = re.compile('--list-separate-rules=(.*)')
     peg_name_re = re.compile('--peg-name=(.*)')
     def print_it(p):
         print p
@@ -5088,6 +5102,9 @@ if __name__ == '__main__':
         elif separate_rules_re.match(arg):
             all = separate_rules_re.match(arg)
             separate[0] = all.group(1)
+        elif list_separate_rules_re.match(arg):
+            all = list_separate_rules_re.match(arg)
+            doit.append(lambda p: p.print_list_files(all.group(1)))
         elif save_re.match(arg):
             all = save_re.match(arg)
             fout = open(all.group(1), 'w')

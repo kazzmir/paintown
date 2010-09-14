@@ -270,6 +270,11 @@ if useSDL() and not useMinpspw():
 elif useMinpspw():
     use.Prepend(LIBS = [sprigLibrary(use)])
 
+def addObjects(objects):
+    obj_files.extend(objects)
+
+SConscript('mugen/parser/SConstruct', exports = ['use', 'addObjects']);
+
 x = []
 # FIXME: adding psp_prx here is ugly, find a better way
 x.append(use.Program('paintown', psp_prx(use) + obj_files + main() + icon()))
@@ -283,7 +288,6 @@ x.append(use.Program('paintown', psp_prx(use) + obj_files + main() + icon()))
 
 # x.append( use.Program( 'mugentest2', obj_files + ['mugen/test2.cpp'] ) )
 
-SConscript('mugen/parser/SConstruct', exports = ['use']);
 SConscript('test/SConstruct', exports = ['use'])
 
 Return('x')
