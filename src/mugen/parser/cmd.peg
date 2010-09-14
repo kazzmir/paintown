@@ -5,13 +5,12 @@ include: {{
 #include "mugen/ast/all.h"
 #include <map>
 #include "gc.h"
-#include "cmd-functions.h"
+// #include "cmd-functions.h"
 typedef std::list<Ast::Section*> SectionList;
 }}
 
 code: {{
 
-#if 0
 Ast::Key * makeKeyModifier(Ast::Key * in, Ast::KeyModifier::ModifierType type, int ticks = 0);
 
 /* in cmd-functions.h */
@@ -76,7 +75,6 @@ public:
 };
 
 /* end in cmd-functions.h */
-#endif
 
 std::string * toString(const Value & input){
   std::ostringstream out;

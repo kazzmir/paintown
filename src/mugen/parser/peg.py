@@ -4269,6 +4269,8 @@ struct %s{
                 return data
 
             hit_count = '+'.join([sumChunk(chunk) for chunk in chunk_to_rules.keys()])
+            # Disable for now
+            hit_count = "0"
 
             data = """
 %s
