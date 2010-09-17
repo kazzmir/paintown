@@ -366,7 +366,7 @@ void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defau
         info.back()->close();
     }
     ::Menu::InfoBox * temp = new ::Menu::InfoBox();
-    temp->setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
+    temp->setFont(context.getFont(), context.getFontWidth(), context.getFontHeight());
     temp->setText(text);
     const int width = temp->location.getWidth();
     const int height = temp->location.getHeight();
@@ -400,7 +400,6 @@ void Menu::Renderer::renderInfo(const Bitmap & work){
 }
 
 Menu::DefaultRenderer::DefaultRenderer(){
-    
     // Default the menu to a certain size and details
     menu.location.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
@@ -409,6 +408,7 @@ Menu::DefaultRenderer::DefaultRenderer(){
     menu.colors.border = Bitmap::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
 }
+
 Menu::DefaultRenderer::~DefaultRenderer(){
     // Kill options
     for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
@@ -452,6 +452,7 @@ bool Menu::DefaultRenderer::readToken(Token * token){
     
     return true;
 }
+
 void Menu::DefaultRenderer::initialize(Context & context){
     // Setup menu fonts etc
     Filesystem::RelativePath localFont("fonts/arial.ttf");
@@ -485,15 +486,17 @@ void Menu::DefaultRenderer::initialize(Context & context){
     
     // Add first info option
     addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
-    
 }
+
 void Menu::DefaultRenderer::finish(){
     menu.close();
     menuInfo.close();
 }
+
 bool Menu::DefaultRenderer::active(){
     return menu.isActive();
 }
+
 void Menu::DefaultRenderer::act(){
     // FIXME find a better way to get options to update this is a waste
     for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
@@ -504,14 +507,17 @@ void Menu::DefaultRenderer::act(){
     menuInfo.act();
     actInfo();
 }
+
 void Menu::DefaultRenderer::render(const Bitmap & bmp){
     menu.render(bmp);
     menuInfo.render(bmp);
     renderInfo(bmp);
 }
+
 void Menu::DefaultRenderer::addOption(MenuOption * opt){
     this->options.push_back(opt);
 }
+
 void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
     switch(action){
         case Up:
@@ -586,6 +592,7 @@ Menu::TabRenderer::TabRenderer(){
     menu.colors.border = Bitmap::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
 }
+
 Menu::TabRenderer::~TabRenderer(){
     // Kill tabs
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
@@ -594,9 +601,9 @@ Menu::TabRenderer::~TabRenderer(){
         }
     }
 }
+
 bool Menu::TabRenderer::readToken(Token * token){
-    
-    if( *token == "menu" ) {
+    if (*token == "menu"){
 	TabInfo * tabInfo = new TabInfo();
 	while (token->hasTokens()){
 	    Token * tok;
@@ -681,6 +688,7 @@ bool Menu::TabRenderer::readToken(Token * token){
     
     return true;
 }
+
 void Menu::TabRenderer::initialize(Context & context){
     // Setup menu fonts etc
     Filesystem::RelativePath localFont("fonts/arial.ttf");
@@ -719,13 +727,16 @@ void Menu::TabRenderer::initialize(Context & context){
     addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
     
 }
+
 void Menu::TabRenderer::finish(){
     //menu.close();
     menuInfo.close();
 }
+
 bool Menu::TabRenderer::active(){
     return true;//menu.isActive();
 }
+
 void Menu::TabRenderer::act(){
     // FIXME find a better way to get options to update this is a waste
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
@@ -736,14 +747,17 @@ void Menu::TabRenderer::act(){
     menuInfo.act();
     actInfo();
 }
+
 void Menu::TabRenderer::render(const Bitmap & bmp){
     menu.render(bmp);
     menuInfo.render(bmp);
     renderInfo(bmp);
 }
+
 void Menu::TabRenderer::addOption(MenuOption * opt){
     //this->options.push_back(opt);
 }
+
 void Menu::TabRenderer::doAction(const Actions & action, Context & context){
     switch(action){
         case Up:
@@ -799,6 +813,7 @@ cleanup(true),
 state(NotStarted),
 fades(0),
 background(0),
+font(Filesystem::RelativePath(sharedFont)),
 fontWidth(24),
 fontHeight(24),
 infoLocation(0,-.5),
@@ -810,6 +825,7 @@ cleanup(false),
 state(NotStarted),
 fades(NULL),
 background(NULL),
+font(Filesystem::RelativePath(sharedFont)),
 fontWidth(24),
 fontHeight(24),
 infoLocation(0,-.5),
@@ -928,6 +944,7 @@ void Menu::Context::initialize(){
         state = Running;
     }
 }
+
 void Menu::Context::finish(){
     if (fades){
         // state
@@ -978,6 +995,7 @@ void Menu::Context::act(){
         background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Menu::Width, Menu::Height)));
     }
 }
+
 void Menu::Context::render(Renderer * renderer, const Bitmap & bmp){
     if (background){
         // background
@@ -1005,9 +1023,11 @@ void Menu::Context::render(Renderer * renderer, const Bitmap & bmp){
         fades->draw(bmp);
     }
 }
+
 void Menu::Context::setFadeTool(Gui::FadeTool *fade){
     fades = fade;
 }
+
 void Menu::Context::setBackground(Background *bg){
     background = bg;
 }
@@ -1102,7 +1122,43 @@ void Menu::Menu::load(Token * token){
     
 }
 
+class LanguageMenu: public Menu::Menu {
+public:
+    class LanguageOption: public MenuOption {
+    public:
+        LanguageOption():
+        MenuOption(NULL){
+            setText("English");
+            setInfoText("English");
+        }
+
+        virtual void logic(){
+        }
+
+        virtual void run(const ::Menu::Context & context){
+            throw ::Menu::MenuException(__FILE__, __LINE__);
+        }
+    };
+
+    LanguageMenu(){
+        addOption(new LanguageOption());
+    }
+};
+
+void Menu::Menu::setupDefaultLanguage(const Context & context){
+    LanguageMenu menu;
+    Configuration::setLanguage("english");
+    try{
+        menu.run(context);
+    } catch (const ::Menu::MenuException & ignore){
+    }
+}
+
 void Menu::Menu::run(const Context & parentContext){
+    if (Configuration::getLanguage() == ""){
+        setupDefaultLanguage(parentContext);
+    }
+
     // TODO Keys need a home
     // Set keys
     input.set(Keyboard::Key_J, 0, true, Down);
@@ -1211,6 +1267,7 @@ void Menu::Menu::act(Context & ourContext){
             throw Exception::Return(__FILE__, __LINE__);
         }
     }
+
     if (renderer){
         if (inputState[Up]){
             renderer->doAction(Up, ourContext);

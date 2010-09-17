@@ -14,7 +14,7 @@ text(""),
 infoText(""),
 runnable(true){
 
-    if(token){
+    if (token){
       Token tok(*token);
 
       while ( tok.hasTokens() ){

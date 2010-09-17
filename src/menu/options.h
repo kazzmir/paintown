@@ -219,7 +219,6 @@ class OptionKey : public MenuOption{
         int keyCode;
 };
 
-
 /*! Handles key reconfiguration */
 class OptionLevel : public MenuOption {
 public:

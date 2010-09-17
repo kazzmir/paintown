@@ -91,6 +91,8 @@ public:
     static void setMenuFontHeight(int x);
     static std::string getCurrentGame();
     static void setCurrentGame(const std::string & str);
+    static std::string getLanguage();
+    static void setLanguage(const std::string & str);
 
     static bool isJoystickEnabled();
     static void setJoystickEnabled(bool enabled);
@@ -167,6 +169,8 @@ private:
     /* directory of current game/mod */
     static std::string currentGameDir;
     static std::map<std::string, std::string> properties;
+
+    static std::string language;
 };
 
 #endif

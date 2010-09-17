@@ -87,6 +87,7 @@ useIntel = makeUseEnvironment('intel', False)
 useMinpspw = makeUseEnvironment('minpspw', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
+nativeCompile = makeUseEnvironment('native', False)
 enableProfiled = makeUseEnvironment('PROFILE', False)
 showTiming = makeUseEnvironment('timing', False)
 
@@ -730,7 +731,6 @@ pspnet_inet
     def llvm(env):
         #env['CC'] = 'llvm-gcc'
         #env['CXX'] = 'llvm-g++'
-        # Use these eventually
         env['CXX'] = 'clang++'
         env['CC'] = 'clang'
 
@@ -757,7 +757,10 @@ pspnet_inet
             cflags.append( ['-g3','-ggdb'])
         else:
             # -march=native
-            cflags.append(['-O2'])
+            if nativeCompile:
+                cflags.append(['-O2', '-pipe', '-march=native', '-fomit-frame-pointer'])
+            else:
+                cflags.append(['-O2'])
 
         if isCygwin():
             import SCons.Tool.zip

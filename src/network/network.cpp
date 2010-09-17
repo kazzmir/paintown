@@ -391,7 +391,7 @@ void close( Socket s ){
 }
 
 void closeAll(){
-	Global::debug(0, "network") << "Closing all sockets" << std::endl;
+	Global::debug(1, "network") << "Closing all sockets" << std::endl;
 	for ( vector< Socket >::iterator it = open_sockets.begin(); it != open_sockets.end(); it++ ){
 		nlClose( *it );
 	}

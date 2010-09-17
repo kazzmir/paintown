@@ -285,5 +285,7 @@ int paintown_main( int argc, char ** argv ){
 
     Configuration::saveConfiguration();
 
+    Global::debug(0) << "Bye!" << endl;
+
     return 0;
 }

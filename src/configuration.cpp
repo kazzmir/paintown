@@ -51,6 +51,7 @@ define_config(screen_size, "screen-size");
 define_config(sound, "sound");
 define_config(music, "music");
 define_config(up, "up");
+define_config(language, "language");
 /* version of the game: 3.3, 3.4, 4.24 */
 define_config(version, "version");
 #undef def_config
@@ -102,20 +103,20 @@ Configuration Configuration::defaultPlayer2Keys(){
 static map< int, Configuration * > configs;
 
 Configuration & Configuration::config( int set ){
-	if ( configs[ set ] == NULL ){
-		configs[ set ] = new Configuration();
-		switch( set ){
-			case 0 : {
-				*configs[ set ] = defaultPlayer1Keys();
-				break;
-			}
-			case 1 : {
-				*configs[ set ] = defaultPlayer2Keys();
-				break;
-			}
-		}
-	}
-	return *configs[ set ];
+    if ( configs[ set ] == NULL ){
+        configs[ set ] = new Configuration();
+        switch( set ){
+            case 0 : {
+                *configs[ set ] = defaultPlayer1Keys();
+                break;
+            }
+            case 1 : {
+                *configs[ set ] = defaultPlayer2Keys();
+                break;
+            }
+        }
+    }
+    return *configs[ set ];
 }
 
 /* hopefully this is only used right before setting all the values
@@ -605,6 +606,10 @@ void Configuration::loadConfigurations(){
                 int x;
                 *n >> x;
                 setSoundVolume(x);
+            } else if (*n == config_language){
+                string what;
+                *n >> what;
+                setLanguage(what);
             } else if (*n == config_music){
                 int x;
                 *n >> x;
@@ -750,6 +755,10 @@ void Configuration::saveConfiguration(){
 
     *(head.newToken()) << config_version << Global::getVersionString();
 
+    if (Configuration::getLanguage() != ""){
+        *(head.newToken()) << config_language << Configuration::getLanguage();
+    }
+
     if (Configuration::getMenuFont() != ""){
         Token * font = new Token();
         *font << config_menu_font << Configuration::getMenuFont();
@@ -829,6 +838,7 @@ int Configuration::musicVolume = 80;
 bool Configuration::joystickEnabled = true;
 std::string Configuration::currentGameDir = "paintown";
 std::map<std::string, std::string> Configuration::properties;
+std::string Configuration::language = "";
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
@@ -898,6 +908,14 @@ Configuration::PlayMode Configuration::getPlayMode(){
 
 void Configuration::setPlayMode(Configuration::PlayMode mode){
     play_mode = mode;
+}
+    
+std::string Configuration::getLanguage(){
+    return language;
+}
+
+void Configuration::setLanguage(const std::string & str){
+    language = str;
 }
 
 void Configuration::setScreenWidth(int i){

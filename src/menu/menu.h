@@ -455,6 +455,7 @@ class Menu{
 	static const int Height = 480;
 	
     protected:
+        void setupDefaultLanguage(const Context & context);
         
         /*! Context */
         Context context;
@@ -485,7 +486,6 @@ class Menu{
 	
 	/*! Check type */
 	virtual Renderer * rendererType(const Type &);
-    
 };
 
 }
