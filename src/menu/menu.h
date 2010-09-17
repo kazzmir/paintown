@@ -443,6 +443,8 @@ class Menu{
         
         /*! Get Name */
         virtual std::string getName();
+
+        virtual void setFont(const Filesystem::RelativePath & font);
         
         /*! Add option */
         virtual inline void addOption(MenuOption * opt){

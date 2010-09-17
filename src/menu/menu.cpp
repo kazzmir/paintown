@@ -813,7 +813,6 @@ cleanup(true),
 state(NotStarted),
 fades(0),
 background(0),
-font(Filesystem::RelativePath(sharedFont)),
 fontWidth(24),
 fontHeight(24),
 infoLocation(0,-.5),
@@ -825,7 +824,6 @@ cleanup(false),
 state(NotStarted),
 fades(NULL),
 background(NULL),
-font(Filesystem::RelativePath(sharedFont)),
 fontWidth(24),
 fontHeight(24),
 infoLocation(0,-.5),
@@ -845,26 +843,33 @@ menuInfoLocation(0,.95){
     if (child.fades != NULL){
         fades = child.fades;
     }
+
     if (child.background != NULL){
         background = child.background;
     }
+
     if (!child.sounds.empty()){
         sounds = child.sounds;
     }
+
     if (Filesystem::exists(child.music)){
         music = child.music;
     }
+
     if (Filesystem::exists(child.font)){
         font = child.font;
         fontWidth = child.fontWidth;
         fontHeight = child.fontHeight;
     }
+
     if (child.infoLocation.getRelativeX() != 0 || child.infoLocation.getRelativeY() != -.5){
         infoLocation = child.infoLocation;
     }
+
     if (child.menuInfoLocation.getRelativeX() != 0 || child.menuInfoLocation.getRelativeY() != .95){
         infoLocation = child.infoLocation;
     }
+
     if (!child.menuInfo.empty()){
         menuInfo = child.menuInfo;
     }
@@ -1074,6 +1079,10 @@ Menu::Menu::~Menu(){
         delete renderer;
     }
 }
+        
+void Menu::Menu::setFont(const Filesystem::RelativePath & font){
+    context.setFont(font);
+}
 
 void Menu::Menu::load(Token * token){ 
     // version info;
@@ -1147,6 +1156,7 @@ public:
 
 void Menu::Menu::setupDefaultLanguage(const Context & context){
     LanguageMenu menu;
+    menu.setFont(Filesystem::RelativePath(sharedFont));
     Configuration::setLanguage("english");
     try{
         menu.run(context);
