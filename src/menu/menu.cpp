@@ -1129,7 +1129,7 @@ public:
         LanguageOption():
         MenuOption(NULL){
             setText("English");
-            setInfoText("English");
+            setInfoText("Set the language to English");
         }
 
         virtual void logic(){
@@ -1155,8 +1155,20 @@ void Menu::Menu::setupDefaultLanguage(const Context & context){
 }
 
 void Menu::Menu::run(const Context & parentContext){
+    // Setup context from parent and this menu and initialize
+    Context localContext(parentContext, context);
+    localContext.initialize();
+
+    // Setup menu fonts etc
+    if (renderer){        
+        renderer->initialize(localContext);
+    }
+    
+    //Play music
+    localContext.playMusic();
+
     if (Configuration::getLanguage() == ""){
-        setupDefaultLanguage(parentContext);
+        setupDefaultLanguage(localContext);
     }
 
     // TODO Keys need a home
@@ -1192,18 +1204,7 @@ void Menu::Menu::run(const Context & parentContext){
 
     InputManager::enableBufferInput();
      
-    // Setup context from parent and this menu and initialize
-    Context localContext(parentContext, context);
-    localContext.initialize();
-
-    // Setup menu fonts etc
-    if (renderer){        
-        renderer->initialize(localContext);
-    }
-    
-    //Play music
-    localContext.playMusic();
-    
+        
     // MenuException or something
     bool specialExit = false;
     
