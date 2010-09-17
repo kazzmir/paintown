@@ -757,7 +757,7 @@ pspnet_inet
             cflags.append( ['-g3','-ggdb'])
         else:
             # -march=native
-            if nativeCompile:
+            if nativeCompile():
                 cflags.append(['-O2', '-pipe', '-march=native', '-fomit-frame-pointer'])
             else:
                 cflags.append(['-O2'])
