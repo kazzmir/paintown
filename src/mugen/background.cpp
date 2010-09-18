@@ -99,7 +99,7 @@ velocityY(0),
 linkedElement(0){
     setName(name);
 
-    class Walker: public Ast::Walker{
+    class Walker: public Ast::Walker {
     public:
         Walker(BackgroundElement & self):
             self(self){
@@ -1630,7 +1630,7 @@ clearColor(-1){
 			}
 		    }
             };
-            BackgroundDefWalker walker(*this,sprites);
+            BackgroundDefWalker walker(*this, sprites);
             section->walk(walker);
 	// This our background data definitions
         /* probably need a better regex here */

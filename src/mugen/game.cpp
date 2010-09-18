@@ -259,6 +259,27 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
     }
 }
 
+void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+    Character player1(Filesystem::find(Filesystem::RelativePath("mugen/chars/" + player1Name + "/" + player1Name + ".def")));
+    Character player2(Filesystem::find(Filesystem::RelativePath("mugen/chars/" + player2Name + "/" + player2Name + ".def")));
+    player1.load();
+    player2.load();
+    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+    DummyBehavior dummyBehavior;
+    // Set regenerative health
+    player1.setRegeneration(true);
+    player2.setRegeneration(true);
+    player1.setBehavior(&player1Behavior);
+    player2.setBehavior(&dummyBehavior);
+    MugenStage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    stage.load();
+    stage.addPlayer1(&player1);
+    stage.addPlayer2(&player2);
+    stage.reset();
+    Bitmap screen(GFX_X, GFX_Y);
+    runMatch(&stage, screen);
+}
+
 void Game::doTraining(const Bitmap & bmp){
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);

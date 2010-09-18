@@ -20,6 +20,9 @@ class Game {
 
         //! Runs everything
         virtual void run();
+
+        /* just start a training match */
+        static void startTraining(const std::string & player1, const std::string & player2, const std::string & stage);
     private:
         void doArcade(const Bitmap &);
         void doTraining(const Bitmap & bmp);

@@ -1251,6 +1251,14 @@ void MugenStage::reset(){
     }
     
     inleft = inright = onLeftSide = onRightSide = 0;
+    if (players.size() < 2){
+        throw MugenException("Need at least 2 players");
+    }
+
+    if (gameHUD == NULL){
+        throw MugenException("Internal error: Stage not loaded, call load()");
+    }
+
     gameHUD->reset(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 }
 

@@ -183,7 +183,7 @@ public:
     }
 
     void executeOption(const Mugen::PlayerType & player, bool & endGame){
-        Mugen::Game watch(player, Mugen::Watch, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
+        Mugen::Game watch(player, Mugen::Watch, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));
         watch.run();
     }
 };
