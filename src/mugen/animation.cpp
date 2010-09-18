@@ -281,6 +281,19 @@ void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const
     }
 }
 
+void MugenAnimation::render(int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects){
+    if (position >= frames.size()){
+        return;
+    }
+
+    if (frames[position]->sprite == 0){
+	return;
+    }
+
+    Mugen::Effects combined = frames[position]->effects + effects;
+    renderFrame(frames[position], xaxis, yaxis, work, combined);
+}
+
 void MugenAnimation::render(int xaxis, int yaxis, const Bitmap &work, double scalex, double scaley){
     if (position >= frames.size()){
         return;

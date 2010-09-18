@@ -682,7 +682,7 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 
     while (tiler.hasMore()){
         Point where = tiler.nextPoint();
-        ani->render(where.x, where.y, bmp);
+        ani->render(where.x, where.y, bmp, getEffects());
     }
 
 #if 0

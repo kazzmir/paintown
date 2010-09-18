@@ -1089,6 +1089,12 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->dimension = e.dimension;
     return *this;
 }
+        
+Mugen::Effects Mugen::Effects::operator+(const Mugen::Effects & e2){
+    Mugen::Effects result(*this);
+    result.mask |= e2.mask;
+    return result;
+}
 
 Mugen::Effects::~Effects(){
 }

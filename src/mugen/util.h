@@ -114,6 +114,8 @@ class Effects{
 	const Effects &operator=(const Effects &e);
 	virtual ~Effects();
 
+        Effects operator+(const Effects &);
+
         /* what kind of translucency to use */
 	TransType trans;
 

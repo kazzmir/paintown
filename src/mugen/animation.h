@@ -128,6 +128,7 @@ class MugenAnimation{
 	
 	// Render current frame optionally scale defaults to 1
 	void render( int xaxis, int yaxis, const Bitmap &work, double scalex=1, double scaley=1 );
+        void render(int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects);
 	
 	// Render current frame overriding flipping
 	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex=1, const double scaley=1  );
