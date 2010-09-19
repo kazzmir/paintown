@@ -32,7 +32,11 @@ static void load(const char * path){
     try{
         TimeDifference diff;
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::parse(string(path)));
-        // Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
+        Token * serial = parsed.serialize();
+        ostream & out = Global::debug(0);
+        serial->toString(out, "");
+        out << endl;
+        delete serial;
     } catch (const Filesystem::NotFound & e){
         Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
     } catch (const Mugen::Cmd::ParseException & e){
@@ -46,4 +50,6 @@ int main(int argc, char ** argv){
     } else {
         load(argv[1]);
     }
+
+    return 0;
 }

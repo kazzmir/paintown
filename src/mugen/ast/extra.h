@@ -7,6 +7,7 @@
 #include <string.h>
 #include "Section.h"
 #include "exception.h"
+#include "util/token.h"
 
 namespace Ast{
 
@@ -36,6 +37,16 @@ public:
 
     inline std::list<Section*> * getSections() const {
         return sections;
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "mugen";
+        for (std::list<Section*>::const_iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+            Section * section = *section_it;
+            *token << section->serialize();
+        }
+        return token;
     }
 
     static int lowerCase( int c ){ return tolower(c); }
