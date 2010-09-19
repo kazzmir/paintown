@@ -39,6 +39,15 @@ public:
         return str;
     }
 
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "attribute-keyword" << name->serialize();
+        if (value != NULL){
+            *token << value->serialize();
+        }
+        return token;
+    }
+
     template <typename X>
     const AttributeKeyword & operator>>(X & v) const {
         if (value != 0){

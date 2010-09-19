@@ -23,6 +23,12 @@ public:
     virtual void walk(Walker & walker) const {
         walker.onHitDefAttribute(*this);
     }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "hitdef-attribute" << value;
+        return token;
+    }
     
     virtual Element * copy() const {
         return new HitDefAttribute(value);
@@ -66,6 +72,15 @@ public:
 
     virtual void addAttribute(const std::string & value){
         values.push_back(value);
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "hitdef-attack-attribute";
+        for (std::vector<std::string>::const_iterator it = values.begin(); it != values.end(); it++){
+            *token << *it;
+        }
+        return token;
     }
 
     virtual void reset() const {

@@ -28,7 +28,7 @@ public:
     }
 
     virtual const Value * getArg(int n) const {
-        if (args != 0){
+        if (args != NULL){
             return args->get(n);
         }
         return 0;
@@ -44,6 +44,15 @@ public:
     
     virtual const Value * getArg3() const {
         return getArg(2);
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "function" << name;
+        if (args != NULL){
+            *token << args->serialize();
+        }
+        return token;
     }
 
     static std::string downcase(std::string str){

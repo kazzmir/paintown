@@ -12,9 +12,11 @@ public:
     }
 
     /* TODO: get rid of this method, this class should not be instantiated */
+    /*
     virtual Element * copy() const {
         return new Expression();
     }
+    */
 
     virtual std::string getType() const {
         return "expression";
@@ -43,6 +45,12 @@ public:
 
     const Value * getExpression() const {
         return expression;
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "expression-unary" << getExpressionType() << getExpression()->serialize();
+        return token;
     }
 
     virtual std::string getType() const {
@@ -149,6 +157,12 @@ public:
 
     virtual inline const Value * getLeft() const {
         return left;
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "expression-infix" << getExpressionType() << getLeft()->serialize() << getRight()->serialize();
+        return token;
     }
     
     virtual inline const Value * getRight() const {

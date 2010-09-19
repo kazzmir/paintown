@@ -9,6 +9,7 @@
 
 #include "Value.h"
 #include "util/funcs.h"
+#include "util/token.h"
 
 namespace Ast{
 
@@ -57,6 +58,12 @@ public:
 
     virtual int getColumn() const {
         return column;
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "identifier" << line << column << toString();
+        return token;
     }
 
     virtual std::string toString() const {

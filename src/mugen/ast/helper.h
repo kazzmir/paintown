@@ -9,6 +9,7 @@
 
 #include "Value.h"
 #include "util/funcs.h"
+#include "util/token.h"
 
 namespace Ast{
 
@@ -38,6 +39,12 @@ public:
     
     virtual void walk(Walker & walker) const {
         walker.onHelper(*this);
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "helper" << name << original->serialize();
+        return token;
     }
 
     bool operator==(const std::string & str) const {

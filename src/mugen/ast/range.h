@@ -50,6 +50,12 @@ public:
         return high;
     }
     
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "range" << getRangeType() << low->serialize() << high->serialize();
+        return token;
+    }
+
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
         low->mark(marks);

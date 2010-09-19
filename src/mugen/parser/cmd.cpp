@@ -931,11 +931,13 @@ SectionList * makeSectionList(){
     return object;
 }
 
+/*
 Ast::Value * makeExpression(){
     Ast::Value * object = new Ast::Expression();
     GC::save(object);
     return object;
 }
+*/
 
 Ast::Value * makeHelper(const Value & name, const Value & id){
     Ast::Value * helper = new Ast::Helper(std::string(as<const char*>(name)), as<Ast::Value*>(id));

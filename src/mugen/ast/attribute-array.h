@@ -8,6 +8,7 @@
 #include "Value.h"
 #include "walker.h"
 #include <sstream>
+#include "util/token.h"
 
 namespace Ast{
 
@@ -51,6 +52,20 @@ public:
             return *identifier_name == str;
         }
         return false;
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "attribute-array";
+        if (keyword_name != NULL){
+            *token << keyword_name->serialize();
+        }
+        if (identifier_name != NULL){
+            *token << identifier_name->serialize();
+        }
+        *token << index->serialize();
+        *token << value->serialize();
+        return token;
     }
 
     std::string valueAsString() const {

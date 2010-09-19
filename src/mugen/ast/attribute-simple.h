@@ -6,6 +6,7 @@
 #include "Value.h"
 #include "walker.h"
 #include <sstream>
+#include "util/token.h"
 
 namespace Ast{
 
@@ -58,6 +59,15 @@ public:
 
     virtual int getColumn() const {
         return column;
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "attribute-simple" << line << column << name->serialize();
+        if (value != NULL){
+            *token << value->serialize();
+        }
+        return token;
     }
 
     std::string valueAsString() const {

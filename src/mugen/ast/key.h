@@ -5,6 +5,7 @@
 #include "walker.h"
 #include <map>
 #include <vector>
+#include "util/token.h"
 
 namespace Ast{
 
@@ -53,6 +54,12 @@ public:
     using Key::same;
     virtual bool same(const KeySingle & key) const {
         return std::string(name) == std::string(key.name);
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "key-single" << name;
+        return token;
     }
 
     virtual bool operator==(const Key & key) const {
@@ -138,6 +145,12 @@ public:
         return key;
     }
 
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "key-modifier" << getModifierType() << getExtra() << getKey()->serialize();
+        return token;
+    }
+
     virtual bool operator==(const Key & key) const {
         return key.same(*this);
     }
@@ -205,6 +218,12 @@ public:
     virtual bool operator==(const Key & key) const {
         return key.same(*this);
     }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "key-combined" << key1->serialize() << key2->serialize();
+        return token;
+    }
     
     virtual std::string toString() const {
         std::ostringstream out;
@@ -255,6 +274,16 @@ public:
 
     virtual const std::vector<Key*> & getKeys() const {
         return keys;
+    }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "key-list";
+        for (std::vector<Key*>::const_iterator it = keys.begin(); it != keys.end(); it++){
+            Key * key = *it;
+            *token << key->serialize();
+        }
+        return token;
     }
     
     virtual std::string toString() const {

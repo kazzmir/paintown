@@ -36,6 +36,12 @@ public:
         return tolower(c);
     }
 
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "keyword" << toString();
+        return token;
+    }
+
     static std::string downcase(std::string str){
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);
         return str;

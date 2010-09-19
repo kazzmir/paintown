@@ -13,6 +13,7 @@
 #include "Value.h"
 #include "exception.h"
 #include "ast.h"
+#include "util/token.h"
 
 namespace Ast{
 
@@ -105,6 +106,37 @@ public:
     void addValue(Value * value){
         values.push_back(value);
         walkList.push_back(WalkValue);
+    }
+
+    virtual Token * serialize() const {
+        Token * token = new Token();
+        *token << "section-list";
+        std::list<Attribute*>::const_iterator attribute_it = attributes.begin();
+        std::list<Value*>::const_iterator value_it = values.begin();
+        for (std::list<WalkList>::const_iterator it = walkList.begin(); it != walkList.end(); it++){
+            WalkList what = *it;
+            switch (what){
+                case WalkAttribute : {
+                    Attribute * attribute = *attribute_it;
+                    Token * next = token->newToken();
+                    *next << "attribute" << attribute->serialize();
+                    attribute_it++;
+                    break;
+                }
+                case WalkValue : {
+                    Value * value = *value_it;
+                    Token * next = token->newToken();
+                    *next << "value" << value->serialize();
+                    value_it++;
+                    break;
+                }
+            }
+        }
+
+        return token;
+    }
+
+    void deserialize(Token * token){
     }
     
     std::string toString(){

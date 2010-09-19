@@ -37,9 +37,17 @@ public:
         x = value;
         return *this;
     }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "number" << value;
+        return token;
+    }
     
     virtual const Value & operator>>(bool & item) const {
-        /* cast to int here? */
+        /* cast to int here? probably not because then 0.1 would become false
+         * can an IEEE floating point value be exactly 0 in binary?
+         */
         if (value == 0){
             item = false;
         } else {

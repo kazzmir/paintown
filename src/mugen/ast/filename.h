@@ -31,6 +31,12 @@ public:
     virtual std::string getType() const {
         return "filename";
     }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "filename" << *str;
+        return token;
+    }
     
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;

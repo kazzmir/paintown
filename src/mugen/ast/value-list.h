@@ -34,6 +34,16 @@ public:
         return true;
     }
 
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "value-list";
+        for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
+            const Value * value = *it;
+            *token << value->serialize();
+        }
+        return token;
+    }
+
     virtual Value * get(unsigned int index) const {
         if (index >= 0 && index < values.size()){
             unsigned int count = 0;

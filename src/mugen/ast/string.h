@@ -25,6 +25,12 @@ public:
         str = *(this->str);
         return *this;
     }
+
+    Token * serialize() const {
+        Token * token = new Token();
+        *token << "string" << *str;
+        return token;
+    }
     
     virtual std::string getType() const {
         return "string";

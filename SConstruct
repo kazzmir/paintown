@@ -758,7 +758,9 @@ pspnet_inet
         else:
             # -march=native
             if nativeCompile():
-                cflags.append(['-O2', '-pipe', '-march=native', '-fomit-frame-pointer'])
+                cflags.append(['-O2', '-pipe', '-march=native'])
+                if not enableProfiled():
+                    cflags.append(['-fomit-frame-pointer'])
             else:
                 cflags.append(['-O2'])
 
