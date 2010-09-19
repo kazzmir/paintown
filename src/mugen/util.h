@@ -74,6 +74,8 @@ namespace Util{
      */
     std::list<Ast::Section*>* parseAir(const std::string & filename);
     std::list<Ast::Section*>* parseDef(const std::string & filename);
+    /* Normally you should use ParseCache::parseCmd instead of this parseCmd */
+    std::list<Ast::Section*>* parseCmd(const std::string & filename);
 
     /* returns the number of game ticks that have passed by.
      * speed adjusts the rate. lower values slow the game down,

@@ -905,6 +905,18 @@ list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
     }
 }
 
+list<Ast::Section*>* Mugen::Util::parseCmd(const string & filename){
+    try{
+        return (list<Ast::Section*>*) Mugen::Cmd::parse(filename);
+    } catch (const Ast::Exception & e){
+        throw MugenException(e.getReason());
+    } catch (const Mugen::Cmd::ParseException & e){
+        ostringstream out;
+        out << "Could not parse " << filename << " because " << e.getReason();
+        throw MugenException(out.str());
+    }
+}
+
 std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask){
     Ast::AstParse parsed(parseAir(filename.path()));
     Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
