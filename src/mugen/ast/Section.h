@@ -84,6 +84,36 @@ public:
         attributes.push_back(attribute);
         walkList.push_back(WalkAttribute);
     }
+
+    template <class Thing> static bool checkEquality(const std::list<Thing*> & my_list, const std::list<Thing*> & him_list){
+        typename std::list<Thing*>::const_iterator my_it = my_list.begin();
+        typename std::list<Thing*>::const_iterator him_it = him_list.begin();
+        while (true){
+            if (my_it == my_list.end() || him_it == him_list.end()){
+                break;
+            }
+            Thing * mine = *my_it;
+            Thing * him = *him_it;
+            if (*mine != *him){
+                return false;
+            }
+
+            my_it++;
+            him_it++;
+        }
+
+        return my_it == my_list.end() && him_it == him_list.end();
+    }
+
+    using Element::operator==;
+    virtual bool operator==(const Section & him) const {
+        if (this == &him){
+            return true;
+        }
+
+        return checkEquality(attributes, him.attributes) &&
+               checkEquality(values, him.values);
+    }
     
     virtual Element * copy() const {
         Section * out = new Section(new std::string(getName()));
@@ -110,7 +140,7 @@ public:
 
     virtual Token * serialize() const {
         Token * token = new Token();
-        *token << "section-list";
+        *token << "section-list" << getName();
         std::list<Attribute*>::const_iterator attribute_it = attributes.begin();
         std::list<Value*>::const_iterator value_it = values.begin();
         for (std::list<WalkList>::const_iterator it = walkList.begin(); it != walkList.end(); it++){
@@ -136,7 +166,27 @@ public:
         return token;
     }
 
-    void deserialize(Token * token){
+    static Section * deserialize(Token * token){
+        Token * next;
+        std::string name;
+        *token >> name;
+        Section * section = new Section(new std::string(name));
+        while (token->hasTokens()){
+            *token >> next;
+            if (*next == "attribute"){
+                Token * attribute;
+                *next >> attribute;
+                section->addAttribute(Attribute::deserialize(attribute));
+            } else if (*next == "value"){
+                Token * value;
+                *next >> value;
+                section->addValue(Value::deserialize(value));
+            } else {
+                throw Exception("Can't deserialize " + next->getName());
+            }
+        }
+
+        return section;
     }
     
     std::string toString(){

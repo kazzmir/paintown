@@ -44,6 +44,15 @@ public:
         walker.onIdentifier(*this);
     }
 
+    static Identifier * deserialize(Token * token);
+
+    using Element::operator==;
+    virtual bool operator==(const Identifier & him) const {
+        return getLine() == him.getLine() &&
+               getColumn() == him.getColumn() &&
+               toString() == him.toString();
+    }
+
     bool operator==(const std::string & str) const {
         return downcase(toString()) == downcase(str);
     }

@@ -28,9 +28,24 @@ public:
     virtual void walk(Walker & walker) const {
         walker.onNumber(*this);
     }
+
+    static Number * deserialize(Token * token){
+        double value;
+        *token >> value;
+        return new Number(value);
+    }
     
     virtual Element * copy() const {
         return new Number(value);
+    }
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const Number & him) const {
+        return value == him.value;
     }
     
     virtual const Value & operator>>(double & x) const {

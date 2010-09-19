@@ -8,6 +8,8 @@
 #include "exception.h"
 #include "ast.h"
 
+class Token;
+
 namespace Ast{
 
 class Value: public Element {
@@ -38,6 +40,13 @@ public:
 
     virtual void debugExplain(){
         std::cout << toString() << std::endl;
+    }
+
+    static Value * deserialize(Token * token);
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
     }
     
     virtual const Value & operator>>(const Value *& value) const {

@@ -47,6 +47,7 @@ public:
         return token;
     }
 
+    using Element::operator==;
     bool operator==(const std::string & str) const {
         return downcase(name) == downcase(str);
     }

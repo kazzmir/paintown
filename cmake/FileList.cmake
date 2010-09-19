@@ -197,6 +197,7 @@ src/mugen/state-controller.cpp
 src/mugen/option-arcade.cpp
 src/mugen/option-options.cpp
 src/mugen/option-versus.cpp
+src/mugen/ast/ast.cpp
 src/mugen/parse-cache.cpp
 src/mugen/parser/parse-exception.cpp
 src/mugen/parser/def.cpp

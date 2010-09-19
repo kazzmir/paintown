@@ -1,6 +1,8 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 #include "debug.h"
+#include <stdlib.h>
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
@@ -28,19 +30,57 @@ string trim(const std::string & str){
 
 }
 
+static string randomFile(){
+    static char temp[64];
+    sprintf(temp, "/tmp/serialXXXXXX");
+    close(mkstemp(temp));
+    return string(temp);
+}
+
 static void load(const char * path){
     try{
+        /* parse file */
         TimeDifference diff;
+        diff.startTime();
         Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::parse(string(path)));
+        diff.endTime();
+        Global::debug(0, "test") << diff.printTime("parse") << endl;
+        diff.startTime();
+
+        /* serialize and write it out to a file */
         Token * serial = parsed.serialize();
-        ostream & out = Global::debug(0);
+        diff.endTime();
+        Global::debug(0, "test") << diff.printTime("serialize") << endl;
+        string file = randomFile();
+        ofstream out(file.c_str());
         serial->toString(out, "");
         out << endl;
+        out.close();
+        TokenReader reader;
+        diff.startTime();
+
+        /* read file and deserialize input */
+        Token * deserial = reader.readTokenFromFile(file.c_str());
+        diff.endTime();
+        Global::debug(0, "test") << diff.printTime("token") << endl;
+        Ast::AstParse deparsed(deserial);
+
+        /* compare original parse with deserial parse */
+        if (parsed != deparsed){
+            Global::debug(0) << "Fail!" << endl;
+        } else {
+            Global::debug(0) << "Pass!" << endl;
+        }
+
+        /* cleanup */
         delete serial;
+        remove(file.c_str());
     } catch (const Filesystem::NotFound & e){
         Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
     } catch (const Mugen::Cmd::ParseException & e){
         Global::debug(0, "test") << "Test failure! Parse exception: " << e.getReason() << endl;
+    } catch (const Ast::Exception & e){
+        Global::debug(0, "test") << "Test failure! Ast exception: " << e.getTrace() << endl;
     }
 }
 

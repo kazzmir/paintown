@@ -28,6 +28,7 @@ public:
         return false;
     }
 
+    using Element::operator==;
     virtual bool operator==(const Key & key) const {
         return false;
     }
@@ -47,6 +48,7 @@ public:
         marks[this] = true;
     }
 
+    using Element::operator==;
     virtual bool operator==(const std::string & that) const {
         return name == that;
     }
@@ -151,6 +153,7 @@ public:
         return token;
     }
 
+    using Element::operator==;
     virtual bool operator==(const Key & key) const {
         return key.same(*this);
     }
@@ -215,6 +218,7 @@ public:
         return key2;
     }
 
+    using Element::operator==;
     virtual bool operator==(const Key & key) const {
         return key.same(*this);
     }
@@ -260,6 +264,7 @@ public:
         }
     }
 
+    using Element::operator==;
     virtual bool operator==(const Key & key) const {
         return key.same(*this);
     }

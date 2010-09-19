@@ -6,6 +6,7 @@
 #include <string>
 #include "ast.h"
 #include "exception.h"
+#include "util/token.h"
 
 namespace Ast{
 
@@ -27,8 +28,11 @@ public:
         walker.onAttribute(*this);
     }
 
-    virtual bool operator==(const std::string & str) const = 0;
+    static Attribute * deserialize(Token * token);
 
+    using Element::operator==;
+    virtual bool operator==(const std::string & str) const = 0;
+    
     virtual Kind getKind(){
         return kind;
     }

@@ -28,6 +28,7 @@ public:
         return new Keyword(str);
     }
     
+    using Element::operator==;
     bool operator==(const std::string & str) const {
         return downcase(toString()) == downcase(str);
     }

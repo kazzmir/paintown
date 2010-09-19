@@ -41,6 +41,26 @@ public:
     }
 
     using Attribute::operator==;
+    virtual bool operator==(const Attribute & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const AttributeSimple & him) const {
+        bool same_values = true;
+        if (value != NULL && him.value != NULL){
+            same_values = *value == *him.value;
+        } else if (value != NULL){
+            same_values = false;
+        } else if (him.value != NULL){
+            same_values = false;
+        }
+
+        return line == him.line &&
+               column == him.column &&
+               *name == *him.name &&
+               same_values;
+    }
+
     virtual bool operator==(const std::string & str) const {
         return *name == str;
     }
@@ -69,6 +89,8 @@ public:
         }
         return token;
     }
+    
+    static AttributeSimple * deserialize(Token * token);
 
     std::string valueAsString() const {
         std::string str;
