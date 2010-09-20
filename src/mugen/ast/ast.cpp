@@ -16,6 +16,27 @@
 using std::string;
 
 namespace Ast{
+
+string Element::SERIAL_STRING = "a";
+string Element::SERIAL_FUNCTION = "b";
+string Element::SERIAL_RANGE = "c";
+string Element::SERIAL_SECTION_LIST = "d";
+string Element::SERIAL_IDENTIFIER = "e";
+string Element::SERIAL_KEYWORD = "f";
+string Element::SERIAL_HITDEF_ATTRIBUTE = "g";
+string Element::SERIAL_HITDEF_ATTACK_ATTRIBUTE = "h";
+string Element::SERIAL_EXPRESSION_UNARY = "i";
+string Element::SERIAL_EXPRESSION_INFIX = "j";
+string Element::SERIAL_VALUE_LIST = "k";
+string Element::SERIAL_ATTRIBUTE_SIMPLE = "l";
+string Element::SERIAL_ATTRIBUTE_ARRAY = "m";
+string Element::SERIAL_HELPER = "n";
+string Element::SERIAL_NUMBER = "o";
+string Element::SERIAL_FILENAME = "p";
+string Element::SERIAL_ATTRIBUTE_KEYWORD = "q";
+    
+string Section::SERIAL_SECTION_ATTRIBUTE = "s1";
+string Section::SERIAL_SECTION_VALUE = "s2";
     
 AttributeSimple * AttributeSimple::deserialize(Token * token){
     int line, column;
@@ -40,9 +61,9 @@ AttributeArray * AttributeArray::deserialize(Token * token){
     *token >> name;
     Identifier * identifier = NULL;
     Keyword * keyword = NULL;
-    if (*name == "identifier"){
+    if (*name == SERIAL_IDENTIFIER){
         identifier = Identifier::deserialize(name);
-    } else if (*name == "keyword"){
+    } else if (*name == SERIAL_KEYWORD){
         keyword = Keyword::deserialize(name);
     }
     Token * indexToken;
@@ -66,50 +87,50 @@ Identifier * Identifier::deserialize(Token * token){
 }
 
 Attribute * Attribute::deserialize(Token * token){
-    if (*token == "attribute-simple"){
+    if (*token == SERIAL_ATTRIBUTE_SIMPLE){
         return AttributeSimple::deserialize(token);
     }
-    if (*token == "attribute-array"){
+    if (*token == SERIAL_ATTRIBUTE_ARRAY){
         return AttributeArray::deserialize(token);
     }
     throw Exception("Don't know how to deserialize " + token->getName());
 }
     
 Value * Value::deserialize(Token * token){
-    if (*token == "number"){
+    if (*token == SERIAL_NUMBER){
         return Number::deserialize(token);
     }
-    if (*token == "expression-infix"){
+    if (*token == SERIAL_EXPRESSION_INFIX){
         return ExpressionInfix::deserialize(token);
     }
-    if (*token == "expression-unary"){
+    if (*token == SERIAL_EXPRESSION_UNARY){
         return ExpressionUnary::deserialize(token);
     }
-    if (*token == "keyword"){
+    if (*token == SERIAL_KEYWORD){
         return Keyword::deserialize(token);
     }
-    if (*token == "function"){
+    if (*token == SERIAL_FUNCTION){
         return Function::deserialize(token);
     }
-    if (*token == "identifier"){
+    if (*token == SERIAL_IDENTIFIER){
         return Identifier::deserialize(token);
     }
-    if (*token == "helper"){
+    if (*token == SERIAL_HELPER){
         return Helper::deserialize(token);
     }
-    if (*token == "string"){
+    if (*token == SERIAL_STRING){
         return String::deserialize(token);
     }
-    if (*token == "value-list"){
+    if (*token == SERIAL_VALUE_LIST){
         return ValueList::deserialize(token);
     }
-    if (*token == "range"){
+    if (*token == SERIAL_RANGE){
         return Range::deserialize(token);
     }
-    if (*token == "hitdef-attribute"){
+    if (*token == SERIAL_HITDEF_ATTRIBUTE){
         return HitDefAttribute::deserialize(token);
     }
-    if (*token == "hitdef-attack-attribute"){
+    if (*token == SERIAL_HITDEF_ATTACK_ATTRIBUTE){
         return HitDefAttackAttribute::deserialize(token);
     }
 

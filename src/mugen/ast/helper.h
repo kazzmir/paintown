@@ -43,7 +43,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "helper" << name << original->serialize();
+        *token << SERIAL_HELPER << name << original->serialize();
         return token;
     }
 

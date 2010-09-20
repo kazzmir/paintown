@@ -38,7 +38,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "value-list";
+        *token << SERIAL_VALUE_LIST;
         for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
             const Value * value = *it;
             *token << value->serialize();

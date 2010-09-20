@@ -35,7 +35,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "hitdef-attribute" << value;
+        *token << SERIAL_HITDEF_ATTRIBUTE << value;
         return token;
     }
 
@@ -91,7 +91,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "hitdef-attack-attribute";
+        *token << SERIAL_HITDEF_ATTACK_ATTRIBUTE;
         for (std::vector<std::string>::const_iterator it = values.begin(); it != values.end(); it++){
             *token << *it;
         }

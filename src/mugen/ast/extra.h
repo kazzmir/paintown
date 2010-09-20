@@ -27,7 +27,9 @@ public:
     AstParse(Token * token):
     sections(NULL){
         checkVersion(token);
-        std::vector<Token*> tokens = token->findTokens("mugen/section-list");
+        std::ostringstream find;
+        find << "mugen/" << Element::SERIAL_SECTION_LIST;
+        std::vector<Token*> tokens = token->findTokens(find.str());
         sections = new std::list<Section*>();
         for (std::vector<Token*>::iterator it = tokens.begin(); it != tokens.end(); it++){
             sections->push_back(Section::deserialize(*it));

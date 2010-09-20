@@ -75,7 +75,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "identifier" << line << column << toString();
+        *token << SERIAL_IDENTIFIER << line << column << toString();
         return token;
     }
 

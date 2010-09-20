@@ -21,6 +21,9 @@ class Walker;
 
 class Section: public Element {
 public: 
+    static std::string SERIAL_SECTION_ATTRIBUTE;
+    static std::string SERIAL_SECTION_VALUE;
+
     Section(const std::string * name):
     name(name){
         if (name == 0){
@@ -140,7 +143,7 @@ public:
 
     virtual Token * serialize() const {
         Token * token = new Token();
-        *token << "section-list" << getName();
+        *token << SERIAL_SECTION_LIST << getName();
         std::list<Attribute*>::const_iterator attribute_it = attributes.begin();
         std::list<Value*>::const_iterator value_it = values.begin();
         for (std::list<WalkList>::const_iterator it = walkList.begin(); it != walkList.end(); it++){
@@ -149,14 +152,14 @@ public:
                 case WalkAttribute : {
                     Attribute * attribute = *attribute_it;
                     Token * next = token->newToken();
-                    *next << "attribute" << attribute->serialize();
+                    *next << SERIAL_SECTION_ATTRIBUTE << attribute->serialize();
                     attribute_it++;
                     break;
                 }
                 case WalkValue : {
                     Value * value = *value_it;
                     Token * next = token->newToken();
-                    *next << "value" << value->serialize();
+                    *next << SERIAL_SECTION_VALUE << value->serialize();
                     value_it++;
                     break;
                 }
@@ -173,11 +176,11 @@ public:
         Section * section = new Section(new std::string(name));
         while (token->hasTokens()){
             *token >> next;
-            if (*next == "attribute"){
+            if (*next == SERIAL_SECTION_ATTRIBUTE){
                 Token * attribute;
                 *next >> attribute;
                 section->addAttribute(Attribute::deserialize(attribute));
-            } else if (*next == "value"){
+            } else if (*next == SERIAL_SECTION_VALUE){
                 Token * value;
                 *next >> value;
                 section->addValue(Value::deserialize(value));

@@ -2,6 +2,7 @@
 #define _paintown_38e6ee3f07e8e75d6d134308f189249e
 
 #include <map>
+#include <string>
 
 class Token;
 
@@ -30,6 +31,24 @@ class Element{
 public:
     Element(){
     }
+
+    static std::string SERIAL_STRING;
+    static std::string SERIAL_FUNCTION;
+    static std::string SERIAL_RANGE;
+    static std::string SERIAL_SECTION_LIST;
+    static std::string SERIAL_IDENTIFIER;
+    static std::string SERIAL_KEYWORD;
+    static std::string SERIAL_HITDEF_ATTRIBUTE;
+    static std::string SERIAL_HITDEF_ATTACK_ATTRIBUTE;
+    static std::string SERIAL_EXPRESSION_UNARY;
+    static std::string SERIAL_EXPRESSION_INFIX;
+    static std::string SERIAL_VALUE_LIST;
+    static std::string SERIAL_ATTRIBUTE_SIMPLE;
+    static std::string SERIAL_ATTRIBUTE_ARRAY;
+    static std::string SERIAL_ATTRIBUTE_KEYWORD;
+    static std::string SERIAL_HELPER;
+    static std::string SERIAL_NUMBER;
+    static std::string SERIAL_FILENAME;
 
     /* This synchronizes on-disk serialized files with the code.
      * If anything in the AST structure changes and causes an incompatibility

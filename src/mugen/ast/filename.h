@@ -34,7 +34,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "filename" << *str;
+        *token << SERIAL_FILENAME << *str;
         return token;
     }
     

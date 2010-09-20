@@ -64,7 +64,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "number" << value;
+        *token << SERIAL_NUMBER << value;
         return token;
     }
     

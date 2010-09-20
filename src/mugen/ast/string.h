@@ -37,7 +37,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "string" << *str;
+        *token << SERIAL_STRING << *str;
         return token;
     }
 

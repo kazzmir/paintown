@@ -56,7 +56,7 @@ static void load(const char * path){
         string file = randomFile();
         ofstream out(file.c_str());
         // out << setprecision(6) << fixed;
-        serial->toString(out, "");
+        serial->toStringCompact(out);
         out << endl;
         out.close();
         TokenReader reader;
@@ -66,7 +66,11 @@ static void load(const char * path){
         Token * deserial = reader.readTokenFromFile(file.c_str());
         diff.endTime();
         Global::debug(0, "test") << diff.printTime("token") << endl;
+
+        diff.startTime();
         Ast::AstParse deparsed(deserial);
+        diff.endTime();
+        Global::debug(0, "test") << diff.printTime("deserialize") << endl;
 
         /* compare original parse with deserial parse */
         diff.startTime();

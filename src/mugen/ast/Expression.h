@@ -56,7 +56,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "expression-unary" << getExpressionType() << getExpression()->serialize();
+        *token << SERIAL_EXPRESSION_UNARY << getExpressionType() << getExpression()->serialize();
         return token;
     }
 
@@ -178,7 +178,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "expression-infix" << getExpressionType() << getLeft()->serialize() << getRight()->serialize();
+        *token << SERIAL_EXPRESSION_INFIX << getExpressionType() << getLeft()->serialize() << getRight()->serialize();
         return token;
     }
 

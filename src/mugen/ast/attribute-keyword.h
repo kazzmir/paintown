@@ -41,7 +41,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "attribute-keyword" << name->serialize();
+        *token << SERIAL_ATTRIBUTE_KEYWORD << name->serialize();
         if (value != NULL){
             *token << value->serialize();
         }

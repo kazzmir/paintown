@@ -89,7 +89,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "attribute-array";
+        *token << SERIAL_ATTRIBUTE_ARRAY;
         if (keyword_name != NULL){
             *token << keyword_name->serialize();
         }

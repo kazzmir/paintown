@@ -48,7 +48,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "function" << name;
+        *token << SERIAL_FUNCTION << name;
         if (args != NULL){
             *token << args->serialize();
         }

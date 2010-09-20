@@ -36,6 +36,7 @@ test/util/sound.cpp
 test/script/script.cpp
 test/util/load_exception.cpp
 test/network/network.cpp
+test/mugen/ast/ast.cpp
 test/input/input-manager.cpp
 test/input/keyboard.cpp
 test/input/joystick.cpp
@@ -137,6 +138,7 @@ test/object/object_attack.cpp
 test/object/network_player.cpp
 test/object/network_character.cpp
 test/util/sound.cpp
+test/mugen/ast/ast.cpp
 test/script/script.cpp
 test/util/load_exception.cpp
 test/network/network.cpp

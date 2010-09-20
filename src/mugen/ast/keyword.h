@@ -47,7 +47,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "keyword" << toString();
+        *token << SERIAL_KEYWORD << toString();
         return token;
     }
 

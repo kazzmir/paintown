@@ -83,7 +83,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "attribute-simple" << line << column << name->serialize();
+        *token << SERIAL_ATTRIBUTE_SIMPLE << line << column << name->serialize();
         if (value != NULL){
             *token << value->serialize();
         }

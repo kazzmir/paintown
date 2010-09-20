@@ -65,7 +65,7 @@ public:
     
     Token * serialize() const {
         Token * token = new Token();
-        *token << "range" << getRangeType() << getLow()->serialize() << getHigh()->serialize();
+        *token << SERIAL_RANGE << getRangeType() << getLow()->serialize() << getHigh()->serialize();
         return token;
     }
 
