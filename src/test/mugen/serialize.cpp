@@ -69,9 +69,14 @@ static void load(const char * path){
         Ast::AstParse deparsed(deserial);
 
         /* compare original parse with deserial parse */
+        diff.startTime();
         if (parsed != deparsed){
+            diff.endTime();
+            Global::debug(0, "test") << diff.printTime("equality") << endl;
             Global::debug(0) << "Fail!" << endl;
         } else {
+            diff.endTime();
+            Global::debug(0, "test") << diff.printTime("equality") << endl;
             Global::debug(0) << "Pass!" << endl;
         }
 

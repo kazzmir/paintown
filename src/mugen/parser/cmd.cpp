@@ -11842,7 +11842,7 @@ Result rule_function(Stream & stream, const int position){
                     Value value((void*) 0);
                     /* FIXME: handle function rest */
                                     std::string name = combine("projcontact", id);
-                                    value = makeFunction(name, arg1);
+                                    value = makeFunction1(name, arg1);
                     result_peg_273.setValue(value);
                 }
             
