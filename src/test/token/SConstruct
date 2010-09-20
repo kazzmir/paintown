@@ -8,6 +8,16 @@ test.cpp
 ../../exceptions/exception.cpp
 """)
 
+parse_source = Split("""
+parse.cpp
+../../util/token.cpp
+../../util/tokenreader.cpp
+../../util/token_exception.cpp
+../../exceptions/exception.cpp
+../../debug.cpp
+""")
+
 x = []
 x.append(use.Program('test', source))
+x.append(use.Program('parse', parse_source))
 Return('x')

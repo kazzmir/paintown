@@ -6,6 +6,7 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
+#include "util/token_exception.h"
 #include "mugen/ast/all.h"
 #include "mugen/parser/all.h"
 #include "mugen/ast/extra.h"
@@ -81,6 +82,8 @@ static void load(const char * path){
         Global::debug(0, "test") << "Test failure! Parse exception: " << e.getReason() << endl;
     } catch (const Ast::Exception & e){
         Global::debug(0, "test") << "Test failure! Ast exception: " << e.getTrace() << endl;
+    } catch (const TokenException & e){
+        Global::debug(0, "test") << "Test failure! Token exception: " << e.getTrace() << endl;
     }
 }
 
