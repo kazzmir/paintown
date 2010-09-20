@@ -6,10 +6,10 @@
 
 namespace Ast{
 
-class Keyword: public Value{
+class Keyword: public Value {
 public:
     /* do not pass in a dynamically allocated string!!! */
-    Keyword(const char * str):
+    Keyword(std::string str):
     str(str){
     }
 
@@ -29,6 +29,14 @@ public:
     }
     
     using Element::operator==;
+    bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    bool operator==(const Keyword & him) const {
+        return str == him.str;
+    }
+
     bool operator==(const std::string & str) const {
         return downcase(toString()) == downcase(str);
     }
@@ -43,6 +51,12 @@ public:
         return token;
     }
 
+    static Keyword * deserialize(Token * token){
+        std::string name;
+        *token >> name;
+        return new Keyword(name);
+    }
+
     static std::string downcase(std::string str){
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);
         return str;
@@ -53,7 +67,7 @@ public:
     }
 
     virtual std::string toString() const {
-        return std::string(str);
+        return str;
     }
     
     virtual ~Keyword(){
@@ -61,7 +75,7 @@ public:
     }
 
 protected:
-    const char * str;
+    std::string str;
 };
 
 }

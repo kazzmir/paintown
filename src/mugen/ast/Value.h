@@ -44,10 +44,12 @@ public:
 
     static Value * deserialize(Token * token);
 
+    /*
     using Element::operator==;
     virtual bool operator==(const Value & him) const {
-        return him == *this;
+        throw Exception("Override this method");
     }
+    */
     
     virtual const Value & operator>>(const Value *& value) const {
         value = this;

@@ -1,6 +1,8 @@
 #ifndef _paintown_c0b3d0dc8f1134d72afa82e1d3e9d3f0
 #define _paintown_c0b3d0dc8f1134d72afa82e1d3e9d3f0
 
+#include "Value.h"
+
 namespace Ast{
 
 class Range: public Value {
@@ -49,11 +51,30 @@ public:
     virtual const Value * getHigh() const {
         return high;
     }
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const Range & him) const {
+        return getRangeType() == him.getRangeType() &&
+               *getLow() == *him.getLow() &&
+               *getHigh() == *him.getHigh();
+    }
     
     Token * serialize() const {
         Token * token = new Token();
-        *token << "range" << getRangeType() << low->serialize() << high->serialize();
+        *token << "range" << getRangeType() << getLow()->serialize() << getHigh()->serialize();
         return token;
+    }
+
+    static Range * deserialize(Token * token){
+        int type;
+        Token * low;
+        Token * high;
+        *token >> type >> low >> high;
+        return new Range(RangeType(type), Value::deserialize(low), Value::deserialize(high));
     }
 
     virtual void mark(std::map<const void*, bool> & marks) const {

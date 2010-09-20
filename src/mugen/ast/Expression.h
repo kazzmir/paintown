@@ -47,10 +47,27 @@ public:
         return expression;
     }
 
+    static ExpressionUnary * deserialize(Token * token){
+        int type;
+        Token * value;
+        *token >> type >> value;
+        return new ExpressionUnary(UnaryType(type), Value::deserialize(value));
+    }
+
     Token * serialize() const {
         Token * token = new Token();
         *token << "expression-unary" << getExpressionType() << getExpression()->serialize();
         return token;
+    }
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const ExpressionUnary & him) const {
+        return getExpressionType() == him.getExpressionType() &&
+               *getExpression() == *him.getExpression();
     }
 
     virtual std::string getType() const {
@@ -164,7 +181,26 @@ public:
         *token << "expression-infix" << getExpressionType() << getLeft()->serialize() << getRight()->serialize();
         return token;
     }
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const ExpressionInfix & him) const {
+        return getExpressionType() == him.getExpressionType() &&
+               *getLeft() == *him.getLeft() &&
+               *getRight() == *him.getRight();
+    }
     
+    static ExpressionInfix * deserialize(Token * token){
+        int type;
+        Token * left;
+        Token * right;
+        *token >> type >> left >> right;
+        return new ExpressionInfix(InfixType(type), Value::deserialize(left), Value::deserialize(right));
+    }
+
     virtual inline const Value * getRight() const {
         return right;
     }

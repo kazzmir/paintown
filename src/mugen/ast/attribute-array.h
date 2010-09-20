@@ -44,7 +44,38 @@ public:
         walker.onAttributeArray(*this);
     }
 
-    using Attribute::operator==;
+    using Element::operator==;
+    virtual bool operator==(const Attribute & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const AttributeArray & him) const {
+        if (keyword_name != NULL && him.keyword_name != NULL){
+            if (*keyword_name != *him.keyword_name){
+                return false;
+            }
+        }
+
+        if ((keyword_name == NULL && him.keyword_name != NULL) ||
+            (keyword_name != NULL && him.keyword_name == NULL)){
+            return false;
+        }
+
+        if (identifier_name != NULL && him.identifier_name != NULL){
+            if (*identifier_name != *him.identifier_name){
+                return false;
+            }
+        }
+
+        if ((identifier_name == NULL && him.identifier_name != NULL) ||
+            (identifier_name != NULL && him.identifier_name == NULL)){
+            return false;
+        }
+
+        return *index == *him.index &&
+               *value == *him.value;
+    }
+
     virtual bool operator==(const std::string & str) const {
         if (keyword_name != 0){
             return *keyword_name == str;
@@ -53,6 +84,8 @@ public:
         }
         return false;
     }
+
+    static AttributeArray * deserialize(Token * token);
 
     Token * serialize() const {
         Token * token = new Token();

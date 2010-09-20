@@ -47,7 +47,23 @@ public:
         return token;
     }
 
+    static Helper * deserialize(Token * token){
+        std::string name;
+        Token * next;
+        *token >> name >> next;
+        return new Helper(name, Value::deserialize(next));
+    }
+
     using Element::operator==;
+    bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    bool operator==(const Helper & him) const {
+        return name == him.name &&
+               *original == *him.original;
+    }
+
     bool operator==(const std::string & str) const {
         return downcase(name) == downcase(str);
     }

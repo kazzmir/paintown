@@ -6,7 +6,7 @@
 
 namespace Ast{
 
-class String: public Value{
+class String: public Value {
 public:
     String(const std::string * str):
     str(str){
@@ -26,10 +26,25 @@ public:
         return *this;
     }
 
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const String & him) const {
+        return *str == *him.str;
+    }
+
     Token * serialize() const {
         Token * token = new Token();
         *token << "string" << *str;
         return token;
+    }
+
+    static String * deserialize(Token * token){
+        std::string out;
+        *token >> out;
+        return new String(new std::string(out));
     }
     
     virtual std::string getType() const {

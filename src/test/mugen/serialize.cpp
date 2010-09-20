@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include "debug.h"
 #include <stdlib.h>
@@ -54,6 +55,7 @@ static void load(const char * path){
         Global::debug(0, "test") << diff.printTime("serialize") << endl;
         string file = randomFile();
         ofstream out(file.c_str());
+        // out << setprecision(6) << fixed;
         serial->toString(out, "");
         out << endl;
         out.close();

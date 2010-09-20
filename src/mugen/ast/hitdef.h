@@ -20,6 +20,15 @@ public:
         return *this;
     }
 
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const HitDefAttribute & him) const {
+        return value == him.value;
+    }
+
     virtual void walk(Walker & walker) const {
         walker.onHitDefAttribute(*this);
     }
@@ -28,6 +37,12 @@ public:
         Token * token = new Token();
         *token << "hitdef-attribute" << value;
         return token;
+    }
+
+    static HitDefAttribute * deserialize(Token * token){
+        std::string value;
+        *token >> value;
+        return new HitDefAttribute(value);
     }
     
     virtual Element * copy() const {
@@ -83,8 +98,45 @@ public:
         return token;
     }
 
+    static HitDefAttackAttribute * deserialize(Token * token){
+        HitDefAttackAttribute * attribute = new HitDefAttackAttribute();
+        try{
+            while (true){
+                std::string value;
+                *token >> value;
+                attribute->addAttribute(value);
+            }
+        } catch (const TokenException & e){
+        }
+        return attribute;
+    }
+
     virtual void reset() const {
         current = values.begin();
+    }
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const HitDefAttackAttribute & him) const {
+        std::vector<std::string>::const_iterator my_it = values.begin();
+        std::vector<std::string>::const_iterator him_it = him.values.begin();
+        while (true){
+            if (my_it == values.end() || him_it == him.values.end()){
+                break;
+            }
+
+            if (*my_it != *him_it){
+                return false;
+            }
+
+            my_it++;
+            him_it++;
+        }
+
+        return my_it == values.end() && him_it == him.values.end();
     }
     
     virtual Element * copy() const {

@@ -47,6 +47,10 @@ public:
     static Identifier * deserialize(Token * token);
 
     using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
     virtual bool operator==(const Identifier & him) const {
         return getLine() == him.getLine() &&
                getColumn() == him.getColumn() &&

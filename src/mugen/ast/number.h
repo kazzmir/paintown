@@ -4,6 +4,7 @@
 #include "Value.h"
 #include <string>
 #include <sstream>
+#include <math.h>
 
 namespace Ast{
 
@@ -11,6 +12,12 @@ class Number: public Value {
 public:
     Number(double value):
     value(value){
+        /* arbitrary limit */
+        /*
+        if (value > 999999){
+            value = 999999;
+        }
+        */
     }
 
     using Value::operator>>;
@@ -45,7 +52,9 @@ public:
     }
 
     virtual bool operator==(const Number & him) const {
-        return value == him.value;
+        /* doubles are printed with a precision of 6 in the tokens */
+        double epsilon = 0.00001;
+        return fabs(value - him.value) < epsilon;
     }
     
     virtual const Value & operator>>(double & x) const {

@@ -8,7 +8,7 @@ namespace Ast{
 
 class Function: public Value {
 public:
-    Function(const std::string & name, const ValueList * args = 0):
+    Function(const std::string & name, const ValueList * args = NULL):
     name(name),
     args(args){
     }
@@ -16,7 +16,7 @@ public:
     virtual std::string toString() const {
         std::ostringstream out;
         out << name << "(";
-        if (args != 0){
+        if (args != NULL){
             out << args->toString();
         }
         out << ")";
@@ -55,6 +55,8 @@ public:
         return token;
     }
 
+    static Function * deserialize(Token * token);
+
     static std::string downcase(std::string str){
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);
         return str;
@@ -69,6 +71,27 @@ public:
     }
 
     using Element::operator==;
+    bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    bool operator==(const Function & him) const {
+        if (name != him.name){
+            return false;
+        }
+
+        if (args != NULL && him.args != NULL){
+            return *args == *him.args;
+        }
+
+        if ((args == NULL && him.args != NULL) ||
+            (args != NULL && him.args == NULL)){
+            return false;
+        }
+
+        return true;
+    }
+
     bool operator==(const std::string & str) const {
         return downcase(name) == downcase(str);
     }

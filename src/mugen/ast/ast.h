@@ -9,11 +9,22 @@ namespace Ast{
 
 class Section;
 class AttributeSimple;
+class AttributeArray;
 class Number;
 class Attribute;
 class Identifier;
 class Value;
 class Number;
+class ExpressionInfix;
+class ExpressionUnary;
+class Function;
+class ValueList;
+class HitDefAttribute;
+class HitDefAttackAttribute;
+class String;
+class Range;
+class Helper;
+class Keyword;
 
 class Element{
 public:
@@ -35,9 +46,20 @@ public:
     define_equals(Section)
     define_equals(Attribute)
     define_equals(AttributeSimple)
+    define_equals(AttributeArray)
     define_equals(Identifier)
     define_equals(Value)
     define_equals(Number)
+    define_equals(ExpressionInfix);
+    define_equals(ExpressionUnary);
+    define_equals(Function);
+    define_equals(ValueList);
+    define_equals(HitDefAttribute);
+    define_equals(HitDefAttackAttribute);
+    define_equals(String);
+    define_equals(Range);
+    define_equals(Helper);
+    define_equals(Keyword);
 
 #undef define_equals
 

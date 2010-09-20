@@ -5,6 +5,8 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include "util/token.h"
+#include "util/token_exception.h"
 
 namespace Ast{
 
@@ -44,6 +46,19 @@ public:
         return token;
     }
 
+    static ValueList * deserialize(Token * token){
+        std::list<Value*> values;
+        try{
+            while (true){
+                Token * next;
+                *token >> next;
+                values.push_back(Value::deserialize(next));
+            }
+        } catch (const TokenException & e){
+        }
+        return new ValueList(values);
+    }
+
     virtual Value * get(unsigned int index) const {
         if (index >= 0 && index < values.size()){
             unsigned int count = 0;
@@ -62,6 +77,30 @@ public:
             copied.push_back((Value*) value->copy());
         }
         return new ValueList(copied);
+    }
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const ValueList & him) const {
+        std::list<Value*>::const_iterator my_it = values.begin();
+        std::list<Value*>::const_iterator him_it = him.values.begin();
+        while (true){
+            if (my_it == values.end() || him_it == him.values.end()){
+                break;
+            }
+
+            if (**my_it != **him_it){
+                return false;
+            }
+
+            my_it++;
+            him_it++;
+        }
+
+        return my_it == values.end() && him_it == him.values.end();
     }
 
     using Value::operator>>;
