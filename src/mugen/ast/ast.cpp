@@ -12,6 +12,7 @@
 #include "Section.h"
 #include "Expression.h"
 #include "number.h"
+#include "key.h"
 
 using std::string;
 
@@ -34,6 +35,10 @@ string Element::SERIAL_HELPER = "n";
 string Element::SERIAL_NUMBER = "o";
 string Element::SERIAL_FILENAME = "p";
 string Element::SERIAL_ATTRIBUTE_KEYWORD = "q";
+string Element::SERIAL_KEY_SINGLE = "r";
+string Element::SERIAL_KEY_MODIFIER = "s";
+string Element::SERIAL_KEY_COMBINED = "t";
+string Element::SERIAL_KEY_LIST = "u";
     
 string Section::SERIAL_SECTION_ATTRIBUTE = "s1";
 string Section::SERIAL_SECTION_VALUE = "s2";
@@ -132,6 +137,18 @@ Value * Value::deserialize(Token * token){
     }
     if (*token == SERIAL_HITDEF_ATTACK_ATTRIBUTE){
         return HitDefAttackAttribute::deserialize(token);
+    }
+    if (*token == SERIAL_KEY_LIST){
+        return KeyList::deserialize(token);
+    }
+    if (*token == SERIAL_KEY_SINGLE){
+        return KeySingle::deserialize(token);
+    }
+    if (*token == SERIAL_KEY_MODIFIER){
+        return KeyModifier::deserialize(token);
+    }
+    if (*token == SERIAL_KEY_COMBINED){
+        return KeyCombined::deserialize(token);
     }
 
     throw Exception("Don't know how to deserialize " + token->getName());

@@ -26,6 +26,11 @@ class String;
 class Range;
 class Helper;
 class Keyword;
+class Key;
+class KeySingle;
+class KeyModifier;
+class KeyCombined;
+class KeyList;
 
 class Element{
 public:
@@ -49,6 +54,10 @@ public:
     static std::string SERIAL_HELPER;
     static std::string SERIAL_NUMBER;
     static std::string SERIAL_FILENAME;
+    static std::string SERIAL_KEY_SINGLE;
+    static std::string SERIAL_KEY_MODIFIER;
+    static std::string SERIAL_KEY_COMBINED;
+    static std::string SERIAL_KEY_LIST;
 
     /* This synchronizes on-disk serialized files with the code.
      * If anything in the AST structure changes and causes an incompatibility
@@ -79,6 +88,11 @@ public:
     define_equals(Range);
     define_equals(Helper);
     define_equals(Keyword);
+    define_equals(Key);
+    define_equals(KeySingle);
+    define_equals(KeyModifier);
+    define_equals(KeyCombined);
+    define_equals(KeyList);
 
 #undef define_equals
 

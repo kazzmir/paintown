@@ -20,6 +20,12 @@ public:
         return "key";
     }
 
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    /*
     virtual bool same(const Key & key) const {
         return false;
     }
@@ -27,11 +33,14 @@ public:
     virtual bool same(const KeySingle & key) const {
         return false;
     }
+    */
 
+    /*
     using Element::operator==;
     virtual bool operator==(const Key & key) const {
         return false;
     }
+    */
 
     virtual ~Key(){
     }
@@ -39,7 +48,7 @@ public:
 
 class KeySingle: public Key {
 public:
-    KeySingle(const char * name):
+    explicit KeySingle(const char * name):
         Key(),
         name(name){
         }
@@ -53,19 +62,24 @@ public:
         return name == that;
     }
 
-    using Key::same;
-    virtual bool same(const KeySingle & key) const {
-        return std::string(name) == std::string(key.name);
+    virtual bool operator==(const KeySingle & key) const {
+        return name == key.name;
     }
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "key-single" << name;
+        *token << SERIAL_KEY_SINGLE << name;
         return token;
     }
 
+    static KeySingle * deserialize(Token * token){
+        std::string what;
+        *token >> what;
+        return new KeySingle(what.c_str());
+    }
+
     virtual bool operator==(const Key & key) const {
-        return key.same(*this);
+        return key == *this;
     }
     
     virtual void walk(Walker & walker) const {
@@ -73,18 +87,18 @@ public:
     }
     
     virtual std::string toString() const {
-        return std::string(name);
+        return name;
     }
     
     virtual Element * copy() const {
-        return new KeySingle(name);
+        return new KeySingle(name.c_str());
     }
 
     virtual ~KeySingle(){
     }
 
 protected:
-    const char * name;
+    std::string name;
 };
 
 class KeyModifier: public Key {
@@ -149,13 +163,28 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "key-modifier" << getModifierType() << getExtra() << getKey()->serialize();
+        *token << SERIAL_KEY_MODIFIER << getModifierType() << getExtra() << getKey()->serialize();
         return token;
+    }
+
+    static KeyModifier * deserialize(Token * token){
+        int type = 0;
+        int extra = 0;
+        Token * next;
+        *token >> type >> extra >> next;
+        return new KeyModifier(ModifierType(type), (Key*) Value::deserialize(next), extra);
     }
 
     using Element::operator==;
     virtual bool operator==(const Key & key) const {
-        return key.same(*this);
+        return key == *this;
+        // return key.same(*this);
+    }
+    
+    virtual bool operator==(const KeyModifier & him) const {
+        return getModifierType() == him.getModifierType() &&
+               getExtra() == him.getExtra() &&
+               *getKey() == *him.getKey();
     }
 
     virtual std::string toString() const {
@@ -220,13 +249,27 @@ public:
 
     using Element::operator==;
     virtual bool operator==(const Key & key) const {
-        return key.same(*this);
+        return key == *this;
+        // return key.same(*this);
+    }
+
+    virtual bool operator==(const KeyCombined & him) const {
+        return *getKey1() == *him.getKey1() &&
+               *getKey2() == *him.getKey2();
     }
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "key-combined" << key1->serialize() << key2->serialize();
+        *token << SERIAL_KEY_COMBINED << key1->serialize() << key2->serialize();
         return token;
+    }
+
+    static KeyCombined * deserialize(Token * token){
+        Token * left;
+        Token * right;
+        *token >> left >> right;
+        return new KeyCombined((Key*) Value::deserialize(left),
+                               (Key*) Value::deserialize(right));
     }
     
     virtual std::string toString() const {
@@ -266,7 +309,27 @@ public:
 
     using Element::operator==;
     virtual bool operator==(const Key & key) const {
-        return key.same(*this);
+        return key == *this;
+        // return key.same(*this);
+    }
+
+    virtual bool operator==(const KeyList & him) const {
+        std::vector<Key*>::const_iterator my_it = keys.begin();
+        std::vector<Key*>::const_iterator him_it = him.keys.begin();
+        while (true){
+            if (my_it == keys.end() || him_it == him.keys.end()){
+                break;
+            }
+
+            if (**my_it != **him_it){
+                return false;
+            }
+
+            my_it++;
+            him_it++;
+        }
+
+        return my_it == keys.end() && him_it == him.keys.end();
     }
 
     virtual Element * copy() const {
@@ -283,12 +346,25 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << "key-list";
+        *token << SERIAL_KEY_LIST;
         for (std::vector<Key*>::const_iterator it = keys.begin(); it != keys.end(); it++){
             Key * key = *it;
             *token << key->serialize();
         }
         return token;
+    }
+
+    static KeyList * deserialize(Token * token){
+        std::vector<Key*> keys;
+        try{
+            while (true){
+                Token * next;
+                *token >> next;
+                keys.push_back((Key*) Value::deserialize(next));
+            }
+        } catch (const TokenException & e){
+        }
+        return new KeyList(keys);
     }
     
     virtual std::string toString() const {
