@@ -181,79 +181,143 @@ typedef struct {
 } pcx_header;
 /* Source: ZSoft Corporation's PCX File Format Technical Reference Manual, Revision 5. */
 
+bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigned char * out){
+    const int PALETTE_SIZE = 768;
+    ifstream file(filename.path().c_str());
+    if (!file){
+        return false;
+    }
+    try{
+        file.seekg(0, std::ios::end);
+        int size = file.tellg();
+        file.seekg(0, std::ios::beg);
+        if (size == PALETTE_SIZE){
+            file.read((char*) out, PALETTE_SIZE);
+            if (file.gcount() != PALETTE_SIZE){
+                throw MugenException("Didn't read 768 bytes");
+            }
+            unsigned char save[3];
+            /* in-memory palette reverse */
+            for (int i = 0; i < 256 / 2; i++){
+                memcpy(save, out + i * 3, 3);
+                memcpy(out + i * 3, out + (256 - 1) * 3 - i * 3, 3);
+                memcpy(out + (256 - 1) * 3 - i * 3, save, 3);
+            }
+        } else if (size < PALETTE_SIZE){
+            throw MugenException("Not an ACT file or PCX file");
+        } else {
+            pcx_header pcxhead;
+            file.read((char*) &pcxhead, sizeof(pcx_header));
 
+            bool valid_pcx = pcxhead.manufacturer == 10 && 
+                             pcxhead.version >= 5 &&
+                             pcxhead.BitsPerPixel == 8 &&
+                             pcxhead.NPlanes == 1;
+
+            if (valid_pcx){
+                /* Palette is at the end. Check to see if the PCX file uses an 8-bit palette. */
+                file.seekg(-769, std::ios::end);
+                unsigned char save;
+                file.read((char*) &save, 1);
+                if (save == 12){
+                    file.read((char*) out, PALETTE_SIZE);
+                } else {
+                    Global::debug(0) << "File " << filename.path() << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+                    throw MugenException("Failed");
+                }
+            }
+        }
+
+    } catch (const MugenException & e){
+        file.close();
+        return false;
+    }
+
+    file.close();
+    return true;
+}
+
+#if 0
 bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigned char *pal){
     unsigned char colorsave[3]; // rgb pal save
     FILE *act_file = fopen(filename.path().c_str(), "rb");
-    if( !act_file ){
+    if (!act_file){
 	Global::debug(1) << "Unable to open ACT file: " << filename.path() << endl;
 	if (act_file){
-            fclose( act_file );
+            fclose(act_file);
         }
 	pal = 0;
 	return false;
-    }
-    else{
+    } else {
 	fseek( act_file, 0, SEEK_END );
 	// Then it must be an act file
-	if( ftell(act_file) == 768 ){ 
-	    for( int i=0; i<256; i++ ){
-		fseek( act_file, -3*(i+1), SEEK_END );
-		// stupid fread
-		size_t bleh = fread( colorsave, 3, 1, act_file );
+	if (ftell(act_file) == 768){ 
+	    for (int i = 0; i < 256; i++){
+		fseek(act_file, -3*(i+1), SEEK_END);
+		size_t bleh = fread(colorsave, 3, 1, act_file);
 		bleh = bleh;
 		pal[3*i]=colorsave[0];
 		pal[3*i+1]=colorsave[1];
 		pal[3*i+2]=colorsave[2];
 	    }
 	    Global::debug(1) << "Applying palette from ACT file: " << filename.path() << endl;
-	    if( act_file )fclose( act_file );
+	    if (act_file){
+                fclose(act_file);
+            }
+
 	    return true;
-	}
-	// 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size.
-	else if( ftell(act_file) < 897 ){ 
+	} else if (ftell(act_file) < 897){ 
+            // 128-byte header + 768-byte palette + 0x0C byte = minimum 8-bit PCX file size.
             Global::debug(1) << "File " << filename.path() << " is not a valid palette file." << endl;
-	    if( act_file )fclose( act_file );
+	    if (act_file){
+                fclose(act_file);
+            }
 	    pal = 0;
 	    return false;
-        }
-	// we'll assume it's a PCX file, for now.
-        else{ 
-            fseek( act_file, 0, SEEK_SET );
+        } else {
+            // we'll assume it's a PCX file, for now.
+            fseek(act_file, 0, SEEK_SET);
 	    pcx_header pcxhead;
-            size_t bleh = fread( &pcxhead, sizeof(pcx_header), 1, act_file );
+            size_t bleh = fread(&pcxhead, sizeof(pcx_header), 1, act_file);
             // Check to see if the PCX file uses an 8-bit palette.
-            if( (pcxhead.manufacturer == 10) && (pcxhead.version >= 5) && (pcxhead.BitsPerPixel == 8) && (pcxhead.NPlanes == 1) ){
+            if ((pcxhead.manufacturer == 10) && (pcxhead.version >= 5) && (pcxhead.BitsPerPixel == 8) && (pcxhead.NPlanes == 1)){
                 fseek( act_file, -769, SEEK_END);
 		// No need to define another variable; colorsave will do just fine.
                 bleh = fread( colorsave, 1, 1, act_file ); 
-                if( colorsave[0] == 12 ){
-                    fseek( act_file, -768, SEEK_END );
-                    bleh = fread( pal, 768, 1, act_file );
+                if (colorsave[0] == 12){
+                    fseek(act_file, -768, SEEK_END);
+                    bleh = fread(pal, 768, 1, act_file);
                     Global::debug(1) << "Applying palette from PCX file: " << filename.path() << endl;
 		    return true;
-                }
-                else{
+                } else {
                     Global::debug(1) << "File " << filename.path() << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
-		    if( act_file )fclose( act_file );
-		    pal =0;
+		    if (act_file){
+                        fclose(act_file);
+                    }
+		    pal = 0;
 		    return false;
                 }
-            }
+            } else {
             // Add support for JASC and RIFF palette files later... 
             // Minimum JASC PAL size = 1,813 bytes (carriage returns are necessary). 
-            else{
 		Global::debug(1) << "File " << filename.path() << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
-		if( act_file )fclose( act_file );
+		if (act_file){
+                    fclose( act_file );
+                }
 		pal = 0;
-		return false;;
+		return false;
             }
         }
     }
-    if( act_file )fclose( act_file );
+
+    if (act_file){
+        fclose(act_file);
+    }
+
     pal = 0;
     return false;
 }
+#endif
 
 /* maybe move this to Filesystem */
 static int computeFileSize(const string & path){
