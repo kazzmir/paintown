@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <fstream>
 #include "util/system.h"
+#include <dirent.h>
 
 namespace System{
 
