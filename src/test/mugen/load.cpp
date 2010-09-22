@@ -38,6 +38,7 @@ static void showMemory(){
 
 static void load(const char * path){
     // showMemory();
+    for (int i = 0; i < 10; i++){
     try{
         TimeDifference diff;
         diff.startTime();
@@ -54,6 +55,7 @@ static void load(const char * path){
         Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
     } catch (const Filesystem::NotFound & e){
         Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
+    }
     }
     // showMemory();
 }
