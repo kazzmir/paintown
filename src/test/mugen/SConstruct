@@ -203,4 +203,5 @@ def makeTest(name, files):
 makeTest('load', load_source + most_game_source)
 makeTest('serialize', ['serialize.cpp'] + ast_source)
 x.append(testEnv.Program('load-stage', stage_source))
+x.append(testEnv.Program('palette', ['palette.cpp', 'test/debug.cpp']))
 Return('x')
