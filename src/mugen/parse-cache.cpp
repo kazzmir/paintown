@@ -4,7 +4,10 @@
 #include "parse-cache.h"
 #include "parser/all.h"
 #include "ast/all.h"
+#include "ast/extra.h"
 #include "globals.h"
+#include "util/file-system.h"
+#include "util/system.h"
 
 using namespace std;
 
@@ -72,9 +75,63 @@ static list<Ast::Section*> * copy(list<Ast::Section*> * input){
     return output;
 }
 
+static int replaceSlash(int what){
+    if (what == '/'){
+        return '-';
+    }
+
+    return what;
+}
+
+const char * MUGEN_CACHE = "mugen-cache";
+
+static list<Ast::Section*> * loadCached(const string & path){
+    string converted = path;
+    std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
+    Filesystem::AbsolutePath fullPath = Filesystem::userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE)).join(Filesystem::RelativePath(converted));
+    TokenReader reader;
+    Global::debug(1, "mugen-parse-cache") << "Loading from " << fullPath.path() << endl;
+    return Ast::AstParse::deserialize(reader.readTokenFromFile(fullPath.path().c_str()));
+}
+
+static void saveCached(list<Ast::Section*> * parse, const string & path){
+    string converted = path;
+    std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
+    Filesystem::AbsolutePath cache = Filesystem::userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE));
+
+    if (!System::isDirectory(cache.path())){
+        System::makeDirectory(cache.path());
+    }
+
+    Filesystem::AbsolutePath fullPath = cache.join(Filesystem::RelativePath(converted));
+    Global::debug(1, "mugen-parse-cache") << "Saving cache to " << fullPath.path() << endl;
+    ofstream out(fullPath.path().c_str());
+    Token * serial = Ast::AstParse::serialize(parse);
+    serial->toStringCompact(out);
+    out << endl;
+    out.close();
+    delete serial;
+}
+
+list<Ast::Section*> * loadFile(const string & path){
+    try{
+        return loadCached(path);
+    } catch (const TokenException & fail){
+    }
+
+    list<Ast::Section*> * out = reallyParseCmd(path);
+    try{
+        saveCached(out, path);
+    } catch (...){
+        /* failed for some reason */
+    }
+
+    return out;
+}
+
 list<Ast::Section*> * ParseCache::doParseCmd(const std::string & path){
     if (cmdCache[path] == NULL){
-        cmdCache[path] = reallyParseCmd(path);
+        cmdCache[path] = loadFile(path);
     }
     return copy(cmdCache[path]);
 }
