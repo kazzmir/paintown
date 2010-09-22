@@ -1,3 +1,4 @@
+#include <fstream>
 #include <stdio.h>
 #include "debug.h"
 #include <iostream>
@@ -111,6 +112,48 @@ bool readPalette(const char * path, palette pal){
 }
 
 void newReadPalette(const char * path, palette out){
+    ifstream file(path);
+    if (!file){
+        return;
+    }
+    file.seekg(0, std::ios::end);
+    int size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    if (size == 768){
+        file.read((char*) out, 768);
+        if (file.gcount() != 768){
+            Global::debug(0) << "Didn't read 768 bytes" << endl;
+        }
+        unsigned char save[3];
+        /* in-memory palette reverse */
+        for (int i = 0; i < 256 / 2; i++){
+            memcpy(save, out + i * 3, 3);
+            memcpy(out + i * 3, out + (256 - 1) * 3 - i * 3, 3);
+            memcpy(out + (256 - 1) * 3 - i * 3, save, 3);
+        }
+    } else if (size < 768){
+    } else {
+        pcx_header pcxhead;
+        file.read((char*) &pcxhead, sizeof(pcx_header));
+
+        bool valid_pcx = pcxhead.manufacturer == 10 && 
+                         pcxhead.version >= 5 &&
+                         pcxhead.BitsPerPixel == 8 &&
+                         pcxhead.NPlanes == 1;
+
+        if (valid_pcx){
+            /* Check to see if the PCX file uses an 8-bit palette. */
+            file.seekg(-769, std::ios::end);
+            unsigned char save;
+            file.read((char*) &save, 1);
+            if (save == 12){
+                file.read((char*) out, 768);
+            } else {
+                Global::debug(0) << "File " << path << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
+            }
+        }
+    }
+    file.close();
 }
 
 void load(const char * path){
@@ -122,9 +165,9 @@ void load(const char * path){
     readPalette(path, palette1);
     newReadPalette(path, palette2);
     if (memcmp(palette1, palette2, sizeof(palette)) != 0){
-        Global::debug(0) << "Fail!" << endl;
+        Global::debug(0) << "Fail! " << path << endl;
     } else {
-        Global::debug(1) << "Fail!" << endl;
+        Global::debug(0) << "Pass! " << path << endl;
     }
 }
 
