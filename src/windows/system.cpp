@@ -23,12 +23,16 @@ bool readable(const std::string & path){
         return true;
     }
 
-	std::ifstream stream(path.c_str());
+    std::ifstream stream(path.c_str());
     bool ok = stream.good();
     if (stream.is_open()){
         stream.close();
     }
     return ok;
+}
+
+void makeDirectory(const std::string & path){
+    _mkdir(path.c_str());
 }
 
 uint64_t currentMicroseconds(){
