@@ -19,12 +19,14 @@ public:
     names(names),
     line(line),
     column(column){
+        stringed = toStringSlow();
     }
 
     Identifier(const std::list<std::string> & names):
     names(names),
     line(-1),
     column(-1){
+        stringed = toStringSlow();
     }
 
     static int lowerCase( int c ){
@@ -80,6 +82,10 @@ public:
     }
 
     virtual std::string toString() const {
+        return stringed;
+    }
+
+    virtual std::string toStringSlow() const {
         std::ostringstream out;
         bool first = true;
         for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); it++){
@@ -118,6 +124,7 @@ public:
 
 protected:
     std::list<std::string> names;
+    std::string stringed;
     int line, column;
 };
 
