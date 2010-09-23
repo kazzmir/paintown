@@ -6,6 +6,7 @@
 #include "config.h"
 #include "sprite.h"
 #include "animation.h"
+#include "parse-cache.h"
 #include "font.h"
 #include "sound.h"
 #include "stage.h"
@@ -1315,7 +1316,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(ourDefFile.path()));
+    Ast::AstParse parsed(ParseCache::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 

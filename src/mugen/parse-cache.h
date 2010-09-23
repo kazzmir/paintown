@@ -64,12 +64,16 @@ public:
 
     /* pass in the full path to the file */
     static std::list<Ast::Section*> * parseCmd(const std::string & path);
+    static std::list<Ast::Section*> * parseAir(const std::string & path);
+    static std::list<Ast::Section*> * parseDef(const std::string & path);
 
     /* clear the cache */
     static void destroy();
 protected:
 
     std::list<Ast::Section*> * doParseCmd(const std::string & path);
+    std::list<Ast::Section*> * doParseAir(const std::string & path);
+    std::list<Ast::Section*> * doParseDef(const std::string & path);
     void destroyCache();
 
     static ParseCache * cache;

@@ -31,6 +31,7 @@
 #include "util/timedifference.h"
 #include "character.h"
 
+#include "parse-cache.h"
 #include "parser/all.h"
 
 #include "animation.h"
@@ -475,7 +476,7 @@ static string regexResult(const string & str, const string & regex){
 
 static list<Ast::Section*>* parseDef(const string & path){
     try{
-        return (list<Ast::Section*>*) Mugen::Def::parse(path);
+        return Mugen::ParseCache::parseDef(path);
     } catch (const Mugen::Def::ParseException & p){
         throw MugenException(p.getReason());
     }
@@ -1428,7 +1429,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(defFile.path()));
+    Ast::AstParse parsed(Mugen::ParseCache::parseDef(defFile.path()));
     return parsed.findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );

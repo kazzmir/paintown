@@ -27,13 +27,30 @@ static int replaceSlash(int what){
 
 const char * MUGEN_CACHE = "mugen-cache";
 
+/* true if path1 has a newer modification time than path2 */
+static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::AbsolutePath & path2){
+    return true;
+}
+
 static list<Ast::Section*> * loadCached(const string & path){
     string converted = path;
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
     Filesystem::AbsolutePath fullPath = Filesystem::userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE)).join(Filesystem::RelativePath(converted));
+    if (!newer(fullPath, Filesystem::AbsolutePath(path))){
+        throw MugenException("File is old");
+    }
     TokenReader reader;
     Global::debug(1, "mugen-parse-cache") << "Loading from " << fullPath.path() << endl;
     return Ast::AstParse::deserialize(reader.readTokenFromFile(fullPath.path().c_str()));
+}
+
+static void saveParse(const Filesystem::AbsolutePath & path, list<Ast::Section*> * parse){
+    ofstream out(path.path().c_str());
+    Token * serial = Ast::AstParse::serialize(parse);
+    serial->toStringCompact(out);
+    out << endl;
+    out.close();
+    delete serial;
 }
 
 static void saveCached(list<Ast::Section*> * parse, const string & path){
@@ -42,17 +59,13 @@ static void saveCached(list<Ast::Section*> * parse, const string & path){
     Filesystem::AbsolutePath cache = Filesystem::userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE));
 
     if (!System::isDirectory(cache.path())){
-        System::makeDirectory(cache.path());
+        /* like mkdir -p */
+        System::makeAllDirectory(cache.path());
     }
 
     Filesystem::AbsolutePath fullPath = cache.join(Filesystem::RelativePath(converted));
     Global::debug(1, "mugen-parse-cache") << "Saving cache to " << fullPath.path() << endl;
-    ofstream out(fullPath.path().c_str());
-    Token * serial = Ast::AstParse::serialize(parse);
-    serial->toStringCompact(out);
-    out << endl;
-    out.close();
-    delete serial;
+    saveParse(fullPath, parse);
 }
 
 /* attempts to load from a file on disk. if the file doesn't exist then
@@ -62,6 +75,7 @@ list<Ast::Section*> * Parser::loadFile(const string & path){
     try{
         return loadCached(path);
     } catch (const TokenException & fail){
+    } catch (const MugenException & e){
     }
 
     list<Ast::Section*> * out = doParse(path);
@@ -139,29 +153,51 @@ DefCache::DefCache(){
 DefCache::~DefCache(){
 }
 
-list<Ast::Section*> * CmdCache::doParse(const std::string & path){
-    return (list<Ast::Section*>*) Cmd::parse(path);
-}
-
-list<Ast::Section*> * AirCache::doParse(const std::string & path){
-    return (list<Ast::Section*>*) Air::parse(path);
-}
-
-list<Ast::Section*> * DefCache::doParse(const std::string & path){
-    return (list<Ast::Section*>*) Def::parse(path);
-}
-
-ParseCache * ParseCache::cache = NULL;
-
 static list<Ast::Section*> * reallyParseCmd(const std::string & path){
     return (list<Ast::Section*>*) Cmd::parse(path);
 }
+
+static list<Ast::Section*> * reallyParseAir(const std::string & path){
+    return (list<Ast::Section*>*) Air::parse(path);
+}
+
+static list<Ast::Section*> * reallyParseDef(const std::string & path){
+    return (list<Ast::Section*>*) Def::parse(path);
+}
+
+list<Ast::Section*> * CmdCache::doParse(const std::string & path){
+    return reallyParseCmd(path);
+}
+
+list<Ast::Section*> * AirCache::doParse(const std::string & path){
+    return reallyParseAir(path);
+}
+
+list<Ast::Section*> * DefCache::doParse(const std::string & path){
+    return reallyParseDef(path);
+}
+
+ParseCache * ParseCache::cache = NULL;
 
 list<Ast::Section*> * ParseCache::parseCmd(const string & path){
     if (cache == NULL){
         return reallyParseCmd(path);
     }
     return cache->doParseCmd(path);
+}
+    
+list<Ast::Section*> * ParseCache::parseAir(const std::string & path){
+    if (cache == NULL){
+        return reallyParseAir(path);
+    }
+    return cache->doParseAir(path);
+}
+
+list<Ast::Section*> * ParseCache::parseDef(const std::string & path){
+    if (cache == NULL){
+        return reallyParseDef(path);
+    }
+    return cache->doParseDef(path);
 }
 
 void ParseCache::destroy(){
@@ -190,6 +226,14 @@ ParseCache::~ParseCache(){
 
 list<Ast::Section*> * ParseCache::doParseCmd(const std::string & path){
     return cmdCache.parse(path);
+}
+    
+list<Ast::Section*> * ParseCache::doParseAir(const std::string & path){
+    return airCache.parse(path);
+}
+
+list<Ast::Section*> * ParseCache::doParseDef(const std::string & path){
+    return defCache.parse(path);
 }
 
 }

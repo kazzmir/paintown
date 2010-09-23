@@ -4,6 +4,7 @@
 
 #include "util.h"
 #include "exception.h"
+#include "parse-cache.h"
 
 #include "globals.h"
 #include "util/file-system.h"
@@ -49,7 +50,7 @@ firstRun(){
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(ourDefFile.path()));
+    Ast::AstParse parsed(ParseCache::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 

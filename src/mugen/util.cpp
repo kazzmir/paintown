@@ -30,6 +30,7 @@
 #include "globals.h"
 #include "init.h"
 #include "state.h"
+#include "parse-cache.h"
 
 #include "ast/all.h"
 #include "parser/all.h"
@@ -947,7 +948,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
 
 list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
     try{
-        return (list<Ast::Section*>*) Mugen::Air::parse(filename);
+        return ParseCache::parseAir(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Air::ParseException & e){
@@ -959,7 +960,7 @@ list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
 
 list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
     try{
-        return (list<Ast::Section*>*) Mugen::Def::parse(filename);
+        return ParseCache::parseDef(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Def::ParseException & e){

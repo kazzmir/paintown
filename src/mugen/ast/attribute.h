@@ -37,10 +37,6 @@ public:
         return kind;
     }
 
-    virtual Element * copy() const {
-        throw Exception("Copy not implemented yet");
-    }
-
     virtual void debugExplain(){
     }
 

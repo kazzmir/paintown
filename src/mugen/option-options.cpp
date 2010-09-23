@@ -8,6 +8,7 @@
 #include "font.h"
 #include "sound.h"
 #include "background.h"
+#include "parse-cache.h"
 
 #include <ostream>
 #include <vector>
@@ -342,7 +343,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Def::parse(systemFile.path()));
+    Ast::AstParse parsed(ParseCache::parseDef(systemFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     

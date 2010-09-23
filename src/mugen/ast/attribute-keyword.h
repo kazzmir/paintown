@@ -27,6 +27,14 @@ public:
     virtual void walk(Walker & walker){
         walker.onAttributeKeyword(*this);
     }
+    
+    virtual Element * copy() const {
+        if (value == NULL){
+            return new AttributeKeyword((Keyword*) name->copy());
+        } else {
+            return new AttributeKeyword((Keyword*) name->copy(), (Value*) value->copy());
+        }
+    }
 
     using Attribute::operator==;
     virtual bool operator==(const std::string & str) const {

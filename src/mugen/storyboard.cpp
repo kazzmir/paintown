@@ -6,14 +6,15 @@
 #include "globals.h"
 #include "init.h"
 #include "factory/font_render.h"
+#include "parse-cache.h"
 
-#include "mugen/animation.h"
-#include "mugen/background.h"
-#include "mugen/sound.h"
-#include "mugen/reader.h"
-#include "mugen/sprite.h"
-#include "mugen/util.h"
-#include "mugen/font.h"
+#include "animation.h"
+#include "background.h"
+#include "sound.h"
+#include "reader.h"
+#include "sprite.h"
+#include "util.h"
+#include "font.h"
 
 #include "util/timedifference.h"
 #include "ast/all.h"
@@ -269,7 +270,7 @@ startscene(0){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed((list<Ast::Section*>*) Def::parse(ourDefFile.path()));
+    Ast::AstParse parsed(ParseCache::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 

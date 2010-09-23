@@ -30,6 +30,7 @@
 #include "object/player.h"
 #include "globals.h"
 #include "factory/font_render.h"
+#include "parse-cache.h"
 
 #include "menu/menu_option.h"
 #include "menu/options.h"
@@ -240,7 +241,7 @@ void MugenMenu::loadData(){
     try{
         TimeDifference diff;
         diff.startTime();
-        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Def::parse(ourDefFile.path()));
+        Ast::AstParse parsed(Mugen::ParseCache::parseDef(ourDefFile.path()));
         diff.endTime();
         Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
