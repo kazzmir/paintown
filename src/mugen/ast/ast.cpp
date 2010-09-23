@@ -3,6 +3,7 @@
 #include "attribute.h"
 #include "attribute-simple.h"
 #include "attribute-array.h"
+#include "attribute-keyword.h"
 #include "helper.h"
 #include "function.h"
 #include "hitdef.h"
@@ -10,6 +11,7 @@
 #include "range.h"
 #include "string.h"
 #include "Section.h"
+#include "filename.h"
 #include "Expression.h"
 #include "number.h"
 #include "key.h"
@@ -98,7 +100,11 @@ Attribute * Attribute::deserialize(Token * token){
     if (*token == SERIAL_ATTRIBUTE_ARRAY){
         return AttributeArray::deserialize(token);
     }
-    throw Exception("Don't know how to deserialize " + token->getName());
+    if (*token == SERIAL_ATTRIBUTE_KEYWORD){
+        return AttributeKeyword::deserialize(token);
+    }
+
+    throw Exception("Don't know how to deserialize attribute " + token->getName());
 }
     
 Value * Value::deserialize(Token * token){
@@ -150,8 +156,11 @@ Value * Value::deserialize(Token * token){
     if (*token == SERIAL_KEY_COMBINED){
         return KeyCombined::deserialize(token);
     }
+    if (*token == SERIAL_FILENAME){
+        return Filename::deserialize(token);
+    }
 
-    throw Exception("Don't know how to deserialize " + token->getName());
+    throw Exception("Don't know how to deserialize value " + token->getName());
 }
     
 Function * Function::deserialize(Token * token){

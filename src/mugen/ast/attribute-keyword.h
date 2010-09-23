@@ -33,6 +33,23 @@ public:
         return *name == str;
     }
 
+    virtual bool operator==(const Attribute & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const AttributeKeyword & him) const {
+        if (value != NULL && him.value != NULL){
+            if (*value != *him.value){
+                return false;
+            }
+        }
+        if ((value != NULL && him.value == NULL) ||
+            (value == NULL && him.value != NULL)){
+            return false;
+        }
+        return *name == *him.name;
+    }
+
     std::string valueAsString() const {
         std::string str;
         *this >> str;
@@ -46,6 +63,18 @@ public:
             *token << value->serialize();
         }
         return token;
+    }
+
+    static AttributeKeyword * deserialize(Token * token){
+        Token * keyword;
+        *token >> keyword;
+        try{
+            Token * value;
+            *token >> value;
+            return new AttributeKeyword(Keyword::deserialize(keyword), Value::deserialize(value));
+        } catch (const TokenException & e){
+            return new AttributeKeyword(Keyword::deserialize(keyword));
+        }
     }
 
     template <typename X>

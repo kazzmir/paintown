@@ -39,12 +39,14 @@ static string randomFile(){
     return string(temp);
 }
 
-static void load(const char * path){
+typedef const void * (*parser)(const string & path, bool what);
+
+static void load(const char * path, parser what){
     try{
         /* parse file */
         TimeDifference diff;
         diff.startTime();
-        Ast::AstParse parsed((list<Ast::Section*>*) Mugen::Cmd::parse(string(path)));
+        Ast::AstParse parsed((list<Ast::Section*>*) what(string(path), false));
         diff.endTime();
         Global::debug(0, "test") << diff.printTime("parse") << endl;
         diff.startTime();
@@ -98,11 +100,32 @@ static void load(const char * path){
     }
 }
 
+bool isCmd(const string & str){
+    return str.find(".cmd") != string::npos ||
+           str.find(".cns") != string::npos;
+}
+
+bool isDef(const string & str){
+    return str.find(".def") != string::npos;
+}
+
+bool isAir(const string & str){
+    return str.find(".air") != string::npos;
+}
+
 int main(int argc, char ** argv){
     if (argc < 2){
-        load("src/test/mugen/serialize-test.cns");
+        load("src/test/mugen/serialize-test.cns", Mugen::Cmd::parse);
     } else {
-        load(argv[1]);
+        if (isCmd(argv[1])){
+            load(argv[1], Mugen::Cmd::parse);
+        } else if (isDef(argv[1])){
+            load(argv[1], Mugen::Def::parse);
+        } else if (isAir(argv[1])){
+            load(argv[1], Mugen::Air::parse);
+        } else {
+            Global::debug(0) << "Don't know how to parse " << argv[1] << endl;
+        }
     }
 
     return 0;

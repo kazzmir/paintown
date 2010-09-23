@@ -11,6 +11,7 @@ namespace Ast{
 class Section;
 class AttributeSimple;
 class AttributeArray;
+class AttributeKeyword;
 class Number;
 class Attribute;
 class Identifier;
@@ -19,6 +20,7 @@ class Number;
 class ExpressionInfix;
 class ExpressionUnary;
 class Function;
+class Filename;
 class ValueList;
 class HitDefAttribute;
 class HitDefAttackAttribute;
@@ -75,6 +77,7 @@ public:
     define_equals(Attribute)
     define_equals(AttributeSimple)
     define_equals(AttributeArray)
+    define_equals(AttributeKeyword)
     define_equals(Identifier)
     define_equals(Value)
     define_equals(Number)
@@ -93,6 +96,7 @@ public:
     define_equals(KeyModifier);
     define_equals(KeyCombined);
     define_equals(KeyList);
+    define_equals(Filename);
 
 #undef define_equals
 

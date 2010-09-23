@@ -25,7 +25,7 @@ public:
     }
     
     virtual Element * copy() const {
-        throw Exception("Not implemented yet");
+        return new Filename(new std::string(*str));
     }
 
     virtual std::string getType() const {
@@ -36,6 +36,21 @@ public:
         Token * token = new Token();
         *token << SERIAL_FILENAME << *str;
         return token;
+    }
+
+    static Filename * deserialize(Token * token){
+        std::string out;
+        *token >> out;
+        return new Filename(new std::string(out));
+    }
+
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const Filename & him) const {
+        return *str == *him.str;
     }
     
     virtual void mark(std::map<const void*, bool> & marks) const {
