@@ -29,7 +29,7 @@ const char * MUGEN_CACHE = "mugen-cache";
 
 /* true if path1 has a newer modification time than path2 */
 static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::AbsolutePath & path2){
-    return true;
+    return System::getModificationTime(path1.path()) >= System::getModificationTime(path2.path());
 }
 
 static list<Ast::Section*> * loadCached(const string & path){
