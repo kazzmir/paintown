@@ -1514,7 +1514,7 @@ public:
             class ConstWalker: public Ast::Walker {
             public:
                 ConstWalker():
-                compiled(false){
+                compiled(NULL){
                 }
 
                 Value * compiled;
