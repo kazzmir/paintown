@@ -1172,7 +1172,10 @@ public:
             const map<string, string> strings = option->getLanguageText().getLanguages();
             for (map<string, string>::const_iterator it = strings.begin(); it != strings.end(); it++){
                 /* ad-hoc structure, maybe use a specific type for languages? */
-                languages[(*it).first] = true;
+                const string & language = (*it).first;
+                if (language != ""){
+                    languages[language] = true;
+                }
             }
         }
 
