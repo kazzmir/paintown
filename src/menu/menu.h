@@ -183,6 +183,7 @@ class Renderer{
         
         //! Compatibility for now, remove later
         virtual void addOption(MenuOption *)=0;
+        virtual std::vector<MenuOption*> getOptions() const = 0;
         
         /*! Handle action, with access to context
         */
@@ -219,6 +220,7 @@ class DefaultRenderer : public Renderer {
         virtual void render(const Bitmap &);
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
+        virtual std::vector<MenuOption*> getOptions() const;
         
     private:
 
@@ -257,6 +259,7 @@ class TabRenderer : public Renderer {
         virtual void render(const Bitmap &);
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
+        virtual std::vector<MenuOption*> getOptions() const;
         
     private:
 
@@ -452,12 +455,16 @@ class Menu{
                 this->renderer->addOption(opt);
             }
         }
+
+        virtual inline Renderer * getRenderer() const {
+            return renderer;
+        }
         
 	static const int Width = 640;
 	static const int Height = 480;
 	
     protected:
-        void setupDefaultLanguage(const Context & context);
+        void setupDefaultLanguage(const Context & context, const Menu & parent);
         
         /*! Context */
         Context context;

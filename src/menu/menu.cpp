@@ -408,6 +408,10 @@ Menu::DefaultRenderer::DefaultRenderer(){
     menu.colors.border = Bitmap::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
 }
+        
+vector<MenuOption*> Menu::DefaultRenderer::getOptions() const {
+    return options;
+}
 
 Menu::DefaultRenderer::~DefaultRenderer(){
     // Kill options
@@ -591,6 +595,14 @@ Menu::TabRenderer::TabRenderer(){
     menu.colors.bodyAlpha = 128;
     menu.colors.border = Bitmap::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
+}
+        
+vector<MenuOption*> Menu::TabRenderer::getOptions() const {
+    vector<MenuOption*> options;
+    for (vector<TabInfo *>::const_iterator it = tabs.begin(); it != tabs.end(); ++it){
+        options.insert(options.end(), (*it)->options.begin(), (*it)->options.end());
+    }
+    return options;
 }
 
 Menu::TabRenderer::~TabRenderer(){
@@ -1135,10 +1147,10 @@ class LanguageMenu: public Menu::Menu {
 public:
     class LanguageOption: public MenuOption {
     public:
-        LanguageOption():
+        LanguageOption(const string & language):
         MenuOption(NULL){
-            setText("English");
-            setInfoText("Set the language to English");
+            setText(language);
+            setInfoText(language);
         }
 
         virtual void logic(){
@@ -1149,13 +1161,28 @@ public:
         }
     };
 
-    LanguageMenu(){
-        addOption(new LanguageOption());
+    LanguageMenu(const Menu::Menu & original){
+        /* get all languages used in the menu */
+        vector<MenuOption*> options = original.getRenderer()->getOptions();
+        map<string, bool> languages;
+        for (vector<MenuOption*>::iterator it = options.begin(); it != options.end(); it++){
+            MenuOption * option = *it;
+            
+            const map<string, string> strings = option->getLanguageText().getLanguages();
+            for (map<string, string>::const_iterator it = strings.begin(); it != strings.end(); it++){
+                /* ad-hoc structure, maybe use a specific type for languages? */
+                languages[(*it).first] = true;
+            }
+        }
+
+        for (map<string, bool>::iterator it = languages.begin(); it != languages.end(); it++){
+            addOption(new LanguageOption((*it).first));
+        }
     }
 };
 
-void Menu::Menu::setupDefaultLanguage(const Context & context){
-    LanguageMenu menu;
+void Menu::Menu::setupDefaultLanguage(const Context & context, const Menu::Menu & parent){
+    LanguageMenu menu(parent);
     menu.setFont(Filesystem::RelativePath(sharedFont));
     Configuration::setLanguage("english");
     try{
@@ -1178,7 +1205,7 @@ void Menu::Menu::run(const Context & parentContext){
     localContext.playMusic();
 
     if (Configuration::getLanguage() == ""){
-        setupDefaultLanguage(localContext);
+        setupDefaultLanguage(localContext, *this);
     }
 
     // TODO Keys need a home

@@ -62,6 +62,11 @@ public:
     inline void setType(const OptionType t) { mType = t; }
     inline OptionType getType() const { return mType; }
     inline void setText(const LanguageString & t) { text = t; }
+
+    inline const LanguageString & getLanguageText() const {
+        return text;
+    }
+
     virtual inline std::string getText() { return text.get(); }
     inline void setInfoText(const LanguageString &t) { infoText = t; }
     inline std::string getInfoText(){ return infoText.get(); }
