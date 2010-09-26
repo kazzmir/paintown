@@ -1157,6 +1157,7 @@ public:
         }
 
         virtual void run(const ::Menu::Context & context){
+            Configuration::setLanguage(getText());
             throw ::Menu::MenuException(__FILE__, __LINE__);
         }
     };
@@ -1184,7 +1185,7 @@ public:
 void Menu::Menu::setupDefaultLanguage(const Context & context, const Menu::Menu & parent){
     LanguageMenu menu(parent);
     menu.setFont(Filesystem::RelativePath(sharedFont));
-    Configuration::setLanguage("english");
+    Configuration::setLanguage("English");
     try{
         menu.run(context);
     } catch (const ::Menu::MenuException & ignore){
