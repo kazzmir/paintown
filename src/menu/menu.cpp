@@ -1162,7 +1162,7 @@ public:
         }
     };
 
-    LanguageMenu(const Menu::Menu & original){
+    vector<string> findLanguages(const Menu::Menu & original){
         /* get all languages used in the menu */
         vector<MenuOption*> options = original.getRenderer()->getOptions();
         map<string, bool> languages;
@@ -1179,8 +1179,17 @@ public:
             }
         }
 
+        vector<string> out;
         for (map<string, bool>::iterator it = languages.begin(); it != languages.end(); it++){
-            addOption(new LanguageOption((*it).first));
+            out.push_back((*it).first);
+        }
+        return out;
+    }
+
+    LanguageMenu(const Menu::Menu & original){
+        vector<string> languages = findLanguages(original);
+        for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
+            addOption(new LanguageOption(*it));
         }
     }
 };
