@@ -172,6 +172,8 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
 
     bool endMatch = false;
 
+    Global::speed_counter = 0;
+
     while (!endMatch){
         bool draw = false;
 
