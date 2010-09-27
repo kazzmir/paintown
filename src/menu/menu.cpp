@@ -51,11 +51,39 @@ y(y){
 Menu::Point::~Point(){
 }
 
+Menu::FontInfo::FontInfo(){
+}
+Menu::FontInfo::FontInfo(const Filesystem::RelativePath & font, int width, int height):
+font(font),
+width(width),
+height(height){
+}
+
+Menu::FontInfo::FontInfo(const FontInfo & copy):
+font(copy.font),
+width(copy.width),
+height(copy.height){
+}
+
+Menu::FontInfo::~FontInfo(){
+}
+
+Menu::FontInfo & Menu::FontInfo::operator=(const FontInfo & copy){
+    this->font = copy.font;
+    this->width = copy.width;
+    this->height = copy.height;
+    
+    return *this;
+}
+
+const Font & Menu::FontInfo::get() const{
+    // Check for override from system and return that instead otherwise continue
+    return Font::getFont(font, width, height);
+}
+
 Menu::InfoBox::InfoBox():
 state(NotActive),
-font(Filesystem::RelativePath(sharedFont)),
-fontWidth(sharedFontWidth),
-fontHeight(sharedFontHeight),
+font(FontInfo(Filesystem::RelativePath(sharedFont), sharedFontWidth, sharedFontHeight)),
 fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
@@ -104,7 +132,7 @@ void Menu::InfoBox::act(){
 void Menu::InfoBox::render(const Bitmap & bmp){
     popup.render(bmp);
     
-    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    const Font & vFont = font.get();
     
     const int x1 = popup.getArea().getX()+(int)(popup.getArea().getRadius()/2);
     const int y1 = popup.getArea().getY()+2;
@@ -147,7 +175,7 @@ void Menu::InfoBox::setText(const std::string & info){
         return;
     }
     text.clear();
-    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    const Font & vFont = font.get();
     size_t start = 0;
     size_t last = 0;
     start = info.find("\n");
@@ -366,7 +394,7 @@ void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defau
         info.back()->close();
     }
     ::Menu::InfoBox * temp = new ::Menu::InfoBox();
-    temp->setFont(context.getFont(), context.getFontWidth(), context.getFontHeight());
+    temp->setFont(context.getFont());
     temp->setText(text);
     const int width = temp->location.getWidth();
     const int height = temp->location.getHeight();
@@ -458,17 +486,17 @@ bool Menu::DefaultRenderer::readToken(Token * token){
 }
 
 void Menu::DefaultRenderer::initialize(Context & context){
-    // Setup menu fonts etc
+    // FIXME This is wrong, move this over to FontInfo so that the overrides can be accounted for
     Filesystem::RelativePath localFont("fonts/arial.ttf");
     int width = 24, height = 24;
     if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
         localFont = Filesystem::RelativePath(Configuration::getMenuFont());
         width = Configuration::getMenuFontWidth();
         height = Configuration::getMenuFontHeight();
-    } else if (Filesystem::exists(context.getFont())){
-        localFont = context.getFont();
-        width = context.getFontWidth();
-        height = context.getFontHeight();
+    } else if (Filesystem::exists(context.getFont().getFont())){
+        localFont = context.getFont().getFont();
+        width = context.getFont().getWidth();
+        height = context.getFont().getHeight();
     }
     menu.setFont(localFont, width, height);
     menu.setList(toContextList(options));
@@ -476,7 +504,8 @@ void Menu::DefaultRenderer::initialize(Context & context){
     
     // Menu info
     if (!context.getMenuInfoText().empty()){
-        menuInfo.setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
+	// FIXME conflicts with above info
+        menuInfo.setFont(context.getFont());
         menuInfo.setText(context.getMenuInfoText());
         const int width = menuInfo.location.getWidth();
         const int height = menuInfo.location.getHeight();
@@ -702,17 +731,17 @@ bool Menu::TabRenderer::readToken(Token * token){
 }
 
 void Menu::TabRenderer::initialize(Context & context){
-    // Setup menu fonts etc
+    // FIXME Redundant, see defaultRenderer
     Filesystem::RelativePath localFont("fonts/arial.ttf");
     int width = 24, height = 24;
     if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
         localFont = Filesystem::RelativePath(Configuration::getMenuFont());
         width = Configuration::getMenuFontWidth();
         height = Configuration::getMenuFontHeight();
-    } else if (Filesystem::exists(context.getFont())){
-        localFont = context.getFont();
-        width = context.getFontWidth();
-        height = context.getFontHeight();
+    } else if (Filesystem::exists(context.getFont().getFont())){
+        localFont = context.getFont().getFont();
+        width = context.getFont().getWidth();
+        height = context.getFont().getHeight();
     }
     menu.setFont(localFont, width, height);
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
@@ -723,7 +752,8 @@ void Menu::TabRenderer::initialize(Context & context){
     
     // Menu info
     if (!context.getMenuInfoText().empty()){
-        menuInfo.setFont(context.getFont(),context.getFontWidth(),context.getFontHeight());
+	// FIXME Inconsistent with above
+        menuInfo.setFont(context.getFont());
         menuInfo.setText(context.getMenuInfoText());
         const int width = menuInfo.location.getWidth();
         const int height = menuInfo.location.getHeight();
@@ -825,8 +855,6 @@ cleanup(true),
 state(NotStarted),
 fades(0),
 background(0),
-fontWidth(24),
-fontHeight(24),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95){
 }
@@ -836,8 +864,6 @@ cleanup(false),
 state(NotStarted),
 fades(NULL),
 background(NULL),
-fontWidth(24),
-fontHeight(24),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95){
     // Update with parents info
@@ -846,8 +872,6 @@ menuInfoLocation(0,.95){
     sounds = parent.sounds;
     music = parent.music;
     font = parent.font;
-    fontWidth = parent.fontWidth;
-    fontHeight = parent.fontHeight;
     infoLocation = parent.infoLocation;
     menuInfoLocation = parent.menuInfoLocation;
 
@@ -868,10 +892,8 @@ menuInfoLocation(0,.95){
         music = child.music;
     }
 
-    if (Filesystem::exists(child.font)){
+    if (Filesystem::exists(child.getFont().getFont())){
         font = child.font;
-        fontWidth = child.fontWidth;
-        fontHeight = child.fontHeight;
     }
 
     if (child.infoLocation.getRelativeX() != 0 || child.infoLocation.getRelativeY() != -.5){
@@ -1092,7 +1114,7 @@ Menu::Menu::~Menu(){
     }
 }
         
-void Menu::Menu::setFont(const Filesystem::RelativePath & font){
+void Menu::Menu::setFont(const FontInfo & font){
     context.setFont(font);
 }
 
@@ -1196,7 +1218,7 @@ public:
 
 void Menu::Menu::setupDefaultLanguage(const Context & context, const Menu::Menu & parent){
     LanguageMenu menu(parent);
-    menu.setFont(Filesystem::RelativePath(sharedFont));
+    menu.setFont(FontInfo(Filesystem::RelativePath(sharedFont),sharedFontWidth, sharedFontHeight));
     Configuration::setLanguage("English");
     try{
         menu.run(context);
@@ -1475,9 +1497,10 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 			std::string font;
 			int w=24,h=24;
 			*value >> font >> w >> h;
-			context.setFont(Filesystem::RelativePath(font));
+			/*context.setFont(Filesystem::RelativePath(font));
 			context.setFontWidth(w);
-			context.setFontHeight(h);
+			context.setFontHeight(h);*/
+			context.setFont(FontInfo(Filesystem::RelativePath(font),w, h));
 		    } catch (const MenuException & ex){
 		    }
 		} else if ( *tok == "action"){

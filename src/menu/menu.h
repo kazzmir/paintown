@@ -38,6 +38,50 @@ class Point{
     ~Point();
 };
 
+class FontInfo {
+    public:
+	FontInfo();
+	FontInfo(const Filesystem::RelativePath & font, int width, int height);
+	FontInfo(const FontInfo &);
+	~FontInfo();
+	
+	FontInfo & operator=(const FontInfo &);
+	
+	inline void set(const Filesystem::RelativePath & font, int width, int height){
+	    this->font = font;
+	    this->width = width;
+	    this->height = height;
+	}
+	
+	const Font & get() const;
+	
+	inline void setFont(const Filesystem::RelativePath & font){
+	    this->font = font;
+	}
+	inline const Filesystem::RelativePath & getFont() const{
+	    return this->font;
+	}
+	
+	inline void setWidth(int width){
+	    this->width = width;
+	}
+	inline const int getWidth() const {
+	    return this->width;
+	}
+	
+	inline void setHeight(int height){
+	    this->height = height;
+	}
+	inline const int getHeight() const{
+	    return this->height;
+	}
+	
+    private:
+	Filesystem::RelativePath font;
+	int width;
+	int height;
+};
+
 class InfoBox: public Gui::Widget {
     public:
         InfoBox();
@@ -53,10 +97,8 @@ class InfoBox: public Gui::Widget {
             return (this->state != NotActive);
         }
         
-        inline void setFont(const Filesystem::RelativePath & font, int width, int height){
+        inline void setFont(const FontInfo & font){
             this->font = font;
-            this->fontWidth = width;
-            this->fontHeight = height;
         }
         
     private:
@@ -70,9 +112,7 @@ class InfoBox: public Gui::Widget {
         State state;
         Gui::PopupBox popup;
         
-        Filesystem::RelativePath font;
-        int fontWidth;
-        int fontHeight;
+        FontInfo font;
         
         int fadeAlpha;
         
@@ -340,23 +380,11 @@ class Context{
             return this->background;
         }
         
-        virtual inline void setFont(const Filesystem::RelativePath & font){
+        virtual inline void setFont(const FontInfo & font){
             this->font = font;
         }
-        virtual inline const Filesystem::RelativePath & getFont() const {
+        virtual inline const FontInfo & getFont() const {
             return this->font;
-        }
-        virtual inline void setFontWidth(int width){
-            this->fontWidth = width;
-        }
-        virtual inline int getFontWidth() const {
-            return this->fontWidth;
-        }
-        virtual inline void setFontHeight(int height){
-            this->fontHeight = height;
-        }
-        virtual inline int getFontHeight() const {
-            return this->fontHeight;
         }
         
         virtual inline void setInfoLocation(double x, double y){
@@ -403,13 +431,7 @@ class Context{
         Filesystem::RelativePath music;
         
         /*! Font */
-        Filesystem::RelativePath font;
-        
-        /*! Font Width */
-        int fontWidth;
-        
-        /*! Font Height */
-        int fontHeight;
+        FontInfo font;
         
         /*! Info Placement */
         Gui::RelativePoint infoLocation;
@@ -447,7 +469,7 @@ class Menu{
         /*! Get Name */
         virtual std::string getName();
 
-        virtual void setFont(const Filesystem::RelativePath & font);
+        virtual void setFont(const FontInfo &);
         
         /*! Add option */
         virtual inline void addOption(MenuOption * opt){
