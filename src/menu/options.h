@@ -514,41 +514,21 @@ class OptionSpeed : public MenuOption
 };
 
 /*! Handles sub menus */
-class OptionTabMenu : public MenuOption
-{
-	public:
-		// Do logic before run part
-		virtual void logic();
-		
-		// Finally it has been selected, this is what shall run 
-		// endGame will be set true if it is a terminating option
-		virtual void run(const Menu::Context &);
-		
-		OptionTabMenu(Token *token);
-	
-		virtual ~OptionTabMenu();
-		
-	private:
-		Menu::Menu *menu;
-};
+class OptionTabMenu : public MenuOption {
+public:
+    // Do logic before run part
+    virtual void logic();
 
-/** Handles key reconfiguration */
-class OptionVersus : public MenuOption
-{
-	public:
-		// Do logic before run part
-		virtual void logic();
-		
-		// Finally it has been selected, this is what shall run 
-		// endGame will be set true if it is a terminating option
-		virtual void run(const Menu::Context &);
-		
-		OptionVersus(Token *token);
-	
-		virtual ~OptionVersus();
-		
-	private:
-		bool human;
+    // Finally it has been selected, this is what shall run 
+    // endGame will be set true if it is a terminating option
+    virtual void run(const Menu::Context &);
+
+    OptionTabMenu(Token *token);
+
+    virtual ~OptionTabMenu();
+
+private:
+    Menu::Menu *menu;
 };
 
 class OptionSound: public MenuOption {

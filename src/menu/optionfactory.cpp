@@ -39,9 +39,6 @@ MenuOption * OptionFactory::getOption(Token *token){
         return new OptionAdventure(tok);
     } else if ( *tok == "adventure-cpu" ){
         return new OptionAdventureCpu(tok);
-    } else if ( *tok == "versus" ){
-        // Versus mode
-        return new OptionVersus(tok);
 #ifdef HAVE_NETWORKING
     } else if ( *tok == "network-host" ){
         return new OptionNetworkHost(tok);
