@@ -2353,11 +2353,6 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
             StateController * controller = *it;
             Global::debug(2 * !controller->getDebug()) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
 
-            if (stateNumber == 430){
-                int x = 2;
-                x += 1;
-            }
-
 #if 0
             /* more debugging */
             bool hasFF = false;
