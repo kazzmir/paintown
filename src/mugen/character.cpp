@@ -2353,6 +2353,11 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
             StateController * controller = *it;
             Global::debug(2 * !controller->getDebug()) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
 
+            if (stateNumber == 430){
+                int x = 2;
+                x += 1;
+            }
+
 #if 0
             /* more debugging */
             bool hasFF = false;
@@ -2461,6 +2466,10 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         render->addMessage(font, x, y, color, -1, "Time %d", getStateTime());
         y += font.getHeight();
         render->addMessage(font, x, y, color, -1, "State type %s", getStateType().c_str());
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, -1, "Attack type %s", getMoveType().c_str());
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, -1, "Hit enabled %d", hit.isEnabled());
         y += font.getHeight();
         render->addMessage(font, x, y, color, -1, "Control %d", hasControl());
         y += font.getHeight();

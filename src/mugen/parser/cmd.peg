@@ -509,13 +509,17 @@ Ast::HitDefAttribute * makeHitDefAttribute(const Value & input){
 
 Ast::Value * makeAnimElem(const Value & line, const Value & arg1, const Value & comparison, const Value & arg2){
     /* animelemno == arg1 && animelemtime(arg1) compare arg2 */
+#if 0
     Ast::Value * element;
     Ast::Value * time;
-    element = makeExpressionEquals(Value(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "anim")), arg1);
+    element = makeExpressionEquals(Value(makeSimpleIdentifier(getCurrentLine(line), getCurrentColumn(line), "animelemno")), arg1);
     /* make a copy of arg1 because values can only have one parent */
     typedef Ast::Value * (*compare_func)(const Value &, const Value &);
     time = as<compare_func>(comparison)(Value(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1)))), arg2);
     return makeExpressionAnd(Value(element), Value(time));
+#endif
+    typedef Ast::Value * (*compare_func)(const Value &, const Value &);
+    return as<compare_func>(comparison)(Value(makeFunction1(std::string("animelemtime"), Value(copyValue(arg1)))), arg2);
 }
 
 Ast::Value * makeAnimElem(const Value & line, const Value & arg1){

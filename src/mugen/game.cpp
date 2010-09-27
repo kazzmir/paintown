@@ -26,6 +26,7 @@
 #include "character-select.h"
 #include "storyboard.h"
 #include "behavior.h"
+#include "parse-cache.h"
 #include "music.h"
 #include "config.h"
 
@@ -261,6 +262,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
 }
 
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+    ParseCache cache;
     Character player1(Filesystem::find(Filesystem::RelativePath("mugen/chars/" + player1Name + "/" + player1Name + ".def")));
     Character player2(Filesystem::find(Filesystem::RelativePath("mugen/chars/" + player2Name + "/" + player2Name + ".def")));
     TimeDifference timer;
@@ -276,7 +278,7 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
 
     {
         std::ostream & out = Global::debug(0);
-        out << "Loading player 2 " << player1Name;
+        out << "Loading player 2 " << player2Name;
         out.flush();
         timer.startTime();
         player2.load();
