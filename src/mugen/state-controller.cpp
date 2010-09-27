@@ -4723,6 +4723,32 @@ public:
     }
 };
 
+class ControllerAllPalFX: public ControllerPalFX {
+public:
+    ControllerAllPalFX(Ast::Section * section, const string & name, int state):
+    ControllerPalFX(section, name, state){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        /* TODO */
+    }
+};
+
+
+class ControllerPowerSet: public StateController {
+public:
+    ControllerPowerSet(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        extractValue(value, section);
+    }
+
+    Value value;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        guy.setPower(evaluateNumber(value, FullEnvironment(stage, guy, commands), 0));
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4890,7 +4916,8 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToParent : return new ControllerBindToParent(section, name, state);
         case StateController::ReversalDef : return new ControllerReversalDef(section, name, state);
         case StateController::Projectile : return new ControllerProjectile(section, name, state);
-        case StateController::AllPalFX :
+        case StateController::AllPalFX : return new ControllerAllPalFX(section, name, state);
+        case StateController::PowerSet : return new ControllerPowerSet(section, name, state);
         case StateController::AppendToClipboard :
         case StateController::BindToRoot :
         case StateController::BindToTarget :
@@ -4899,7 +4926,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::MoveHitReset :
         case StateController::Offset :
         case StateController::ParentVarAdd :
-        case StateController::PowerSet :
         case StateController::SndPan :
         case StateController::TargetDrop :
         case StateController::TargetPowerAdd :

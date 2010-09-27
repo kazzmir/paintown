@@ -746,6 +746,10 @@ public:
             return power;
         }
 
+        virtual inline void setPower(double p){
+            power = p;
+        }
+
         virtual void addPower(double d);
 
         virtual inline bool hasControl() const {
