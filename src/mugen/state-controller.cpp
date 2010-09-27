@@ -4749,6 +4749,23 @@ public:
     }
 };
 
+class ControllerOffset: public StateController {
+public:
+    ControllerOffset(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        x = extractAttribute(section, "x");
+        y = extractAttribute(section, "y");
+    }
+
+    Value x, y;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        guy.setDrawOffset(evaluateNumber(x, environment, 0),
+                          evaluateNumber(y, environment, 0));
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4918,13 +4935,13 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Projectile : return new ControllerProjectile(section, name, state);
         case StateController::AllPalFX : return new ControllerAllPalFX(section, name, state);
         case StateController::PowerSet : return new ControllerPowerSet(section, name, state);
+        case StateController::Offset : return new ControllerOffset(section, name, state);
         case StateController::AppendToClipboard :
         case StateController::BindToRoot :
         case StateController::BindToTarget :
         case StateController::ClearClipboard :
         case StateController::ExplodBindTime :
         case StateController::MoveHitReset :
-        case StateController::Offset :
         case StateController::ParentVarAdd :
         case StateController::SndPan :
         case StateController::TargetDrop :

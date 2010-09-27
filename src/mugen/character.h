@@ -1052,6 +1052,8 @@ public:
 	    return this->attackdist;
 	}
 
+        virtual void setDrawOffset(double x, double y);
+
         virtual void setAfterImage(int time, int length, int timegap, int framegap);
         virtual void setAfterImageTime(int time);
 

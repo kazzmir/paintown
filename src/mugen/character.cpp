@@ -2405,8 +2405,8 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be 0... */
     if (animation != 0){
-        int x = getRX() - cameraX;
-        int y = getRY() - cameraY;
+        int x = getRX() - cameraX + drawOffset.x;
+        int y = getRY() - cameraY + drawOffset.y;
 
         if (isPaused() && moveType == Move::Hit){
             x += PaintownUtil::rnd(3) - 1;
@@ -2795,6 +2795,10 @@ void Character::disablePushCheck(){
         
 void Character::setHitOverride(int slot, const string & attribute, int state, int time, bool air){
     /* TODO */
+}
+
+void Character::setDrawOffset(double x, double y){
+    drawOffset.set(x, y);
 }
         
 }
