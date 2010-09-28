@@ -2799,39 +2799,32 @@ class ControllerExplod: public StateController {
 public:
     ControllerExplod(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
-    animation(NULL),
-    ownAnimation(true),
-    id(NULL),
-    posX(NULL),
-    posY(NULL),
-    velocityX(NULL),
-    velocityY(NULL),
-    accelerationX(NULL),
-    accelerationY(NULL),
-    removeTime(NULL){
+    ownAnimation(true){
         parse(section);
     }
 
-    Compiler::Value * animation;
+    Value animation;
     bool ownAnimation;
-    Compiler::Value * id;
-    Compiler::Value * posX;
-    Compiler::Value * posY;
-    Compiler::Value * velocityX;
-    Compiler::Value * velocityY;
-    Compiler::Value * accelerationX;
-    Compiler::Value * accelerationY;
-    Compiler::Value * removeTime;
+    Value id;
+    Value posX;
+    Value posY;
+    Value velocityX;
+    Value velocityY;
+    Value accelerationX;
+    Value accelerationY;
+    Value removeTime;
+    Value bindTime;
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime):
+        ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime):
             Effect(owner, animation, id, x, y),
             velocityX(velocityX),
             velocityY(velocityY),
             accelerationX(accelerationX),
             accelerationY(accelerationY),
-            removeTime(removeTime){
+            removeTime(removeTime),
+            bindTime(bindTime){
             }
 
         void setVelocityX(double x){
@@ -2852,6 +2845,10 @@ public:
 
         void setAccelerationX(double x){
             accelerationX = x;
+        }
+
+        void setBindTime(int time){
+            bindTime = time;
         }
 
         double getAccelerationX() const {
@@ -2879,9 +2876,14 @@ public:
         double accelerationX;
         double accelerationY;
         int removeTime;
+        int bindTime;
 
         virtual void logic(){
             Effect::logic();
+            if (bindTime > 0){
+                bindTime -= 1;
+            }
+
             x += velocityX;
             y += velocityY;
             velocityX += accelerationX;
@@ -2903,15 +2905,6 @@ public:
     };
 
     virtual ~ControllerExplod(){
-        delete animation;
-        delete id;
-        delete posX;
-        delete posY;
-        delete velocityX;
-        delete velocityY;
-        delete accelerationX;
-        delete accelerationY;
-        delete removeTime;
     }
 
     void parse(Ast::Section * section){
@@ -2944,6 +2937,9 @@ public:
                 } else if (simple == "facing"){
                 } else if (simple == "vfacing"){
                 } else if (simple == "bindtime"){
+                    const Ast::Value * time;
+                    simple >> time;
+                    controller.bindTime = Compiler::compile(time);
                 } else if (simple == "velocity" || simple == "vel"){
                     const Ast::Value * x;
                     const Ast::Value * y;
@@ -2991,6 +2987,7 @@ public:
         double accelerationX_value = evaluateNumber(accelerationX, 0) * facingLeft;
         double accelerationY_value = evaluateNumber(accelerationY, 0);
         int removeTime_value = (int) evaluateNumber(removeTime, -2);
+        int bindTime_value = (int) evaluateNumber(bindTime, 0);
 #undef evaluateNumber
 
         MugenAnimation * animation = NULL;
@@ -3006,10 +3003,8 @@ public:
             throw MugenException(out.str());
         }
 
-        
-
         /* FIXME: handle rest of the explod parameters */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value);
         stage.addEffect(effect);
     }
 };
@@ -4749,6 +4744,7 @@ public:
     }
 };
 
+/* 90% */
 class ControllerOffset: public StateController {
 public:
     ControllerOffset(Ast::Section * section, const string & name, int state):
@@ -4763,6 +4759,35 @@ public:
         FullEnvironment environment(stage, guy, commands);
         guy.setDrawOffset(evaluateNumber(x, environment, 0),
                           evaluateNumber(y, environment, 0));
+    }
+};
+
+class ControllerExplodBindTime: public StateController {
+public:
+    ControllerExplodBindTime(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        id = extractAttribute(section, "id");
+        Compiler::Value * time = extractAttribute(section, "time");
+        Compiler::Value * value = extractAttribute(section, "value");
+        if (time != NULL){
+            this->time = time;
+        }
+        if (value != NULL){
+            this->time = value;
+        }
+    }
+
+    Value id;
+    Value time;
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        vector<Effect*> effects = stage.findEffects(&guy, (int) evaluateNumber(id, environment, -1));
+        int bind = (int) evaluateNumber(time, environment, 1);
+        for (vector<Effect*>::iterator it = effects.begin(); it != effects.end(); it++){
+            ControllerExplod::ExplodeEffect * effect = (ControllerExplod::ExplodeEffect*) (*it);
+            effect->setBindTime(bind);
+        }
     }
 };
 
@@ -4936,11 +4961,11 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AllPalFX : return new ControllerAllPalFX(section, name, state);
         case StateController::PowerSet : return new ControllerPowerSet(section, name, state);
         case StateController::Offset : return new ControllerOffset(section, name, state);
+        case StateController::ExplodBindTime : return new ControllerExplodBindTime(section, name, state);
         case StateController::AppendToClipboard :
         case StateController::BindToRoot :
         case StateController::BindToTarget :
         case StateController::ClearClipboard :
-        case StateController::ExplodBindTime :
         case StateController::MoveHitReset :
         case StateController::ParentVarAdd :
         case StateController::SndPan :

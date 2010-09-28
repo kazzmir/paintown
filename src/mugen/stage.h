@@ -220,6 +220,7 @@ public:
     virtual void removeEffects(const Mugen::Character * owner, int id);
     virtual int countMyEffects(const Mugen::Character * owner) const;
     virtual Mugen::Effect * findEffect(const Mugen::Character * owner, int id);
+    virtual std::vector<Mugen::Effect *> findEffects(const Mugen::Character * owner, int id);
 
     virtual void setEnvironmentColor(int color, int time, bool under); 
 

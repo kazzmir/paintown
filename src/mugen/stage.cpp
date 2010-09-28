@@ -1911,3 +1911,15 @@ Mugen::Effect * MugenStage::findEffect(const Mugen::Character * owner, int id){
 
     return NULL;
 }
+
+vector<Mugen::Effect *> MugenStage::findEffects(const Mugen::Character * owner, int id){
+    vector<Mugen::Effect*> effects;
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
+        Mugen::Effect * effect = *it;
+        if (effect->getOwner() == owner && (id == effect->getId() || id == -1)){
+            effects.push_back(effect);
+        }
+    }
+
+    return effects;
+}
