@@ -1869,6 +1869,7 @@ void OptionSelectFont::nextIndex(bool forward){
 	    }
 	}
     }
+
     if (forward){
 	index++;
 	if (index >= (int) fonts.size()){
@@ -1880,12 +1881,12 @@ void OptionSelectFont::nextIndex(bool forward){
 	    index = (int)fonts.size()-1;
 	}
     }
+
     if (fonts[index] == "default"){
 	Configuration::setMenuFont("");
     } else {
 	Configuration::setMenuFont(fonts[index]);
     }
-    
 }
 
 OptionSpeed::OptionSpeed(Token *token): MenuOption(token), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
@@ -1922,20 +1923,17 @@ void OptionSpeed::logic(){
 void OptionSpeed::run(const Menu::Context & context){
 }
 
-bool OptionSpeed::leftKey()
-{
-	Configuration::setGameSpeed(Configuration::getGameSpeed() - 0.05);
-	if( Configuration::getGameSpeed() < 0.1 ){
-	    Configuration::setGameSpeed(0.1);
-	}
-	return false;
+bool OptionSpeed::leftKey(){
+    Configuration::setGameSpeed(Configuration::getGameSpeed() - 0.05);
+    if (Configuration::getGameSpeed() < 0.1){
+        Configuration::setGameSpeed(0.1);
+    }
+    return false;
 }
-bool OptionSpeed::rightKey()
-{
-	Configuration::setGameSpeed(Configuration::getGameSpeed() + 0.05);
-	
-	rblue = rgreen = 0;
-	return false;
+bool OptionSpeed::rightKey(){
+    Configuration::setGameSpeed(Configuration::getGameSpeed() + 0.05);
+    rblue = rgreen = 0;
+    return false;
 }
 
 OptionTabMenu::OptionTabMenu(Token *token):
@@ -1963,14 +1961,14 @@ menu(0){
     }
 }
 
-OptionTabMenu::~OptionTabMenu()
-{
-	// Delete our menu
-	if(menu)delete menu;
+OptionTabMenu::~OptionTabMenu(){
+    // Delete our menu
+    if (menu){
+        delete menu;
+    }
 }
 
-void OptionTabMenu::logic()
-{
+void OptionTabMenu::logic(){
 	// Nothing
 }
 
