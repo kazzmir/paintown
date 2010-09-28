@@ -76,17 +76,42 @@ Menu::FontInfo & Menu::FontInfo::operator=(const FontInfo & copy){
     return *this;
 }
 
+static bool menuFontAvailable(){
+    return (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont())));
+}
+
 const Font & Menu::FontInfo::get() const{
     // Check for override from system and return that instead otherwise continue
-    if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
+    if (menuFontAvailable()){
 	return Font::getFont(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
     }
     return Font::getFont(font, width, height);
 }
 
+const Filesystem::RelativePath Menu::FontInfo::getFont() const{
+    if (menuFontAvailable()){
+	return Filesystem::RelativePath(Configuration::getMenuFont());
+    }
+    return this->font;
+}
+
+const int Menu::FontInfo::getWidth() const {
+    if (menuFontAvailable()){
+	return Configuration::getMenuFontWidth();
+    }
+    return this->width;
+}
+
+const int Menu::FontInfo::getHeight() const{
+    if (menuFontAvailable()){
+	return Configuration::getMenuFontHeight();
+    }
+    return this->height;
+}
+
 Menu::InfoBox::InfoBox():
 state(NotActive),
-font(FontInfo(Filesystem::RelativePath(sharedFont), sharedFontWidth, sharedFontHeight)),
+font(FontInfo(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())),
 fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
@@ -389,6 +414,10 @@ Menu::Renderer::~Renderer(){
     }
 }
 
+void Menu::Renderer::setFont(const FontInfo & font){
+    // empty
+}
+
 void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defaults, Context & context){
     if (text.empty()){
         return;
@@ -488,6 +517,13 @@ bool Menu::DefaultRenderer::readToken(Token * token){
     return true;
 }
 
+void Menu::DefaultRenderer::setFont(const FontInfo & font){
+    if (!font.empty()){
+	menu.setFont(font.getFont(),font.getWidth(),font.getHeight());
+	menuInfo.setFont(font);
+    }
+}
+
 void Menu::DefaultRenderer::initialize(Context & context){
     // FIXME This is wrong, move this over to FontInfo so that the overrides can be accounted for
     Filesystem::RelativePath localFont("fonts/arial.ttf");
@@ -501,14 +537,12 @@ void Menu::DefaultRenderer::initialize(Context & context){
         width = context.getFont().getWidth();
         height = context.getFont().getHeight();
     }
-    menu.setFont(localFont, width, height);
+    setFont(FontInfo(localFont, width, height));
     menu.setList(toContextList(options));
     menu.open();
     
     // Menu info
     if (!context.getMenuInfoText().empty()){
-	// FIXME conflicts with above info
-        menuInfo.setFont(context.getFont());
         menuInfo.setText(context.getMenuInfoText());
         const int width = menuInfo.location.getWidth();
         const int height = menuInfo.location.getHeight();
@@ -570,12 +604,14 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             break;
         case Left:
             if (options[menu.getCurrentIndex()]->leftKey()){
+		setFont(context.getFont());
                 context.playSound(Left);
             }
             break;
         case Right:
             if (options[menu.getCurrentIndex()]->rightKey()){
-                context.playSound(Right);
+                setFont(context.getFont());
+		context.playSound(Right);
             }
             break;
         case Select:
@@ -586,6 +622,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
                 menu.open();
                 menuInfo.open();
             }
+            setFont(context.getFont());
             context.playMusic();
             addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
             break;
@@ -733,6 +770,13 @@ bool Menu::TabRenderer::readToken(Token * token){
     return true;
 }
 
+void Menu::TabRenderer::setFont(const FontInfo & font){
+    if (!font.empty()){
+	menu.setFont(font.getFont(),font.getWidth(),font.getHeight());
+	menuInfo.setFont(font);
+    }
+}
+
 void Menu::TabRenderer::initialize(Context & context){
     // FIXME Redundant, see defaultRenderer
     Filesystem::RelativePath localFont("fonts/arial.ttf");
@@ -746,7 +790,7 @@ void Menu::TabRenderer::initialize(Context & context){
         width = context.getFont().getWidth();
         height = context.getFont().getHeight();
     }
-    menu.setFont(localFont, width, height);
+    setFont(FontInfo(localFont, width, height));
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         TabInfo * tab = *i;
         menu.addTab(tab->name, toContextList(tab->options));
@@ -755,8 +799,6 @@ void Menu::TabRenderer::initialize(Context & context){
     
     // Menu info
     if (!context.getMenuInfoText().empty()){
-	// FIXME Inconsistent with above
-        menuInfo.setFont(context.getFont());
         menuInfo.setText(context.getMenuInfoText());
         const int width = menuInfo.location.getWidth();
         const int height = menuInfo.location.getHeight();
@@ -817,12 +859,14 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
             break;
         case Left:
             menu.left();
-            context.playSound(Up);
+            setFont(context.getFont());
+	    context.playSound(Up);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
             break;
         case Right:
             menu.right();
-            context.playSound(Down);
+            setFont(context.getFont());
+	    context.playSound(Down);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
             break;
         case Select:
@@ -837,6 +881,7 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
                 //menu.open();
                 menuInfo.open();
             }
+	    setFont(context.getFont());
             context.playMusic();
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
             break;
@@ -1118,7 +1163,10 @@ Menu::Menu::~Menu(){
 }
         
 void Menu::Menu::setFont(const FontInfo & font){
-    context.setFont(font);
+    //context.setFont(font);
+    if (renderer){
+	renderer->setFont(font);
+    }
 }
 
 void Menu::Menu::load(Token * token){ 
@@ -1282,7 +1330,7 @@ void Menu::Menu::run(const Context & parentContext){
         
     // MenuException or something
     bool specialExit = false;
-    
+        
     // Run while till the localContext is done
     while (localContext.getState() != Context::Completed && (renderer && renderer->active())){
         bool draw = false;

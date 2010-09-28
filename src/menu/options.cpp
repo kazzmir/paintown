@@ -1759,8 +1759,6 @@ rgreen(255){
                 fonts.push_back(Filesystem::cleanse(*it).path());
             }
 
-            /* use for debugging */
-            // fonts.push_back("fonts/arial.ttf");
         } catch (const Filesystem::NotFound & e){
             throw LoadException(__FILE__, __LINE__, e, "Could not load font");
         }
@@ -1882,7 +1880,7 @@ void OptionSelectFont::nextIndex(bool forward){
 	}
     }
 
-    if (fonts[index] == "default"){
+    if (fonts[index] == "Default"){
 	Configuration::setMenuFont("");
     } else {
 	Configuration::setMenuFont(fonts[index]);

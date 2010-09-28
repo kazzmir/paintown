@@ -58,22 +58,20 @@ class FontInfo {
 	inline void setFont(const Filesystem::RelativePath & font){
 	    this->font = font;
 	}
-	inline const Filesystem::RelativePath & getFont() const{
-	    return this->font;
-	}
+	const Filesystem::RelativePath getFont() const;
 	
 	inline void setWidth(int width){
 	    this->width = width;
 	}
-	inline const int getWidth() const {
-	    return this->width;
-	}
+	const int getWidth() const;
 	
 	inline void setHeight(int height){
 	    this->height = height;
 	}
-	inline const int getHeight() const{
-	    return this->height;
+	const int getHeight() const;
+	
+	inline const bool empty() const{
+	    return font.path().empty();
 	}
 	
     private:
@@ -220,6 +218,9 @@ class Renderer{
         
         virtual void act()=0;
         virtual void render(const Bitmap &)=0;
+	
+	// Set font if applicable
+	virtual void setFont(const FontInfo &);
         
         //! Compatibility for now, remove later
         virtual void addOption(MenuOption *)=0;
@@ -252,6 +253,7 @@ class DefaultRenderer : public Renderer {
         DefaultRenderer();
         virtual ~DefaultRenderer();
         
+	virtual void setFont(const FontInfo &);
         virtual bool readToken(Token *);
         virtual void initialize(Context &);
         virtual void finish();
@@ -291,6 +293,7 @@ class TabRenderer : public Renderer {
         TabRenderer();
         virtual ~TabRenderer();
         
+	virtual void setFont(const FontInfo &);
         virtual bool readToken(Token *);
         virtual void initialize(Context &);
         virtual void finish();
