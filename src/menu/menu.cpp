@@ -78,6 +78,9 @@ Menu::FontInfo & Menu::FontInfo::operator=(const FontInfo & copy){
 
 const Font & Menu::FontInfo::get() const{
     // Check for override from system and return that instead otherwise continue
+    if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
+	return Font::getFont(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
+    }
     return Font::getFont(font, width, height);
 }
 

@@ -1749,6 +1749,8 @@ rgreen(255){
                 name = Filesystem::cleanse(name).path();
             }
             */
+	    // DEFAULT (blank)
+	    fonts.push_back("default");
             for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
                 fonts.push_back(Filesystem::cleanse(*it).path());
             }
@@ -1771,26 +1773,32 @@ OptionSelectFont::~OptionSelectFont(){
 
 void OptionSelectFont::logic(){
     /* FIXME Get current font and display info */
-    #if 0
     switch (typeAdjust){
-        case fontName:	  
-            setText("Current Font: " + OldMenu::Menu::getFont().path());
+        case fontName:{
+	    std::string name;
+	    if (Configuration::getMenuFont() == ""){
+		name = "Default";
+	    } else {
+		name = Filesystem::RelativePath(Configuration::getMenuFont()).path();
+	    }
+		
+            setText("Current Font: " + name);
             break;
+	}
         case fontWidth:{
             ostringstream temp;
-            temp << "Font Width: " << OldMenu::Menu::getFontWidth();
+            temp << "Font Width: " << Configuration::getMenuFontWidth();
             setText(temp.str());
             break;
         }
         case fontHeight:{
             ostringstream temp;
-            temp << "Font Height: " << OldMenu::Menu::getFontHeight();
+            temp << "Font Height: " << Configuration::getMenuFontHeight();
             setText(temp.str());
             break;
         }
         default: break;
     }
-    #endif
     if (lblue < 255){
         lblue += 5;
     }
@@ -1813,45 +1821,37 @@ void OptionSelectFont::run(const Menu::Context & context){
 }
 
 bool OptionSelectFont::leftKey(){
-    /* FIXME font info */
-    #if 0
     switch (typeAdjust){
         case fontName:
             nextIndex(false);
             break;
         case fontWidth:
-            OldMenu::Menu::setFontWidth(OldMenu::Menu::getFontWidth() - 1);
+            Configuration::setMenuFontWidth(Configuration::getMenuFontWidth() - 1);
             break;
         case fontHeight:
-            OldMenu::Menu::setFontHeight(OldMenu::Menu::getFontHeight() - 1);
+            Configuration::setMenuFontHeight(Configuration::getMenuFontHeight() - 1);
             break;
         default:
             break;
     }
-    #endif
-    // Menu::setFont(current, width, height);
     lblue = lgreen = 0;
     return true;
 }
 
 bool OptionSelectFont::rightKey(){
-    /* FIXME font info */
-    #if 0
     switch (typeAdjust){
         case fontName:
             nextIndex(true);
             break;
         case fontWidth:
-            OldMenu::Menu::setFontWidth(OldMenu::Menu::getFontWidth() + 1);
+            Configuration::setMenuFontWidth(Configuration::getMenuFontWidth() + 1);
             break;
         case fontHeight:
-            OldMenu::Menu::setFontHeight(OldMenu::Menu::getFontHeight() + 1);
+            Configuration::setMenuFontHeight(Configuration::getMenuFontHeight() + 1);
             break;
         default:
             break;
     }
-    #endif
-    // Menu::setFont(current, width, height);
     rblue = rgreen = 0;
     return true;
 }
@@ -1860,26 +1860,32 @@ void OptionSelectFont::nextIndex(bool forward){
     if (fonts.size() == 0){
         return;
     }
-    /* FIXME fonts */
-    #if 0
+    
     int index = 0;
-    for (unsigned int i = 0 ; i < fonts.size() ; ++i){
-        if (OldMenu::Menu::getFont().path() == fonts[i]){
-            if (forward){
-                index = i + 1;
-                if (index >= (int) fonts.size()){
-                    index = 0;
-                }
-            } else {
-                index = i - 1;
-                if (index < 0){
-                    index = (int)fonts.size()-1;
-                }
-            }
-        }    
+    if (Configuration::getMenuFont() != ""){
+	for (unsigned int i = 0 ; i < fonts.size() ; ++i){
+	    if (Configuration::getMenuFont() == fonts[i]){
+		index = i;
+	    }
+	}
     }
-    OldMenu::Menu::setFontName(fonts[index]);
-    #endif
+    if (forward){
+	index++;
+	if (index >= (int) fonts.size()){
+	    index = 0;
+	}
+    } else {
+	index--;
+	if (index < 0){
+	    index = (int)fonts.size()-1;
+	}
+    }
+    if (fonts[index] == "default"){
+	Configuration::setMenuFont("");
+    } else {
+	Configuration::setMenuFont(fonts[index]);
+    }
+    
 }
 
 OptionSpeed::OptionSpeed(Token *token): MenuOption(token), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
