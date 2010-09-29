@@ -141,17 +141,17 @@ linkedElement(0){
                 std::string type;
                 simple >> type;
                 type = Mugen::Util::fixCase(Mugen::Util::removeSpaces(type));
-		TransType trans = NONE;
+		TransType trans = None;
                 if (type == "none" ){
-		    trans = NONE;
+		    trans = None;
 		} else if (type == "add"){
-		    trans = ADD;
+		    trans = Add;
 		} else if (type == "add1"){
-		    trans = ADD1;
+		    trans = Add1;
 		} else if (type == "sub"){
-		    trans = SUB;
+		    trans = Sub;
 		} else if (type == "addalpha"){
-		    trans = ADDALPHA;
+		    trans = AddAlpha;
 		}
 		self.setTrans(trans);
             } else if (simple == "alpha"){

@@ -80,7 +80,7 @@ static bool menuFontAvailable(){
     return (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont())));
 }
 
-const Font & Menu::FontInfo::get() const{
+const Font & Menu::FontInfo::get() const {
     // Check for override from system and return that instead otherwise continue
     if (menuFontAvailable()){
 	return Font::getFont(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
@@ -88,7 +88,7 @@ const Font & Menu::FontInfo::get() const{
     return Font::getFont(font, width, height);
 }
 
-const Filesystem::RelativePath Menu::FontInfo::getFont() const{
+const Filesystem::RelativePath Menu::FontInfo::getFont() const {
     if (menuFontAvailable()){
 	return Filesystem::RelativePath(Configuration::getMenuFont());
     }

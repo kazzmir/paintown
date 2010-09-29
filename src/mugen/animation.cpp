@@ -385,7 +385,7 @@ void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, cons
     Mugen::Effects effects = frame->effects;
     effects.facing = (facing ? -1 : 1);
     effects.vfacing = (vfacing ? -1 : 1);
-    effects.trans = Mugen::ADDALPHA;
+    effects.trans = Mugen::AddAlpha;
     effects.alphalow = alpha;
     effects.scalex = scalex;
     effects.scaley = scaley;

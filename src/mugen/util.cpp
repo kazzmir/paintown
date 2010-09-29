@@ -813,7 +813,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             }
 
             if (PaintownUtil::matchRegex(blend, "^a")){
-                frame->effects.trans = ADD;
+                frame->effects.trans = Add;
 
                 /*
                  * If you wish to specify alpha values for color addition, use the
@@ -839,7 +839,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
                 frame->effects.alphalow = source;
                 frame->effects.alphahigh = dest;
             } else if (blend == "s"){
-                frame->effects.trans = SUB;
+                frame->effects.trans = Sub;
             }
 
             // Add sprite
@@ -1132,7 +1132,7 @@ Mugen::Point::~Point(){
 }
 
 Mugen::Effects::Effects():
-trans(NONE),
+trans(None),
 alphalow(255),
 alphahigh(255),
 mask(false),

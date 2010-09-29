@@ -102,11 +102,13 @@ class Point{
 };
 
 enum TransType{
-    NONE = 0,
-    ADD,
-    ADD1,
-    SUB,
-    ADDALPHA
+    None = 0,
+    Add,
+    Add1,
+    Sub,
+    AddAlpha,
+    /* used by the Trans controller to specify the trans should not change */
+    Default
 };
 
 class Effects{

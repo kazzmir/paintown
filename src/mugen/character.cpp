@@ -2129,6 +2129,7 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
     /* reset some stuff */
     blocking = false;
     widthOverride.enabled = false;
+    transOverride.enabled = false;
 
     for (int slot = 0; slot < 2; slot++){
         if (hitByOverride[slot].time > 0){
@@ -2492,6 +2493,13 @@ bool Character::canTurn() const {
            getCurrentState() == WalkingForwards ||
            getCurrentState() == WalkingBackwards ||
            getCurrentState() == Crouching;
+}
+        
+void Character::setTransOverride(TransType type, int alphaFrom, int alphaTo){
+    transOverride.enabled = true;
+    transOverride.type = type;
+    transOverride.alphaSource = alphaFrom;
+    transOverride.alphaDestination = alphaTo;
 }
 
 static MugenSound * findSound(const Mugen::SoundMap & sounds, int group, int item){

@@ -1089,6 +1089,8 @@ public:
         virtual void setReversalActive();
         ReversalData & getReversal();
 
+        virtual void setTransOverride(TransType type, int alphaFrom, int alphaTo);
+
 protected:
     void initialize();
 
@@ -1466,6 +1468,17 @@ protected:
 
         ReversalData reversal;
         bool reversalActive;
+
+        struct TransOverride{
+            TransOverride():
+            enabled(false){
+            }
+
+            bool enabled;
+            TransType type;
+            int alphaSource;
+            int alphaDestination;
+        } transOverride;
 };
 
 }

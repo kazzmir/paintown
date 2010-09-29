@@ -1717,7 +1717,7 @@ rgreen(255){
                 else if ( temp == "height" ) typeAdjust = fontHeight;
                 else throw LoadException(__FILE__, __LINE__, "Incorrect value \"" + temp + "\" in font-select");
             } else {
-                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                Global::debug(3) << "Unhandled menu attribute: " << endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
                 }
@@ -1812,7 +1812,6 @@ void OptionSelectFont::logic(){
     if (rgreen < 255){
         rgreen += 5;
     }
-
 }
 
 void OptionSelectFont::run(const Menu::Context & context){

@@ -221,33 +221,33 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
     
     // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
     switch (effects.trans){
-	case ADDALPHA:{
+	case AddAlpha : {
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
 	    Bitmap::transBlender(0, 0, 0, effects.alphalow);
 	    draw(modImage, xaxis, yaxis, where, effects);
 	    break;
 	}
-	case ADD:{
+	case Add : {
 	    // this additive 100% I assume... not totally sure
 	    // Bitmap::addBlender( 255, 255, 255, 255 );
 	    Bitmap::addBlender(0, 0, 0, 255);
 	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}
-	case ADD1:{
+	case Add1 : {
 	    // 50%
 	    Bitmap::addBlender(128, 128, 128, 255);
 	    draw(modImage,xaxis,yaxis,where,effects);
 	    break;
 	}
-	case SUB:{
+	case Sub : {
 	    // Shadow effect
 	    // Bitmap::multiplyBlender( 0, 0, 0, 128 );
 	    Bitmap::differenceBlender(0, 0, 0, 128);
 	    draw(modImage, xaxis, yaxis, where, effects);
 	    break;
 	}
-	case NONE:
+	case None:
 	default:{
 	    draw(modImage, xaxis, yaxis, where, effects);
 	    break;
@@ -397,7 +397,7 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
     const int NOT_FLIPPED = 1;
 
     if ( (effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
-	if (effects.trans != NONE){
+	if (effects.trans != None){
 	    bmp.drawTransHFlip(flippedX, normalY, where);
 	} else {
 	    // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
@@ -405,20 +405,20 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	}
 	
     } else if ( (effects.vfacing == FLIPPED) && (effects.facing == NOT_FLIPPED)){
-	if (effects.trans != NONE){
+	if (effects.trans != None){
 	    bmp.drawTransVFlip(normalX, flippedY, where);
 	} else {
 	    bmp.drawVFlip(normalX, flippedY, where);
 	}
     } else if ((effects.vfacing == FLIPPED) && (effects.facing == FLIPPED)){
-	if (effects.trans != NONE){
+	if (effects.trans != None){
 	    bmp.drawTransHVFlip(flippedX, flippedY, where);
 	} else {
 	    bmp.drawHVFlip(flippedX, flippedY, where);
 	}
     } else {
 	//if( effects.mask ){
-	if (effects.trans != NONE){
+	if (effects.trans != None){
 	    bmp.drawTrans(normalX, normalY, where);
 	} else {
 	    bmp.draw(normalX, normalY, startWidth, startHeight, width, height, where);

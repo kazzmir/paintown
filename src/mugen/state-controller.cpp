@@ -4791,6 +4791,80 @@ public:
     }
 };
 
+class ControllerTrans: public StateController {
+public:
+    ControllerTrans(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section),
+    trans(Default){
+        parse(section);
+    }
+
+    TransType trans;
+    Value alphaSource;
+    Value alphaDestination;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTrans & controller):
+            controller(controller){
+            }
+
+            ControllerTrans & controller;
+
+            TransType parseType(const string & what){
+                if (what == "default"){
+                    return Default;
+                } else if (what == "none"){
+                    return None;
+                } else if (what == "add"){
+                    return Add;
+                } else if (what == "addalpha"){
+                    return AddAlpha;
+                } else if (what == "add1"){
+                    return Add1;
+                } else if (what == "sub"){
+                    return Sub;
+                } else {
+                    Global::debug(0) << "Invalid trans type `" << what << "'" << endl;
+                    return Default;
+                }
+            }
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "trans"){
+                    string type;
+                    simple >> type;
+                    controller.trans = parseType(PaintownUtil::lowerCaseAll(type));
+                } else if (simple == "alpha"){
+                    const Ast::Value * from;
+                    const Ast::Value * to;
+                    simple >> from >> to;
+                    controller.alphaSource = Compiler::compile(from);
+                    controller.alphaDestination = Compiler::compile(to);
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        int alphaFrom = 256;
+        int alphaTo = 128;
+        if (trans == AddAlpha){
+            FullEnvironment environment(stage, guy, commands);
+            alphaFrom = (int) evaluateNumber(alphaSource, environment, 256);
+            alphaTo = (int) evaluateNumber(alphaDestination, environment, 0);
+        }
+
+        if (trans != Default){
+            guy.setTransOverride(trans, alphaFrom, alphaTo);
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -4962,6 +5036,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::PowerSet : return new ControllerPowerSet(section, name, state);
         case StateController::Offset : return new ControllerOffset(section, name, state);
         case StateController::ExplodBindTime : return new ControllerExplodBindTime(section, name, state);
+        case StateController::Trans : return new ControllerTrans(section, name, state);
         case StateController::AppendToClipboard :
         case StateController::BindToRoot :
         case StateController::BindToTarget :
@@ -4972,8 +5047,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetDrop :
         case StateController::TargetPowerAdd :
         case StateController::TargetVelAdd :
-        case StateController::TargetVelSet :
-        case StateController::Trans : {
+        case StateController::TargetVelSet : {
             class DefaultController: public StateController {
             public:
                 DefaultController(Ast::Section * section, const string & name, int state):
@@ -4994,14 +5068,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
             throw MugenException(out.str());
             break;
         }
-            /*
-               case InternalCommand : {
-               typedef void (Character::*func)(const MugenStage & stage, const vector<string> & inputs);
-               func f = (func) controller.internal;
-               (guy.*f)(stage, commands);
-               break;
-               }
-               */
     }
 
     ostringstream out;
