@@ -2441,6 +2441,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             }
         }
 
+        /* TODO: add transOverride stuff here */
         animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
     }
 

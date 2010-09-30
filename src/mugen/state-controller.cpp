@@ -4865,6 +4865,30 @@ public:
     }
 };
 
+class ControllerAppendToClipboard: public StateController {
+public:
+    ControllerAppendToClipboard(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        Global::debug(0) << "AppendToClipboard is not implemented" << endl;
+    }
+};
+
+class ControllerClearClipboard: public StateController {
+public:
+    ControllerClearClipboard(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        Global::debug(0) << "ClearClipboard is not implemented" << endl;
+    }
+};
+
+
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -5037,10 +5061,10 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Offset : return new ControllerOffset(section, name, state);
         case StateController::ExplodBindTime : return new ControllerExplodBindTime(section, name, state);
         case StateController::Trans : return new ControllerTrans(section, name, state);
-        case StateController::AppendToClipboard :
+        case StateController::AppendToClipboard : return new ControllerAppendToClipboard(section, name, state);
+        case StateController::ClearClipboard : return new ControllerClearClipboard(section, name, state);
         case StateController::BindToRoot :
         case StateController::BindToTarget :
-        case StateController::ClearClipboard :
         case StateController::MoveHitReset :
         case StateController::ParentVarAdd :
         case StateController::SndPan :
