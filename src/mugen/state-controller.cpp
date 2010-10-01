@@ -4943,8 +4943,6 @@ public:
     }
 };
 
-
-
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
