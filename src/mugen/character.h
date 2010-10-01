@@ -242,6 +242,15 @@ struct HitDefinition{
         int item;
     } hitSound;
 
+    struct GetPower{
+        GetPower():
+            hit(0),
+            guarded(0){
+            }
+        int hit;
+        int guarded;
+    } getPower;
+
     struct GuardHitSound{
         GuardHitSound():
             own(false),

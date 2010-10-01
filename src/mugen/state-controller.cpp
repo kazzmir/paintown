@@ -1268,6 +1268,14 @@ public:
             } envShake;
         } fall;
 
+        /* getpower = p1power, p1gpower (int, int)
+         * p1power specifies the amount of power to give P1 if this HitDef connects successfully. p1gpower specifies the amount of power to give P1 if this HitDef is guarded. If omitted, p1power defaults to hit_damage (from "damage" parameter) multiplied by the value of Default.Attack.LifeToPowerMul specified in data/mugen.cfg. If p1gpower is omitted, it defaults to the value specified for p1power divided by 2.
+         */
+        struct GetPower{
+            Value hit;
+            Value guarded;
+        } getPower;
+
         /* down.velocity = x_velocity, y_velocity (float, float)
          * This is the velocity to assign P2 if P2 is hit while lying down. If the y_velocity is non-zero, P2 will be hit into the air. If it is zero, then P2 will slide back on the ground. Defaults to the same values as the "air.velocity" parameter if omitted.
          * down.hittime = hit_time (int)
@@ -1290,8 +1298,6 @@ public:
          * Set to 0 to prevent this attack from KO'ing the opponent when he falls on the ground (see fall.damage). Defaults to 1.
          * numhits = hit_count (int)
          * hit_count indicates how many hits this hitdef should add to the combo counter. Must be 0 or greater. Defaults to 1.
-         * getpower = p1power, p1gpower (int, int)
-         * p1power specifies the amount of power to give P1 if this HitDef connects successfully. p1gpower specifies the amount of power to give P1 if this HitDef is guarded. If omitted, p1power defaults to hit_damage (from "damage" parameter) multiplied by the value of Default.Attack.LifeToPowerMul specified in data/mugen.cfg. If p1gpower is omitted, it defaults to the value specified for p1power divided by 2.
          * givepower = p2power, p2gpower (int, int)
          * p2power specifies the amount of power to give P2 if this HitDef connects successfully. p2gpower specifies the amount of power to give P2 if this HitDef is guarded. If omitted, p1power defaults to hit_damage (from "damage" parameter) multiplied by the value of Default.GetHit.LifeToPowerMul specified in data/mugen.cfg. If p1gpower is omitted, it defaults to the value specified for p1power divided by 2.
          * palfx.time = palfx_time (int)
@@ -1487,6 +1493,12 @@ public:
                     if (PaintownUtil::matchRegex(what, "[0-9]+")){
                         hit.guardSpark = atoi(what.c_str());
                     }
+                } else if (simple == "getpower"){
+                    const Ast::Value * hit;
+                    const Ast::Value * guarded;
+                    simple >> hit >> guarded;
+                    this->hit.getPower.hit = Compiler::compile(hit);
+                    this->hit.getPower.guarded = Compiler::compile(guarded);
                 } else if (simple == "sparkxy"){
                     try{
                         const Ast::Value * x;
@@ -1758,6 +1770,9 @@ public:
         his.sparkPosition.y = evaluateNumberLocal(hit.sparkPosition.y, 0);
         his.spark = hit.spark;
         his.guardSpark = hit.guardSpark;
+
+        his.getPower.hit = evaluateNumberLocal(hit.getPower.hit, his.damage.damage);
+        his.getPower.guarded = evaluateNumberLocal(hit.getPower.guarded, his.getPower.hit / 2);
 
 #undef evaluateNumber
 #undef evaluateBool
