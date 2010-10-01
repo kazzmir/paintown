@@ -259,14 +259,15 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
 
     guarded = false;
     shakeTime = hit.pause.player2;
-    groundType = hit.groundType;
-    airType = hit.airType;
     yAcceleration = hit.yAcceleration;
+    airType = hit.airType;
+    groundType = hit.groundType;
 
     /* FIXME: set damage */
     
     /* if in the air */
     if (inAir){
+        hitType = hit.airType;
         if (fall.fall){
             if (hit.animationTypeFall == AttackType::NoAnimation){
                 if (hit.animationTypeAir == AttackType::Up){
@@ -298,6 +299,7 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
         groundSlideTime = (int) hit.groundSlideTime;
         returnControlTime = hit.airGuardControlTime;
     } else {
+        hitType = hit.groundType;
         int groundSlideTime = 0;
         groundSlideTime = (int) hit.groundSlideTime;
         animationType = hit.animationType;

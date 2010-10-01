@@ -112,6 +112,7 @@ namespace AttackType{
         DiagonalUp = 5
     };
 
+    /* Badly named.. */
     enum Ground{
         None = 0,
         High,
@@ -402,8 +403,9 @@ struct HitState{
     double yVelocity;
     double xVelocity;
     AttackType::Animation animationType;
-    AttackType::Ground groundType;
     AttackType::Ground airType;
+    AttackType::Ground groundType;
+    AttackType::Ground hitType;
     bool guarded;
     int damage;
 

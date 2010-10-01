@@ -634,6 +634,7 @@ public:
         }
 
         if (function == "gethitvar"){
+#if 0
             const HitState & state = environment.getCharacter().getHitState();
             if (function.getArg1() == 0){
                 throw MugenException("No argument given to gethitvar");
@@ -681,6 +682,7 @@ public:
             }
 
             throw MugenException("Unknown gethitvar variable " + var);
+#endif
         }
 
         if (function == "sysvar"){

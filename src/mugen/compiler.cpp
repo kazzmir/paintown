@@ -2101,10 +2101,45 @@ public:
 
             std::string var = PaintownUtil::lowerCaseAll(function.getArg1()->toString());
             if (var == "xveladd"){
+                /* TODO: I am unsure xveladd and yveladd are right here. As far as
+                 * I can tell these values are computed by the engine. JMugen uses
+                 * the x/y velocities from the hit state, so I am doing the same for now.
+                 */
+                class HitVarXVelAdd: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(-state(environment).xVelocity);
+                    }
+                };
+
+                return new HitVarXVelAdd();
             } else if (var == "yveladd"){
-                /* TODO */
+                class HitVarYVelAdd: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).yVelocity);
+                    }
+                };
+
+                return new HitVarYVelAdd();
             } else if (var == "type"){
-                /* TODO */
+                class HitVarType: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        if (state(environment).hitType == AttackType::None){
+                            return RuntimeValue(0);
+                        } else if (state(environment).hitType == AttackType::High){
+                            return RuntimeValue(1);
+                        } else if (state(environment).hitType == AttackType::Low){
+                            return RuntimeValue(2);
+                        } else if (state(environment).hitType == AttackType::Trip){
+                            return RuntimeValue(3);
+                        }
+                        throw MugenException("Invalid hit type");
+                    }
+                };
+
+                return new HitVarType();
             } else if (var == "animtype"){
                 class HitVarAnimType: public HitVar {
                 public:
