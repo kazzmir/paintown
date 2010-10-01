@@ -2280,6 +2280,7 @@ void Character::addCombo(int combo){
         
 void Character::didHit(Character * enemy, MugenStage & stage){
     hitState.shakeTime = getHit().pause.player1;
+    addPower(getHit().getPower.hit);
 
     if (states[getCurrentState()]->powerChanged()){
         addPower(states[getCurrentState()]->getPower()->evaluate(FullEnvironment(stage, *this)).toNumber());
@@ -2687,6 +2688,7 @@ void Character::guarded(Character * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
     hitState.guarded = true;
     lastTicket = enemy->getTicket();
+    enemy->addPower(hit.getPower.guarded);
     /* the character will transition to the guard state when he next acts */
     needToGuard = true;
     bool inAir = getY() > 0;
