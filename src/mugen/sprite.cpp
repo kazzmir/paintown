@@ -327,7 +327,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
     ifile.clear();
     if (samePalette){
 	// Lets give it space for the palette
-	Global::debug(1) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
+	Global::debug(2) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
 	newlength += 768;
 	pcx = new char[newlength];
         memset(pcx, 0, newlength);
@@ -346,7 +346,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 	if (!useact){
 	    if (samePalette){
 		memcpy( pcx + (reallength), palsave1, 768);
-		Global::debug(1) << "Applying 1st palette to Sprite: " << imageNumber << " in Group: " << groupNumber << endl;
+		Global::debug(2) << "Applying 1st palette to Sprite: " << imageNumber << " in Group: " << groupNumber << endl;
 	    } else {
 		memcpy(palsave1, pcx+(reallength)-768, 768);
 	    }

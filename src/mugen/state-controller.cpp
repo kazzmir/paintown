@@ -81,6 +81,13 @@ double evaluateNumber(const Value & value, const Environment & env, double defau
     return default_;
 }
 
+double evaluateBool(Compiler::Value * value, const Environment & env, double default_){
+    if (value != NULL){
+        return value->evaluate(env).toBool();
+    }
+    return default_;
+}
+
 bool evaluateBool(const Value & value, const Environment & env, double default_){
     if (value != NULL){
         return value->evaluate(env).toBool();
@@ -1021,14 +1028,12 @@ public:
          */
         struct HitSound{
             HitSound():
-                own(false),
-                group(-1),
-                item(-1){
+                own(false){
                 }
 
             bool own;
-            int group;
-            int item;
+            Value group;
+            Value item;
         } hitSound;
 
         /* guardsound = snd_grp, snd_item (int, int)
@@ -1480,7 +1485,21 @@ public:
                         hit.sparkPosition.y = Compiler::compile(y);
                     } catch (const Ast::Exception & e){
                     }
+                } else if (simple == "hitsound-own"){
+                    const Ast::Value * item;
+                    const Ast::Value * group;
+                    simple >> item >> group;
+                    hit.hitSound.own = true;
+                    hit.hitSound.item = Compiler::compile(item);
+                    hit.hitSound.group = Compiler::compile(group);
                 } else if (simple == "hitsound"){
+                    const Ast::Value * item;
+                    const Ast::Value * group;
+                    simple >> item >> group;
+                    hit.hitSound.own = false;
+                    hit.hitSound.item = Compiler::compile(item);
+                    hit.hitSound.group = Compiler::compile(group);
+#if 0
                     string first;
                     bool own = false;
                     int group = 0;
@@ -1499,6 +1518,7 @@ public:
                     hit.hitSound.own = own;
                     hit.hitSound.group = group;
                     hit.hitSound.item = item;
+#endif
                 } else if (simple == "guardsound"){
                     string first;
                     bool own = false;
@@ -1667,7 +1687,7 @@ public:
                 } else if (simple == "forcenofall"){
                     hit.fall.forceNoFall = Compiler::compile(simple.getValue());
                 } else {
-                    // Global::debug(0) << "Unhandled state controller '" << getName() << "' attribute: " << simple.toString() << endl;
+                    Global::debug(1) << "Unhandled hitdef attribute: " << simple.toString() << endl;
                 }
             }
         };
@@ -1677,44 +1697,44 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
-#define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
-#define evaluateBool(value, default_) (value != NULL ? value->evaluate(env).toBool() : default_)
+#define evaluateNumberLocal(value, default_) evaluateNumber(value, env, default_)
+#define evaluateBoolLocal(value, default_) evaluateBool(value, env, default_)
         guy.enableHit();
         guy.nextTicket();
         /* set all the hitdef crap */
         FullEnvironment env(stage, guy, commands);
         HitDefinition & his = guy.getHit();
-        his.pause.player2 = evaluateNumber(hit.pause.player2, 0);
+        his.pause.player2 = evaluateNumberLocal(hit.pause.player2, 0);
         his.groundType = hit.groundType;
         his.airType = hit.airType;
-        his.yAcceleration = evaluateNumber(hit.yAcceleration, 0.35);
+        his.yAcceleration = evaluateNumberLocal(hit.yAcceleration, 0.35);
         his.animationTypeFall = hit.animationTypeFall;
-        his.airHitTime = evaluateNumber(hit.airHitTime, 20);
-        his.airVelocity.x = evaluateNumber(hit.airVelocity.x, 0);
-        his.airVelocity.y = evaluateNumber(hit.airVelocity.y, 0);
-        his.fall.fall = evaluateBool(hit.fall.fall, false);
-        his.fall.yVelocity = evaluateNumber(hit.fall.yVelocity, -4.5);
-        his.fall.xVelocity = evaluateNumber(hit.fall.xVelocity, guy.getXVelocity());
-        his.fall.envShake.time = evaluateNumber(hit.fall.envShake.time, 0);
-        his.fall.damage = evaluateNumber(hit.fall.damage, 0);
-        his.fall.recover = evaluateBool(hit.fall.recover, true);
-        his.fall.recoverTime = (int) evaluateNumber(hit.fall.recoverTime, 4);
-        his.groundSlideTime = evaluateNumber(hit.groundSlideTime, 0);
-        his.guardControlTime = evaluateNumber(hit.guardControlTime, his.groundSlideTime);
-        his.airGuardControlTime = evaluateNumber(hit.airGuardControlTime, his.guardControlTime);
-        his.groundVelocity.x = evaluateNumber(hit.groundVelocity.x, 0);
-        his.groundVelocity.y = evaluateNumber(hit.groundVelocity.y, 0);
-        his.damage.damage = evaluateNumber(hit.damage.damage, 0);
-        his.damage.guardDamage = evaluateNumber(hit.damage.guardDamage, 0);
-        his.airJuggle = evaluateNumber(hit.airJuggle, 0);
+        his.airHitTime = evaluateNumberLocal(hit.airHitTime, 20);
+        his.airVelocity.x = evaluateNumberLocal(hit.airVelocity.x, 0);
+        his.airVelocity.y = evaluateNumberLocal(hit.airVelocity.y, 0);
+        his.fall.fall = evaluateBoolLocal(hit.fall.fall, false);
+        his.fall.yVelocity = evaluateNumberLocal(hit.fall.yVelocity, -4.5);
+        his.fall.xVelocity = evaluateNumberLocal(hit.fall.xVelocity, guy.getXVelocity());
+        his.fall.envShake.time = evaluateNumberLocal(hit.fall.envShake.time, 0);
+        his.fall.damage = evaluateNumberLocal(hit.fall.damage, 0);
+        his.fall.recover = evaluateBoolLocal(hit.fall.recover, true);
+        his.fall.recoverTime = (int) evaluateNumberLocal(hit.fall.recoverTime, 4);
+        his.groundSlideTime = evaluateNumberLocal(hit.groundSlideTime, 0);
+        his.guardControlTime = evaluateNumberLocal(hit.guardControlTime, his.groundSlideTime);
+        his.airGuardControlTime = evaluateNumberLocal(hit.airGuardControlTime, his.guardControlTime);
+        his.groundVelocity.x = evaluateNumberLocal(hit.groundVelocity.x, 0);
+        his.groundVelocity.y = evaluateNumberLocal(hit.groundVelocity.y, 0);
+        his.damage.damage = evaluateNumberLocal(hit.damage.damage, 0);
+        his.damage.guardDamage = evaluateNumberLocal(hit.damage.guardDamage, 0);
+        his.airJuggle = evaluateNumberLocal(hit.airJuggle, 0);
         his.hitSound.own = hit.hitSound.own;
-        his.hitSound.group = hit.hitSound.group;
-        his.hitSound.item = hit.hitSound.item;
+        his.hitSound.group = evaluateNumberLocal(hit.hitSound.group, -1);
+        his.hitSound.item = evaluateNumberLocal(hit.hitSound.item, -1);
         his.guardHitSound.own = hit.guardHitSound.own;
         his.guardHitSound.group = hit.guardHitSound.group;
         his.guardHitSound.item = hit.guardHitSound.item;
-        his.sparkPosition.x = evaluateNumber(hit.sparkPosition.x, 0);
-        his.sparkPosition.y = evaluateNumber(hit.sparkPosition.y, 0);
+        his.sparkPosition.x = evaluateNumberLocal(hit.sparkPosition.x, 0);
+        his.sparkPosition.y = evaluateNumberLocal(hit.sparkPosition.y, 0);
         his.spark = hit.spark;
         his.guardSpark = hit.guardSpark;
 

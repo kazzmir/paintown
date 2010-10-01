@@ -1061,7 +1061,7 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
         Global::debug(1) << "Overriding state " << state << endl;
         delete states[state];
     }
-    Global::debug(1) << "Adding state definition " << state << endl;
+    Global::debug(2) << "Adding state definition " << state << endl;
     states[state] = definition;
 
     return definition;
@@ -1531,19 +1531,19 @@ void Character::load(int useAct){
         paletteFile = palFile.begin()->second;
     } else {
 	paletteFile = palFile[currentPalette];
-	Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << paletteFile << endl;
+	Global::debug(2) << "Current pal: " << currentPalette << " | Palette File: " << paletteFile << endl;
     }
     /*
     if (currentPalette > palFile.size() - 1){
         currentPalette = 1;
     }
     */
-    Global::debug(1) << "Reading Sff (sprite) Data..." << endl; 
+    Global::debug(2) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
     Util::readSprites(baseDir.join(Filesystem::RelativePath(sffFile)), baseDir.join(Filesystem::RelativePath(paletteFile)), sprites, true);
     destroyRaw(sprites);
-    Global::debug(1) << "Reading Air (animation) Data..." << endl;
+    Global::debug(2) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
     animations = Util::loadAnimations(baseDir.join(Filesystem::RelativePath(airFile)), sprites, true);

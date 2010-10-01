@@ -70,6 +70,7 @@ int main(int argc, char ** argv){
     Bitmap::setFakeGraphicsMode(640, 480);
 #endif
 
+    Global::setDebug(1);
     Mugen::ParseCache cache;
 
     if (argc < 2){

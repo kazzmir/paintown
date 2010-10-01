@@ -40,7 +40,7 @@ static list<Ast::Section*> * loadCached(const string & path){
         throw MugenException("File is old");
     }
     TokenReader reader;
-    Global::debug(1, "mugen-parse-cache") << "Loading from " << fullPath.path() << endl;
+    Global::debug(1, "mugen-parse-cache") << "Loading from cache " << fullPath.path() << endl;
     return Ast::AstParse::deserialize(reader.readTokenFromFile(fullPath.path().c_str()));
 }
 

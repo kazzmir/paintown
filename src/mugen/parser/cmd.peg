@@ -271,6 +271,15 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
     return object;
 }
 
+Ast::Value * makeValueList2(const Value & first, const Value & second){
+    std::list<Ast::Value*> values;
+    values.push_back(as<Ast::Value*>(first));
+    values.push_back(as<Ast::Value*>(second));
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeFunction(const Value & name, const Value & arg1){
     Ast::Value * function = new Ast::Function(std::string(as<const char*>(name)), as<Ast::ValueList*>(arg1));
     GC::save(function);
@@ -566,7 +575,14 @@ rules:
                         value = makeAttribute("guardsound", exp);
                     }
                }}
-               | line:<line> "sparkno"{case} s "=" s "s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
+               | line:<line> "sparkno"{case} s "=" s own:"s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
+               | line:<line> "hitsound"{case} s "=" s own:"s"{case}? exp1:expr_c s "," s exp2:expr {{
+                   const char * name = "hitsound";
+                   if (own.getValue() != 0){
+                       name = "hitsound-own";
+                   }
+                   value = makeAttribute(name, Value(makeValueList2(exp1, exp2)));
+               }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, Value(negateExpression(exp))); }}
                | name:identifier s "=" whitespace &line_end {{ value = makeAttribute(name); }}

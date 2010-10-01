@@ -541,7 +541,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
     ifile.read( (char *)&totalSounds, 4 );
     ifile.read( (char *)&location, 4 );
     
-     Global::debug(1) << "Got Total Sounds: " << totalSounds << ", Next Location in file: " << location << endl;
+     Global::debug(2) << "Got Total Sounds: " << totalSounds << ", Next Location in file: " << location << endl;
     
     // We got some stuff
     if( totalSounds > 0){
@@ -942,7 +942,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
     int h;
     MugenItem(head) >> h;
     animation->setType(Mugen::AnimationType(h));
-    Global::debug(1) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
+    Global::debug(2) << "Adding Animation 'Begin Action " << h << "' : '" << animation->getName(animation->getType()) << "'" << endl;
     return animation;
 }
 
@@ -990,12 +990,12 @@ std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::Ab
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
-        Global::debug(1, __FILE__) << "Animation section '" << head << "'" << endl;
+        Global::debug(2, __FILE__) << "Animation section '" << head << "'" << endl;
 	head = Mugen::Util::fixCase(head);
         int number;
         if (PaintownUtil::matchRegex(head, "begin action [0-9]+")){
             number = atoi(PaintownUtil::captureRegex(head, "begin action ([0-9]+)", 0).c_str());
-            Global::debug(1, __FILE__) << "Parse animation " << number << endl;
+            Global::debug(2, __FILE__) << "Parse animation " << number << endl;
             animations[number] = Mugen::Util::getAnimation(section, sprites, mask);
         }
     }
