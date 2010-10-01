@@ -568,11 +568,11 @@ rules:
                       | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
     section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
     assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
-               | line:<line> "guardsound"{case} s "=" s own:"s"{case}? exp:expr {{
+               | line:<line> "guardsound"{case} s "=" s own:"s"{case}? item:expr_c s "," s group:expr_c {{
                     if (own.getValue() != 0){
-                        value = makeAttribute("guardsound-own", exp);
+                        value = makeAttribute("guardsound-own", Value(makeValueList2(item, group)));
                     } else {
-                        value = makeAttribute("guardsound", exp);
+                        value = makeAttribute("guardsound", Value(makeValueList2(item, group)));
                     }
                }}
                | line:<line> "sparkno"{case} s "=" s own:"s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}

@@ -1041,14 +1041,12 @@ public:
          */
         struct GuardHitSound{
             GuardHitSound():
-                own(false),
-                group(-1),
-                item(-1){
+                own(false){
                 }
 
             bool own;
-            int group;
-            int item;
+            Value group;
+            Value item;
         } guardHitSound;
 
         /* ground.type = attack_type (string)
@@ -1359,6 +1357,19 @@ public:
                 return AttackType::NoAnimation;
             }
 
+            bool isTrigger(const Ast::AttributeSimple & simple){
+                return PaintownUtil::lowerCaseAll(simple.idString()).find("trigger") == 0;
+            }
+            
+            bool isType(const Ast::AttributeSimple & simple){
+                return PaintownUtil::lowerCaseAll(simple.idString()).find("type") == 0;
+            }
+
+            bool shouldIgnore(const Ast::AttributeSimple & simple){
+                return isTrigger(simple) ||
+                       isType(simple);
+            }
+
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "attr"){
                     string type, attack;
@@ -1519,7 +1530,21 @@ public:
                     hit.hitSound.group = group;
                     hit.hitSound.item = item;
 #endif
+                } else if (simple == "guardsound-own"){
+                    const Ast::Value * item;
+                    const Ast::Value * group;
+                    simple >> item >> group;
+                    hit.guardHitSound.own = true;
+                    hit.guardHitSound.item = Compiler::compile(item);
+                    hit.guardHitSound.group = Compiler::compile(group);
                 } else if (simple == "guardsound"){
+                    const Ast::Value * item;
+                    const Ast::Value * group;
+                    simple >> item >> group;
+                    hit.guardHitSound.own = false;
+                    hit.guardHitSound.item = Compiler::compile(item);
+                    hit.guardHitSound.group = Compiler::compile(group);
+                    /*
                     string first;
                     bool own = false;
                     int group;
@@ -1534,6 +1559,7 @@ public:
                     hit.guardHitSound.own = own;
                     hit.guardHitSound.group = group;
                     hit.guardHitSound.item = item;
+                    */
                 } else if (simple == "ground.type"){
                     string type;
                     simple >> type;
@@ -1623,13 +1649,6 @@ public:
                     hit.airGuardControlTime = Compiler::compile(simple.getValue());
                 } else if (simple == "air.juggle"){
                     hit.airJuggle = Compiler::compile(simple.getValue());
-                } else if (simple == "guardsound"){
-                    try{
-                        /* FIXME: parse a string and then determine if its S# or just # */
-                        simple >> hit.guardHitSound.group;
-                        simple >> hit.guardHitSound.item;
-                    } catch (const Ast::Exception & e){
-                    }
                 } else if (simple == "mindist"){
                     const Ast::Value * x;
                     const Ast::Value * y;
@@ -1686,6 +1705,8 @@ public:
                     hit.fall.airFall = Compiler::compile(simple.getValue());
                 } else if (simple == "forcenofall"){
                     hit.fall.forceNoFall = Compiler::compile(simple.getValue());
+                } else if (shouldIgnore(simple)){
+                    /* ignore triggers, parsed already */
                 } else {
                     Global::debug(1) << "Unhandled hitdef attribute: " << simple.toString() << endl;
                 }
@@ -1731,8 +1752,8 @@ public:
         his.hitSound.group = evaluateNumberLocal(hit.hitSound.group, -1);
         his.hitSound.item = evaluateNumberLocal(hit.hitSound.item, -1);
         his.guardHitSound.own = hit.guardHitSound.own;
-        his.guardHitSound.group = hit.guardHitSound.group;
-        his.guardHitSound.item = hit.guardHitSound.item;
+        his.guardHitSound.group = evaluateNumberLocal(hit.guardHitSound.group, -1);
+        his.guardHitSound.item = evaluateNumberLocal(hit.guardHitSound.item, -1);
         his.sparkPosition.x = evaluateNumberLocal(hit.sparkPosition.x, 0);
         his.sparkPosition.y = evaluateNumberLocal(hit.sparkPosition.y, 0);
         his.spark = hit.spark;
