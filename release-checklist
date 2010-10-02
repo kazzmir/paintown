@@ -26,6 +26,8 @@ Files to update version
  README
  website
  gui-installer
+ debian/changelog
+ debian/control
 
 Making a release
 ----------------

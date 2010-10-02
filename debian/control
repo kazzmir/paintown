@@ -1,0 +1,15 @@
+Source: paintown
+Section: devel
+Priority: optional
+Maintainer: Jon Rafkind <jon@rafkind.com>
+Standards-Version: 3.4.0
+Build-Depends: libsdl (>= 1.2.4), scons (>= 1.1.0)
+Homepage: http://paintown.sf.net
+
+Package: paintown
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Paintown is a 2-d fighting game similar to Streets of Rage
+ and Teenage Mutant Ninja Turtles. Paintown comes with level and animation editors
+ to help with the creation of new content. Paintown also implements the
+ MUGEN engine.

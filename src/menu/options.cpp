@@ -1692,6 +1692,42 @@ static string joinPaths(const vector<Filesystem::AbsolutePath> & strings, const 
     return out.str();
 }
 
+static vector<string> findFonts(){
+    vector<string> fonts;
+    try{
+        Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
+        Global::debug(1, "fonts") << "Font directory " << fontsDirectory.path() << endl;
+        vector<Filesystem::AbsolutePath> ttfFonts = Filesystem::getFiles(fontsDirectory, "*.ttf");
+        Global::debug(1, "fonts") << "Found ttf fonts " << joinPaths(ttfFonts, ", ") << endl;
+        vector<Filesystem::AbsolutePath> otfFonts = Filesystem::getFiles(fontsDirectory, "*.otf");
+        Global::debug(1, "fonts") << "Found otf fonts " << joinPaths(otfFonts, ", ") << endl;
+
+        /*
+           std::back_insert_iterator< std::vector<Filesystem::AbsolutePath> > inserter(fonts);
+           copy(ttfFonts.begin(), ttfFonts.end(), inserter);
+           copy(otfFonts.begin(), otfFonts.end(), inserter);
+           for (vector<Filesystem::AbsolutePath>::iterator it = fonts.begin(); it != fonts.end(); it++){
+           Filesystem::AbsolutePath & name = *it;
+           name = Filesystem::cleanse(name).path();
+           }
+           */
+        // DEFAULT (blank)
+        fonts.push_back("default");
+        for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
+            fonts.push_back(Filesystem::cleanse(*it).path());
+        }
+
+        for (vector<Filesystem::AbsolutePath>::iterator it = otfFonts.begin(); it != otfFonts.end(); it++){
+            fonts.push_back(Filesystem::cleanse(*it).path());
+        }
+
+    } catch (const Filesystem::NotFound & e){
+        throw LoadException(__FILE__, __LINE__, e, "Could not load font");
+    }
+
+    return fonts;
+}
+
 OptionSelectFont::OptionSelectFont(Token *token):
 MenuOption(token),
 typeAdjust(fontName),
@@ -1732,36 +1768,8 @@ rgreen(255){
 
     // Find and set fonts now
     if (typeAdjust == fontName){
-        try{
-            Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
-            Global::debug(1, "fonts") << "Font directory " << fontsDirectory.path() << endl;
-            vector<Filesystem::AbsolutePath> ttfFonts = Filesystem::getFiles(fontsDirectory, "*.ttf");
-            Global::debug(1, "fonts") << "Found ttf fonts " << joinPaths(ttfFonts, ", ") << endl;
-            vector<Filesystem::AbsolutePath> otfFonts = Filesystem::getFiles(fontsDirectory, "*.otf");
-            Global::debug(1, "fonts") << "Found otf fonts " << joinPaths(otfFonts, ", ") << endl;
-
-            /*
-            std::back_insert_iterator< std::vector<Filesystem::AbsolutePath> > inserter(fonts);
-            copy(ttfFonts.begin(), ttfFonts.end(), inserter);
-            copy(otfFonts.begin(), otfFonts.end(), inserter);
-            for (vector<Filesystem::AbsolutePath>::iterator it = fonts.begin(); it != fonts.end(); it++){
-                Filesystem::AbsolutePath & name = *it;
-                name = Filesystem::cleanse(name).path();
-            }
-            */
-	    // DEFAULT (blank)
-	    fonts.push_back("default");
-            for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
-                fonts.push_back(Filesystem::cleanse(*it).path());
-            }
-
-            for (vector<Filesystem::AbsolutePath>::iterator it = otfFonts.begin(); it != otfFonts.end(); it++){
-                fonts.push_back(Filesystem::cleanse(*it).path());
-            }
-
-        } catch (const Filesystem::NotFound & e){
-            throw LoadException(__FILE__, __LINE__, e, "Could not load font");
-        }
+        fonts = findFonts();
+        
     }
 }
 
