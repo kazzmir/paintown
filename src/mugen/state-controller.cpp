@@ -1276,6 +1276,13 @@ public:
             Value guarded;
         } getPower;
 
+        struct Down{
+            Value x;
+            Value y;
+            Value time;
+            bool bounce;
+        } down;
+
         /* down.velocity = x_velocity, y_velocity (float, float)
          * This is the velocity to assign P2 if P2 is hit while lying down. If the y_velocity is non-zero, P2 will be hit into the air. If it is zero, then P2 will slide back on the ground. Defaults to the same values as the "air.velocity" parameter if omitted.
          * down.hittime = hit_time (int)
@@ -1717,6 +1724,12 @@ public:
                     hit.fall.airFall = Compiler::compile(simple.getValue());
                 } else if (simple == "forcenofall"){
                     hit.fall.forceNoFall = Compiler::compile(simple.getValue());
+                } else if (simple == "down.velocity"){
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    hit.down.x = Compiler::compile(x);
+                    hit.down.y = Compiler::compile(y);
                 } else if (shouldIgnore(simple)){
                     /* ignore triggers, parsed already */
                 } else {
