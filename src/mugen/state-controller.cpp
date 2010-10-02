@@ -50,11 +50,21 @@ state(state){
                 controller.currentPersistent = controller.persistent;
             } else if (simple == "debug"){
                 controller.debug = true;
+            } else if (simple == "sprpriority"){
+                /* TODO */
             }
         }
     };
     Walker walker(*this);
     section->walk(walker);
+}
+
+bool StateController::handled(const Ast::AttributeSimple & simple){
+    string name = PaintownUtil::lowerCaseAll(simple.idString());
+    return name.find("trigger") == 0 ||
+           name == "sprpriority" ||
+           name == "debug" ||
+           name == "persistent";
 }
 
 StateController::~StateController(){
@@ -1265,6 +1275,9 @@ public:
 
             struct Shake{
                 Value time;
+                Value frequency;
+                Value amplitude;
+                Value phase;
             } envShake;
         } fall;
 
@@ -1313,6 +1326,16 @@ public:
          * See below.
          * palfx.add = r2, g2, b2 (int, int, int)
          * If included, this allows for palette effects on P2 if the hit is successful. palfx_time is the time in game-ticks to apply palette effects on P2. palfx_time is 0 by default (no effect). The rest of the parameters are the same as in the PalFX controller.
+         */
+
+        struct EnvShake{
+            Value time;
+            Value frequency;
+            Value amplitude;
+            Value phase;
+        } envShake;
+
+         /*
          * envshake.time = envshake_time (int)
          * See below.
          * envshake.freq = envshake_freq (float)
@@ -1370,17 +1393,12 @@ public:
                 return AttackType::NoAnimation;
             }
 
-            bool isTrigger(const Ast::AttributeSimple & simple){
-                return PaintownUtil::lowerCaseAll(simple.idString()).find("trigger") == 0;
-            }
-            
             bool isType(const Ast::AttributeSimple & simple){
                 return PaintownUtil::lowerCaseAll(simple.idString()).find("type") == 0;
             }
 
             bool shouldIgnore(const Ast::AttributeSimple & simple){
-                return isTrigger(simple) ||
-                       isType(simple);
+                return isType(simple) || StateController::handled(simple);
             }
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
@@ -1720,6 +1738,12 @@ public:
                     hit.fall.damage = Compiler::compile(simple.getValue());
                 } else if (simple == "fall.envshake.time"){
                     hit.fall.envShake.time = Compiler::compile(simple.getValue());
+                } else if (simple == "fall.envshake.freq"){
+                    hit.fall.envShake.frequency = Compiler::compile(simple.getValue());
+                } else if (simple == "fall.envshake.ampl"){
+                    hit.fall.envShake.amplitude = Compiler::compile(simple.getValue());
+                } else if (simple == "fall.envshake.phase"){
+                    hit.fall.envShake.phase = Compiler::compile(simple.getValue());
                 } else if (simple == "air.fall"){
                     hit.fall.airFall = Compiler::compile(simple.getValue());
                 } else if (simple == "forcenofall"){
@@ -1734,6 +1758,22 @@ public:
                     const Ast::Value * x;
                     simple >> x;
                     hit.down.time = Compiler::compile(x);
+                } else if (simple == "envshake.time"){
+                    const Ast::Value * x;
+                    simple >> x;
+                    hit.envShake.time = Compiler::compile(x);
+                } else if (simple == "envshake.freq"){
+                    const Ast::Value * x;
+                    simple >> x;
+                    hit.envShake.frequency = Compiler::compile(x);
+                } else if (simple == "envshake.ampl"){
+                    const Ast::Value * x;
+                    simple >> x;
+                    hit.envShake.amplitude = Compiler::compile(x);
+                } else if (simple == "envshake.phase"){
+                    const Ast::Value * x;
+                    simple >> x;
+                    hit.envShake.phase = Compiler::compile(x);
                 } else if (shouldIgnore(simple)){
                     /* ignore triggers, parsed already */
                 } else {

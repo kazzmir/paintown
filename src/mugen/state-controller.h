@@ -7,6 +7,7 @@
 
 namespace Ast{
     class Section;
+    class AttributeSimple;
 }
 
 class MugenStage;
@@ -134,6 +135,8 @@ public:
 
     bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<std::string> & commands) const;
     virtual void activate(MugenStage & stage, Character & who, const std::vector<std::string> & commands) const = 0;
+
+    static bool handled(const Ast::AttributeSimple & simple);
 
     virtual inline void setType(Type type){
         this->type = type;
