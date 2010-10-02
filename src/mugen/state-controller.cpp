@@ -1730,6 +1730,10 @@ public:
                     simple >> x >> y;
                     hit.down.x = Compiler::compile(x);
                     hit.down.y = Compiler::compile(y);
+                } else if (simple == "down.hittime"){
+                    const Ast::Value * x;
+                    simple >> x;
+                    hit.down.time = Compiler::compile(x);
                 } else if (shouldIgnore(simple)){
                     /* ignore triggers, parsed already */
                 } else {

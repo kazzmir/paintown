@@ -1,9 +1,9 @@
 Source: paintown
-Section: devel
+Section: games
 Priority: optional
 Maintainer: Jon Rafkind <jon@rafkind.com>
 Standards-Version: 3.4.0
-Build-Depends: libsdl (>= 1.2.4), scons (>= 1.1.0)
+Build-Depends: libsdl-dev, scons (>= 1.1.0)
 Homepage: http://paintown.sf.net
 
 Package: paintown
