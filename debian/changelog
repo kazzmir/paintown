@@ -1,3 +1,9 @@
+paintown (3.4.0.3) jaunty; urgency=low
+
+  * Fixes to dh build
+
+ -- Jon Rafkind <jon@rafkind.com>  Sat, 02 Oct 2010 23:42:37 -0600
+
 paintown (3.4.0.2) jaunty; urgency=low
 
   * Add more dependancies
