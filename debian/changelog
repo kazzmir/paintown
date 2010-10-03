@@ -1,3 +1,9 @@
+paintown (3.4.0.1) jaunty; urgency=low
+
+  * Trivial fixes to make launchpad happy
+
+ -- Jon Rafkind <jon@rafkind.com>  Sat, 02 Oct 2010 18:56:15 -0600
+
 paintown (3.4.0) jaunty; urgency=low
 
   * First PPA release
