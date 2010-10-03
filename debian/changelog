@@ -1,3 +1,9 @@
+paintown (3.4.0.2) jaunty; urgency=low
+
+  * Add more dependancies
+ 
+ -- Jon Rafkind <jon@rafkind.com>  Sat, 02 Oct 2010 19:27:35 -0600
+
 paintown (3.4.0.1) jaunty; urgency=low
 
   * Trivial fixes to make launchpad happy
