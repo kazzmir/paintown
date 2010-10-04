@@ -519,7 +519,7 @@ bool Menu::DefaultRenderer::readToken(Token * token){
 
 void Menu::DefaultRenderer::setFont(const FontInfo & font){
     if (!font.empty()){
-	menu.setFont(font.getFont(),font.getWidth(),font.getHeight());
+	menu.setFont(font.getFont(), font.getWidth(), font.getHeight());
 	menuInfo.setFont(font);
     }
 }
