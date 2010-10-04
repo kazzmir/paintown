@@ -38,12 +38,19 @@ class Point{
     ~Point();
 };
 
+/*
+ * class FontInfo
+ * class DefaultFontInfo
+ * class RelativeFontInfo
+ * class AbsoluteFontInfo
+ */
+
 class FontInfo {
     public:
 	FontInfo();
 	FontInfo(const Filesystem::RelativePath & font, int width, int height);
 	FontInfo(const FontInfo &);
-	~FontInfo();
+	virtual ~FontInfo();
 	
 	FontInfo & operator=(const FontInfo &);
 	
@@ -58,11 +65,13 @@ class FontInfo {
 	inline void setFont(const Filesystem::RelativePath & font){
 	    this->font = font;
 	}
+
 	const Filesystem::RelativePath getFont() const;
 	
 	inline void setWidth(int width){
 	    this->width = width;
 	}
+
 	const int getWidth() const;
 	
 	inline void setHeight(int height){

@@ -1264,7 +1264,11 @@ MenuOption(token){
                 // Filename
                 *tok >> temp;
                 // Set the default motif
-                Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
+                try{
+                    Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
+                } catch (const Filesystem::NotFound & fail){
+                    throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
+                }
             } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
