@@ -7,7 +7,9 @@
 
 #include "util/load_exception.h"
 #include "util/file-system.h"
+#include "util/pointer.h"
 #include "input/input-map.h"
+#include "font-info.h"
 
 #include "gui/animation.h"
 #include "gui/box.h"
@@ -38,57 +40,6 @@ class Point{
     ~Point();
 };
 
-/*
- * class FontInfo
- * class DefaultFontInfo
- * class RelativeFontInfo
- * class AbsoluteFontInfo
- */
-
-class FontInfo {
-    public:
-	FontInfo();
-	FontInfo(const Filesystem::RelativePath & font, int width, int height);
-	FontInfo(const FontInfo &);
-	virtual ~FontInfo();
-	
-	FontInfo & operator=(const FontInfo &);
-	
-	inline void set(const Filesystem::RelativePath & font, int width, int height){
-	    this->font = font;
-	    this->width = width;
-	    this->height = height;
-	}
-	
-	const Font & get() const;
-	
-	inline void setFont(const Filesystem::RelativePath & font){
-	    this->font = font;
-	}
-
-	const Filesystem::RelativePath getFont() const;
-	
-	inline void setWidth(int width){
-	    this->width = width;
-	}
-
-	const int getWidth() const;
-	
-	inline void setHeight(int height){
-	    this->height = height;
-	}
-	const int getHeight() const;
-	
-	inline const bool empty() const{
-	    return font.path().empty();
-	}
-	
-    private:
-	Filesystem::RelativePath font;
-	int width;
-	int height;
-};
-
 class InfoBox: public Gui::Widget {
     public:
         InfoBox();
@@ -105,7 +56,7 @@ class InfoBox: public Gui::Widget {
         }
         
         inline void setFont(const FontInfo & font){
-            this->font = font;
+            this->font = new FontInfo(font);
         }
         
     private:
@@ -119,7 +70,7 @@ class InfoBox: public Gui::Widget {
         State state;
         Gui::PopupBox popup;
         
-        FontInfo font;
+        Util::ReferenceCount<FontInfo> font;
         
         int fadeAlpha;
         
@@ -393,10 +344,11 @@ class Context{
         }
         
         virtual inline void setFont(const FontInfo & font){
-            this->font = font;
+            this->font = new FontInfo(font);
         }
+
         virtual inline const FontInfo & getFont() const {
-            return this->font;
+            return *this->font;
         }
         
         virtual inline void setInfoLocation(double x, double y){
@@ -443,7 +395,7 @@ class Context{
         Filesystem::RelativePath music;
         
         /*! Font */
-        FontInfo font;
+        Util::ReferenceCount<FontInfo> font;
         
         /*! Info Placement */
         Gui::RelativePoint infoLocation;

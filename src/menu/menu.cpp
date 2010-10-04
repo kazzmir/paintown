@@ -111,7 +111,7 @@ const int Menu::FontInfo::getHeight() const{
 
 Menu::InfoBox::InfoBox():
 state(NotActive),
-font(FontInfo(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())),
+font(new FontInfo(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())),
 fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
@@ -160,7 +160,7 @@ void Menu::InfoBox::act(){
 void Menu::InfoBox::render(const Bitmap & bmp){
     popup.render(bmp);
     
-    const Font & vFont = font.get();
+    const Font & vFont = font->get();
     
     const int x1 = popup.getArea().getX()+(int)(popup.getArea().getRadius()/2);
     const int y1 = popup.getArea().getY()+2;
@@ -203,7 +203,7 @@ void Menu::InfoBox::setText(const std::string & info){
         return;
     }
     text.clear();
-    const Font & vFont = font.get();
+    const Font & vFont = font->get();
     size_t start = 0;
     size_t last = 0;
     start = info.find("\n");
