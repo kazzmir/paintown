@@ -50,8 +50,8 @@ install_data=
 install_bin=
 
 if [ "x$DESTDIR" != "x" ]; then
-    install_data=$DESTDIR/share/paintown-$version
-    install_bin=$DESTDIR/bin/games
+    install_data=$DESTDIR/usr/share/paintown-$version
+    install_bin=$DESTDIR/usr/bin/games
 fi
 
 while getopts d:b: o

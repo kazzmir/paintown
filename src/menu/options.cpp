@@ -527,7 +527,7 @@ void OptionCredits::run( const Menu::Context & context ){
 
     Paintown::Fire fire;
 
-    const Font & vFont = context.getFont().get();
+    const Font & vFont = context.getFont()->get();
 
     bool quit = false;
 
@@ -893,7 +893,7 @@ void OptionJoystick::logic(){
 
 void OptionJoystick::run(const Menu::Context & context){
     //int x, y, width, height;
-    const Font & vFont = context.getFont().get();
+    const Font & vFont = context.getFont()->get();
     const char * message = "Press a joystick button!";
     const int width = vFont.textLength(message) + 10;
     const int height = vFont.getHeight() + 10;

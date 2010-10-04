@@ -356,7 +356,7 @@ Menu::Renderer::~Renderer(){
     }
 }
 
-void Menu::Renderer::setFont(const FontInfo & font){
+void Menu::Renderer::setFont(const Util::ReferenceCount<FontInfo> & font){
     // empty
 }
 
@@ -459,9 +459,9 @@ bool Menu::DefaultRenderer::readToken(Token * token){
     return true;
 }
 
-void Menu::DefaultRenderer::setFont(const FontInfo & font){
-    if (!font.empty()){
-	menu.setFont(font.getFont(), font.getWidth(), font.getHeight());
+void Menu::DefaultRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
+    if (!font->empty()){
+	menu.setFont(font->getFont(), font->getWidth(), font->getHeight());
 	menuInfo.setFont(font);
     }
 }
@@ -474,12 +474,12 @@ void Menu::DefaultRenderer::initialize(Context & context){
         localFont = Filesystem::RelativePath(Configuration::getMenuFont());
         width = Configuration::getMenuFontWidth();
         height = Configuration::getMenuFontHeight();
-    } else if (Filesystem::exists(context.getFont().getFont())){
-        localFont = context.getFont().getFont();
-        width = context.getFont().getWidth();
-        height = context.getFont().getHeight();
+    } else if (Filesystem::exists(context.getFont()->getFont())){
+        localFont = context.getFont()->getFont();
+        width = context.getFont()->getWidth();
+        height = context.getFont()->getHeight();
     }
-    setFont(FontInfo(localFont, width, height));
+    setFont(new FontInfo(localFont, width, height));
     menu.setList(toContextList(options));
     menu.open();
     
@@ -712,9 +712,9 @@ bool Menu::TabRenderer::readToken(Token * token){
     return true;
 }
 
-void Menu::TabRenderer::setFont(const FontInfo & font){
-    if (!font.empty()){
-	menu.setFont(font.getFont(),font.getWidth(),font.getHeight());
+void Menu::TabRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
+    if (!font->empty()){
+	menu.setFont(font->getFont(), font->getWidth(), font->getHeight());
 	menuInfo.setFont(font);
     }
 }
@@ -727,12 +727,12 @@ void Menu::TabRenderer::initialize(Context & context){
         localFont = Filesystem::RelativePath(Configuration::getMenuFont());
         width = Configuration::getMenuFontWidth();
         height = Configuration::getMenuFontHeight();
-    } else if (Filesystem::exists(context.getFont().getFont())){
-        localFont = context.getFont().getFont();
-        width = context.getFont().getWidth();
-        height = context.getFont().getHeight();
+    } else if (Filesystem::exists(context.getFont()->getFont())){
+        localFont = context.getFont()->getFont();
+        width = context.getFont()->getWidth();
+        height = context.getFont()->getHeight();
     }
-    setFont(FontInfo(localFont, width, height));
+    setFont(new FontInfo(localFont, width, height));
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         TabInfo * tab = *i;
         menu.addTab(tab->name, toContextList(tab->options));
@@ -845,6 +845,7 @@ cleanup(true),
 state(NotStarted),
 fades(0),
 background(0),
+font(new FontInfo(Filesystem::RelativePath("Default"), 24, 24)),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95){
 }
@@ -854,6 +855,7 @@ cleanup(false),
 state(NotStarted),
 fades(NULL),
 background(NULL),
+font(new FontInfo(Filesystem::RelativePath("Default"), 24, 24)),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95){
     // Update with parents info
@@ -882,7 +884,7 @@ menuInfoLocation(0,.95){
         music = child.music;
     }
 
-    if (Filesystem::exists(child.getFont().getFont())){
+    if (Filesystem::exists(child.getFont()->getFont())){
         font = child.font;
     }
 
@@ -1104,7 +1106,7 @@ Menu::Menu::~Menu(){
     }
 }
         
-void Menu::Menu::setFont(const FontInfo & font){
+void Menu::Menu::setFont(const Util::ReferenceCount<FontInfo> & font){
     //context.setFont(font);
     if (renderer){
 	renderer->setFont(font);
@@ -1211,7 +1213,7 @@ public:
 
 void Menu::Menu::setupDefaultLanguage(const Context & context, const Menu::Menu & parent){
     LanguageMenu menu(parent);
-    menu.setFont(FontInfo(Filesystem::RelativePath(sharedFont),sharedFontWidth, sharedFontHeight));
+    menu.setFont(new FontInfo(Filesystem::RelativePath(sharedFont),sharedFontWidth, sharedFontHeight));
     Configuration::setLanguage("English");
     try{
         menu.run(context);
@@ -1493,7 +1495,7 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 			/*context.setFont(Filesystem::RelativePath(font));
 			context.setFontWidth(w);
 			context.setFontHeight(h);*/
-			context.setFont(FontInfo(Filesystem::RelativePath(font),w, h));
+			context.setFont(new FontInfo(Filesystem::RelativePath(font),w, h));
 		    } catch (const MenuException & ex){
 		    }
 		} else if ( *tok == "action"){

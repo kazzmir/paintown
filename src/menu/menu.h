@@ -55,8 +55,8 @@ class InfoBox: public Gui::Widget {
             return (this->state != NotActive);
         }
         
-        inline void setFont(const FontInfo & font){
-            this->font = new FontInfo(font);
+        inline void setFont(const Util::ReferenceCount<FontInfo> & font){
+            this->font = font;
         }
         
     private:
@@ -180,7 +180,7 @@ class Renderer{
         virtual void render(const Bitmap &)=0;
 	
 	// Set font if applicable
-	virtual void setFont(const FontInfo &);
+	virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         
         //! Compatibility for now, remove later
         virtual void addOption(MenuOption *)=0;
@@ -213,7 +213,7 @@ class DefaultRenderer : public Renderer {
         DefaultRenderer();
         virtual ~DefaultRenderer();
         
-	virtual void setFont(const FontInfo &);
+	virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         virtual bool readToken(Token *);
         virtual void initialize(Context &);
         virtual void finish();
@@ -253,7 +253,7 @@ class TabRenderer : public Renderer {
         TabRenderer();
         virtual ~TabRenderer();
         
-	virtual void setFont(const FontInfo &);
+	virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         virtual bool readToken(Token *);
         virtual void initialize(Context &);
         virtual void finish();
@@ -343,12 +343,12 @@ class Context{
             return this->background;
         }
         
-        virtual inline void setFont(const FontInfo & font){
-            this->font = new FontInfo(font);
+        virtual inline void setFont(const Util::ReferenceCount<FontInfo> & font){
+            this->font = font;
         }
 
-        virtual inline const FontInfo & getFont() const {
-            return *this->font;
+        virtual inline const Util::ReferenceCount<FontInfo> & getFont() const {
+            return this->font;
         }
         
         virtual inline void setInfoLocation(double x, double y){
@@ -433,7 +433,7 @@ class Menu{
         /*! Get Name */
         virtual std::string getName();
 
-        virtual void setFont(const FontInfo &);
+        virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         
         /*! Add option */
         virtual inline void addOption(MenuOption * opt){
