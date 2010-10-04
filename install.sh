@@ -49,6 +49,11 @@ version=3.4.0
 install_data=
 install_bin=
 
+if [ "x$DESTDIR" != "x" ]; then
+    install_data=$DESTDIR/share/paintown-$version
+    install_bin=$DESTDIR/bin/games
+fi
+
 while getopts d:b: o
 do
 	case $o in

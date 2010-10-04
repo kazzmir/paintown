@@ -9,8 +9,7 @@ export SDL=1
 		dh $@
 
 override_dh_auto_test:
-		echo "Skipping tests"
+		@echo "Skipping tests"
 
-override_dh_auto_install:
-		@-mkdir -p /usr/bin/games/
-		@cp paintown /usr/bin/games/
+override_dh_auto_configure:
+		@echo "Skipping configure"

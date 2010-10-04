@@ -1,3 +1,33 @@
+paintown (3.4.0.8) karmic; urgency=low
+
+  * Use DESTDIR in install.sh
+ 
+ -- Jon Rafkind <jon@rafkind.com>  Sun, 03 Oct 2010 19:04:08 -0600
+
+paintown (3.4.0.7) karmic; urgency=low
+
+  * Install to DESTDIR
+
+ -- Jon Rafkind <jon@rafkind.com>  Sun, 03 Oct 2010 15:59:47 -0600
+
+paintown (3.4.0.6) karmic; urgency=low
+
+  * Ignore configure step
+
+ -- Jon Rafkind <jon@rafkind.com>  Sun, 03 Oct 2010 11:31:31 -0600
+
+paintown (3.4.0.5) karmic; urgency=low
+
+  * Use 9.10 to get a newer dh
+
+ -- Jon Rafkind <jon@rafkind.com>  Sun, 03 Oct 2010 11:16:24 -0600
+
+paintown (3.4.0.4) jaunty; urgency=low
+
+  * Trivial fixes
+
+ -- Jon Rafkind <jon@rafkind.com>  Sun, 03 Oct 2010 10:40:44 -0600
+
 paintown (3.4.0.3) jaunty; urgency=low
 
   * Fixes to dh build

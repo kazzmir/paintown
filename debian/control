@@ -2,7 +2,6 @@ Source: paintown
 Section: games
 Priority: optional
 Maintainer: Jon Rafkind <jon@rafkind.com>
-Standards-Version: 3.9.1.0
 Build-Depends: libsdl-dev, scons (>= 1.1.0), dh-make, g++, libpng12-dev, libfreetype6-dev, make, zlib1g-dev
 Homepage: http://paintown.sf.net
 
