@@ -143,6 +143,7 @@ set(MENU_SRC
 src/menu/actionfactory.cpp
 src/menu/action_speed.cpp
 src/menu/menu.cpp
+src/menu/font-info.cpp
 src/menu/menu_action.cpp
 src/menu/menu_option.cpp
 src/menu/options.cpp

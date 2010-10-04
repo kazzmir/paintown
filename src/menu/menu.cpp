@@ -51,64 +51,6 @@ y(y){
 Menu::Point::~Point(){
 }
 
-Menu::FontInfo::FontInfo(){
-}
-Menu::FontInfo::FontInfo(const Filesystem::RelativePath & font, int width, int height):
-font(font),
-width(width),
-height(height){
-}
-
-Menu::FontInfo::FontInfo(const FontInfo & copy):
-font(copy.font),
-width(copy.width),
-height(copy.height){
-}
-
-Menu::FontInfo::~FontInfo(){
-}
-
-Menu::FontInfo & Menu::FontInfo::operator=(const FontInfo & copy){
-    this->font = copy.font;
-    this->width = copy.width;
-    this->height = copy.height;
-    
-    return *this;
-}
-
-static bool menuFontAvailable(){
-    return (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont())));
-}
-
-const Font & Menu::FontInfo::get() const {
-    // Check for override from system and return that instead otherwise continue
-    if (menuFontAvailable()){
-	return Font::getFont(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
-    }
-    return Font::getFont(font, width, height);
-}
-
-const Filesystem::RelativePath Menu::FontInfo::getFont() const {
-    if (menuFontAvailable()){
-	return Filesystem::RelativePath(Configuration::getMenuFont());
-    }
-    return this->font;
-}
-
-const int Menu::FontInfo::getWidth() const {
-    if (menuFontAvailable()){
-	return Configuration::getMenuFontWidth();
-    }
-    return this->width;
-}
-
-const int Menu::FontInfo::getHeight() const{
-    if (menuFontAvailable()){
-	return Configuration::getMenuFontHeight();
-    }
-    return this->height;
-}
-
 Menu::InfoBox::InfoBox():
 state(NotActive),
 font(new FontInfo(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())),
