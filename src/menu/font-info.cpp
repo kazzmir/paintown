@@ -32,36 +32,37 @@ FontInfo & FontInfo::operator=(const FontInfo & copy){
 }
 
 static bool menuFontAvailable(){
-    return (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont())));
+    return Configuration::getMenuFont() != NULL;
 }
 
-const Font & FontInfo::get() const {
+const Font & FontInfo::get(const FontInfo & next) const {
     // Check for override from system and return that instead otherwise continue
+    /*
     if (menuFontAvailable()){
-	return Font::getFont(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight());
+        return Configuration::getMenuFont()->get();
     }
+    */
     return Font::getFont(font, width, height);
 }
 
-const Filesystem::RelativePath FontInfo::getFont() const {
-    if (menuFontAvailable()){
-	return Filesystem::RelativePath(Configuration::getMenuFont());
-    }
+const Filesystem::RelativePath FontInfo::getFont(const FontInfo & next) const {
     return this->font;
 }
 
-const int FontInfo::getWidth() const {
-    if (menuFontAvailable()){
-	return Configuration::getMenuFontWidth();
-    }
+const int FontInfo::getWidth(const FontInfo & next) const {
     return this->width;
 }
 
-const int FontInfo::getHeight() const{
-    if (menuFontAvailable()){
-	return Configuration::getMenuFontHeight();
-    }
+const int FontInfo::getHeight(const FontInfo & next) const{
     return this->height;
+}
+    
+const Font & DefaultFontInfo::get(const FontInfo & next) const {
+    return next.get(next);
+}
+
+const Filesystem::RelativePath DefaultFontInfo::getFont(const FontInfo & next) const {
+    return next.getFont(next);
 }
 
 }

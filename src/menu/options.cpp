@@ -527,7 +527,7 @@ void OptionCredits::run( const Menu::Context & context ){
 
     Paintown::Fire fire;
 
-    const Font & vFont = context.getFont()->get();
+    const Font & vFont = Configuration::getMenuFont()->get(*context.getFont());
 
     bool quit = false;
 
@@ -870,9 +870,17 @@ keyCode(0){
         }
     }
 
-    if(name.empty())throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
-    if(type == Invalidkey)throw LoadException(__FILE__, __LINE__, "Invalid key, should be up, down, left, right, up, down, jump, attack1-6!");
-    if(player == -1)throw LoadException(__FILE__, __LINE__, "Player not specified in key configuration");
+    if (name.empty()){
+        throw LoadException(__FILE__, __LINE__, "No name set, this option should have a name!");
+    }
+
+    if (type == Invalidkey){
+        throw LoadException(__FILE__, __LINE__, "Invalid joystick button, should be up, down, left, right, up, down, jump, attack1-6!");
+    }
+
+    if (player == -1){
+        throw LoadException(__FILE__, __LINE__, "Player not specified in joystick configuration");
+    }
 
     ostringstream out;
     out << name << ": " << Joystick::keyToName(getKey(player, type));
@@ -893,7 +901,7 @@ void OptionJoystick::logic(){
 
 void OptionJoystick::run(const Menu::Context & context){
     //int x, y, width, height;
-    const Font & vFont = context.getFont()->get();
+    const Font & vFont = Configuration::getMenuFont()->get(*context.getFont());
     const char * message = "Press a joystick button!";
     const int width = vFont.textLength(message) + 10;
     const int height = vFont.getHeight() + 10;
@@ -1786,11 +1794,13 @@ void OptionSelectFont::logic(){
     switch (typeAdjust){
         case fontName:{
 	    std::string name;
-	    if (Configuration::getMenuFont() == ""){
+            /* FIXME
+	    if (Configuration::getMenuFont() == NULL){
 		name = "Default";
 	    } else {
-		name = Filesystem::RelativePath(Configuration::getMenuFont()).path();
+		name = Configuration::getMenuFont()->getFont().path();
 	    }
+            */
 		
             setText("Current Font: " + name);
             break;
@@ -1871,11 +1881,13 @@ void OptionSelectFont::nextIndex(bool forward){
     }
     
     int index = 0;
-    if (Configuration::getMenuFont() != ""){
+    if (Configuration::getMenuFont() != NULL){
 	for (unsigned int i = 0 ; i < fonts.size() ; ++i){
+            /* FIXME
 	    if (Configuration::getMenuFont() == fonts[i]){
 		index = i;
 	    }
+            */
 	}
     }
 
@@ -1891,11 +1903,14 @@ void OptionSelectFont::nextIndex(bool forward){
 	}
     }
 
+    /* FIXME */
+    /*
     if (fonts[index] == "Default"){
 	Configuration::setMenuFont("");
     } else {
 	Configuration::setMenuFont(fonts[index]);
     }
+    */
 }
 
 OptionSpeed::OptionSpeed(Token *token): MenuOption(token), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)

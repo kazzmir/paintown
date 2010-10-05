@@ -247,12 +247,12 @@ int Configuration::getKey( Input::PaintownInput which, int facing ) const {
 	}
 }
         
-std::string Configuration::getMenuFont(){
+Util::ReferenceCount<Menu::FontInfo> Configuration::getMenuFont(){
     return menuFont;
 }
 
-void Configuration::setMenuFont(const std::string & str){
-    menuFont = str;
+void Configuration::setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & info){
+    menuFont = info;
 }
 
 void Configuration::setMenuFontWidth(int x){
@@ -601,7 +601,8 @@ void Configuration::loadConfigurations(){
             } else if (*n == config_menu_font){
                 string font;
                 *n >> font;
-                setMenuFont(font);
+                /* FIXME */
+                // setMenuFont(font);
             } else if (*n == config_sound){
                 int x;
                 *n >> x;
@@ -759,10 +760,13 @@ void Configuration::saveConfiguration(){
         *(head.newToken()) << config_language << Configuration::getLanguage();
     }
 
-    if (Configuration::getMenuFont() != ""){
+    if (Configuration::getMenuFont() != NULL){
+        /* FIXME */
+        /*
         Token * font = new Token();
         *font << config_menu_font << Configuration::getMenuFont();
         head.addToken(font);
+        */
     }
 
     {
@@ -830,7 +834,7 @@ int Configuration::screen_height = 272;
 int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
 #endif
-std::string Configuration::menuFont = "";
+Util::ReferenceCount<Menu::FontInfo> Configuration::menuFont = new Menu::DefaultFontInfo();
 int Configuration::menuFontWidth = 24;
 int Configuration::menuFontHeight = 24;
 int Configuration::soundVolume = 80;

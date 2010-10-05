@@ -29,24 +29,25 @@ class FontInfo {
 	    this->height = height;
 	}
 	
-	const Font & get() const;
+	virtual const Font & get(const FontInfo & next) const;
 	
 	inline void setFont(const Filesystem::RelativePath & font){
 	    this->font = font;
 	}
 
-	const Filesystem::RelativePath getFont() const;
+	virtual const Filesystem::RelativePath getFont(const FontInfo & next) const;
 	
 	inline void setWidth(int width){
 	    this->width = width;
 	}
 
-	const int getWidth() const;
+	virtual const int getWidth(const FontInfo & next) const;
 	
 	inline void setHeight(int height){
 	    this->height = height;
 	}
-	const int getHeight() const;
+
+	virtual const int getHeight(const FontInfo & next) const;
 	
 	inline const bool empty() const{
 	    return font.path().empty();
@@ -56,6 +57,12 @@ class FontInfo {
 	Filesystem::RelativePath font;
 	int width;
 	int height;
+};
+
+class DefaultFontInfo: public FontInfo {
+public:
+    virtual const Font & get(const FontInfo & next) const;
+    virtual const Filesystem::RelativePath getFont(const FontInfo & next) const;
 };
 
 }

@@ -4,6 +4,12 @@
 #include <string>
 #include <map>
 #include "input/input.h"
+#include "util/pointer.h"
+#include "menu/font-info.h"
+
+namespace Menu{
+class FontInfo;
+}
 
 class Token;
 
@@ -83,8 +89,8 @@ public:
     static int getScreenWidth();
     static void setScreenHeight(int i);
     static int getScreenHeight();
-    static std::string getMenuFont();
-    static void setMenuFont(const std::string & str);
+    static Util::ReferenceCount<Menu::FontInfo> getMenuFont();
+    static void setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & str);
     static int getMenuFontWidth();
     static int getMenuFontHeight();
     static void setMenuFontWidth(int x);
@@ -157,7 +163,7 @@ private:
     static int screen_width;
     static int screen_height;
 
-    static std::string menuFont;
+    static Util::ReferenceCount<Menu::FontInfo> menuFont;
     static int menuFontWidth;
     static int menuFontHeight;
 

@@ -53,7 +53,7 @@ Menu::Point::~Point(){
 
 Menu::InfoBox::InfoBox():
 state(NotActive),
-font(new FontInfo(Filesystem::RelativePath(Configuration::getMenuFont()), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())),
+font(Configuration::getMenuFont()),
 fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
@@ -102,7 +102,7 @@ void Menu::InfoBox::act(){
 void Menu::InfoBox::render(const Bitmap & bmp){
     popup.render(bmp);
     
-    const Font & vFont = font->get();
+    const Font & vFont = Configuration::getMenuFont()->get(*font);
     
     const int x1 = popup.getArea().getX()+(int)(popup.getArea().getRadius()/2);
     const int y1 = popup.getArea().getY()+2;
@@ -145,7 +145,7 @@ void Menu::InfoBox::setText(const std::string & info){
         return;
     }
     text.clear();
-    const Font & vFont = font->get();
+    const Font & vFont = Configuration::getMenuFont()->get(*font);
     size_t start = 0;
     size_t last = 0;
     start = info.find("\n");
@@ -461,7 +461,9 @@ bool Menu::DefaultRenderer::readToken(Token * token){
 
 void Menu::DefaultRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
     if (!font->empty()){
-	menu.setFont(font->getFont(), font->getWidth(), font->getHeight());
+	menu.setFont(Configuration::getMenuFont()->getFont(*font),
+                     Configuration::getMenuFont()->getWidth(*font),
+                     Configuration::getMenuFont()->getHeight(*font));
 	menuInfo.setFont(font);
     }
 }
@@ -470,8 +472,10 @@ void Menu::DefaultRenderer::initialize(Context & context){
     // FIXME This is wrong, move this over to FontInfo so that the overrides can be accounted for
     Filesystem::RelativePath localFont("fonts/arial.ttf");
     int width = 24, height = 24;
-    if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
-        localFont = Filesystem::RelativePath(Configuration::getMenuFont());
+
+    /*
+    if (Configuration::getMenuFont() != NULL){
+        localFont = Configuration::getMenuFont()->getFont();
         width = Configuration::getMenuFontWidth();
         height = Configuration::getMenuFontHeight();
     } else if (Filesystem::exists(context.getFont()->getFont())){
@@ -479,6 +483,8 @@ void Menu::DefaultRenderer::initialize(Context & context){
         width = context.getFont()->getWidth();
         height = context.getFont()->getHeight();
     }
+    */
+
     setFont(new FontInfo(localFont, width, height));
     menu.setList(toContextList(options));
     menu.open();
@@ -714,7 +720,9 @@ bool Menu::TabRenderer::readToken(Token * token){
 
 void Menu::TabRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
     if (!font->empty()){
-	menu.setFont(font->getFont(), font->getWidth(), font->getHeight());
+	menu.setFont(Configuration::getMenuFont()->getFont(*font),
+                     Configuration::getMenuFont()->getWidth(*font),
+                     Configuration::getMenuFont()->getHeight(*font));
 	menuInfo.setFont(font);
     }
 }
@@ -723,8 +731,9 @@ void Menu::TabRenderer::initialize(Context & context){
     // FIXME Redundant, see defaultRenderer
     Filesystem::RelativePath localFont("fonts/arial.ttf");
     int width = 24, height = 24;
-    if (Configuration::getMenuFont() != "" && Filesystem::exists(Filesystem::RelativePath(Configuration::getMenuFont()))){
-        localFont = Filesystem::RelativePath(Configuration::getMenuFont());
+    /*
+    if (Configuration::getMenuFont() != NULL){
+        localFont = Configuration::getMenuFont()->getFont();
         width = Configuration::getMenuFontWidth();
         height = Configuration::getMenuFontHeight();
     } else if (Filesystem::exists(context.getFont()->getFont())){
@@ -732,6 +741,7 @@ void Menu::TabRenderer::initialize(Context & context){
         width = context.getFont()->getWidth();
         height = context.getFont()->getHeight();
     }
+    */
     setFont(new FontInfo(localFont, width, height));
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         TabInfo * tab = *i;
@@ -884,8 +894,9 @@ menuInfoLocation(0,.95){
         music = child.music;
     }
 
-    if (Filesystem::exists(child.getFont()->getFont())){
-        font = child.font;
+    if (child.getFont() != NULL){
+        // Filesystem::exists(child.getFont()->getFont())){
+        font = child.getFont();
     }
 
     if (child.infoLocation.getRelativeX() != 0 || child.infoLocation.getRelativeY() != -.5){
