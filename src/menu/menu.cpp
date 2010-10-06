@@ -855,7 +855,7 @@ cleanup(true),
 state(NotStarted),
 fades(0),
 background(0),
-font(new FontInfo(Filesystem::RelativePath("Default"), 24, 24)),
+font(new FontInfo(Filesystem::RelativePath("fonts/arial.ttf"), 24, 24)),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95){
 }
@@ -865,7 +865,7 @@ cleanup(false),
 state(NotStarted),
 fades(NULL),
 background(NULL),
-font(new FontInfo(Filesystem::RelativePath("Default"), 24, 24)),
+font(new FontInfo(Filesystem::RelativePath("fonts/arial.ttf"), 24, 24)),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95){
     // Update with parents info
