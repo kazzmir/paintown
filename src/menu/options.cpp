@@ -505,7 +505,7 @@ OptionCredits::~OptionCredits(){
 void OptionCredits::logic(){
 }
 
-void OptionCredits::run( const Menu::Context & context ){
+void OptionCredits::run(const Menu::Context & context){
     Keyboard key;
     Bitmap backgroundImage(Filesystem::find(background).path());
 
@@ -527,7 +527,7 @@ void OptionCredits::run( const Menu::Context & context ){
 
     Paintown::Fire fire;
 
-    const Font & vFont = Configuration::getMenuFont()->get(*context.getFont());
+    const Font & vFont = Configuration::getMenuFont()->get(context.getFont()->get());
 
     bool quit = false;
 
@@ -901,7 +901,7 @@ void OptionJoystick::logic(){
 
 void OptionJoystick::run(const Menu::Context & context){
     //int x, y, width, height;
-    const Font & vFont = Configuration::getMenuFont()->get(*context.getFont());
+    const Font & vFont = Configuration::getMenuFont()->get(context.getFont()->get());
     const char * message = "Press a joystick button!";
     const int width = vFont.textLength(message) + 10;
     const int height = vFont.getHeight() + 10;
@@ -1095,7 +1095,7 @@ void OptionKey::run(const Menu::Context & context){
     Menu::Context tempContext = context;
     tempContext.initialize();
     Menu::InfoBox keyDialog;
-    keyDialog.setFont(tempContext.getFont());
+    // keyDialog.setFont(tempContext.getFont());
     //keyDialog.location.set(-1,-1,1,1);
     const int width = temp.getWidth();
     const int height = temp.getHeight();

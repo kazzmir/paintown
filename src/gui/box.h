@@ -20,6 +20,7 @@ class Box : public Widget{
 		virtual void act();
 		
 		// Render
+                using Widget::render;
 		virtual void render(const Bitmap &);
 		
 		// Do a message Dialog centered with respect to the given width/height

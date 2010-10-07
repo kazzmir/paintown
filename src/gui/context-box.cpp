@@ -37,8 +37,10 @@ int ContextItem::getRightColor(){
 ContextBox::ContextBox():
 current(0),
 fadeState(NotActive),
+/*
 fontWidth(0),
 fontHeight(0),
+*/
 fadeSpeed(12),
 fadeAlpha(0),
 cursorCenter(0),
@@ -54,9 +56,11 @@ fadeState(NotActive),
 selectedGradient(GradientMax, selectedGradientStart(), selectedGradientEnd()),
 renderOnlyText(false){
     this->context = copy.context;
+    /*
     this->font = copy.font;
     this->fontWidth = copy.fontWidth;
     this->fontHeight = copy.fontHeight;
+    */
     this->fadeSpeed = copy.fadeSpeed;
     this->fadeAlpha = copy.fadeAlpha;
     this->cursorCenter = copy.cursorCenter;
@@ -71,9 +75,11 @@ ContextBox & ContextBox::operator=( const ContextBox & copy){
     this->current = 0;
     this->fadeState = NotActive;
     this->context = copy.context;
+    /*
     this->font = copy.font;
     this->fontWidth = copy.fontWidth;
     this->fontHeight = copy.fontHeight;
+    */
     this->fadeSpeed = copy.fadeSpeed;
     this->fadeAlpha = copy.fadeAlpha;
     this->cursorCenter = copy.cursorCenter;
@@ -90,27 +96,32 @@ void ContextBox::act(){
     
     // do fade
     doFade();
-
-    // Calculate text info
-    calculateText();
     
     // Update gradient
     selectedGradient.update();
 }
 
 void ContextBox::render(const Bitmap & work){
+}
+
+void ContextBox::render(const Bitmap & work, const Font & font){
+    // Calculate text info
+    calculateText(font);
+
     if (!renderOnlyText){
 	board.render(work);
     }
-    drawText(work);
+    drawText(work, font);
 }
 
 bool ContextBox::next(){
     if (fadeState == FadeOut){
 	return false;
     }
+    /*
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     cursorLocation += (int)(vFont.getHeight()/FONT_SPACER);
+    */
     if (current < context.size()-1){
         current++;
     } else {
@@ -118,12 +129,15 @@ bool ContextBox::next(){
     }
     return true;
 }
+
 bool ContextBox::previous(){
     if (fadeState == FadeOut){
 	return false;
     }
+    /*
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     cursorLocation -= (int)(vFont.getHeight()/FONT_SPACER);
+    */
     if (current > 0){
         current--;
     } else {
@@ -131,10 +145,13 @@ bool ContextBox::previous(){
     }
     return true;
 }
+
 void ContextBox::adjustLeft(){
 }
+
 void ContextBox::adjustRight(){
 }
+
 void ContextBox::open(){
     // Set the fade stuff
     fadeState = FadeIn;
@@ -189,17 +206,17 @@ void ContextBox::doFade(){
     }
 }
 
-void ContextBox::calculateText(){
+void ContextBox::calculateText(const Font & vFont){
     if (context.empty()){
         return;
     } 
     
-    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    // const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     
     cursorCenter = (location.getY() + (int)location.getHeight()/2) - vFont.getHeight()/2;//(position.y + (int)position.height/2) - vFont.getHeight()/2;
     
     if (cursorLocation == cursorCenter){
-	    scrollWait = 4;
+        scrollWait = 4;
     } else {
 	if (scrollWait <= 0){
 	    cursorLocation = (cursorLocation + cursorCenter)/2;
@@ -210,11 +227,11 @@ void ContextBox::calculateText(){
     }
 }
 
-void ContextBox::drawText(const Bitmap & bmp){
+void ContextBox::drawText(const Bitmap & bmp, const Font & vFont){
     if (context.empty()){
         return;
     }
-    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    // const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     const int x1 = board.getArea().getX()+(int)(board.getArea().getRadius()/2);
     const int y1 = board.getArea().getY()+2;//(board.getArea().radius/2);
     const int x2 = board.getArea().getX2()-(int)(board.getArea().getRadius()/2);

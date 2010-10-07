@@ -114,6 +114,10 @@ void Widget::setColors(Token * token){
         colors.border = Bitmap::makeColor(r,g,b);
     } 
 }
+        
+void Widget::render(const Bitmap & bitmap, const Font & font){
+    render(bitmap);
+}
 
 void Widget::arc( const Bitmap & work, int x, int y, double startAngle, int radius, int color ){
     int q = 0;// for counters

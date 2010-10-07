@@ -6,6 +6,7 @@
 
 class Bitmap;
 class Token;
+class Font;
 
 namespace Gui{
     
@@ -46,7 +47,9 @@ class Widget{
         virtual void act()=0;
         
         // Render
-        virtual void render(const Bitmap &)=0;
+        virtual void render(const Bitmap &) = 0;
+        /* default behavior is just to call render() */
+        virtual void render(const Bitmap &, const Font &);
     
     protected:
         void arc( const Bitmap &, int x, int y, double startAngle, int radius, int color );

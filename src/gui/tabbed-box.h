@@ -38,6 +38,7 @@ class TabbedBox : public Widget{
         virtual void act();
         
         //! Render
+        using Widget::render;
         virtual void render(const Bitmap &);
         
         //! Add tab

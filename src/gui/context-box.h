@@ -23,7 +23,7 @@ class ContextItem{
         virtual int getRightColor();
 };
 
-class ContextBox : public Widget{
+class ContextBox : public Widget {
     public:
         ContextBox();
         ContextBox(const ContextBox &);
@@ -34,7 +34,9 @@ class ContextBox : public Widget{
         //! Logic
         virtual void act();
         //! Render
+        using Widget::render;
         virtual void render(const Bitmap &);
+        virtual void render(const Bitmap &, const Font & font);
         //! Next
         virtual bool next();
         //! Previous
@@ -53,11 +55,13 @@ class ContextBox : public Widget{
             this->current = 0;
         }
         //! Set current font
+        /*
 	virtual inline void setFont(const Filesystem::RelativePath & font, int width, int height){
 	    this->font = font;
 	    this->fontWidth = width;
 	    this->fontHeight = height;
 	}
+        */
         //! Get current index
         virtual inline unsigned int getCurrentIndex(){
             return this->current;
@@ -90,9 +94,9 @@ class ContextBox : public Widget{
 	
 	void doFade();
 	
-	void calculateText();
+	void calculateText(const Font & font);
 	
-	void drawText(const Bitmap &);
+	void drawText(const Bitmap &, const Font & font);
 	
 	enum FadeState{
 	    NotActive,
@@ -110,9 +114,11 @@ class ContextBox : public Widget{
         std::vector<ContextItem *> context;
 	
 	//! Current font
+        /*
         Filesystem::RelativePath font;
 	int fontWidth;
 	int fontHeight;
+        */
 	
 	//! Fade speed
 	int fadeSpeed;

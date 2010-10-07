@@ -22,6 +22,7 @@ class PopupBox : public Widget{
         //! Logic
         virtual void act();
         //! Render
+        using Widget::render;
         virtual void render(const Bitmap &);
         //! Open box
 	virtual void open();

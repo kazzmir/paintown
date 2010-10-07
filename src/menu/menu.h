@@ -46,7 +46,8 @@ class InfoBox: public Gui::Widget {
         ~InfoBox();
         
         void act();
-        void render(const Bitmap &);
+        virtual void render(const Bitmap &);
+        void render(const Bitmap &, const Font & font);
         void open();
         void close();
         void setText(const std::string &);
@@ -55,9 +56,14 @@ class InfoBox: public Gui::Widget {
             return (this->state != NotActive);
         }
         
+        /*
         inline void setFont(const Util::ReferenceCount<FontInfo> & font){
             this->font = font;
         }
+        */
+    protected:
+
+        virtual void computeDimensions(const Font & font);
         
     private:
         enum State{
@@ -70,11 +76,12 @@ class InfoBox: public Gui::Widget {
         State state;
         Gui::PopupBox popup;
         
-        Util::ReferenceCount<FontInfo> font;
+        // Util::ReferenceCount<FontInfo> font;
         
         int fadeAlpha;
         
         std::vector<std::string> text;
+        const Font * lastFont;
 };
 
 class MenuException : public Exception::Base{
@@ -177,10 +184,10 @@ class Renderer{
         virtual bool active()=0;
         
         virtual void act()=0;
-        virtual void render(const Bitmap &)=0;
+        virtual void render(const Bitmap &, const Font & font)=0;
 	
 	// Set font if applicable
-	virtual void setFont(const Util::ReferenceCount<FontInfo> &);
+	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         
         //! Compatibility for now, remove later
         virtual void addOption(MenuOption *)=0;
@@ -204,7 +211,7 @@ class Renderer{
         virtual void actInfo();
         
         /*! render info box */
-        virtual void renderInfo(const Bitmap &);
+        virtual void renderInfo(const Bitmap &, const Font & font);
 };
 
 /*! Regular Menu */
@@ -213,13 +220,13 @@ class DefaultRenderer : public Renderer {
         DefaultRenderer();
         virtual ~DefaultRenderer();
         
-	virtual void setFont(const Util::ReferenceCount<FontInfo> &);
+	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         virtual bool readToken(Token *);
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
         virtual void act();
-        virtual void render(const Bitmap &);
+        virtual void render(const Bitmap &, const Font &); 
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<MenuOption*> getOptions() const;
@@ -253,13 +260,13 @@ class TabRenderer : public Renderer {
         TabRenderer();
         virtual ~TabRenderer();
         
-	virtual void setFont(const Util::ReferenceCount<FontInfo> &);
+	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         virtual bool readToken(Token *);
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
         virtual void act();
-        virtual void render(const Bitmap &);
+        virtual void render(const Bitmap &, const Font &);
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<MenuOption*> getOptions() const;
@@ -335,10 +342,13 @@ class Context{
         }
         
         virtual void setFadeTool(Gui::FadeTool *);
+
         virtual inline Gui::FadeTool * getFadeTool(){
             return this->fades;
         }
+
         virtual void setBackground(Background *);
+
         virtual inline Background * getBackground(){
             return this->background;
         }
@@ -350,7 +360,7 @@ class Context{
         virtual inline const Util::ReferenceCount<FontInfo> & getFont() const {
             return this->font;
         }
-        
+
         virtual inline void setInfoLocation(double x, double y){
             this->infoLocation.set(x,y);
         }
@@ -363,7 +373,7 @@ class Context{
             this->menuInfoLocation.set(x,y);
         }
         
-        virtual inline const Gui::RelativePoint & getMenuInfoLocation()const {
+        virtual inline const Gui::RelativePoint & getMenuInfoLocation() const {
             return this->menuInfoLocation;
         }
         
@@ -396,7 +406,7 @@ class Context{
         
         /*! Font */
         Util::ReferenceCount<FontInfo> font;
-        
+
         /*! Info Placement */
         Gui::RelativePoint infoLocation;
         

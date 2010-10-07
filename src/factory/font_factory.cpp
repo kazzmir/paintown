@@ -8,6 +8,7 @@
 #include "util/file-system.h"
 #include "font_factory.h"
 #include "globals.h"
+#include "exceptions/exception.h"
 
 // #include "fonts.h"
 
@@ -51,6 +52,9 @@ Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int
     }
 
     Font * f = font_mapper[path.path()];
+    if (f == NULL){
+        throw Exception::Base(__FILE__, __LINE__);
+    }
     f->setSize(x, y);
 
     return f;

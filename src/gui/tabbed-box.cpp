@@ -144,7 +144,7 @@ void TabbedBox::addTab(const std::string & name, const std::vector<ContextItem *
     Tab * tab = new Tab();
     tab->name = name;
     tab->context->setList(list);
-    tab->context->setFont(font, fontWidth, fontHeight);
+    // tab->context->setFont(font, fontWidth, fontHeight);
     const int modifier = fontHeight * .35;
     tab->context->location.setPosition(Gui::AbsolutePoint(0, fontHeight + modifier));
     tab->context->location.setPosition2(Gui::AbsolutePoint(location.getWidth(), location.getHeight()- modifier));

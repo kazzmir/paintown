@@ -81,6 +81,7 @@ public:
 	void act();
 
 	//! Draw
+        using Widget::render;
 	void render(const Bitmap &);
 
 	//! set Focus

@@ -2,6 +2,7 @@
 #include "util/file-system.h"
 #include "util/font.h"
 #include "configuration.h"
+#include "exceptions/exception.h"
 
 namespace Menu{
 
@@ -34,8 +35,12 @@ FontInfo & FontInfo::operator=(const FontInfo & copy){
 static bool menuFontAvailable(){
     return Configuration::getMenuFont() != NULL;
 }
+    
+const Font & FontInfo::get() const {
+    return Font::getFont(font, width, height);
+}
 
-const Font & FontInfo::get(const FontInfo & next) const {
+const Font & FontInfo::get(const Font & next) const {
     // Check for override from system and return that instead otherwise continue
     /*
     if (menuFontAvailable()){
@@ -43,6 +48,10 @@ const Font & FontInfo::get(const FontInfo & next) const {
     }
     */
     return Font::getFont(font, width, height);
+}
+        
+const FontInfo & FontInfo::get(const FontInfo & next) const {
+    return *this;
 }
 
 const Filesystem::RelativePath FontInfo::getFont(const FontInfo & next) const {
@@ -57,12 +66,20 @@ const int FontInfo::getHeight(const FontInfo & next) const{
     return this->height;
 }
     
-const Font & DefaultFontInfo::get(const FontInfo & next) const {
-    return next.get(next);
+const Font & DefaultFontInfo::get(const Font & next) const {
+    return next;
 }
 
 const Filesystem::RelativePath DefaultFontInfo::getFont(const FontInfo & next) const {
     return next.getFont(next);
+}
+
+const FontInfo & DefaultFontInfo::get(const FontInfo & next) const {
+    return next;
+}
+
+const Font & DefaultFontInfo::get() const {
+    throw Exception::Base(__FILE__, __LINE__);
 }
 
 }

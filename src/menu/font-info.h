@@ -29,7 +29,9 @@ class FontInfo {
 	    this->height = height;
 	}
 	
-	virtual const Font & get(const FontInfo & next) const;
+	virtual const Font & get() const;
+	virtual const Font & get(const Font & next) const;
+        virtual const FontInfo & get(const FontInfo & next) const;
 	
 	inline void setFont(const Filesystem::RelativePath & font){
 	    this->font = font;
@@ -61,7 +63,9 @@ class FontInfo {
 
 class DefaultFontInfo: public FontInfo {
 public:
-    virtual const Font & get(const FontInfo & next) const;
+    virtual const Font & get() const;
+    virtual const Font & get(const Font & next) const;
+    virtual const FontInfo & get(const FontInfo & next) const;
     virtual const Filesystem::RelativePath getFont(const FontInfo & next) const;
 };
 
