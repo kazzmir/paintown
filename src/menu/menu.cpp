@@ -164,6 +164,7 @@ void Menu::InfoBox::computeDimensions(const Font & font){
     }
 
     location.setDimensions(maxWidth, height);
+    popup.location = location;
 }
 
 void Menu::InfoBox::setText(const std::string & info){
