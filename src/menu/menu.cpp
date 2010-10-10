@@ -60,8 +60,8 @@ fadeAlpha(0){
 Menu::InfoBox::~InfoBox(){
 }
  
-void Menu::InfoBox::act(){
-    popup.act();
+void Menu::InfoBox::act(const Font & font){
+    popup.act(font);
     
     int speed = 9;
     switch (state){
@@ -404,10 +404,10 @@ void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defau
     info.push_back(temp);
 }
 
-void Menu::Renderer::actInfo(){
+void Menu::Renderer::actInfo(const Font & font){
     for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end();){
         ::Menu::InfoBox *box = *i;
-        box->act();
+        box->act(font);
         if (!box->isActive()){
             delete box;
             i = info.erase(i);
@@ -545,15 +545,16 @@ bool Menu::DefaultRenderer::active(){
     return menu.isActive();
 }
 
-void Menu::DefaultRenderer::act(){
+void Menu::DefaultRenderer::act(const Context & context){
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     // FIXME find a better way to get options to update this is a waste
     for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
         MenuOption * option = *i;
         option->logic();
     }
-    menu.act();
-    menuInfo.act();
-    actInfo();
+    menu.act(font);
+    menuInfo.act(font);
+    actInfo(font);
 }
 
 void Menu::DefaultRenderer::render(const Bitmap & bmp, const Font & font){
@@ -815,15 +816,16 @@ bool Menu::TabRenderer::active(){
     return true;//menu.isActive();
 }
 
-void Menu::TabRenderer::act(){
+void Menu::TabRenderer::act(const Context & context){
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     // FIXME find a better way to get options to update this is a waste
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         TabInfo * tab = *i;
         tab->act();
     }
-    menu.act();
-    menuInfo.act();
-    actInfo();
+    menu.act(font);
+    menuInfo.act(font);
+    actInfo(font);
 }
 
 void Menu::TabRenderer::render(const Bitmap & bmp, const Font & font){
@@ -1416,7 +1418,7 @@ void Menu::Menu::act(Context & ourContext){
             renderer->doAction(Select, ourContext);
         }
         // Menu act
-        renderer->act();
+        renderer->act(ourContext);
     }
 
     // Act context

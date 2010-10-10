@@ -511,7 +511,8 @@ sigslot::slot ChatServer::keyRelease(const keys &k){
 
 void ChatServer::handleInput( Keyboard & keyboard ){
 
-	lineEdit->act();
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+	lineEdit->act(font);
 
 	if ( lineEdit->didChanged( editCounter ) ){
 		needUpdate();

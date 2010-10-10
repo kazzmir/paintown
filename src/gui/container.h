@@ -5,34 +5,34 @@
 #include "gui/rectarea.h"
 
 class Bitmap;
+class Font;
 
 namespace Gui{
     
 class Widget;
 
-class Container
-{
-	public:
-		Container();
-		virtual ~Container();
-		
-		// position info
-		RectArea position;
-		
-		// Logic
-		void act();
-		
-		// Render
-		void render(const Bitmap &);
-		
-		// Add widget
-		void add(Widget *widget);
-		
-		// Remove widget
-		void remove(Widget *widget);
-		
-	private:
-		std::list<Widget *>widgets;
+class Container{
+public:
+    Container();
+    virtual ~Container();
+
+    // position info
+    RectArea position;
+
+    // Logic
+    void act(const Font & font);
+
+    // Render
+    void render(const Bitmap &);
+
+    // Add widget
+    void add(Widget *widget);
+
+    // Remove widget
+    void remove(Widget *widget);
+
+private:
+    std::list<Widget *>widgets;
 };
 
 }

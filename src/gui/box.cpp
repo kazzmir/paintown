@@ -28,7 +28,7 @@ Box &Box::operator=( const Box &copy){
 }
 
 // Logic
-void Box::act(){
+void Box::act(const Font & font){
 	// Nothing yet
 }
 

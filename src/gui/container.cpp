@@ -28,14 +28,12 @@ void Container::remove(Widget *widget)
 }
 
 // Logic
-void Container::act()
-{
-	std::list<Widget *>::iterator i = widgets.begin(), end = widgets.end();
-	while(i!=end)
-	{
-		(*i)->act();
-		i++;
-	}
+void Container::act(const Font & font){
+    std::list<Widget *>::iterator i = widgets.begin(), end = widgets.end();
+    while(i!=end){
+        (*i)->act(font);
+        i++;
+    }
 }
 
 // Render

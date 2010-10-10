@@ -35,7 +35,7 @@ class TabbedBox : public Widget{
         TabbedBox &operator=( const TabbedBox &);
         
         //! Logic
-        virtual void act();
+        virtual void act(const Font &);
         
         //! Render
         using Widget::render;

@@ -90,9 +90,12 @@ ContextBox & ContextBox::operator=( const ContextBox & copy){
     return *this;
 }
 
-void ContextBox::act(){
+void ContextBox::act(const Font & font){
     // update board
-    board.act();
+    board.act(font);
+    
+    // Calculate text info
+    calculateText(font);
     
     // do fade
     doFade();
@@ -105,8 +108,6 @@ void ContextBox::render(const Bitmap & work){
 }
 
 void ContextBox::render(const Bitmap & work, const Font & font){
-    // Calculate text info
-    calculateText(font);
 
     if (!renderOnlyText){
 	board.render(work);

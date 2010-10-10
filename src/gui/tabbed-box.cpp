@@ -86,11 +86,11 @@ TabbedBox &TabbedBox::operator=( const TabbedBox &copy){
 }
 
 // Logic
-void TabbedBox::act(){
+void TabbedBox::act(const Font & font){
     if (!tabs.empty()){
-	const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+	// const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
 	//tabWidthMax = location.getWidth()/tabs.size();
-	const int width = vFont.textLength(tabs[current]->name.c_str()) + 5;
+	const int width = font.textLength(tabs[current]->name.c_str()) + 5;
 	tabWidthMax = (location.getWidth() - width) / (tabs.size() - 1);
     } else {
 	return;
@@ -98,7 +98,7 @@ void TabbedBox::act(){
     if (!tabs[current]->active){
 	tabs[current]->active = true;
     }
-    tabs[current]->context->act();
+    tabs[current]->context->act(font);
     if (inTab){
 	if (activeTabFontColor){
 	    activeTabFontColor->update();

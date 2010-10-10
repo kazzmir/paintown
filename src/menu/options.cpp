@@ -1109,8 +1109,9 @@ void OptionKey::run(const Menu::Context & context){
     keyDialog.colors.border = Bitmap::makeColor(255,255,255);
     keyDialog.colors.borderAlpha = 255;
     keyDialog.open();
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     while (!key.keypressed() && keyDialog.isActive()){
-	keyDialog.act();
+	keyDialog.act(font);
 	if (keyDialog.isActive()){
 	    key.poll();
 	}

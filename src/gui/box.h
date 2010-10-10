@@ -17,7 +17,7 @@ class Box : public Widget{
 		Box &operator=( const Box &);
 		
 		// Logic
-		virtual void act();
+		virtual void act(const Font &);
 		
 		// Render
                 using Widget::render;

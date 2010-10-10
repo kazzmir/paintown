@@ -245,47 +245,48 @@ void ChatClient::popup( Bitmap & work, Keyboard & key, const std::string & str )
 }
 
 void ChatClient::handleInput( Keyboard & keyboard ){
-	/*
-	vector< int > keys;
-	keyboard.readKeys( keys );
+    /*
+       vector< int > keys;
+       keyboard.readKeys( keys );
 
-	for ( vector< int >::iterator it = keys.begin(); it != keys.end(); it++ ){
-		int key = *it;
-		if ( key == Keyboard::Key_BACKSPACE ){
-			if ( input != "" ){
-				input = input.substr( 0, input.length() - 1 );
-				needUpdate();
-			}
-		} else if ( Keyboard::isAlpha( key ) ){
-			input += lowerCase( Keyboard::keyToName( key ) );
-			needUpdate();
-		} else if ( key == Keyboard::Key_SPACE ){
-			input += " ";
-			needUpdate();
-		} else if ( key == Keyboard::Key_ENTER ){
-			addMessage( "You: " + input, 0 );
-			if ( ! sendMessage( input ) ){
-				popup( keyboard, "Could not send message" );
-			}
-			input = "";
-			needUpdate();
-		}
-	}
-	*/
+       for ( vector< int >::iterator it = keys.begin(); it != keys.end(); it++ ){
+       int key = *it;
+       if ( key == Keyboard::Key_BACKSPACE ){
+       if ( input != "" ){
+       input = input.substr( 0, input.length() - 1 );
+       needUpdate();
+       }
+       } else if ( Keyboard::isAlpha( key ) ){
+       input += lowerCase( Keyboard::keyToName( key ) );
+       needUpdate();
+       } else if ( key == Keyboard::Key_SPACE ){
+       input += " ";
+       needUpdate();
+       } else if ( key == Keyboard::Key_ENTER ){
+       addMessage( "You: " + input, 0 );
+       if ( ! sendMessage( input ) ){
+       popup( keyboard, "Could not send message" );
+       }
+       input = "";
+       needUpdate();
+       }
+       }
+       */
 
-	lineEdit->act();
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    lineEdit->act(font);
 
-	if ( lineEdit->didChanged( editCounter ) ){
-		needUpdate();
-	}
+    if ( lineEdit->didChanged( editCounter ) ){
+        needUpdate();
+    }
 
-	if ( enterPressed && lineEdit->getText().length() > 0 ){
-		// enterPressed = false;
-		addMessage( "You: " + lineEdit->getText(), 0 );
-                toSend.push(lineEdit->getText());
-		lineEdit->clearText();
-		needUpdate();
-	}
+    if ( enterPressed && lineEdit->getText().length() > 0 ){
+        // enterPressed = false;
+        addMessage( "You: " + lineEdit->getText(), 0 );
+        toSend.push(lineEdit->getText());
+        lineEdit->clearText();
+        needUpdate();
+    }
 }
 
 void ChatClient::needUpdate(){

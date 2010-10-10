@@ -20,7 +20,7 @@ class PopupBox : public Widget{
         //! copy
         PopupBox &operator=(const PopupBox &);
         //! Logic
-        virtual void act();
+        virtual void act(const Font &);
         //! Render
         using Widget::render;
         virtual void render(const Bitmap &);

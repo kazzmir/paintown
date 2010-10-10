@@ -21,7 +21,7 @@ PopupBox & PopupBox::operator=( const PopupBox & copy){
     return *this;
 }
 
-void PopupBox::act(){
+void PopupBox::act(const Font & font){
     // do fade
     doFade();
 }

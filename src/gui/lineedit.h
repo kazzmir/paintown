@@ -78,7 +78,7 @@ public:
 	void setCursorBlinkRate(unsigned int msecs);
 
 	//! Update
-	void act();
+	void act(const Font &);
 
 	//! Draw
         using Widget::render;

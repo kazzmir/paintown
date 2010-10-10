@@ -53,7 +53,7 @@ void LineEdit::fontChange()
 }
 
 // Update
-void LineEdit::act(){
+void LineEdit::act(const Font & font){
     if((blinkRate*2)<=cursorTime.msecs())cursorTime.reset();
     if(changed_){
         textSizeH = currentSetFont->getHeight();

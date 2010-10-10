@@ -32,7 +32,7 @@ class ContextBox : public Widget {
         //! copy
         ContextBox &operator=(const ContextBox &);
         //! Logic
-        virtual void act();
+        virtual void act(const Font &);
         //! Render
         using Widget::render;
         virtual void render(const Bitmap &);

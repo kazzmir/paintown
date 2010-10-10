@@ -45,7 +45,7 @@ class InfoBox: public Gui::Widget {
         InfoBox();
         ~InfoBox();
         
-        void act();
+        void act(const Font &);
         virtual void render(const Bitmap &);
         void render(const Bitmap &, const Font & font);
         void open();
@@ -180,7 +180,7 @@ class Renderer{
         virtual void finish()=0;
         virtual bool active()=0;
         
-        virtual void act()=0;
+        virtual void act(const Context &)=0;
         virtual void render(const Bitmap &, const Font & font)=0;
 	
 	// Set font if applicable
@@ -205,7 +205,7 @@ class Renderer{
         virtual void addInfo(const std::string &, const Gui::Widget &, Context &, const Font &);
         
         /*! act info box */
-        virtual void actInfo();
+        virtual void actInfo(const Font &);
         
         /*! render info box */
         virtual void renderInfo(const Bitmap &, const Font & font);
@@ -222,7 +222,7 @@ class DefaultRenderer : public Renderer {
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
-        virtual void act();
+        virtual void act(const Context &);
         virtual void render(const Bitmap &, const Font &); 
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
@@ -262,7 +262,7 @@ class TabRenderer : public Renderer {
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
-        virtual void act();
+        virtual void act(const Context &);
         virtual void render(const Bitmap &, const Font &);
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);

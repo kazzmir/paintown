@@ -44,7 +44,7 @@ class Widget{
         ColorInfo colors;
         
         // Logic
-        virtual void act()=0;
+        virtual void act(const Font &)=0;
         
         // Render
         virtual void render(const Bitmap &) = 0;
