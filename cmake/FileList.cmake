@@ -50,11 +50,7 @@ src/network/network_world_client.cpp
 src/network/server.cpp)
 
 set(ENV_SRC
-src/environment/atmosphere.cpp
-src/environment/rain_atmosphere.cpp
-src/environment/snow_atmosphere.cpp
-src/environment/night_atmosphere.cpp
-src/environment/fog_atmosphere.cpp)
+src/environment/atmosphere.cpp)
 
 set(FACTORY_SRC
 src/factory/font_factory.cpp
