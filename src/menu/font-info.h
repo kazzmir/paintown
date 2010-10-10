@@ -53,7 +53,7 @@ class FontInfo {
 
 	virtual const int getHeight(const FontInfo & next) const;
 	
-	inline const bool empty() const{
+	virtual inline const bool empty() const{
 	    return font.path().empty();
 	}
 	
@@ -67,6 +67,21 @@ class RelativeFontInfo: public FontInfo {
 public:
     RelativeFontInfo();
     RelativeFontInfo(const Filesystem::RelativePath & font, int width, int height);
+};
+
+class AbsoluteFontInfo: public FontInfo {
+public:
+    AbsoluteFontInfo(const Filesystem::AbsolutePath & font, int width, int height);
+
+    using FontInfo::get;
+    virtual const Font & get() const;
+    virtual const Font & get(const Font & next) const;
+    virtual std::string getName() const;
+
+protected:
+    Filesystem::AbsolutePath myfont;
+    int mwidth;
+    int mheight;
 };
 
 class DefaultFontInfo: public FontInfo {

@@ -1733,6 +1733,13 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
         for (vector<Filesystem::AbsolutePath>::iterator it = otfFonts.begin(); it != otfFonts.end(); it++){
             fonts.push_back(new Menu::RelativeFontInfo(Filesystem::cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
+        
+        /* linux specific fonts */
+        vector<Filesystem::AbsolutePath> systemFonts = Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/usr/share/fonts/truetype"), "*.ttf");
+        for (vector<Filesystem::AbsolutePath>::iterator it = systemFonts.begin(); it != systemFonts.end(); it++){
+            Global::debug(1) << "Adding system font `" << (*it).path() << "'" << endl;
+            fonts.push_back(new Menu::AbsoluteFontInfo(*it, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+        }
 
     } catch (const Filesystem::NotFound & e){
         throw LoadException(__FILE__, __LINE__, e, "Could not load font");
@@ -1869,6 +1876,16 @@ bool OptionSelectFont::rightKey(){
     return true;
 }
 
+static bool saneFont(const Util::ReferenceCount<Menu::FontInfo> & info){
+    try{
+        const Font & font = info->get();
+        return font.textLength("A") != 0 &&
+               font.getHeight() != 0;
+    } catch (const Exception::Base & ignore){
+        return true;
+    }
+}
+
 void OptionSelectFont::nextIndex(bool forward){
     if (fonts.size() == 0){
         return;
@@ -1893,6 +1910,18 @@ void OptionSelectFont::nextIndex(bool forward){
 	if (index < 0){
 	    index = (int)fonts.size()-1;
 	}
+    }
+
+    while (!saneFont(fonts[index])){
+        Global::debug(0) << "Warning: erasing font `" << fonts[index]->getName() << "'" << endl;
+        int where = 0;
+        vector<Util::ReferenceCount<Menu::FontInfo> >::iterator it;
+        for (it = fonts.begin(); it != fonts.end() && where != index; it++, where++){
+        }
+        fonts.erase(it);
+        if (index >= (int) fonts.size()){
+            index = fonts.size() - 1;
+        }
     }
 
     Configuration::setMenuFont(fonts[index]);

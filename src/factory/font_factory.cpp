@@ -23,41 +23,46 @@ Font * FontFactory::getFont(const Filesystem::RelativePath & path, const int x, 
     return my_factory->getRealFont(path, x, y );
 }
 
+Font * FontFactory::getFont(const Filesystem::AbsolutePath & path, const int x, const int y ){
+    if ( my_factory == NULL ){
+        my_factory = new FontFactory();
+    }
+
+    return my_factory->getRealFont(path, x, y );
+}
+
 void FontFactory::destroy(){
     if ( my_factory != NULL ){
         delete my_factory;
     }
 }
-	
-Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int x, const int y ){
-    try{
+
+Font * FontFactory::getRealFont(const Filesystem::AbsolutePath & path, int x, int y){
     if (font_mapper.find(path.path()) == font_mapper.end()){
-        font_mapper[path.path()] = new FreeTypeFont(Filesystem::find(path));
-        /*
-        if ( my_data != NULL ){
-            DATAFILE * obj = find_datafile_object( my_data, str.c_str() );
-            if ( obj == NULL ){
-                font_mapper[ str ] = new FreeTypeFont( str );
-            } else {
-                font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
-            }
-        } else {
-            font_mapper[ str ] = new AllegroFont( ::font );
-        }
-        */
-
-        // font_mapper[ str ] = new AllegroFont( (FONT *)( obj->dat ) );
-        // Font * f = new FreeTypeFont( str );
-        // font_mapper[ str ] = f;
+        font_mapper[path.path()] = new FreeTypeFont(path);
     }
-
-    Font * f = font_mapper[path.path()];
-    if (f == NULL){
+    Font * font = font_mapper[path.path()];
+    if (font == NULL){
         throw Exception::Base(__FILE__, __LINE__);
     }
-    f->setSize(x, y);
+    font->setSize(x, y);
 
-    return f;
+    return font;
+}
+
+Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int x, const int y ){
+    try{
+        if (font_mapper.find(path.path()) == font_mapper.end()){
+            font_mapper[path.path()] = new FreeTypeFont(Filesystem::find(path));
+        }
+
+        Font * f = font_mapper[path.path()];
+        if (f == NULL){
+            throw Exception::Base(__FILE__, __LINE__);
+        }
+        f->setSize(x, y);
+
+        return f;
     } catch (const Filesystem::NotFound & e){
         Global::debug(0) << "Warning: could not find font " << path.path() << ": " << e.getTrace() << endl;
         return &nullFont;

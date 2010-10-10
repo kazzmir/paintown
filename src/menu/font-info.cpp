@@ -97,6 +97,22 @@ RelativeFontInfo::RelativeFontInfo(const Filesystem::RelativePath & font, int wi
 FontInfo(font, width, height){
 }
 
+AbsoluteFontInfo::AbsoluteFontInfo(const Filesystem::AbsolutePath & font, int width, int height):
+myfont(font),
+mwidth(width),
+mheight(height){
+}
 
+const Font & AbsoluteFontInfo::get() const {
+    return Font::getFont(myfont, mwidth, mheight);
+}
+
+const Font & AbsoluteFontInfo::get(const Font & next) const {
+    return get();
+}
+    
+std::string AbsoluteFontInfo::getName() const {
+    return myfont.getFilename().path();
+}
 
 }

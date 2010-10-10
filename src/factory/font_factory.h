@@ -15,6 +15,7 @@ private:
     friend class Collector;
     friend class Font;
     static Font * getFont(const Filesystem::RelativePath & path, const int x, const int y );
+    static Font * getFont(const Filesystem::AbsolutePath & path, const int x, const int y );
 
 private:
     FontFactory();
@@ -23,6 +24,7 @@ private:
     static void destroy();
 
     Font * getRealFont(const Filesystem::RelativePath & str, const int x, const int y );
+    Font * getRealFont(const Filesystem::AbsolutePath & str, int x, int y );
 
 private:
     static FontFactory * my_factory;
