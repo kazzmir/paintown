@@ -114,14 +114,16 @@ void ContextBox::render(const Bitmap & work, const Font & font){
     drawText(work, font);
 }
 
-bool ContextBox::next(){
+bool ContextBox::next(const Font & font){
     if (fadeState == FadeOut){
 	return false;
     }
+
     /*
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    cursorLocation += (int)(vFont.getHeight()/FONT_SPACER);
     */
+    cursorLocation += (int)(font.getHeight()/FONT_SPACER);
+
     if (current < context.size()-1){
         current++;
     } else {
@@ -130,14 +132,16 @@ bool ContextBox::next(){
     return true;
 }
 
-bool ContextBox::previous(){
+bool ContextBox::previous(const Font & font){
     if (fadeState == FadeOut){
 	return false;
     }
+
     /*
     const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
-    cursorLocation -= (int)(vFont.getHeight()/FONT_SPACER);
     */
+    cursorLocation -= (int)(font.getHeight()/FONT_SPACER);
+
     if (current > 0){
         current--;
     } else {

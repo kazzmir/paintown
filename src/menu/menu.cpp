@@ -570,13 +570,13 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
     const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     switch(action){
         case Up:
-            if (menu.previous()){
+            if (menu.previous(font)){
                 context.playSound(Up);
                 addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             }
             break;
         case Down:
-            if (menu.next()){
+            if (menu.next(font)){
                 context.playSound(Down);
                 addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             }
@@ -840,23 +840,23 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
     const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     switch(action){
         case Up:
-            menu.up();
+            menu.up(font);
             context.playSound(Up);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Down:
-            menu.down();
+            menu.down(font);
             context.playSound(Down);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Left:
-            menu.left();
+            menu.left(font);
             // setFont(context.getFont());
 	    context.playSound(Up);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Right:
-            menu.right();
+            menu.right(font);
             // setFont(context.getFont());
 	    context.playSound(Down);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);

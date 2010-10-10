@@ -167,29 +167,29 @@ void TabbedBox::moveTab(int direction){
     tabs[current]->active = true;
 }
 
-void TabbedBox::up(){
+void TabbedBox::up(const Font & font){
     if (tabs.size() == 0){
         return;
     }
     if (!inTab){
         moveTab(-1);
     } else {
-        tabs[current]->context->previous();
+        tabs[current]->context->previous(font);
     }
 }
 
-void TabbedBox::down(){
+void TabbedBox::down(const Font & font){
     if (tabs.size() == 0){
         return;
     }
     if (!inTab){
         moveTab(1);
     } else {
-        tabs[current]->context->next();
+        tabs[current]->context->next(font);
     }
 }
 
-void TabbedBox::left(){
+void TabbedBox::left(const Font & font){
     if (tabs.size() == 0){
         return;
     }
@@ -200,7 +200,7 @@ void TabbedBox::left(){
     }
 }
 
-void TabbedBox::right(){
+void TabbedBox::right(const Font & font){
     if (tabs.size() == 0){
         return;
     }

@@ -38,9 +38,9 @@ class ContextBox : public Widget {
         virtual void render(const Bitmap &);
         virtual void render(const Bitmap &, const Font & font);
         //! Next
-        virtual bool next();
+        virtual bool next(const Font &);
         //! Previous
-        virtual bool previous();
+        virtual bool previous(const Font &);
 	//! Adjust left
 	virtual void adjustLeft();
 	//! Adjust right

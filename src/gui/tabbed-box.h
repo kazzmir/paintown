@@ -45,16 +45,16 @@ class TabbedBox : public Widget{
         virtual void addTab(const std::string &, const std::vector<ContextItem *> & list);
         
         //! Up
-        virtual void up();
+        virtual void up(const Font &);
         
         //! Down
-        virtual void down();
+        virtual void down(const Font &);
         
         //! Left 
-        virtual void left();
+        virtual void left(const Font &);
         
         //! Right
-        virtual void right();
+        virtual void right(const Font &);
 	
 	//! Virtual
 	virtual void toggleTabSelect();
