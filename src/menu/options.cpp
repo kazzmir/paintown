@@ -1705,8 +1705,8 @@ static string joinPaths(const vector<Filesystem::AbsolutePath> & strings, const 
     return out.str();
 }
 
-static vector<string> findFonts(){
-    vector<string> fonts;
+static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
+    vector<Util::ReferenceCount<Menu::FontInfo> > fonts;
     try{
         Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
         Global::debug(1, "fonts") << "Font directory " << fontsDirectory.path() << endl;
@@ -1725,13 +1725,13 @@ static vector<string> findFonts(){
            }
            */
         // DEFAULT (blank)
-        fonts.push_back("default");
+        fonts.push_back(new Menu::DefaultFontInfo());
         for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
-            fonts.push_back(Filesystem::cleanse(*it).path());
+            fonts.push_back(new Menu::RelativeFontInfo(Filesystem::cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
 
         for (vector<Filesystem::AbsolutePath>::iterator it = otfFonts.begin(); it != otfFonts.end(); it++){
-            fonts.push_back(Filesystem::cleanse(*it).path());
+            fonts.push_back(new Menu::RelativeFontInfo(Filesystem::cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
 
     } catch (const Filesystem::NotFound & e){
@@ -1795,14 +1795,7 @@ void OptionSelectFont::logic(){
     switch (typeAdjust){
         case fontName:{
 	    std::string name;
-            /* FIXME
-	    if (Configuration::getMenuFont() == NULL){
-		name = "Default";
-	    } else {
-		name = Configuration::getMenuFont()->getFont().path();
-	    }
-            */
-		
+            name = Configuration::getMenuFont()->getName();
             setText("Current Font: " + name);
             break;
 	}
@@ -1884,11 +1877,9 @@ void OptionSelectFont::nextIndex(bool forward){
     int index = 0;
     if (Configuration::getMenuFont() != NULL){
 	for (unsigned int i = 0 ; i < fonts.size() ; ++i){
-            /* FIXME
 	    if (Configuration::getMenuFont() == fonts[i]){
 		index = i;
 	    }
-            */
 	}
     }
 
@@ -1903,6 +1894,8 @@ void OptionSelectFont::nextIndex(bool forward){
 	    index = (int)fonts.size()-1;
 	}
     }
+
+    Configuration::setMenuFont(fonts[index]);
 
     /* FIXME */
     /*

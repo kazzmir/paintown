@@ -304,8 +304,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     copy.setY( 0 );
                     // copy.setZ( preview.getHeight() - stand );
                     copy.setZ(preview.getHeight() - stand);
-                    preview.fill( Bitmap::MaskColor() );
-                    reflection.fill( Bitmap::MaskColor() );
+                    preview.fill(Bitmap::MaskColor());
+                    reflection.fill(Bitmap::MaskColor());
                     // preview.fill( 0 );
                     // reflection.fill( 0 );
 
@@ -318,6 +318,12 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     s2.draw( 0, preview.getHeight() - stand - stand, preview );
 
                     Bitmap::transBlender( 0, 0, 0, 128 );
+                    /* TODO: implement a fading reflection. compute the alpha for each y line.
+                     * start out with alpha of 128 then slowly move towards 64 at the middle
+                     * of the sprite and then fade to 0 soon after, like after another 10
+                     * pixels.
+                     * alpha(y) = y < height/2 : 128 * y/height/2 * 100 ? alpha(64) * log(y)
+                     */
                     reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
                     copy.draw( &preview, 0, 0 );
 

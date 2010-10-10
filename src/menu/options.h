@@ -4,8 +4,9 @@
 #include "menu_option.h"
 #include "input/input-map.h"
 #include "util/file-system.h"
-
 #include "level/utils.h"
+#include "util/pointer.h"
+#include "font-info.h"
 
 class Token;
 
@@ -477,9 +478,7 @@ private:
     int lblue, lgreen;
     int rblue, rgreen;
     
-    // fonts
-    /* FIXME: change this to Filesystem::RelativePath */
-    std::vector<std::string> fonts;
+    std::vector<Util::ReferenceCount<Menu::FontInfo> > fonts;
     
     void nextIndex(bool forward);
 

@@ -37,6 +37,8 @@ class FontInfo {
 	    this->font = font;
 	}
 
+        virtual std::string getName() const;
+
 	virtual const Filesystem::RelativePath getFont(const FontInfo & next) const;
 	
 	inline void setWidth(int width){
@@ -61,12 +63,19 @@ class FontInfo {
 	int height;
 };
 
+class RelativeFontInfo: public FontInfo {
+public:
+    RelativeFontInfo();
+    RelativeFontInfo(const Filesystem::RelativePath & font, int width, int height);
+};
+
 class DefaultFontInfo: public FontInfo {
 public:
     virtual const Font & get() const;
     virtual const Font & get(const Font & next) const;
     virtual const FontInfo & get(const FontInfo & next) const;
     virtual const Filesystem::RelativePath getFont(const FontInfo & next) const;
+    virtual std::string getName() const;
 };
 
 }

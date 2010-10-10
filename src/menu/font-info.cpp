@@ -40,6 +40,10 @@ const Font & FontInfo::get() const {
     return Font::getFont(font, width, height);
 }
 
+std::string FontInfo::getName() const {
+    return font.path();
+}
+
 const Font & FontInfo::get(const Font & next) const {
     // Check for override from system and return that instead otherwise continue
     /*
@@ -81,5 +85,18 @@ const FontInfo & DefaultFontInfo::get(const FontInfo & next) const {
 const Font & DefaultFontInfo::get() const {
     throw Exception::Base(__FILE__, __LINE__);
 }
+    
+std::string DefaultFontInfo::getName() const {
+    return "Default";
+}
+
+RelativeFontInfo::RelativeFontInfo(){
+}
+
+RelativeFontInfo::RelativeFontInfo(const Filesystem::RelativePath & font, int width, int height):
+FontInfo(font, width, height){
+}
+
+
 
 }
