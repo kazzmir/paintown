@@ -45,53 +45,53 @@ void PopupBox::close(){
 
 
 void PopupBox::doFade(){
-    switch ( fadeState ){
-	case FadeIn: {
-        board.location.growTo(location, 0.0025 * fadeSpeed);
-	    if (board.colors.borderAlpha < colors.borderAlpha){
-            board.colors.borderAlpha += (int)(fadeSpeed/2);
-            if (board.colors.borderAlpha >= colors.borderAlpha){
-                board.colors.borderAlpha = colors.borderAlpha;
+    switch (fadeState){
+        case FadeIn: {
+            board.location.growTo(location, 0.0025 * fadeSpeed);
+            if (board.colors.borderAlpha < colors.borderAlpha){
+                board.colors.borderAlpha += (int)(fadeSpeed/2);
+                if (board.colors.borderAlpha >= colors.borderAlpha){
+                    board.colors.borderAlpha = colors.borderAlpha;
+                }
             }
-        }
-        if (board.colors.bodyAlpha < colors.bodyAlpha){
-            board.colors.bodyAlpha += (int)(fadeSpeed/2);
-            if (board.colors.bodyAlpha >= colors.bodyAlpha){
-                board.colors.bodyAlpha = colors.bodyAlpha;
+            if (board.colors.bodyAlpha < colors.bodyAlpha){
+                board.colors.bodyAlpha += (int)(fadeSpeed/2);
+                if (board.colors.bodyAlpha >= colors.bodyAlpha){
+                    board.colors.bodyAlpha = colors.bodyAlpha;
+                }
             }
-        }
 
-	    if (board.location == location && board.colors.bodyAlpha == colors.bodyAlpha && board.colors.borderAlpha == colors.borderAlpha){
-		    fadeState = Open;
-	    }
+            if (board.location == location && board.colors.bodyAlpha == colors.bodyAlpha && board.colors.borderAlpha == colors.borderAlpha){
+                fadeState = Open;
+            }
 
-	    break;
-	}
-	case FadeOut: {
-	    Coordinate coord;
-        coord.center(location);
-        board.location.growTo(coord, 0.0025 * fadeSpeed);
-        
-	    if (board.colors.borderAlpha > 0){
-            board.colors.borderAlpha -= (int)(fadeSpeed/2);
-            if (board.colors.borderAlpha <= 0){
-                board.colors.borderAlpha = 0;
+            break;
+        }
+        case FadeOut: {
+            Coordinate coord;
+            coord.center(location);
+            board.location.growTo(coord, 0.0025 * fadeSpeed);
+
+            if (board.colors.borderAlpha > 0){
+                board.colors.borderAlpha -= (int)(fadeSpeed/2);
+                if (board.colors.borderAlpha <= 0){
+                    board.colors.borderAlpha = 0;
+                }
             }
-        }
-        if (board.colors.bodyAlpha > 0){
-            board.colors.bodyAlpha -= (int)(fadeSpeed/2);
-            if (board.colors.bodyAlpha <= 0){
-                board.colors.bodyAlpha = 0;
+            if (board.colors.bodyAlpha > 0){
+                board.colors.bodyAlpha -= (int)(fadeSpeed/2);
+                if (board.colors.bodyAlpha <= 0){
+                    board.colors.bodyAlpha = 0;
+                }
             }
+            if (board.location.empty() && board.colors.borderAlpha == 0 && board.colors.bodyAlpha == 0){
+                fadeState = Closed;
+            }
+            break;
         }
-        if (board.location.empty() && board.colors.borderAlpha == 0 && board.colors.bodyAlpha == 0){
-            fadeState = Closed;
-        }
-	    break;
-	}
-	case Open:
-	case Closed:
-	default:
-	    break;
+        case Open:
+        case Closed:
+        default:
+            break;
     }
 }

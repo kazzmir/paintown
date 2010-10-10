@@ -53,8 +53,7 @@ Menu::Point::~Point(){
 
 Menu::InfoBox::InfoBox():
 state(NotActive),
-fadeAlpha(0),
-lastFont(NULL){
+fadeAlpha(0){
     popup.setFadeSpeed(20);
 }
 
@@ -104,7 +103,6 @@ void Menu::InfoBox::render(const Bitmap &){
 }
 
 void Menu::InfoBox::render(const Bitmap & bmp, const Font & vFont){
-    computeDimensions(vFont);
     popup.render(bmp);
     
     // const Font & vFont = Configuration::getMenuFont()->get(*font);
@@ -146,13 +144,7 @@ void Menu::InfoBox::close(){
 }
 
 /* dimensions are computed lazily when we get a font, but only compute once per font */
-void Menu::InfoBox::computeDimensions(const Font & font){
-    if (lastFont != &font){
-        lastFont = &font;
-    } else {
-        return;
-    }
-
+void Menu::InfoBox::initialize(const Font & font){
     int maxWidth = 0;
     int height = 0;
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
@@ -164,7 +156,6 @@ void Menu::InfoBox::computeDimensions(const Font & font){
     }
 
     location.setDimensions(maxWidth, height);
-    popup.location = location;
 }
 
 void Menu::InfoBox::setText(const std::string & info){
@@ -236,6 +227,7 @@ Menu::ValueHolder::ValueHolder(const std::string & name):
 name(name),
 location(0){
 }
+
 Menu::ValueHolder::~ValueHolder(){
 }
 
@@ -390,7 +382,7 @@ void Menu::Renderer::setFont(const Util::ReferenceCount<FontInfo> & font){
 }
 */
 
-void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defaults, Context & context){
+void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defaults, Context & context, const Font & font){
     if (text.empty()){
         return;
     }
@@ -400,6 +392,7 @@ void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defau
     ::Menu::InfoBox * temp = new ::Menu::InfoBox();
     // temp->setFont(context.getFont());
     temp->setText(text);
+    temp->initialize(font);
     const int width = temp->location.getWidth();
     const int height = temp->location.getHeight();
     temp->location.setPosition(Gui::AbsolutePoint(context.getInfoLocation().getX() - width/2, context.getInfoLocation().getY() - height/2));
@@ -523,21 +516,24 @@ void Menu::DefaultRenderer::initialize(Context & context){
     menu.setList(toContextList(options));
     menu.open();
     
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     // Menu info
     if (!context.getMenuInfoText().empty()){
         menuInfo.setText(context.getMenuInfoText());
+        menuInfo.initialize(font);
         const int width = menuInfo.location.getWidth();
         const int height = menuInfo.location.getHeight();
         menuInfo.location.setPosition(Gui::AbsolutePoint(context.getMenuInfoLocation().getX() - width/2, context.getMenuInfoLocation().getY() - height/2));
         // have to pass the dimensions back in to correct proper placement
-        menuInfo.location.setPosition2(Gui::AbsolutePoint(menuInfo.location.getX() + width,menuInfo.location.getY() + height));
+        menuInfo.location.setPosition2(Gui::AbsolutePoint(menuInfo.location.getX() + width, menuInfo.location.getY() + height));
         menuInfo.location.setRadius(menu.location.getRadius());
         menuInfo.colors = menu.colors;
     }
+    
     menuInfo.open();
     
     // Add first info option
-    addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+    addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
 }
 
 void Menu::DefaultRenderer::finish(){
@@ -571,17 +567,18 @@ void Menu::DefaultRenderer::addOption(MenuOption * opt){
 }
 
 void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     switch(action){
         case Up:
             if (menu.previous()){
                 context.playSound(Up);
-                addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+                addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             }
             break;
         case Down:
             if (menu.next()){
                 context.playSound(Down);
-                addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+                addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             }
             break;
         case Left:
@@ -606,7 +603,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             }
             // setFont(context.getFont());
             context.playMusic();
-            addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+            addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             break;
         case Cancel:
             context.playSound(Cancel);
@@ -788,9 +785,11 @@ void Menu::TabRenderer::initialize(Context & context){
     }
     //menu.open();
     
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     // Menu info
     if (!context.getMenuInfoText().empty()){
         menuInfo.setText(context.getMenuInfoText());
+        menuInfo.initialize(font);
         const int width = menuInfo.location.getWidth();
         const int height = menuInfo.location.getHeight();
         menuInfo.location.setPosition(Gui::AbsolutePoint(context.getMenuInfoLocation().getX() - width/2, context.getMenuInfoLocation().getY() - height/2));
@@ -799,10 +798,11 @@ void Menu::TabRenderer::initialize(Context & context){
         menuInfo.location.setRadius(menu.location.getRadius());
         menuInfo.colors = menu.colors;
     }
+
     menuInfo.open();
     
     // Add first info option
-    addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+    addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
     
 }
 
@@ -837,28 +837,29 @@ void Menu::TabRenderer::addOption(MenuOption * opt){
 }
 
 void Menu::TabRenderer::doAction(const Actions & action, Context & context){
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     switch(action){
         case Up:
             menu.up();
             context.playSound(Up);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Down:
             menu.down();
             context.playSound(Down);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Left:
             menu.left();
             // setFont(context.getFont());
 	    context.playSound(Up);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Right:
             menu.right();
             // setFont(context.getFont());
 	    context.playSound(Down);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context);
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Select:
             try{
@@ -874,7 +875,7 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
             }
 	    // setFont(context.getFont());
             context.playMusic();
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context); 
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             break;
         case Cancel:
             context.playSound(Cancel);

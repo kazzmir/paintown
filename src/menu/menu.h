@@ -61,9 +61,7 @@ class InfoBox: public Gui::Widget {
             this->font = font;
         }
         */
-    protected:
-
-        virtual void computeDimensions(const Font & font);
+        virtual void initialize(const Font & font);
         
     private:
         enum State{
@@ -81,7 +79,6 @@ class InfoBox: public Gui::Widget {
         int fadeAlpha;
         
         std::vector<std::string> text;
-        const Font * lastFont;
 };
 
 class MenuException : public Exception::Base{
@@ -205,7 +202,7 @@ class Renderer{
         InfoBox menuInfo;
         
         /*! Add info box */
-        virtual void addInfo(const std::string &, const Gui::Widget &, Context &);
+        virtual void addInfo(const std::string &, const Gui::Widget &, Context &, const Font &);
         
         /*! act info box */
         virtual void actInfo();
