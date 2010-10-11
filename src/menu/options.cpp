@@ -1713,6 +1713,51 @@ static bool sortInfo(const Util::ReferenceCount<Menu::FontInfo> & info1,
     return name1 < name2;
 }
 
+static bool isWindows(){
+#ifdef WINDOWS
+    return true;
+#else
+    return false;
+#endif
+}
+
+static bool isOSX(){
+#ifdef MACOSX
+    return true;
+#else
+    return false;
+#endif
+}
+
+template <class X>
+static vector<X> operator+(const vector<X> & v1, const vector<X> & v2){
+    vector<X> out;
+    for (typename vector<X>::const_iterator it = v1.begin(); it != v1.end(); it++){
+        out.push_back(*it);
+    }
+    for (typename vector<X>::const_iterator it = v2.begin(); it != v2.end(); it++){
+        out.push_back(*it);
+    }
+    return out;
+}
+
+static vector<Filesystem::AbsolutePath> findSystemFonts(){
+    if (isWindows()){
+        const char * windows = getenv("windir");
+        if (windows != NULL){
+            return Filesystem::getFilesRecursive(Filesystem::AbsolutePath(string(windows) + "/fonts"), "*.ttf");
+        }
+        return vector<Filesystem::AbsolutePath>();
+    } else if (isOSX()){
+        return Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/Library/Fonts"), "*.ttf");
+    } else {
+        /* assume unix/linux conventions */
+        return Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/usr/share/fonts/truetype"), "*.ttf") + 
+               Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/usr/local/share/fonts/truetype"), "*.ttf");
+
+    }
+}
+
 static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
     vector<Util::ReferenceCount<Menu::FontInfo> > fonts;
     try{
@@ -1742,7 +1787,7 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
         }
         
         /* linux specific fonts */
-        vector<Filesystem::AbsolutePath> systemFonts = Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/usr/share/fonts/truetype"), "*.ttf");
+        vector<Filesystem::AbsolutePath> systemFonts = findSystemFonts();
         for (vector<Filesystem::AbsolutePath>::iterator it = systemFonts.begin(); it != systemFonts.end(); it++){
             Global::debug(1) << "Adding system font `" << (*it).path() << "'" << endl;
             fonts.push_back(new Menu::AbsoluteFontInfo(*it, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));

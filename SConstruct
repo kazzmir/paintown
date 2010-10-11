@@ -749,6 +749,10 @@ pspnet_inet
         #env['RANLIB'] = 'llvm-ranlib'
         return env
     def raw():
+        defines = []
+        if isOSX():
+            defines.append(['MACOSX'])
+            # env.Append(CPPDEFINES = 'MACOSX')
         cflags = []
         if debug:
             # for gcov:
@@ -773,21 +777,21 @@ pspnet_inet
             SCons.Tool.zip.generate(env)
             return env
         elif useMingw():
-            return Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw', 'zip'])
+            return Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw', 'zip'])
         else:
             if useIntel():
                 print "Using the intel compiler"
-                return intel(Environment(ENV = os.environ, CCFLAGS = cflags))
+                return intel(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useWii():
                 if isWindows():
-                    return wii(Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw']))
-                return wii(Environment(ENV = os.environ, CCFLAGS = cflags))
+                    return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
+                return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useMinpspw():
-                return minpspw(Environment(ENV = os.environ, CCFLAGS = cflags, tools = ['mingw']))
+                return minpspw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useLLVM():
-                return llvm(Environment(ENV = os.environ, CCFLAGS = cflags))
+                return llvm(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             else:
-                return Environment(ENV = os.environ, CCFLAGS = cflags)
+                return Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags)
     def add_peg(env):
         env['PEG_MAKE'] = 'Creating peg parser $TARGET'
         return env

@@ -242,8 +242,8 @@ def dumbLibrary(env):
 def hawknlLibrary(env):
     hawkEnv = env.Clone()
     env = hawkEnv
-    if isOSX():
-        env.Append(CPPDEFINES = 'MACOSX')
+    # if isOSX():
+    #    env.Append(CPPDEFINES = 'MACOSX')
     return env.SConscript('hawknl/SConscript', exports = ['env'])
 
 def main():
