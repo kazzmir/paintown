@@ -1706,6 +1706,13 @@ static string joinPaths(const vector<Filesystem::AbsolutePath> & strings, const 
     return out.str();
 }
 
+static bool sortInfo(const Util::ReferenceCount<Menu::FontInfo> & info1, 
+                     const Util::ReferenceCount<Menu::FontInfo> & info2){
+    string name1 = Util::lowerCaseAll(info1->getName());
+    string name2 = Util::lowerCaseAll(info2->getName());
+    return name1 < name2;
+}
+
 static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
     vector<Util::ReferenceCount<Menu::FontInfo> > fonts;
     try{
@@ -1726,7 +1733,6 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
            }
            */
         // DEFAULT (blank)
-        fonts.push_back(new Menu::DefaultFontInfo());
         for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
             fonts.push_back(new Menu::RelativeFontInfo(Filesystem::cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
@@ -1742,6 +1748,9 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
             fonts.push_back(new Menu::AbsoluteFontInfo(*it, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
 
+        sort(fonts.begin(), fonts.end(), sortInfo);
+        
+        fonts.insert(fonts.begin(), new Menu::DefaultFontInfo());
     } catch (const Filesystem::NotFound & e){
         throw LoadException(__FILE__, __LINE__, e, "Could not load font");
     }
