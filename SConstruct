@@ -751,22 +751,22 @@ pspnet_inet
     def raw():
         defines = []
         if isOSX():
-            defines.append(['MACOSX'])
+            defines.append('MACOSX')
             # env.Append(CPPDEFINES = 'MACOSX')
         cflags = []
         if debug:
             # for gcov:
             # ['-fprofile-arcs', '-ftest-coverage']
             # cflags.append( ['-g3','-ggdb', '-Werror'])
-            cflags.append( ['-g3','-ggdb'])
+            cflags.extend(['-g3','-ggdb'])
         else:
             # -march=native
             if nativeCompile():
-                cflags.append(['-O2', '-g', '-pipe', '-march=native'])
+                cflags.extend(['-O2', '-g', '-pipe', '-march=native'])
                 if not enableProfiled():
-                    cflags.append(['-fomit-frame-pointer'])
+                    cflags.extend(['-fomit-frame-pointer'])
             else:
-                cflags.append(['-O2'])
+                cflags.extend(['-O2'])
 
         if isCygwin():
             import SCons.Tool.zip
