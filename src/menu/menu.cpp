@@ -1278,7 +1278,7 @@ public:
 
 void Menu::Menu::setupDefaultLanguage(const Context & context, const Menu::Menu & parent){
     LanguageMenu menu(parent);
-    menu.setFont(new FontInfo(Filesystem::RelativePath(sharedFont),sharedFontWidth, sharedFontHeight));
+    menu.setFont(new RelativeFontInfo(Filesystem::RelativePath(sharedFont),sharedFontWidth, sharedFontHeight));
     Configuration::setLanguage("English");
     try{
         menu.run(context);
@@ -1560,7 +1560,7 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 			/*context.setFont(Filesystem::RelativePath(font));
 			context.setFontWidth(w);
 			context.setFontHeight(h);*/
-			context.setFont(new FontInfo(Filesystem::RelativePath(font), w, h));
+			context.setFont(new RelativeFontInfo(Filesystem::RelativePath(font), w, h));
 		    } catch (const MenuException & ex){
 		    }
 		} else if ( *tok == "action"){
