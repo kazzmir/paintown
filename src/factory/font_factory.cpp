@@ -36,6 +36,12 @@ void FontFactory::destroy(){
         delete my_factory;
     }
 }
+    
+void FontFactory::clear(){
+    if (my_factory != NULL){
+        my_factory->_clear();
+    }
+}
 
 Font * FontFactory::getRealFont(const Filesystem::AbsolutePath & path, int x, int y){
     if (font_mapper.find(path.path()) == font_mapper.end()){
@@ -70,18 +76,29 @@ Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int
     // return font_mapper[ str ];
 }
 
+void FontFactory::_clear(){
+    for (map<string,Font*>::iterator it = font_mapper.begin(); it != font_mapper.end(); it++){
+        Font * s = (*it).second;
+        delete s;
+    }
+    font_mapper.clear();
+#ifdef USE_ALLEGRO
+    font_mapper["bios"] = new AllegroFont(::font);
+#endif
+}
+
 FontFactory::FontFactory(){
     // my_data = load_datafile(Filesystem::find(Filesystem::RelativePath("fonts.dat")).path().c_str());
 #ifdef USE_ALLEGRO
-    font_mapper[ "bios" ] = new AllegroFont( ::font );
+    font_mapper[ "bios" ] = new AllegroFont(::font);
 #endif
 }
 
 FontFactory::~FontFactory(){
-	for ( map<string,Font*>::iterator it = font_mapper.begin(); it != font_mapper.end(); it++ ){
-		Font * s = (*it).second;
-		delete s;
-	}
+    for ( map<string,Font*>::iterator it = font_mapper.begin(); it != font_mapper.end(); it++ ){
+        Font * s = (*it).second;
+        delete s;
+    }
         /*
 	if ( my_data != NULL ){
 		unload_datafile( my_data );

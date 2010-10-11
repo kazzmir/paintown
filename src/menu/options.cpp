@@ -23,6 +23,7 @@
 #include "game.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "factory/font_factory.h"
 #include "globals.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
@@ -1838,6 +1839,12 @@ void OptionSelectFont::logic(){
 }
 
 void OptionSelectFont::run(const Menu::Context & context){
+    /* the user probably loaded a bunch of different fonts that will
+     * never be used again, so clear the font cache
+     */
+    FontFactory::clear();
+    // throw Menu::MenuException(__FILE__, __LINE__);
+    /* throw something to quit back to the previous menu */
 }
 
 bool OptionSelectFont::leftKey(){

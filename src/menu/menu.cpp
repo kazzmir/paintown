@@ -594,7 +594,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
 		context.playSound(Right);
             }
             break;
-        case Select:
+        case Select: {
             try{
                 context.playSound(Select);
                 options[menu.getCurrentIndex()]->run(context);
@@ -604,8 +604,11 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             }
             // setFont(context.getFont());
             context.playMusic();
+            /* font might have been recreated */
+            const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
             addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             break;
+        }
         case Cancel:
             context.playSound(Cancel);
             throw Exception::Return(__FILE__, __LINE__);

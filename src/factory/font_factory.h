@@ -11,6 +11,12 @@ class Font;
 class Collector;
 
 class FontFactory{
+public:
+    /* clear the cache. if anyone has a reference to an existing Font object a crash
+     * is likely to occur!
+     */
+    static void clear();
+
 private:
     friend class Collector;
     friend class Font;
@@ -25,6 +31,7 @@ private:
 
     Font * getRealFont(const Filesystem::RelativePath & str, const int x, const int y );
     Font * getRealFont(const Filesystem::AbsolutePath & str, int x, int y );
+    void _clear();
 
 private:
     static FontFactory * my_factory;
