@@ -607,6 +607,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             /* font might have been recreated */
             const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
             addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
+            menuInfo.initialize(font);
             break;
         }
         case Cancel:
@@ -1105,7 +1106,7 @@ void Menu::Context::render(Renderer * renderer, const Bitmap & bmp){
     
     // Menu
     if (renderer){
-        renderer->render(bmp, getFont()->get());
+        renderer->render(bmp, Configuration::getMenuFont()->get(getFont()->get()));
     }
     
     if (background){

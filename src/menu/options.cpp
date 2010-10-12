@@ -1768,16 +1768,6 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
         vector<Filesystem::AbsolutePath> otfFonts = Filesystem::getFiles(fontsDirectory, "*.otf");
         Global::debug(1, "fonts") << "Found otf fonts " << joinPaths(otfFonts, ", ") << endl;
 
-        /*
-           std::back_insert_iterator< std::vector<Filesystem::AbsolutePath> > inserter(fonts);
-           copy(ttfFonts.begin(), ttfFonts.end(), inserter);
-           copy(otfFonts.begin(), otfFonts.end(), inserter);
-           for (vector<Filesystem::AbsolutePath>::iterator it = fonts.begin(); it != fonts.end(); it++){
-           Filesystem::AbsolutePath & name = *it;
-           name = Filesystem::cleanse(name).path();
-           }
-           */
-        // DEFAULT (blank)
         for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
             fonts.push_back(new Menu::RelativeFontInfo(Filesystem::cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
@@ -1795,6 +1785,7 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
 
         sort(fonts.begin(), fonts.end(), sortInfo);
         
+        // DEFAULT (blank)
         fonts.insert(fonts.begin(), new Menu::DefaultFontInfo());
     } catch (const Filesystem::NotFound & e){
         throw LoadException(__FILE__, __LINE__, e, "Could not load font");
