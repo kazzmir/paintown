@@ -27,6 +27,7 @@ test/util/token.cpp
 test/util/tokenreader.cpp
 test/util/token_exception.cpp
 test/mugen/ast/ast.cpp
+test/menu/font-info.cpp
 test/input/keyboard.cpp
 test/util/bitmap.cpp
 test/util/funcs.cpp
@@ -52,10 +53,6 @@ test/level/utils.cpp
 test/util/sound.cpp
 test/factory/object_factory.cpp
 test/environment/atmosphere.cpp
-test/environment/rain_atmosphere.cpp
-test/environment/fog_atmosphere.cpp
-test/environment/snow_atmosphere.cpp
-test/environment/night_atmosphere.cpp
 test/resource.cpp
 test/object/actor.cpp
 test/object/animation.cpp

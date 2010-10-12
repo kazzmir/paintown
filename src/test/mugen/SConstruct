@@ -44,6 +44,7 @@ test/input/allegro/allegro-joystick.cpp
 test/input/sdl/joystick.cpp
 test/globals.cpp
 test/debug.cpp
+test/menu/font-info.cpp
 test/configuration.cpp
 test/util/events.cpp
 test/util/thread.cpp
@@ -100,6 +101,7 @@ test/mugen/item.cpp
 test/mugen/parse-cache.cpp
 test/mugen/characterhud.cpp
 test/gui/rectarea.cpp
+test/menu/font-info.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
