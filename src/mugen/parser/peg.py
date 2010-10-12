@@ -1755,6 +1755,7 @@ if (%s != '\\0' && strchr("%s", %s) != NULL){
             if pattern.options == "{case}":
                 comparison = "compareCharCase"
             data = """
+%s.setValue(Value((void*) "%s"));
 for (int i = 0; i < %d; i++){
     if (%s("%s"[i], %s.get(%s.getPosition()))){
         %s.nextPosition();
@@ -1762,19 +1763,18 @@ for (int i = 0; i < %d; i++){
         %s
     }
 }
-%s.setValue(Value((void*) "%s"));
-    """ % (length, comparison, pattern.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())), result, pattern.letters.replace('"', '\\"'))
+    """ % (result, pattern.letters.replace('"', '\\"'), length, comparison, pattern.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())))
             return data
         def doAscii():
             data = """
+%s.setValue(Value((void*) %s));
 if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
     %s.nextPosition();
 } else {
     %s
 }
-%s.setValue(Value((void*) %s));
 """
-            return data % (stream, result, pattern.letters, result, indent(failure()), result, pattern.letters)
+            return data % (result, pattern.letters, stream, result, pattern.letters, result, indent(failure()))
 
         if type(pattern.letters) == type('x'):
             return doString()

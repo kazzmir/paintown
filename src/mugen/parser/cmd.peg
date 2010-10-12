@@ -401,14 +401,20 @@ double * parseDouble(const Value & left, const Value & right){
     return number;
 }
 
-Ast::Identifier * makeSimpleIdentifier(const std::string & str){
-    Ast::Identifier * identifier = new Ast::SimpleIdentifier(str);
+Ast::Identifier * makeSimpleIdentifier(int line, int column, const std::string & str){
+    Ast::Identifier * identifier = new Ast::SimpleIdentifier(line, column, str);
     GC::save(identifier);
     return identifier;
 }
 
 Ast::Attribute * makeAttribute(const char * name, const Value & data){
-    Ast::AttributeSimple * object = new Ast::AttributeSimple(makeSimpleIdentifier(std::string(name)), as<Ast::Value*>(data));
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(makeSimpleIdentifier(-1, -1, std::string(name)), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
+}
+
+Ast::Attribute * makeAttribute(int line, int column, const char * name, const Value & data){
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(makeSimpleIdentifier(line, column, std::string(name)), as<Ast::Value*>(data));
     GC::save(object);
     return object;
 }
@@ -575,7 +581,19 @@ rules:
                         value = makeAttribute("guardsound", Value(makeValueList2(item, group)));
                     }
                }}
-               | line:<line> "sparkno"{case} s "=" s own:"s"{case}? exp:expr {{ value = makeAttribute("sparkno", exp); }}
+               | line:<line> "sparkno"{case} s "=" s own:"s"{case}? exp:expr {{
+                   /* TODO: handle own */
+                   value = makeAttribute("sparkno", exp);
+               }}
+               | line:<line> "anim"{case} s "=" s own:"s"{case}? exp:expr {{
+                   const char * name = "anim";
+                   if (own.getValue() != 0){
+                       name = "anim-own";
+                   }
+                   /* TODO: add line number information */
+
+                   value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp);
+               }}
                | line:<line> "hitsound"{case} s "=" s own:"s"{case}? exp1:expr_c s "," s exp2:expr {{
                    const char * name = "hitsound";
                    if (own.getValue() != 0){

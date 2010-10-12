@@ -1930,6 +1930,7 @@ public:
         posX(NULL),
         posY(NULL),
         animation(NULL),
+        ownAnimation(false),
         darken(NULL),
         p2defmul(NULL),
         poweradd(NULL),
@@ -1957,6 +1958,7 @@ public:
     Compiler::Value * posX;
     Compiler::Value * posY;
     Compiler::Value * animation;
+    bool ownAnimation;
     Compiler::Value * darken;
     Compiler::Value * p2defmul;
     Compiler::Value * poweradd;
@@ -1986,6 +1988,9 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
                     super.time = Compiler::compile(simple.getValue());
+                } else if (simple == "anim-own"){
+                    super.animation = Compiler::compile(simple.getValue());
+                    super.ownAnimation = true;
                 } else if (simple == "anim"){
                     super.animation = Compiler::compile(simple.getValue());
                 } else if (simple == "darken"){
@@ -2078,6 +2083,7 @@ public:
         /* FIXME: handle darken, p2defmul, unhittable */
 
         playSound(guy, env);
+        /* TODO: handle ownAnimation */
         stage.doSuperPause(time, animation, x, y);
     }
 };
