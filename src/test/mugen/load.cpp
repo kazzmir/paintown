@@ -36,27 +36,30 @@ static void showMemory(){
 }
 */
 
-static void load(const char * path){
+static int load(const char * path){
     // showMemory();
     for (int i = 0; i < 1; i++){
-    try{
-        TimeDifference diff;
-        diff.startTime();
-        Global::debug(0) << "Loading " << path << endl;
-        Mugen::Character kfm(Filesystem::find(Filesystem::RelativePath(path)));
-        kfm.load();
-        diff.endTime();
-        Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
-        /*
-        int * x = new int[1 << 21];
-        delete[] x;
-        */
-    } catch (const MugenException & e){
-        Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
-    } catch (const Filesystem::NotFound & e){
-        Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
+        try{
+            TimeDifference diff;
+            diff.startTime();
+            Global::debug(0) << "Loading " << path << endl;
+            Mugen::Character kfm(Filesystem::find(Filesystem::RelativePath(path)));
+            kfm.load();
+            diff.endTime();
+            Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
+            /*
+               int * x = new int[1 << 21];
+               delete[] x;
+               */
+        } catch (const MugenException & e){
+            Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
+            return 1;
+        } catch (const Filesystem::NotFound & e){
+            Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
+            return 1;
+        }
     }
-    }
+    return 0;
     // showMemory();
 }
 
@@ -73,10 +76,11 @@ int main(int argc, char ** argv){
     Global::setDebug(1);
     Mugen::ParseCache cache;
 
+    int die = 0;
     if (argc < 2){
-        load("mugen/chars/kfm/kfm.def");
+        die = load("mugen/chars/kfm/kfm.def");
     } else {
-        load(argv[1]);
+        die = load(argv[1]);
     }
 
 #ifdef USE_SDL
@@ -85,6 +89,7 @@ int main(int argc, char ** argv){
 
     // for (int i = 0; i < 3; i++){
       // }
+    return die;
 }
 #ifdef USE_ALLEGRO
 END_OF_MAIN()
