@@ -38,7 +38,7 @@ stimulationType(copy.stimulationType),
 stimulationValue(copy.stimulationValue){
 }
 
-BlockObject::BlockObject( Token * tok ) throw (LoadException):
+BlockObject::BlockObject(const Token * tok):
 type(ObjectFactory::NoneType),
 aggression( -1 ),
 map( 0 ),
@@ -48,14 +48,15 @@ coords_z( 0 ),
 id(-1),
 stimulationType( "none" ),
 stimulationValue( 0 ){
-    while ( tok->hasTokens() ){
+    TokenView view = tok->view();
+    while (view.hasMore()){
         try{
-            Token * current;
-            *tok >> current;
+            const Token * current;
+            view >> current;
 
             if ( *current == "type" ){
                 string k;
-                *current >> k;
+                current->view() >> k;
                 if ( k == "item" ){
                     type = ObjectFactory::ItemType;
                 } else if ( k == "enemy" ){
@@ -71,51 +72,51 @@ stimulationValue( 0 ){
             } else if ( *current == "stimulation" ){
                 string type;
                 int value;
-                Token * next;
-                *current >> next;
+                const Token * next;
+                current->view() >> next;
                 type = next->getName();
-                *next >> value;
-                setStimulationValue( value );
-                setStimulationType( type );
+                next->view() >> value;
+                setStimulationValue(value);
+                setStimulationType(type);
             } else if (*current == "id"){
                 int id;
-                *current >> id;
+                current->view() >> id;
                 setId(id);
                 ObjectFactory::maxId(id);
             } else if ( *current == "path" ){
                 string n;
-                *current >> n;
+                current->view() >> n;
                 setPath(Filesystem::find(Filesystem::RelativePath(n)));
             } else if ( *current == "aggression" ){
                 int a;
-                *current >> a;
-                setAggression( a );
+                current->view() >> a;
+                setAggression(a);
             } else if ( *current == "name" ){
                 string n;
-                *current >> n;
+                current->view() >> n;
                 if ( n.length() > 0 && (n[0] >= 'a' && n[0] <= 'z') ){
                     n[0] = (char)(n[0] - 'a' + 'A');
                 }
                 setName( n );
             } else if ( *current == "alias" ){
                 string n;
-                *current >> n;
+                current->view() >> n;
                 if ( n.length() > 0 && (n[0] >= 'a' && n[0] <= 'z') )
                     n[0] = (char)(n[0] - 'a' + 'A');
                 setAlias( n );
             } else if ( *current == "coords" ){
                 int x, z;
-                *current >> x >> z;
+                current->view() >> x >> z;
                 setCoords( x, z );
             } else if ( *current == "health" ){
                 int h;
-                *current >> h;
+                current->view() >> h;
                 setHealth( h );
             } else if ( *current == "at" ){
                 /* not quite sure what 'at' is */
             } else if ( *current == "map" ){
                 int m;
-                *current >> m;
+                current->view() >> m;
                 setMap( m );
             } else {
                 cout<<"Unhandled blockobject token"<<endl;

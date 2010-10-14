@@ -22,14 +22,14 @@ class OptionAdventure : public MenuOption{
         // endGame will be set true if it is a terminating option
         virtual void run(const Menu::Context &);
 
-        OptionAdventure(Token *token);
+        OptionAdventure(const Token *token);
 
         virtual ~OptionAdventure();
 };
 
 class OptionAdventureCpu : public MenuOption{
 public:
-	OptionAdventureCpu(Token *token);
+	OptionAdventureCpu(const Token *token);
 
 	// Do logic before run part
 	virtual void logic();
@@ -44,7 +44,7 @@ public:
 /* Change game mod */
 class OptionChangeMod: public MenuOption {
 public:
-    OptionChangeMod(Token *token);
+    OptionChangeMod(const Token *token);
     virtual ~OptionChangeMod();
     virtual void logic();
     virtual void run(const Menu::Context &);
@@ -64,7 +64,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionCredits(Token *token);
+    OptionCredits(const Token *token);
 
     virtual ~OptionCredits();
 private:
@@ -78,7 +78,7 @@ private:
 /*! Dummy option, to allow place fillers in menus */
 class OptionDummy : public MenuOption{
 public:
-	OptionDummy( Token *token );
+	OptionDummy( const Token *token );
 	OptionDummy( const std::string &name );
 
 	// Do logic before run part
@@ -107,7 +107,7 @@ public:
     virtual bool leftKey();
     virtual bool rightKey();
 
-    OptionFullscreen(Token *token);
+    OptionFullscreen(const Token *token);
 
     virtual ~OptionFullscreen();
 private:
@@ -133,7 +133,7 @@ class OptionInvincible : public MenuOption
     
                 virtual std::string getText();
 		
-		OptionInvincible(Token *token);
+		OptionInvincible(const Token *token);
 	
 		virtual ~OptionInvincible();
 	private:
@@ -151,7 +151,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionJoystick(Token *token);
+    OptionJoystick(const Token *token);
 
     virtual ~OptionJoystick();
 
@@ -190,7 +190,7 @@ class OptionKey : public MenuOption{
         // endGame will be set true if it is a terminating option
         virtual void run(const Menu::Context &);
 
-        OptionKey(Token *token);
+        OptionKey(const Token *token);
 
         virtual ~OptionKey();
 
@@ -223,7 +223,7 @@ class OptionKey : public MenuOption{
 /*! Handles key reconfiguration */
 class OptionLevel : public MenuOption {
 public:
-	OptionLevel(Token *token, int * set, int value);
+	OptionLevel(const Token *token, int * set, int value);
 
 	// Do logic before run part
 	virtual void logic();
@@ -257,7 +257,7 @@ public:
     
     virtual std::string getText();
 
-    OptionLives(Token *token);
+    OptionLives(const Token *token);
 
     virtual ~OptionLives();
 private:
@@ -280,7 +280,7 @@ class OptionMenu : public MenuOption {
         // endGame will be set true if it is a terminating option
         virtual void run(const Menu::Context &);
 
-        OptionMenu(Token *token);
+        OptionMenu(const Token *token);
 
         virtual ~OptionMenu();
 
@@ -299,7 +299,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionMugenMenu(Token *token);
+    OptionMugenMenu(const Token *token);
 
     virtual ~OptionMugenMenu();
 
@@ -311,7 +311,7 @@ private:
 /*! Handles key reconfiguration */
 class OptionNetworkHost : public MenuOption{
 public:
-	OptionNetworkHost(Token *token);
+	OptionNetworkHost(const Token *token);
 
 	// Do logic before run part
 	virtual void logic();
@@ -326,7 +326,7 @@ public:
 /*! Handles key reconfiguration */
 class OptionNetworkJoin : public MenuOption{
 public:
-	OptionNetworkJoin(Token *token);
+	OptionNetworkJoin(const Token *token);
 
 	// Do logic before run part
 	virtual void logic();
@@ -342,7 +342,7 @@ public:
 /*! Handles key reconfiguration */
 class OptionNpcBuddies : public MenuOption {
 public:
-	OptionNpcBuddies( Token *token );
+	OptionNpcBuddies( const Token *token );
 
 	// Do logic before run part
 	virtual void logic();
@@ -366,7 +366,7 @@ private:
 /*! Handles key reconfiguration */
 class OptionPlayMode : public MenuOption {
 public:
-    OptionPlayMode(Token *token);
+    OptionPlayMode(const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -395,7 +395,7 @@ private:
 /*! Handles key reconfiguration */
 class OptionQuit : public MenuOption {
 public:
-	OptionQuit( Token *token );
+	OptionQuit( const Token *token );
 	OptionQuit( const std::string &name );
 
 	// Do logic before run part
@@ -416,7 +416,7 @@ struct ScreenSize{
 /*! Handles key reconfiguration */
 class OptionScreenSize : public MenuOption {
 public:
-    OptionScreenSize(Token *token);
+    OptionScreenSize(const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -448,7 +448,7 @@ private:
 /*! Handles font selection */
 class OptionSelectFont : public MenuOption {
 public:
-    OptionSelectFont(Token *token);
+    OptionSelectFont(const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -501,7 +501,7 @@ class OptionSpeed : public MenuOption
 
                 virtual std::string getText();
 		
-		OptionSpeed(Token *token);
+		OptionSpeed(const Token *token);
 	
 		virtual ~OptionSpeed();
 	private:
@@ -522,7 +522,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionTabMenu(Token *token);
+    OptionTabMenu(const Token *token);
 
     virtual ~OptionTabMenu();
 
@@ -532,7 +532,7 @@ private:
 
 class OptionSound: public MenuOption {
 public:
-    OptionSound(Token *token);
+    OptionSound(const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -557,7 +557,7 @@ private:
 
 class OptionMusic: public MenuOption {
 public:
-    OptionMusic(Token *token);
+    OptionMusic(const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -582,7 +582,7 @@ private:
 
 class OptionLanguage: public MenuOption {
 public:
-    OptionLanguage(Token * token);
+    OptionLanguage(const Token * token);
     virtual void logic();
     virtual void run(const Menu::Context &);
 };

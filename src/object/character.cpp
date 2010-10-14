@@ -351,18 +351,19 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
 
     // map<string, Filesystem::AbsolutePath> remaps;
 
-    Token * n = NULL;
+    const Token * n = NULL;
     try{
 
-        while ( head->hasTokens() ){
-            *head >> n;
+        TokenView view = head->view();
+        while (view.hasMore()){
+            view >> n;
 
             if ( *n == "name" ){
-                *n >> name;
+                n->view() >> name;
                 name = Util::upcase(name);
             } else if ( *n == "anim" ){
 
-                Animation * ani = new Animation( n, this );
+                Animation * ani = new Animation(n, this);
 
                 /*
                    if ( movements[ ani->getName() ] != 0 ){
@@ -381,42 +382,42 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                 */
             } else if ( *n == "health" ){
                 int h;
-                *n >> h;
+                n->view() >> h;
                 setMaxHealth( h );
                 setHealth( h );
             } else if ( *n == "jump-velocity" ){
                 double h;
-                *n >> h;
+                n->view() >> h;
                 setJumpingYVelocity( h );
             } else if ( *n == "hit-sound" ){
                 string _snd;
-                *n >> _snd;
+                n->view() >> _snd;
                 setHit(Sound(Filesystem::find(Filesystem::RelativePath(_snd)).path()));
             } else if ( *n == "die-sound" ){
                 string _snd;
-                *n >> _snd;
+                n->view() >> _snd;
                 die_sound = new Sound(Filesystem::find(Filesystem::RelativePath(_snd)).path());
             } else if ( *n == "landed" ){
                 string st;
-                *n >> st;
+                n->view() >> st;
                 landed_sound = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
             } else if ( *n == "speed" ){
-                *n >> speed;
+                n->view() >> speed;
             } else if ( *n == "type" ){
-                *n >> type;
+                n->view() >> type;
             } else if ( *n == "shadow" ){
                 int x;
-                *n >> x;
+                n->view() >> x;
                 setShadow( x );
             } else if ( *n == "icon" ){
                 string icon_path;
-                *n >> icon_path;
+                n->view() >> icon_path;
                 // cout<<"Loading icon "<<icon_path<<endl;
                 icon = new Bitmap(Filesystem::find(Filesystem::RelativePath(icon_path)).path());
             } else if ( *n == "remap" ){
                 string first;
                 string second;
-                *n >> first >> second;
+                n->view() >> first >> second;
                 if (newRemap(first, second)){
                     addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
                 }
@@ -457,7 +458,9 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
         throw LoadException(__FILE__, __LINE__, ex, ss.str());
     } catch( const TokenException & tex ){
         cout<< "TokenException: " << tex.getTrace() << endl;
-        n->print(" ");
+        if (n != NULL){
+            n->print(" ");
+        }
         cout<<"* Dumping character"<<endl;
         head->print("*");
         // delete head;

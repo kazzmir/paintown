@@ -19,20 +19,22 @@ reader(reader){
 
 static vector<Token> getAnimations(Token * head){
     vector<Token> out;
-    while (head->hasTokens()){
-        Token * current;
-        *head >> current;
+    TokenView view = head->view();
+    /* FIXME: this code has issues.. */
+    while (view.hasMore()){
+        const Token * current;
+        view >> current;
         /* labels make this easier */
         again:
         if (*current == "anim"){
             bool done = false;
             Token top(*current);
             while (!done){
-                *head >> current;
+                view >> current;
                 if (*current == "anim"){
                     done = true;
                 } else {
-                    top.addToken(current);
+                    top.addToken((Token*) current);
                 }
                 if (!head->hasTokens()){
                     done = true;
@@ -79,7 +81,7 @@ void DisplayCharacter::load(){
         for (vector<Token>::iterator it = animations.begin(); it != animations.end(); it++){
             Token & animation = *it;
             string name;
-            animation >> name;
+            animation.view() >> name;
             // animation.resetToken();
             /* only care about the 'idle' animation */
             if (name == "idle"){

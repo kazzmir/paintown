@@ -51,43 +51,44 @@ Widget &Widget::operator=( const Widget &copy){
     return *this;
 }
 
-void Widget::setCoordinates(Token * token){
+void Widget::setCoordinates(const Token * token){
     if ( *token == "position" ){
         int x, y, width, height;
-        *token >> x >> y >> width >> height;
+        token->view() >> x >> y >> width >> height;
         AbsolutePoint pos(x, y);
         AbsolutePoint dimensions(x + width, y + height);
         location.setPosition(pos);
         location.setPosition2(dimensions);
     } else if ( *token == "relative-position" ){
         double x1, y1, x2, y2;
-        *token >> x1 >> y1 >> x2 >> y2;
+        token->view() >> x1 >> y1 >> x2 >> y2;
         RelativePoint pos(x1,y1);
         RelativePoint dimensions(x2,y2);
         location = Coordinate(pos, dimensions);
     } else if ( *token == "coordinate" ){
-        while (token->hasTokens()){
-            Token * coordToken;
-            *token >> coordToken;
+        TokenView view = token->view();
+        while (view.hasMore()){
+            const Token * coordToken;
+            view >> coordToken;
             if (*coordToken == "absolute"){
                 int x, y, width, height;
-                *coordToken >> x >> y >> width >> height;
+                coordToken->view() >> x >> y >> width >> height;
                 AbsolutePoint pos(x, y);
                 AbsolutePoint dimensions(x + width, y + height);
                 location = Coordinate(pos, dimensions);
             } else if (*coordToken == "relative"){
                 double x1, y1, x2, y2;
-                *coordToken >> x1 >> y1 >> x2 >> y2;
+                coordToken->view() >> x1 >> y1 >> x2 >> y2;
                 RelativePoint pos(x1,y1);
                 RelativePoint dimensions(x2,y2);
                 location = Coordinate(pos, dimensions);
             } else if (*coordToken == "radius"){
                 double radius;
-                *coordToken >> radius;
+                coordToken->view() >> radius;
                 location.setRadius(radius);
             } else if (*coordToken == "z"){
                 double z;
-                *coordToken >> z;
+                coordToken->view() >> z;
                 location.setZ(z);
             }
         }
@@ -101,16 +102,16 @@ void Widget::setCoordinates(Token * token){
     }
 }
 
-void Widget::setColors(Token * token){
+void Widget::setColors(const Token * token){
     if ( *token == "position-body" ) {
         // This handles the body color of the widget
         int r,g,b;
-        *token >> r >> g >> b >> colors.bodyAlpha;
+        token->view() >> r >> g >> b >> colors.bodyAlpha;
         colors.body = Bitmap::makeColor(r,g,b);
     } else if ( *token == "position-border" ) {
         // This handles the border color of the widget
         int r,g,b;
-        *token >> r >> g >> b >> colors.borderAlpha;
+        token->view() >> r >> g >> b >> colors.borderAlpha;
         colors.border = Bitmap::makeColor(r,g,b);
     } 
 }

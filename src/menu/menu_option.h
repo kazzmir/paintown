@@ -41,7 +41,7 @@ public:
         AdjustableOption
     };
 
-    MenuOption(Token *token) throw (LoadException);
+    MenuOption(const Token *token) throw (LoadException);
 
     virtual ~MenuOption();
 
@@ -77,8 +77,8 @@ public:
     inline const std::string getName(){ return this->getText(); }
 
 protected:
-    void readName(Token * token);
-    void readInfo(Token * token);
+    void readName(const Token * token);
+    void readInfo(const Token * token);
 };
 
 #endif

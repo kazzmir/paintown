@@ -7,9 +7,9 @@
 
 using namespace std;
 
-MenuOption * OptionFactory::getOption(Token *token){
-    Token * tok;
-    *token >> tok;
+MenuOption * OptionFactory::getOption(const Token *token){
+    const Token * tok;
+    token->view() >> tok;
     if ( *tok == "menu" ){
         // Create a sub menu
 	const Token * typeToken = tok->findToken("_/type");

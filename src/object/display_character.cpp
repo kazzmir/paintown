@@ -38,12 +38,13 @@ void DisplayCharacter::load(){
 
         // map<string, Filesystem::AbsolutePath> remaps;
 
-        Token * current;
-        while ( head->hasTokens() ){
-            *head >> current;
+        TokenView view = head->view();
+        const Token * current;
+        while (view.hasMore()){
+            view >> current;
             if ( *current == "name" ){
                 string n;
-                *current >> n;
+                current->view() >> n;
                 setName( n );
             } else if ( *current == "anim" ){
 
@@ -52,7 +53,7 @@ void DisplayCharacter::load(){
                     /* screw it */
                     continue;
                 }
-                current->resetToken();
+                // current->resetToken();
                 string xname;
                 name->view() >> xname;
                 /* only care about the 'idle' animation */
@@ -69,7 +70,7 @@ void DisplayCharacter::load(){
             } else if ( *current == "remap" ){
                 string first;
                 string second;
-                *current >> first >> second;
+                current->view() >> first >> second;
                 if (newRemap(first, second)){
                     addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
                 }

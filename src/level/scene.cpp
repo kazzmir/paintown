@@ -61,62 +61,65 @@ frontBuffer(NULL){
         if ( *current != "level" )
             throw LoadException(__FILE__, __LINE__, "Not a level");
 
-        while ( current->hasTokens() ){
+        TokenView view = current->view();
+        while (view.hasMore()){
             /* stop loading if a shutdown occurs */
             if (Global::shutdown()){
                 throw ShutdownException();
             }
 
-            Token * tok;
-            *current >> tok;
+            const Token * tok;
+            view >> tok;
             if ( *tok == "music" ){
-                *tok >> music;
+                tok->view() >> music;
             } else if ( *tok == "background" ){
                 string n;
-                *tok >> n;
+                tok->view() >> n;
                 background = new Bitmap(Filesystem::find(Filesystem::RelativePath(n)).path());
             } else if ( *tok == "background-parallax" ){
                 double d;
-                *tok >> d;
+                tok->view() >> d;
                 setBackgroundParallax( d );
             } else if ( *tok == "foreground-parallax" ){
                 double d;
-                *tok >> d;
+                tok->view() >> d;
                 setForegroundParallax( d );
             } else if (*tok == "description"){
-                *tok >> this->description;
+                tok->view() >> this->description;
             } else if ( *tok == "script" ){
                 string kind;
                 string scriptPath;
-                *tok >> kind >> scriptPath;
+                tok->view() >> kind >> scriptPath;
                 Script::newEngine(kind, Filesystem::RelativePath(scriptPath));
             } else if ( *tok == "atmosphere" ){
-                while (tok->hasTokens()){
+                TokenView atmosphereView = tok->view();
+                while (atmosphereView.hasMore()){
                     string s;
-                    *tok >> s;
+                    atmosphereView >> s;
                     Atmosphere * atmosphere = Atmosphere::createAtmosphere(s);
                     if (atmosphere != NULL){
                         atmospheres.push_back(atmosphere);
                     }
                 }
             } else if ( *tok == "z" ){
-                while ( tok->hasTokens() ){
-                    Token * next;
-                    *tok >> next;
+                TokenView zToken = tok->view();
+                while (zToken.hasMore()){
+                    const Token * next;
+                    zToken >> next;
                     if ( *next == "minimum" ){
                         int m;
-                        *next >> m;
+                        next->view() >> m;
                         setMinimumZ( m );
                     } else if ( *next == "maximum" ){
                         int m;
-                        *next >> m;
+                        next->view() >> m;
                         setMaximumZ( m );
                     }
                 }
             } else if ( *tok == "panel" ){
                 int num;
                 string normal, neon, s_screen;
-                *tok >> num >> normal >> neon >> s_screen;
+                tok->view() >> num >> normal >> neon >> s_screen;
 
                 Bitmap * x_normal = NULL;
                 Bitmap * x_neon = NULL;
@@ -142,17 +145,18 @@ frontBuffer(NULL){
                 triggers.push_back(trigger);
             } else if ( *tok == "block" ){
                 Block * b = new Block(tok, cacher);
-                level_blocks.push_back( b );
+                level_blocks.push_back(b);
             } else if ( *tok == "frontpanel" ){
                 string file;
-                *tok >> file;
+                tok->view() >> file;
                 Bitmap * front = new Bitmap(Filesystem::find(Filesystem::RelativePath(file)).path());
                 front_panels.push_back( front );
             } else if ( *tok == "order" ){
                 // *tok >> order;
-                while ( tok->hasTokens() ){
+                TokenView orderView = tok->view();
+                while (orderView.hasMore()){
                     int x;
-                    *tok >> x;
+                    orderView >> x;
                     order.push_back( x );
                 }
             } else {

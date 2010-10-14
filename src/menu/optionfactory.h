@@ -7,7 +7,7 @@ class MenuOption;
 class Token;
 
 namespace OptionFactory{
-    MenuOption * getOption(Token *token);
+    MenuOption * getOption(const Token *token);
 }
 
 #endif

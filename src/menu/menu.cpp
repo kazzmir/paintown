@@ -266,12 +266,11 @@ Menu::ValueHolder & Menu::ValueHolder::operator<<(double val){
     return *this << o.str();
 }
 
-Menu::ValueHolder & Menu::ValueHolder::operator<<(Token * tok){
+Menu::ValueHolder & Menu::ValueHolder::operator<<(TokenView & view){
     std::string temp;
-    *tok >> temp;
+    view >> temp;
     return *this << temp;
 }
-
 
 Menu::ValueHolder & Menu::ValueHolder::operator>>(std::string & val){
     if (values[location].empty()){
@@ -446,7 +445,7 @@ Menu::DefaultRenderer::~DefaultRenderer(){
         }
     }
 }
-bool Menu::DefaultRenderer::readToken(Token * token){
+bool Menu::DefaultRenderer::readToken(const Token * token){
     if( *token == "option" ) {
         try{
             MenuOption *temp = OptionFactory::getOption(token);
@@ -473,7 +472,7 @@ bool Menu::DefaultRenderer::readToken(Token * token){
     } else if ( *token == "fade-speed" ) {
         // Menu fade in speed
         int speed;
-        *token >> speed;
+        token->view() >> speed;
         menu.setFadeSpeed(speed);
     } else {
         return false;
@@ -668,19 +667,20 @@ Menu::TabRenderer::~TabRenderer(){
     }
 }
 
-bool Menu::TabRenderer::readToken(Token * token){
+bool Menu::TabRenderer::readToken(const Token * token){
     if (*token == "menu"){
 	TabInfo * tabInfo = new TabInfo();
-	while (token->hasTokens()){
-	    Token * tok;
-	    *token >> tok;
+        TokenView view = token->view();
+	while (view.hasMore()){
+	    const Token * tok;
+	    view >> tok;
 	    try{
 		if (*tok == "name"){
-		    *tok >> tabInfo->name;
+		    tok->view() >> tabInfo->name;
 		} else if (*tok == "info"){
-		    *tok >> tabInfo->info;
+		    tok->view() >> tabInfo->info;
 		} else if (*tok == "menuinfo"){
-		    *tok >> tabInfo->menuInfo;
+		    tok->view() >> tabInfo->menuInfo;
 		} else if (*tok == "option"){
 		    try {
 			MenuOption *temp = OptionFactory::getOption(tok);
@@ -711,42 +711,42 @@ bool Menu::TabRenderer::readToken(Token * token){
         menu.setColors(token);
     } else if ( *token == "tab-body" ) {
         int r,g,b;
-        *token >> r >> g >> b >> menu.tabColors.bodyAlpha;
+        token->view() >> r >> g >> b >> menu.tabColors.bodyAlpha;
         menu.tabColors.body = Bitmap::makeColor(r,g,b);
     } else if ( *token == "tab-border" ) {
         int r,g,b;
-        *token >> r >> g >> b >> menu.tabColors.borderAlpha;
+        token->view() >> r >> g >> b >> menu.tabColors.borderAlpha;
         menu.tabColors.border = Bitmap::makeColor(r,g,b);
     } else if ( *token == "selectedtab-body" ) {
         int r,g,b;
-        *token >> r >> g >> b >> menu.selectedTabColors.bodyAlpha;
+        token->view() >> r >> g >> b >> menu.selectedTabColors.bodyAlpha;
         menu.selectedTabColors.body = Bitmap::makeColor(r,g,b);
     } else if ( *token == "selectedtab-border" ) {
         int r,g,b;
-        *token >> r >> g >> b >> menu.selectedTabColors.borderAlpha;
+        token->view() >> r >> g >> b >> menu.selectedTabColors.borderAlpha;
         menu.selectedTabColors.border = Bitmap::makeColor(r,g,b);
     } else if ( *token == "runningtab-body" ) {
         int r,g,b;
-        *token >> r >> g >> b >> menu.runningTabColors.bodyAlpha;
+        token->view() >> r >> g >> b >> menu.runningTabColors.bodyAlpha;
         menu.runningTabColors.body = Bitmap::makeColor(r,g,b);
     } else if ( *token == "runningtab-border" ) {
         int r,g,b;
-        *token >> r >> g >> b >> menu.runningTabColors.borderAlpha;
+        token->view() >> r >> g >> b >> menu.runningTabColors.borderAlpha;
         menu.runningTabColors.border = Bitmap::makeColor(r,g,b);
     } else if ( *token == "font-color" ) {
 	int r,g,b;
-        *token >> r >> g >> b;
+        token->view() >> r >> g >> b;
 	menu.setTabFontColor(Bitmap::makeColor(r,g,b));
     } else if ( *token == "selectedfont-color" ) {
 	int r,g,b;
-        *token >> r >> g >> b;
+        token->view() >> r >> g >> b;
 	menu.setSelectedTabFontColor(Bitmap::makeColor(r,g,b));
     } else if ( *token == "runningfont-color" ) {
         
     } else if ( *token == "fade-speed" ) {
         // Menu fade in speed
         int speed;
-        *token >> speed;
+        token->view() >> speed;
         //menu.setFadeSpeed(speed);
     } else {
         return false;
@@ -980,19 +980,20 @@ Menu::Context::~Context(){
     }
 }
 
-void Menu::Context::parseToken(Token * token){
+void Menu::Context::parseToken(const Token * token){
     if ( *token != "context" ){
         throw LoadException(__FILE__, __LINE__, "Not a menu context");
     } else if (!token->hasTokens()){
         return;
     } 
     // Token
-    Token * tok;
-    *token >> tok;
+    const Token * tok;
+    token->view() >> tok;
     
-    while (tok->hasTokens()){
-        Token * context;
-        *tok >> context;
+    TokenView view = tok->view();
+    while (view.hasMore()){
+        const Token * context;
+        view >> context;
         if (*context == "fade"){
             // Fade info
             if (!fades){
@@ -1015,7 +1016,7 @@ void Menu::Context::parseToken(Token * token){
 
 }
 
-void Menu::Context::addBackground(Token * token){
+void Menu::Context::addBackground(const Token * token){
     // Backgrounds
     if (!background){
         background = new Background();
@@ -1153,7 +1154,7 @@ type(type){
     }
 }
 
-Menu::Menu::Menu(Token * token, const Type & type):
+Menu::Menu::Menu(const Token * token, const Type & type):
 renderer(0),
 type(type){
     load(token);
@@ -1182,15 +1183,15 @@ void Menu::Menu::setFont(const Util::ReferenceCount<FontInfo> & font){
     */
 }
 
-void Menu::Menu::load(Token * token){ 
+void Menu::Menu::load(const Token * token){ 
     // version info;
     int major=0, minor=0, micro=0;
     if (!token->hasTokens()){
         throw LoadException(__FILE__, __LINE__, "Empty Menu");
     } else {
         // Get version
-        Token * tok;
-        *token >> tok;
+        const Token * tok;
+        token->view() >> tok;
 	const Token *ourToken = tok->findToken("type");
         if (ourToken != NULL){
 	    try {
@@ -1455,19 +1456,21 @@ void Menu::Menu::addData(ValueHolder * item){
     }
 }
 
-void Menu::Menu::handleCurrentVersion(Token * token){
-    while ( token->hasTokens() ){
+void Menu::Menu::handleCurrentVersion(const Token * token){
+    TokenView view = token->view();
+    while (view.hasMore()){
         try{
-            Token * tok;
-            *token >> tok;
+            const Token * tok;
+            view >> tok;
             // Newer items
             if (*tok == "val" || *tok == "value"){
-                Token * val;
-                *tok >> val;
+                const Token * val;
+                tok->view() >> val;
                 ValueHolder * value = new ValueHolder(val->getName());
+                TokenView valueView = val->view();
                 try {
                     while (true){
-                        *value << val;
+                        *value << valueView;
                     }
                 } catch (const TokenException & ex){
                 }
@@ -1490,20 +1493,23 @@ void Menu::Menu::handleCurrentVersion(Token * token){
     }
 }
 
-void Menu::Menu::handleCompatibility(Token * token, int version){
+void Menu::Menu::handleCompatibility(const Token * token, int version){
     Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
-	while ( token->hasTokens() ){
+        TokenView view = token->view();
+	while (view.hasMore()){
 	    try {
-		Token * tok;
-		*token >> tok;
+		const Token * tok;
+		view >> tok;
 		if ( *tok == "name" ){
 		    ValueHolder * value = new ValueHolder("name");
-		    *value << tok;
+                    TokenView nameView = tok->view();
+		    *value << nameView;
 		    addData(value);
 		} else if ( *tok == "music" ) {
 		    ValueHolder * value = new ValueHolder("music");
-		    *value << tok;
+                    TokenView musicView = tok->view();
+		    *value << musicView;
 		    addData(value);
 		    try {
 			std::string music;
@@ -1513,7 +1519,8 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    }
 		} else if( *tok == "select-sound" ) {
 		    ValueHolder * value = new ValueHolder("select-sound");
-		    *value << tok;
+                    TokenView soundView = tok->view();
+		    *value << soundView;
 		    addData(value);
 		    try{
 			std::string sound;
@@ -1524,7 +1531,8 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    }
 		} else if (*tok == "back-sound"){
 		    ValueHolder * value = new ValueHolder("back-sound");
-		    *value << tok;
+                    TokenView soundView = tok->view();
+		    *value << soundView;
 		    addData(value);
 		    try{
 			std::string sound;
@@ -1535,7 +1543,8 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    }
 		} else if (*tok == "ok-sound"){
 		    ValueHolder * value = new ValueHolder("ok-sound");
-		    *value << tok;
+                    TokenView okView = tok->view();
+		    *value << okView;
 		    addData(value);
 		    try{
 			std::string sound;
@@ -1545,7 +1554,7 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    }
 		} else if ( *tok == "background" ) {
 		    std::string temp;
-		    *tok >> temp;
+		    tok->view() >> temp;
 		    context.addBackground(temp);
 		} else if (*tok == "anim"){
 		    context.addBackground(tok);
@@ -1555,7 +1564,8 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    // Nothing checks compatible version of renderer
 		} else if ( *tok == "font" ) {
 		    ValueHolder * value = new ValueHolder("font");
-		    *value << tok << tok << tok;
+                    TokenView fontView = tok->view();
+		    *value << fontView << fontView << fontView;
 		    addData(value);
 		    try {
 			std::string font;
@@ -1572,7 +1582,8 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    //ActionAct(tok);
 		} else if ( *tok == "info-position"){
 		    ValueHolder * value = new ValueHolder("info-position");
-		    *value << tok << tok;
+                    TokenView infoView = tok->view();
+		    *value << infoView << infoView;
 		    addData(value);
 		    try {
 			double x=0, y=-.5;
@@ -1582,7 +1593,8 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    } 
 		} else if (*tok == "menuinfo"){
 		    ValueHolder * value = new ValueHolder("menuinfo");
-		    *value << tok;
+                    TokenView infoView = tok->view();
+		    *value << infoView;
 		    addData(value);
 		    try {
 			std::string info;
@@ -1592,7 +1604,8 @@ void Menu::Menu::handleCompatibility(Token * token, int version){
 		    } 
 		} else if (*tok == "menuinfo-position"){
 		    ValueHolder * value = new ValueHolder("menuinfo-position");
-		    *value << tok << tok;
+                    TokenView infoView = tok->view();
+		    *value << infoView << infoView;
 		    addData(value);
 		    try {
 			double x=0, y=.95;

@@ -471,9 +471,10 @@ void Configuration::loadConfigurations(){
         if (*head != config_configuration){
             throw LoadException(__FILE__, __LINE__, string("Config file ") + Filesystem::configFile().path() + " does not use the configuration format" );
         }
-        while ( head->hasTokens() ){
-            Token * n;
-            *head >> n;
+        TokenView view = head->view();
+        while (view.hasMore()){
+            const Token * n;
+            view >> n;
             /* these operate on the global vars directly
              * to avoid calling saveConfiguration
              * if setFoo() was called
@@ -490,29 +491,30 @@ void Configuration::loadConfigurations(){
                  */
                 std::string input = "Allegro";
 
-                while ( n->hasTokens() ){
-                    Token * thing;
-                    *n >> thing;
+                TokenView keyboardView = n->view();
+                while (keyboardView.hasMore()){
+                    const Token * thing;
+                    keyboardView >> thing;
                     if ( *thing == config_number){
-                        *thing >> number;
+                        thing->view() >> number;
                     } else if (*thing == config_input){
-                        *thing >> input;
+                        thing->view() >> input;
                     } else if ( *thing == config_left){
-                        *thing >> left;
+                        thing->view() >> left;
                     } else if ( *thing == config_right){
-                        *thing >> right;
+                        thing->view() >> right;
                     } else if ( *thing == config_down){
-                        *thing >> down;
+                        thing->view() >> down;
                     } else if ( *thing == config_up){
-                        *thing >> up;
+                        thing->view() >> up;
                     } else if ( *thing == config_attack1){
-                        *thing >> attack1;
+                        thing->view() >> attack1;
                     } else if ( *thing == config_attack2){
-                        *thing >> attack2;
+                        thing->view() >> attack2;
                     } else if ( *thing == config_attack3){
-                        *thing >> attack3;
+                        thing->view() >> attack3;
                     } else if ( *thing == config_jump){
-                        *thing >> jump;
+                        thing->view() >> jump;
                     }
                 }
                 if ( number == -1 ){
@@ -540,37 +542,38 @@ void Configuration::loadConfigurations(){
                 /* see above */
                 std::string input = "Allegro";
 
-                while ( n->hasTokens() ){
+                TokenView joystickView = n->view();
+                while (joystickView.hasMore()){
                     int temp;
-                    Token * thing;
-                    *n >> thing;
+                    const Token * thing;
+                    joystickView >> thing;
                     if ( *thing == config_number){
-                        *thing >> number;
+                        thing->view() >> number;
                     } else if (*thing == config_input){
-                        *thing >> input;
+                        thing->view() >> input;
                     } else if ( *thing == config_left){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         left = intToJoystick(temp);
                     } else if ( *thing == config_right){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         right = intToJoystick(temp);
                     } else if ( *thing == config_down){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         down = intToJoystick(temp);
                     } else if ( *thing == config_up){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         up = intToJoystick(temp);
                     } else if ( *thing == config_attack1){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         attack1 = intToJoystick(temp);
                     } else if ( *thing == config_attack2){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         attack2 = intToJoystick(temp);
                     } else if ( *thing == config_attack3){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         attack3 = intToJoystick(temp);
                     } else if ( *thing == config_jump){
-                        *thing >> temp;
+                        thing->view() >> temp;
                         jump = intToJoystick(temp);
                     }
                 }
@@ -591,52 +594,52 @@ void Configuration::loadConfigurations(){
                     myconfig.setJoystickJump(jump);
                 }
             } else if ( *n == config_game_speed){
-                *n >> gamespeed;
+                n->view() >> gamespeed;
             } else if ( *n == config_invincible){
-                *n >> invincible;
+                n->view() >> invincible;
             } else if ( *n == config_fullscreen){
-                *n >> fullscreen;
+                n->view() >> fullscreen;
             } else if (*n == config_lives){
-                *n >> lives;
+                n->view() >> lives;
             } else if (*n == config_menu_font){
                 string font;
-                *n >> font;
+                n->view() >> font;
                 /* FIXME */
                 // setMenuFont(font);
             } else if (*n == config_sound){
                 int x;
-                *n >> x;
+                n->view() >> x;
                 setSoundVolume(x);
             } else if (*n == config_language){
                 string what;
-                *n >> what;
+                n->view() >> what;
                 setLanguage(what);
             } else if (*n == config_music){
                 int x;
-                *n >> x;
+                n->view() >> x;
                 setMusicVolume(x);
             } else if (*n == config_menu_font_width){
                 int x;
-                *n >> x;
+                n->view() >> x;
                 setMenuFontWidth(x);
             } else if (*n == config_menu_font_height){
                 int x;
-                *n >> x;
+                n->view() >> x;
                 setMenuFontHeight(x);
             } else if (*n == config_current_game){
                 string game;
-                *n >> game;
+                n->view() >> game;
                 setCurrentGame(game);
             } else if ( *n == config_npc_buddies){
-                *n >> npc_buddies;
+                n->view() >> npc_buddies;
             } else if (*n == config_screen_size){
                 int w, h;
-                *n >> w >> h;
+                n->view() >> w >> h;
                 Configuration::setScreenWidth(w);
                 Configuration::setScreenHeight(h);
             } else if (*n == config_play_mode){
                 string mode;
-                *n >> mode;
+                n->view() >> mode;
                 if (mode == config_cooperative){
                     Configuration::setPlayMode(Configuration::Cooperative);
                 } else if (mode == config_free_for_all){
@@ -645,7 +648,7 @@ void Configuration::loadConfigurations(){
             } else {
                 string value;
                 try{
-                    *n >> value;
+                    n->view() >> value;
                     Configuration::setProperty(n->getName(), value);
                 } catch (const TokenException & e){
                     /* ignore errors */

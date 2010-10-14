@@ -14,7 +14,7 @@ namespace Level{
 
 class Block{
 public:
-    Block(Token * tok, const Level::Cacher & cacher);
+    Block(const Token * tok, const Level::Cacher & cacher);
     Block();
 
     inline void setLength( const int l ){

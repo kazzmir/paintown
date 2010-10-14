@@ -19,7 +19,7 @@ fadeOutColor(Bitmap::makeColor(0,0,0)){
 FadeTool::~FadeTool(){
 }
 
-void FadeTool::parseDefaults(Token * token){
+void FadeTool::parseDefaults(const Token * token){
     if ( *token != "fade" ){
         throw LoadException(__FILE__, __LINE__, "Not a fader");
     }
@@ -28,32 +28,39 @@ void FadeTool::parseDefaults(Token * token){
         (in (color 0 0 0) (time 0) ) 
         (out (color 0 0 0) (time 0) ))
     */
-    Token ourToken(*token);
-    while ( ourToken.hasTokens() ){
+    const Token & ourToken = *token;
+    TokenView view = ourToken.view();
+    /* FIXME: this code looks like its expecting a structure like
+     *  (in (color ...) (out ...))
+     * But its not parsing that way, rewrite it
+     */
+    while (view.hasMore()){
         try{
-            Token * tok;
-            ourToken >> tok;
+            const Token * tok;
+            view >> tok;
             if (*tok == "in"){
-                Token in(*tok);
-                while (in.hasTokens()){
-                    if (in == "color"){
+                TokenView inView = tok->view();
+                /* FIXME: this loop is pretty wierd, shouldn't the if's be on the outside? */
+                while (inView.hasMore()){
+                    if (*tok == "color"){
                         int r=0,g=0,b=0;
                         try {
-                            in >> r >> g >> b;
+                            inView >> r >> g >> b;
                         } catch (const TokenException & ex){
                         }
                         setFadeInColor(Bitmap::makeColor(r,b,g));
-                    } else if (in == "time"){
+                    } else if (*tok == "time"){
                         int time=0;
                         try {
-                            in >> time;
+                            inView >> time;
                         } catch (const TokenException & ex){
                         }
                         setFadeInTime(time);
                     }
                 }
             } else if (*tok == "out"){
-                Token out(*tok);
+                /*
+                Token & out = *tok;
                 while (out.hasTokens()){
                     if (out == "color"){
                         int r=0,g=0,b=0;
@@ -71,6 +78,7 @@ void FadeTool::parseDefaults(Token * token){
                         setFadeOutTime(time);
                     }
                 }
+            */
             } 
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Fade tool parse error");

@@ -24,18 +24,19 @@ life( 0 ){
         throw LoadException(__FILE__, __LINE__, "Token does not start with 'projectile'. Instead it starts with " + token->getName() );
     }
 
-    Token * current;
-    while ( token->hasTokens() ){
+    TokenView view = token->view();
+    while (view.hasMore()){
         try{
-            *token >> current;
+            const Token * current;
+            view >> current;
             if ( *current == "anim" ){
-                Animation * animation = new Animation( current, NULL );
+                Animation * animation = new Animation(current, NULL);
                 if ( animation->getName() == "main" ){
                     main = animation;
                 } else if ( animation->getName() == "death" ){
                     death = animation;
                 } else {
-                    cout << "Unknown animation for projectile: " + animation->getName() + ". Must be either 'main' or 'death'." << endl;
+                    Global::debug(0) << "Unknown animation for projectile: " + animation->getName() + ". Must be either 'main' or 'death'." << endl;
                     delete animation;
                 }
             }

@@ -1,21 +1,19 @@
-#include "menu/action_speed.h"
+#include "action_speed.h"
 #include "configuration.h"
 #include "util/token.h"
 
-ActionSpeed::ActionSpeed(Token *token)throw( LoadException ) : speed(0.1)
-{
-	*token >> speed;
+ActionSpeed::ActionSpeed(const Token *token):
+speed(0.1){
+    token->view() >> speed;
 }
 
-ActionSpeed::~ActionSpeed()
-{
+ActionSpeed::~ActionSpeed(){
 }
 
-void ActionSpeed::act()
-{
-	if(speed < 0.1){
-	    speed = 0.1;
-	}
-	Configuration::setGameSpeed(speed);
+void ActionSpeed::act(){
+    if (speed < 0.1){
+        speed = 0.1;
+    }
+    Configuration::setGameSpeed(speed);
 }
 

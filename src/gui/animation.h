@@ -16,35 +16,35 @@ namespace Gui{
 typedef std::map< int, Bitmap *> imageMap;
 
 class Frame{
-    public:
-	Frame(Token *token, imageMap &images) throw (LoadException);
+public:
+    Frame(const Token *token, imageMap &images) throw (LoadException);
     Frame(Bitmap *);
-	virtual ~Frame();
-	virtual void act(double xvel, double yvel);
-	virtual void draw(int xaxis, int yaxis, const Bitmap &);
-	Bitmap *bmp;
+    virtual ~Frame();
+    virtual void act(double xvel, double yvel);
+    virtual void draw(int xaxis, int yaxis, const Bitmap &);
+    Bitmap *bmp;
     RelativePoint offset;
     RelativePoint scrollOffset;
-	int time;
-	bool horizontalFlip;
-	bool verticalFlip;
-	int alpha;
+    int time;
+    bool horizontalFlip;
+    bool verticalFlip;
+    int alpha;
 };
 
 class Animation{
 public:
-	Animation(Token *token) throw (LoadException);
+    Animation(const Token *token) throw (LoadException);
     /*! Load only a single bitmap (for bacwards compatibility of backgrounds in menu) */
     Animation(const std::string &) throw (LoadException);
-	virtual ~Animation();
-	// Logic
-	virtual void act();
-	virtual void draw(const Bitmap &);
-	virtual void forwardFrame();
-	virtual void backFrame();
-	
-	inline void reset(){ if (allowReset){ currentFrame = 0; } }
-	inline int getID() const { return id; }
+    virtual ~Animation();
+    // Logic
+    virtual void act();
+    virtual void draw(const Bitmap &);
+    virtual void forwardFrame();
+    virtual void backFrame();
+
+    inline void reset(){ if (allowReset){ currentFrame = 0; } }
+    inline int getID() const { return id; }
 
     enum Depth {
         BackgroundBottom,
@@ -54,21 +54,21 @@ public:
         ForegroundMiddle,
         ForegroundTop,
     };
-	inline const Depth & getDepth() const { return this->depth; }
-	
+    inline const Depth & getDepth() const { return this->depth; }
+
 private:
-	int id;
-	Depth depth;
-	int ticks;
-	unsigned int currentFrame;
-	unsigned int loop;
-	bool allowReset;
+    int id;
+    Depth depth;
+    int ticks;
+    unsigned int currentFrame;
+    unsigned int loop;
+    bool allowReset;
     RelativePoint axis;
-	// This allows the frames to scroll in place
+    // This allows the frames to scroll in place
     RelativePoint velocity;
     Coordinate window;
-	std::vector<Frame *> frames;
-	imageMap images;
+    std::vector<Frame *> frames;
+    imageMap images;
 };
 }
 #endif

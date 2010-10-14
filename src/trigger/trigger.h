@@ -31,7 +31,7 @@ public:
 
     virtual ~Trigger();
 
-    static Trigger * parse(Token * token) throw (TokenException);
+    static Trigger * parse(const Token * token) throw (TokenException);
 };
 
 #endif

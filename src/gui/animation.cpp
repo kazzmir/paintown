@@ -38,7 +38,7 @@ static void renderSprite(const Bitmap & bmp, const int x, const int y, const int
     }
 }
 
-Frame::Frame(Token *the_token, imageMap &images) throw (LoadException):
+Frame::Frame(const Token *the_token, imageMap &images) throw (LoadException):
 bmp(0),
 time(0),
 horizontalFlip(false),
@@ -47,41 +47,42 @@ alpha(255){
     if ( *the_token != "frame" ){
         throw LoadException(__FILE__, __LINE__, "Not an frame");
     }
-    Token tok(*the_token);
+    const Token & tok = *the_token;
     /* The usual setup of an animation frame is
     // use image -1 to not draw anything, it can be used to get a blinking effect
     (frame (image NUM) (alpha NUM) (offset x y) (hflip 0|1) (vflip 0|1) (time NUM))
     */
-    while ( tok.hasTokens() ){
+    TokenView view = tok.view();
+    while (view.hasMore()){
         try{
-            Token * token;
-            tok >> token;
+            const Token * token;
+            view >> token;
             if (*token == "image"){
                 // get the number
                 int num;
-                *token >> num;
+                token->view() >> num;
                 // now assign the bitmap
                 bmp = images[num];
             } else if (*token == "alpha"){
                 // get alpha
-                *token >> alpha;
+                token->view() >> alpha;
             } else if (*token == "offset"){
                 // Get the offset location it defaults to 0,0
                 double x=0, y=0;
                 try {
-                    *token >> x >> y;
+                    token->view() >> x >> y;
                 } catch (const TokenException & ex){
                 }
                 offset.set(x,y);
             } else if (*token == "hflip"){
                 // horizontal flip
-                *token >> horizontalFlip;
+                token->view() >> horizontalFlip;
             } else if (*token == "vflip"){
                 // horizontal flip
-                *token >> verticalFlip;
+                token->view() >> verticalFlip;
             } else if (*token == "time"){
                 // time to display
-                *token >> time;
+                token->view() >> time;
             } else {
                 Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -159,7 +160,7 @@ void Frame::draw(const int xaxis, const int yaxis, const Bitmap & work){
     }
 }
 
-Animation::Animation(Token *the_token) throw (LoadException):
+Animation::Animation(const Token *the_token) throw (LoadException):
 id(0),
 depth(BackgroundBottom),
 ticks(0),
@@ -192,18 +193,19 @@ allowReset(true){
 	      (reset NUM)
 	      (window x1 y1 x2 y2))
     */
-    Token tok(*the_token);
-    while ( tok.hasTokens() ){
+    const Token & tok = *the_token;
+    TokenView view = tok.view();
+    while (view.hasMore()){
         try{
-            Token * token;
-            tok >> token;
+            const Token * token;
+            view >> token;
             if (*token == "id"){
                 // get the id
-                *token >> id;
+                token->view() >> id;
             } else if (*token == "location"){
                 // translate location to depth
                 int location = 0;
-                *token >> location;
+                token->view() >> location;
                 if (location == 0){
                     depth = BackgroundBottom;
                 } else if (location == 1){
@@ -212,7 +214,7 @@ allowReset(true){
             } else if (*token == "depth"){
                 // get the depth
                 std::string name, level;
-                *token >> name >> level;
+                token->view() >> name >> level;
                 if (name == "background"){
                     if (level == "bottom"){
                         depth = BackgroundBottom;
@@ -232,12 +234,12 @@ allowReset(true){
                 }
             } else if (*token == "basedir"){
                 // set the base directory for loading images
-                *token >> basedir;
+                token->view() >> basedir;
             } else if (*token == "image"){
                 // add bitmaps by number to the map
                 int number;
                 std::string temp;
-                *token >> number >> temp;
+                token->view() >> number >> temp;
                 Bitmap *bmp = new Bitmap(Filesystem::find(Filesystem::RelativePath(basedir + temp)).path());
                 if (bmp->getError()){
                     delete bmp;
@@ -248,7 +250,7 @@ allowReset(true){
                 // Get the axis location it defaults to 0,0
                 double x=0, y=0;
                 try {
-                    *token >> x >> y;
+                    token->view() >> x >> y;
                 } catch (const TokenException & ex){
                 }
                 axis.set(x,y);
@@ -256,7 +258,7 @@ allowReset(true){
                 // Windowed area where to clip if necessary otherwise it defaults to max
                 double x1=0,x2=0, y1=0,y2=0;
                 try {
-                    *token >> x1 >> y1 >> x2 >> y2;
+                    token->view() >> x1 >> y1 >> x2 >> y2;
                 } catch (const TokenException & ex){
                 }
                 window.set(x1,y1,x2,y2);
@@ -264,20 +266,20 @@ allowReset(true){
                 // This allows the animation to get a wrapping scroll action going on
                 double x=0, y=0;
                 try {
-                    *token >> x >> y;
+                    token->view() >> x >> y;
                 } catch (const TokenException & ex){
                 }
                 velocity.set(x,y);
             } else if (*token == "frame"){
                 // new frame
-                Frame *frame = new Frame(token,images);
+                Frame *frame = new Frame(token, images);
                 frames.push_back(frame);
             } else if (*token == "loop"){
                 // start loop here
                 loop = frames.size();
             } else if (*token == "reset"){
                 // Allow reset of animation
-                *token >> allowReset;
+                token->view() >> allowReset;
             } else {
                 Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){

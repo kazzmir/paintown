@@ -33,9 +33,8 @@ class Widget{
         // copy
         Widget &operator=( const Widget &);
         
-        void setCoordinates(Token * token);
-        
-        void setColors(Token * token);
+        void setCoordinates(const Token * token);
+        void setColors(const Token * token);
         
         //! New position data
         Coordinate location;

@@ -29,6 +29,7 @@ class Font;
 class Bitmap;
 class MenuOption;
 class Token;
+class TokenView;
 
 namespace Menu{
 class Point{
@@ -110,7 +111,7 @@ class ValueHolder{
         virtual ValueHolder & operator<<(bool val);
         virtual ValueHolder & operator<<(int val);
         virtual ValueHolder & operator<<(double val);  
-        virtual ValueHolder & operator<<(Token *);
+        virtual ValueHolder & operator<<(TokenView &); 
         
         virtual ValueHolder & operator>>(std::string &);
         virtual ValueHolder & operator>>(bool &);
@@ -174,7 +175,7 @@ class Renderer{
         virtual ~Renderer();
         
         //! Reader
-        virtual bool readToken(Token *)=0;
+        virtual bool readToken(const Token *)=0;
         
         virtual void initialize(Context &)=0;
         virtual void finish()=0;
@@ -218,7 +219,7 @@ class DefaultRenderer : public Renderer {
         virtual ~DefaultRenderer();
         
 	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
-        virtual bool readToken(Token *);
+        virtual bool readToken(const Token *);
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
@@ -258,7 +259,7 @@ class TabRenderer : public Renderer {
         virtual ~TabRenderer();
         
 	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
-        virtual bool readToken(Token *);
+        virtual bool readToken(const Token *);
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
@@ -299,10 +300,10 @@ class Context{
         virtual void render(Renderer *, const Bitmap &);
         
         /*! Parse data */
-        virtual void parseToken(Token *);
+        virtual void parseToken(const Token *);
 
         //! Compatibility stuff
-        virtual void addBackground(Token *);
+        virtual void addBackground(const Token *);
         virtual void addBackground(const std::string &);
         
         /*! Initializes things like faders */
@@ -423,7 +424,7 @@ class Menu{
 	};
         Menu(const Type & type = Default);
         Menu(const Filesystem::AbsolutePath &, const Type & type = Default);
-        Menu(Token *, const Type & type = Default);
+        Menu(const Token *, const Type & type = Default);
         virtual ~Menu();
 
         /*! Run Menu pass parent context */
@@ -469,13 +470,13 @@ class Menu{
         Renderer * renderer;
         
         /*! load token */
-        void load(Token * token);
+        void load(const Token * token);
 	
 	/*! Do current version */
-	virtual void handleCurrentVersion(Token *);
+	virtual void handleCurrentVersion(const Token *);
 	
         /*! Prior token compatibility based on version Global::getVersion() */
-        virtual void handleCompatibility(Token *, int version);
+        virtual void handleCompatibility(const Token *, int version);
         
         /*! Add Data */
         void addData(ValueHolder *);

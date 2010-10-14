@@ -19,7 +19,7 @@ static const string dataPath( const string & str ){
 }
 */
 	
-Block::Block(Token * tok, const Level::Cacher & cacher):
+Block::Block(const Token * tok, const Level::Cacher & cacher):
 id(-1),
 finished( -1 ),
 continuous( false ){
@@ -28,26 +28,26 @@ continuous( false ){
         throw LoadException(__FILE__, __LINE__, "Not a scene block");
     }
 
-    while ( tok->hasTokens() ){
-
+    TokenView view = tok->view();
+    while (view.hasMore()){
         try{
-            Token * current;
-            *tok >> current;
-            if ( *current == "length" ){
+            const Token * current;
+            view >> current;
+            if (*current == "length"){
                 int l;
-                *current >> l;
+                current->view() >> l;
                 setLength( l );
             } else if ( *current == "wait" ){
-                *current >> wait;
+                current->view() >> wait;
             } else if ( *current == "id" ){
                 int id;
-                *current >> id;
+                current->view() >> id;
                 setId(id);
             } else if ( *current == "continuous" ){
                 setContinuous( true );
             } else if ( *current == "finish" ){
                 int f;
-                *current >> f;
+                current->view() >> f;
                 setFinished( f );
             } else if ( *current == "object" ){
                 try{ 

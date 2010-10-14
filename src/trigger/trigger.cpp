@@ -8,7 +8,7 @@ using namespace std;
 
 class TriggerEnvironment: public Trigger {
 public:
-    TriggerEnvironment(Token * token){
+    TriggerEnvironment(const Token * token){
         message = token->findToken("trigger/message");
         if (message == NULL){
             throw LoadException(__FILE__, __LINE__, "Expected trigger/message token");
@@ -35,7 +35,7 @@ protected:
     const Token * message;
 };
 
-Trigger * Trigger::parse(Token * token) throw (TokenException) {
+Trigger * Trigger::parse(const Token * token) throw (TokenException) {
     const Token * token_type = token->findToken("trigger/type");
     if (token_type == NULL){
         throw TokenException(__FILE__, __LINE__, "Expected to find trigger/type");

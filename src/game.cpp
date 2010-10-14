@@ -85,21 +85,23 @@ static vector< Background > readBackgrounds( const Filesystem::AbsolutePath & pa
         Token * head = reader.readToken();
 
         if ( *head == "backgrounds" ){
-            while ( head->hasTokens() ){
-                Token * background;
-                *head >> background;
+            TokenView view = head->view();
+            while (view.hasMore()){
+                const Token * background;
+                view >> background;
                 if ( *background == "background" ){
-                    Token * next;
                     Background b;
+                    TokenView backgroundView = background->view();
                     for ( int i = 0; i < 2; i++ ){
-                        *background >> next;
+                        const Token * next;
+                        backgroundView >> next;
                         if ( *next == "path" ){
-                            *next >> b.path;
+                            next->view() >> b.path;
                         } else if ( *next == "z" ){
-                            *next >> b.z;
+                            next->view() >> b.z;
                         }
                     }
-                    backgrounds.push_back( b );
+                    backgrounds.push_back(b);
                 }
             }
         }

@@ -4,19 +4,16 @@
 #include "util/load_exception.h"
 class Token;
 
-class ActionSpeed
-{
-	public:
-		// Do whatever is needed for the requested item
-		virtual void act();
+class ActionSpeed{
+public:
+    // Do whatever is needed for the requested item
+    virtual void act();
+    ActionSpeed(const Token *token);
+    virtual ~ActionSpeed();
 
-		ActionSpeed(Token *token)throw( LoadException );
-	
-		virtual ~ActionSpeed();
-		
-	private:
-		// speed
-		double speed;
+private:
+    // speed
+    double speed;
 };
 
 #endif

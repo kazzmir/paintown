@@ -22,27 +22,29 @@ stimulation( stimulation ){
 	setMaxHealth( 1 );
 	setHealth( 1 );
 
-	try{
-		Token * head;
-		head = tr.readToken();
+        try{
+            Token * head;
+            head = tr.readToken();
 
-		if ( *head != "item" ){
-			throw LoadException(__FILE__, __LINE__, "Item does not begin with 'item'" );
-		}
+            if ( *head != "item" ){
+                throw LoadException(__FILE__, __LINE__, "Item does not begin with 'item'" );
+            }
 
-		while ( head->hasTokens() ){
-			Token * next = head->readToken();
-			if ( *next == "frame" ){
-				string file;
-				*next >> file;
-				picture.load(Filesystem::find(Filesystem::RelativePath(file)).path());
-			} else if ( *next == "sound" ){
-				string path;
-				*next >> path;
-				sound = Sound(Filesystem::find(Filesystem::RelativePath(path)).path());
-			}
-		}
-	} catch (const TokenException & ex){
+            TokenView view = head->view();
+            while (view.hasMore()){
+                const Token * next = NULL;
+                view >> next;
+                if (*next == "frame"){
+                    string file;
+                    next->view() >> file;
+                    picture.load(Filesystem::find(Filesystem::RelativePath(file)).path());
+                } else if (*next == "sound"){
+                    string path;
+                    next->view() >> path;
+                    sound = Sound(Filesystem::find(Filesystem::RelativePath(path)).path());
+                }
+            }
+        } catch (const TokenException & ex){
             // Global::debug(0) << "Could not read "<<filename.path()<< ": "<<ex.getReason()<<endl;
             throw LoadException(__FILE__, __LINE__, ex, "Could not open item file");
 	}

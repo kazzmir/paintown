@@ -8,19 +8,20 @@
 
 using namespace std;
 
-MenuOption::MenuOption(Token *token) throw (LoadException):
+MenuOption::MenuOption(const Token *token) throw (LoadException):
 currentState(Deselected),
 text(""),
 infoText(""),
 runnable(true){
 
     if (token){
-      Token tok(*token);
+      const Token & tok = *token;
 
-      while ( tok.hasTokens() ){
+      TokenView view = tok.view();
+      while (view.hasMore()){
 	  try{
-	      Token * token;
-	      tok >> token;
+	      const Token * token;
+	      view >> token;
 	      if ( *token == "info" ){
                   readInfo(token);
                   /*
@@ -30,9 +31,7 @@ runnable(true){
 		  setInfoText(temp);
                   */
 	      } else if( *token == "option-anim" ) {
-		  
-	      } 
-	      else {
+	      } else {
 		  Global::debug( 3 ) << "Unhandled menu attribute: "<<endl;
 		  if (Global::getDebug() >= 3){
 		      token->print(" ");
@@ -60,7 +59,7 @@ runnable(true){
  *  Expects the parent token to be passed in:
  *  (whatever (name ...))
  */
-void MenuOption::readName(Token * token){
+void MenuOption::readName(const Token * token){
     try{
         LanguageString name;
         string temp;
@@ -87,7 +86,7 @@ void MenuOption::readName(Token * token){
 /* same deal as readName, except this excepts just the info token:
  * (info ...)
  */
-void MenuOption::readInfo(Token * token){
+void MenuOption::readInfo(const Token * token){
     try{
         LanguageString name;
         string temp;

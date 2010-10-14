@@ -21,7 +21,7 @@ public:
         };
         
         //! Read info from Token
-        void parseDefaults(Token *);
+        void parseDefaults(const Token *);
 	
 	// Fade state
 	void setState(const State &);

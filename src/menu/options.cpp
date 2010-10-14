@@ -89,7 +89,7 @@ Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & contex
     throw LoadException(__FILE__, __LINE__, "No level chosen!");
 }
 
-OptionAdventure::OptionAdventure(Token *token):
+OptionAdventure::OptionAdventure(const Token *token):
 MenuOption(token){
     if ( *token != "adventure" ){
         throw LoadException(__FILE__, __LINE__, "Not an adventure");
@@ -131,7 +131,7 @@ void OptionAdventure::run(const Menu::Context & context){
     */
 }
 
-OptionAdventureCpu::OptionAdventureCpu(Token *token):
+OptionAdventureCpu::OptionAdventureCpu(const Token *token):
 MenuOption(token){
     if (*token != "adventure-cpu"){
         throw LoadException(__FILE__, __LINE__, "Not an adventure");
@@ -199,7 +199,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
     }
 }
 
-OptionChangeMod::OptionChangeMod(Token *token):
+OptionChangeMod::OptionChangeMod(const Token *token):
 MenuOption(token){
     if ( *token != "change-mod" ){
         throw LoadException(__FILE__, __LINE__, "Not a change mod");
@@ -405,7 +405,7 @@ static bool miguelBirthday(){
     return todaysDate(8, 11, 0);
 }
 
-OptionCredits::OptionCredits( Token * token ):
+OptionCredits::OptionCredits( const Token * token ):
 MenuOption(token),
 music(""),
 color(Bitmap::makeColor(255,255,255)),
@@ -452,38 +452,40 @@ title(Bitmap::makeColor(0,255,255)){
 
     readName(token);
     
-    while ( token->hasTokens() ){
+    TokenView view = token->view();
+    while (view.hasMore()){
 	try{
-	    Token * tok;
-	    *token >> tok;
+	    const Token * tok;
+	    view >> tok;
 	    if ( *tok == "music" ) {
-		    /* Set music for credits */
-		    *tok >> music;
-	    } else if ( *tok == "background" ) {
-		    /* Create an image and push it back on to vector */
-		    std::string temp;
-		    *tok >> temp;
-		    background = Filesystem::RelativePath(temp);
-	    } else if ( *tok == "additional" ) {
-		    std::string str;
-		    while ( tok->hasTokens() ){
-			    *tok >> str;
-			    credits.push_back(str);
-		    }
-	    } else if ( *tok == "titlecolor" ) {
-		    int r,b,g;
-		    *tok >> r >> g >> b;
-		    title = Bitmap::makeColor( r, b, g );
+                /* Set music for credits */
+                tok->view() >> music;
+            } else if ( *tok == "background" ) {
+                /* Create an image and push it back on to vector */
+                std::string temp;
+                tok->view() >> temp;
+                background = Filesystem::RelativePath(temp);
+            } else if ( *tok == "additional" ) {
+                std::string str;
+                TokenView additionalView = tok->view();
+                while (additionalView.hasMore()){
+                    additionalView >> str;
+                    credits.push_back(str);
+                }
+            } else if ( *tok == "titlecolor" ) {
+                int r,b,g;
+                tok->view() >> r >> g >> b;
+                title = Bitmap::makeColor( r, b, g );
 	    } else if ( *tok == "color" ) {
-		    int r,b,g;
-		    *tok >> r >> g >> b;
-		    color = Bitmap::makeColor( r, b, g );
+                int r,b,g;
+                tok->view() >> r >> g >> b;
+                color = Bitmap::makeColor( r, b, g );
 	    } else {
-		    Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
-		    if (Global::getDebug() >= 3){
-			tok->print(" ");
-		    }
-	    }
+                Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
 	} catch ( const TokenException & ex ) {
 		throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
 	} catch ( const LoadException & ex ) {
@@ -603,7 +605,7 @@ void OptionCredits::run(const Menu::Context & context){
     throw Exception::Return(__FILE__, __LINE__);
 }
 
-OptionDummy::OptionDummy(Token *token):
+OptionDummy::OptionDummy(const Token *token):
 MenuOption(token){
     if ( *token != "dummy" ){
         throw LoadException(__FILE__, __LINE__, "Not dummy option");
@@ -633,7 +635,7 @@ void OptionDummy::logic(){
 void OptionDummy::run(const Menu::Context & context){
 }
 
-OptionFullscreen::OptionFullscreen(Token *token):
+OptionFullscreen::OptionFullscreen(const Token *token):
 MenuOption(token),
 lblue(255),
 lgreen(255),
@@ -677,7 +679,7 @@ bool OptionFullscreen::rightKey(){
     return true;
 }
 
-OptionInvincible::OptionInvincible(Token *token):
+OptionInvincible::OptionInvincible(const Token *token):
 MenuOption(token),
 lblue(255),
 lgreen(255),
@@ -837,7 +839,7 @@ static Configuration::JoystickInput readJoystick(){
     return Joystick::Up;
 }
 
-OptionJoystick::OptionJoystick(Token *token):
+OptionJoystick::OptionJoystick(const Token *token):
 MenuOption(token),
 name(""),
 player(-1),
@@ -847,17 +849,18 @@ keyCode(0){
         throw LoadException(__FILE__, __LINE__, "Not joystick option");
     }
 
-    while ( token->hasTokens() ){
+    TokenView view = token->view();
+    while (view.hasMore()){
         try{
-            Token * tok;
-            *token >> tok;
+            const Token * tok;
+            view >> tok;
             if ( *tok == "name" ){
-                *tok >> name;
+                tok->view() >> name;
             } else if ( *tok == "player" ) {
-                *tok >> player;
+                tok->view() >> player;
             } else if ( *tok == "type" ) {
                 std::string temp;
-                *tok >> temp;
+                tok->view() >> temp;
                 type = convertToKey(temp);
             } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
@@ -1038,22 +1041,23 @@ static int readKey( Keyboard & key ){
 	return k;
 }
 
-OptionKey::OptionKey(Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0)
+OptionKey::OptionKey(const Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0)
 {
     if ( *token != "key" )
         throw LoadException(__FILE__, __LINE__, "Not key option");
 
-    while ( token->hasTokens() ) {
+    TokenView view = token->view();
+    while (view.hasMore()) {
         try {
-            Token * tok;
-            *token >> tok;
+            const Token * tok;
+            view >> tok;
             if ( *tok == "name" ) {
-                *tok >> name;
+                tok->view() >> name;
             } else if ( *tok == "player" ) {
-                *tok >> player;
+                tok->view() >> player;
             } else if ( *tok == "type" ) {
                 std::string temp;
-                *tok >> temp;
+                tok->view() >> temp;
                 type = convertToKeyboardKey(temp);
             } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
@@ -1126,7 +1130,7 @@ void OptionKey::run(const Menu::Context & context){
     setKey(player,type, keyCode);
 }
 
-OptionLevel::OptionLevel(Token *token, int * set, int value):
+OptionLevel::OptionLevel(const Token *token, int * set, int value):
 MenuOption(token),
 set(set),
 value(value){
@@ -1144,7 +1148,7 @@ void OptionLevel::run(const Menu::Context & context){
     throw Menu::MenuException(__FILE__, __LINE__);
 }
 
-OptionLives::OptionLives( Token * token ):
+OptionLives::OptionLives( const Token * token ):
 MenuOption(token),
 lblue(255),
 lgreen(255),
@@ -1190,7 +1194,7 @@ bool OptionLives::rightKey(){
 	return false;
 }
 
-OptionMenu::OptionMenu(Token *token):
+OptionMenu::OptionMenu(const Token *token):
 MenuOption(token),
 menu(0){
     // Check whether we have a menu or tabmenu
@@ -1214,7 +1218,7 @@ menu(0){
 
     if (token->numTokens() == 1){
         std::string temp;
-        *token >> temp;
+        token->view() >> temp;
         menu = new Menu::Menu(Filesystem::find(Filesystem::RelativePath(temp)));
     } else {
         menu = new Menu::Menu(token);
@@ -1251,26 +1255,27 @@ void OptionMenu::run(const Menu::Context & context){
     menu->run(context);
 }
 
-OptionMugenMenu::OptionMugenMenu(Token *token):
+OptionMugenMenu::OptionMugenMenu(const Token *token):
 MenuOption(token){
     if ( *token != "mugen" ){
         throw LoadException(__FILE__, __LINE__, "Not a mugen motif menu");
     }
     
-    while ( token->hasTokens() ){
+    TokenView view = token->view();
+    while (view.hasMore()){
         try{
-            Token * tok;
-            *token >> tok;
+            const Token * tok;
+            view >> tok;
             if ( *tok == "name" ){
                 // Create an image and push it back on to vector
                 std::string temp;
-                *tok >> temp;
+                tok->view() >> temp;
                 this->setText(temp);
             } else if (*tok == "motif"){
                 // Load Motif from file
                 std::string temp;
                 // Filename
-                *tok >> temp;
+                tok->view() >> temp;
                 // Set the default motif
                 try{
                     Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
@@ -1327,7 +1332,7 @@ void OptionMugenMenu::run(const Menu::Context & context){
 }
 
 #ifdef HAVE_NETWORKING
-OptionNetworkHost::OptionNetworkHost(Token *token):
+OptionNetworkHost::OptionNetworkHost(const Token *token):
 MenuOption(token){
     if ( *token != "network-host" ){
         throw LoadException(__FILE__, __LINE__, "Not a network-host");
@@ -1355,7 +1360,7 @@ void OptionNetworkHost::run(const Menu::Context & context){
     throw Exception::Return(__FILE__, __LINE__);
 }
 
-OptionNetworkJoin::OptionNetworkJoin(Token *token):
+OptionNetworkJoin::OptionNetworkJoin(const Token *token):
 MenuOption(token){
     if ( *token != "network-join" ){
         throw LoadException(__FILE__, __LINE__, "Not a network-join");
@@ -1387,7 +1392,7 @@ void OptionNetworkJoin::run(const Menu::Context & context){
 }
 #endif
 
-OptionNpcBuddies::OptionNpcBuddies( Token * token ):
+OptionNpcBuddies::OptionNpcBuddies( const Token * token ):
 MenuOption(token),
 lblue(255),
 lgreen(255),
@@ -1434,7 +1439,7 @@ bool OptionNpcBuddies::rightKey(){
 	return false;
 }
 
-OptionPlayMode::OptionPlayMode(Token *token):
+OptionPlayMode::OptionPlayMode(const Token *token):
 MenuOption(token),
 lblue(255),
 lgreen(255),
@@ -1494,7 +1499,7 @@ bool OptionPlayMode::rightKey(){
     return true;
 }
 
-OptionQuit::OptionQuit(Token *token):
+OptionQuit::OptionQuit(const Token *token):
 MenuOption(token){
     if ( *token != "quit" ){
         throw LoadException(__FILE__, __LINE__, "Not quit option");
@@ -1593,7 +1598,7 @@ static vector<ScreenSize> sortResolutions(const vector<ScreenSize> & modes){
     return copy;
 }
 
-OptionScreenSize::OptionScreenSize(Token *token):
+OptionScreenSize::OptionScreenSize(const Token *token):
 MenuOption(token),
 name(""),
 lblue(255),
@@ -1792,7 +1797,7 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
     return fonts;
 }
 
-OptionSelectFont::OptionSelectFont(Token *token):
+OptionSelectFont::OptionSelectFont(const Token *token):
 MenuOption(token),
 typeAdjust(fontName),
 lblue(255),
@@ -1805,13 +1810,14 @@ rgreen(255){
         throw LoadException(__FILE__, __LINE__, "Not a font selector");
     }
 
-    while (token->hasTokens()){
+    TokenView view = token->view();
+    while (view.hasMore()){
         try{
-            Token * tok;
-            *token >> tok;
+            const Token * tok;
+            view >> tok;
             if ( *tok == "adjust" ){
                 std::string temp;
-                *tok >> temp;
+                tok->view() >> temp;
                 if ( temp == "name" ) typeAdjust = fontName;
                 else if ( temp == "width" ) typeAdjust = fontWidth;
                 else if ( temp == "height" ) typeAdjust = fontHeight;
@@ -1986,7 +1992,7 @@ void OptionSelectFont::nextIndex(bool forward){
     */
 }
 
-OptionSpeed::OptionSpeed(Token *token): MenuOption(token), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
+OptionSpeed::OptionSpeed(const Token *token): MenuOption(token), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
 {
     setRunnable(false);
 
@@ -2033,12 +2039,12 @@ bool OptionSpeed::rightKey(){
     return false;
 }
 
-OptionTabMenu::OptionTabMenu(Token *token):
+OptionTabMenu::OptionTabMenu(const Token *token):
 MenuOption(token),
 menu(0){
     if (token->numTokens() == 1){
         std::string temp;
-        *token >> temp;
+        token->view() >> temp;
         menu = new Menu::Menu(Filesystem::find(Filesystem::RelativePath(temp)), Menu::Menu::Tabbed);
     } else {
         menu = new Menu::Menu(token, Menu::Menu::Tabbed);
@@ -2074,7 +2080,7 @@ void OptionTabMenu::run(const Menu::Context & context){
 	menu->run(context);
 }
 
-OptionSound::OptionSound(Token *token):
+OptionSound::OptionSound(const Token *token):
 MenuOption(token),
 lblue(255),
 lgreen(255),
@@ -2129,7 +2135,7 @@ bool OptionSound::rightKey(){
     return true;
 }
 
-OptionMusic::OptionMusic(Token *token):
+OptionMusic::OptionMusic(const Token *token):
 MenuOption(token),
 lblue(255),
 lgreen(255),
@@ -2184,7 +2190,7 @@ bool OptionMusic::rightKey(){
 OptionMusic::~OptionMusic(){
 }
 
-OptionLanguage::OptionLanguage(Token * token):
+OptionLanguage::OptionLanguage(const Token * token):
 MenuOption(token){
     const Token * start = token->getRootParent();
     vector<const Token*> tokens = start->findTokens("*/language");

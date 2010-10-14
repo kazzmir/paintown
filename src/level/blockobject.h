@@ -12,7 +12,7 @@ class BlockObject{
 public:
 	BlockObject();
 	BlockObject(const BlockObject & copy);
-	BlockObject( Token * tok ) throw ( LoadException );
+	BlockObject(const Token * tok);
 
 /* getters */
 public: 

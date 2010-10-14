@@ -46,47 +46,44 @@ image( NULL ){
 		throw LoadException(__FILE__, __LINE__, "Not an effect");
 	}
 	
-	while ( head->hasTokens() ) {
-		Token * n = NULL;
+        TokenView view = head->view();
+        while (head->hasTokens()) {
+            const Token * n = NULL;
+            try{
+                view >> n;
 
-		try{
+                // for ( int q = 0; q < head->numTokens(); q++ ){
+                // n = head->getToken( q );
 
-			*head >> n;
+                if ( *n == "anim" ){
+                    if ( image ){
+                        // cout<<"Mulitple animations specified"<<endl;
+                        throw LoadException(__FILE__, __LINE__, "Multiple animations specified");
+                    }
 
-			// for ( int q = 0; q < head->numTokens(); q++ ){
-				// n = head->getToken( q );
+                    image = new Animation(n, NULL);
+                } else {
+                    cout<<"Unhandled effect attribute: "<<endl;
+                    n->print(" ");
+                }
 
-			if ( *n == "anim" ){
+                // }
 
-				if ( image ){
-					cout<<"Mulitple animations specified"<<endl;
-					throw LoadException(__FILE__, __LINE__, "Multiple animations specified");
-				}
+                /* catch exception?? */
+            } catch( const exception & ex ){
+                // delete head;
+                n->print(" ");
+                /*
+                   if ( n ){
+                   cout<<"Error with: "<<n<<endl;
+                   } else 
+                   cout<<"Something bad happened in character"<<endl;
+                   throw ex;
+                   */
+                throw LoadException(__FILE__, __LINE__, "Effect parse error");
+            }
 
-				image = new Animation( n, NULL );
-
-			} else {
-				cout<<"Unhandled effect attribute: "<<endl;
-				n->print(" ");
-			}
-
-			// }
-
-        /* catch exception?? */
-		} catch( const exception & ex ){
-			// delete head;
-			n->print(" ");
-			/*
-			if ( n ){
-				cout<<"Error with: "<<n<<endl;
-			} else 
-				cout<<"Something bad happened in character"<<endl;
-			throw ex;
-			*/
-			throw LoadException(__FILE__, __LINE__, "Effect parse error");
-		}
-
-	}
+        }
 
 	// delete head;
 

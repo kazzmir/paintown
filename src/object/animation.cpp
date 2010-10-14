@@ -78,7 +78,7 @@ static string join(const char * names[], const int max, const string & sep){
     return out.str();
 }
 
-Animation::Animation( Token * tok, Character * const owner ):
+Animation::Animation(const Token * tok, Character * const owner ):
 parent( owner ),
 current_frame( NULL ),
 attack_collide( NULL ),
@@ -105,335 +105,329 @@ damage( 0 ),
 commision( true ),
 contact( NULL ){
 
-	prev_sequence = "none";
-	next_sequence = "none";
+    prev_sequence = "none";
+    next_sequence = "none";
 
-	if ( *tok != "anim" && *tok != "animation" ){
-		Global::debug( 0 ) <<"Not an animation"<<endl;
-		throw LoadException(__FILE__, __LINE__, "Not an animation");
-	}
+    if ( *tok != "anim" && *tok != "animation" ){
+        Global::debug( 0 ) <<"Not an animation"<<endl;
+        throw LoadException(__FILE__, __LINE__, "Not an animation");
+    }
 
-	TimeDifference diff;
+    TimeDifference diff;
 
-	Token * current1;
+    const Token * current1;
 
-	string basedir("");
-	diff.startTime();
-	while ( tok->hasTokens() ){
-		
-		try {
-			*tok >> current1;
+    string basedir("");
+    diff.startTime();
+    TokenView view = tok->view();
+    while (view.hasMore()){
+        try {
+            view >> current1;
+            const Token & current = *current1;
 
-                        /* I forgot why I copy the token object. Is it just so
-                         * that I don't have to deal with dereferencing the token?
-                         */
-                        Token current(*current1);
+            if (current == "name" ){
+                current.view() >> name;
 
-			if ( current == "name" ){
-				current >> name;
-
-				/* this should be deprecated soon */
-				if ( name.find("attack" ) != string::npos ){
-					is_attack = true;
-				}
-			} else if ( current == "loop" ){
-				current >> loop;
-			} else if ( current == "type" ){
-				string x;
-				current >> x;
-				if ( x == "attack" )
-					is_attack = true;
-			} else if ( current == "basedir" ){
-				current >> basedir;
-			} else if ( current == "offset" ){
-				// *current >> offset_x >> offset_y;
-				int x = 0;
-				int y = 0;
-				try{
-					current >> x >> y;
-				} catch ( const TokenException & te ){
-					/* ignore token exceptions here */
-				}
-				// cout<<"Read offset as "<<x<<" "<<y<<endl;
-				AnimationEventOffset * ani = new AnimationEventOffset( x, y );
-				events.push_back( ani );
-			} else if ( current == "projectile" ){
-				AnimationEventProjectile * ani = new AnimationEventProjectile( &current );
-				events.push_back( ani );
-			} else if ( current == "move" ){
-				try{
-					int x, y, z;
-					x = y = z = 0;
-					current >> x >> y >> z;
-
-					AnimationEventMove * em = new AnimationEventMove( x, y, z );
-					events.push_back( em );
-				} catch( const TokenException & te ){
-					Global::debug( 0 ) << "Could not read move event: " << te.getTrace() << endl;
-					/* ignore token exceptions here */
-				}
-			} else if ( current == "blast" ){
-                        } else if (current == "trail"){
-                            int produce = 0;
-                            int life = 0;
-                            while (current.hasTokens()){
-                                Token * sub;
-                                current >> sub;
-                                if (*sub == "generate"){
-                                    *sub >> produce;
-                                } else if (*sub == "length"){
-                                    *sub >> life;
-                                }
-                            }
-                            AnimationEventTrail * trail = new AnimationEventTrail(produce, life);
-                            events.push_back(trail);
-			} else if ( current == "damage" ){
-				current >> damage;
-			} else if ( current == "sequence" ){
-				string p, n;
-				current >> p >> n;
-				// sequences[ p ] = n;
-				// cout<<getName() << ":Adding sequence "<<p<<endl;
-				sequences.push_back( p );
-				// *current >> prev_sequence >> next_sequence;
-			} else if ( current == "contact" ){
-				string st;
-				current >> st;
-				contact = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
-			} else if ( current == "keys" ){
-
-				while ( current.hasTokens() ){
-					Token * nm;
-					current >> nm;
-					KeyPress press;
-					// nm->print("combo ");
-					if ( !nm->hasTokens() ){
-						string key_name = nm->getName();
-                                                Input::PaintownInput actualKey = convertKeyPress( key_name );
-						if ( actualKey == Input::Unknown ){
-							Global::debug( 0 ) << "Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
-						}
-						// cout<<"Convert "<<key_name<<" to "<<actualKey<<endl;
-						press.combo.push_back(actualKey);
-					} else {
-						while ( nm->hasTokens() ){
-						// for ( int i = 0; i < nm->numTokens(); i++ ){
-							string key_name;
-							*nm >> key_name;
-                            Input::PaintownInput actualKey = convertKeyPress( key_name );
-							if (actualKey == Input::Unknown){
-								Global::debug( 0 ) <<"Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
-							}
-							press.combo.push_back(actualKey);
-						}
-					}
-					keys.push_back( press );
-				}
-
-			} else if ( current == "status" ){
-				
-				string st;
-				current >> st;
-				if ( st == "jump" ){
-					status = Status_Jumping;
-				} else if ( st == "ground" ){
-					status = Status_Ground;
-				} else if ( st == "grab" ){
-					status = Status_Grab;
-				} else {
-					Global::debug( 0 ) <<"Unhandled status "<<st<<endl;
-				}
-			} else if ( current == "shadow" ){
-				int x, y;
-				current >> x >> y;
-				AnimationEvent * ani = new AnimationEventShadow( x, y );
-				events.push_back( ani );
-			} else if ( current == "coords" ){
-				Token * c;
-				current >> c;
-				int x, y, z;
-				x = y = z = -1;
-				while ( c != NULL ){
-					string dimension;
-					int d;
-					*c >> dimension >> d;
-					if ( dimension == "x" )
-						x = d;
-					if ( dimension == "y" )
-						y = d;
-					if ( dimension == "z" )
-						z = d;
-					current >> c;
-				}
-				AnimationEvent * ani = new AnimationEventCoords( x, y, z );
-				events.push_back( ani );
-
-			} else if ( current == "bbox" ){
-
-				/*
-				int x1, y1, x2, y2;
-				x1 = y1 = 0;
-				x2 = y2 = 1;
-				in >> x1 >> y1 >> x2 >> y2;
-				AnimationEvent * ani = new AnimationEventBBox( x1, y1, x2, y2 );
-				events.push_back( ani );
-				*/
-			} else if ( current == "attack" ){
-
-				Attack ak(current);
-		
-				/*
-				int x1 = 0; 
-				int y1 = 0;
-				int x2 = 0;
-				int y2 = 0;
-				int damage = 0;
-				int force = 0;
-
-				*current >> x1 >> y1 >> x2 >> y2 >> damage >> force;
-				*/
-				
-				// AnimationEvent * ani = new AnimationEventAttack( x1, y1, x2, y2, damage, force );
-				AnimationEvent * ani = new AnimationEventAttack( ak );
-				events.push_back( ani );
-			} else if ( current == "z-distance" ){
-				double d;
-				current >> d;
-				AnimationEvent * e = new AnimationEventZDistance( d );
-				events.push_back( e );
-			} else if ( current == "sound" ){
-				string st;
-				current >> st;
-
-				if ( sounds.find( st ) == sounds.end() ){
-					Sound * sp = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
-					sounds[ st ] = sp;
-				}
-
-				AnimationEvent * aes = new AnimationEventSound(st);
-				events.push_back( aes );
-
-			} else if ( current == "setstatus" ){
-				string st;
-				current >> st;
-				int m = Status_Ground;
-				if ( st == "jump" ){
-					m = Status_Jumping;	
-				} else if ( st == "grab" ){
-					m = Status_Grab;
-				}
-				AnimationEvent * ani = new AnimationEventStatus( m );
-				events.push_back( ani );
-			} else if ( current == "jump" ){
-				double x, y, z;
-				current >> x >> y >> z;
-				AnimationEvent * ani = new AnimationEventJump( x, y, z );
-				events.push_back( ani );
-			} else if ( current == "decommision" ){
-				string l;
-				current >> l;
-				addDecommision( l );
-			} else if ( current == "commision" ){
-				string l;
-				current >> l;
-				addCommision( l );
-			} else if ( current == "face" ){
-				string way;
-				current >> way;
-				int direction = Object::FACING_RIGHT;
-				if ( way == "right" ){
-					direction = Object::FACING_RIGHT;
-				} else if ( way == "left" ){
-					direction = Object::FACING_LEFT;
-				} else if ( way == "reverse" ){
-					direction = -1;
-				}
-				AnimationEvent * ani = new AnimationEventFace( direction );
-				events.push_back( ani );
-			} else if ( current == "nop" ){
-				events.push_back( new AnimationEventNOP() );
-			} else if ( current == "next-ticket" ){
-				events.push_back( new AnimationEventTicket() );
-			} else if ( current == "range" ){
-				int r;
-				current >> r;
-				setRange( r );
-			} else if ( current == "delay" ){
-					
-				int delay = 0;
-				current >> delay;
-				AnimationEvent * ani = new AnimationEventDelay( delay );
-				events.push_back( ani );
-
-			} else if ( current == "frame" ){
-				string path;
-				current >> path;
-                                Filesystem::RelativePath full = Filesystem::RelativePath(basedir + path);
-                                // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
-				if (frames.find(full.path()) == frames.end()){
-					Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
-					ECollide * collide = new ECollide(pic);
-					Frame * f = new Frame(pic, collide);
-					frames[full.path()] = f;
-					if (pic->getError()){
-                                            // Global::debug( 0 ) <<"Pic error"<<endl;
-                                            throw LoadException(__FILE__, __LINE__, "Could not load picture");
-					}
-				}
-				AnimationEvent * ani = new AnimationEventFrame(full.path());
-				events.push_back(ani);
-			} else {
-				Global::debug( 0 ) << tok->getFileName() << " Unhandled animation attribute: "<<endl;
-				current.print(" ");
-			}
-
-		} catch ( const TokenException & te ){
-			current1->print(" ");
-			throw LoadException(__FILE__, __LINE__, te, "Animation parse error");
-		} catch (const Exception::Base & e){
-                    throw LoadException(__FILE__, __LINE__, e, "Could not load animation");
+                /* this should be deprecated soon */
+                if ( name.find("attack" ) != string::npos ){
+                    is_attack = true;
                 }
-	}
+            } else if ( current == "loop" ){
+                current.view() >> loop;
+            } else if ( current == "type" ){
+                string x;
+                current.view() >> x;
+                if ( x == "attack" )
+                    is_attack = true;
+            } else if ( current == "basedir" ){
+                current.view() >> basedir;
+            } else if ( current == "offset" ){
+                // *current >> offset_x >> offset_y;
+                int x = 0;
+                int y = 0;
+                try{
+                    current.view() >> x >> y;
+                } catch ( const TokenException & te ){
+                    /* ignore token exceptions here */
+                }
+                // cout<<"Read offset as "<<x<<" "<<y<<endl;
+                AnimationEventOffset * ani = new AnimationEventOffset( x, y );
+                events.push_back( ani );
+            } else if (current == "projectile" ){
+                AnimationEventProjectile * ani = new AnimationEventProjectile(current1);
+                events.push_back( ani );
+            } else if ( current == "move" ){
+                try{
+                    int x, y, z;
+                    x = y = z = 0;
+                    current.view() >> x >> y >> z;
 
-	diff.endTime();
+                    AnimationEventMove * em = new AnimationEventMove( x, y, z );
+                    events.push_back( em );
+                } catch( const TokenException & te ){
+                    Global::debug( 0 ) << "Could not read move event: " << te.getTrace() << endl;
+                    /* ignore token exceptions here */
+                }
+            } else if (current == "blast"){
+            } else if (current == "trail"){
+                int produce = 0;
+                int life = 0;
+                TokenView trailView = current.view();
+                while (trailView.hasMore()){
+                    const Token * sub;
+                    trailView >> sub;
+                    if (*sub == "generate"){
+                        sub->view() >> produce;
+                    } else if (*sub == "length"){
+                        sub->view() >> life;
+                    }
+                }
+                AnimationEventTrail * trail = new AnimationEventTrail(produce, life);
+                events.push_back(trail);
+            } else if ( current == "damage" ){
+                current.view() >> damage;
+            } else if ( current == "sequence" ){
+                string p, n;
+                current.view() >> p >> n;
+                // sequences[ p ] = n;
+                // cout<<getName() << ":Adding sequence "<<p<<endl;
+                sequences.push_back( p );
+                // *current >> prev_sequence >> next_sequence;
+            } else if ( current == "contact" ){
+                string st;
+                current.view() >> st;
+                contact = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
+            } else if ( current == "keys" ){
 
-	string xls = "Animation ";
-	xls += getName();
-	Global::debug( 4 ) << diff.printTime( xls ) << endl;
+                TokenView keyView = current.view();
+                while (keyView.hasMore()){
+                    const Token * nm;
+                    keyView >> nm;
+                    KeyPress press;
+                    // nm->print("combo ");
+                    if (nm->isData()){
+                        string key_name = nm->getName();
+                        Input::PaintownInput actualKey = convertKeyPress( key_name );
+                        if ( actualKey == Input::Unknown ){
+                            Global::debug( 0 ) << "Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
+                        }
+                        // cout<<"Convert "<<key_name<<" to "<<actualKey<<endl;
+                        press.combo.push_back(actualKey);
+                    } else {
+                        TokenView moreView = nm->view();
+                        while (moreView.hasMore()){
+                            string key_name;
+                            moreView >> key_name;
+                            Input::PaintownInput actualKey = convertKeyPress( key_name );
+                            if (actualKey == Input::Unknown){
+                                Global::debug( 0 ) <<"Warning: '"<<key_name<<"' is not a valid key name. Valid keys are " << join(key_names, Keys::Max, ", ") << endl;
+                            }
+                            press.combo.push_back(actualKey);
+                        }
+                    }
+                    keys.push_back( press );
+                }
+            } else if ( current == "status" ){
 
-	if ( frames.empty() ){
-		Global::debug( 0 )<<"No frames given"<<endl;
-		// throw exception();
-		throw LoadException(__FILE__, __LINE__, "No frames given");
-	}
+                string st;
+                current.view() >> st;
+                if ( st == "jump" ){
+                    status = Status_Jumping;
+                } else if ( st == "ground" ){
+                    status = Status_Ground;
+                } else if ( st == "grab" ){
+                    status = Status_Grab;
+                } else {
+                    Global::debug( 0 ) <<"Unhandled status "<<st<<endl;
+                }
+            } else if ( current == "shadow" ){
+                int x, y;
+                current.view() >> x >> y;
+                AnimationEvent * ani = new AnimationEventShadow( x, y );
+                events.push_back( ani );
+            } else if ( current == "coords" ){
+                const Token * c;
+                TokenView coordsView = current.view();
+                coordsView >> c;
+                int x, y, z;
+                x = y = z = -1;
+                while (c != NULL){
+                    string dimension;
+                    int d;
+                    c->view() >> dimension >> d;
+                    if ( dimension == "x" )
+                        x = d;
+                    if ( dimension == "y" )
+                        y = d;
+                    if ( dimension == "z" )
+                        z = d;
+                    coordsView >> c;
+                }
+                AnimationEvent * ani = new AnimationEventCoords( x, y, z );
+                events.push_back( ani );
+            } else if ( current == "bbox" ){
 
-	delay_counter = 0;
+                /*
+                   int x1, y1, x2, y2;
+                   x1 = y1 = 0;
+                   x2 = y2 = 1;
+                   in >> x1 >> y1 >> x2 >> y2;
+                   AnimationEvent * ani = new AnimationEventBBox( x1, y1, x2, y2 );
+                   events.push_back( ani );
+                   */
+            } else if ( current == "attack" ){
 
-	current_event = events.begin();
+                Attack ak(current);
 
-	current_frame = NULL;
-	current_collide = NULL;
-	map< string, Frame * >::iterator first = frames.begin();
-	if ( first != frames.end() ){
-		Frame * x = (*first).second;
-		current_frame = x->pic;
-		current_collide = x->collide;
-	}
+                /*
+                   int x1 = 0; 
+                   int y1 = 0;
+                   int x2 = 0;
+                   int y2 = 0;
+                   int damage = 0;
+                   int force = 0;
 
-	own_bitmaps = true;
-	own_events = true;
+                 *current >> x1 >> y1 >> x2 >> y2 >> damage >> force;
+                 */
 
-	// cout<<"Create animation "<<name<<endl;
+                // AnimationEvent * ani = new AnimationEventAttack( x1, y1, x2, y2, damage, force );
+                AnimationEvent * ani = new AnimationEventAttack( ak );
+                events.push_back( ani );
+            } else if (current == "z-distance" ){
+                double d;
+                current.view() >> d;
+                AnimationEvent * e = new AnimationEventZDistance( d );
+                events.push_back( e );
+            } else if ( current == "sound" ){
+                string st;
+                current.view() >> st;
 
-	/*
-	cout<<getName()<<" has sequences"<<endl;
-	for ( vector<string>::iterator it = sequences.begin(); it != sequences.end(); it++ ){
-		cout<< *it << endl;
-	}
-	*/
+                if (sounds.find(st) == sounds.end()){
+                    Sound * sp = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
+                    sounds[st] = sp;
+                }
+
+                AnimationEvent * aes = new AnimationEventSound(st);
+                events.push_back( aes );
+            } else if ( current == "setstatus" ){
+                string st;
+                current.view() >> st;
+                int m = Status_Ground;
+                if ( st == "jump" ){
+                    m = Status_Jumping;	
+                } else if ( st == "grab" ){
+                    m = Status_Grab;
+                }
+                AnimationEvent * ani = new AnimationEventStatus( m );
+                events.push_back( ani );
+            } else if ( current == "jump" ){
+                double x, y, z;
+                current.view() >> x >> y >> z;
+                AnimationEvent * ani = new AnimationEventJump( x, y, z );
+                events.push_back( ani );
+            } else if ( current == "decommision" ){
+                string l;
+                current.view() >> l;
+                addDecommision( l );
+            } else if ( current == "commision" ){
+                string l;
+                current.view() >> l;
+                addCommision( l );
+            } else if ( current == "face" ){
+                string way;
+                current.view() >> way;
+                int direction = Object::FACING_RIGHT;
+                if ( way == "right" ){
+                    direction = Object::FACING_RIGHT;
+                } else if ( way == "left" ){
+                    direction = Object::FACING_LEFT;
+                } else if ( way == "reverse" ){
+                    direction = -1;
+                }
+                AnimationEvent * ani = new AnimationEventFace( direction );
+                events.push_back( ani );
+            } else if ( current == "nop" ){
+                events.push_back( new AnimationEventNOP() );
+            } else if ( current == "next-ticket" ){
+                events.push_back( new AnimationEventTicket() );
+            } else if ( current == "range" ){
+                int r;
+                current.view() >> r;
+                setRange(r);
+            } else if ( current == "delay" ){
+                int delay = 0;
+                current.view() >> delay;
+                AnimationEvent * ani = new AnimationEventDelay( delay );
+                events.push_back( ani );
+            } else if ( current == "frame" ){
+                string path;
+                current.view() >> path;
+                Filesystem::RelativePath full = Filesystem::RelativePath(basedir + path);
+                // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
+                if (frames.find(full.path()) == frames.end()){
+                    Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
+                    ECollide * collide = new ECollide(pic);
+                    Frame * f = new Frame(pic, collide);
+                    frames[full.path()] = f;
+                    if (pic->getError()){
+                        // Global::debug( 0 ) <<"Pic error"<<endl;
+                        throw LoadException(__FILE__, __LINE__, "Could not load picture");
+                    }
+                }
+                AnimationEvent * ani = new AnimationEventFrame(full.path());
+                events.push_back(ani);
+            } else {
+                Global::debug( 0 ) << tok->getFileName() << " Unhandled animation attribute: "<<endl;
+                current.print(" ");
+            }
+
+        } catch ( const TokenException & te ){
+            current1->print(" ");
+            throw LoadException(__FILE__, __LINE__, te, "Animation parse error");
+        } catch (const Exception::Base & e){
+            throw LoadException(__FILE__, __LINE__, e, "Could not load animation");
+        }
+    }
+
+    diff.endTime();
+
+    string xls = "Animation ";
+    xls += getName();
+    Global::debug( 4 ) << diff.printTime( xls ) << endl;
+
+    if ( frames.empty() ){
+        Global::debug( 0 )<<"No frames given"<<endl;
+        // throw exception();
+        throw LoadException(__FILE__, __LINE__, "No frames given");
+    }
+
+    delay_counter = 0;
+
+    current_event = events.begin();
+
+    current_frame = NULL;
+    current_collide = NULL;
+    map< string, Frame * >::iterator first = frames.begin();
+    if ( first != frames.end() ){
+        Frame * x = (*first).second;
+        current_frame = x->pic;
+        current_collide = x->collide;
+    }
+
+    own_bitmaps = true;
+    own_events = true;
+
+    // cout<<"Create animation "<<name<<endl;
+
+    /*
+       cout<<getName()<<" has sequences"<<endl;
+       for ( vector<string>::iterator it = sequences.begin(); it != sequences.end(); it++ ){
+       cout<< *it << endl;
+       }
+       */
 
 }
-	
+
 Animation::Animation( const Animation & animation, Character * const owner ):
 parent( owner ),
 attack_collide( NULL ),
