@@ -254,7 +254,6 @@ void * loadingScreenSimple1(void * arg){
     original.BlitFromScreen(0, 0);
     Util::ThreadBoolean quit(done_loading, loading_screen_mutex);
     Global::speed_counter = 0;
-    bool firstDraw = true;
     int angle = 0;
     int color1 = Bitmap::makeColor(0, 0, 0);
     int color2 = Bitmap::makeColor(0x00, 0x99, 0xff);
@@ -264,11 +263,9 @@ void * loadingScreenSimple1(void * arg){
     Bitmap::transBlender(0, 0, 0, 64);
     int speed = 7;
     while (! quit.get()){
-        bool draw = firstDraw;
+        bool draw = false;
 
         /* will be true if any new info messages appeared */
-        bool drawInfo = firstDraw;
-        firstDraw = false;
         if (Global::speed_counter > 0){
             double think = Global::speed_counter;	
             Global::speed_counter = 0;
