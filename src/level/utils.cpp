@@ -100,7 +100,7 @@ LevelInfo readLevel(const Token * level){
 
         TokenView view = token_levels->view();
         while (view.hasMore()){
-            const Token * next;
+            const Token * next = 0;
             view >> next;
             Global::debug(1) << "Add level " << next->getName() << endl;
             info.addLevel(next->getName());
