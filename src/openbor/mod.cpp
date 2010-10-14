@@ -72,10 +72,10 @@ static bool isOpenborPlayer(Bor::PackReader & reader, const string & path){
         /* will either succeed or throw TokenException */
         Token * start = tokens.readTokenFromString(parsed);
 
-        Token * type = start->findToken("_/type");
+        const Token * type = start->findToken("_/type");
         if (type != NULL){
             string kind;
-            *type >> kind;
+            type->view() >> kind;
             return kind == "player";
         } else {
             return false;

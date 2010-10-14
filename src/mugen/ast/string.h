@@ -41,9 +41,9 @@ public:
         return token;
     }
 
-    static String * deserialize(Token * token){
+    static String * deserialize(const Token * token){
         std::string out;
-        *token >> out;
+        token->view() >> out;
         return new String(new std::string(out));
     }
     

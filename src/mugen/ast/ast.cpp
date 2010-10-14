@@ -45,17 +45,18 @@ string Element::SERIAL_KEY_LIST = "u";
 string Section::SERIAL_SECTION_ATTRIBUTE = "s1";
 string Section::SERIAL_SECTION_VALUE = "s2";
     
-AttributeSimple * AttributeSimple::deserialize(Token * token){
+AttributeSimple * AttributeSimple::deserialize(const Token * token){
     int line, column;
-    *token >> line;
-    *token >> column;
-    Token * nameToken;
-    *token >> nameToken;
+    TokenView view = token->view();
+    view >> line;
+    view >> column;
+    const Token * nameToken;
+    view >> nameToken;
     Identifier * name = Identifier::deserialize(nameToken);
     Value * value = NULL;
     try{
-        Token * valueToken;
-        *token >> valueToken;
+        const Token * valueToken;
+        view >> valueToken;
         value = Value::deserialize(valueToken);
     } catch (const TokenException & e){
     }
@@ -63,9 +64,10 @@ AttributeSimple * AttributeSimple::deserialize(Token * token){
     return new AttributeSimple(line, column, name, value);
 }
     
-AttributeArray * AttributeArray::deserialize(Token * token){
-    Token * name;
-    *token >> name;
+AttributeArray * AttributeArray::deserialize(const Token * token){
+    const Token * name;
+    TokenView view = token->view();
+    view >> name;
     Identifier * identifier = NULL;
     Keyword * keyword = NULL;
     if (*name == SERIAL_IDENTIFIER){
@@ -73,9 +75,9 @@ AttributeArray * AttributeArray::deserialize(Token * token){
     } else if (*name == SERIAL_KEYWORD){
         keyword = Keyword::deserialize(name);
     }
-    Token * indexToken;
-    Token * valueToken;
-    *token >> indexToken >> valueToken;
+    const Token * indexToken;
+    const Token * valueToken;
+    view >> indexToken >> valueToken;
     Value * index = Value::deserialize(indexToken);
     Value * value = Value::deserialize(valueToken);
     if (identifier != NULL){
@@ -86,14 +88,14 @@ AttributeArray * AttributeArray::deserialize(Token * token){
     throw Exception("Deserialization error: no name given for an attribute array");
 }
     
-Identifier * Identifier::deserialize(Token * token){
+Identifier * Identifier::deserialize(const Token * token){
     int line, column;
     string name;
-    *token >> line >> column >> name;
+    token->view() >> line >> column >> name;
     return new SimpleIdentifier(line, column, name);
 }
 
-Attribute * Attribute::deserialize(Token * token){
+Attribute * Attribute::deserialize(const Token * token){
     if (*token == SERIAL_ATTRIBUTE_SIMPLE){
         return AttributeSimple::deserialize(token);
     }
@@ -107,7 +109,7 @@ Attribute * Attribute::deserialize(Token * token){
     throw Exception("Don't know how to deserialize attribute " + token->getName());
 }
     
-Value * Value::deserialize(Token * token){
+Value * Value::deserialize(const Token * token){
     if (*token == SERIAL_NUMBER){
         return Number::deserialize(token);
     }
@@ -163,13 +165,14 @@ Value * Value::deserialize(Token * token){
     throw Exception("Don't know how to deserialize value " + token->getName());
 }
     
-Function * Function::deserialize(Token * token){
+Function * Function::deserialize(const Token * token){
     string name;
-    *token >> name;
+    TokenView view = token->view();
+    view >> name;
     ValueList * args = NULL;
     try{
-        Token * next;
-        *token >> next;
+        const Token * next;
+        view >> next;
         args = ValueList::deserialize(next);
     } catch (const TokenException & e){
     }

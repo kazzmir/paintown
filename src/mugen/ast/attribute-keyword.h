@@ -73,12 +73,13 @@ public:
         return token;
     }
 
-    static AttributeKeyword * deserialize(Token * token){
-        Token * keyword;
-        *token >> keyword;
+    static AttributeKeyword * deserialize(const Token * token){
+        const Token * keyword;
+        TokenView view = token->view();
+        view >> keyword;
         try{
-            Token * value;
-            *token >> value;
+            const Token * value;
+            view >> value;
             return new AttributeKeyword(Keyword::deserialize(keyword), Value::deserialize(value));
         } catch (const TokenException & e){
             return new AttributeKeyword(Keyword::deserialize(keyword));

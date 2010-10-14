@@ -580,4 +580,11 @@ private:
     int rblue, rgreen;
 };
 
+class OptionLanguage: public MenuOption {
+public:
+    OptionLanguage(Token * token);
+    virtual void logic();
+    virtual void run(const Menu::Context &);
+};
+
 #endif

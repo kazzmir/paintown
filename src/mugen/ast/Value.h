@@ -42,7 +42,7 @@ public:
         std::cout << toString() << std::endl;
     }
 
-    static Value * deserialize(Token * token);
+    static Value * deserialize(const Token * token);
 
     /*
     using Element::operator==;

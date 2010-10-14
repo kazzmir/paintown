@@ -55,7 +55,7 @@ public:
         return token;
     }
 
-    static Function * deserialize(Token * token);
+    static Function * deserialize(const Token * token);
 
     static std::string downcase(std::string str){
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);

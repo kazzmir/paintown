@@ -1191,11 +1191,11 @@ void Menu::Menu::load(Token * token){
         // Get version
         Token * tok;
         *token >> tok;
-	Token *ourToken = tok->findToken("type");
+	const Token *ourToken = tok->findToken("type");
         if (ourToken != NULL){
 	    try {
 		std::string menuType;
-		*ourToken >> menuType;
+		ourToken->view() >> menuType;
 		if (menuType == "default"){
 		    type = Default;
 		} else if (menuType == "tabbed"){
@@ -1207,7 +1207,7 @@ void Menu::Menu::load(Token * token){
 	ourToken = tok->findToken("version");
         if (ourToken != NULL){
             try {
-                *ourToken >> major >> minor >> micro;
+                ourToken->view() >> major >> minor >> micro;
             } catch (const TokenException & ex){
             }
         } else {
@@ -1282,7 +1282,7 @@ public:
 
 void Menu::Menu::setupDefaultLanguage(const Context & context, const Menu::Menu & parent){
     LanguageMenu menu(parent);
-    menu.setFont(new RelativeFontInfo(Filesystem::RelativePath(sharedFont),sharedFontWidth, sharedFontHeight));
+    menu.setFont(new RelativeFontInfo(Filesystem::RelativePath(sharedFont), sharedFontWidth, sharedFontHeight));
     Configuration::setLanguage("English");
     try{
         menu.run(context);

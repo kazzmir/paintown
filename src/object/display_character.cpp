@@ -47,18 +47,18 @@ void DisplayCharacter::load(){
                 setName( n );
             } else if ( *current == "anim" ){
 
-                Token * name = current->findToken("_/name");
-                if ( name == NULL ){
+                const Token * name = current->findToken("_/name");
+                if (name == NULL){
                     /* screw it */
                     continue;
                 }
                 current->resetToken();
                 string xname;
-                *name >> xname;
+                name->view() >> xname;
                 /* only care about the 'idle' animation */
                 if ( xname == "idle" ){
-                    name->resetToken();
-                    Animation * ani = new Animation( current, this );
+                    // name->resetToken();
+                    Animation * ani = new Animation(current, this);
 
                     if ( getMovement( "idle" ) != NULL ){
                         delete getMovement( "idle" );

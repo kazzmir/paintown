@@ -33,12 +33,12 @@ public:
     virtual void drawScreen(Bitmap * work, int x);
     virtual void act(const Scene & level);
     virtual void addLight(const int x, const int y, const int lower_width, const int upper_width, const int color, const int alpha);
-    virtual void interpret(Token * message);
+    virtual void interpret(const Token * message);
 
 protected:
 
     void drawLight(Bitmap * original, Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const int black, const int black_alpha, const int light, const int light_alpha, bool draw_light);
-    void processLight(Token * token);
+    void processLight(const Token * token);
     int getSkyColor() const;
     int getSkyDarkness() const;
 

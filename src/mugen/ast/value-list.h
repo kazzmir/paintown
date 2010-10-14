@@ -46,12 +46,13 @@ public:
         return token;
     }
 
-    static ValueList * deserialize(Token * token){
+    static ValueList * deserialize(const Token * token){
         std::list<Value*> values;
         try{
+            TokenView view = token->view();
             while (true){
-                Token * next;
-                *token >> next;
+                const Token * next;
+                view >> next;
                 values.push_back(Value::deserialize(next));
             }
         } catch (const TokenException & e){

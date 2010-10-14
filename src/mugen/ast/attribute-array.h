@@ -85,7 +85,7 @@ public:
         return false;
     }
 
-    static AttributeArray * deserialize(Token * token);
+    static AttributeArray * deserialize(const Token * token);
 
     Token * serialize() const {
         Token * token = new Token();

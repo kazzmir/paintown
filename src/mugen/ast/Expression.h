@@ -47,10 +47,10 @@ public:
         return expression;
     }
 
-    static ExpressionUnary * deserialize(Token * token){
+    static ExpressionUnary * deserialize(const Token * token){
         int type;
-        Token * value;
-        *token >> type >> value;
+        const Token * value;
+        token->view() >> type >> value;
         return new ExpressionUnary(UnaryType(type), Value::deserialize(value));
     }
 
@@ -193,11 +193,11 @@ public:
                *getRight() == *him.getRight();
     }
     
-    static ExpressionInfix * deserialize(Token * token){
+    static ExpressionInfix * deserialize(const Token * token){
         int type;
-        Token * left;
-        Token * right;
-        *token >> type >> left >> right;
+        const Token * left;
+        const Token * right;
+        token->view() >> type >> left >> right;
         return new ExpressionInfix(InfixType(type), Value::deserialize(left), Value::deserialize(right));
     }
 

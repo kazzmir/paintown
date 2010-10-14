@@ -12,10 +12,10 @@ MenuOption * OptionFactory::getOption(Token *token){
     *token >> tok;
     if ( *tok == "menu" ){
         // Create a sub menu
-	Token * typeTok = tok->findToken("_/type");
-	if (typeTok != NULL){
+	const Token * typeToken = tok->findToken("_/type");
+	if (typeToken != NULL){
 	    std::string type;
-	    *typeTok >> type;
+	    typeToken->view() >> type;
 	    if (type == "tabbed"){
 		return new OptionTabMenu(tok);
 	    }
@@ -30,6 +30,8 @@ MenuOption * OptionFactory::getOption(Token *token){
     } else if ( *tok == "joystick" ){
         // Reconfigure a given joystick button
         return new OptionJoystick(tok);
+    } else if (*tok == "language"){
+        return new OptionLanguage(tok);
     } else if (*tok == "sound"){
         return new OptionSound(tok);
     } else if (*tok == "music"){

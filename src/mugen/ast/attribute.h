@@ -28,7 +28,7 @@ public:
         walker.onAttribute(*this);
     }
 
-    static Attribute * deserialize(Token * token);
+    static Attribute * deserialize(const Token * token);
 
     using Element::operator==;
     virtual bool operator==(const std::string & str) const = 0;

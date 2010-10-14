@@ -108,7 +108,7 @@ void FogAtmosphere::act(const Scene & level){
     }
 }
 
-void FogAtmosphere::interpret(Token * message){
+void FogAtmosphere::interpret(const Token * message){
 }
 
 /*
@@ -290,18 +290,18 @@ void NightAtmosphere::act(const Scene & level){
     }
 }
 
-void NightAtmosphere::processLight(Token * token){
+void NightAtmosphere::processLight(const Token * token){
     int x;
-    *token >> x;
+    token->view() >> x;
     addLight(x, 30, 50, 30, Bitmap::makeColor(32,32,0), 0);
 }
     
-void NightAtmosphere::interpret(Token * message){
-    Token * night = message->findToken("message/night");
+void NightAtmosphere::interpret(const Token * message){
+    const Token * night = message->findToken("message/night");
     if (night != NULL){
-        vector<Token*> lights = night->findTokens("night/lamp");
-        for (vector<Token*>::iterator it = lights.begin(); it != lights.end(); it++){
-            Token * token = *it;
+        vector<const Token*> lights = night->findTokens("night/lamp");
+        for (vector<const Token*>::iterator it = lights.begin(); it != lights.end(); it++){
+            const Token * token = *it;
             try{
                 processLight(token);
             } catch (const TokenException & e){
@@ -358,7 +358,7 @@ void RainAtmosphere::drawForeground(Bitmap * work, int x){
 void RainAtmosphere::drawFront(Bitmap * work, int x){
 }
 
-void RainAtmosphere::interpret(Token * message){
+void RainAtmosphere::interpret(const Token * message){
 }
 
 void RainAtmosphere::drawScreen(Bitmap * work, int x){
@@ -508,5 +508,5 @@ void SnowAtmosphere::act(const Scene & level){
     }
 }
 
-void SnowAtmosphere::interpret(Token * message){
+void SnowAtmosphere::interpret(const Token * message){
 }

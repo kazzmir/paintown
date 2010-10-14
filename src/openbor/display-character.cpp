@@ -57,19 +57,19 @@ void DisplayCharacter::load(){
     Token * head = reader.readTokenFromString(data);
 
     try{
-        Token * name = head->findToken("_/name");
+        const Token * name = head->findToken("_/name");
         if (name != NULL){
             string what;
-            *name >> what;
+            name->view() >> what;
             setName(what);
         }
 
-        vector<Token *> remaps = head->findTokens("_/remap");
-        for (vector<Token*>::iterator it = remaps.begin(); it != remaps.end(); it++){
-            Token * remap = *it;
+        vector<const Token *> remaps = head->findTokens("_/remap");
+        for (vector<const Token*>::iterator it = remaps.begin(); it != remaps.end(); it++){
+            const Token * remap = *it;
             string first;
             string second;
-            *remap >> first >> second;
+            remap->view() >> first >> second;
             if (newRemap(first, second)){
                 addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
             }

@@ -86,21 +86,22 @@ const string & LevelInfo::getName() const {
 LevelInfo::~LevelInfo(){
 }
 
-LevelInfo readLevel(Token * level){
+LevelInfo readLevel(const Token * level){
     LevelInfo info;
 
     try{
-        Token * token_name = level->findToken("level-set/name");
-        Token * token_levels = level->findToken("level-set/levels");
-        Token * token_player = level->findToken("level-set/player-path");
+        const Token * token_name = level->findToken("level-set/name");
+        const Token * token_levels = level->findToken("level-set/levels");
+        const Token * token_player = level->findToken("level-set/player-path");
 
         string name;
-        *token_name >> name;
+        token_name->view() >> name;
         info.setName(name);
 
-        while (token_levels->hasTokens()){
-            Token * next;
-            *token_levels >> next;
+        TokenView view = token_levels->view();
+        while (view.hasMore()){
+            const Token * next;
+            view >> next;
             Global::debug(1) << "Add level " << next->getName() << endl;
             info.addLevel(next->getName());
         }

@@ -25,7 +25,7 @@ public:
 	virtual void drawFront(Bitmap * work, int x);
 	virtual void drawScreen(Bitmap * work, int x);
 	virtual void act(const Scene & level);
-    virtual void interpret(Token * message);
+    virtual void interpret(const Token * message);
 
 protected:
 	Bitmap * fog;

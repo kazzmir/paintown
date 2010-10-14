@@ -1492,6 +1492,12 @@ protected:
         } transOverride;
 };
 
+/* copy all data from the parent somehow, maybe lazily. to speed things up */
+class Helper: public Character {
+public:
+    Helper(const Character & parent);
+};
+
 }
 
 #endif

@@ -70,7 +70,7 @@ static void test3(){
     test3_write(file);
     TokenReader reader(file);
     Token * head = reader.readToken();
-    vector<Token*> tokens = head->findTokens("foo1/foo2/foo3");
+    vector<const Token*> tokens = head->findTokens("foo1/foo2/foo3");
     if (tokens.size() != 2){
         throw Failure(3);
     }
@@ -123,7 +123,7 @@ static void test6(){
     string data = "(foo1 (foo2 (foo3)) (foo2 (foo3)))";
     TokenReader reader;
     Token * head = reader.readTokenFromString(data);
-    vector<Token*> tokens = head->findTokens("foo1/foo2/foo3");
+    vector<const Token*> tokens = head->findTokens("foo1/foo2/foo3");
     if (tokens.size() != 2){
         throw Failure(6);
     }

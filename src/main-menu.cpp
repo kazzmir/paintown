@@ -110,10 +110,10 @@ static void addArgs(vector<const char *> & args, const char * strings[], int num
 static void setMugenMotif(const Filesystem::AbsolutePath & path){
     TokenReader reader;
     Token * head = reader.readToken(path.path());
-    Token * motif = head->findToken("menu/option/mugen/motif");
+    const Token * motif = head->findToken("menu/option/mugen/motif");
     if (motif != NULL){
         string path;
-        *motif >> path;
+        motif->view() >> path;
         Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(path));
     }
 }

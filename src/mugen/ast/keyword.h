@@ -51,9 +51,9 @@ public:
         return token;
     }
 
-    static Keyword * deserialize(Token * token){
+    static Keyword * deserialize(const Token * token){
         std::string name;
-        *token >> name;
+        token->view() >> name;
         return new Keyword(name);
     }
 

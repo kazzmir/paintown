@@ -46,7 +46,7 @@ public:
         walker.onIdentifier(*this);
     }
 
-    static Identifier * deserialize(Token * token);
+    static Identifier * deserialize(const Token * token);
 
     using Element::operator==;
     virtual bool operator==(const Value & him) const {

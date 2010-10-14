@@ -72,9 +72,9 @@ public:
         return token;
     }
 
-    static KeySingle * deserialize(Token * token){
+    static KeySingle * deserialize(const Token * token){
         std::string what;
-        *token >> what;
+        token->view() >> what;
         return new KeySingle(what.c_str());
     }
 
@@ -167,11 +167,11 @@ public:
         return token;
     }
 
-    static KeyModifier * deserialize(Token * token){
+    static KeyModifier * deserialize(const Token * token){
         int type = 0;
         int extra = 0;
-        Token * next;
-        *token >> type >> extra >> next;
+        const Token * next;
+        token->view() >> type >> extra >> next;
         return new KeyModifier(ModifierType(type), (Key*) Value::deserialize(next), extra);
     }
 
@@ -264,10 +264,10 @@ public:
         return token;
     }
 
-    static KeyCombined * deserialize(Token * token){
-        Token * left;
-        Token * right;
-        *token >> left >> right;
+    static KeyCombined * deserialize(const Token * token){
+        const Token * left;
+        const Token * right;
+        token->view() >> left >> right;
         return new KeyCombined((Key*) Value::deserialize(left),
                                (Key*) Value::deserialize(right));
     }
@@ -354,12 +354,13 @@ public:
         return token;
     }
 
-    static KeyList * deserialize(Token * token){
+    static KeyList * deserialize(const Token * token){
         std::vector<Key*> keys;
         try{
+            TokenView view = token->view();
             while (true){
-                Token * next;
-                *token >> next;
+                const Token * next;
+                view >> next;
                 keys.push_back((Key*) Value::deserialize(next));
             }
         } catch (const TokenException & e){

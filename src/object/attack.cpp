@@ -34,7 +34,7 @@ Attack::Attack( const Attack & a ){
 	setForce( a.getForce() );
 }
 
-Attack::Attack(Token & tok) throw( LoadException ):
+Attack::Attack(Token & tok) throw (LoadException):
 x1( 0 ),
 y1( 0 ),
 x2( 0 ),

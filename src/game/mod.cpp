@@ -20,17 +20,17 @@ Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
         TokenReader reader(path.path());
         Token * head = reader.readToken();
 
-        Token * name = head->findToken("game/name");
-        Token * token_menu = head->findToken("game/menu");
+        const Token * name = head->findToken("game/name");
+        const Token * token_menu = head->findToken("game/menu");
         if (token_menu == NULL){
             throw LoadException(__FILE__, __LINE__, "No game/menu token found. Add (menu some/path) to the mod file.");
         }
-        *token_menu >> menu;
+        token_menu->view() >> menu;
 
-        vector<Token*> token_level = head->findTokens("game/level-set");
+        vector<const Token*> token_level = head->findTokens("game/level-set");
         Global::debug(1) << "Found " << token_level.size() << " level sets" << endl;
-        for (vector<Token*>::iterator it = token_level.begin(); it != token_level.end(); it++){
-            Token * set = *it;
+        for (vector<const Token*>::iterator it = token_level.begin(); it != token_level.end(); it++){
+            const Token * set = *it;
             levels.push_back(Level::readLevel(set));
         }
 

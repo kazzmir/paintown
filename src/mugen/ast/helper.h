@@ -47,10 +47,10 @@ public:
         return token;
     }
 
-    static Helper * deserialize(Token * token){
+    static Helper * deserialize(const Token * token){
         std::string name;
-        Token * next;
-        *token >> name >> next;
+        const Token * next;
+        token->view() >> name >> next;
         return new Helper(name, Value::deserialize(next));
     }
 

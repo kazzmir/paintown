@@ -38,9 +38,9 @@ public:
         return token;
     }
 
-    static Filename * deserialize(Token * token){
+    static Filename * deserialize(const Token * token){
         std::string out;
-        *token >> out;
+        token->view() >> out;
         return new Filename(new std::string(out));
     }
 

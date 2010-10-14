@@ -32,7 +32,7 @@ public:
     virtual void act(const Scene & level) = 0;
 
     /* interpret a trigger's message */
-    virtual void interpret(Token * message) = 0;
+    virtual void interpret(const Token * message) = 0;
 
     static Atmosphere * createAtmosphere( const std::string & name );
 };

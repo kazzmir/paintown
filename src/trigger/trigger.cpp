@@ -32,16 +32,16 @@ public:
         delete message;
     }
 protected:
-    Token * message;
+    const Token * message;
 };
 
 Trigger * Trigger::parse(Token * token) throw (TokenException) {
-    Token * token_type = token->findToken("trigger/type");
+    const Token * token_type = token->findToken("trigger/type");
     if (token_type == NULL){
         throw TokenException(__FILE__, __LINE__, "Expected to find trigger/type");
     }
     string type;
-    *token_type >> type;
+    token_type->view() >> type;
     if (type == "environment"){
         return new TriggerEnvironment(token);
     }

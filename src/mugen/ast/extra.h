@@ -33,9 +33,9 @@ public:
         checkVersion(token);
         std::ostringstream find;
         find << "mugen/" << Element::SERIAL_SECTION_LIST;
-        std::vector<Token*> tokens = token->findTokens(find.str());
+        std::vector<const Token*> tokens = token->findTokens(find.str());
         std::list<Section*> * out = new std::list<Section*>();
-        for (std::vector<Token*>::iterator it = tokens.begin(); it != tokens.end(); it++){
+        for (std::vector<const Token*>::iterator it = tokens.begin(); it != tokens.end(); it++){
             out->push_back(Section::deserialize(*it));
         }
 
@@ -43,10 +43,10 @@ public:
     }
 
     static void checkVersion(Token * token){
-        Token * version = token->findToken("mugen/version");
+        const Token * version = token->findToken("mugen/version");
         if (version != NULL){
             int what;
-            *version >> what;
+            version->view() >> what;
             if (what != Element::SERIAL_VERSION){
                 throw Exception("Mistmatch between serial versions");
             }

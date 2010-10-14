@@ -169,20 +169,21 @@ public:
         return token;
     }
 
-    static Section * deserialize(Token * token){
-        Token * next;
+    static Section * deserialize(const Token * token){
+        const Token * next;
         std::string name;
-        *token >> name;
+        TokenView view = token->view();
+        view >> name;
         Section * section = new Section(new std::string(name));
-        while (token->hasTokens()){
-            *token >> next;
+        while (view.hasMore()){
+            view >> next;
             if (*next == SERIAL_SECTION_ATTRIBUTE){
-                Token * attribute;
-                *next >> attribute;
+                const Token * attribute;
+                next->view() >> attribute;
                 section->addAttribute(Attribute::deserialize(attribute));
             } else if (*next == SERIAL_SECTION_VALUE){
-                Token * value;
-                *next >> value;
+                const Token * value;
+                next->view() >> value;
                 section->addValue(Value::deserialize(value));
             } else {
                 throw Exception("Can't deserialize " + next->getName());

@@ -61,7 +61,7 @@ protected:
 };
 
 // LevelInfo readLevels(const std::string & filename);
-LevelInfo readLevel(Token * level);
+LevelInfo readLevel(const Token * level);
 
 }
 

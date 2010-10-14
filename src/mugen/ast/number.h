@@ -36,9 +36,9 @@ public:
         walker.onNumber(*this);
     }
 
-    static Number * deserialize(Token * token){
+    static Number * deserialize(const Token * token){
         double value;
-        *token >> value;
+        token->view() >> value;
         return new Number(value);
     }
     

@@ -39,9 +39,9 @@ public:
         return token;
     }
 
-    static HitDefAttribute * deserialize(Token * token){
+    static HitDefAttribute * deserialize(const Token * token){
         std::string value;
-        *token >> value;
+        token->view() >> value;
         return new HitDefAttribute(value);
     }
     
@@ -98,12 +98,13 @@ public:
         return token;
     }
 
-    static HitDefAttackAttribute * deserialize(Token * token){
+    static HitDefAttackAttribute * deserialize(const Token * token){
         HitDefAttackAttribute * attribute = new HitDefAttackAttribute();
         try{
+            TokenView view = token->view();
             while (true){
                 std::string value;
-                *token >> value;
+                view >> value;
                 attribute->addAttribute(value);
             }
         } catch (const TokenException & e){

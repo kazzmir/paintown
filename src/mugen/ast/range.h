@@ -69,11 +69,11 @@ public:
         return token;
     }
 
-    static Range * deserialize(Token * token){
+    static Range * deserialize(const Token * token){
         int type;
-        Token * low;
-        Token * high;
-        *token >> type >> low >> high;
+        const Token * low;
+        const Token * high;
+        token->view() >> type >> low >> high;
         return new Range(RangeType(type), Value::deserialize(low), Value::deserialize(high));
     }
 

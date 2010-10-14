@@ -90,7 +90,7 @@ public:
         return token;
     }
     
-    static AttributeSimple * deserialize(Token * token);
+    static AttributeSimple * deserialize(const Token * token);
 
     std::string valueAsString() const {
         std::string str;

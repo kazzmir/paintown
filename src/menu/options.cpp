@@ -289,10 +289,10 @@ static string modNamePaintown(const Filesystem::AbsolutePath & path){
     try{
         TokenReader reader(path.path());
         Global::debug(1) << "Checking for a mod in " << path.path() << endl;
-        Token * name_token = reader.readToken()->findToken("game/name");
+        const Token * name_token = reader.readToken()->findToken("game/name");
         if (name_token != NULL){
             string name;
-            *name_token >> name;
+            name_token->view() >> name;
             return name;
         }
         return Filesystem::cleanse(path).path();
@@ -1222,10 +1222,10 @@ menu(0){
 
     // this->setText(menu->getName());
     // token->print("Menu: ");
-    Token * tok = token->findToken("_/name");
+    const Token * tok = token->findToken("_/name");
     if (tok != NULL){
         std::string name;
-        *tok >> name;
+        tok->view() >> name;
         // Global::debug(0, "menu") << "Menu name: " << name << endl;
         this->setText(name);
     } else {
@@ -1237,19 +1237,17 @@ menu(0){
     //if ( menu->checkRemoval() ) setForRemoval(true);
 }
 
-OptionMenu::~OptionMenu()
-{
-	// Delete our menu
-	if(menu)delete menu;
+OptionMenu::~OptionMenu(){
+    // Delete our menu
+    if(menu)delete menu;
 }
 
-void OptionMenu::logic()
-{
-	// Nothing
+void OptionMenu::logic(){
+    // Nothing
 }
 
 void OptionMenu::run(const Menu::Context & context){
-	// Do our new menu
+    // Do our new menu
     menu->run(context);
 }
 
@@ -2048,10 +2046,10 @@ menu(0){
 
     // this->setText(menu->getName());
     // token->print("Menu: ");
-    Token * tok = token->findToken("_/name");
+    const Token * tok = token->findToken("_/name");
     if (tok != NULL){
         std::string name;
-        *tok >> name;
+        tok->view() >> name;
         // Global::debug(0, "menu") << "Menu name: " << name << endl;
         this->setText(name);
     } else {
@@ -2184,4 +2182,38 @@ bool OptionMusic::rightKey(){
 }
 
 OptionMusic::~OptionMusic(){
+}
+
+OptionLanguage::OptionLanguage(Token * token):
+MenuOption(token){
+    const Token * start = token->getRootParent();
+    vector<const Token*> tokens = start->findTokens("*/language");
+    for (vector<const Token*>::iterator it = tokens.begin(); it != tokens.end(); it++){
+        string language;
+        const Token * token = *it;
+        token->match("language", language);
+    }
+    // Global::debug(0) << "Found " << languages.size() << " languages" << endl;
+}
+
+void OptionLanguage::run(const Menu::Context &){
+    class LanguageOption: public MenuOption {
+    public:
+        LanguageOption(const string & language):
+        MenuOption(NULL){
+            setText(language);
+            setInfoText(language);
+        }
+
+        virtual void logic(){
+        }
+
+        virtual void run(const ::Menu::Context & context){
+            Configuration::setLanguage(getText());
+            throw ::Menu::MenuException(__FILE__, __LINE__);
+        }
+    };
+}
+    
+void OptionLanguage::logic(){
 }
