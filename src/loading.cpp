@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include <math.h>
 #include <iostream>
 
@@ -51,7 +52,9 @@ private:
     MessageQueue messages;
 };
 
-void startLoading(Util::Thread::Id * thread, void * arg){
+void * loadingScreenSimple1(void * arg);
+
+void startLoading(Util::Thread::Id * thread, void * arg, Kind kind){
     bool create = false;
     Util::Thread::acquireLock(&loading_screen_mutex);
     create = done_loading;
@@ -60,7 +63,10 @@ void startLoading(Util::Thread::Id * thread, void * arg){
 
     /* prevent multiple loading threads from being made */
     if (create){
-        Util::Thread::createThread(thread, NULL, (Util::Thread::ThreadFunction) loadingScreen, arg);
+        switch (kind){
+            case Default: Util::Thread::createThread(thread, NULL, (Util::Thread::ThreadFunction) loadingScreen, arg); break;
+            case SimpleCircle: Util::Thread::createThread(thread, NULL, (Util::Thread::ThreadFunction) loadingScreenSimple1, arg); break;
+        }
     }
 }
 
@@ -235,6 +241,61 @@ void * loadingScreen(void * arg){
             /* work already contains the correct background */
             // work.Blit( load_x, load_y, *Bitmap::Screen );
             work.BlitAreaToScreen(load_x, load_y);
+        }
+    }
+
+    return NULL;
+}
+
+/* shows two circles rotating around a center point */
+void * loadingScreenSimple1(void * arg){
+    Bitmap work(40, 40);
+    Bitmap original(40, 40);
+    original.BlitFromScreen(0, 0);
+    Util::ThreadBoolean quit(done_loading, loading_screen_mutex);
+    Global::speed_counter = 0;
+    bool firstDraw = true;
+    int angle = 0;
+    int color1 = Bitmap::makeColor(0, 0, 0);
+    int color2 = Bitmap::makeColor(0x00, 0x99, 0xff);
+    int color3 = Bitmap::makeColor(0xff, 0x22, 0x33);
+    int color4 = Bitmap::makeColor(0x44, 0x77, 0x33);
+    int colors[4] = {color1, color2, color3, color4};
+    Bitmap::transBlender(0, 0, 0, 64);
+    int speed = 7;
+    while (! quit.get()){
+        bool draw = firstDraw;
+
+        /* will be true if any new info messages appeared */
+        bool drawInfo = firstDraw;
+        firstDraw = false;
+        if (Global::speed_counter > 0){
+            double think = Global::speed_counter;	
+            Global::speed_counter = 0;
+            draw = true;
+
+            while (think > 0){
+                angle += speed;
+                think -= 1;
+            }
+        } else {
+            Util::rest(1);
+        }
+
+        if (draw){
+            int max = sizeof(colors) / sizeof(int);
+            double middleX = work.getWidth() / 2;
+            double middleY = work.getHeight() / 2;
+            original.Blit(work);
+            for (int i = 0; i < max; i++){
+                double x = cos(Util::radians(angle + 360 / max * i)) * 15;
+                double y = sin(Util::radians(angle + 360 / max * i)) * 15;
+                work.translucent().circleFill(middleX + x, middleY + y, 2, colors[i]);
+                x = cos(Util::radians(angle + speed + 360 / max * i)) * 15;
+                y = sin(Util::radians(angle + speed + 360 / max * i)) * 15;
+                work.circleFill(middleX + x, middleY + y, 2, colors[i]);
+            }
+            work.BlitAreaToScreen(0, 0);
         }
     }
 

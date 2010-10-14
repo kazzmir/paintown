@@ -33,6 +33,7 @@
 #include "gui/box.h"
 #include "util/thread.h"
 
+#include "loading.h"
 #include "util/fire.h"
 #include "input/input-map.h"
 #include "input/input-manager.h"
@@ -1933,11 +1934,15 @@ bool OptionSelectFont::rightKey(){
 }
 
 static bool saneFont(const Util::ReferenceCount<Menu::FontInfo> & info){
+    Util::Thread::Id load;
+    Loader::startLoading(&load, NULL, Loader::SimpleCircle);
     try{
         const Font & font = info->get();
+        Loader::stopLoading(load);
         return font.textLength("A") != 0 &&
                font.getHeight() != 0;
     } catch (const Exception::Base & ignore){
+        Loader::stopLoading(load);
         return true;
     }
 }
