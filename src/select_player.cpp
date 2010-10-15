@@ -20,6 +20,7 @@
 #include "util/file-system.h"
 #include "world.h"
 #include "exceptions/exception.h"
+#include "loading.h"
 #include "openbor/mod.h"
 #include "openbor/pack-reader.h"
 #include "openbor/display-character.h"
@@ -476,7 +477,10 @@ namespace Paintown{
 
 Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
     /* hm, it would be nice to cache this I suppose */
+    Util::Thread::Id wait;
+    Loader::startLoading(&wait, NULL, Loader::SimpleCircle);
     PlayerVector players = loadPlayers(info.getPlayerPath());
+    Loader::stopLoading(wait);
     return doSelectPlayer(players, message, info, remap);
 }
 
