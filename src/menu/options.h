@@ -585,6 +585,8 @@ public:
     OptionLanguage(const Token * token);
     virtual void logic();
     virtual void run(const Menu::Context &);
+protected:
+    std::vector<std::string> languages;
 };
 
 #endif

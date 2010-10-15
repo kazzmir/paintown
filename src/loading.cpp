@@ -247,7 +247,7 @@ void * loadingScreen(void * arg){
     return NULL;
 }
 
-/* shows two circles rotating around a center point */
+/* shows some circles rotating around a center point */
 void * loadingScreenSimple1(void * arg){
     Bitmap work(40, 40);
     Bitmap original(40, 40);
@@ -259,13 +259,14 @@ void * loadingScreenSimple1(void * arg){
     int color2 = Bitmap::makeColor(0x00, 0x99, 0xff);
     int color3 = Bitmap::makeColor(0xff, 0x22, 0x33);
     int color4 = Bitmap::makeColor(0x44, 0x77, 0x33);
+    /* the length of this array is the number of circles to show */
     int colors[4] = {color1, color2, color3, color4};
     Bitmap::transBlender(0, 0, 0, 64);
+    /* speed of rotation */
     int speed = 7;
     while (! quit.get()){
         bool draw = false;
 
-        /* will be true if any new info messages appeared */
         if (Global::speed_counter > 0){
             double think = Global::speed_counter;	
             Global::speed_counter = 0;
@@ -287,9 +288,11 @@ void * loadingScreenSimple1(void * arg){
             for (int i = 0; i < max; i++){
                 double x = cos(Util::radians(angle + 360 / max * i)) * 15;
                 double y = sin(Util::radians(angle + 360 / max * i)) * 15;
+                /* ghost circle */
                 work.translucent().circleFill(middleX + x, middleY + y, 2, colors[i]);
                 x = cos(Util::radians(angle + speed + 360 / max * i)) * 15;
                 y = sin(Util::radians(angle + speed + 360 / max * i)) * 15;
+                /* real circle */
                 work.circleFill(middleX + x, middleY + y, 2, colors[i]);
             }
             work.BlitAreaToScreen(0, 0);

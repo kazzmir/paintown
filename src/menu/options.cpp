@@ -2197,17 +2197,22 @@ OptionMusic::~OptionMusic(){
 
 OptionLanguage::OptionLanguage(const Token * token):
 MenuOption(token){
+    readName(token);
     const Token * start = token->getRootParent();
     vector<const Token*> tokens = start->findTokens("*/language");
+    vector<string> all;
     for (vector<const Token*>::iterator it = tokens.begin(); it != tokens.end(); it++){
         string language;
         const Token * token = *it;
-        token->match("language", language);
+        if (token->match("language", language)){
+            all.push_back(language);
+        }
     }
+    unique_copy(all.begin(), all.end(), back_insert_iterator<vector<string> >(languages));
     // Global::debug(0) << "Found " << languages.size() << " languages" << endl;
 }
 
-void OptionLanguage::run(const Menu::Context &){
+void OptionLanguage::run(const Menu::Context & context){
     class LanguageOption: public MenuOption {
     public:
         LanguageOption(const string & language):
@@ -2224,6 +2229,21 @@ void OptionLanguage::run(const Menu::Context &){
             throw ::Menu::MenuException(__FILE__, __LINE__);
         }
     };
+
+    Menu::Menu temp;
+    Util::ReferenceCount<Menu::FontInfo> info = new Menu::RelativeFontInfo(Filesystem::RelativePath("fonts/arial.ttf"), 24, 24);
+    temp.setFont(info);
+
+    for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
+        temp.addOption(new LanguageOption(*it));
+    }
+
+    try {
+        temp.run(context);
+    } catch (const Menu::MenuException & ex){
+    }
+
+    throw Exception::Return(__FILE__, __LINE__);
 }
     
 void OptionLanguage::logic(){

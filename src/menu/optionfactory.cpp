@@ -30,7 +30,7 @@ MenuOption * OptionFactory::getOption(const Token *token){
     } else if ( *tok == "joystick" ){
         // Reconfigure a given joystick button
         return new OptionJoystick(tok);
-    } else if (*tok == "language"){
+    } else if (*tok == "choose-language"){
         return new OptionLanguage(tok);
     } else if (*tok == "sound"){
         return new OptionSound(tok);
