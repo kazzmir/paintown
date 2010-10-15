@@ -2208,6 +2208,7 @@ MenuOption(token){
             all.push_back(language);
         }
     }
+    sort(all.begin(), all.end());
     unique_copy(all.begin(), all.end(), back_insert_iterator<vector<string> >(languages));
     // Global::debug(0) << "Found " << languages.size() << " languages" << endl;
 }
