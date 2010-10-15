@@ -1,5 +1,7 @@
 #ifdef WINDOWS
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <windows.h>
 #include <fstream>
 #include "util/system.h"
@@ -42,6 +44,14 @@ uint64_t currentMicroseconds(){
     QueryPerformanceFrequency(&ticksPerSecond);
     QueryPerformanceCounter(&tick);
     return (tick.QuadPart)/(ticksPerSecond.QuadPart/1000000);
+}
+    
+uint64_t getModificationTime(const std::string & path){
+    struct _stat info;
+    if (_stat(path.c_str(), &info) == 0){
+        return info.st_mtime;
+    }
+    return 0;
 }
 
 }

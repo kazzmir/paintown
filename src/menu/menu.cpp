@@ -1230,6 +1230,7 @@ void Menu::Menu::load(const Token * token){
     
 }
 
+typedef Menu::Menu MenuClass;
 class LanguageMenu: public Menu::Menu {
 public:
     class LanguageOption: public MenuOption {
@@ -1249,7 +1250,7 @@ public:
         }
     };
 
-    vector<string> findLanguages(const Menu::Menu & original){
+    static vector<string> findLanguages(const MenuClass & original){
         /* get all languages used in the menu */
         vector<MenuOption*> options = original.getRenderer()->getOptions();
         map<string, bool> languages;
@@ -1273,7 +1274,7 @@ public:
         return out;
     }
 
-    LanguageMenu(const Menu::Menu & original){
+    LanguageMenu(const MenuClass & original){
         vector<string> languages = findLanguages(original);
         for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
             addOption(new LanguageOption(*it));
@@ -1281,7 +1282,7 @@ public:
     }
 };
 
-void Menu::Menu::setupDefaultLanguage(const Context & context, const Menu::Menu & parent){
+void Menu::Menu::setupDefaultLanguage(const Context & context, const MenuClass & parent){
     LanguageMenu menu(parent);
     menu.setFont(new RelativeFontInfo(Filesystem::RelativePath(sharedFont), sharedFontWidth, sharedFontHeight));
     Configuration::setLanguage("English");
