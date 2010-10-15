@@ -47,7 +47,7 @@ image( NULL ){
 	}
 	
         TokenView view = head->view();
-        while (head->hasTokens()) {
+        while (view.hasMore()){
             const Token * n = NULL;
             try{
                 view >> n;
@@ -72,7 +72,9 @@ image( NULL ){
                 /* catch exception?? */
             } catch( const exception & ex ){
                 // delete head;
-                n->print(" ");
+                if (n != NULL){
+                    n->print(" ");
+                }
                 /*
                    if ( n ){
                    cout<<"Error with: "<<n<<endl;
