@@ -115,6 +115,9 @@ test/game/mod.cpp
 test/util/ebox.cpp
 test/level/utils.cpp
 test/select_player.cpp
+test/loading.cpp
+test/network/messages.cpp
+test/util/gradient.cpp
 test/openbor/mod.cpp
 test/openbor/util.cpp
 test/openbor/pack-reader.cpp

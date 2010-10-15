@@ -74,20 +74,31 @@ get_uid_name (uid_t uid)
             return (cache [cache_scan].name);
 
     /*  Add new name to cache: if cache was full, kick-out oldest entry      */
-    if (cache_size == UID_CACHE_MAX)
-      {
+    if (cache_size == UID_CACHE_MAX){
         cache_scan = cache_oldest++;
         cache_oldest %= UID_CACHE_MAX;
+        /* ok, sort of gets around the memory leak below, but not entirely */
         free (cache [cache_scan].name);
-      }
-    else
+    } else {
         cache_scan = cache_size++;
+    }
 
     cache [cache_scan].id = uid;
-    if ((passwd_entry = getpwuid (uid)) == NULL)
-        cache [cache_scan].name = "<none>";
-    else
-        cache [cache_scan].name = strdupl (passwd_entry-> pw_name);
+
+    /* FIXME: this is a memory leak because getpwuid may return dynamically
+     * allocated memory. Also the call `strdupl' is never freed.
+     * All in all this is a very minor leak..
+     * The getpwuid man page is slightly ambiguous about the returned memory but
+     * it looks like its saying you can never know if the returned memory
+     * is static or dynamic.
+     *   The return value may point to a static area which is overwritten by a
+     *   subsequent call to getpwent(), getpwnam(), or getpwuid().
+     */
+    if ((passwd_entry = getpwuid (uid)) == NULL){
+        cache [cache_scan].name = strdupl("<none>");
+    } else {
+        cache [cache_scan].name = strdupl (passwd_entry->pw_name);
+    }
 
     return (cache [cache_scan].name);
 

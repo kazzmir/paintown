@@ -110,7 +110,7 @@ static void test5(){
     if (*head != "relative-position"){
         throw Failure(5);
     }
-    *head >> n1 >> n2;
+    head->view() >> n1 >> n2;
     if (fabs(n1 - (-0.5)) > epsilon){
         throw Failure(5);
     }
