@@ -113,6 +113,10 @@ MenuOption::~MenuOption(){
 void MenuOption::open(){
 }
 
+/* do any dynamic cleanup here */
+void MenuOption::close(){
+}
+
 // This is to pass paramaters to an option ie a bar or something
 bool MenuOption::leftKey(){
     return false;

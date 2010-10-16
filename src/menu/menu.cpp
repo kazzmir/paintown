@@ -1300,6 +1300,14 @@ void Menu::Menu::openOptions(){
     }
 }
 
+void Menu::Menu::closeOptions(){
+    vector<MenuOption*> options = getRenderer()->getOptions();
+    for (vector<MenuOption*>::iterator it = options.begin(); it != options.end(); it++){
+        MenuOption * option = *it;
+        option->close();
+    }
+}
+
 void Menu::Menu::run(const Context & parentContext){
     // Setup context from parent and this menu and initialize
     Context localContext(parentContext, context);
@@ -1352,7 +1360,6 @@ void Menu::Menu::run(const Context & parentContext){
     Global::speed_counter = 0;
 
     InputManager::enableBufferInput();
-     
         
     // MenuException or something
     bool specialExit = false;
@@ -1398,6 +1405,8 @@ void Menu::Menu::run(const Context & parentContext){
             InputManager::poll();
         }
     }
+
+    closeOptions();
     
     // FIXME Menu is finished, lets return is this even required anymore?
     throw Exception::Return(__FILE__, __LINE__);

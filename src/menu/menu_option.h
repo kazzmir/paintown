@@ -21,6 +21,11 @@ public:
      */
     virtual void open();
 
+    /* called when the menu containing this option returns.
+     * default behavior is to do nothing.
+     */
+    virtual void close();
+
     // Do logic before run part
     virtual void logic() = 0;
 

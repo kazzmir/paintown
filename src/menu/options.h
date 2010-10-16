@@ -451,6 +451,7 @@ public:
     OptionSelectFont(const Token *token);
 
     virtual void open();
+    virtual void close();
 
     // Do logic before run part
     virtual void logic();

@@ -460,6 +460,7 @@ class Menu{
     protected:
         void setupDefaultLanguage(const Context & context, const Menu & parent);
         virtual void openOptions();
+        virtual void closeOptions();
         
         /*! Context */
         Context context;

@@ -1844,6 +1844,16 @@ void OptionSelectFont::open(){
         fonts = findFonts();
     }
 }
+    
+void OptionSelectFont::close(){
+    if (typeAdjust == fontName){
+        /* the user probably loaded a bunch of different fonts that will
+         * never be used again, so clear the font cache
+         * TODO: dont clear the currently selected font
+         */
+        FontFactory::clear();
+    }
+}
 
 OptionSelectFont::~OptionSelectFont(){
     // Nothing
@@ -1890,10 +1900,6 @@ void OptionSelectFont::logic(){
 }
 
 void OptionSelectFont::run(const Menu::Context & context){
-    /* the user probably loaded a bunch of different fonts that will
-     * never be used again, so clear the font cache
-     */
-    FontFactory::clear();
     // throw Menu::MenuException(__FILE__, __LINE__);
     /* throw something to quit back to the previous menu */
 }
