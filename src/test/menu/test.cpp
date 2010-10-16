@@ -15,7 +15,9 @@
 using namespace std;
 
 void load(const char * path){
-    Menu::Menu menu(Filesystem::find(Filesystem::RelativePath(path)));
+    for (int i = 0; i < 10; i++){
+        Menu::Menu menu(Filesystem::find(Filesystem::RelativePath(path)));
+    }
 }
 
 int paintown_main(int argc, char ** argv){
