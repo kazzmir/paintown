@@ -206,9 +206,13 @@ static bool respawnPlayers(const vector<Object*> & players, World & world){
     return true;
 }
 
+/* in-game menu */
+void doMenu(Bitmap & screen_buffer){
+}
+
 bool playLevel( World & world, const vector< Object * > & players, double helpTime){
     
-    Bitmap screen_buffer( GFX_X, GFX_Y );
+    Bitmap screen_buffer(GFX_X, GFX_Y);
 
     /* 150 pixel tall console */
     Console::Console console(150);
@@ -418,7 +422,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
 
                 doInput(state, takeScreenshot, draw);
                 
-                state.done |= state.force_quit || world.finished();
+                state.done |= world.finished();
                 Global::speed_counter = 0;
             }
 
@@ -551,7 +555,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
 
     try{
         /* Main Loop! */
-        while ( ! state.done ){
+        while (!state.done && !state.force_quit){
             bool draw = false;
             bool takeScreenshot = false;
             draw = logic.run(takeScreenshot, state);
@@ -560,11 +564,14 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 drawer.run(screen_buffer, state, takeScreenshot);
             }
 
+            if (state.force_quit){
+                doMenu(screen_buffer);
+            }
+
             while (Global::speed_counter < 1){
                 logic.rest();
             }
         }
-
 
         if (!state.force_quit){
             drawer.showScreenshots(screen_buffer);
