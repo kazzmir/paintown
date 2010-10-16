@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ "$1x" = "x" ]; then
+    echo "Give a directory, like build-sdl-debug"
+    exit 0
+fi
+
+dir=$1
+$dir/test/thread/semaphore
+$dir/test/token/test
+$dir/test/menu/menu
+$dir/test/regex/test
+$dir/test/mugen/load
+$dir/test/mugen/load-stage
+$dir/test/mugen/serialize
