@@ -1836,11 +1836,12 @@ rgreen(255){
             throw ex;
         }
     }
+}
 
+void OptionSelectFont::open(){
     // Find and set fonts now
     if (typeAdjust == fontName){
         fonts = findFonts();
-        
     }
 }
 

@@ -16,8 +16,13 @@ namespace Menu {
 
 class MenuOption : public Gui::ContextItem {
 public:
+    /* called when the menu containing this option is displayed to the user.
+     * default behavior is to do nothing.
+     */
+    virtual void open();
+
     // Do logic before run part
-    virtual void logic()=0;
+    virtual void logic() = 0;
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
@@ -28,8 +33,7 @@ public:
     virtual bool leftKey();
     virtual bool rightKey();
     
-    enum state
-    {
+    enum state{
         Selected = 0,
         Deselected,
         Run

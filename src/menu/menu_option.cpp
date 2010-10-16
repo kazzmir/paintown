@@ -107,7 +107,10 @@ void MenuOption::readInfo(const Token * token){
 }
 
 MenuOption::~MenuOption(){
+}
     
+/* subclasses can lazily load stuff by overriding this method */
+void MenuOption::open(){
 }
 
 // This is to pass paramaters to an option ie a bar or something

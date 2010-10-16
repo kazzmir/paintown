@@ -1292,6 +1292,14 @@ void Menu::Menu::setupDefaultLanguage(const Context & context, const MenuClass &
     }
 }
 
+void Menu::Menu::openOptions(){
+    vector<MenuOption*> options = getRenderer()->getOptions();
+    for (vector<MenuOption*>::iterator it = options.begin(); it != options.end(); it++){
+        MenuOption * option = *it;
+        option->open();
+    }
+}
+
 void Menu::Menu::run(const Context & parentContext){
     // Setup context from parent and this menu and initialize
     Context localContext(parentContext, context);
@@ -1308,6 +1316,9 @@ void Menu::Menu::run(const Context & parentContext){
     if (Configuration::getLanguage() == ""){
         setupDefaultLanguage(localContext, *this);
     }
+
+    /* do any lazy loading options want to do */
+    openOptions();
 
     // TODO Keys need a home
     // Set keys

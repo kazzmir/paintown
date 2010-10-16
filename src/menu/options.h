@@ -450,6 +450,8 @@ class OptionSelectFont : public MenuOption {
 public:
     OptionSelectFont(const Token *token);
 
+    virtual void open();
+
     // Do logic before run part
     virtual void logic();
 

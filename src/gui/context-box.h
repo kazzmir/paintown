@@ -17,7 +17,7 @@ class ContextItem{
 	ContextItem();
 	virtual ~ContextItem();
 	
-	virtual const std::string getName()=0;
+	virtual const std::string getName() = 0;
 	virtual bool isAdjustable();
         virtual int getLeftColor();
         virtual int getRightColor();
