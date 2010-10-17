@@ -36,6 +36,8 @@ public:
     Animation(const Token *token) throw (LoadException);
     /*! Load only a single bitmap (for bacwards compatibility of backgrounds in menu) */
     Animation(const std::string &) throw (LoadException);
+    /* use an existing bitmap */
+    Animation(Bitmap * image);
     virtual ~Animation();
     // Logic
     virtual void act();

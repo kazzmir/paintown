@@ -1,4 +1,3 @@
-/* bitmap.h must come first */
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
 
@@ -6,6 +5,7 @@
 #include "music.h"
 #include "util/funcs.h"
 #include "util/font.h"
+#include "menu/menu.h"
 #include "configuration.h"
 #include "object/object.h"
 #include "object/character.h"
@@ -45,10 +45,10 @@ static bool show_loading_screen = true;
 namespace Game{
 
 struct Background{
-	string path;
-	int z;
+    string path;
+    int z;
 
-	Background():z(0){}
+    Background():z(0){}
 };
 	
 static double startingGameSpeed(){
@@ -207,7 +207,23 @@ static bool respawnPlayers(const vector<Object*> & players, World & world){
 }
 
 /* in-game menu */
-void doMenu(Bitmap & screen_buffer){
+static bool doMenu(const Bitmap & screen_buffer){
+    Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
+    Menu::Context context;
+    /* use the current screen as the background */
+    context.addBackground(screen_buffer);
+    try{
+        menu.run(context);
+        /* im pretty sure there is no way to get the menu to return normally,
+         * it should always throw an exception either because ESC was pressed
+         * or because an option threw something
+         */
+        return false;
+    } catch (const Exception::Quit & forceQuit){
+        return true;
+    } catch (const Exception::Return & back){
+        return false;
+    }
 }
 
 bool playLevel( World & world, const vector< Object * > & players, double helpTime){
@@ -565,7 +581,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             }
 
             if (state.force_quit){
-                doMenu(screen_buffer);
+                state.force_quit = doMenu(screen_buffer);
             }
 
             while (Global::speed_counter < 1){

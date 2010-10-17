@@ -318,16 +318,29 @@ allowReset(true){
     frames.push_back(frame);
 }
 
+Animation::Animation(Bitmap * image):
+id(0),
+depth(BackgroundBottom),
+ticks(0),
+currentFrame(0),
+loop(0),
+allowReset(true){
+    images[0] = image;
+    Frame *frame = new Frame(image);
+    frames.push_back(frame);
+}
+
 Animation::~Animation(){
     for (std::vector<Frame *>::iterator i = frames.begin(); i != frames.end(); ++i){
-	    if (*i){
-	        delete *i;
-	    }
+        if (*i){
+            delete *i;
+        }
     }
+
     for (imageMap::iterator i = images.begin(); i != images.end(); ++i){
-	    if (i->second){
-	        delete i->second;
-	    }
+        if (i->second){
+            delete i->second;
+        }
     }
 }
 void Animation::act(){

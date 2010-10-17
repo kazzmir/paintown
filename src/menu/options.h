@@ -408,6 +408,24 @@ public:
 	virtual ~OptionQuit();
 };
 
+/* return to previous menu */
+class OptionReturn: public MenuOption {
+public:
+    OptionReturn(const Token * token);
+    virtual void logic();
+    virtual void run(const Menu::Context &);
+    virtual ~OptionReturn();
+};
+
+/* continue the game */
+class OptionContinue: public MenuOption {
+public:
+    OptionContinue(const Token * token);
+    virtual void logic();
+    virtual void run(const Menu::Context &);
+    virtual ~OptionContinue();
+};
+
 struct ScreenSize{
     ScreenSize(int w, int h):w(w), h(h){}
     int w, h;

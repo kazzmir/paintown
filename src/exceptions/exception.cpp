@@ -69,4 +69,19 @@ Base * Return::copy() const {
     return new Return(*this);
 }
 
+Quit::Quit(const std::string & file, int line):
+Base(file, line){
+}
+
+Quit::Quit(const std::string & file, int line, const Base & nested):
+Base(file, line, nested){
+}
+
+Quit::~Quit() throw(){
+}
+
+Base * Quit::copy() const {
+    return new Quit(*this);
+}
+
 }

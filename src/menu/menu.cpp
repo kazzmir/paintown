@@ -1024,6 +1024,13 @@ void Menu::Context::addBackground(const Token * token){
     background->add(new Gui::Animation(token));
 }
 
+void Menu::Context::addBackground(const Bitmap & image){
+    if (!background){
+        background = new Background();
+    }
+    background->add(new Gui::Animation(new Bitmap(image)));
+}
+
 void Menu::Context::addBackground(const std::string & image){
     // Backgrounds
     if (!background){
@@ -1461,6 +1468,17 @@ std::string Menu::Menu::getName(){
     try {
         if (data["name"]){
             *data["name"] >> name;
+        }
+    } catch (const MenuException & ex){
+    }
+    return name;
+}
+
+std::string Menu::Menu::getInfo(){
+    std::string name;
+    try {
+        if (data["info"]){
+            *data["info"] >> name;
         }
     } catch (const MenuException & ex){
     }

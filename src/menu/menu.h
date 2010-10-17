@@ -305,6 +305,7 @@ class Context{
         //! Compatibility stuff
         virtual void addBackground(const Token *);
         virtual void addBackground(const std::string &);
+        virtual void addBackground(const Bitmap & image);
         
         /*! Initializes things like faders */
         virtual void initialize();
@@ -440,6 +441,7 @@ class Menu{
         
         /*! Get Name */
         virtual std::string getName();
+        virtual std::string getInfo();
 
         virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         

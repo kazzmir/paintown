@@ -45,6 +45,18 @@ protected:
     virtual Base * copy() const;
 };
 
+/* try to quit out of a menu or something. Maybe this should derive from
+ * MenuException?
+ */
+class Quit: public Base {
+public:
+    Quit(const std::string & file, int line);
+    Quit(const std::string & file, int line, const Base & nested);
+    virtual ~Quit() throw();
+protected:
+    virtual Base * copy() const;
+};
+
 }
 
 #endif

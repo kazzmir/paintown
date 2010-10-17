@@ -1198,21 +1198,6 @@ bool OptionLives::rightKey(){
 OptionMenu::OptionMenu(const Token *token):
 MenuOption(token),
 menu(0){
-    // Check whether we have a menu or tabmenu
-    /*if ( *token == "menu" ){
-	menu = new Menu();
-    } else {
-	throw LoadException(__FILE__, __LINE__, "Not a menu");
-    }*/
-    // Set this menu as an option
-    //menu->setAsOption(true);
-    
-    /*
-    // Lets try loading from a file
-    std::string temp;
-    // Filename
-    *token >> temp;
-    */
     if (*token != "menu"){
         throw LoadException(__FILE__, __LINE__, "Not a menu");
     }
@@ -1225,21 +1210,8 @@ menu(0){
         menu = new Menu::Menu(token);
     }
 
-    /*
-    // this->setText(menu->getName());
-    // token->print("Menu: ");
-    const Token * tok = token->findToken("_/name");
-    if (tok != NULL){
-        std::string name;
-        tok->view() >> name;
-        // Global::debug(0, "menu") << "Menu name: " << name << endl;
-        this->setText(name);
-    } else {
-        // No name?
-        throw LoadException(__FILE__, __LINE__, "Menu has no name");
-    }
-    */
     this->setText(menu->getName());
+    this->setInfoText(menu->getInfo());
     
     // Lets check if this menu is going bye bye
     //if ( menu->checkRemoval() ) setForRemoval(true);
@@ -1505,6 +1477,45 @@ bool OptionPlayMode::rightKey(){
     return true;
 }
 
+OptionReturn::OptionReturn(const Token * token):
+MenuOption(token){
+    if (*token != "return"){
+        throw LoadException(__FILE__, __LINE__, "Not a return option");
+    }
+    readName(token);
+}
+
+void OptionReturn::logic(){
+}
+
+/* maybe this option is misnamed, but its supposed to quit the current game
+ * and go back to the main menu
+ */
+void OptionReturn::run(const Menu::Context & context){
+    throw Exception::Quit(__FILE__, __LINE__);
+}
+
+OptionReturn::~OptionReturn(){
+}
+
+OptionContinue::OptionContinue(const Token * token):
+MenuOption(token){
+    if (*token != "continue"){
+        throw LoadException(__FILE__, __LINE__, "Not a continue option");
+    }
+    readName(token);
+}
+
+void OptionContinue::logic(){
+}
+
+void OptionContinue::run(const Menu::Context & context){
+    throw Exception::Return(__FILE__, __LINE__);
+}
+
+OptionContinue::~OptionContinue(){
+}
+
 OptionQuit::OptionQuit(const Token *token):
 MenuOption(token){
     if ( *token != "quit" ){
@@ -1514,7 +1525,7 @@ MenuOption(token){
     readName(token);
 }
 
-OptionQuit::OptionQuit( const std::string &name ):
+OptionQuit::OptionQuit(const std::string &name):
 MenuOption(0){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to quit");
@@ -1529,7 +1540,7 @@ void OptionQuit::logic(){
 }
 
 void OptionQuit::run(const Menu::Context & context){
-	throw ShutdownException();
+    throw ShutdownException();
 }
 
 

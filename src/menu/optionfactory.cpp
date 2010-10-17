@@ -32,6 +32,10 @@ MenuOption * OptionFactory::getOption(const Token *token){
         return new OptionJoystick(tok);
     } else if (*tok == "choose-language"){
         return new OptionLanguage(tok);
+    } else if (*tok == "return"){
+        return new OptionReturn(tok);
+    } else if (*tok == "continue"){
+        return new OptionContinue(tok);
     } else if (*tok == "sound"){
         return new OptionSound(tok);
     } else if (*tok == "music"){
