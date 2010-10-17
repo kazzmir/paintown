@@ -1459,8 +1459,8 @@ void Menu::Menu::render(Context & ourContext, const Bitmap & bmp){
 std::string Menu::Menu::getName(){
     std::string name;
     try {
-        if (data[name]){
-            *data[name] >> name;
+        if (data["name"]){
+            *data["name"] >> name;
         }
     } catch (const MenuException & ex){
     }

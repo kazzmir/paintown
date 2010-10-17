@@ -1225,6 +1225,7 @@ menu(0){
         menu = new Menu::Menu(token);
     }
 
+    /*
     // this->setText(menu->getName());
     // token->print("Menu: ");
     const Token * tok = token->findToken("_/name");
@@ -1237,6 +1238,8 @@ menu(0){
         // No name?
         throw LoadException(__FILE__, __LINE__, "Menu has no name");
     }
+    */
+    this->setText(menu->getName());
     
     // Lets check if this menu is going bye bye
     //if ( menu->checkRemoval() ) setForRemoval(true);
@@ -1244,7 +1247,9 @@ menu(0){
 
 OptionMenu::~OptionMenu(){
     // Delete our menu
-    if(menu)delete menu;
+    if (menu){
+        delete menu;
+    }
 }
 
 void OptionMenu::logic(){
