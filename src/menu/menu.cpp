@@ -1197,9 +1197,9 @@ void Menu::Menu::load(const Token * token){
         throw LoadException(__FILE__, __LINE__, "Empty Menu");
     } else {
         // Get version
-        const Token * tok;
-        token->view() >> tok;
-	const Token *ourToken = tok->findToken("type");
+        // const Token * tok;
+        // token->view() >> tok;
+	const Token *ourToken = token->findToken("_/type");
         if (ourToken != NULL){
 	    try {
 		std::string menuType;
@@ -1212,7 +1212,7 @@ void Menu::Menu::load(const Token * token){
 	    } catch (const TokenException & ex){
 	    }
 	}
-	ourToken = tok->findToken("version");
+	ourToken = token->findToken("_/version");
         if (ourToken != NULL){
             try {
                 ourToken->view() >> major >> minor >> micro;
