@@ -2278,6 +2278,7 @@ void OptionLanguage::run(const Menu::Context & context){
 
     try {
         temp.run(context);
+    } catch (const Exception::Return & ignore){
     } catch (const Menu::MenuException & ex){
     }
 
