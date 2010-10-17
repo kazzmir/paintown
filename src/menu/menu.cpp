@@ -223,6 +223,17 @@ Exception::Base * Menu::MenuException::copy() const {
     return new MenuException(*this);
 }
 
+Menu::Reload::Reload(const std::string & file, int line, const std::string reason):
+MenuException(file, line, reason){
+}
+
+Menu::Reload::~Reload() throw() {
+}
+    
+Exception::Base * Menu::Reload::copy() const {
+    return new Reload(*this);
+}
+
 Menu::ValueHolder::ValueHolder(const std::string & name):
 name(name),
 location(0){
@@ -597,7 +608,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             try{
                 context.playSound(Select);
                 options[menu.getCurrentIndex()]->run(context);
-            } catch (const Exception::Return & ex){
+            } catch (const Reload & reload){
                 menu.open();
                 menuInfo.open();
             }

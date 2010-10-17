@@ -122,6 +122,8 @@ void OptionAdventure::run(const Menu::Context & context){
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Error while loading: " << le.getTrace() << endl;
+    } catch (const Exception::Return & ignore){
+        throw Menu::Reload(__FILE__, __LINE__);
     }
 
     /* player will be null if an exception occurred before selectPlayer was called */
@@ -193,6 +195,8 @@ void OptionAdventureCpu::run(const Menu::Context & context){
         Game::realGame(futures, info);
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Could not load player: " << le.getTrace() << endl;
+    } catch (const Exception::Return & ignore){
+        throw Menu::Reload(__FILE__, __LINE__);
     }
 
     for (vector<Util::Future<Object*>*>::iterator it = futures.begin(); it != futures.end(); it++){
@@ -369,6 +373,8 @@ void OptionChangeMod::run(const Menu::Context & context){
         
         try{
             menu.run(context);
+        } catch (const Exception::Return & ignore){
+            throw Menu::Reload(__FILE__, __LINE__);
         } catch (const Menu::MenuException & ignore){
         }
 
@@ -603,7 +609,8 @@ void OptionCredits::run(const Menu::Context & context){
     }
 
     InputManager::waitForRelease(input, Exit);
-    throw Exception::Return(__FILE__, __LINE__);
+    throw Menu::Reload(__FILE__, __LINE__);
+    // throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionDummy::OptionDummy(const Token *token):
@@ -1230,7 +1237,11 @@ void OptionMenu::logic(){
 
 void OptionMenu::run(const Menu::Context & context){
     // Do our new menu
-    menu->run(context);
+    try{
+        menu->run(context);
+    } catch (const Exception::Return ignore){
+        throw Menu::Reload(__FILE__, __LINE__);
+    }
 }
 
 OptionMugenMenu::OptionMugenMenu(const Token *token):
@@ -1306,7 +1317,8 @@ void OptionMugenMenu::run(const Menu::Context & context){
         Util::showError(le, out.str());
         InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
     }
-    throw Exception::Return(__FILE__, __LINE__);
+    throw Menu::Reload(__FILE__, __LINE__);
+    // throw Exception::Return(__FILE__, __LINE__);
 }
 
 #ifdef HAVE_NETWORKING
@@ -1335,7 +1347,8 @@ void OptionNetworkHost::run(const Menu::Context & context){
     key.clear();
     key.poll();
     key.wait();
-    throw Exception::Return(__FILE__, __LINE__);
+    throw Menu::Reload(__FILE__, __LINE__);
+    // throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionNetworkJoin::OptionNetworkJoin(const Token *token):
@@ -1366,7 +1379,8 @@ void OptionNetworkJoin::run(const Menu::Context & context){
     key.clear();
     key.poll();
     key.wait();
-    throw Exception::Return(__FILE__, __LINE__);
+    throw Menu::Reload(__FILE__, __LINE__);
+    // throw Exception::Return(__FILE__, __LINE__);
 }
 #endif
 
@@ -2267,7 +2281,8 @@ void OptionLanguage::run(const Menu::Context & context){
     } catch (const Menu::MenuException & ex){
     }
 
-    throw Exception::Return(__FILE__, __LINE__);
+    throw Menu::Reload(__FILE__, __LINE__);
+    // throw Exception::Return(__FILE__, __LINE__);
 }
     
 void OptionLanguage::logic(){

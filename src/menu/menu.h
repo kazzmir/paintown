@@ -99,6 +99,15 @@ class MenuException : public Exception::Base{
         virtual Exception::Base * copy() const;
 };
 
+/* reload the current menu, usually thrown by some option */
+class Reload: public MenuException {
+public:
+    Reload(const std::string & file, int line, const std::string reason = "");
+    virtual ~Reload() throw();
+protected:
+    virtual Exception::Base * copy() const;
+};
+
 class ValueHolder{
     public:
         ValueHolder(const std::string &);
