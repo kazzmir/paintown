@@ -34,6 +34,7 @@ Font * FontFactory::getFont(const Filesystem::AbsolutePath & path, const int x, 
 void FontFactory::destroy(){
     if ( my_factory != NULL ){
         delete my_factory;
+        my_factory = NULL;
     }
 }
     
