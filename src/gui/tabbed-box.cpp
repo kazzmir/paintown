@@ -105,9 +105,13 @@ void TabbedBox::act(const Font & font){
 	}
     }
 }
+        
+void TabbedBox::render(const Bitmap & work){
+    /* nothing */
+}
 
 // Render
-void TabbedBox::render(const Bitmap & work){
+void TabbedBox::render(const Bitmap & work, const Font & font){
     const int tabHeight = fontHeight + 5;
     // checkWorkArea();
     Bitmap area(work, location.getX(), location.getY(), location.getWidth(), location.getHeight());
@@ -125,7 +129,7 @@ void TabbedBox::render(const Bitmap & work){
     
     tabs[current]->context->render(area);
     
-    renderTabs(area);
+    renderTabs(area, font);
     
     /* FIXME: only render the background in translucent mode, the text should
      * not be translucent
@@ -238,9 +242,9 @@ void TabbedBox::setSelectedTabFontColor(int color){
     activeTabFontColor = new Effects::Gradient(50, tabFontColor, currentTabFontColor);
 }
 
-void TabbedBox::renderTabs(const Bitmap & bmp){
+void TabbedBox::renderTabs(const Bitmap & bmp, const Font & vFont){
     const int tabHeight = fontHeight + 5;
-    const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
+    // const Font & vFont = Font::getFont(font, fontWidth, fontHeight);
     
     int x = 0;
     Bitmap::transBlender(0, 0, 0, colors.bodyAlpha);
