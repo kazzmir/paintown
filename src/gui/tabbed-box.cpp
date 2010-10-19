@@ -127,7 +127,7 @@ void TabbedBox::render(const Bitmap & work, const Font & font){
 	area.translucent().vLine(tabHeight,location.getWidth()-1,location.getHeight()-1,colors.border);
     }
     
-    tabs[current]->context->render(area);
+    tabs[current]->context->render(area, font);
     
     renderTabs(area, font);
     
