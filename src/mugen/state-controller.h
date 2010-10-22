@@ -186,6 +186,8 @@ protected:
 
     /* state number */
     int state;
+
+    int spritePriority;
 };
 
 }

@@ -190,6 +190,25 @@ Win
 
 namespace PaintownUtil = ::Util;
     
+/* This isn't so much a compiler as a partial evaluating interpreter (you can
+ * tell its not a compiler because there are explicit calls to `evaluate' at runtime).
+ * Here is a nice quote from Joe Marshall on the difference between interpreters
+ * and compilers:
+ * 
+ *  "If you have a machine
+ *   that runs programs written in language M, but you have a program
+ *   written in language L, you can proceed in one of two ways:
+ *
+ *   1) You can modify the *machine* to run programs in a different language.
+ *     An interpreter is a program that transforms a machine into
+ *     another machine.
+ *
+ *   2) You can find an `equivalant' program in the language the machine does run.
+ *     A compiler is a program that transforms a program into another program."
+ *  -- Joe Marshall 10/14/2010
+ *  http://www.mail-archive.com/users@racket-lang.org/msg02358.html
+ */
+
 namespace Mugen{
 namespace Compiler{
 

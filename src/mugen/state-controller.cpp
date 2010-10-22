@@ -21,7 +21,8 @@ name(name),
 debug(false),
 persistent(1),
 currentPersistent(1),
-state(state){
+state(state),
+spritePriority(0){
 }
 
 StateController::StateController(const string & name, int state, Ast::Section * section):
@@ -30,7 +31,8 @@ name(name),
 debug(false),
 persistent(1),
 currentPersistent(1),
-state(state){
+state(state),
+spritePriority(0){
     class Walker: public Ast::Walker {
     public:
         Walker(StateController & controller):
@@ -51,6 +53,7 @@ state(state){
             } else if (simple == "debug"){
                 controller.debug = true;
             } else if (simple == "sprpriority"){
+                simple >> controller.spritePriority;
                 /* TODO */
             }
         }
