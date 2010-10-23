@@ -576,6 +576,10 @@ public:
             return name;
         }
 
+        virtual const Filesystem::AbsolutePath & getLocation() const {
+            return location;
+        }
+
         virtual inline const std::string & getAuthor() const {
             return author;
         }

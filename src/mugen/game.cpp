@@ -263,29 +263,65 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
     }
 }
 
+static Filesystem::AbsolutePath maybeFindRandom(const std::string & name, std::vector<Filesystem::AbsolutePath> & all){
+    if (name == "_"){
+        if (all.size() > 0){
+            Filesystem::AbsolutePath front = all[0];
+            all.erase(all.begin());
+            return front;
+        }
+        throw MugenException("No def files found", __FILE__, __LINE__);
+    } else {
+        return Filesystem::find(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
+    }
+}
+
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
     ParseCache cache;
-    Character player1(Filesystem::find(Filesystem::RelativePath("mugen/chars/" + player1Name + "/" + player1Name + ".def")));
-    Character player2(Filesystem::find(Filesystem::RelativePath("mugen/chars/" + player2Name + "/" + player2Name + ".def")));
+    std::vector<Filesystem::AbsolutePath> allCharacters = Filesystem::getFilesRecursive(Filesystem::find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+    std::random_shuffle(allCharacters.begin(), allCharacters.end());
+    bool random1 = player1Name == "_";
+    bool random2 = player2Name == "_";
+here1:
+    if (allCharacters.size() == 0){
+        throw MugenException("No def files left", __FILE__, __LINE__);
+    }
+    Character player1(maybeFindRandom(player1Name, allCharacters));
     TimeDifference timer;
-    {
+    try{
         std::ostream & out = Global::debug(0);
-        out << "Loading player 1 " << player1Name;
+        out << "Loading player 1 " << player1.getLocation().path();
         out.flush();
         timer.startTime();
         player1.load();
         timer.endTime();
         out << timer.printTime(" took") << std::endl;
+    } catch (const MugenException & failed){
+        if (random1){
+            Global::debug(0) << "Failed to load: " << failed.getReason() << std::endl;
+            goto here1;
+        }
+        throw failed;
     }
 
-    {
+here2:
+    if (allCharacters.size() == 0){
+        throw MugenException("No def files left", __FILE__, __LINE__);
+    }
+    Character player2(maybeFindRandom(player2Name, allCharacters));
+    try {
         std::ostream & out = Global::debug(0);
-        out << "Loading player 2 " << player2Name;
+        out << "Loading player 2 " << player2.getLocation().path();
         out.flush();
         timer.startTime();
         player2.load();
         timer.endTime();
         out << timer.printTime(" took") << std::endl;
+    } catch (const MugenException & failed){
+        if (random2){
+            Global::debug(0) << "Failed to load: " << failed.getReason() << std::endl;
+            goto here2;
+        }
     }
 
     HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
