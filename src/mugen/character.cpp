@@ -1665,25 +1665,6 @@ void Character::fixAssumptions(){
             raw << "trigger2 = command = \"holdback\"\n";
             raw << "value = " << WalkingForwards << "\n";
             states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, StateController::ChangeState));
-
-            /*
-            StateController * controller = new StateController("walk");
-            controller->setType(StateController::ChangeState);
-            Ast::Number value(WalkingForwards);
-            controller->setValue(&value);
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("stateno"),
-                        new Ast::Number(0))));
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
-            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdfwd")))));
-            controller->addTrigger(2, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdback")))));
-            states[-1]->addController(controller);
-            controller->compile();
-            */
         }
 
 
@@ -1698,24 +1679,6 @@ void Character::fixAssumptions(){
             raw << "triggerall = command = \"holddown\"\n";
 
             states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, StateController::ChangeState));
-            /*
-            StateController * controller = new StateController("crouch");
-            controller->setType(StateController::ChangeState);
-            Ast::Number value(StandToCrouch);
-            controller->setValue(&value);
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
-            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("stateno"),
-                        new Ast::Number(0))));
-            controller->addTrigger(2, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("stateno"),
-                        new Ast::Number(WalkingForwards))));
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holddown")))));
-            states[-1]->addControllerFront(controller);
-            controller->compile();
-            */
         }
 
         /* jump */
@@ -1740,21 +1703,6 @@ void Character::fixAssumptions(){
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(new string("holdup")))));
             states[-1]->addController(controller);
-
-            /*
-            StateController * controller = new StateController("jump");
-            controller->setType(StateController::InternalCommand);
-            controller->setInternal(&Mugen::Character::resetJump);
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("statetype"),
-                        new Ast::String(new string("S")))));
-            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                        new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdup")))));
-            states[-1]->addController(controller);
-            controller->compile();
-            */
         }
 
         /* double jump */
@@ -1766,7 +1714,6 @@ void Character::fixAssumptions(){
             Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(keys), 5, 0);
             addCommand(doubleJumpCommand);
 
-            // internalJumpNumber = new MutableCompiledInteger(0);
             setSystemVariable(JumpIndex, RuntimeValue(0));
 
             class InternalDoubleJumpController: public StateController {
@@ -1833,21 +1780,6 @@ void Character::fixAssumptions(){
         raw << "trigger1 = command != \"holdback\"\n";
 
         states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, StateController::ChangeState));
-
-        /*
-        StateController * controller = new StateController("stop walking");
-        controller->setType(StateController::ChangeState);
-        Ast::Number value(Standing);
-        controller->setValue(&value);
-        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
-                    new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holdfwd")))));
-        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
-                    new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holdback")))));
-        states[20]->addController(controller);
-        controller->compile();
-        */
     }
 
     if (states[Standing] != 0){
@@ -1862,18 +1794,6 @@ void Character::fixAssumptions(){
         raw << "trigger1 = command != \"holddown\"\n";
 
         states[11]->addController(parseController(raw.str(), "stand after crouching", 11, StateController::ChangeState));
-
-        /*
-        StateController * controller = new StateController("stop walking");
-        controller->setType(StateController::ChangeState);
-        Ast::Number value(CrouchToStand);
-        controller->setValue(&value);
-        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Unequals,
-                    new Ast::SimpleIdentifier("command"),
-                    new Ast::String(new string("holddown")))));
-        states[11]->addController(controller);
-        controller->compile();
-        */
     }
 
     /* get up kids */
@@ -1884,20 +1804,6 @@ void Character::fixAssumptions(){
         raw << "trigger1 = time >= " << getLieDownTime() << "\n";
 
         states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, StateController::ChangeState));
-
-        /*
-        StateController * controller = new StateController("get up");
-        controller->setType(StateController::ChangeState);
-        Ast::Number value(GetUpFromLiedown);
-        controller->setValue(&value);
-
-        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThanEquals,
-                    new Ast::SimpleIdentifier("time"),
-                    new Ast::Number(getLieDownTime()))));
-
-        states[Liedown]->addController(controller);
-        controller->compile();
-        */
     }
 
     /* standing turn state */
@@ -1913,18 +1819,6 @@ void Character::fixAssumptions(){
         raw << "trigger1 = animtime = 0\n";
 
         turn->addController(parseController(raw.str(), "turn", 5, StateController::ChangeState));
-
-        /*
-        StateController * controller = new StateController("stand");
-        controller->setType(StateController::ChangeState);
-        Ast::Number value(Standing);
-        controller->setValue(&value);
-        controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
-                    new Ast::SimpleIdentifier("animtime"),
-                    new Ast::Number(0))));
-        turn->addController(controller);
-        controller->compile();
-        */
     }
 
     /* if y reaches 0 then auto-transition to state 52.
@@ -1991,30 +1885,6 @@ void Character::nextPalette(){
 	currentPalette++;
     } else currentPalette = 0;
     Global::debug(1) << "Current pal: " << currentPalette << " | Location: " << palDefaults[currentPalette] << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
-   /*
-    // Now replace the palettes
-    unsigned char pal[768];
-    if (Mugen::Util::readPalette(Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
-	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-		if( j->second ){
-		    MugenSprite *sprite = j->second;
-		    if ( sprite->samePalette){
-			memcpy( sprite->pcx + (sprite->reallength), pal, 768);
-		    } else {
-			if (!(sprite->groupNumber == 9000 && sprite->imageNumber == 1)){
-			    memcpy( sprite->pcx + (sprite->reallength)-768, pal, 768);
-			} 
-		    }
-		}
-	    }
-	}
-	// reload with new palette
-	for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	    if( i->second )i->second->reloadBitmaps();
-	}
-    }
-    */
 }
 
 void Character::priorPalette(){
@@ -2022,28 +1892,6 @@ void Character::priorPalette(){
 	currentPalette--;
     } else currentPalette = palDefaults.size() -1;
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
-    // Now replace the palettes
-    /*unsigned char pal[768];
-    if (Mugen::Util::readPalette(Mugen::Util::fixFileName(baseDir, palFile[palDefaults[currentPalette]]),pal)){
-	for( std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-	    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-		if( j->second ){
-		    MugenSprite *sprite = j->second;
-		    if ( sprite->samePalette){
-			memcpy( sprite->pcx + (sprite->reallength), pal, 768);
-		    } else {
-			if (!(sprite->groupNumber == 9000 && sprite->imageNumber == 1)){
-			    memcpy( sprite->pcx + (sprite->reallength)-768, pal, 768);
-			} 
-		    }
-		}
-	    }
-	}
-	// Get rid of animation lists;
-	for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	    if( i->second )i->second->reloadBitmaps();
-	}
-    }*/
 }
 
 const Bitmap * Character::getCurrentFrame() const {
@@ -2071,25 +1919,6 @@ vector<string> Character::doInput(const MugenStage & stage){
     }
 
     return behavior->currentCommands(stage, this, commands, getFacing() == Object::FACING_RIGHT);
-
-    /*
-    vector<string> out;
-
-    InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput());
-
-    // if (hasControl()){
-        Global::debug(2) << "Commands" << endl;
-        for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
-            Command * command = *it;
-            if (command->handle(output)){
-                Global::debug(2) << "command: " << command->getName() << endl;
-                out.push_back(command->getName());
-            }
-        }
-    // }
-
-    return out;
-    */
 }
 
 bool Character::isPaused(){

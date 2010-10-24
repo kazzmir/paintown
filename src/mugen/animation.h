@@ -212,7 +212,13 @@ class MugenAnimation{
 	bool showDefense;
 	bool showOffense;
 	
+        /* incremented for each game tick as long as the animation is not
+         * in an infinite loop time frame (-1)
+         */
 	int ticks;
+
+        /* incremented when the animation specifies a looptime of -1 */
+        int virtual_ticks;
 };
 
 #endif

@@ -424,15 +424,19 @@ public:
             string group;
             const Ast::Value * item;
             *value >> group >> item;
-            if (PaintownUtil::matchRegex(group, "F[0-9]+")){
-                int realGroup = atoi(PaintownUtil::captureRegex(group, "F([0-9]+)", 0).c_str());
+            group = PaintownUtil::lowerCaseAll(group);
+            if (PaintownUtil::matchRegex(group, "f[0-9]+")){
+                int realGroup = atoi(PaintownUtil::captureRegex(group, "f([0-9]+)", 0).c_str());
                 this->group = realGroup;
                 this->item = Compiler::compile(item);
                 own = true;
-            } else if (PaintownUtil::matchRegex(group, "[0-9]+")){
-                this->group = atoi(group.c_str());
+            } else if (PaintownUtil::matchRegex(group, "s?[0-9]+")){
+                int realGroup = atoi(PaintownUtil::captureRegex(group, "s?([0-9]+)", 0).c_str());
+                this->group = realGroup;
                 this->item = Compiler::compile(item);
                 own = false;
+            } else {
+                Global::debug(0) << "Unable to parse group value for PlaySnd: " << group << endl;
             }
         } catch (const MugenException & e){
             // Global::debug(0) << "Error with PlaySnd " << controller.name << ": " << e.getReason() << endl;

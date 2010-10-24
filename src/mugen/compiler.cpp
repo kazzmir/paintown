@@ -1107,6 +1107,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getCurrentState());
                 }
+
+                virtual std::string toString() const {
+                    return "stateno";
+                }
             };
 
             return new StateNo();
@@ -1488,6 +1492,12 @@ public:
             JustNumber(double what):
                 value(what){
                 }
+
+            virtual std::string toString() const {
+                std::ostringstream out;
+                out << value.toNumber();
+                return out.str();
+            }
 
             RuntimeValue value;
 
@@ -2581,6 +2591,12 @@ public:
                 virtual ~FunctionAnimElemTime(){
                     delete index;
                 }
+        
+                virtual std::string toString() const {
+                    std::ostringstream out;
+                    out << "animelemtime(" << index->toString() << ")";
+                    return out.str();
+                }
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     int index = (int) this->index->evaluate(environment).toNumber();
@@ -2973,6 +2989,14 @@ public:
                     }
                     case ExpressionInfix::GreaterThan : {
                         out << " > ";
+                        break;
+                    }
+                    case ExpressionInfix::Or : {
+                        out << " || ";
+                        break;
+                    }
+                    case ExpressionInfix::Equals : {
+                        out << " = ";
                         break;
                     }
                     default : break;

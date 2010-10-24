@@ -128,7 +128,8 @@ started(false),
 type(Mugen::Unknown),
 showDefense(false),
 showOffense(false),
-ticks(0){
+ticks(0),
+virtual_ticks(0){
 }
 
 MugenAnimation::MugenAnimation(const MugenAnimation &copy):
@@ -144,6 +145,7 @@ looped(false){
         this->frames.push_back(new MugenFrame(*old));
     }
     this->ticks = copy.ticks;
+    this->virtual_ticks = copy.virtual_ticks;
     this->started = copy.started;
 }
 
@@ -189,6 +191,7 @@ int MugenAnimation::animationElementElapsed(int position) const {
 
     if (position - 1 == (int) this->position){
         total += ticks;
+        total += virtual_ticks;
     }
 
     for (int from = position - 1; from < (int) this->position; from++){
@@ -206,6 +209,7 @@ int MugenAnimation::animationTime() const {
     }
 
     int left = frames[position]->time - ticks - 1;
+    /* FIXME: might need to add virtual_ticks here for loop time */
     for (unsigned int rest = position + 1; rest < frames.size(); rest++){
         if (frames[rest]->time == -1){
             return -1;
@@ -255,6 +259,7 @@ void MugenAnimation::logic(){
             ticks += 1;
             if (ticks >= frames[position]->time){
                 ticks = 0;
+                virtual_ticks = 0;
                 if (position < frames.size() - 1){
                     position += 1;
                 } else {
@@ -264,6 +269,8 @@ void MugenAnimation::logic(){
 		    }
                 }
             }
+        } else {
+            virtual_ticks += 1;
         }
     }
 }
