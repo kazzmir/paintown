@@ -1184,6 +1184,7 @@ double * parseDouble(const Value & value){
     std::string * str = toString(value);
     std::istringstream get(*str);
     double * number = new double;
+    *number = 0;
     get >> *number;
     GC::save(number);
     return number;
@@ -1194,6 +1195,7 @@ double * parseDouble(const Value & left, const Value & right){
     std::string * str2 = toString(right);
     std::istringstream get(*str1 + "." + *str2);
     double * number = new double;
+    *number = 0;
     get >> *number;
     GC::save(number);
     return number;

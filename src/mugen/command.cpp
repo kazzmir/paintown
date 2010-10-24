@@ -202,6 +202,9 @@ public:
     key(key),
     time(0){
         time = ast.getExtra();
+        if (time < 1){
+            time = 1;
+        }
     }
     
     virtual bool operator==(const CompiledKey & key) const {
@@ -254,7 +257,10 @@ protected:
     int time;
 };
  
-/* FIXME: make direction keys work */
+/* FIXME: make direction keys work
+ * This doesn't look like its used, instead direction keys are handled
+ * natively by KeySingle
+ */
 class CompiledKeyDirection: public CompiledKey {
 public:
     CompiledKeyDirection(const Ast::KeyModifier & ast, CompiledKey * key):
@@ -398,7 +404,9 @@ successTime(0),
 needRelease(NULL){
 }
 
-/* AST walking way, purely interpreted */
+/* AST walking way, purely interpreted
+ * Not used anymore.
+ */
 bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease){
     class KeyWalker: public Ast::Walker{
     public:
