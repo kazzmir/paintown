@@ -1786,6 +1786,16 @@ void Character::fixAssumptions(){
         states[Standing]->setControl(Compiler::compile(1));
     }
 
+    if (states[StandToCrouch] != NULL){
+        ostringstream raw;
+        raw << "[State " << StandToCrouch << ", paintown-internal-stand-while-crouching]\n";
+        raw << "value = " << CrouchToStand << "\n";
+        raw << "trigger1 = command != \"holddown\"\n";
+
+        states[StandToCrouch]->addController(parseController(raw.str(), "stand while crouching", StandToCrouch, StateController::ChangeState));
+
+    }
+
     /* stand after crouching */
     if (states[11] != 0){
         ostringstream raw;

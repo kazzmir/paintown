@@ -202,9 +202,11 @@ public:
     key(key),
     time(0){
         time = ast.getExtra();
+        /*
         if (time < 1){
             time = 1;
         }
+        */
     }
     
     virtual bool operator==(const CompiledKey & key) const {
@@ -222,6 +224,30 @@ public:
     }
     
     bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
+        if (holdKey > 0){
+            int fake = -1;
+            const CompiledKey * fakeKey;
+            if (key->pressed(keys, oldKeys, fake, holder, fakeKey)){
+                holdKey -= 1;
+                return false;
+            } else {
+                throw Command::Exception();
+            }
+        } else if (holdKey == 0){
+            int fake = -1;
+            const CompiledKey * fakeKey;
+            return !key->pressed(keys, oldKeys, fake, holder, fakeKey);
+        } else if (holdKey == -1){
+            int fake = -1;
+            const CompiledKey * fakeKey;
+            if (key->pressed(keys, oldKeys, fake, holder, fakeKey)){
+                holdKey = time;
+                return true;
+            }
+            return false;
+        }
+
+        /*
         if (time > 0){
             if (holdKey > 0){
                 int fake = -1;
@@ -244,6 +270,7 @@ public:
             int fake = -1;
             return !key->pressed(keys, oldKeys, fake, holder, needRelease);
         }
+        */
 
         throw Command::Exception();
     }
@@ -639,7 +666,11 @@ bool Command::handle(InputMap<Mugen::Keys>::Output keys){
         }
     }
 
-    // Global::debug(0) << "Command " << name << " at ticks " << ticks << endl;
+    /* // For debugging
+    if (name == "superPulo"){
+        Global::debug(0) << "Command " << name << " at ticks " << ticks << " " << (*current)->toString() << endl;
+    }
+    */
 
     if (fail){
         current = this->compiledKeys.begin();
