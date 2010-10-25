@@ -1069,7 +1069,7 @@ public:
 
         virtual void setDrawOffset(double x, double y);
 
-        virtual void setAfterImage(int time, int length, int timegap, int framegap);
+        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects);
         virtual void setAfterImageTime(int time);
 
         virtual void updateAngleEffect(double angle);
@@ -1412,7 +1412,8 @@ protected:
 
         struct AfterImage{
             AfterImage():
-                show(false){
+                show(false),
+                translucent(Default){
                 }
 
             struct Frame{
@@ -1438,11 +1439,13 @@ protected:
 
             /* true if after images are being shown */
             bool show;
+            /* count ticks */
             int currentTime;
             int timegap;
             int framegap;
             int lifetime;
             unsigned int length;
+            TransType translucent;
 
             std::deque<Frame> frames;
         } afterImage;

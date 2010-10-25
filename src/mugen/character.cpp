@@ -688,8 +688,10 @@ void Character::resetStateTime(){
 }
         
 void Character::changeState(MugenStage & stage, int stateNumber, const vector<string> & inputs){
-    /* dont let after images carry over to the next state */
-    afterImage.show = false;
+    /* dont let after images carry over to the next state
+     * UPDATE: mugen actually allows this
+     */
+    // afterImage.show = false;
 
     /* reset juggle points once the player gets up */
     if (stateNumber == GetUpFromLiedown){
@@ -1972,6 +1974,23 @@ void Character::act(vector<Object*>* others, World* world, vector<Object*>* add)
     widthOverride.enabled = false;
     transOverride.enabled = false;
 
+    if (afterImage.show){
+        afterImage.lifetime -= 1;
+        afterImage.show = afterImage.lifetime > 0;
+        afterImage.currentTime += 1;
+        
+        for (deque<AfterImage::Frame>::iterator it = afterImage.frames.begin(); it != afterImage.frames.end(); /**/ ){
+            AfterImage::Frame & frame = *it;
+            frame.life -= 1;
+            /* negative lifetimes mean indefinite frames */
+            if (frame.life == 0){
+                it = afterImage.frames.erase(it);
+            } else {
+                it++;
+            }
+        }
+    }
+
     for (int slot = 0; slot < 2; slot++){
         if (hitByOverride[slot].time > 0){
             hitByOverride[slot].time -= 1;
@@ -2256,30 +2275,19 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         }
 
         if (afterImage.show){
-            afterImage.currentTime += 1;
             if (afterImage.currentTime >= afterImage.timegap){
+                int life = 5;
+                afterImage.currentTime = 0;
                 MugenFrame * currentSprite = animation->getCurrentFrame();
-                afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == Object::FACING_LEFT, false, xscale, yscale), afterImage.lifetime, x, y));
+                afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == Object::FACING_LEFT, false, xscale, yscale), life, x, y));
+                if (afterImage.frames.size() > afterImage.length){
+                    afterImage.frames.resize(afterImage.length);
+                }
             }
 
             for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
                 const AfterImage::Frame & frame = afterImage.frames[index];
-                frame.sprite->render(frame.x, frame.y, *work, frame.effects);
-            }
-
-            for (deque<AfterImage::Frame>::iterator it = afterImage.frames.begin(); it != afterImage.frames.end(); /**/ ){
-                AfterImage::Frame & frame = *it;
-                frame.life -= 1;
-                /* negative lifetimes mean indefinite frames */
-                if (frame.life == 0){
-                    it = afterImage.frames.erase(it);
-                } else {
-                    it++;
-                }
-            }
-
-            if (afterImage.frames.size() > afterImage.length){
-                afterImage.frames.resize(afterImage.length);
+                frame.sprite->render(frame.x, frame.y, *work, frame.effects + afterImage.translucent);
             }
         }
 
@@ -2537,13 +2545,14 @@ void Character::guarded(Character * enemy, const HitDefinition & hit){
     }
 }
 
-void Character::setAfterImage(int time, int length, int timegap, int framegap){
+void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent){
     afterImage.show = true;
     afterImage.currentTime = 0;
     afterImage.timegap = timegap;
     afterImage.framegap = framegap;
     afterImage.lifetime = time;
     afterImage.length = length;
+    afterImage.translucent = translucent;
     afterImage.frames.clear();
 }
         

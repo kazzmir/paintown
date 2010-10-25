@@ -118,7 +118,11 @@ class Effects{
 	const Effects &operator=(const Effects &e);
 	virtual ~Effects();
 
-        Effects operator+(const Effects &);
+        /* adds the mask from the parameter to this object */
+        Effects operator+(const Effects &) const;
+
+        /* adds the translucency */
+        Effects operator+(const TransType & translucent) const;
 
         /* what kind of translucency to use */
 	TransType trans;

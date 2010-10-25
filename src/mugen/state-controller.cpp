@@ -214,6 +214,25 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
     return false;
 }
 
+static TransType parseTrans(const string & what){
+    if (what == "default"){
+        return Default;
+    } else if (what == "none"){
+        return None;
+    } else if (what == "add"){
+        return Add;
+    } else if (what == "addalpha"){
+        return AddAlpha;
+    } else if (what == "add1"){
+        return Add1;
+    } else if (what == "sub"){
+        return Sub;
+    } else {
+        Global::debug(0) << "Invalid trans type `" << what << "'" << endl;
+        return Default;
+    }
+}
+
 /* helpers */
 
 /* Compile a single value from some attribute in a section.
@@ -2102,7 +2121,8 @@ public:
         time(NULL),
         length(NULL),
         timeGap(NULL),
-        frameGap(NULL){
+        frameGap(NULL),
+        translucent(Default){
             parse(section);
         }
 
@@ -2110,6 +2130,7 @@ public:
     Compiler::Value * length;
     Compiler::Value * timeGap;
     Compiler::Value * frameGap;
+    TransType translucent;
 
     virtual ~ControllerAfterImage(){
         delete time;
@@ -2144,6 +2165,9 @@ public:
                 } else if (simple == "framegap"){
                     image.frameGap = Compiler::compile(simple.getValue());
                 } else if (simple == "trans"){
+                    string type;
+                    simple >> type;
+                    image.translucent = parseTrans(PaintownUtil::lowerCaseAll(type));
                 }
                 /* time = duration (int)
                  * Specifies the number of ticks that the afterimages should be displayed for. Set to -1 to display indefinitely. Defaults to 1.
@@ -2208,8 +2232,8 @@ public:
             length = this->length->evaluate(environment).toNumber();
         }
 
-        /* FIXME: handle palette and translucency */
-        guy.setAfterImage(time, length, timegap, framegap);
+        /* FIXME: handle palette */
+        guy.setAfterImage(time, length, timegap, framegap, translucent);
     }
 };
 
@@ -4938,30 +4962,11 @@ public:
 
             ControllerTrans & controller;
 
-            TransType parseType(const string & what){
-                if (what == "default"){
-                    return Default;
-                } else if (what == "none"){
-                    return None;
-                } else if (what == "add"){
-                    return Add;
-                } else if (what == "addalpha"){
-                    return AddAlpha;
-                } else if (what == "add1"){
-                    return Add1;
-                } else if (what == "sub"){
-                    return Sub;
-                } else {
-                    Global::debug(0) << "Invalid trans type `" << what << "'" << endl;
-                    return Default;
-                }
-            }
-
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "trans"){
                     string type;
                     simple >> type;
-                    controller.trans = parseType(PaintownUtil::lowerCaseAll(type));
+                    controller.trans = parseTrans(PaintownUtil::lowerCaseAll(type));
                 } else if (simple == "alpha"){
                     const Ast::Value * from;
                     const Ast::Value * to;

@@ -1167,9 +1167,15 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     return *this;
 }
         
-Mugen::Effects Mugen::Effects::operator+(const Mugen::Effects & e2){
+Mugen::Effects Mugen::Effects::operator+(const Mugen::Effects & e2) const {
     Mugen::Effects result(*this);
     result.mask |= e2.mask;
+    return result;
+}
+            
+Mugen::Effects Mugen::Effects::operator+(const TransType & translucent) const {
+    Mugen::Effects result(*this);
+    result.trans = translucent;
     return result;
 }
 
