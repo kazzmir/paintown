@@ -150,7 +150,7 @@ public:
 };
 
 static void runMatch(MugenStage * stage, const Bitmap & buffer){
-    Bitmap work(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     InputMap<int> gameInput;
     gameInput.set(Keyboard::Key_F1, 10, false, 0);
     gameInput.set(Keyboard::Key_F2, 10, false, 1);
@@ -179,11 +179,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
 
         if (Global::speed_counter > 0){
             runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
-            /*
-            if (runCounter > 10){
-                runCounter = 10;
-            }
-            */
+            Global::speed_counter = 0;
 
             while (runCounter > 1){
                 InputManager::poll();
@@ -225,16 +221,17 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
                     gameSpeed = 0.1;
                 }
             }
-            Global::speed_counter = 0;
+            // Global::speed_counter = 0;
         }
 
         if (second_counter != Global::second_counter){
             int difference = Global::second_counter - second_counter;
+            double alpha = 0.2;
             /* unlikely, but just in case */
             if (difference == 0){
                 difference = 1;
             }
-            fps = (0.8 * fps) + (0.2 * (double) frames / difference);
+            fps = (alpha * fps) + ((1-alpha) * (double) frames / difference);
             // fps[fps_index] = (double) frames / (double) difference;
             // fps_index = (fps_index+1) % max_fps_index;
             second_counter = Global::second_counter;

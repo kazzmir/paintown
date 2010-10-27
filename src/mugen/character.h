@@ -1412,7 +1412,6 @@ protected:
 
         struct AfterImage{
             AfterImage():
-                show(false),
                 translucent(Default){
                 }
 
@@ -1437,13 +1436,15 @@ protected:
                 int y;
             };
 
-            /* true if after images are being shown */
-            bool show;
             /* count ticks */
             int currentTime;
             int timegap;
             int framegap;
+
+            /* time left for the afterimage effects will be added */
             int lifetime;
+
+            /* maximum number of afterimage frames */
             unsigned int length;
             TransType translucent;
 

@@ -414,6 +414,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
             bool draw = false;
             if (Global::speed_counter > 0){
                 runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
+                Global::speed_counter = 0;
 
                 while (runCounter >= 1.0){
                     InputManager::poll();
@@ -439,7 +440,6 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
                 doInput(state, takeScreenshot, draw);
                 
                 state.done |= world.finished();
-                Global::speed_counter = 0;
             }
 
             return draw;
@@ -480,11 +480,12 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
         void updateFrames(){
             if (second_counter != Global::second_counter){
                 int difference = Global::second_counter - second_counter;
+                double alpha = 0.2;
                 /* unlikely, but just in case */
                 if (difference == 0){
                     difference = 1;
                 }
-                fps = (0.75 * fps) + (0.25 * (double) frames / difference);
+                fps = (alpha * fps) + ((1 - alpha) * (double) frames / difference);
                 // fps[fps_index] = (double) frames / (double) difference;
                 // fps_index = (fps_index+1) % max_fps_index;
                 second_counter = Global::second_counter;
