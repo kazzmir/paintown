@@ -9,7 +9,9 @@
 
 using namespace std;
 
-/* TODO: go through each trigger and write how far done it is, 50% or 100% */
+/* TODO: go through each trigger and write how far done it is, 50% or 100%
+ * TODO: Remove Compiler::Value* and replace it with Value
+ */
 
 namespace Mugen{
         
@@ -2118,25 +2120,29 @@ class ControllerAfterImage: public StateController {
 public:
     ControllerAfterImage(Ast::Section * section, const string & name, int state):
         StateController(name, state, section),
-        time(NULL),
-        length(NULL),
-        timeGap(NULL),
-        frameGap(NULL),
         translucent(Default){
             parse(section);
         }
 
-    Compiler::Value * time;
-    Compiler::Value * length;
-    Compiler::Value * timeGap;
-    Compiler::Value * frameGap;
+    Value time;
+    Value length;
+    Value timeGap;
+    Value frameGap;
+    Value paletteColor;
+    Value invertColor;
+
+    struct RGBColors{
+        Value red, green, blue;
+    };
+
+    RGBColors bright;
+    RGBColors contrast;
+    RGBColors postbright;
+    RGBColors add;
+    RGBColors multiply;
     TransType translucent;
 
     virtual ~ControllerAfterImage(){
-        delete time;
-        delete length;
-        delete timeGap;
-        delete frameGap;
     }
 
     void parse(Ast::Section * section){
@@ -2154,12 +2160,50 @@ public:
                 } else if (simple == "length"){
                     image.length = Compiler::compile(simple.getValue());
                 } else if (simple == "palcolor"){
+                    image.paletteColor = Compiler::compile(simple.getValue());
                 } else if (simple == "palinvertall"){
+                    image.invertColor = Compiler::compile(simple.getValue());
                 } else if (simple == "palbright"){
+                    // * palbright = add_r, add_g, add_b (int)
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    image.bright.red = Compiler::compile(red);
+                    image.bright.green = Compiler::compile(green);
+                    image.bright.blue = Compiler::compile(blue);
                 } else if (simple == "palcontrast"){
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    image.contrast.red = Compiler::compile(red);
+                    image.contrast.green = Compiler::compile(green);
+                    image.contrast.blue = Compiler::compile(blue);
                 } else if (simple == "palpostbright"){
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    image.postbright.red = Compiler::compile(red);
+                    image.postbright.green = Compiler::compile(green);
+                    image.postbright.blue = Compiler::compile(blue);
                 } else if (simple == "paladd"){
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    image.add.red = Compiler::compile(red);
+                    image.add.green = Compiler::compile(green);
+                    image.add.blue = Compiler::compile(blue);
                 } else if (simple == "palmul"){
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    image.multiply.red = Compiler::compile(red);
+                    image.multiply.green = Compiler::compile(green);
+                    image.multiply.blue = Compiler::compile(blue);
                 } else if (simple == "timegap"){
                     image.timeGap = Compiler::compile(simple.getValue());
                 } else if (simple == "framegap"){
