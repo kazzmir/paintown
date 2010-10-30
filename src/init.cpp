@@ -27,7 +27,7 @@
 #include "util/dumb/include/dumb.h"
 #ifdef USE_ALLEGRO
 #include "util/dumb/include/aldumb.h"
-#include "loadpng/loadpng.h"
+#include "util/loadpng/loadpng.h"
 #include "util/gif/algif.h"
 #endif
 #include "util/bitmap.h"
