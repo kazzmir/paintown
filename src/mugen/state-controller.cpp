@@ -2256,28 +2256,36 @@ public:
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
-        int timegap = 1;
-        if (this->timeGap != NULL){
-            timegap = this->timeGap->evaluate(environment).toNumber();
-        }
+        int timegap = evaluateNumber(this->timeGap, environment, 1);
+        int framegap = evaluateNumber(this->frameGap, environment, 1);
+        int time = evaluateNumber(this->time, environment, 1);
+        int length = evaluateNumber(this->length, environment, 20);
+        int paletteColor = evaluateNumber(this->paletteColor, environment, 256);
+        bool invertColor = evaluateBool(this->invertColor, environment, false);
+        Character::AfterImage::RGB bright, contrast, postBright, add, multiply;
+        bright.red = evaluateNumber(this->bright.red, environment, 30);
+        bright.green = evaluateNumber(this->bright.green, environment, 30);
+        bright.blue = evaluateNumber(this->bright.blue, environment, 30);
+        
+        contrast.red = evaluateNumber(this->contrast.red, environment, 120);
+        contrast.green = evaluateNumber(this->contrast.green, environment, 120);
+        contrast.blue = evaluateNumber(this->contrast.blue, environment, 120);
+        
+        postBright.red = evaluateNumber(this->postbright.red, environment, 0);
+        postBright.green = evaluateNumber(this->postbright.green, environment, 0);
+        postBright.blue = evaluateNumber(this->postbright.blue, environment, 0);
 
-        int framegap = 1;
-        if (this->frameGap != NULL){
-            framegap = this->frameGap->evaluate(environment).toNumber();
-        }
-
-        int time = 1;
-        if (this->time != NULL){
-            time = this->time->evaluate(environment).toNumber();
-        }
-
-        int length = 20;
-        if (this->length != NULL){
-            length = this->length->evaluate(environment).toNumber();
-        }
+        add.red = evaluateNumber(this->add.red, environment, 10);
+        add.green = evaluateNumber(this->add.green, environment, 10);
+        add.blue = evaluateNumber(this->add.blue, environment, 25);
+        
+        multiply.red = evaluateNumber(this->multiply.red, environment, 0.65);
+        multiply.green = evaluateNumber(this->multiply.green, environment, 0.65);
+        multiply.blue = evaluateNumber(this->multiply.blue, environment, 0.75);
 
         /* FIXME: handle palette */
-        guy.setAfterImage(time, length, timegap, framegap, translucent);
+        guy.setAfterImage(time, length, timegap, framegap, translucent,
+                          bright, contrast, postBright, add, multiply);
     }
 };
 

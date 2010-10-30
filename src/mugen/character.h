@@ -1069,7 +1069,6 @@ public:
 
         virtual void setDrawOffset(double x, double y);
 
-        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects);
         virtual void setAfterImageTime(int time);
 
         virtual void updateAngleEffect(double angle);
@@ -1410,6 +1409,10 @@ protected:
         /* true if the player is currently guarding an attack */
         bool guarding;
 
+public:
+        /* this is public so the AfterImage state-controller can easily communicate
+         * RGB information
+         */
         struct AfterImage{
             AfterImage():
                 translucent(Default){
@@ -1436,6 +1439,10 @@ protected:
                 int y;
             };
 
+            struct RGB{
+                double red, green, blue;
+            };
+
             /* count ticks */
             int currentTime;
             int timegap;
@@ -1448,8 +1455,15 @@ protected:
             unsigned int length;
             TransType translucent;
 
+            RGB bright;
+            RGB contrast;
+            RGB postBright;
+            RGB add;
+            RGB multiply;
+
             std::deque<Frame> frames;
         } afterImage;
+protected:
 
         struct WidthOverride{
             WidthOverride():
@@ -1498,6 +1512,11 @@ protected:
             int alphaSource;
             int alphaDestination;
         } transOverride;
+public:
+        /* this definition is down here so we can get access to the AfterImage
+         * struct definition
+         */
+        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply);
 };
 
 /* copy all data from the parent somehow, maybe lazily. to speed things up */

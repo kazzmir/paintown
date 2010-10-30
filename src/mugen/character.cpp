@@ -2546,7 +2546,7 @@ void Character::guarded(Character * enemy, const HitDefinition & hit){
     }
 }
 
-void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent){
+void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply){
     afterImage.currentTime = 0;
     afterImage.timegap = timegap;
     afterImage.framegap = framegap;
@@ -2554,6 +2554,11 @@ void Character::setAfterImage(int time, int length, int timegap, int framegap, T
     afterImage.length = length;
     afterImage.translucent = translucent;
     afterImage.frames.clear();
+    afterImage.bright = bright;
+    afterImage.contrast = contrast;
+    afterImage.postBright = postBright;
+    afterImage.add = add;
+    afterImage.multiply = multiply;
 }
         
 void Character::setAfterImageTime(int time){
