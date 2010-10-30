@@ -21,10 +21,6 @@
 #include "world.h"
 #include "exceptions/exception.h"
 #include "loading.h"
-#include "openbor/mod.h"
-#include "openbor/pack-reader.h"
-#include "openbor/display-character.h"
-#include "openbor/util.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include <iostream>
