@@ -208,7 +208,7 @@ set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LI
 #add_library (main_module ${ALL_SRC})
 
 #Dumb
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/dumb)
 
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/network/hawknl)

@@ -237,7 +237,7 @@ def pcreLibrary(env):
 def dumbLibrary(env):
     dumbEnv = env.Clone()
     env = dumbEnv
-    return use.SConscript('dumb/SConscript', exports = ['env'])
+    return use.SConscript('util/dumb/SConscript', exports = ['env'])
 
 def hawknlLibrary(env):
     hawkEnv = env.Clone()

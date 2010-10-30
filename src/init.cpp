@@ -24,9 +24,9 @@
 #include <time.h>
 
 #include <ostream>
-#include "dumb/include/dumb.h"
+#include "util/dumb/include/dumb.h"
 #ifdef USE_ALLEGRO
-#include "dumb/include/aldumb.h"
+#include "util/dumb/include/aldumb.h"
 #include "loadpng/loadpng.h"
 #include "util/gif/algif.h"
 #endif
