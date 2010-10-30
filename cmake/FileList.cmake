@@ -8,7 +8,7 @@ src/music.cpp
 src/main-menu.cpp
 src/init.cpp
 src/nameplacer.cpp
-src/select_player.cpp
+src/game/select_player.cpp
 src/resource.cpp
 src/world.cpp
 src/versus_world.cpp)
