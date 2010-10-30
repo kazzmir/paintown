@@ -38,7 +38,7 @@ static void showMemory(){
 
 static int load(const char * path){
     // showMemory();
-    for (int i = 0; i < 1; i++){
+    for (int i = 0; i < 5; i++){
         try{
             TimeDifference diff;
             diff.startTime();
