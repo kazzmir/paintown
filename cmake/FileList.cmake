@@ -10,7 +10,7 @@ src/init.cpp
 src/nameplacer.cpp
 src/game/select_player.cpp
 src/resource.cpp
-src/world.cpp
+src/game/world.cpp
 src/versus_world.cpp)
 
 set(GAME_SRC
@@ -23,8 +23,7 @@ src/input/input-manager.cpp)
 
 set(SCRIPT_SRC
 src/script/script.cpp
-src/script/modules/python.cpp
-src/script/modules/ruby.cpp)
+src/script/modules/python.cpp)
 
 set(OGG_SRC
 src/util/ogg/logg.c)

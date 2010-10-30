@@ -32,7 +32,7 @@
 #include "util/file-system.h"
 #include "util/tokenreader.h"
 #include "script/script.h"
-#include "world.h"
+#include "game/world.h"
 #include "game/mod.h"
 
 using namespace std;

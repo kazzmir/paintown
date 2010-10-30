@@ -6,7 +6,7 @@
 # -------
 # macros
 # -------
-find_package(Ruby)
+# find_package(Ruby)
 include(TestForPythonEmbed)
 
 # Python
@@ -17,16 +17,17 @@ if(PYTHON_EMBEDABLE)
 endif(PYTHON_EMBEDABLE)
 
 # Ruby
-if(RUBY_INCLUDE_PATH)
-	set(RUBY_INCLUDE ${RUBY_INCLUDE_PATH})
-	set(RUBY_LIBS ${RUBY_LIBRARY})
-	add_definitions(-DHAVE_RUBY)
-endif(RUBY_INCLUDE_PATH)
+#if(RUBY_INCLUDE_PATH)
+#	set(RUBY_INCLUDE ${RUBY_INCLUDE_PATH})
+#	set(RUBY_LIBS ${RUBY_LIBRARY})
+#	add_definitions(-DHAVE_RUBY)
+#endif(RUBY_INCLUDE_PATH)
 
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(${PY_INCLUDE} ${RUBY_INCLUDE})
+# include_directories(${PY_INCLUDE} ${RUBY_INCLUDE})
+include_directories(${PY_INCLUDE})
 
 # -------------------------------------------------------
 # module
@@ -37,5 +38,6 @@ foreach(src_file ${SCRIPT_SRC})
         list(APPEND SRC ${src_file})
 endforeach(src_file ${SCRIPT_SRC})
 add_library(script_module ${SRC})
-target_link_libraries(script_module ${PY_LIBS} ${RUBY_LIBS})
+# target_link_libraries(script_module ${PY_LIBS} ${RUBY_LIBS})
+target_link_libraries(script_module ${PY_LIBS})
 

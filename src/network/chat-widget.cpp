@@ -2,7 +2,7 @@
 #include <deque>
 #include "input/text-input.h"
 #include "chat-widget.h"
-#include "world.h"
+#include "game/world.h"
 #include "input/input-manager.h"
 #include "util/font.h"
 #include "factory/font_render.h"

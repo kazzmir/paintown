@@ -4,7 +4,7 @@
 #include "stimulation.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
-#include "world.h"
+#include "game/world.h"
 #include "util/ebox.h"
 #include "util/funcs.h"
 #include "util/file-system.h"

@@ -9,7 +9,7 @@
 #include "nameplacer.h"
 #include "util/file-system.h"
 #include "globals.h"
-#include "world.h"
+#include "game/world.h"
 #include <vector>
 #include <math.h>
 

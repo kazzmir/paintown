@@ -12,7 +12,7 @@
 #include "factory/font_render.h"
 #include "factory/object_factory.h"
 #include "factory/heart_factory.h"
-#include "world.h"
+#include "game/world.h"
 #include "music.h"
 #include "object/character.h"
 #include "object/player.h"

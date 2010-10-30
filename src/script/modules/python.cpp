@@ -10,7 +10,7 @@
 #include "globals.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-#include "world.h"
+#include "game/world.h"
 #include "level/blockobject.h"
 #include "factory/object_factory.h"
 #include "object/enemy.h"

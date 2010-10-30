@@ -4,7 +4,7 @@
 #include <ruby.h>
 /* ruby script engine interface */
 #include "ruby.h"
-#include "world.h"
+#include "game/world.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "globals.h"

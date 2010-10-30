@@ -8,7 +8,7 @@
 #include "exception.h"
 #include "util.h"
 
-#include "world.h"
+#include "game/world.h"
 
 class Bitmap;
 namespace Console{

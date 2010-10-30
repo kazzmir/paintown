@@ -11,7 +11,7 @@
 #include "globals.h"
 #include "nameplacer.h"
 #include "util/load_exception.h"
-#include "world.h"
+#include "game/world.h"
 #include "util/file-system.h"
 #include "object.h"
 #include "object_messages.h"

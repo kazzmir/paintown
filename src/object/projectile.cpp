@@ -4,7 +4,7 @@
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "util/funcs.h"
-#include "world.h"
+#include "game/world.h"
 #include "globals.h"
 #include "animation.h"
 #include <iostream>
