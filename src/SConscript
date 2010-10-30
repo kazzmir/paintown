@@ -97,7 +97,7 @@ wavestream.c
 
 def sflLibrary(env):
     use = env
-    return SConscript('sfl/SConscript', exports = ['use'])
+    return SConscript('util/sfl/SConscript', exports = ['use'])
 
 def gmeLibrary(env):
     gmeEnv = env.Clone()

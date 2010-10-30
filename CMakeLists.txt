@@ -242,7 +242,7 @@ if (USE_SDL)
     # IMAGE
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sdl/image)
     # SFL
-    add_subdirectory(${CMAKE_SOURCE_DIR}/src/sfl)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sfl)
     # SPRIG
     add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
     # Image
