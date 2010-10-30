@@ -27,7 +27,7 @@ src/script/modules/python.cpp
 src/script/modules/ruby.cpp)
 
 set(OGG_SRC
-src/ogg/logg.c)
+src/util/ogg/logg.c)
 
 set(LEVEL_SRC
 src/level/block.cpp
