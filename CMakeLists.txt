@@ -194,7 +194,7 @@ endif(APPLE)
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src src/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${OGG_INCLUDES})
+include_directories(src src/network/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${OGG_INCLUDES})
 
 # -------------------------------------------------------
 # Put the linked libraries together
@@ -211,7 +211,7 @@ set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LI
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/dumb)
 
 #Hawknl
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/hawknl)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/network/hawknl)
 
 #Source modules
 add_library(base_module ${BASE_SRC})
