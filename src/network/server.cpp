@@ -6,7 +6,7 @@
 #include "factory/font_render.h"
 #include "factory/heart_factory.h"
 #include "factory/object_factory.h"
-#include "game.h"
+#include "game/game.h"
 #include "globals.h"
 #include "init.h"
 #include "level/utils.h"

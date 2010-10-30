@@ -19,7 +19,7 @@
 #include "object/network_character.h"
 #include "object/network_player.h"
 #include "network_world_client.h"
-#include "game.h"
+#include "game/game.h"
 #include "game/mod.h"
 #include "exceptions/exception.h"
 #include "loading.h"

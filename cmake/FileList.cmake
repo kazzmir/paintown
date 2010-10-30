@@ -1,6 +1,6 @@
 set(BASE_SRC 
 src/configuration.cpp
-src/game.cpp
+src/game/game.cpp
 src/globals.cpp
 src/debug.cpp
 src/loading.cpp

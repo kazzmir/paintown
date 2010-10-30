@@ -20,7 +20,7 @@
 #include "object/buddy_player.h"
 
 #include "input/keyboard.h"
-#include "game.h"
+#include "game/game.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "factory/font_factory.h"
