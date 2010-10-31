@@ -14,7 +14,7 @@ class MugenSprite{
     public:
 	MugenSprite();
 	MugenSprite( const MugenSprite &copy );
-	~MugenSprite();
+	virtual ~MugenSprite();
 	
 	MugenSprite & operator=( const MugenSprite &copy );
 	// For map searching
@@ -37,8 +37,11 @@ class MugenSprite{
         /* just copies the bitmap */
         void copyImage(const MugenSprite * copy);
 	
-	// get sprite
+	/* get the internal bitmap */
 	Bitmap * getBitmap(bool mask);
+
+        /* get the properly scaled sprite */
+        Bitmap getFinalBitmap(const Mugen::Effects & effects);
 	int getWidth();
 	int getHeight();
 	
@@ -70,6 +73,8 @@ class MugenSprite{
 	inline unsigned short getPrevious() const { return prev; }
 	inline bool getSamePalette() const { return samePalette; }
 	inline const char *getComments() const { return comments; }
+	
+        static void draw(const Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Bitmap &where, const Mugen::Effects &effects);
 
     protected:
         /* destroy allocated things */
@@ -97,8 +102,8 @@ class MugenSprite{
 	
 	Bitmap * unmaskedBitmap;
         Bitmap * maskedBitmap;
-	
-	void draw(const Bitmap &, const int xaxis, const int yaxis, const Bitmap &, const Mugen::Effects &);
+        
+        void draw(const Bitmap &, const int xaxis, const int yaxis, const Bitmap &, const Mugen::Effects &);
 };
 
 #endif

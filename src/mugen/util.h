@@ -8,8 +8,8 @@
 #include "exception.h"
 
 #include "input/input-manager.h"
+#include "util/bitmap.h"
 
-class Bitmap;
 class MugenAnimation;
 class MugenBackground;
 class MugenSprite;
@@ -124,6 +124,8 @@ class Effects{
         /* adds the translucency */
         Effects operator+(const TransType & translucent) const;
 
+        Effects operator+(const Bitmap::Blender & blender) const;
+
         /* what kind of translucency to use */
 	TransType trans;
 
@@ -153,6 +155,8 @@ class Effects{
             int x1, x2;
             int y1, y2;
         } dimension;
+
+        const Bitmap::Blender * drawBlender;
 };
 
 /* Use with fonts */

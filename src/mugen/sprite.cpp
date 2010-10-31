@@ -204,13 +204,7 @@ static bool isScaled(const Mugen::Effects & effects){
            fabs(effects.scaley - 1) > epsilon;
 }
 
-void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
-    // temp for scaling
-    /*
-    Bitmap modImage = Bitmap::temporaryBitmap((int) (bitmap->getWidth() * effects.scalex), (int) (bitmap->getHeight() * effects.scaley));
-    bitmap->Stretch(modImage);
-    */
-
+Bitmap MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
     Bitmap * use = getBitmap(effects.mask);
 
     Bitmap modImage = *use;
@@ -218,41 +212,12 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, 
         modImage = Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley));
         use->Stretch(modImage);
     }
-    
-    // This needs to be a switch trans = None, Add, Add1, Sub1, Addalpha
-    switch (effects.trans){
-	case AddAlpha : {
-	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
-	    Bitmap::transBlender(0, 0, 0, effects.alphalow);
-	    draw(modImage, xaxis, yaxis, where, effects);
-	    break;
-	}
-	case Add : {
-	    // this additive 100% I assume... not totally sure
-	    // Bitmap::addBlender( 255, 255, 255, 255 );
-	    Bitmap::addBlender(0, 0, 0, 255);
-	    draw(modImage,xaxis,yaxis,where,effects);
-	    break;
-	}
-	case Add1 : {
-	    // 50%
-	    Bitmap::addBlender(128, 128, 128, 255);
-	    draw(modImage,xaxis,yaxis,where,effects);
-	    break;
-	}
-	case Sub : {
-	    // Shadow effect
-	    // Bitmap::multiplyBlender( 0, 0, 0, 128 );
-	    Bitmap::differenceBlender(0, 0, 0, 128);
-	    draw(modImage, xaxis, yaxis, where, effects);
-	    break;
-	}
-	case None:
-	default:{
-	    draw(modImage, xaxis, yaxis, where, effects);
-	    break;
-	}
-    }
+
+    return modImage;
+}
+
+void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
+    draw(getFinalBitmap(effects), xaxis, yaxis, where, effects);
 }
 
 void MugenSprite::load(bool mask){
@@ -366,7 +331,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
     load(mask);
 }
 
-void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
+void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Bitmap &where, const Mugen::Effects &effects){
     int startWidth = 0;
     int startHeight = 0;
     int width = bmp.getWidth();
@@ -388,13 +353,42 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
         height = effects.dimension.y2;
     }
 
-    const int normalX = (xaxis - this->x);
-    const int normalY = (yaxis - this->y);
-    const int flippedX = (xaxis - bmp.getWidth() + this->x);
-    const int flippedY = (yaxis - bmp.getHeight() + this->y);
+    const int normalX = (xaxis - x);
+    const int normalY = (yaxis - y);
+    const int flippedX = (xaxis - bmp.getWidth() + x);
+    const int flippedY = (yaxis - bmp.getHeight() + y);
 
     const int FLIPPED = -1;
     const int NOT_FLIPPED = 1;
+
+    switch (effects.trans){
+	case AddAlpha : {
+	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
+	    Bitmap::transBlender(0, 0, 0, effects.alphalow);
+	    break;
+	}
+	case Add : {
+	    // this additive 100% I assume... not totally sure
+	    // Bitmap::addBlender( 255, 255, 255, 255 );
+	    Bitmap::addBlender(0, 0, 0, 255);
+	    break;
+	}
+	case Add1 : {
+	    // 50%
+	    Bitmap::addBlender(128, 128, 128, 255);
+	    break;
+	}
+	case Sub : {
+	    // Shadow effect
+	    // Bitmap::multiplyBlender( 0, 0, 0, 128 );
+	    Bitmap::differenceBlender(0, 0, 0, 128);
+	    break;
+	}
+	case None:
+	default:{
+	    break;
+	}
+    }
 
     if ( (effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
 	if (effects.trans != None){
@@ -427,4 +421,8 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	//    bmp.Blit( placex, placey, where );
 //	}
     }
+}
+
+void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
+    draw(bmp, xaxis, yaxis, this->x, this->y, where, effects);
 }

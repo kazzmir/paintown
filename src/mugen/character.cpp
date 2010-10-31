@@ -2287,9 +2287,33 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             x += PaintownUtil::rnd(3) - 1;
         }
 
+        class AfterImageBlender: public Bitmap::Blender {
+        public:
+            AfterImageBlender(double bright, double contrast, double post):
+            bright(bright),
+            contrast(contrast),
+            post(post){
+            }
+
+            double bright, contrast, post;
+
+            unsigned int blend(unsigned int pixel) const {
+                double out = (pixel + bright) * contrast + post;
+                if (out < 0){
+                    out = 0;
+                }
+                if (out > 255){
+                    out = 255;
+                }
+                return (unsigned int) out;
+            }
+        };
+
+        AfterImageBlender blender(afterImage.bright.red, afterImage.contrast.red / 256.0, afterImage.postBright.red);
+
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
             const AfterImage::Frame & frame = afterImage.frames[index];
-            frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent);
+            frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
         }
 
         /* TODO: add transOverride stuff here */
