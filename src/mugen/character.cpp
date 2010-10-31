@@ -2305,22 +2305,9 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
                 const AfterImage::RGB & extraAdd;
                 const AfterImage::RGB & extraMultiplier;
                 const int extra;
+                mutable map<unsigned, unsigned int> cache;
 
                 unsigned int doFilter(int red, int green, int blue) const {
-                    /*
-                    int red_out = (red + bright.red) * contrast.red / 256 + post.red;
-                    int green_out = (green + bright.green) * contrast.green / 256 + post.green;
-                    int blue_out = (blue + bright.blue) * contrast.blue / 256 + post.blue;
-                    for (int i = 0; i < extra; i++){
-                        red_out += extraAdd.red;
-                        red_out *= extraMultiplier.red;
-                        green_out += extraAdd.green;
-                        green_out *= extraMultiplier.green;
-                        blue_out += extraAdd.blue;
-                        blue_out *= extraMultiplier.blue;
-                    }
-                    */
-
                     int red_out = red;
                     int green_out = green;
                     int blue_out = blue;
@@ -2361,21 +2348,37 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
                 }
 
                 unsigned int filter(unsigned int pixel) const {
+                    if (cache.find(pixel) != cache.end()){
+                        return cache[pixel];
+                    }
+
                     int red = Bitmap::getRed(pixel);
                     int green = Bitmap::getGreen(pixel);
                     int blue = Bitmap::getBlue(pixel);
-                    return doFilter(red, green, blue);
+                    unsigned int out = doFilter(red, green, blue);
+                    cache[pixel] = out;
+                    return out;
                 }
             };
 
-            /* TODO: handle afterImage.color and afterImage.invert */
-            AfterImageFilter filter(afterImage.bright, afterImage.contrast, afterImage.postBright, afterImage.add, afterImage.multiply, index);
+            AfterImage::Frame & frame = afterImage.frames[index];
+            Bitmap fixed;
+            if (frame.extra != index){
+                /* TODO: handle afterImage.color and afterImage.invert */
+                AfterImageFilter filter(afterImage.bright, afterImage.contrast, afterImage.postBright, afterImage.add, afterImage.multiply, index);
 
-            const AfterImage::Frame & frame = afterImage.frames[index];
-            // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
-            Bitmap original = frame.sprite->getSprite()->getFinalBitmap(frame.effects);
-            Bitmap fixed = Bitmap::temporaryBitmap2(original.getWidth(), original.getHeight());
-            original.draw(0, 0, filter, fixed);
+                // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
+                Bitmap original = frame.sprite->getSprite()->getFinalBitmap(frame.effects);
+                fixed = Bitmap::temporaryBitmap2(original.getWidth(), original.getHeight());
+                original.draw(0, 0, filter, fixed);
+                frame.extra = index;
+                /* trade time for space -- but allocating a bitmap is sort
+                 * of expensive..
+                 */
+                frame.cache = Bitmap(fixed, true);
+            } else {
+                fixed = frame.cache;
+            }
             MugenSprite::draw(fixed, frame.x - cameraX + drawOffset.x + frame.sprite->xoffset, frame.y - cameraY + drawOffset.y + frame.sprite->yoffset, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
         }
 

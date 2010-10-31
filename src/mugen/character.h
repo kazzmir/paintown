@@ -17,6 +17,7 @@
 #include "util.h"
 #include "compiler.h"
 #include "definitions.h"
+#include "util/bitmap.h"
 
 namespace Ast{
     class KeyList;
@@ -1426,6 +1427,7 @@ public:
 
                 Frame(MugenFrame * sprite, Effects effects, int life, int x, int y):
                     sprite(sprite),
+                    extra(-1),
                     effects(effects),
                     life(life),
                     x(x),
@@ -1433,6 +1435,8 @@ public:
                     }
 
                 MugenFrame * sprite;
+                Bitmap cache;
+                unsigned int extra;
                 Effects effects;
                 int life;
                 int x;
