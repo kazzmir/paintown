@@ -2283,8 +2283,8 @@ public:
         multiply.green = evaluateNumber(this->multiply.green, environment, 0.65);
         multiply.blue = evaluateNumber(this->multiply.blue, environment, 0.75);
 
-        /* FIXME: handle palette */
         guy.setAfterImage(time, length, timegap, framegap, translucent,
+                          paletteColor, invertColor,
                           bright, contrast, postBright, add, multiply);
     }
 };

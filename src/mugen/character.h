@@ -1455,6 +1455,9 @@ public:
             unsigned int length;
             TransType translucent;
 
+            int paletteColor;
+            bool invertColor;
+
             RGB bright;
             RGB contrast;
             RGB postBright;
@@ -1516,7 +1519,7 @@ public:
         /* this definition is down here so we can get access to the AfterImage
          * struct definition
          */
-        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply);
+        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply);
 };
 
 /* copy all data from the parent somehow, maybe lazily. to speed things up */

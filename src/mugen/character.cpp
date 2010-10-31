@@ -2287,31 +2287,90 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             x += PaintownUtil::rnd(3) - 1;
         }
 
-        class AfterImageFilter: public Bitmap::Filter {
-        public:
-            AfterImageFilter(double bright, double contrast, double post):
-            bright(bright),
-            contrast(contrast),
-            post(post){
-            }
-
-            double bright, contrast, post;
-
-            unsigned int filter(unsigned int pixel) const {
-                double out = (pixel + bright) * contrast + post;
-                if (out < 0){
-                    out = 0;
-                }
-                if (out > 255){
-                    out = 255;
-                }
-                return (unsigned int) out;
-            }
-        };
-
-        AfterImageFilter filter(afterImage.bright.red, afterImage.contrast.red / 256.0, afterImage.postBright.red);
-
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
+            class AfterImageFilter: public Bitmap::Filter {
+            public:
+                AfterImageFilter(const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & post, const AfterImage::RGB & extraAdd, const AfterImage::RGB & extraMultiplier, int extra):
+                    bright(bright),
+                    contrast(contrast),
+                    post(post),
+                    extraAdd(extraAdd),
+                    extraMultiplier(extraMultiplier),
+                    extra(extra){
+                    }
+
+                const AfterImage::RGB & bright;
+                const AfterImage::RGB & contrast;
+                const AfterImage::RGB & post;
+                const AfterImage::RGB & extraAdd;
+                const AfterImage::RGB & extraMultiplier;
+                const int extra;
+
+                unsigned int doFilter(int red, int green, int blue) const {
+                    /*
+                    int red_out = (red + bright.red) * contrast.red / 256 + post.red;
+                    int green_out = (green + bright.green) * contrast.green / 256 + post.green;
+                    int blue_out = (blue + bright.blue) * contrast.blue / 256 + post.blue;
+                    for (int i = 0; i < extra; i++){
+                        red_out += extraAdd.red;
+                        red_out *= extraMultiplier.red;
+                        green_out += extraAdd.green;
+                        green_out *= extraMultiplier.green;
+                        blue_out += extraAdd.blue;
+                        blue_out *= extraMultiplier.blue;
+                    }
+                    */
+
+                    int red_out = red;
+                    int green_out = green;
+                    int blue_out = blue;
+                    for (int i = 0; i < extra; i++){
+                        red_out += extraAdd.red;
+                        red_out *= extraMultiplier.red;
+                        green_out += extraAdd.green;
+                        green_out *= extraMultiplier.green;
+                        blue_out += extraAdd.blue;
+                        blue_out *= extraMultiplier.blue;
+                    }
+
+                    red_out = (red_out + bright.red) * contrast.red / 256 + post.red;
+                    green_out = (green_out + bright.green) * contrast.green / 256 + post.green;
+                    blue_out = (blue_out + bright.blue) * contrast.blue / 256 + post.blue;
+                    
+                    if (red_out < 0){
+                        red_out = 0;
+                    }
+                    if (red_out > 255){
+                        red_out = 255;
+                    }
+                    if (green_out < 0){
+                        green_out = 0;
+                    }
+                    if (green_out > 255){
+                        green_out = 255;
+                    }
+                    if (blue_out < 0){
+                        blue_out = 0;
+                    }
+                    if (blue_out > 255){
+                        blue_out = 255;
+                    }
+
+                    int out = Bitmap::makeColor(red_out, green_out, blue_out);
+                    return (unsigned int) out;
+                }
+
+                unsigned int filter(unsigned int pixel) const {
+                    int red = Bitmap::getRed(pixel);
+                    int green = Bitmap::getGreen(pixel);
+                    int blue = Bitmap::getBlue(pixel);
+                    return doFilter(red, green, blue);
+                }
+            };
+
+            /* TODO: handle afterImage.color and afterImage.invert */
+            AfterImageFilter filter(afterImage.bright, afterImage.contrast, afterImage.postBright, afterImage.add, afterImage.multiply, index);
+
             const AfterImage::Frame & frame = afterImage.frames[index];
             // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
             Bitmap original = frame.sprite->getSprite()->getFinalBitmap(frame.effects);
@@ -2574,7 +2633,7 @@ void Character::guarded(Character * enemy, const HitDefinition & hit){
     }
 }
 
-void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply){
+void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent, int paletteColor, bool invertColor, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply){
     afterImage.currentTime = 0;
     afterImage.timegap = timegap;
     afterImage.framegap = framegap;
@@ -2582,6 +2641,8 @@ void Character::setAfterImage(int time, int length, int timegap, int framegap, T
     afterImage.length = length;
     afterImage.translucent = translucent;
     afterImage.frames.clear();
+    afterImage.paletteColor = paletteColor;
+    afterImage.invertColor = invertColor;
     afterImage.bright = bright;
     afterImage.contrast = contrast;
     afterImage.postBright = postBright;
