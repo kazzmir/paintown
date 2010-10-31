@@ -2998,10 +2998,20 @@ public:
 };
 
 class ControllerExplod: public StateController {
+private:
+    enum PositionType{
+        Player1, /* Interprets pos relative to p1's axis. A positive x offset is toward the front of p1. This is the default value for postype. Refer to the note at the end of this controller's description. */
+        Player2, /* Interprets pos relative to p2's axis. A positive x offset is toward the front of p2. Refer to the note at the end of this controller's description. */
+        Front, /* Interprets x_pos relative to the edge of the screen that p1 is facing toward, and y_pos relative to the top of the screen. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center. */
+        Back, /* Interprets x_pos relative to the edge of the screen that p1 is facing away from, and y_pos relative to the top of the screen. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center. */
+        Left, /* Interprets x_pos and y_pos relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen. */
+        Right /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
+    };
 public:
     ControllerExplod(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
-    ownAnimation(true){
+    ownAnimation(true),
+    positionType(Player1){
         parse(section);
     }
 
@@ -3016,17 +3026,21 @@ public:
     Value accelerationY;
     Value removeTime;
     Value bindTime;
+    PositionType positionType;
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime):
+        ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY):
             Effect(owner, animation, id, x, y),
             velocityX(velocityX),
             velocityY(velocityY),
             accelerationX(accelerationX),
             accelerationY(accelerationY),
             removeTime(removeTime),
-            bindTime(bindTime){
+            bindTime(bindTime),
+            positionType(positionType),
+            posX(posX),
+            posY(posY){
             }
 
         void setVelocityX(double x){
@@ -3079,17 +3093,37 @@ public:
         double accelerationY;
         int removeTime;
         int bindTime;
+        PositionType positionType;
+        int posX;
+        int posY;
 
         virtual void logic(){
             Effect::logic();
-            if (bindTime > 0){
-                bindTime -= 1;
+
+            if (bindTime == 0){
+                x += velocityX;
+                y += velocityY;
+                velocityX += accelerationX;
+                velocityY += accelerationY;
+            } else {
+                /* bindTime could be negative in which case its active forever */
+                if (bindTime > 0){
+                    bindTime -= 1;
+                }
+                switch (positionType){
+                    case Player1: {
+                        x = posX + owner->getRX();
+                        y = posY + owner->getRY();
+                        break;
+                    }
+                    /* TODO: implement rest of cases */
+                    default : {
+                        x = posX;
+                        y = posY;
+                    }
+                }
             }
 
-            x += velocityX;
-            y += velocityY;
-            velocityX += accelerationX;
-            velocityY += accelerationY;
             if (removeTime > 0){
                 removeTime -= 1;
             }
@@ -3136,8 +3170,28 @@ public:
                     controller.posX = Compiler::compile(x);
                     controller.posY = Compiler::compile(y);
                 } else if (simple == "postype"){
+                    string type;
+                    simple >> type;
+                    type = PaintownUtil::lowerCaseAll(type);
+                    if (type == "p1"){
+                        controller.positionType = Player1;
+                    } else if (type == "p2"){
+                        controller.positionType = Player2;
+                    } else if (type == "front"){
+                        controller.positionType = Front;
+                    } else if (type == "back"){
+                        controller.positionType = Back;
+                    } else if (type == "left"){
+                        controller.positionType = Left;
+                    } else if (type == "right"){
+                        controller.positionType = Right;
+                    } else {
+                        Global::debug(0) << "Unknown position type '" << type << "'" << endl;
+                    }
                 } else if (simple == "facing"){
+                    /* TODO */
                 } else if (simple == "vfacing"){
+                    /* TODO */
                 } else if (simple == "bindtime"){
                     const Ast::Value * time;
                     simple >> time;
@@ -3155,19 +3209,31 @@ public:
                     controller.accelerationX = Compiler::compile(x);
                     controller.accelerationY = Compiler::compile(y);
                 } else if (simple == "random"){
+                    /* TODO */
                 } else if (simple == "removetime"){
                     controller.removeTime = Compiler::compile(simple.getValue());
                 } else if (simple == "supermove"){
+                    /* TODO */
                 } else if (simple == "supermovetime"){
+                    /* TODO */
                 } else if (simple == "pausemovetime"){
+                    /* TODO */
                 } else if (simple == "scale"){
+                    /* TODO */
                 } else if (simple == "sprpriority"){
+                    /* TODO */
                 } else if (simple == "ontop"){
+                    /* TODO */
                 } else if (simple == "shadow"){
+                    /* TODO */
                 } else if (simple == "ownpal"){
+                    /* TODO */
                 } else if (simple == "removeongethit"){
+                    /* TODO */
                 } else if (simple == "ignorehitpause"){
+                    /* TODO */
                 } else if (simple == "trans"){
+                    /* TODO */
                 }
             }
         };
@@ -3205,8 +3271,11 @@ public:
             throw MugenException(out.str());
         }
 
-        /* FIXME: handle rest of the explod parameters */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value);
+        /* FIXME: handle rest of the explod parameters
+         * FIXME: the initial x/y values are determined by the postype value
+         * so instead of 'posX_value + guy.getRX()' it should be something else
+         */
+        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value);
         stage.addEffect(effect);
     }
 };
