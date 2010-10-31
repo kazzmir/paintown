@@ -11,7 +11,7 @@
 #include "init.h"
 // #include "select_player.h"
 #include "game.h"
-#include "game/mod.h"
+#include "mod.h"
 #include "input/keyboard.h"
 #include "input/input-manager.h"
 #include "input/input-map.h"
