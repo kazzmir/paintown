@@ -102,19 +102,19 @@ test/factory/heart_factory.cpp
 test/util/timedifference.cpp
 test/util/language-string.cpp
 test/trigger/trigger.cpp
-test/select_player.cpp
+test/game/select_player.cpp
 test/game/mod.cpp
 test/util/fire.cpp
 test/game/adventure_world.cpp
 test/game/console.cpp
-test/game.cpp
+test/game/game.cpp
 test/music.cpp
 test/util/music-player.cpp
 test/loading.cpp
 test/network/messages.cpp
-test/ogg/logg.c
+test/util/ogg/logg.c
 test/versus_world.cpp
-test/world.cpp
+test/game/world.cpp
 test/factory/shadow.cpp
 test/mugen/config.cpp
 test/network/server.cpp
@@ -167,9 +167,9 @@ test/mugen/menu.cpp
 test/mugen/option-arcade.cpp
 test/mugen/option-versus.cpp
 test/mugen/option-options.cpp
-test/loadpng/loadpng.c
-test/loadpng/regpng.c
-test/loadpng/savepng.c
+test/util/loadpng/loadpng.c
+test/util/loadpng/regpng.c
+test/util/loadpng/savepng.c
 test/factory/collector.cpp
 """)
 

@@ -1139,8 +1139,7 @@ mask(false),
 facing(1),
 vfacing(1),
 scalex(1),
-scaley(1),
-drawBlender(NULL){
+scaley(1){
 }
 
 Mugen::Effects::Effects(const Mugen::Effects & copy){
@@ -1153,7 +1152,6 @@ Mugen::Effects::Effects(const Mugen::Effects & copy){
     this->scalex = copy.scalex;
     this->scaley = copy.scaley;
     this->dimension = copy.dimension;
-    this->drawBlender = copy.drawBlender;
 }
 
 const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
@@ -1166,7 +1164,6 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->scalex = e.scalex;
     this->scaley = e.scaley;
     this->dimension = e.dimension;
-    this->drawBlender = e.drawBlender;
     return *this;
 }
         
@@ -1179,12 +1176,6 @@ Mugen::Effects Mugen::Effects::operator+(const Mugen::Effects & e2) const {
 Mugen::Effects Mugen::Effects::operator+(const TransType & translucent) const {
     Mugen::Effects result(*this);
     result.trans = translucent;
-    return result;
-}
-
-Mugen::Effects Mugen::Effects::operator+(const Bitmap::Blender & blender) const {
-    Mugen::Effects result(*this);
-    result.drawBlender = &blender;
     return result;
 }
 

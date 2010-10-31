@@ -2287,9 +2287,9 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             x += PaintownUtil::rnd(3) - 1;
         }
 
-        class AfterImageBlender: public Bitmap::Blender {
+        class AfterImageFilter: public Bitmap::Filter {
         public:
-            AfterImageBlender(double bright, double contrast, double post):
+            AfterImageFilter(double bright, double contrast, double post):
             bright(bright),
             contrast(contrast),
             post(post){
@@ -2297,7 +2297,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
 
             double bright, contrast, post;
 
-            unsigned int blend(unsigned int pixel) const {
+            unsigned int filter(unsigned int pixel) const {
                 double out = (pixel + bright) * contrast + post;
                 if (out < 0){
                     out = 0;
@@ -2309,11 +2309,15 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             }
         };
 
-        AfterImageBlender blender(afterImage.bright.red, afterImage.contrast.red / 256.0, afterImage.postBright.red);
+        AfterImageFilter filter(afterImage.bright.red, afterImage.contrast.red / 256.0, afterImage.postBright.red);
 
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
             const AfterImage::Frame & frame = afterImage.frames[index];
-            frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
+            // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
+            Bitmap original = frame.sprite->getSprite()->getFinalBitmap(frame.effects);
+            Bitmap fixed = Bitmap::temporaryBitmap2(original.getWidth(), original.getHeight());
+            original.draw(0, 0, filter, fixed);
+            MugenSprite::draw(fixed, frame.x - cameraX + drawOffset.x + frame.sprite->xoffset, frame.y - cameraY + drawOffset.y + frame.sprite->yoffset, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
         }
 
         /* TODO: add transOverride stuff here */

@@ -7,7 +7,7 @@
 #include <iostream>
 #include "util/token_exception.h"
 #include "util/file-system.h"
-#include "loadpng/loadpng.h"
+#include "util/loadpng/loadpng.h"
 #include "util/bitmap.h"
 #include "factory/collector.h"
 #include "menu/menu.h"

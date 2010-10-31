@@ -65,7 +65,7 @@ test/factory/font_render.cpp
 test/factory/font_factory.cpp
 test/windows/system.cpp
 test/game/console.cpp
-test/world.cpp
+test/game/world.cpp
 test/mugen/config.cpp
 test/mugen/characterhud.cpp
 test/mugen/behavior.cpp
@@ -114,7 +114,7 @@ test/nameplacer.cpp
 test/game/mod.cpp
 test/util/ebox.cpp
 test/level/utils.cpp
-test/select_player.cpp
+test/game/select_player.cpp
 test/loading.cpp
 test/network/messages.cpp
 test/util/gradient.cpp
@@ -167,7 +167,7 @@ test/util/message-queue.cpp
 test/util/token.cpp
 test/util/tokenreader.cpp
 test/util/token_exception.cpp
-test/world.cpp
+test/game/world.cpp
 test/game/console.cpp
 test/exceptions/exception.cpp
 test/util/thread.cpp
