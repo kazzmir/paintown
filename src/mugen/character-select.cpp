@@ -139,9 +139,9 @@ void FontHandler::render(const std::string &text, const Bitmap &bmp){
 CharacterInfo::CharacterInfo(const Filesystem::AbsolutePath &definitionFile):
 definitionFile(definitionFile),
 baseDirectory(definitionFile.getDirectory()),
-spriteFile(Util::probeDef(definitionFile, "files","sprite")),
-name(Util::probeDef(definitionFile,"info","name")),
-displayName(Util::probeDef(definitionFile,"info","displayname")),
+// spriteFile(Util::probeDef(definitionFile, "files", "sprite")),
+// name(Util::probeDef(definitionFile, "info", "name")),
+// displayName(Util::probeDef(definitionFile, "info", "displayname")),
 currentPlayer1Act(1),
 currentPlayer2Act(1),
 icon(0),
@@ -151,12 +151,17 @@ order(1),
 referenceCell(0),
 character1(0),
 character2(0){
+    Ast::AstParse parsed(Mugen::Util::parseDef(definitionFile.path()));
+    spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
+    name = Util::probeDef(parsed, "info", "name");
+    displayName = Util::probeDef(parsed, "info", "displayname");
+
     /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
     for (int i = 0; i < 12; ++i){
         stringstream act;
         act << "pal" << i;
         try {
-            std::string actFile = Util::probeDef(definitionFile, "files", act.str());
+            std::string actFile = Util::probeDef(parsed, "files", act.str());
             actCollection.push_back(Filesystem::RelativePath(actFile));
         } catch (const MugenException &me){
             // Ran its course got what we needed
@@ -297,7 +302,7 @@ void StageHandler::addStage(const std::string &stage){
         // If stage is already stored, ignore it
         if (std::find(stages.begin(), stages.end(), ourDefFile) == stages.end()){
             stringstream temp;
-            temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile, "info","name");
+            temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile, "info", "name");
 	    stageNames.push_back(temp.str());
 	    stages.push_back(ourDefFile);
         }
@@ -847,7 +852,7 @@ void Cursor::renderPortrait(const Bitmap &bmp){
 	effects.facing = facing;
 	effects.scalex = faceScaleX;
 	effects.scaley = faceScaleY;
-	character->getPortrait()->render(faceOffset.x,faceOffset.y,bmp,effects);
+	character->getPortrait()->render(faceOffset.x, faceOffset.y, bmp, effects);
 	font.render(character->getDisplayName(),bmp);
     }
 }

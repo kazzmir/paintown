@@ -113,14 +113,13 @@ class FontHandler{
 /* Forward declaration of Cell */
 class Cell;
 
-/*! Character Info handler, portrait name and etc */
+/* Character Info handler, portrait name and etc */
 class CharacterInfo {
     public:
         CharacterInfo(const Filesystem::AbsolutePath &definitionFile);
         virtual ~CharacterInfo();
 	
 	virtual void loadPlayer1();
-	
 	virtual void loadPlayer2();
 	
 	virtual inline bool operator==(CharacterInfo &character){
@@ -855,6 +854,10 @@ class Cursor{
         bool actModifier;
 };
 
+/* Displays the two selected characters with some overlayed text right before
+ * the battle begins. Players are loaded in the background while the animation
+ * is playing.
+ */
 class VersusScreen {
     public:
 	VersusScreen();
@@ -929,6 +932,7 @@ class VersusScreen {
 	FontHandler player2Font;
 };
 
+/* runs the whole character selection process */
 class CharacterSelect {
     public:
         CharacterSelect(const Filesystem::AbsolutePath & file, const PlayerType &, const GameType &);
@@ -1065,5 +1069,3 @@ class CharacterSelect {
 }
 
 #endif
-
-
