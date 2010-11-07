@@ -103,8 +103,8 @@ void Parser::destroy(){
             destroySectionList(sections);
         }
     }
-    cache.clear();
 
+    cache.clear();
 }
 
 Parser::Parser(){

@@ -474,6 +474,7 @@ static string regexResult(const string & str, const string & regex){
     return "";
 }
 
+/*
 static list<Ast::Section*>* parseDef(const string & path){
     try{
         return Mugen::ParseCache::parseDef(path);
@@ -481,6 +482,7 @@ static list<Ast::Section*>* parseDef(const string & path){
         throw MugenException(p.getReason());
     }
 }
+*/
 
 static Filesystem::AbsolutePath getMotifFile(const string & path){
     return Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(path));
@@ -524,7 +526,7 @@ void MugenStage::load(){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(parseDef(ourDefFile.path()));
+    Ast::AstParse parsed(Mugen::Util::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
@@ -1429,7 +1431,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    Ast::AstParse parsed(Mugen::ParseCache::parseDef(defFile.path()));
+    Ast::AstParse parsed(Mugen::Util::parseDef(defFile.path()));
     return parsed.findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );

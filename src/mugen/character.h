@@ -1416,6 +1416,11 @@ public:
          */
         struct AfterImage{
             AfterImage():
+                currentTime(0),
+                timegap(0),
+                framegap(0),
+                lifetime(0),
+                length(0),
                 translucent(Default){
                 }
 

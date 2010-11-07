@@ -4534,6 +4534,7 @@ public:
                 } else if (type == "right"){
                     return Right;
                 }
+                return Player1;
             }
 
             /* extract an item and compile it */

@@ -972,7 +972,7 @@ list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
 
 list<Ast::Section*>* Mugen::Util::parseCmd(const string & filename){
     try{
-        return (list<Ast::Section*>*) Mugen::Cmd::parse(filename);
+        return ParseCache::parseCmd(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Cmd::ParseException & e){

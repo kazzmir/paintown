@@ -43,7 +43,6 @@
 #include "sprite.h"
 #include "util.h"
 #include "font.h"
-#include "parse-cache.h"
 
 #include "ast/all.h"
 #include "parser/all.h"
@@ -151,7 +150,7 @@ order(1),
 referenceCell(0),
 character1(0),
 character2(0){
-    Ast::AstParse parsed(ParseCache::parseDef(definitionFile.path()));
+    Ast::AstParse parsed(Util::parseDef(definitionFile.path()));
 
     spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
     name = Util::probeDef(parsed, "info", "name");
@@ -1162,7 +1161,7 @@ void CharacterSelect::load(){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(ParseCache::parseDef(systemFile.path()));
+    Ast::AstParse parsed(Util::parseDef(systemFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
@@ -1697,7 +1696,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(ParseCache::parseDef(file.path()));
+    Ast::AstParse parsed(Util::parseDef(file.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     

@@ -496,7 +496,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         int defaultTime = 15;
         int defaultBufferTime = 1;
 
-        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
+        Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
         State * currentState = NULL;
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
@@ -723,7 +723,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
     Filesystem::AbsolutePath full = baseDir.join(path);
     try{
         /* cns can use the Cmd parser */
-        Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
+        Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -1227,7 +1227,7 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
     Filesystem::AbsolutePath full = findStateFile(base, path);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
-    Ast::AstParse parsed((list<Ast::Section*>*) ParseCache::parseCmd(full.path()));
+    Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
     State * currentState = NULL;
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
