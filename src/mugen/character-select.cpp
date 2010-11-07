@@ -151,7 +151,8 @@ order(1),
 referenceCell(0),
 character1(0),
 character2(0){
-    Ast::AstParse parsed(Mugen::Util::parseDef(definitionFile.path()));
+    Ast::AstParse parsed(ParseCache::parseDef(definitionFile.path()));
+
     spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
     name = Util::probeDef(parsed, "info", "name");
     displayName = Util::probeDef(parsed, "info", "displayname");
@@ -916,7 +917,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     bool escaped = false;
     
     int ticker = 0;
-    ParseCache cache;
+    // ParseCache cache;
     
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
@@ -1862,7 +1863,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
             Filesystem::RelativePath str = Filesystem::RelativePath(character.name).getFilename();
 	    const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
 	    // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
-	    Global::debug(0) << "Got character def: " << charDefFile.path() << endl;
+	    Global::debug(1) << "Got character def: " << charDefFile.path() << endl;
 	    CharacterInfo *charInfo = new CharacterInfo(charDefFile);
 	    charInfo->setRandomStage(character.randomStage);
 	    // Set stage

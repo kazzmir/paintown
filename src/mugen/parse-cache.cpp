@@ -82,6 +82,7 @@ list<Ast::Section*> * Parser::loadFile(const string & path){
     try{
         saveCached(out, path);
     } catch (...){
+        Global::debug(0) << "Failed to save cached file " << path << endl;
         /* failed for some reason */
     }
 

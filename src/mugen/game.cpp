@@ -48,6 +48,7 @@ Game::~Game(){
 }
 
 void Game::run(){
+    ParseCache cache;
     Bitmap screen(GFX_X, GFX_Y);
 
     try{
@@ -274,6 +275,9 @@ static Filesystem::AbsolutePath maybeFindRandom(const std::string & name, std::v
 }
 
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+    /* This has its own parse cache because its started by the main menu and not
+     * by Game::run()
+     */
     ParseCache cache;
     std::vector<Filesystem::AbsolutePath> allCharacters = Filesystem::getFilesRecursive(Filesystem::find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());

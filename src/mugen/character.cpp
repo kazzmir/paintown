@@ -465,7 +465,7 @@ void Character::loadSelectData(){
 	    Global::debug(1) << "Cannot locate player definition file for: " << location.path() << endl;
 	}
 	
-        Ast::AstParse parsed(Mugen::Util::parseDef(ourDefFile.path()));
+        Ast::AstParse parsed(ParseCache::parseDef(ourDefFile.path()));
 	// Set name of character
 	this->name = Mugen::Util::probeDef(parsed, "info", "name");
 	this->displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
@@ -1275,7 +1275,7 @@ void Character::load(int useAct){
     baseDir = location.getDirectory();
     // const std::string ourDefFile = location;
      
-    Ast::AstParse parsed(Util::parseDef(location.path()));
+    Ast::AstParse parsed(ParseCache::parseDef(location.path()));
     try{
         /* Extract info for our first section of our stage */
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
