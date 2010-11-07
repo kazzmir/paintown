@@ -4474,6 +4474,43 @@ public:
         parse(section);
     }
 
+    enum PosType{
+        Player1,
+        Player2,
+        Front,
+        Back,
+        Left,
+        Right
+    };
+
+    string name;
+    Value id;
+    Value posX, posY;
+    PosType posType;
+    Value facing;
+    Value state;
+    Value key;
+    Value ownPalette;
+    Value superMoveTime;
+    Value pauseMoveTime;
+    Value xscale;
+    Value yscale;
+    struct Ground{
+        Value back;
+        Value front;
+    } ground;
+
+    struct Air{
+        Value back;
+        Value front;
+    } air;
+
+    Value height;
+    Value projectileScale;
+    Value headPosition;
+    Value midPosition;
+    Value shadowOffset;
+
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
@@ -4483,23 +4520,54 @@ public:
 
             ControllerHelper & controller;
 
+            PosType parsePosType(const string & type){
+                if (type == "p1"){
+                    return Player1;
+                } else if (type == "p2"){
+                    return Player2;
+                } else if (type == "front"){
+                    return Front;
+                } else if (type == "back"){
+                    return Back;
+                } else if (type == "left"){
+                    return Left;
+                } else if (type == "right"){
+                    return Right;
+                }
+            }
+
+            /* extract an item and compile it */
+            Compiler::Value * compile1(const Ast::AttributeSimple & simple){
+                const Ast::Value * item;
+                simple >> item;
+                return Compiler::compile(item);
+            }
+
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "helpertype"){
                     /* helpertype = type_string (string)
                      * This parameter is deprecated; player-type helpers are not supported. If helpertype = normal, then the helper will be allowed to move off the edge of the screen. Furthermore, the camera will not move to try to keep the helper on screen. If helpertype = player, then the helper will be constrained to the screen and will be followed by the camera, just like a normal player. Defaults to normal. If you plan to use a helper for camera manipulation, do not use a player-type helper; instead use the ScreenBound controller in a normal helper with the "movecamera" parameter.
                      */
+                    /* TODO */
                 } else if (simple == "name"){
                     /* name = "name_string" (string)
                      * Specifies a name for this helper, which must be enclosed in double quotes. If omitted, the name defaults to "<parent>'s helper", where <parent> represents the name of the player creating the helper.
                      */
+                    simple >> controller.name;
                 } else if (simple == "ID"){
                     /* ID = id_no (int)
                      * Sets an ID number to refer to this helper by. Defaults to 0.
                      */
+                    controller.id = compile1(simple);
                 } else if (simple == "pos"){
                     /* pos = x_off, y_off (int)
                      * Specifies the x and y offsets to create this helper at. The precise meaning of these parameters is dependent on the postype. Defaults to 0,0.
                      */
+                    const Ast::Value * x;
+                    const Ast::Value * y;
+                    simple >> x >> y;
+                    controller.posX = Compiler::compile(x);
+                    controller.posY = Compiler::compile(y);
                 } else if (simple == "postype"){
                     /* postype = postype_string (string)
                      * postype works nearly the same as in the Explod controller. postype_string specifies the postype -- how to interpret the pos parameters. In all cases, a positive y offset means a downward displacement.
@@ -4517,41 +4585,62 @@ public:
                      * Interprets xpos relative to the left edge of the screen, and ypos relative to p1's axis. A positive x offset is toward the right of the screen.
                      * right
                      * Interprets xpos relative to the right edge of the screen, and ypos relative to p1's axis. A positive x offset is toward the left of the screen.
-                     * facing = facing (int)
-                     * If postype is left or right, setting facing to 1 will make the helper face the right, and a value of -1 makes the helper face left. For all other values of postype except p2, if facing is 1, the helper will face the same direction as the player. If facing is -1, the helper will face the opposite direction. In the case of postype = p2, facing has the same effect as above, except it is with respect to p2's facing. Defaults to 1.
                      */
-
+                    string type;
+                    simple >> type;
+                    controller.posType = parsePosType(PaintownUtil::lowerCaseAll(type));
+                } else if (simple == "facing"){
+                     /* facing = facing (int)
+                      * If postype is left or right, setting facing to 1 will make the helper face the right, and a value of -1 makes the helper face left. For all other values of postype except p2, if facing is 1, the helper will face the same direction as the player. If facing is -1, the helper will face the opposite direction. In the case of postype = p2, facing has the same effect as above, except it is with respect to p2's facing. Defaults to 1.
+                      */
+                    controller.facing = compile1(simple);
                 } else if (simple == "stateno"){
                   /* stateno = start_state (int)
                    * Determines the state number that the helper starts off in. Defaults to 0.
                    */
+                    controller.state = compile1(simple);
                 } else if (simple == "keyctrl"){
                     /* keyctrl = ctrl_flag (boolean)
                      * If ctrl_flag is 1, then the helper is able to read command input from the player (e.g., the keyboard or joystick). Also, the helper will inherit its root's State -1. If ctrl_flag is 0, then the helper does not have access to command input, and does not inherit State -1. The default value of ctrl_flag is 0.
                      */
+                    controller.key = compile1(simple);
                 } else if (simple == "ownpal"){
                     /* ownpal = pal_flag (boolean)
                      * If pal_flag is 0, the helper will inherit its parent's palette. If the parent's palette is temporarily changed (eg. by a PalFX controller), the changes will be reflected in the helper too. If pal_flag is 1, the helper will receive its own working palette, that is independent of its parent's. Defaults to 0.
                      */
+                    controller.ownPalette = compile1(simple);
                 } else if (simple == "supermovetime"){
                     /* supermovetime = move_time (int)
                      * Specifies the number of ticks that the helper should be unfrozen during a SuperPause. Defaults to 0.
                      */
+                    controller.superMoveTime = compile1(simple);
                 } else if (simple == "pausemovetime"){
                     /* pausemovetime = move_time (int)
                      * Determines the number of ticks that the helper should be unfrozen during a Pause. Defaults to 0.
                      */
+                    controller.pauseMoveTime = compile1(simple);
                 } else if (simple == "size.xscale"){
+                    controller.xscale = compile1(simple);
                 } else if (simple == "size.yscale"){
+                    controller.yscale = compile1(simple);
                 } else if (simple == "size.ground.back"){
+                    controller.ground.back = compile1(simple);
                 } else if (simple == "size.ground.front"){
+                    controller.ground.front = compile1(simple);
                 } else if (simple == "size.air.back"){
+                    controller.air.back = compile1(simple);
                 } else if (simple == "size.air.front"){
+                    controller.air.front = compile1(simple);
                 } else if (simple == "size.height"){
+                    controller.height = compile1(simple);
                 } else if (simple == "size.proj.doscale"){
+                    controller.projectileScale = compile1(simple);
                 } else if (simple == "size.head.pos"){
+                    controller.headPosition = compile1(simple);
                 } else if (simple == "size.mid.pos"){
+                    controller.midPosition = compile1(simple);
                 } else if (simple == "size.shadowoffset"){
+                    controller.shadowOffset = compile1(simple);
                 }
             }
         };
