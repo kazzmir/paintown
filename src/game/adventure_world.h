@@ -1,11 +1,14 @@
 #ifndef _paintown_adventure_world_h
 #define _paintown_adventure_world_h
 
+namespace Paintown{
 class Object;
-class Scene;
+class Enemy;
+}
+
 class Bitmap;
 class Block;
-class Enemy;
+class Scene;
 
 namespace Effects{
 class Gradient;
@@ -27,14 +30,14 @@ namespace Script{
 
 struct PlayerTracker{
 	double min_x;
-	Object * player;
+        Paintown::Object * player;
         void * script;
 };
 
 class AdventureWorld: public World {
 public:
 	AdventureWorld();
-	AdventureWorld(const std::vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher = new Level::DefaultCacher(), int screen_size = 320);
+	AdventureWorld(const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher = new Level::DefaultCacher(), int screen_size = 320);
 
 	virtual ~AdventureWorld();
 
@@ -44,7 +47,7 @@ public:
 
 	virtual void act();
 	virtual void draw( Bitmap * work );
-	virtual void addObject( Object * o );
+	virtual void addObject( Paintown::Object * o );
 
 	virtual bool finished() const;
 
@@ -66,15 +69,15 @@ public:
     virtual int levelLength() const;
     virtual const Block * currentBlock() const;
 
-    virtual inline const std::vector<Object*> & getObjects() const {
+    virtual inline const std::vector<Paintown::Object*> & getObjects() const {
         return objects;
     }
 
-    void addEnemy(Enemy * obj);
+    void addEnemy(Paintown::Enemy * obj);
 
 	virtual void doScene( int min_x, int max_x );
 
-        virtual Object * findObject(int id);
+        virtual Paintown::Object * findObject(int id);
 
 	virtual int getMaximumZ();
 	virtual int getMinimumZ();
@@ -84,7 +87,7 @@ public:
         
         virtual double ticks(const double in) const;
 
-	void killAllHumans( Object * player );
+	void killAllHumans( Paintown::Object * player );
 
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	Network::Message createBangMessage( int x, int y, int z );
@@ -94,7 +97,7 @@ public:
          */
         using World::dyingObject;
         // virtual void dyingObject(const Object & obj);
-        virtual void dyingObject(const Player & obj);
+        virtual void dyingObject(const Paintown::Player & obj);
         
 protected:
         /* number of ticks to be in slow-motion */
@@ -104,15 +107,15 @@ protected:
 	void loadLevel( const Filesystem::AbsolutePath & path );
 	void threadedLoadLevel( const Filesystem::AbsolutePath & path );
 
-	void drawWorld( const PlayerTracker & tracker, Bitmap * where, const std::map< int, std::vector< Object * > > & object_z );
+	void drawWorld( const PlayerTracker & tracker, Bitmap * where, const std::map< int, std::vector< Paintown::Object * > > & object_z );
 
-	virtual void deleteObjects( std::vector< Object * > * objects );
+	virtual void deleteObjects( std::vector< Paintown::Object * > * objects );
 
         bool randomLevel() const;
 
 	virtual void doLogic();
 
-	virtual bool isPlayer( Object * o ) const;
+	virtual bool isPlayer( Paintown::Object * o ) const;
 
     inline bool shouldTakeScreenshot() const {
         return takeAScreenshot;
@@ -128,7 +131,7 @@ protected:
 
 protected:
     std::vector< PlayerTracker > players;
-    Object * bang;
+    Paintown::Object * bang;
 
     Scene * scene;
 

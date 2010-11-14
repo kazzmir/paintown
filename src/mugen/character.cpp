@@ -2498,7 +2498,7 @@ bool Character::isGrabbed(){
     return false;
 }
 
-Object* Character::copy(){
+Paintown::Object* Character::copy(){
     return this;
 }
 

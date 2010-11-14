@@ -8,6 +8,8 @@
 #include <string>
 
 class Token;
+
+namespace Paintown{
 class Animation;
 
 class Projectile: public ObjectAttack {
@@ -80,5 +82,7 @@ protected:
 	double dx, dy;
 	int life;
 };
+
+}
 
 #endif

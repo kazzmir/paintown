@@ -1,12 +1,17 @@
 #ifndef _paintown_world_h
 #define _paintown_world_h
 
+namespace Paintown{
+
 class Object;
 class Player;
-class Scene;
-class Bitmap;
-class Block;
 class Enemy;
+
+}
+
+class Scene;
+class Block;
+class Bitmap;
 
 #include <vector>
 #include <deque>
@@ -33,7 +38,7 @@ public:
 
 	virtual void act() = 0;
 	virtual void draw( Bitmap * work ) = 0;
-	virtual void addObject( Object * o ) = 0;
+	virtual void addObject( Paintown::Object * o ) = 0;
 
 	virtual bool finished() const = 0;
 
@@ -53,7 +58,7 @@ public:
     virtual int levelLength() const = 0;
     virtual const Block * currentBlock() const = 0;
 
-    virtual inline const std::vector<Object*> & getObjects() const {
+    virtual inline const std::vector<Paintown::Object*> & getObjects() const {
         return objects;
     }
 
@@ -66,13 +71,13 @@ public:
     virtual bool isPaused() = 0;
 
     /* an object has notified us that it is dying */
-    virtual void dyingObject(const Object & obj);
-    virtual void dyingObject(const Player & obj);
+    virtual void dyingObject(const Paintown::Object & obj);
+    virtual void dyingObject(const Paintown::Player & obj);
 
     /* bleh.. */
-    virtual void addEnemy(Enemy * obj) = 0;
+    virtual void addEnemy(Paintown::Enemy * obj) = 0;
 
-    virtual Object * findObject(int id) = 0;
+    virtual Paintown::Object * findObject(int id) = 0;
 
 	virtual int getMaximumZ() = 0;
 	virtual int getMinimumZ() = 0;
@@ -80,14 +85,14 @@ public:
 	virtual void drawMiniMaps( bool b ) = 0;
 	virtual bool shouldDrawMiniMaps() = 0;
 
-	virtual void killAllHumans( Object * player ) = 0;
+	virtual void killAllHumans( Paintown::Object * player ) = 0;
 
 	virtual void addMessage(Network::Message m, Network::Socket from = 0, Network::Socket to = 0) = 0;
 	virtual Network::Message createBangMessage( int x, int y, int z ) = 0;
 
 protected:
 	int quake_time;
-	std::vector<Object *> objects;
+	std::vector<Paintown::Object *> objects;
 
 public:
         /* serialized actions the world can take. mostly for use with networking

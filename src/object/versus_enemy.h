@@ -5,8 +5,10 @@
 #include "character.h"
 #include "util/load_exception.h"
 
-class Object;
 class World;
+
+namespace Paintown{
+class Object;
 
 class VersusEnemy: public Enemy {
 public:
@@ -21,5 +23,7 @@ public:
 protected:
 	int what_to_do;
 };
+
+}
 
 #endif

@@ -8,9 +8,7 @@
 
 class Bitmap;
 class ECollide;
-class ObjectAttack;
 class World;
-class Stimulation;
 
 namespace Script{
     class Object;
@@ -19,6 +17,11 @@ namespace Script{
 #define MIN_(a,b) ((a) < (b) ? (a) : (b))
 #define MAX_(a,b) ((a) > (b) ? (a) : (b))
 #define MID_(a,b,c) MAX_(a,MIN_(b,c))
+
+namespace Paintown{
+
+class ObjectAttack;
+class Stimulation;
 
 /* generic game object
  * abstract for goodness
@@ -437,5 +440,7 @@ private:
 
         void * scriptObject;
 };
+
+}
 
 #endif

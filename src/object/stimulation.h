@@ -1,12 +1,14 @@
 #ifndef _paintown_stimulation_h
 #define _paintown_stimulation_h
 
-class Object;
-class Character;
-
 namespace Network{
     struct Message;
 }
+
+namespace Paintown{
+
+class Object;
+class Character;
 
 class Stimulation{
 public:
@@ -20,5 +22,7 @@ public:
 
 	virtual ~Stimulation();
 };
+
+}
 
 #endif

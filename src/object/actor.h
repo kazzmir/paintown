@@ -13,6 +13,8 @@ namespace Filesystem{
     class AbsolutePath;
 }
 
+namespace Paintown{
+
 class Actor: public ObjectNonAttack {
 public:
 	Actor( const Filesystem::AbsolutePath & filename ) throw( LoadException );
@@ -35,5 +37,7 @@ protected:
     std::vector< Animation * > animations;
 	Animation * current_animation;
 };
+
+}
 
 #endif

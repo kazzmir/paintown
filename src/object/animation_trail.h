@@ -3,6 +3,8 @@
 
 class Bitmap;
 
+namespace Paintown{
+
 class AnimationTrail{
 public:
     AnimationTrail(const int x, const int y, const int facing, const int life, const Bitmap & sprite);
@@ -20,5 +22,7 @@ protected:
     int life;
 
 };
+
+}
 
 #endif

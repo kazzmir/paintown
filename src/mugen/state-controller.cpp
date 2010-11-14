@@ -3791,7 +3791,7 @@ public:
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         if (isFalling(guy)){
-            guy.takeDamage(stage, (ObjectAttack*) stage.getEnemy(&guy), guy.getHitState().fall.damage);
+            guy.takeDamage(stage, (Paintown::ObjectAttack*) stage.getEnemy(&guy), guy.getHitState().fall.damage);
         }
     }
 };

@@ -13,7 +13,7 @@ using namespace std;
 namespace Bor{
 
 DisplayCharacter::DisplayCharacter(PackReader & reader, std::string file):
-::DisplayCharacter(file),
+Paintown::DisplayCharacter(file),
 reader(reader){
 }
 
@@ -73,7 +73,7 @@ void DisplayCharacter::load(){
             string second;
             remap->view() >> first >> second;
             if (newRemap(first, second)){
-                addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+                addRemap(new Paintown::Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
             }
         }
 
@@ -85,7 +85,7 @@ void DisplayCharacter::load(){
             // animation.resetToken();
             /* only care about the 'idle' animation */
             if (name == "idle"){
-                ::Animation * ani = new Animation(&animation, this);
+                Paintown::Animation * ani = new Animation(&animation, this);
                 ani->setName("idle");
 
                 if (getMovement("idle") != NULL){
@@ -109,7 +109,7 @@ void DisplayCharacter::load(){
     animation_current = getMovement("idle");
     /* run the animation up till the first frame */
     animation_current->Act();
-    effects.push_back(new DrawNormalEffect(this));
+    effects.push_back(new Paintown::DrawNormalEffect(this));
 }
 
 }

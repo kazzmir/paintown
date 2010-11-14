@@ -10,10 +10,13 @@
 class Bitmap;
 class Block;
 class Heart;
-class Object;
 class Atmosphere;
-class Enemy;
 class Trigger;
+
+namespace Paintown{
+    class Enemy;
+    class Object;
+}
 
 namespace Level{
     class Cacher;
@@ -58,7 +61,7 @@ public:
         return current_block;
     }
 
-    void addEnemy(Enemy * const obj);
+    void addEnemy(Paintown::Enemy * const obj);
 
     virtual void advanceBlocks( int n );
 
@@ -69,7 +72,7 @@ public:
     int totalLength() const;
 
 	int getLimit();
-	void act( int min_x, int max_x, std::vector< Object * > * objects );
+	void act( int min_x, int max_x, std::vector< Paintown::Object * > * objects );
 
 	virtual ~Scene();
 
@@ -126,7 +129,7 @@ protected:
     std::vector<Block*> old_level_blocks;
 
     std::vector< Heart * > hearts;
-    std::vector<Object*> added_objects;
+    std::vector<Paintown::Object*> added_objects;
 
     int scene_length;
 

@@ -11,9 +11,12 @@
 #include <string>
 #include <vector>
 
+class World;
+
+namespace Paintown{
+
 class Stimulation;
 class Object;
-class World;
 
 class Item: public ObjectNonAttack {
 public:
@@ -52,5 +55,7 @@ protected:
 	Sound sound;
         Filesystem::AbsolutePath path;
 };
+
+}
 
 #endif

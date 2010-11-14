@@ -34,9 +34,9 @@ using namespace std;
 
 namespace Network{
 
-static bool uniqueId( const vector< Object * > & objs, Object::networkid_t id ){
-    for ( vector< Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
-        Object * o = *it;
+static bool uniqueId( const vector< Paintown::Object * > & objs, Paintown::Object::networkid_t id ){
+    for ( vector< Paintown::Object * >::const_iterator it = objs.begin(); it != objs.end(); it++ ){
+        Paintown::Object * o = *it;
         if ( o->getId() == id ){
             return false;
         }
@@ -81,9 +81,9 @@ static void playGame( Socket socket ){
         Level::LevelInfo info;
         int remap = 0;
         Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
-        Player * player = new Player(playerPath);
+        Paintown::Player * player = new Paintown::Player(playerPath);
         player->setMap(remap);
-        ((Player *) player)->ignoreLives();
+        ((Paintown::Player *) player)->ignoreLives();
         Filesystem::RelativePath path = Filesystem::cleanse(playerPath);
         // path.erase( 0, Util::getDataPath().length() );
 
@@ -100,7 +100,7 @@ static void playGame( Socket socket ){
         int type;
         int alliance;
         myid >> type;
-        Object::networkid_t client_id = (Object::networkid_t) -1;
+        Paintown::Object::networkid_t client_id = (Paintown::Object::networkid_t) -1;
         if ( type == World::SET_ID ){
             myid >> client_id >> alliance;
             player->setId( client_id );
@@ -110,10 +110,10 @@ static void playGame( Socket socket ){
             Global::debug( 0 ) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
         }
 
-        vector< Object * > players;
+        vector< Paintown::Object * > players;
         players.push_back( player );
 
-        map<Object::networkid_t, string> clientNames;
+        map<Paintown::Object::networkid_t, string> clientNames;
 
         bool done = false;
         int showHelp = 800;
@@ -123,20 +123,20 @@ static void playGame( Socket socket ){
             next >> type;
             switch ( type ){
                 case World::CREATE_CHARACTER : {
-                    Object::networkid_t id;
+                    Paintown::Object::networkid_t id;
                     int alliance;
                     next >> id >> alliance;
                     if ( uniqueId( players, id ) ){
                         Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
-                        Character * c = new NetworkPlayer(Filesystem::find(Filesystem::RelativePath(next.path)), alliance);
+                        Paintown::Character * c = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(next.path)), alliance);
                         c->setId( id );
-                        ((NetworkCharacter *)c)->alwaysShowName();
+                        ((Paintown::NetworkCharacter *)c)->alwaysShowName();
                         players.push_back( c );
                     }
                     break;
                 }
                 case World::CLIENT_INFO : {
-                    Object::networkid_t id;
+                    Paintown::Object::networkid_t id;
                     next >> id;
                     string name = next.path;
                     clientNames[id] = name;
@@ -157,7 +157,7 @@ static void playGame( Socket socket ){
 
                     Loader::stopLoading(loadingThread);
                     try{
-                        vector<Object*> xplayers;
+                        vector<Paintown::Object*> xplayers;
                         bool forceQuit = ! Game::playLevel(world, xplayers, showHelp);
                         showHelp = 0;
 
@@ -204,7 +204,7 @@ static void playGame( Socket socket ){
             }
         }
 
-        for (vector<Object*>::iterator it = players.begin(); it != players.end(); it++){
+        for (vector<Paintown::Object*>::iterator it = players.begin(); it != players.end(); it++){
             delete *it;
         }
     } catch ( const LoadException & le ){

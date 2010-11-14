@@ -5,6 +5,9 @@
 #include "util/load_exception.h"
 
 class Token;
+
+namespace Paintown{
+
 class Projectile;
 class Animation;
 
@@ -242,5 +245,7 @@ public:
 protected:
 	double d;
 };
+
+}
 
 #endif

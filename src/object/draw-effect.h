@@ -1,8 +1,11 @@
 #ifndef _paintown_draw_effect_h
 #define _paintown_draw_effect_h
 
-class Character;
 class Bitmap;
+
+namespace Paintown{
+
+class Character;
 
 class DrawEffect{
 public:
@@ -77,5 +80,7 @@ protected:
     DrawEffect * const effect;
     until end;
 };
+
+}
 
 #endif

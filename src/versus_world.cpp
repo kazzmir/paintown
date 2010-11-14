@@ -8,7 +8,7 @@
 
 using namespace std;
 
-VersusWorld::VersusWorld( int z, Character * player1, Character * player2 ):
+VersusWorld::VersusWorld( int z, Paintown::Character * player1, Paintown::Character * player2 ):
 AdventureWorld(),
 player1( player1 ),
 player2( player2 ),
@@ -17,7 +17,7 @@ z( z ){
 	this->addObject(player2);
 
         Filesystem::AbsolutePath bang_path(Filesystem::find(Filesystem::RelativePath("misc/flash/flash.txt")));
-	Object * effect = new Effect(bang_path.path().c_str());
+        Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
 		delete bang;
 	}
@@ -55,16 +55,16 @@ void VersusWorld::act(){
 	player2->setZ( getMinimumZ() );
 
 	if ( player1->getX() < player2->getX() ){
-		player1->setFacing( Object::FACING_RIGHT );
-		player2->setFacing( Object::FACING_LEFT );
+		player1->setFacing( Paintown::Object::FACING_RIGHT );
+		player2->setFacing( Paintown::Object::FACING_LEFT );
 	} else {
-		player1->setFacing( Object::FACING_LEFT );
-		player2->setFacing( Object::FACING_RIGHT );
+		player1->setFacing( Paintown::Object::FACING_LEFT );
+		player2->setFacing( Paintown::Object::FACING_RIGHT );
 	}
 
-	vector< Object * > added_effects;
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-		Object * good = *it;
+	vector< Paintown::Object * > added_effects;
+	for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); ){
+            Paintown::Object * good = *it;
 		good->act( &objects, this, &added_effects );
 
 		if ( good->getZ() < getMinimumZ() ){
@@ -77,8 +77,8 @@ void VersusWorld::act(){
 		/* Check for collisions */
 		if ( good->isAttacking() ){
 			// ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
-			ObjectAttack * o_good = (ObjectAttack *)good;
-			for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
+                    Paintown::ObjectAttack * o_good = (Paintown::ObjectAttack *)good;
+			for ( vector<Paintown::Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
 				if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
 					// cout << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
 
@@ -96,7 +96,7 @@ void VersusWorld::act(){
 						y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
 
 						if ( bang != NULL ){
-							Object * addx = bang->copy();
+                                                    Paintown::Object * addx = bang->copy();
 							addx->setX( x );
 							addx->setY( 0 );
 							addx->setZ( y+addx->getHeight()/2 );
@@ -129,16 +129,16 @@ bool VersusWorld::finished() const {
 
 void VersusWorld::draw( Bitmap * work ){
 
-	map< int, vector<Object*> > object_z;
+	map< int, vector<Paintown::Object*> > object_z;
 
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * n = *it;
+	for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+            Paintown::Object * n = *it;
 		object_z[ n->getRZ() ].push_back( n );
 	}
 
-	for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
-		vector<Object *> & xx = (*it).second;
-		for ( vector<Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+	for ( map<int,vector<Paintown::Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
+		vector<Paintown::Object *> & xx = (*it).second;
+		for ( vector<Paintown::Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
 			(*mm)->draw( work, 0, 0 );
 		}
@@ -146,14 +146,14 @@ void VersusWorld::draw( Bitmap * work ){
 }
 
 VersusWorld::~VersusWorld(){
-	/* everything in 'objects' gets delete'd in the world destructor, so
-	 * remove the two objects that were created elsewhere
-	 */
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-		if ( *it == player1 || *it == player2 ){
-			it = objects.erase( it );
-		} else {
-			it++;
-		}
-	}
+    /* everything in 'objects' gets delete'd in the world destructor, so
+     * remove the two objects that were created elsewhere
+     */
+    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); ){
+        if ( *it == player1 || *it == player2 ){
+            it = objects.erase( it );
+        } else {
+            it++;
+        }
+    }
 }

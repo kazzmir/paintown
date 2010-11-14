@@ -17,7 +17,7 @@ static void do_finish_chat_input(void * arg){
     widget->endChatLine();
 }
 
-ChatWidget::ChatWidget(World & world, Object::networkid_t id):
+ChatWidget::ChatWidget(World & world, Paintown::Object::networkid_t id):
 world(world),
 removeChatTimer(0),
 enable_chat(false),

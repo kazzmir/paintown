@@ -9,7 +9,7 @@ class World;
 
 class ChatWidget{
 public:
-    ChatWidget(World & world, Object::networkid_t id);
+    ChatWidget(World & world, Paintown::Object::networkid_t id);
     virtual ~ChatWidget();
 
     virtual void act();
@@ -49,7 +49,7 @@ private:
     bool enable_chat;
     TextInput chatInput;
     InputMap<Inputs> input;
-    Object::networkid_t id;
+    Paintown::Object::networkid_t id;
 };
 
 #endif

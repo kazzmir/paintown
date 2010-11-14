@@ -7,7 +7,9 @@
 
 class World;
 
-class ObjectAttack: public Object{
+namespace Paintown{
+
+class ObjectAttack: public Object {
 public:
 	ObjectAttack( int alliance );
 	ObjectAttack( const int x, const int y, int alliance );
@@ -32,5 +34,7 @@ protected:
 	unsigned int attack_ticket;
 
 };
+
+}
 
 #endif

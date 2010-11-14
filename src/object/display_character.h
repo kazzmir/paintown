@@ -7,12 +7,14 @@
 #include <vector>
 #include "util/thread.h"
 
+namespace Paintown{
+
 /* loads some parts of the character to be displayed in
  * the character selection screen. this is faster than
  * loading the entire character + all his animations.
  */
 class DisplayCharacterLoader;
-class DisplayCharacter: public Character{
+class DisplayCharacter: public Character {
 public:
 	DisplayCharacter(const std::string & str);
 	virtual ~DisplayCharacter();
@@ -57,5 +59,7 @@ protected:
     Util::Thread::Lock data_lock;
     bool forceQuit;
 };
+
+}
 
 #endif

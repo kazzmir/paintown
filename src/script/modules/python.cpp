@@ -66,7 +66,7 @@ namespace PaintownLevel{
             BlockObject block;
             block.setType(ObjectFactory::EnemyType);
             block.setPath(Filesystem::find(Filesystem::RelativePath(spath)));
-            Enemy * enemy = (Enemy*) ObjectFactory::createObject(&block);
+            Paintown::Enemy * enemy = (Paintown::Enemy*) ObjectFactory::createObject(&block);
             delete enemy;
         }
 
@@ -102,7 +102,7 @@ namespace PaintownLevel{
              * will call into the script module to create a new character,
              * so just return that handle
              */
-            Enemy * enemy = (Enemy*) ObjectFactory::createObject(&block);
+            Paintown::Enemy * enemy = (Paintown::Enemy*) ObjectFactory::createObject(&block);
             World * world = (World*) PyCObject_AsVoidPtr(cworld);
             world->addEnemy(enemy);
             Py_INCREF((PyObject*) enemy->getScriptObject());
@@ -118,7 +118,7 @@ namespace PaintownLevel{
         int id = 0;
         if (PyArg_ParseTuple(args, "Oi", &cworld, &id)){
             World * world = (World*) PyCObject_AsVoidPtr(cworld);
-            Object * obj = world->findObject(id);
+            Paintown::Object * obj = world->findObject(id);
             if (obj == NULL || obj->getScriptObject() == NULL){
                 Py_INCREF(Py_None);
                 return Py_None;
@@ -138,9 +138,9 @@ namespace PaintownLevel{
 
         if (PyArg_ParseTuple(args, "O", &cworld)){
             World * world = (World*) PyCObject_AsVoidPtr(cworld);
-            vector<Object*> objects = world->getObjects();
-            for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-                Object * object = *it;
+            vector<Paintown::Object*> objects = world->getObjects();
+            for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+                Paintown::Object * object = *it;
                 if (object->getScriptObject() != NULL){
                     PyObject * script = (PyObject*) object->getScriptObject();
                     PyList_Append(list, script);
@@ -199,7 +199,7 @@ namespace PaintownCharacter{
         PyObject * cobject;
 
         if (PyArg_ParseTuple(args, "O", &cobject)){
-            Character * object = (Character*) PyCObject_AsVoidPtr(cobject);
+            Paintown::Character * object = (Paintown::Character*) PyCObject_AsVoidPtr(cobject);
             int length = object->getHealth();
             return Py_BuildValue("i", length);
         }
@@ -213,7 +213,7 @@ namespace PaintownCharacter{
 
         int much = 0;
         if (PyArg_ParseTuple(args, "Oi", &cobject, &much)){
-            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            Paintown::Object * object = (Paintown::Object*) PyCObject_AsVoidPtr(cobject);
             object->setHealth(much);
         }
 
@@ -221,10 +221,10 @@ namespace PaintownCharacter{
         return Py_None;
     }
 
-    static PyObject * getDouble(PyObject * dummy, PyObject * args, double (Object::*get)() const){
+    static PyObject * getDouble(PyObject * dummy, PyObject * args, double (Paintown::Object::*get)() const){
         PyObject * cobject;
         if (PyArg_ParseTuple(args, "O", &cobject)){
-            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            Paintown::Object * object = (Paintown::Object*) PyCObject_AsVoidPtr(cobject);
             return Py_BuildValue("d", (object->*get)());
         }
 
@@ -233,22 +233,22 @@ namespace PaintownCharacter{
     }
 
     static PyObject * getX(PyObject * dummy, PyObject * args){
-        return getDouble(dummy, args, &Object::getX);
+        return getDouble(dummy, args, &Paintown::Object::getX);
     }
     
     static PyObject * getY(PyObject * dummy, PyObject * args){
-        return getDouble(dummy, args, &Object::getY);
+        return getDouble(dummy, args, &Paintown::Object::getY);
     }
     
     static PyObject * getZ(PyObject * dummy, PyObject * args){
-        return getDouble(dummy, args, &Object::getZ);
+        return getDouble(dummy, args, &Paintown::Object::getZ);
     }
 
-    static PyObject * setDouble(PyObject * dummy, PyObject * args, void (Object::*set)(const double value)){
+    static PyObject * setDouble(PyObject * dummy, PyObject * args, void (Paintown::Object::*set)(const double value)){
         PyObject * cobject;
         double value = 0;
         if (PyArg_ParseTuple(args, "Od", &cobject, &value)){
-            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            Paintown::Object * object = (Paintown::Object*) PyCObject_AsVoidPtr(cobject);
             (object->*set)(value);
         }
 
@@ -257,21 +257,21 @@ namespace PaintownCharacter{
     }
     
     static PyObject * setX(PyObject * dummy, PyObject * args){
-        return setDouble(dummy, args, &Object::setX);
+        return setDouble(dummy, args, &Paintown::Object::setX);
     }
     
     static PyObject * setY(PyObject * dummy, PyObject * args){
-        return setDouble(dummy, args, &Object::setY);
+        return setDouble(dummy, args, &Paintown::Object::setY);
     }
     
     static PyObject * setZ(PyObject * dummy, PyObject * args){
-        return setDouble(dummy, args, &Object::setZ);
+        return setDouble(dummy, args, &Paintown::Object::setZ);
     }
 
     static PyObject * getId(PyObject * dummy, PyObject * args){
         PyObject * cobject;
         if (PyArg_ParseTuple(args, "O", &cobject)){
-            Object * object = (Object*) PyCObject_AsVoidPtr(cobject);
+            Paintown::Object * object = (Paintown::Object*) PyCObject_AsVoidPtr(cobject);
             return Py_BuildValue("i", (int) object->getObjectId());
         }
 
@@ -282,7 +282,7 @@ namespace PaintownCharacter{
     static PyObject * getScore(PyObject * dummy, PyObject * args){
         PyObject * cobject;
         if (PyArg_ParseTuple(args, "O", &cobject)){
-            PlayerCommon * object = (PlayerCommon*) PyCObject_AsVoidPtr(cobject);
+            Paintown::PlayerCommon * object = (Paintown::PlayerCommon*) PyCObject_AsVoidPtr(cobject);
             return Py_BuildValue("i", (int) object->getScore());
         }
 
@@ -294,7 +294,7 @@ namespace PaintownCharacter{
         PyObject * cobject;
         int much;
         if (PyArg_ParseTuple(args, "Oi", &cobject, &much)){
-            PlayerCommon * object = (PlayerCommon*) PyCObject_AsVoidPtr(cobject);
+            Paintown::PlayerCommon * object = (Paintown::PlayerCommon*) PyCObject_AsVoidPtr(cobject);
             object->setScore(much);
         }
 

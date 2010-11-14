@@ -10,6 +10,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 AnimationEvent::AnimationEvent( ){
 }
 
@@ -255,4 +257,6 @@ d( d ){
 
 void AnimationEventZDistance::Interact( Animation * animation ){
 	animation->setMinZDistance( d );
+}
+
 }

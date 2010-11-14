@@ -55,7 +55,7 @@ continuous( false ){
 
                     /* cache the object in the factory */
                     // Object * tmp = ObjectFactory::createObject(so);
-                    Object * tmp = cacher.cache(*so);
+                    Paintown::Object * tmp = cacher.cache(*so);
                     if ( tmp == NULL ){
                         current->print(" ");
                         delete so;
@@ -95,7 +95,7 @@ bool Block::empty(){
 	return objects.empty();
 }
 
-vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, vector< Object * > * list ){
+vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, vector< Paintown::Object * > * list ){
 	vector< Heart * > hearts;
 
     /* to silence compiler warnings */
@@ -114,7 +114,7 @@ vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, 
 		/* dont care about distance.. */
 		if ( true ){
 
-			Object * newobj = ObjectFactory::createObject( obj );
+                    Paintown::Object * newobj = ObjectFactory::createObject( obj );
 			if ( newobj == NULL ){
 				delete obj;
 				it = objects.erase( it );
@@ -123,7 +123,7 @@ vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, 
 
 			/* does this violate some OOP principle? oh wel */
 			if ( obj->getType() == ObjectFactory::EnemyType ){
-				Heart * h = ((Enemy *)newobj)->getHeart();
+				Heart * h = ((Paintown::Enemy *)newobj)->getHeart();
 				hearts.push_back( h );
 			}
 			// newobj->moveX( total_length );

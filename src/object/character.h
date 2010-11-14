@@ -10,18 +10,21 @@
 #include "network/network.h"
 
 class Bitmap;
-class Animation;
-class AnimationTrail;
-class ObjectAttack;
 class Stimulation;
 class World;
 class Sound;
-class Projectile;
-class DrawEffect;
 
 namespace Script{
     class Character;
 }
+
+namespace Paintown{
+
+class Animation;
+class AnimationTrail;
+class ObjectAttack;
+class Projectile;
+class DrawEffect;
 
 /* used for gibs */
 struct BodyPart{
@@ -524,5 +527,7 @@ protected:
 
         std::vector<DrawEffect*> effects;
 };
+
+}
 
 #endif

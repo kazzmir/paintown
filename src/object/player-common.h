@@ -8,6 +8,8 @@ namespace Filesystem{
     class AbsolutePath;
 }
 
+namespace Paintown{
+
 class PlayerCommon: public Character {
 public:
     PlayerCommon(const Character& chr) throw (LoadException);
@@ -30,5 +32,7 @@ private:
     unsigned int score;
 
 };
+
+}
 
 #endif

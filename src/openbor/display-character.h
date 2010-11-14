@@ -8,7 +8,7 @@ namespace Bor{
 
 class PackReader;
 
-class DisplayCharacter: public ::DisplayCharacter {
+class DisplayCharacter: public Paintown::DisplayCharacter {
 public:
     DisplayCharacter(PackReader & reader, std::string file);
 protected:

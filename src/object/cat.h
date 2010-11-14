@@ -10,6 +10,9 @@
 #include "util/file-system.h"
 
 class Bitmap;
+
+namespace Paintown{
+
 class Animation;
 
 class Cat: public ObjectNonAttack {
@@ -52,5 +55,7 @@ protected:
 
 	State state;
 };
+
+}
 
 #endif

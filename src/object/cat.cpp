@@ -13,6 +13,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 Cat::Cat(const Filesystem::AbsolutePath & filename) throw( LoadException ):
 ObjectNonAttack( 0, 0 ),
 state( IDLE1 ){
@@ -276,3 +278,4 @@ Cat::~Cat(){
 	}
 }
 
+}

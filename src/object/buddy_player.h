@@ -8,9 +8,12 @@
 #include <vector>
 #include "util/thread.h"
 
-class Animation;
 class World;
+
+namespace Paintown{
+
 class Player;
+class Animation;
 
 class BuddyPlayer: public PlayerCommon {
 public:
@@ -87,5 +90,6 @@ protected:
     Player * base;
 };
 
+}
 
 #endif

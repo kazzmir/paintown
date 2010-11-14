@@ -3,6 +3,8 @@
 
 static unsigned int ticket = 1;
 
+namespace Paintown{
+
 ObjectAttack::ObjectAttack( int alliance ):
 Object( alliance ),
 attack_ticket( ticket++ ){
@@ -21,4 +23,6 @@ attack_ticket( ticket++ ){
 
 void ObjectAttack::nextTicket(){
 	attack_ticket++;
+}
+
 }

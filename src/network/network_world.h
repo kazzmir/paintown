@@ -29,7 +29,7 @@ struct Packet{
 
 class NetworkWorld: public AdventureWorld, public ChatWidget {
 public:
-	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Object * > & players, const std::map<Object*, Network::Socket> & characterToClient, const Filesystem::AbsolutePath & path, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Paintown::Object * > & players, const std::map<Paintown::Object*, Network::Socket> & characterToClient, const Filesystem::AbsolutePath & path, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	virtual void act();
@@ -52,12 +52,12 @@ public:
 	
 	void stopRunning();
 	
-	virtual void addObject( Object * o );
+	virtual void addObject( Paintown::Object * o );
 
 	virtual ~NetworkWorld();
 
 protected:
-	Object * findNetworkObject( Object::networkid_t id );
+        Paintown::Object * findNetworkObject( Paintown::Object::networkid_t id );
 	void sendMessage( const Network::Message & message, Network::Socket socket );
         std::vector< Network::Message > getIncomingMessages();
 	void handleMessage( Network::Message & message );
@@ -65,9 +65,9 @@ protected:
 
 	Network::Message nextBlockMessage( int block );
 
-        void removePlayer(Object * player);
+        void removePlayer(Paintown::Object * player);
         void removeSocket(Network::Socket socket);
-        Object * findPlayerFromSocket(Network::Socket socket);
+        Paintown::Object * findPlayerFromSocket(Network::Socket socket);
 
 	inline unsigned int nextId(){
             unsigned int i = id;
@@ -80,9 +80,9 @@ private:
 	std::vector<Packet> outgoing;
 	std::vector<Network::Message> incoming;
 	std::vector<Util::Thread::Id> threads;
-        std::map<Object::networkid_t, std::string> clientNames;
-	std::map<Object*, Network::Socket> characterToClient;
-        Object::networkid_t id;
+        std::map<Paintown::Object::networkid_t, std::string> clientNames;
+	std::map<Paintown::Object*, Network::Socket> characterToClient;
+        Paintown::Object::networkid_t id;
 
 	unsigned int sent_messages;
 

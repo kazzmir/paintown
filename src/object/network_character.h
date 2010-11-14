@@ -7,6 +7,8 @@
 #include "util/load_exception.h"
 #include "character.h"
 
+namespace Paintown{
+
 class NetworkCharacter: public Character {
 public:
 
@@ -36,5 +38,7 @@ protected:
 	int name_id;
 	int show_name_time;
 };
+
+}
 
 #endif

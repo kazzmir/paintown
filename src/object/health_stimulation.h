@@ -3,6 +3,8 @@
 
 #include "stimulation.h"
 
+namespace Paintown{
+
 class Character;
 // class Network::Message;
 
@@ -19,5 +21,7 @@ public:
 protected:
 	int value;
 };
+
+}
 
 #endif

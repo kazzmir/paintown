@@ -7,6 +7,8 @@
 #include "util/bitmap.h"
 #include "util/funcs.h"
 
+namespace Paintown{
+
 DrawEffect::DrawEffect(const Character * owner, const int level):
 owner(owner),
 level(level){
@@ -146,4 +148,6 @@ DrawEffect * DrawUntilEffect::copy(const Character * owner) const {
 
 DrawUntilEffect::~DrawUntilEffect(){
     delete effect;
+}
+
 }

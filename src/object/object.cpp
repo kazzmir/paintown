@@ -14,6 +14,8 @@ using namespace std;
 #define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 #endif
 
+namespace Paintown{
+
 /*
 const int Object::FACING_LEFT = 0; 
 const int Object::FACING_RIGHT = 1;
@@ -294,4 +296,6 @@ Object::~Object(){
     if (getScriptObject() != NULL){
         Script::Engine::getEngine()->destroyObject(getScriptObject());
     }
+}
+
 }

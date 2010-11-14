@@ -42,7 +42,7 @@ descriptionGradient(0){
 
 static const int DESCRIPTION_TIME = 700;
 
-AdventureWorld::AdventureWorld( const vector< Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher, int _screen_size ):
+AdventureWorld::AdventureWorld( const vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Level::Cacher * cacher, int _screen_size ):
 World(),
 path( path ),
 draw_minimaps( true ),
@@ -57,7 +57,7 @@ descriptionGradient(new Effects::Gradient(100, Bitmap::makeColor(255, 255, 255),
 	bang = NULL;
 	screen_size = _screen_size;
 
-	for ( vector<Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
+	for ( vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
 		PlayerTracker t;
 		t.min_x = 0;
 		t.player = *it;
@@ -213,14 +213,14 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	scene = s;
 	
         Filesystem::AbsolutePath bang_path(Filesystem::find(Filesystem::RelativePath("misc/flash/flash.txt")));
-	Object * effect = new Effect(bang_path.path().c_str());
+        Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
 		delete bang;
 	}
 	bang = effect;
 		
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		Object * const player = it->player;	
+            Paintown::Object * const player = it->player;	
 		player->setX( 100 + Util::rnd( 75 ) );
 		player->setZ( getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
 		player->setY( 0 );
@@ -235,8 +235,8 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 
 }
 
-void AdventureWorld::deleteObjects( vector< Object * > * objects ){
-    for ( vector< Object * >::iterator it = objects->begin(); it != objects->end(); it++ ){
+void AdventureWorld::deleteObjects( vector< Paintown::Object * > * objects ){
+    for ( vector< Paintown::Object * >::iterator it = objects->begin(); it != objects->end(); it++ ){
         if ( ! isPlayer( *it ) ){
             delete *it;
         }
@@ -248,7 +248,7 @@ bool AdventureWorld::finished() const {
     int f = scene->getFinished();
     if ( players.size() > 0 ){
         for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
-            Object * const player = it->player;
+            Paintown::Object * const player = it->player;
             if ( f != -1 && player->getX() >= f ){
                 return player->getX() >= f;
             }
@@ -259,7 +259,7 @@ bool AdventureWorld::finished() const {
     }
 }
 	
-bool AdventureWorld::isPlayer( Object * o ) const {
+bool AdventureWorld::isPlayer( Paintown::Object * o ) const {
     for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
         if ( it->player == o ){
             return true;
@@ -307,7 +307,7 @@ int AdventureWorld::levelLength() const {
     return scene->totalLength();
 }
         
-void AdventureWorld::addEnemy(Enemy * obj){
+void AdventureWorld::addEnemy(Paintown::Enemy * obj){
     if (scene){
         scene->addEnemy(obj);
     } else {
@@ -320,9 +320,9 @@ void AdventureWorld::enterSlowMotion(const int amount){
     slowmotion = amount;
 }
 
-Object * AdventureWorld::findObject(int id){
-    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-        Object * object = *it;
+Paintown::Object * AdventureWorld::findObject(int id){
+    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Paintown::Object * object = *it;
         if (object->getObjectId() == id){
             return object;
         }
@@ -330,7 +330,7 @@ Object * AdventureWorld::findObject(int id){
     return NULL;
 }
         
-void AdventureWorld::dyingObject(const Player & obj){
+void AdventureWorld::dyingObject(const Paintown::Player & obj){
     /* 60 comes from character.cpp:act(), but I should probably use a function
      * that returns the number instead
      */
@@ -344,9 +344,9 @@ void AdventureWorld::doLogic(){
         slowmotion -= 1;
     }
 
-    vector< Object * > added_effects;
-    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-        Object * good = *it;
+    vector< Paintown::Object * > added_effects;
+    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Paintown::Object * good = *it;
         good->act( &objects, this, &added_effects );
 
         if ( good->getZ() < getMinimumZ() ){
@@ -358,8 +358,8 @@ void AdventureWorld::doLogic(){
         /* Check for collisions */
         if ( good->isAttacking() ){
             // ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
-            ObjectAttack * o_good = (ObjectAttack *)good;
-            for ( vector<Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
+            Paintown::ObjectAttack * o_good = (Paintown::ObjectAttack *)good;
+            for ( vector<Paintown::Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
                 if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
                     // cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
                     // cout << "Collision: " << (*fight)->collision( o_good ) << endl;
@@ -376,7 +376,7 @@ void AdventureWorld::doLogic(){
                         y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
 
                         if ( bang != NULL ){
-                            Object * addx = bang->copy();
+                            Paintown::Object * addx = bang->copy();
                             addx->setX( x );
                             addx->setY( 0 );
                             addx->setZ( y+addx->getHeight()/2 );
@@ -406,7 +406,7 @@ void AdventureWorld::doLogic(){
         }
     }
 
-    for ( vector<Object *>::iterator it = objects.begin(); it != objects.end(); ){
+    for ( vector<Paintown::Object *>::iterator it = objects.begin(); it != objects.end(); ){
         if ( (*it)->getHealth() <= 0 ){
             (*it)->died( added_effects );
             if ( ! isPlayer( *it ) ){
@@ -420,10 +420,10 @@ void AdventureWorld::doLogic(){
 
     /* special case for getting items */
     for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-        Character * const cplayer = (Character *) it->player; 
-        if ( cplayer->getStatus() == Status_Get ){
-            for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); ){
-                Object * const o = *it;
+        Paintown::Character * const cplayer = (Paintown::Character *) it->player; 
+        if ( cplayer->getStatus() == Paintown::Status_Get ){
+            for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); ){
+                Paintown::Object * const o = *it;
                 if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
                     o->touch( cplayer );
                     addMessage( deleteMessage( o->getId() ) );
@@ -442,14 +442,14 @@ void AdventureWorld::doLogic(){
     getEngine()->tick();
 }
 
-void AdventureWorld::killAllHumans( Object * player ){
-	for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-		Object * o = *it;
-		if ( o != player ){
-			// o->takeDamage( o->getMaxHealth() * 2 );
-			o->takeDamage(*this, NULL, 999999 );
-		}
-	}
+void AdventureWorld::killAllHumans( Paintown::Object * player ){
+    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Paintown::Object * o = *it;
+        if ( o != player ){
+            // o->takeDamage( o->getMaxHealth() * 2 );
+            o->takeDamage(*this, NULL, 999999 );
+        }
+    }
 }
 
 int AdventureWorld::getMinimumZ(){
@@ -476,7 +476,7 @@ void AdventureWorld::act(){
 	
 	double lowest = 9999999;
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		Object * player = it->player;
+            Paintown::Object * player = it->player;
 		if ( player->getHealth() > 0 ){
 			double mx = player->getX() - screen_size / 2;
 			if ( it->min_x < mx ){
@@ -529,11 +529,11 @@ void AdventureWorld::doScene( int min_x, int max_x ){
 	scene->act( min_x, max_x, &objects );
 }
 
-void AdventureWorld::addObject( Object * o ){
+void AdventureWorld::addObject( Paintown::Object * o ){
 	objects.push_back( o );
 }
 
-void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, const map< int, vector< Object * > > & object_z ){
+void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
 	int min_x = 0;
 
 	min_x = (int) tracker.min_x;
@@ -550,9 +550,9 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, c
 
 	scene->drawBack( min_x, where );
 
-	for ( map<int,vector<Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
-		const vector<Object *> & xx = (*it).second;
-		for ( vector<Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+	for ( map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+		const vector<Paintown::Object *> & xx = (*it).second;
+		for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
 			(*mm)->draw( where, min_x, 0 );
 		}
@@ -564,9 +564,9 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, c
          * this is things like icon/name/health, not objects that are part of
          * the scene, and therefore the atmosphere doesn't apply to them.
          */
-        for ( map<int,vector<Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
-		const vector<Object *> & xx = (*it).second;
-		for ( vector<Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+        for ( map<int,vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+		const vector<Paintown::Object *> & xx = (*it).second;
+		for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 			(*mm)->drawFront( where, min_x );
 		}
 	}
@@ -618,10 +618,10 @@ void AdventureWorld::doTakeScreenshot(Bitmap * work){
 
 void AdventureWorld::draw( Bitmap * work ){
 
-    map< int, vector<Object*> > object_z;
+    map< int, vector<Paintown::Object*> > object_z;
 
-    for ( vector< Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-        Object * n = *it;
+    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+        Paintown::Object * n = *it;
         object_z[ n->getRZ() ].push_back( n );
     }
 

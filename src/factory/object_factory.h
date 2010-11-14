@@ -5,20 +5,23 @@
 #include <vector>
 #include <string>
 
-class Object;
-class BlockObject;
-class Actor;
-class Cat;
+namespace Paintown{
+    class Object;
+    class Actor;
+    class Cat;
+    class Item;
+    class Enemy;
+    class NetworkCharacter;
+    class NetworkPlayer;
+}
+
 class Heart;
-class Item;
-class Enemy;
-class NetworkCharacter;
-class NetworkPlayer;
+class BlockObject;
 
 /* factory class for instantiating new objects from a BlockObject */
 class ObjectFactory{
 public:
-	static Object * createObject( const BlockObject * block );
+	static Paintown::Object * createObject( const BlockObject * block );
         static int getNextObjectId();
         static void maxId(int id);
 	static void destroy();
@@ -39,14 +42,14 @@ public:
 	
 private:
 	ObjectFactory();
-	Object * makeObject( const BlockObject * block );
+        Paintown::Object * makeObject( const BlockObject * block );
 
-	Object * makeItem(Item * item, const BlockObject * block);
-	Object * makeEnemy(Enemy * enemy, const BlockObject * block);
-	Object * makeActor(Actor * ret, const BlockObject * block);
-	Object * makeCat(Cat * ret, const BlockObject * block);
-	Object * makeNetworkCharacter(NetworkCharacter * guy, const BlockObject * block);
-	Object * makeNetworkPlayer(NetworkPlayer * guy, const BlockObject * block);
+        Paintown::Object * makeItem(Paintown::Item * item, const BlockObject * block);
+	Paintown::Object * makeEnemy(Paintown::Enemy * enemy, const BlockObject * block);
+	Paintown::Object * makeActor(Paintown::Actor * ret, const BlockObject * block);
+	Paintown::Object * makeCat(Paintown::Cat * ret, const BlockObject * block);
+	Paintown::Object * makeNetworkCharacter(Paintown::NetworkCharacter * guy, const BlockObject * block);
+	Paintown::Object * makeNetworkPlayer(Paintown::NetworkPlayer * guy, const BlockObject * block);
 
         int _getNextObjectId();
         void maxObjectId(int id);
@@ -54,7 +57,7 @@ private:
 	~ObjectFactory();
 
 private:
-        std::map< std::string, Object * > cached;
+        std::map< std::string, Paintown::Object * > cached;
 	static ObjectFactory * factory;
         std::vector< Heart * > hearts;
         int nextObjectId;

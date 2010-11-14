@@ -4,19 +4,22 @@
 #include "object/animation.h"
 
 class Token;
-class Character;
+
+namespace Paintown{
+    class Character;
+}
 
 namespace Bor{
 
-class Animation: public ::Animation{
+class Animation: public Paintown::Animation{
 public:
-    Animation(Token * token, Character * const owner);
-    Animation(const Animation & animation, Character * const owner);
+    Animation(Token * token, Paintown::Character * const owner);
+    Animation(const Animation & animation, Paintown::Character * const owner);
 
     virtual int getOffsetX() const;
     virtual int getOffsetY() const;
         
-    virtual ::Animation * copy(Character * owner) const;
+    virtual Paintown::Animation * copy(Paintown::Character * owner) const;
 };
 
 }

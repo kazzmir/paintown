@@ -17,6 +17,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 NetworkPlayer::NetworkPlayer(const Filesystem::AbsolutePath & filename, int alliance) throw ( LoadException ):
 NetworkCharacter( filename, alliance ),
 score(0),
@@ -157,4 +159,6 @@ void NetworkPlayer::act( vector< Object * > * others, World * world, vector< Obj
         world->addMessage(message);
         need_confirm_message = false;
     }
+}
+
 }

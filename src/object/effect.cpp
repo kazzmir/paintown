@@ -14,6 +14,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 Effect::Effect( int alliance ):
 ObjectNonAttack( 0, 0, alliance ),
 image( NULL ){
@@ -141,3 +143,4 @@ Effect::~Effect(){
 		delete image;
 }
 
+}

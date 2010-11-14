@@ -204,17 +204,17 @@ Configuration::~Configuration(){
 }
 
 Configuration::JoystickInput Configuration::getJoystickKey(Input::PaintownInput which, int facing) const {
-    switch( which ){
+    switch (which){
         case Input::Forward : {
-                                  if ( facing == Object::FACING_LEFT ) 
-                                      return this->joystick_left;
-                                  else 	return this->joystick_right;
-                              }
+            if ( facing == Paintown::Object::FACING_LEFT ) 
+                return this->joystick_left;
+            else 	return this->joystick_right;
+        }
         case Input::Back : {
-                               if ( facing == Object::FACING_LEFT )
-                                   return this->joystick_right;
-                               else	return this->joystick_left;
-                           }
+            if ( facing == Paintown::Object::FACING_LEFT )
+                return this->joystick_right;
+            else	return this->joystick_left;
+        }
         case Input::Up : return this->joystick_up;
         case Input::Down : return this->joystick_down;
         case Input::Attack1 : return this->joystick_attack1;
@@ -226,25 +226,25 @@ Configuration::JoystickInput Configuration::getJoystickKey(Input::PaintownInput 
 }
 
 int Configuration::getKey( Input::PaintownInput which, int facing ) const {
-	switch( which ){
+    switch (which){
         case Input::Forward : {
-			if ( facing == Object::FACING_LEFT ) 
+            if ( facing == Paintown::Object::FACING_LEFT ) 
                 return this->left;
             else 	return this->right;
-		}
+        }
         case Input::Back : {
-			if ( facing == Object::FACING_LEFT )
-				return this->right;
-			else	return this->left;
-		}
+            if ( facing == Paintown::Object::FACING_LEFT )
+                return this->right;
+            else	return this->left;
+        }
         case Input::Up : return this->up;
-		case Input::Down : return this->down;
-		case Input::Attack1 : return this->attack1;
-		case Input::Attack2 : return this->attack2;
-		case Input::Attack3 : return this->attack3;
-		case Input::Jump : return this->jump;
-		default : return -1;
-	}
+        case Input::Down : return this->down;
+        case Input::Attack1 : return this->attack1;
+        case Input::Attack2 : return this->attack2;
+        case Input::Attack3 : return this->attack3;
+        case Input::Jump : return this->jump;
+        default : return -1;
+    }
 }
         
 Util::ReferenceCount<Menu::FontInfo> Configuration::getMenuFont(){

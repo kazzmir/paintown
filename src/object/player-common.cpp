@@ -3,6 +3,8 @@
 #include "util/load_exception.h"
 #include "globals.h"
 
+namespace Paintown{
+
 PlayerCommon::PlayerCommon(const Character& chr) throw (LoadException):
 Character(chr),
 score(0){
@@ -28,4 +30,6 @@ PlayerCommon::~PlayerCommon(){
 
 void PlayerCommon::increaseScore(int much){
     score += much;
+}
+
 }

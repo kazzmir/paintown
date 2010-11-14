@@ -17,8 +17,8 @@ double World::ticks(const double in) const {
     return in;
 }
 
-void World::dyingObject(const Object & obj){
+void World::dyingObject(const Paintown::Object & obj){
 }
 
-void World::dyingObject(const Player & obj){
+void World::dyingObject(const Paintown::Player & obj){
 }

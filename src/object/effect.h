@@ -8,9 +8,12 @@
 #include "network/network.h"
 
 class Bitmap;
-class Animation;
 
 extern const int ALLIANCE_NONE;
+
+namespace Paintown{
+
+class Animation;
 
 class Effect: public ObjectNonAttack {
 public:
@@ -36,5 +39,7 @@ protected:
 	Animation * image;
 
 };
+
+}
 
 #endif

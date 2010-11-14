@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 static const int DO_NOTHING = 0;
 static const int DO_WALK_FORWARD = 1;
 static const int DO_WALK_BACKWARD = 2;
@@ -128,4 +130,6 @@ void VersusEnemy::act( vector< Object * > * others, World * world, vector< Objec
 			}
 		}
 	}
+}
+
 }

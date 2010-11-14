@@ -37,9 +37,9 @@ using namespace std;
 static const char * DEBUG_CONTEXT = __FILE__;
 
 struct playerInfo{
-    DisplayCharacter * guy;
+    Paintown::DisplayCharacter * guy;
     Filesystem::AbsolutePath path;
-    playerInfo(DisplayCharacter * guy, const Filesystem::AbsolutePath & path ):
+    playerInfo(Paintown::DisplayCharacter * guy, const Filesystem::AbsolutePath & path ):
     guy(guy),
     path(path){
     }
@@ -58,7 +58,7 @@ static PlayerVector loadPlayers( const string & path ){
         if (Util::exists(file)){
             Global::debug(1, DEBUG_CONTEXT) << "Loading " << file << endl;
             try{
-                players.push_back(playerInfo(new DisplayCharacter(file), Filesystem::AbsolutePath(file)));
+                players.push_back(playerInfo(new Paintown::DisplayCharacter(file), Filesystem::AbsolutePath(file)));
             } catch (const LoadException & le){
                 Global::debug(0, DEBUG_CONTEXT) << "Could not load " << file << " because " << le.getTrace() << endl;
             }
@@ -81,8 +81,8 @@ Key getNth( const map< Key, Value > & m, int i ){
 }
 */
 
-static vector<DisplayCharacter*> getCharacters(PlayerVector players){
-    vector<DisplayCharacter*> characters;
+static vector<Paintown::DisplayCharacter*> getCharacters(PlayerVector players){
+    vector<Paintown::DisplayCharacter*> characters;
     for (PlayerVector::iterator it = players.begin(); it != players.end(); it++){
         characters.push_back(it->guy);
     }
@@ -92,7 +92,7 @@ static vector<DisplayCharacter*> getCharacters(PlayerVector players){
 
 /* run the loader in a separate thread */
 static void * characterLoader(void * arg){
-    DisplayCharacterLoader * loader = (DisplayCharacterLoader*) arg;
+    Paintown::DisplayCharacterLoader * loader = (Paintown::DisplayCharacterLoader*) arg;
     loader->load();
     return NULL;
 }
@@ -105,8 +105,9 @@ namespace Select{
     };
 }
 
+/* TODO: refactor */
 static int choosePlayer(const PlayerVector & players, const string & message){
-    DisplayCharacterLoader loader(getCharacters(players));
+    Paintown::DisplayCharacterLoader loader(getCharacters(players));
     InputMap<Select::Input> input;
 
     // Bitmap work( GFX_X / 2, GFX_Y / 2 );
@@ -192,7 +193,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     try{
         while (! done){
             /* bad variable name */
-            DisplayCharacter * ch = players[ current ].guy;
+            Paintown::DisplayCharacter * ch = players[ current ].guy;
 
             if ( Global::speed_counter > 0 ){
                 // double think = Global::speed_counter;
@@ -294,8 +295,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
                 if (ch->isLoaded()){
                     const int stand = 100;
-                    ch->setFacing( Object::FACING_RIGHT );
-                    Character copy(*ch);
+                    ch->setFacing( Paintown::Object::FACING_RIGHT );
+                    Paintown::Character copy(*ch);
                     copy.setDrawShadow( false );
                     copy.setX( preview.getWidth() / 2 );
                     copy.setY( 0 );
@@ -355,13 +356,13 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 unsigned int i;
                 for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
                     Bitmap box(work, x, y, boxSize, boxSize);
-                    DisplayCharacter * displayed = players[i].guy;
+                    Paintown::DisplayCharacter * displayed = players[i].guy;
                     box.clear();
                     // int color = unselectedColor;
                     // int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
                     if (displayed->isLoaded()){
                         temp.clear();
-                        Character smaller(*displayed);
+                        Paintown::Character smaller(*displayed);
 
                         /* draw a border */
                         // box.border( 0, 3, color[ clock % maxColor ] );

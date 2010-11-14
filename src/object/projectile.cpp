@@ -11,6 +11,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 /* the alliance must be set by someone else at some point */
 Projectile::Projectile( Token * token ) throw( LoadException ):
 ObjectAttack( ALLIANCE_NONE ),
@@ -219,4 +221,6 @@ double Projectile::minZDistance() const {
 
 void Projectile::attacked(World * world, Object * something, vector< Object * > & objects ){
 	setLife( 0 );
+}
+
 }

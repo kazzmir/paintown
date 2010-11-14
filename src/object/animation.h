@@ -11,13 +11,16 @@
 
 /* is that crazy hat for chicken? */
 
-class AnimationEvent;
 class Bitmap;
 class ECollide;
 class Token;
-class Character;
 class Sound;
+
+namespace Paintown{
+
+class Character;
 class Projectile;
+class AnimationEvent;
 class AnimationTrail;
 
 struct KeyPress{
@@ -332,5 +335,6 @@ protected:
 
 };
 
+}
 
 #endif

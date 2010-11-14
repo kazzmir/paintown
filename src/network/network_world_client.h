@@ -19,7 +19,7 @@ class Bitmap;
 class NetworkWorldClient: public AdventureWorld, public ChatWidget {
 public:
 
-	NetworkWorldClient( Network::Socket server, const std::vector< Object * > & players, const Filesystem::AbsolutePath & path, Object::networkid_t id, const std::map<Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorldClient( Network::Socket server, const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Paintown::Object::networkid_t id, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
 	virtual void draw(Bitmap * work);
@@ -37,7 +37,7 @@ public:
         /* start thread to handle messages */
         void startMessageHandler();
 
-        Object::networkid_t getId() const {
+        Paintown::Object::networkid_t getId() const {
             return id;
         }
 	
@@ -55,18 +55,18 @@ public:
 
 protected:
 
-	Object * findNetworkObject( Object::networkid_t id );
+        Paintown::Object * findNetworkObject( Paintown::Object::networkid_t id );
 	void handleCreateCharacter( Network::Message & message );
 	void handleCreateCat( Network::Message & message );
 	void handleCreateBang( Network::Message & message );
 	void handleCreateItem( Network::Message & message );
-	Object * removeObject( Object::networkid_t id );
-        void removePlayer(Object * obj);
+        Paintown::Object * removeObject( Paintown::Object::networkid_t id );
+        void removePlayer(Paintown::Object * obj);
 
 	void sendMessage( const Network::Message & message, NLsocket socket );
         void sendMessages(const std::vector<Network::Message> & messages, Network::Socket socket);
 
-	bool uniqueObject( Object::networkid_t id );
+	bool uniqueObject( Paintown::Object::networkid_t id );
 	void handleMessage( Network::Message & message );
         // std::vector< Network::Message > getIncomingMessages();
         /* avoid an unnecessary stack copy by passing in the vector directly */
@@ -84,14 +84,14 @@ private:
 
 	bool world_finished;
         unsigned int secondCounter;
-        Object::networkid_t id;
+        Paintown::Object::networkid_t id;
 
 	bool running;
 
         std::map<unsigned int, uint64_t> pings;
         double currentPing;
        
-        std::map<Object::networkid_t, std::string> clientNames;
+        std::map<Paintown::Object::networkid_t, std::string> clientNames;
         unsigned int pingCounter;
 };
 

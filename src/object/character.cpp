@@ -37,6 +37,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 Remap::Remap():
 needRemap(false),
 original(NULL){
@@ -1853,4 +1855,6 @@ Character::~Character(){
        for ( vector< Animation * >::iterator it = animation_attacks.begin(); it != animation_attacks.end(); it++ )
        delete *it;
        */
+}
+
 }

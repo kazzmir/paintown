@@ -3,12 +3,15 @@
 
 #include "game/adventure_world.h"
 
-class Character;
 class Bitmap;
+
+namespace Paintown{
+class Character;
+}
 
 class VersusWorld: public AdventureWorld {
 public:
-	VersusWorld( int z, Character * player1, Character * player2 );
+	VersusWorld( int z, Paintown::Character * player1, Paintown::Character * player2 );
 	virtual ~VersusWorld();
 
 	virtual void draw( Bitmap * work );
@@ -21,8 +24,8 @@ public:
 	virtual int getMinimumZ();
 
 protected:
-	Character * const player1;
-	Character * const player2;
+        Paintown::Character * const player1;
+	Paintown::Character * const player2;
 
 	int z;
 };

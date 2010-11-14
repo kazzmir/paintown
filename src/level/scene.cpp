@@ -267,7 +267,7 @@ bool Scene::canContinue( int x ){
  * later on. This is because modifying the world object list during
  * the logic() method will corrupt the iterators.
  */
-void Scene::addEnemy(Enemy * const obj){
+void Scene::addEnemy(Paintown::Enemy * const obj){
     hearts.push_back(obj->getHeart());
     added_objects.push_back(obj);
 }
@@ -285,7 +285,7 @@ void Scene::doTriggers(){
     }
 }
 
-void Scene::act( int min_x, int max_x, vector< Object * > * objects ){
+void Scene::act( int min_x, int max_x, vector< Paintown::Object * > * objects ){
     clearHearts();
 
     if ( canContinue( min_x ) ){

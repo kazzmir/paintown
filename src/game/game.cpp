@@ -186,9 +186,9 @@ static void doTakeScreenshot(const Bitmap & work){
 }
 
 /* returns false if players cannot be respawned due to running out of lives */
-static bool respawnPlayers(const vector<Object*> & players, World & world){
-    for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-        Character * player = (Character *) *it;
+static bool respawnPlayers(const vector<Paintown::Object*> & players, World & world){
+    for ( vector< Paintown::Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+        Paintown::Character * player = (Paintown::Character *) *it;
         if ( player->getHealth() <= 0 ){
             if ( player->spawnTime() == 0 ){
                 player->deathReset();
@@ -226,7 +226,7 @@ static bool doMenu(const Bitmap & screen_buffer){
     }
 }
 
-bool playLevel( World & world, const vector< Object * > & players, double helpTime){
+bool playLevel( World & world, const vector< Paintown::Object * > & players, double helpTime){
     
     Bitmap screen_buffer(GFX_X, GFX_Y);
 
@@ -293,7 +293,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
 
     class Logic{
     public:
-        Logic(const vector<Object*> & players, World & world, Console::Console & console):
+        Logic(const vector<Paintown::Object*> & players, World & world, Console::Console & console):
         runCounter(0),
         gameSpeed(startingGameSpeed()),
         players(players),
@@ -319,7 +319,7 @@ bool playLevel( World & world, const vector< Object * > & players, double helpTi
         InputMap<Game::Input> input;
         double runCounter;
         double gameSpeed;
-        const vector<Object*> & players;
+        const vector<Paintown::Object*> & players;
         bool helped;
         World & world;
         Util::EventManager eventManager;
@@ -621,7 +621,7 @@ static string funnyGo(){
     }
 }
 
-void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
 
     /* disables buffer input on entry, enables buffering on function exit */
     class InputBuffer{
@@ -661,9 +661,9 @@ void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Leve
                */
 
             Global::info("Setting up world");
-            vector<Object*> players;
-            for (vector<Util::Future<Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
-                Util::Future<Object*> * future = *fit;
+            vector<Paintown::Object*> players;
+            for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
+                Util::Future<Paintown::Object*> * future = *fit;
                 players.push_back(future->get());
             }
 
@@ -676,8 +676,8 @@ void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Leve
             Music::loadSong(Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
             Music::play();
 
-            for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-                Player * playerX = (Player *) *it;
+            for ( vector< Paintown::Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+                Paintown::Player * playerX = (Paintown::Player *) *it;
                 playerX->setTrails(0, 0);
                 playerX->setY( 200 );
                 /* setMoving(false) sets all velocities to 0 */
@@ -685,7 +685,7 @@ void realGame(const vector<Util::Future<Object*> * > & futurePlayers, const Leve
                 /* but the player is falling so set it back to true */
                 playerX->setMoving( true );
 
-                playerX->setStatus( Status_Falling );
+                playerX->setStatus( Paintown::Status_Falling );
             }
 
             stopLoading( loading_screen_thread );
@@ -842,7 +842,7 @@ static bool closeFloat(double a, double b){
     return fabs(a-b) < epsilon;
 }
 
-void playVersusMode( Character * player1, Character * player2, int round ){
+void playVersusMode( Paintown::Character * player1, Paintown::Character * player2, int round ){
 
 	player1->setY( 0 );
 	player2->setY( 0 );

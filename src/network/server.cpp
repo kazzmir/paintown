@@ -499,14 +499,14 @@ static void sendAllOk(const vector<Socket> & sockets){
 
 /* TODO: simplify this code */
 static void playGame(vector<Client*> & clients){
-    vector< Object * > players;
+    vector< Paintown::Object * > players;
     Util::Thread::Id loading_screen_thread;
     try{
         /* first the user selects his own player */
         Level::LevelInfo info;
         int remap = 0;
         Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
-        Player * player = new Player(playerPath);
+        Paintown::Player * player = new Paintown::Player(playerPath);
         player->setMap(remap);
         player->ignoreLives();
         players.push_back( player );
@@ -521,7 +521,7 @@ static void playGame(vector<Client*> & clients){
         allAlliance = ALLIANCE_FREE_FOR_ALL;
 
         /* the server player is network id 1 */
-        Object::networkid_t id = 1;
+        Paintown::Object::networkid_t id = 1;
         player->setId( id );
         /* the server's player alliance can just be ALLIANCE_PLAYER, so no
          * need to change it
@@ -530,12 +530,12 @@ static void playGame(vector<Client*> & clients){
         vector<Network::Socket> sockets;
 
         /* keep track of characters and their related sockets (clients) */
-        map<Object*, Socket> characterToSocket;
+        map<Paintown::Object*, Socket> characterToSocket;
 
         /* bundle up all the client infos and send them after setting up the clients */
         vector<Message> clientInfos;
 
-        map<Object::networkid_t, string> clientNames;
+        map<Paintown::Object::networkid_t, string> clientNames;
 
         id += 1;
         /* all other players will send their chosen character as a
@@ -553,12 +553,12 @@ static void playGame(vector<Client*> & clients){
             message >> type;
             if ( type == World::CREATE_CHARACTER ){
                 int alliance = playerAlliance();
-                Character * client_character = new NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
+                Paintown::Character * client_character = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
                 characterToSocket[client_character] = socket;
                 /* Don't need this line now that NetworkPlayer exists.
                  * take it out at some point.
                  */
-                ((NetworkCharacter *)client_character)->alwaysShowName();
+                ((Paintown::NetworkCharacter *)client_character)->alwaysShowName();
 
                 players.push_back(client_character);
                 client_character->setLives(1);
@@ -589,8 +589,8 @@ static void playGame(vector<Client*> & clients){
         }
 
         /* send all created characters to all clients */
-        for ( vector<Object *>::iterator it = players.begin(); it != players.end(); it++ ){
-            Character * c = (Character *) *it;
+        for ( vector<Paintown::Object *>::iterator it = players.begin(); it != players.end(); it++ ){
+            Paintown::Character * c = (Paintown::Character *) *it;
             Filesystem::RelativePath path = Filesystem::cleanse(c->getPath());
             // path.erase( 0, Util::getDataPath().length() );
             Message add;
@@ -619,15 +619,15 @@ static void playGame(vector<Client*> & clients){
             loadLevel.path = level;
             sendToAll( sockets, loadLevel );
 
-            for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-                Character * playerX = (Character *) *it;
+            for ( vector< Paintown::Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+                Paintown::Character * playerX = (Paintown::Character *) *it;
                 playerX->setY( 200 );
                 /* setMoving(false) sets all velocities to 0 */
                 playerX->setMoving( false );
                 /* but the player is falling so set it back to true */
                 playerX->setMoving( true );
 
-                playerX->setStatus( Status_Falling );
+                playerX->setStatus( Paintown::Status_Falling );
             }
 
             debug( 1 ) << "Create network world" << endl;
@@ -719,7 +719,7 @@ static void playGame(vector<Client*> & clients){
         debug( 0 ) << "Network excetion: " + ne.getMessage() << endl;
     }
 
-    for ( vector< Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+    for ( vector< Paintown::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
         delete *it;
     }
 

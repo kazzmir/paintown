@@ -83,14 +83,14 @@ static Input::PaintownInput convertJoystickKey(const Joystick::Key key, const in
         case Joystick::Up : return Input::Up;
         case Joystick::Down : return Input::Down;
         case Joystick::Left : {
-            if (facing == Object::FACING_RIGHT){
+            if (facing == Paintown::Object::FACING_RIGHT){
                 return Input::Back;
             } else {
                 return Input::Forward;
             }
         }
         case Joystick::Right : {
-            if (facing == Object::FACING_RIGHT){
+            if (facing == Paintown::Object::FACING_RIGHT){
                 return Input::Forward;
             } else {
                 return Input::Back;

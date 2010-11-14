@@ -3,23 +3,23 @@
 
 namespace Bor{
 
-Animation::Animation(Token * token, Character * const owner):
-::Animation(token, owner){
+Animation::Animation(Token * token, Paintown::Character * const owner):
+Paintown::Animation(token, owner){
 }
     
-Animation::Animation(const Animation & animation, Character * const owner):
-::Animation(animation, owner){
+Animation::Animation(const Animation & animation, Paintown::Character * const owner):
+Paintown::Animation(animation, owner){
 }
 
 int Animation::getOffsetX() const {
-    return getWidth() / 2 - ::Animation::getOffsetX();
+    return getWidth() / 2 - Paintown::Animation::getOffsetX();
 }
 
 int Animation::getOffsetY() const {
-    return getHeight() - ::Animation::getOffsetY();
+    return getHeight() - Paintown::Animation::getOffsetY();
 }
     
-::Animation * Animation::copy(Character * owner) const {
+Paintown::Animation * Animation::copy(Paintown::Character * owner) const {
     return new Animation(*this, owner);
 }
 

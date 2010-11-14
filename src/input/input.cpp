@@ -8,13 +8,13 @@ using namespace std;
 static Input::PaintownInput convertKey(const Configuration & configuration, const int facing, const int key){
     if (key == configuration.getRight()){
         switch (facing){
-            case Object::FACING_LEFT : return Input::Back;
-            case Object::FACING_RIGHT : return Input::Forward;
+            case Paintown::Object::FACING_LEFT : return Input::Back;
+            case Paintown::Object::FACING_RIGHT : return Input::Forward;
         }
     } else if (key == configuration.getLeft()){
         switch (facing){
-            case Object::FACING_LEFT : return Input::Forward;
-            case Object::FACING_RIGHT : return Input::Back;
+            case Paintown::Object::FACING_LEFT : return Input::Forward;
+            case Paintown::Object::FACING_RIGHT : return Input::Back;
         }
     } else if (key == configuration.getJump()){
         return Input::Jump;

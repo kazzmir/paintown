@@ -5,8 +5,9 @@
 #include "network/network.h"
 #include <vector>
 
+namespace Paintown{
 
-class Gib: public ObjectNonAttack{
+class Gib: public ObjectNonAttack {
 public:
 	struct Point{
 		Point( int x, int y, int life ):x(x), y(y), life(life){}
@@ -37,5 +38,7 @@ protected:
 	Bitmap * image;
     std::vector< Point > blood;
 };
+
+}
 
 #endif

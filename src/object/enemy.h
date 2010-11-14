@@ -1,5 +1,5 @@
-#ifndef _enemy_guy_h
-#define _enemy_guy_h
+#ifndef _paintown_enemy_guy_h
+#define _paintown_enemy_guy_h
 
 #include "character.h"
 #include "util/load_exception.h"
@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
-class Object;
 class World;
 
+namespace Paintown{
+
+class Object;
 class Enemy: public Character{
 public:
 	Enemy( ); 
@@ -70,5 +72,7 @@ protected:
 	int aggression;
 
 };
+
+}
 
 #endif

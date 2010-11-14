@@ -17,6 +17,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 DisplayCharacter::DisplayCharacter(const string & path):
 Character(ALLIANCE_NONE),
 path(path),
@@ -183,4 +185,6 @@ void DisplayCharacterLoader::update(DisplayCharacter* character){
 }
 
 DisplayCharacterLoader::~DisplayCharacterLoader(){
+}
+
 }

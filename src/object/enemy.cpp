@@ -20,6 +20,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 const int NORMAL_AGRESSION = 97;
 
 Enemy::Enemy( ):
@@ -153,6 +155,7 @@ const Object * Enemy::findClosest( const vector< Object * > & enemies ){
 	return e;
 }
 
+/* TODO: cleanup */
 void Enemy::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
 	Global::debug( 4 ) << this << " " << getName() << " (x,y,z) = ( " << getX() << ", " << getY() << ", " << getZ() << " ) " << " status = " << getStatus() << endl;
@@ -308,4 +311,6 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 		}
 		
 	// }
+}
+
 }

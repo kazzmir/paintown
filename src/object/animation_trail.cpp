@@ -2,6 +2,8 @@
 #include "animation_trail.h"
 #include "object.h"
 
+namespace Paintown{
+
 AnimationTrail::AnimationTrail(const int x, const int y, const int facing, const int life, const Bitmap & sprite):
 sprite(sprite),
 x(x),
@@ -37,4 +39,6 @@ void AnimationTrail::draw(int rel_x, Bitmap * work) const {
 }
 
 AnimationTrail::~AnimationTrail(){
+}
+
 }

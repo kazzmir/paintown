@@ -4,6 +4,8 @@
 #include "character.h"
 #include "draw-effect.h"
 
+namespace Paintown{
+
 HealthStimulation::HealthStimulation( int value ):
 value( value ){
 }
@@ -27,4 +29,6 @@ void HealthStimulation::createMessage( Network::Message & message ) const {
 
 Stimulation * HealthStimulation::copy() const {
 	return new HealthStimulation( *this );
+}
+
 }

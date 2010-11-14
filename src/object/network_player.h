@@ -8,6 +8,8 @@
 #include "character.h"
 #include "network_character.h"
 
+namespace Paintown{
+
 class NetworkPlayer: public NetworkCharacter {
 public:
 
@@ -46,5 +48,7 @@ protected:
         bool need_confirm;
         bool need_confirm_message;
 };
+
+}
 
 #endif

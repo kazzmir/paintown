@@ -6,8 +6,11 @@
 #include "util/load_exception.h"
 
 class World;
-class Object;
 class Bitmap;
+
+namespace Paintown{
+
+class Object;
 
 class VersusPlayer: public Player {
 public:
@@ -21,5 +24,7 @@ public:
 
 	virtual ~VersusPlayer();
 };
+
+}
 
 #endif

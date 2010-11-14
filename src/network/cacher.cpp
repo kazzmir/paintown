@@ -7,7 +7,7 @@ NetworkCacher::NetworkCacher():
 Cacher(){
 }
     
-Object * NetworkCacher::cache(const BlockObject & block) const {
+Paintown::Object * NetworkCacher::cache(const BlockObject & block) const {
     if (block.getType() == ObjectFactory::EnemyType){
         BlockObject networkEnemy(block);
         networkEnemy.setType(ObjectFactory::NetworkCharacterType);

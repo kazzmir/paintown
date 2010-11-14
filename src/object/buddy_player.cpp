@@ -17,6 +17,8 @@ using namespace std;
 
 static const int SPAWN_TIME = 1500;
 
+namespace Paintown{
+
 BuddyPlayer::BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException ):
 PlayerCommon( chr ),
 name_id(-1),
@@ -263,4 +265,6 @@ void BuddyFuture::compute(){
     buddy->setObjectId(id);
     Global::info("Loaded buddy " + Filesystem::cleanse(path).path());
     set(buddy);
+}
+
 }

@@ -24,6 +24,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 Frame::Frame( Bitmap * p, ECollide * e ){
 	pic = p;
 	collide = e;
@@ -1090,27 +1092,29 @@ bool Animation::empty(){
 }
 
 Animation::~Animation(){
-	// cout<<"Animation destructor "<<getName()<<":"<<this<<endl;
-	if ( own_events ){
-		// Global::debug( 1 ) << "Destroy animation events" << endl;
-		for ( vector< AnimationEvent * >::iterator it = events.begin(); it != events.end(); it++ )
-			delete *it;
+    // cout<<"Animation destructor "<<getName()<<":"<<this<<endl;
+    if ( own_events ){
+        // Global::debug( 1 ) << "Destroy animation events" << endl;
+        for ( vector< AnimationEvent * >::iterator it = events.begin(); it != events.end(); it++ )
+            delete *it;
 
-		for ( map<string, Sound * >::iterator it = sounds.begin(); it != sounds.end(); it++ ){
-			delete (*it).second;
-		}
+        for ( map<string, Sound * >::iterator it = sounds.begin(); it != sounds.end(); it++ ){
+            delete (*it).second;
+        }
 
-		delete contact;
-	}
-	if ( own_bitmaps ){
-		// Global::debug( 1 ) << "Destroy animation bitmaps" << endl;
-		for ( map< string, Frame * >::iterator it = frames.begin(); it != frames.end(); it++ ){
-			Frame * x = (*it).second;
-			// cout<<"Deleting frame "<<x<<" path = "<<x->pic->getPath()<<endl;
-			delete x;
-		}
-	}
+        delete contact;
+    }
+    if ( own_bitmaps ){
+        // Global::debug( 1 ) << "Destroy animation bitmaps" << endl;
+        for ( map< string, Frame * >::iterator it = frames.begin(); it != frames.end(); it++ ){
+            Frame * x = (*it).second;
+            // cout<<"Deleting frame "<<x<<" path = "<<x->pic->getPath()<<endl;
+            delete x;
+        }
+    }
 
-	if ( attack_collide )
-		delete attack_collide;
+    if ( attack_collide )
+        delete attack_collide;
+}
+
 }

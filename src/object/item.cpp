@@ -13,6 +13,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 Item::Item( const Filesystem::AbsolutePath & filename, Stimulation * const stimulation ) throw( LoadException ):
 ObjectNonAttack( 0, 0 ),
 collide( 0 ),
@@ -167,4 +169,6 @@ int Item::getHeight() const {
 Item::~Item(){
 	delete collide;
 	delete stimulation;
+}
+
 }

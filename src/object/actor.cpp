@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 Actor::Actor( const Filesystem::AbsolutePath & filename ) throw( LoadException ):
 ObjectNonAttack( 0, 0 ){
 
@@ -96,3 +98,4 @@ Actor::~Actor(){
 	}
 }
 
+}

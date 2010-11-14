@@ -7,7 +7,7 @@ class NetworkCacher: public Level::Cacher {
 public:
     NetworkCacher();
     
-    virtual Object * cache(const BlockObject & block) const;
+    virtual Paintown::Object * cache(const BlockObject & block) const;
 
     virtual ~NetworkCacher();
 };

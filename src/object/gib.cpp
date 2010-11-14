@@ -6,6 +6,8 @@
 #include "globals.h"
 #include <math.h>
 
+namespace Paintown{
+
 Gib::Gib( const int x, const int y, const int z, double dx, double dy, double dz, Bitmap * image ):
 ObjectNonAttack( x, z ),
 dx(dx),
@@ -68,52 +70,54 @@ Network::Message Gib::getCreateMessage(){
 }
 	
 void Gib::act( std::vector< Object * > * others, World * world, std::vector< Object * > * add ){
-	if ( fade > 0 ){
-		fade += 2;
-		if ( fade > 255 ){
-			setHealth( -1 );
-		}
-	} else {
+    if ( fade > 0 ){
+        fade += 2;
+        if ( fade > 255 ){
+            setHealth( -1 );
+        }
+    } else {
 
-		moveX(dx);
-		moveY(dy);
-                moveZ(dz);
+        moveX(dx);
+        moveY(dy);
+        moveZ(dz);
 
-		dy -= 0.1;
-		if ( getY() <= 0 ){
-			dy = -dy / 2;
-			dx = dx / 2;
-                        dz = dz / 2;
-			if ( fade == 0 && fabs( dy ) < 0.1 ){
-				fade = 1;
-			}
+        dy -= 0.1;
+        if ( getY() <= 0 ){
+            dy = -dy / 2;
+            dx = dx / 2;
+            dz = dz / 2;
+            if ( fade == 0 && fabs( dy ) < 0.1 ){
+                fade = 1;
+            }
 
-			/*
-			   if ( fabs( dy ) < 0.1 ){
-			   setHealth( -1 );
-			   }
-			   */
-		}
+            /*
+               if ( fabs( dy ) < 0.1 ){
+               setHealth( -1 );
+               }
+               */
+        }
 
-		for ( int i = 0; i < 3; i++ ){
-			int x = getRX() + Util::rnd( 5 ) - 2;
-			int y = getRY() + Util::rnd( 5 ) - 2;
-			blood.push_back( Point( x, y, 10 ) );
-		}
+        for ( int i = 0; i < 3; i++ ){
+            int x = getRX() + Util::rnd( 5 ) - 2;
+            int y = getRY() + Util::rnd( 5 ) - 2;
+            blood.push_back( Point( x, y, 10 ) );
+        }
 
-		for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
-			Point & p = *it;
-			p.life -= 1;
-			if ( p.life <= 0 ){
-				it = blood.erase( it );
-			} else {
-				it++;
-			}
-		}
+        for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
+            Point & p = *it;
+            p.life -= 1;
+            if ( p.life <= 0 ){
+                it = blood.erase( it );
+            } else {
+                it++;
+            }
+        }
 
-		angle += (int) sqrt( dx * dx + dy * dy ) * 3;
-	}
+        angle += (int) sqrt( dx * dx + dy * dy ) * 3;
+    }
 }
 
 Gib::~Gib(){
+}
+
 }

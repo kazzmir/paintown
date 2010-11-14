@@ -529,7 +529,11 @@ protected:
 
 class Command;
 
-class Character: public ObjectAttack {
+class Object: public Paintown::ObjectAttack {
+public:
+};
+
+class Character: public Paintown::ObjectAttack {
 public:
 	// Location at dataPath() + "mugen/chars/"
 	Character(const Filesystem::AbsolutePath & s );
@@ -955,14 +959,14 @@ public:
         /* prevent character from being hit, like after a KO */
         virtual void setUnhurtable();
 	
-        using Object::takeDamage;
+        using Paintown::Object::takeDamage;
         /* if kill is true then the damage can reduce health below 1, otherwise
          * health cannot go below 1
          * if defense is true then the defenseMultiplier is taken into account
          */
-        virtual void takeDamage(World & world, ObjectAttack * obj, int amount, bool kill, bool defense);
+        virtual void takeDamage(World & world, Paintown::ObjectAttack * obj, int amount, bool kill, bool defense);
         /* passes true for kill and defense */
-        virtual void takeDamage(World & world, ObjectAttack * obj, int amount);
+        virtual void takeDamage(World & world, Paintown::ObjectAttack * obj, int amount);
 
         /* character can be hit */
         virtual void setHurtable();

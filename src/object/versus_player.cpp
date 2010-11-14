@@ -11,6 +11,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 VersusPlayer::VersusPlayer(const Filesystem::AbsolutePath & str) throw( LoadException ):
 Player(str, 0){
 }
@@ -217,4 +219,6 @@ void VersusPlayer::act( vector< Object * > * others, World * world, vector< Obje
 }
 	
 VersusPlayer::~VersusPlayer(){
+}
+
 }

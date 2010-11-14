@@ -10,8 +10,11 @@
 #include "game/adventure_world.h"
 #include "util/thread.h"
 
-class Animation;
 class World;
+
+namespace Paintown{
+
+class Animation;
 
 class Player: public PlayerCommon {
 public:
@@ -135,5 +138,7 @@ protected:
     int lives;
     int remap;
 };
+
+}
 
 #endif

@@ -28,6 +28,8 @@ static const unsigned int KEY_CACHE_SIZE = 100;
 
 using namespace std;
 
+namespace Paintown{
+
 #define DEFAULT_LIVES 4
 
 Player::Player( const char * filename, int config ) throw( LoadException ): 
@@ -960,4 +962,6 @@ void PlayerFuture::compute(){
     player->setLives(lives);
     Global::info("Loaded " + Filesystem::cleanse(path).path());
     set(player);
+}
+
 }

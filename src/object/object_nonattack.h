@@ -7,6 +7,8 @@
 #include "object.h"
 #include "globals.h"
 
+namespace Paintown{
+
 class ObjectAttack;
 
 class ObjectNonAttack : public Object {
@@ -30,5 +32,7 @@ public:
 protected:
 	std::string no_name;
 };
+
+}
 
 #endif

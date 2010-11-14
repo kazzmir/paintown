@@ -1,5 +1,7 @@
-#include "object/stimulation.h"
-#include "object/object.h"
+#include "stimulation.h"
+#include "object.h"
+
+namespace Paintown{
 
 Stimulation::Stimulation(){
 }
@@ -21,4 +23,6 @@ void Stimulation::createMessage( Network::Message & message ) const {
 }
 
 Stimulation::~Stimulation(){
+}
+
 }

@@ -15,6 +15,8 @@
 
 using namespace std;
 
+namespace Paintown{
+
 NetworkCharacter::NetworkCharacter( int alliance ):
 Character( alliance ),
 name_id(-1),
@@ -154,4 +156,6 @@ void NetworkCharacter::deathReset(){
     setInvincibility( 400 );
     setDeath( 0 );
     animation_current = getMovement( "idle" );
+}
+
 }

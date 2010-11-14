@@ -20,7 +20,7 @@
 using namespace std;
 
 ObjectFactory * ObjectFactory::factory = NULL;
-Object * ObjectFactory::createObject( const BlockObject * block ){
+Paintown::Object * ObjectFactory::createObject( const BlockObject * block ){
 	return getFactory()->makeObject( block );
 }
         
@@ -50,14 +50,14 @@ ObjectFactory::ObjectFactory():
 nextObjectId(0){
 }
 
-static Stimulation * makeStimulation( const string & str, int value ){
-	if ( str == "health" ){
-		return new HealthStimulation( value );
-	}
-	return new Stimulation();
+static Paintown::Stimulation * makeStimulation( const string & str, int value ){
+    if ( str == "health" ){
+        return new Paintown::HealthStimulation( value );
+    }
+    return new Paintown::Stimulation();
 }
 
-Object * ObjectFactory::makeItem( Item * item, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeItem( Paintown::Item * item, const BlockObject * block ){
 	
 	int x, z;
 	block->getCoords( x, z );
@@ -68,7 +68,7 @@ Object * ObjectFactory::makeItem( Item * item, const BlockObject * block ){
 
 }
 
-Object * ObjectFactory::makeActor( Actor * ret, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeActor( Paintown::Actor * ret, const BlockObject * block ){
 	int x, z;
 	block->getCoords( x, z );
 	ret->setX( x );
@@ -78,7 +78,7 @@ Object * ObjectFactory::makeActor( Actor * ret, const BlockObject * block ){
 	return ret;
 }
 
-Object * ObjectFactory::makeCat( Cat * ret, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeCat( Paintown::Cat * ret, const BlockObject * block ){
 	int x, z;
 	block->getCoords( x, z );
 	ret->setX( x );
@@ -87,7 +87,7 @@ Object * ObjectFactory::makeCat( Cat * ret, const BlockObject * block ){
 	return ret;
 }
 
-Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeNetworkCharacter( Paintown::NetworkCharacter * guy, const BlockObject * block ){
 
 	guy->setMap( block->getMap() );
         guy->setObjectId(block->getId());
@@ -95,13 +95,13 @@ Object * ObjectFactory::makeNetworkCharacter( NetworkCharacter * guy, const Bloc
 	return guy;
 }
 
-Object * ObjectFactory::makeNetworkPlayer( NetworkPlayer * guy, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeNetworkPlayer( Paintown::NetworkPlayer * guy, const BlockObject * block ){
 	guy->setMap( block->getMap() );
         guy->setObjectId(block->getId());
 	return guy;
 }
 
-Object * ObjectFactory::makeEnemy( Enemy * ret, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeEnemy( Paintown::Enemy * ret, const BlockObject * block ){
 
 	int x, z;
 	block->getCoords( x, z );
@@ -133,7 +133,7 @@ void ObjectFactory::maxObjectId(int id){
     }
 }
 
-Object * ObjectFactory::makeObject( const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeObject( const BlockObject * block ){
     maxObjectId(block->getId());
 
     try{
@@ -141,63 +141,63 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
             case ItemType : {
                 string cachePath = "item:" + block->getPath().path();
                 if (cached[cachePath] == NULL){
-                    cached[cachePath] = new Item(block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
+                    cached[cachePath] = new Paintown::Item(block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue() ) ); 
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Filesystem::cleanse(block->getPath()).path());
                 }
 
-                return makeItem( (Item *) cached[cachePath]->copy(), block );
+                return makeItem( (Paintown::Item *) cached[cachePath]->copy(), block );
             }
             case NetworkCharacterType : {
                 string cachedPath = "network-character:" + block->getPath().path();
                 if ( cached[cachedPath] == NULL ){
-                    cached[cachedPath] = new NetworkCharacter( block->getPath(), 0 );
+                    cached[cachedPath] = new Paintown::NetworkCharacter( block->getPath(), 0 );
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Filesystem::cleanse(block->getPath()).path());
                 }
-                return makeNetworkCharacter( (NetworkCharacter *) cached[cachedPath]->copy(), block );
+                return makeNetworkCharacter( (Paintown::NetworkCharacter *) cached[cachedPath]->copy(), block );
             }
             case NetworkPlayerType : {
                 string cachedPath = "network-player:" + block->getPath().path();
                 if (cached[cachedPath] == NULL){
-                    cached[cachedPath] = new NetworkPlayer( block->getPath(), 0 );
+                    cached[cachedPath] = new Paintown::NetworkPlayer( block->getPath(), 0 );
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Filesystem::cleanse(block->getPath()).path());
                 }
-                return makeNetworkPlayer( (NetworkPlayer *) cached[cachedPath]->copy(), block );
+                return makeNetworkPlayer( (Paintown::NetworkPlayer *) cached[cachedPath]->copy(), block );
             }
             case ActorType : {
                 string cachedPath = "actor:" + block->getPath().path();
                 if ( cached[cachedPath] == NULL ){
-                    cached[cachedPath] = new Actor( block->getPath() );
+                    cached[cachedPath] = new Paintown::Actor( block->getPath() );
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Filesystem::cleanse(block->getPath()).path());
                 }
 
-                return makeActor( (Actor *) cached[cachedPath]->copy(), block );
+                return makeActor( (Paintown::Actor *) cached[cachedPath]->copy(), block );
             }
             case EnemyType : {
                 string cachedPath = "enemy:" + block->getPath().path();
                 if ( cached[cachedPath] == NULL ){
-                    cached[cachedPath] = new Enemy(block->getPath());
+                    cached[cachedPath] = new Paintown::Enemy(block->getPath());
                     Global::debug(1) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Filesystem::cleanse(block->getPath()).path());
                 }
                 /* Hack! Set the map here so the original cached object stores
                  * remaps, thus saving time later
                  */
-                ((Enemy*) cached[cachedPath])->setMap(block->getMap());
-                return makeEnemy( (Enemy *) cached[cachedPath]->copy(), block );
+                ((Paintown::Enemy*) cached[cachedPath])->setMap(block->getMap());
+                return makeEnemy( (Paintown::Enemy *) cached[cachedPath]->copy(), block );
             }
             case CatType : {
                 string cachedPath = "cat:" + block->getPath().path();
                 if ( cached[cachedPath] == NULL ){
-                    cached[cachedPath] = new Cat( block->getPath() );
+                    cached[cachedPath] = new Paintown::Cat( block->getPath() );
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Filesystem::cleanse(block->getPath()).path());
                 }
 
-                return makeCat( (Cat *) cached[cachedPath]->copy(), block );
+                return makeCat( (Paintown::Cat *) cached[cachedPath]->copy(), block );
             }
             default : {
                 Global::debug( 0 ) <<__FILE__<<": No type given for: "<<block->getPath().path()<<endl;
@@ -213,7 +213,7 @@ Object * ObjectFactory::makeObject( const BlockObject * block ){
 
 ObjectFactory::~ObjectFactory(){
 	// cout<<"Object Factory erasing: "<<cached.size()<<" elements"<<endl;
-	for ( map< string, Object * >::iterator it = cached.begin(); it != cached.end(); it++ ){
+	for ( map< string, Paintown::Object * >::iterator it = cached.begin(); it != cached.end(); it++ ){
 		// cout<<"Object factory deleting object: "<< (*it).second << endl;
 
 		delete (*it).second;
