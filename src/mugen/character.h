@@ -531,9 +531,12 @@ class Command;
 
 class Object: public Paintown::ObjectAttack {
 public:
+    Object(int alliance);
+    Object(const int x, const int y, int alliance);
+    Object(const Object & copy);
 };
 
-class Character: public Paintown::ObjectAttack {
+class Character: public Object {
 public:
 	// Location at dataPath() + "mugen/chars/"
 	Character(const Filesystem::AbsolutePath & s );
@@ -628,18 +631,18 @@ public:
         virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
 
     /*! This all the inherited members */
-    virtual void act(std::vector<Object*, std::allocator<Object*> >*, World*, std::vector<Object*, std::allocator<Object*> >*);                       
+    virtual void act(std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >*, World*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >*);                       
     virtual void draw(Bitmap*, int cameraX, int cameraY);
-    virtual void grabbed(Object*);
+    virtual void grabbed(Paintown::Object*);
     virtual void unGrab();
     virtual bool isGrabbed();
-    virtual Object* copy();
+    virtual Paintown::Object* copy();
     virtual const std::string& getAttackName();
-    virtual bool collision(ObjectAttack*);
+    virtual bool collision(Paintown::ObjectAttack*);
     virtual int getDamage() const;
-    virtual bool isCollidable(Object*);
+    virtual bool isCollidable(Paintown::Object*);
     virtual bool isGettable();
-    virtual bool isGrabbable(Object*);
+    virtual bool isGrabbable(Paintown::Object*);
     virtual bool isAttacking();
     virtual int getWidth() const;
     virtual int getBackWidth() const;
@@ -651,7 +654,7 @@ public:
     virtual Network::Message getCreateMessage();
     virtual void getAttackCoords(int&, int&);
     virtual double minZDistance() const;
-    virtual void attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&);
+    virtual void attacked(World*, Paintown::Object*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >&);
 
     virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
     /* change back to states in the players own cns file */
@@ -1536,9 +1539,8 @@ public:
 };
 
 /* copy all data from the parent somehow, maybe lazily. to speed things up */
-class Helper: public Character {
+class Helper: public Object {
 public:
-    Helper(const Character & parent);
 };
 
 }

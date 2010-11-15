@@ -318,7 +318,7 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
 }
 
 Character::Character(const Filesystem::AbsolutePath & s ):
-ObjectAttack(0),
+Object(0),
 commonSounds(NULL){
     this->location = s;
     initialize();
@@ -334,22 +334,35 @@ hit(NULL){
 }
 */
 
+Object::Object(int alliance):
+Paintown::ObjectAttack(alliance){
+}
+
+Object::Object(const int x, const int y, int alliance):
+Paintown::ObjectAttack(x, y, alliance){
+}
+
+
+Object::Object(const Object & copy):
+ObjectAttack(copy){
+}
+
 Character::Character( const Filesystem::AbsolutePath & s, int alliance ):
-ObjectAttack(alliance),
+Object(alliance),
 commonSounds(NULL){
     this->location = s;
     initialize();
 }
 
 Character::Character( const Filesystem::AbsolutePath & s, const int x, const int y, int alliance ):
-ObjectAttack(x,y,alliance),
+Object(x,y,alliance),
 commonSounds(NULL){
     this->location = s;
     initialize();
 }
 
 Character::Character( const Character & copy ):
-ObjectAttack(copy),
+Object(copy),
 commonSounds(NULL){
 }
 
@@ -1961,7 +1974,7 @@ static bool holdingBlock(const vector<string> & commands){
 }
 
 /* Inherited members */
-void Character::act(vector<Object*>* others, World* world, vector<Object*>* add){
+void Character::act(vector<Paintown::Object*>* others, World* world, vector<Paintown::Object*>* add){
     
     reversalActive = false;
 
@@ -2488,7 +2501,7 @@ void Character::doTurn(MugenStage & stage){
     reverseFacing();
 }
 
-void Character::grabbed(Object*){
+void Character::grabbed(Paintown::Object*){
 }
 
 void Character::unGrab(){
@@ -2522,7 +2535,7 @@ int Character::getDamage() const {
     return 0;
 }
 
-bool Character::isCollidable(Object*){
+bool Character::isCollidable(Paintown::Object*){
     return true;
 }
 
@@ -2530,7 +2543,7 @@ bool Character::isGettable(){
     return false;
 }
 
-bool Character::isGrabbable(Object*){
+bool Character::isGrabbable(Paintown::Object*){
     return true;
 }
 
@@ -2585,7 +2598,7 @@ double Character::minZDistance() const{
     return 0;
 }
 
-void Character::attacked(World*, Object*, std::vector<Object*, std::allocator<Object*> >&){
+void Character::attacked(World*, Paintown::Object*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >&){
 }
         
 int Character::getCurrentCombo() const {
