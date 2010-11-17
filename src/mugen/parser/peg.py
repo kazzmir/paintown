@@ -5053,7 +5053,7 @@ def help():
     print "--ruby : Generate Ruby parser"
     print "--python : Generate Python parser"
     print "--cpp,--c++ : Generate C++ parser"
-    print "--c++-interpreter : Generate a C++ parser that uses an interpreter"
+    # print "--c++-interpreter : Generate a C++ parser that uses an interpreter"
     print "--save=filename : Save all generated parser output to a file, 'filename'"
     print "--peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'."
 
@@ -5083,8 +5083,8 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_bnf())
         elif arg == '--cpp' or arg == '--c++':
             doit.append(lambda p: p.generate_cpp(parallel[0], separate[0]))
-        elif arg == '--c++-interpreter':
-            doit.append(lambda p: p.generate_cpp_interpreter())
+        #elif arg == '--c++-interpreter':
+        #    doit.append(lambda p: p.generate_cpp_interpreter())
         elif arg == '--ruby':
             doit.append(lambda p: p.generate_ruby())
         elif arg == '--python':
