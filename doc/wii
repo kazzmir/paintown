@@ -5,3 +5,24 @@ Issues with porting paintown to the Wii:
   * Wii input (wiimote, gamecube pad, classic controller, nunchuck), these things weren't very well supported, Juvinious added code to read them.
 
   * Reading data files is incredibly slow. WiiOs doesn't cache files and reading from FAT partition is slow in itself which yields load times upto 10x slower than Paintown on the PC.
+
+How to install on homebrew:
+  1. Get the wii build environment:
+    svn co https://paintown.svn.sourceforge.net/svnroot/paintown/build-environments/devkitpro
+
+  2. Make symlinks to the devkitpro directory you just checked out in /opt
+    ln -s /path/to/devkitpro /opt/devkitpro
+
+  3. Set some devkitpro environment variables
+    export DEVKITPRO=/opt/devkitpro
+    export DEVKITPPC=/opt/devkitpro/devkitPPC/
+
+  4. Set the build type environment variable to 'wii' and build paintown
+    export wii=1
+    cd /path/to/paintown
+    make
+
+  5. The build system will tell you to run 'elf2dol' on the resulting 'paintown' executable.
+    /opt/devkitpro/devkitPPC/bin/elf2dol paintown
+
+  6. Copy paintown.dol and the data/ directory to a flash card that you can insert into the wii. Install to homebrew and play.
