@@ -10,6 +10,7 @@ class MugenStage;
 
 namespace Mugen{
 
+class Object;
 class Character;
 class Command;
 
@@ -21,7 +22,7 @@ public:
     virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed) = 0;
 
     /* hit someone */
-    virtual void hit(Character * enemy);
+    virtual void hit(Object * enemy);
 
     virtual ~Behavior();
 };
@@ -68,7 +69,7 @@ public:
 
     virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     
-    virtual void hit(Character * enemy);
+    virtual void hit(Object * enemy);
 
     virtual ~LearningAIBehavior();
 

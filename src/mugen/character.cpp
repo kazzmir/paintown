@@ -346,6 +346,9 @@ Paintown::ObjectAttack(x, y, alliance){
 Object::Object(const Object & copy):
 ObjectAttack(copy){
 }
+    
+Object::~Object(){
+}
 
 Character::Character( const Filesystem::AbsolutePath & s, int alliance ):
 Object(alliance),
@@ -626,7 +629,7 @@ static bool isStateDefSection(string name){
            PaintownUtil::matchRegex(name, "statedef ");
 }
 
-bool Character::canBeHit(Character * enemy){
+bool Character::canBeHit(Object * enemy){
     /* FIXME: handle the hit flags here */
     return (moveType != Move::Hit && lastTicket < enemy->getTicket()) ||
            (moveType == Move::Hit && lastTicket < enemy->getTicket() &&
@@ -2162,7 +2165,7 @@ void Character::addCombo(int combo){
     }
 }
         
-void Character::didHit(Character * enemy, MugenStage & stage){
+void Character::didHit(Object * enemy, MugenStage & stage){
     hitState.shakeTime = getHit().pause.player1;
     addPower(getHit().getPower.hit);
 
@@ -2203,7 +2206,7 @@ void Character::takeDamage(World & world, ObjectAttack * obj, int amount){
     takeDamage(world, obj, amount, true, true);
 }
 
-void Character::wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hisHit){
+void Character::wasHit(MugenStage & stage, Object * enemy, const HitDefinition & hisHit){
     hitState.update(stage, *this, getY() > 0, hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
@@ -2635,7 +2638,7 @@ bool Character::isGuarding() const {
     return guarding;
 }
         
-void Character::guarded(Character * enemy, const HitDefinition & hit){
+void Character::guarded(Object * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
     hitState.guarded = true;
     lastTicket = enemy->getTicket();

@@ -534,6 +534,34 @@ public:
     Object(int alliance);
     Object(const int x, const int y, int alliance);
     Object(const Object & copy);
+
+    virtual ~Object();
+        
+    /* paused from an attack */
+    virtual bool isPaused() = 0;
+    virtual Physics::Type getCurrentPhysics() const = 0;
+    virtual double getGravity() const = 0;
+    virtual void setYVelocity(double y) = 0;
+    virtual double getYVelocity() const = 0;
+    virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs) = 0;
+    virtual double getXVelocity() const = 0;
+    virtual void setXVelocity(double x) = 0;
+    virtual bool canTurn() const = 0;
+    virtual void doTurn(MugenStage & stage) = 0;
+    virtual double getStandingFriction() const = 0;
+    virtual const std::string & getMoveType() const = 0;
+    virtual HitDefinition & getHit() = 0;
+    virtual const HitDefinition & getHit() const = 0;
+    virtual int getCurrentJuggle() const = 0;
+    virtual const std::vector<MugenArea> getAttackBoxes() const = 0;
+    virtual const std::vector<MugenArea> getDefenseBoxes() const = 0;
+    virtual int getDefaultSpark() const = 0;
+    virtual int getDefaultGuardSpark() const = 0;
+    virtual int getAttackDistance() const = 0;
+    virtual void guarded(Object * enemy, const HitDefinition & hit) = 0;
+    virtual void addPower(double d) = 0;
+    virtual void wasHit(MugenStage & stage, Object * enemy, const HitDefinition & hit) = 0;
+    virtual void didHit(Object * enemy, MugenStage & stage) = 0;
 };
 
 class Character: public Object {
@@ -663,7 +691,7 @@ public:
     virtual void setAnimation(int animation);
     
     /* true if enemy can hit this */
-    virtual bool canBeHit(Character * enemy);
+    virtual bool canBeHit(Object * enemy);
     
     virtual inline int getAnimation() const {
         return this->currentAnimation;
@@ -930,13 +958,13 @@ public:
         }
 
         /* `this' hit `enemy' */
-        void didHit(Character * enemy, MugenStage & stage);
+        void didHit(Object * enemy, MugenStage & stage);
 
         /* `enemy' hit `this' with hitdef `hit' */
-        void wasHit(MugenStage & stage, Character * enemy, const HitDefinition & hit);
+        void wasHit(MugenStage & stage, Object * enemy, const HitDefinition & hit);
 
         /* `this' character guarded `enemy' */
-        void guarded(Character * enemy, const HitDefinition & hit);
+        void guarded(Object * enemy, const HitDefinition & hit);
 
         /* true if the player is holding back */
         bool isBlocking(const HitDefinition & hit);

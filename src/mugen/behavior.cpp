@@ -20,7 +20,7 @@ Behavior::Behavior(){
 Behavior::~Behavior(){
 }
     
-void Behavior::hit(Character * enemy){
+void Behavior::hit(Object * enemy){
 }
 
 DummyBehavior::DummyBehavior(){
@@ -214,7 +214,7 @@ vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Cha
 }
 
 /* hit succeeded, reinforce learning behavior for that move */
-void LearningAIBehavior::hit(Character * enemy){
+void LearningAIBehavior::hit(Object * enemy){
     Move & move = moves[lastCommand];
     move.points += 1;
     if (move.points > 5){

@@ -17,6 +17,7 @@ namespace Console{
 
 namespace Mugen{
     class Character;
+    class Object;
     class Background;
     class Spark;
     class Effect;
@@ -251,8 +252,8 @@ protected:
 
     void updatePlayer(Paintown::Object *o);
     void physics(Paintown::Object * o);
-    bool doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2);
-    bool doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2);
+    bool doBlockingDetection(Mugen::Object * obj1, Mugen::Object * obj2);
+    bool doCollisionDetection(Mugen::Object * obj1, Mugen::Object * obj2);
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
 
 protected:

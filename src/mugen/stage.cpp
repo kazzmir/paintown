@@ -716,11 +716,11 @@ static bool anyBlocking(const vector<MugenArea> & boxes1, int x1, int y1, int at
     return false;
 }
 
-bool MugenStage::doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2){
+bool MugenStage::doBlockingDetection(Mugen::Object * obj1, Mugen::Object * obj2){
     return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
-bool MugenStage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
+bool MugenStage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * obj2){
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
@@ -756,9 +756,10 @@ void MugenStage::playSound(int group, int item, bool own){
     }
 }
 
+/* for helpers and players */
 void MugenStage::physics(Paintown::Object * player){
 
-    Mugen::Character * mugen = (Mugen::Character *) player;
+    Mugen::Object * mugen = (Mugen::Object *) player;
     /* ignore physics while the player is paused */
     if (mugen->isPaused()){
         return;
@@ -783,7 +784,7 @@ void MugenStage::physics(Paintown::Object * player){
 
     if (mugen->canTurn()){
         for (vector<Paintown::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-            Mugen::Character * enemy = (Mugen::Character*) *enem;
+            Mugen::Object * enemy = (Mugen::Object*) *enem;
             if (enemy->getAlliance() != mugen->getAlliance()){
                 if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Paintown::Object::FACING_RIGHT) ||
                     (enemy->getX() < mugen->getX() && mugen->getFacing() != Paintown::Object::FACING_LEFT)){
@@ -870,11 +871,11 @@ void MugenStage::physics(Paintown::Object * player){
         Paintown::Object *enemy = *enem;
         if (player->getAlliance() != enemy->getAlliance()){
             // Do stuff for players
-            if (isaPlayer( enemy )){
+            if (isaPlayer(enemy)){
                 // He collides with another push him away
                 // if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
-                Mugen::Character * mplayer = (Mugen::Character *) player;
-                Mugen::Character * menemy = (Mugen::Character *) enemy;
+                Mugen::Object * mplayer = (Mugen::Object *) player;
+                Mugen::Object * menemy = (Mugen::Object *) enemy;
                 // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 /* TODO: make this cleaner */
                 while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
@@ -906,7 +907,7 @@ void MugenStage::physics(Paintown::Object * player){
                 }
                 // autoturn need to do turning actions
                 if (autoturn){
-                    if (isaPlayer( player )){
+                    if (isaPlayer(player)){
                         /* FIXME! */
                         /*
                            if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
