@@ -2,6 +2,7 @@
 #include "ast/all.h"
 #include "state-controller.h"
 #include "character.h"
+#include "helper.h"
 #include "stage.h"
 #include "sound.h"
 #include <sstream>
