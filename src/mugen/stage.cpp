@@ -101,7 +101,7 @@ Spark::~Spark(){
 
 }
 
-static bool centerCollision( Mugen::Character *p1, Mugen::Character *p2 ){
+static bool centerCollision( Mugen::Object *p1, Mugen::Object *p2 ){
     //p1->getCurrentMovement()->getCurrentFrame();
     /* FIXME! */
     /*
@@ -878,7 +878,7 @@ void MugenStage::physics(Paintown::Object * player){
                 Mugen::Object * menemy = (Mugen::Object *) enemy;
                 // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 /* TODO: make this cleaner */
-                while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(((Mugen::Character *)player), ((Mugen::Character *)enemy)) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
+                while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(mplayer, menemy) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
                     if (enemy->getX() < player->getX()){
                         if (enemy->getX() <= maximumLeft()){
                             /* FIXME */
@@ -1029,11 +1029,16 @@ void MugenStage::logic( ){
 
             // Players go in here
             std::vector<Paintown::Object *> add;
-            for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+            addedObjects.clear();
+            for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
+                bool next = true;
                 /* use local variables more often, iterators can be easily confused */
                 Paintown::Object * player = *it;
                 player->act( &objects, this, &add);
                 physics(player);
+
+                /* Debug crap put it on console */
+                *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
 
                 if (isaPlayer(player)){
                     // Lets check their boundaries and camera whateva
@@ -1045,21 +1050,18 @@ void MugenStage::logic( ){
 
                     // Non players, objects, projectiles misc
                 } else if (!isaPlayer(player) && player->getHealth() <= 0){
-                    /* FIXME: you can't do objects.erase(it) here if you are going
-                     * to have ++it in the for loop. move deletion of objects
-                     * to after this entire loop.
-                     */
                     delete player;
                     it = objects.erase(it);
-                    if (it == objects.end()){
-                        break;
-                    }
+                    next = false;
                 }
 
-                // Debug crap put it on console
-                *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
+                if (next){
+                    it++;
+                }
             }
+
             objects.insert(objects.end(), add.begin(), add.end());
+            objects.insert(objects.end(), addedObjects.begin(), addedObjects.end());
         }
     }
     
@@ -1337,7 +1339,10 @@ void MugenStage::draw( Bitmap * work ){
     render(work);
 }
 
-void MugenStage::addObject( Paintown::Object * o ){ /* Does nothing */ }
+void MugenStage::addObject(Paintown::Object * o){
+    addedObjects.push_back(o);
+}
+
 bool MugenStage::finished() const { return false; }
 void MugenStage::reloadLevel() throw( LoadException ){ 
     cleanup();

@@ -176,7 +176,7 @@ public:
     // Inherited world actions
     virtual void act();
     virtual void draw( Bitmap * work );
-    virtual void addObject( Paintown::Object * o );
+    virtual void addObject(Paintown::Object * o);
     virtual bool finished() const;
     virtual void reloadLevel() throw( LoadException );
     virtual Script::Engine * getEngine() const;
@@ -513,6 +513,14 @@ private:
 
     // player list so we can distinguish
     std::vector<Paintown::Object *> players;
+
+    /* FIXME: sort of a hack which lets other classes with a reference to the
+     * stage call stage.addObject(blah). really a vector should be passed
+     * to the calling class that the class can add to and the stage will
+     * insert all the objects from that vector into the `objects' vector
+     * at some later point.
+     */
+    std::vector<Paintown::Object*> addedObjects;
     // Hold information for players
     std::map<void *, PlayerData> playerInfo;
 

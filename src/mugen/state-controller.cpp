@@ -4651,7 +4651,9 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
-        /* TODO */
+        /* FIXME */
+        Mugen::Helper * helper = new Mugen::Helper(guy);
+        // stage.addObject(helper);
     }
 };
 
