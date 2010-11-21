@@ -18,6 +18,7 @@ How to install on homebrew:
     export DEVKITPPC=/opt/devkitpro/devkitPPC/
 
   4. Set the build type environment variable to 'wii' and build paintown
+    export SDL=1
     export wii=1
     cd /path/to/paintown
     make
@@ -25,4 +26,4 @@ How to install on homebrew:
   5. The build system will tell you to run 'elf2dol' on the resulting 'paintown' executable.
     /opt/devkitpro/devkitPPC/bin/elf2dol paintown
 
-  6. Copy paintown.dol and the data/ directory to a flash card that you can insert into the wii. Install to homebrew and play.
+  6. Copy paintown.dol, data/wii/meta.xml, data/wii/icon.png and the data/ directory into a directory inside the apps directory of the homebrew channel SD card that you can insert into the wii. Load up the homebrew channel, navigate to paintown and play.
