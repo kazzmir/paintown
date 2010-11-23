@@ -35,6 +35,7 @@ protected:
 public:
     StateController(const std::string & name, int state);
     StateController(const std::string & name, int state, Ast::Section * section);
+    StateController(const StateController & you);
 
     /* from scrtls.html or more recently
      * http://elecbyte.com/wiki/index.php/Category:State_Controllers

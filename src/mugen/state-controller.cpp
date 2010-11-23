@@ -64,6 +64,23 @@ spritePriority(0){
     Walker walker(*this);
     section->walk(walker);
 }
+    
+StateController::StateController(const StateController & you):
+type(you.type),
+name(you.name),
+debug(you.debug),
+persistent(you.persistent),
+currentPersistent(you.currentPersistent),
+state(you.state),
+spritePriority(you.spritePriority){
+    for (map<int, vector<Compiler::Value*> >::const_iterator it = you.triggers.begin(); it != you.triggers.end(); it++){
+        int number = it->first;
+        const vector<Compiler::Value*> & all = it->second;
+        for (vector<Compiler::Value*>::const_iterator all_it = all.begin(); all_it != all.end(); all_it++){
+            addTrigger(number, Compiler::copy(*all_it));
+        }
+    }
+}
 
 bool StateController::handled(const Ast::AttributeSimple & simple){
     string name = PaintownUtil::lowerCaseAll(simple.idString());
