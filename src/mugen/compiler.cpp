@@ -265,6 +265,10 @@ public:
 
             RuntimeValue::StateTypes value;
 
+            Value * copy() const {
+                return new Result(value);
+            }
+
             RuntimeValue evaluate(const Environment & environment) const {
                 return RuntimeValue(value);
             }
@@ -324,6 +328,10 @@ public:
             Result(const std::vector<AttackType::Attribute> & attacks):
             attacks(attacks){
             }
+
+            Value * copy() const {
+                return new Result(attacks);
+            }
             
             std::vector<AttackType::Attribute> attacks;
 
@@ -362,6 +370,10 @@ public:
             RuntimeValue evaluate(const Environment & environment) const {
                 return RuntimeValue(value);
             }
+
+            Value * copy() const {
+                return new JustString(value);
+            }
         };
 	
 	if (identifier == "e"){
@@ -387,6 +399,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCommands());
                 }
+
+                Value * copy() const {
+                    return new Command();
+                }
             };
 
             return new Command();
@@ -398,6 +414,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getAnimation());
                 }
+
+                Value * copy() const {
+                    return new Animation();
+                }
             };
 
             return new Animation();
@@ -408,6 +428,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHealth() > 0);
+                }
+
+                Value * copy() const {
+                    return new Alive();
                 }
             };
 
@@ -440,6 +464,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().isHelper());
                 }
+
+                Value * copy() const {
+                    return new IsHelper();
+                }
             };
 
             return new IsHelper();
@@ -467,6 +495,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getName());
                 }
+
+                Value * copy() const {
+                    return new P1Name();
+                }
             };
 
             return new P1Name();
@@ -478,6 +510,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->getName());
+                }
+                
+                Value * copy() const {
+                    return new P2Name();
                 }
             };
 
@@ -491,6 +527,10 @@ public:
                     /* FIXME */
                     return RuntimeValue(std::string());
                 }
+
+                Value * copy() const {
+                    return new P3Name();
+                }
             };
 
             return new P3Name();
@@ -503,6 +543,10 @@ public:
                     /* FIXME */
                     return RuntimeValue(std::string());
                 }
+
+                Value * copy() const {
+                    return new P4Name();
+                }
             };
 
             return new P4Name();
@@ -513,6 +557,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getAuthor());
+                }
+
+                Value * copy() const {
+                    return new AuthorName();
                 }
             };
 
@@ -530,6 +578,10 @@ public:
                     }
                     return RuntimeValue(0);
                 }
+
+                Value * copy() const {
+                    return new Facing();
+                }
             };
 
             return new Facing();
@@ -543,6 +595,10 @@ public:
                     int x = environment.getCharacter().getBackX();
                     return RuntimeValue(PaintownUtil::min(x - environment.getStage().maximumLeft(),
                                                           environment.getStage().maximumRight() - x));
+                }
+
+                Value * copy() const {
+                    return new BackEdgeBodyDist();
                 }
             };
 
@@ -568,6 +624,10 @@ public:
                     return RuntimeValue(PaintownUtil::min(x - environment.getStage().maximumLeft(),
                                                           environment.getStage().maximumRight() - x));
                 }
+
+                Value * copy() const {
+                    return new FrontEdgeBodyDist();
+                }
             };
 
             return new FrontEdgeBodyDist();
@@ -579,6 +639,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* TODO: check if the player is in an attack state */
                     return convertStateType(environment.getCharacter().getHit().attribute.state);
+                }
+
+                Value * copy() const {
+                    return new HitDefAttrState();
                 }
             };
 
@@ -597,6 +661,10 @@ public:
                     all.push_back(convertAttackType(PaintownUtil::upperCaseAll(hit.attribute.attackType) + PaintownUtil::upperCaseAll(hit.attribute.physics)));
                     return RuntimeValue(all);
                 }
+
+                Value * copy() const {
+                    return new HitDefAttrAttribute();
+                }
             };
 
             return new HitDefAttrAttribute();
@@ -608,6 +676,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHealth());
                 }
+
+                Value * copy() const {
+                    return new Life();
+                }
             };
 
             return new Life();
@@ -618,6 +690,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getMaxHealth());
+                }
+
+                Value * copy() const {
+                    return new LifeMax();
                 }
             };
 
@@ -632,6 +708,10 @@ public:
                     int wins = environment.getCharacter().getWins().size()+1;
                     return RuntimeValue(wins);
                 }
+
+                Value * copy() const {
+                    return new Wins();
+                }
             };
 
             return new Wins();
@@ -643,6 +723,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getStage().isMatchOver());
                 }
+
+                Value * copy() const {
+                    return new Over();
+                }
             };
 
             return new Over();
@@ -653,6 +737,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getMoveType());
+                }
+
+                Value * copy() const {
+                    return new MoveType();
                 }
             };
 
@@ -666,6 +754,10 @@ public:
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->getMoveType());
                 }
+
+                Value * copy() const {
+                    return new MoveType2();
+                }
             };
 
             return new MoveType2();
@@ -678,6 +770,10 @@ public:
                     /* Returns a random number between 0 and 999, inclusive. */
                     return RuntimeValue(PaintownUtil::rnd(1000));
                 }
+
+                Value * copy() const {
+                    return new Random();
+                }
             };
 
             return new Random();
@@ -688,6 +784,10 @@ public:
                 public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getStage().getGameInfo()->getRound().getRound());
+                }
+
+                Value * copy() const {
+                    return new RoundNumber();
                 }
 
             };
@@ -702,6 +802,10 @@ public:
                     /* FIXME */
                     return RuntimeValue(0);
                 }
+
+                Value * copy() const {
+                    return new RoundsExisted();
+                }
             };
 
             return new RoundsExisted();
@@ -712,6 +816,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue("I");
+                }
+
+                Value * copy() const {
+                    return new JustI();
                 }
             };
 
@@ -724,6 +832,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue("H");
                 }
+
+                Value * copy() const {
+                    return new JustH();
+                }
             };
             return new JustH();
         }
@@ -734,6 +846,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->getCurrentState());
+                }
+
+                Value * copy() const {
+                    return new P2StateNo();
                 }
             };
 
@@ -746,6 +862,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHitCount());
                 }
+
+                Value * copy() const {
+                    return new HitCount();
+                }
             };
 
             return new HitCount();
@@ -757,6 +877,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(environment.getCharacter().getHitCount());
+                }
+
+                Value * copy() const {
+                    return new UniqueHitCount();
                 }
             };
 
@@ -771,6 +895,10 @@ public:
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(convertStateType(enemy->getStateType()));
                 }
+
+                Value * copy() const {
+                    return new P2StateType();
+                }
             };
 
             return new P2StateType();
@@ -783,6 +911,10 @@ public:
                     /* FIXME */
                     return RuntimeValue(0);
                 }
+
+                Value * copy() const {
+                    return new WinTime();
+                }
             };
 
             return new WinTime();
@@ -794,6 +926,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(false);
+                }
+
+                Value * copy() const {
+                    return new Winko();
                 }
             };
 
@@ -811,6 +947,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
+                }
+
+                Value * copy() const {
+                    return new Win();
                 }
             };
 
@@ -858,6 +998,10 @@ public:
                     // return RuntimeValue(2);
                     return RuntimeValue(3);
                 }
+
+                Value * copy() const {
+                    return new RoundState();
+                }
             };
 
             return new RoundState();
@@ -869,6 +1013,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
+                }
+
+                Value * copy() const {
+                    return new MoveContact();
                 }
             };
 
@@ -885,6 +1033,10 @@ public:
 		     */
                     return RuntimeValue(0);
                 }
+
+                Value * copy() const {
+                    return new MoveReversed();
+                }
             };
 
             return new MoveReversed();
@@ -896,6 +1048,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(1);
+                }
+
+                Value * copy() const {
+                    return new NumTarget();
                 }
             };
 
@@ -914,6 +1070,10 @@ public:
                     /* FIXME: deal with distance as well */
                     return RuntimeValue(out);
                 }
+
+                Value * copy() const {
+                    return new InGuardDist();
+                }
             };
 
             return new InGuardDist();
@@ -925,6 +1085,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
                 }
+
+                Value * copy() const {
+                    return new AnimTime();
+                }
             };
 
             return new AnimTime();
@@ -935,6 +1099,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue((int) environment.getCharacter().getCurrentPalette());
+                }
+
+                Value * copy() const {
+                    return new PalNo();
                 }
             };
 
@@ -948,6 +1116,10 @@ public:
                     /* FIXME */
                     return RuntimeValue(0);
                 }
+
+                Value * copy() const {
+                    return new MoveHit();
+                }
             };
 
             return new MoveHit();
@@ -960,6 +1132,10 @@ public:
                     /* FIXME */
                     return RuntimeValue(0);
                 }
+
+                Value * copy() const {
+                    return new ProjHit();
+                }
             };
 
             return new ProjHit();
@@ -970,6 +1146,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return environment.getStage().countMyEffects(&environment.getCharacter());
+                }
+
+                Value * copy() const {
+                    return new NumExplod();
                 }
             };
 
@@ -982,6 +1162,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getStage().getGameTime());
                 }
+
+                Value * copy() const {
+                    return new GameTime();
+                }
             };
 
             return new GameTime();
@@ -992,6 +1176,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);
+                }
+
+                Value * copy() const {
+                    return new HitShakeOver();
                 }
             };
 
@@ -1004,6 +1192,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHitState().hitTime <= -1);
                 }
+
+                Value * copy() const {
+                    return new HitOver();
+                }
             };
 
             return new HitOver();
@@ -1014,6 +1206,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().canRecover());
+                }
+
+                Value * copy() const {
+                    return new CanRecover();
                 }
             };
 
@@ -1026,6 +1222,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const HitState & state = environment.getCharacter().getHitState();
                     return RuntimeValue(state.fall.fall);
+                }
+
+                Value * copy() const {
+                    return new HitFall();
                 }
             };
 
@@ -1040,6 +1240,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getStateTime());
+                }
+
+                Value * copy() const {
+                    return new Time();
                 }
             };
 
@@ -1059,6 +1263,10 @@ public:
                     std::string state = environment.getCharacter().getStateType();
                     return convertStateType(state);
                 }
+
+                Value * copy() const {
+                    return new StateType();
+                }
             };
 
             return new StateType();
@@ -1071,6 +1279,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().hasControl());
                 }
+
+                Value * copy() const {
+                    return new Ctrl();
+                }
             };
 
             return new Ctrl();
@@ -1081,6 +1293,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().pauseTime());
+                }
+
+                Value * copy() const {
+                    return new HitPauseTime();
                 }
             };
 
@@ -1093,6 +1309,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->isGuarding());
+                }
+
+                Value * copy() const {
+                    return new MoveGuarded();
                 }
             };
 
@@ -1111,6 +1331,10 @@ public:
                 virtual std::string toString() const {
                     return "stateno";
                 }
+
+                Value * copy() const {
+                    return new StateNo();
+                }
             };
 
             return new StateNo();
@@ -1121,6 +1345,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHealth());
+                }
+
+                Value * copy() const {
+                    return new Life();
                 }
             };
 
@@ -1134,6 +1362,10 @@ public:
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->getHealth());
                 }
+
+                Value * copy() const {
+                    return new P2Life();
+                }
             };
 
             return new P2Life();
@@ -1145,6 +1377,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getMaxHealth());
                 }
+
+                Value * copy() const {
+                    return new LifeMax();
+                }
             };
 
             return new LifeMax();
@@ -1155,6 +1391,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getPower());
+                }
+
+                Value * copy() const {
+                    return new Power();
                 }
             };
 
@@ -1172,6 +1412,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getExtraJumps());
                 }
+
+                Value * copy() const {
+                    return new ExtraJumps();
+                }
             };
 
             return new ExtraJumps();
@@ -1183,6 +1427,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getAirJumpHeight());
                 }
+
+                Value * copy() const {
+                    return new AirJump();
+                }
             };
 
             return new AirJump();
@@ -1193,6 +1441,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getPreviousState());
+                }
+
+                Value * copy() const {
+                    return new PrevStateNo();
                 }
             };
 
@@ -1236,6 +1488,10 @@ public:
                     delete argument;
                 }
 
+                Value * copy() const {
+                    return new Parent(Compiler::copy(argument));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
@@ -1256,6 +1512,10 @@ public:
 
                 virtual ~Root(){
                     delete argument;
+                }
+
+                Value * copy() const {
+                    return new Root(Compiler::copy(argument));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -1280,6 +1540,10 @@ public:
                     delete argument;
                 }
 
+                Value * copy() const {
+                    return new Helper(Compiler::copy(argument));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
@@ -1300,6 +1564,10 @@ public:
 
                 virtual ~Target(){
                     delete argument;
+                }
+
+                Value * copy() const {
+                    return new Target(Compiler::copy(argument));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -1324,6 +1592,10 @@ public:
                     delete argument;
                 }
 
+                Value * copy() const {
+                    return new Partner(Compiler::copy(argument));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
@@ -1344,6 +1616,10 @@ public:
 
                 virtual ~Enemy(){
                     delete argument;
+                }
+
+                Value * copy() const {
+                    return new Enemy(Compiler::copy(argument));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -1368,6 +1644,10 @@ public:
                     delete argument;
                 }
 
+                Value * copy() const {
+                    return new EnemyNear(Compiler::copy(argument));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     FullEnvironment redirected(environment.getStage(), *enemy, environment.getCommands());
@@ -1388,6 +1668,10 @@ public:
 
                 virtual ~PlayerID(){
                     delete argument;
+                }
+
+                Value * copy() const {
+                    return new PlayerID(Compiler::copy(argument));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -1430,6 +1714,10 @@ public:
                 delete high;
             }
 
+            Value * copy() const {
+                return new Range(Compiler::copy(low), Compiler::copy(high), type);
+            }
+
             RuntimeValue evaluate(const Environment & environment) const {
                 int low = (int) this->low->evaluate(environment).toNumber();
                 int high = (int) this->high->evaluate(environment).toNumber();
@@ -1470,6 +1758,14 @@ public:
                 value(what){
                 }
 
+            JustString(const JustString & you):
+            value(you.value){
+            }
+
+            Value * copy() const {
+                return new JustString(*this);
+            }
+
             RuntimeValue value;
 
             RuntimeValue evaluate(const Environment & environment) const {
@@ -1493,10 +1789,18 @@ public:
                 value(what){
                 }
 
+            JustNumber(const JustNumber & you):
+            value(you.value){
+            }
+
             virtual std::string toString() const {
                 std::ostringstream out;
                 out << value.toNumber();
                 return out.str();
+            }
+
+            Value * copy() const {
+                return new JustNumber(*this);
             }
 
             RuntimeValue value;
@@ -1533,6 +1837,10 @@ public:
                 delete argument;
             }
 
+            Value * copy() const {
+                return new MetaCircularArg1(cFunction, Compiler::copy(argument));
+            }
+
             RuntimeValue evaluate(const Environment & environment) const {
                 double result = argument->evaluate(environment).toNumber();
                 return RuntimeValue(cFunction(result));
@@ -1555,6 +1863,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getMaxHealth());
                             }
+
+                            Value * copy() const {
+                                return new DataLife();
+                            }
                         };
 
                         return new DataLife();
@@ -1565,6 +1877,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getPower());
+                            }
+
+                            Value * copy() const {
+                                return new DataPower();
                             }
                         };
 
@@ -1604,14 +1920,18 @@ public:
                     */ 
 		    
                     if (identifier == "movement.yaccel"){
-                        class MovemntYAccel: public Value {
+                        class MovementYAccel: public Value {
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getGravity());
                             }
+
+                            Value * copy() const {
+                                return new MovementYAccel();
+                            }
                         };
 
-                        return new MovemntYAccel();
+                        return new MovementYAccel();
                     }
                     
                     /* FIXME others
@@ -1639,6 +1959,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getWalkBackX());
                             }
+
+                            Value * copy() const {
+                                return new VelocityBackX();
+                            }
                         };
 
                         return new VelocityBackX();
@@ -1649,6 +1973,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getWalkForwardX());
+                            }
+
+                            Value * copy() const {
+                                return new VelocityForwardX();
                             }
                         };
 
@@ -1661,6 +1989,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getRunForwardX());
                             }
+
+                            Value * copy() const {
+                                return new RunForwardX();
+                            }
                         };
 
                         return new RunForwardX();
@@ -1671,6 +2003,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getRunForwardY());
+                            }
+
+                            Value * copy() const {
+                                return new RunForwardY();
                             }
                         };
 
@@ -1683,6 +2019,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getNeutralJumpingX());
                             }
+
+                            Value * copy() const {
+                                return new JumpX();
+                            }
                         };
 
                         return new JumpX();
@@ -1693,6 +2033,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
+                            }
+
+                            Value * copy() const {
+                                return new JumpY();
                             }
                         };
 
@@ -1705,6 +2049,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getRunJumpBack());
                             }
+
+                            Value * copy() const {
+                                return new RunBackJumpX();
+                            }
                         };
 
                         return new RunBackJumpX();
@@ -1715,6 +2063,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getRunBackX());
+                            }
+
+                            Value * copy() const {
+                                return new RunBackX();
                             }
                         };
 
@@ -1727,6 +2079,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getRunBackY());
                             }
+
+                            Value * copy() const {
+                                return new RunBackY();
+                            }
                         };
 
                         return new RunBackY();
@@ -1737,6 +2093,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getJumpBack());
+                            }
+
+                            Value * copy() const {
+                                return new JumpBackX();
                             }
                         };
 
@@ -1749,6 +2109,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getJumpForward());
                             }
+
+                            Value * copy() const {
+                                return new JumpForwardX();
+                            }
                         };
 
                         return new JumpForwardX();
@@ -1759,6 +2123,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getRunJumpForward());
+                            }
+
+                            Value * copy() const {
+                                return new RunJumpForwardX();
                             }
                         };
 
@@ -1771,6 +2139,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getAirJumpNeutralX());
                             }
+
+                            Value * copy() const {
+                                return new AirJumpX();
+                            }
                         };
 
                         return new AirJumpX();
@@ -1781,6 +2153,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getAirJumpNeutralY());
+                            }
+
+                            Value * copy() const {
+                                return new AirJumpY();
                             }
                         };
 
@@ -1793,6 +2169,10 @@ public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getAirJumpBack());
                             }
+
+                            Value * copy() const {
+                                return new AirJumpBackX();
+                            }
                         };
 
                         return new AirJumpBackX();
@@ -1803,6 +2183,10 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 return RuntimeValue(environment.getCharacter().getAirJumpForward());
+                            }
+
+                            Value * copy() const {
+                                return new AirJumpForwardX();
                             }
                         };
 
@@ -1951,6 +2335,10 @@ public:
 		virtual ~Ln(){
 		    delete argument;
 		}
+
+                Value * copy() const {
+                    return new Ln(Compiler::copy(argument));
+                }
 		
                 RuntimeValue evaluate(const Environment & environment) const {
 		    const double num = argument->evaluate(environment).toNumber();
@@ -1984,6 +2372,10 @@ public:
 		    delete arg1;
 		    delete arg2;
 		}
+
+                Value * copy() const {
+                    return new Log(Compiler::copy(arg1), Compiler::copy(arg2));
+                }
 		
                 RuntimeValue evaluate(const Environment & environment) const {
 		    const double base = arg1->evaluate(environment).toNumber();
@@ -2050,6 +2442,10 @@ public:
                     delete argument;
                 }
 
+                Value * copy() const {
+                    return new NumHelper(Compiler::copy(argument));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
@@ -2070,6 +2466,10 @@ public:
 
                 virtual ~FunctionFloor(){
                     delete argument;
+                }
+
+                Value * copy() const {
+                    return new FunctionFloor(Compiler::copy(argument));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -2097,6 +2497,12 @@ public:
                     delete condition;
                     delete then;
                     delete else_;
+                }
+
+                Value * copy() const {
+                    return new FunctionIfElse(Compiler::copy(condition),
+                                              Compiler::copy(then),
+                                              Compiler::copy(else_));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -2139,6 +2545,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(-state(environment).xVelocity);
                     }
+
+                    Value * copy() const {
+                        return new HitVarXVelAdd();
+                    }
                 };
 
                 return new HitVarXVelAdd();
@@ -2147,6 +2557,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).yVelocity);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarYVelAdd();
                     }
                 };
 
@@ -2166,6 +2580,10 @@ public:
                         }
                         throw MugenException("Invalid hit type");
                     }
+
+                    Value * copy() const {
+                        return new HitVarType();
+                    }
                 };
 
                 return new HitVarType();
@@ -2174,6 +2592,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).animationType);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarAnimType();
                     }
                 };
 
@@ -2184,6 +2606,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).airType);
                     }
+
+                    Value * copy() const {
+                        return new HitVarAirType();
+                    }
                 };
 
                 return new HitVarAirType();
@@ -2192,6 +2618,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).groundType);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarGroundType();
                     }
                 };
 
@@ -2202,6 +2632,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).damage);
                     }
+
+                    Value * copy() const {
+                        return new HitVarDamage();
+                    }
                 };
 
                 return new HitVarDamage();
@@ -2210,6 +2644,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).hits);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarHitCount();
                     }
                 };
 
@@ -2222,6 +2660,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(environment.getCharacter().pauseTime());
                     }
+
+                    Value * copy() const {
+                        return new HitVarShakeTime();
+                    }
                 };
                 return new HitVarShakeTime();
             } else if (var == "hittime"){
@@ -2229,6 +2671,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).hitTime);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarHitTime();
                     }
                 };
 
@@ -2238,6 +2684,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).slideTime);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarSlideTime();
                     }
                 };
 
@@ -2250,6 +2700,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).returnControlTime);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarCtrlTime();
                     }
                 };
 
@@ -2267,6 +2721,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(false);
                     }
+
+                    Value * copy() const {
+                        return new HitVarIsBound();
+                    }
                 };
 
                 return new HitVarIsBound();
@@ -2282,6 +2740,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).xVelocity);
                     }
+
+                    Value * copy() const {
+                        return new HitVarXVel();
+                    }
                 };
 
                 return new HitVarXVel();
@@ -2291,6 +2753,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).yVelocity);
                     }
+
+                    Value * copy() const {
+                        return new HitVarYVel();
+                    }
                 };
 
                 return new HitVarYVel();
@@ -2299,6 +2765,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).yAcceleration);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarYAccel();
                     }
                 };
 
@@ -2313,6 +2783,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).guarded);
                     }
+
+                    Value * copy() const {
+                        return new HitVarGuarded();
+                    }
                 };
 
                 return new HitVarGuarded();
@@ -2321,6 +2795,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).fall.fall);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarFall();
                     }
                 };
 
@@ -2333,6 +2811,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).fall.xVelocity);
                     }
+
+                    Value * copy() const {
+                        return new HitVarFallXVel();
+                    }
                 };
 
                 return new HitVarFallXVel();
@@ -2342,6 +2824,10 @@ public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).fall.yVelocity);
                     }
+
+                    Value * copy() const {
+                        return new HitVarFallYVel();
+                    }
                 };
 
                 return new HitVarFallYVel();
@@ -2350,6 +2836,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).fall.recover);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarFallRecover();
                     }
                 };
 
@@ -2390,6 +2880,14 @@ public:
 		    }
 		}
 
+                TeamMode(const TeamMode & you):
+                check(you.check){
+                }
+
+                Value * copy() const {
+                    return new TeamMode(*this);
+                }
+
                 Mode check;
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -2421,6 +2919,10 @@ public:
 
                 int index;
 
+                Value * copy() const {
+                    return new FunctionVar(index);
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     return environment.getCharacter().getVariable(index);
                 }
@@ -2440,6 +2942,10 @@ public:
                     }
 
                 const int index;
+
+                Value * copy() const {
+                    return new FunctionFVar(index);
+                }
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     return environment.getCharacter().getFloatVariable(index);
@@ -2465,6 +2971,10 @@ public:
                     index(index){
                     }
 
+                Value * copy() const {
+                    return new FunctionSysFVar(index);
+                }
+
                 int index;
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -2486,6 +2996,10 @@ public:
                     }
 
                 int index;
+
+                Value * copy() const {
+                    return new FunctionSysVar(index);
+                }
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     return environment.getCharacter().getSystemVariable(index);
@@ -2511,6 +3025,10 @@ public:
                     delete animation;
                 }
 
+                Value * copy() const {
+                    return new SelfAnimExist(Compiler::copy(animation));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME this should actually be animexist... self checks if player has animation.
                        If the opponent had given animation it will not be checked */
@@ -2533,6 +3051,10 @@ public:
 
                 virtual ~Ceil(){
                     delete argument;
+                }
+
+                Value * copy() const {
+                    return new Ceil(Compiler::copy(argument));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -2564,6 +3086,10 @@ public:
                     delete animation;
                 }
 
+                Value * copy() const {
+                    return new AnimExist(Compiler::copy(animation));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     int animation = (int) this->animation->evaluate(environment).toNumber();
                     return RuntimeValue(environment.getCharacter().hasAnimation(animation));
@@ -2587,6 +3113,10 @@ public:
                     }
 
                 Value * index;
+
+                Value * copy() const {
+                    return new FunctionAnimElemTime(Compiler::copy(index));
+                }
 
                 virtual ~FunctionAnimElemTime(){
                     delete index;
@@ -2686,6 +3216,10 @@ public:
                     delete index;
                 }
 
+                Value * copy() const {
+                    return new AnimElemNo(Compiler::copy(index));
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
@@ -2723,6 +3257,10 @@ public:
 
             virtual ~Unary(){
                 delete expression;
+            }
+
+            Value * copy() const {
+                return new Unary(Compiler::copy(expression), type);
             }
 
             RuntimeValue evaluate(const Environment & environment) const {
@@ -2768,6 +3306,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getXVelocity());
                 }
+
+                Value * copy() const {
+                    return new VelX();
+                }
             };
 
             return new VelX();
@@ -2783,6 +3325,10 @@ public:
                 std::string toString() const {
                     return "vel y";
                 }
+
+                Value * copy() const {
+                    return new VelY();
+                }
             };
 
             return new VelY();
@@ -2794,6 +3340,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(- environment.getCharacter().getHitState().xVelocity);
                 }
+
+                Value * copy() const {
+                    return new HitVelX();
+                }
             };
  
             return new HitVelX();
@@ -2804,6 +3354,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHitState().yVelocity);
+                }
+
+                Value * copy() const {
+                    return new HitVelY();
                 }
             };
  
@@ -2824,6 +3378,10 @@ public:
                     int position = floor - y;
                     return RuntimeValue(position);
                 }
+
+                Value * copy() const {
+                    return new ScreenPosY();
+                }
             };
 
             return new ScreenPosY();
@@ -2834,6 +3392,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getX());
+                }
+
+                Value * copy() const {
+                    return new ScreenPosX();
                 }
             };
 
@@ -2850,6 +3412,10 @@ public:
                 virtual std::string toString() const {
                     return "pos y";
                 }
+
+                Value * copy() const {
+                    return new PosY();
+                }
             };
 
             return new PosY();
@@ -2860,6 +3426,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getX());
+                }
+                
+                Value * copy() const {
+                    return new PosX();
                 }
             };
 
@@ -2878,6 +3448,10 @@ public:
                     return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
 
                 }
+
+                Value * copy() const {
+                    return new P2BodyDistX();
+                }
             };
 
             return new P2BodyDistX();
@@ -2890,6 +3464,10 @@ public:
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(-enemy->getY() - (-environment.getCharacter().getY()));
                 }
+
+                Value * copy() const {
+                    return new P2BodyDistY();
+                }
             };
 
             return new P2BodyDistY();
@@ -2901,6 +3479,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
+                }
+
+                Value * copy() const {
+                    return new ParentDistX();
                 }
             };
 
@@ -2918,6 +3500,10 @@ public:
                     return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
 
                 }
+
+                Value * copy() const {
+                    return new P2DistX();
+                }
             };
 
             return new P2DistX();
@@ -2930,6 +3516,10 @@ public:
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(-enemy->getY() - (-environment.getCharacter().getY()));
 
+                }
+
+                Value * copy() const {
+                    return new P2DistY();
                 }
             };
 
@@ -2977,6 +3567,10 @@ public:
             virtual ~Infix(){
                 delete left;
                 delete right;
+            }
+
+            Value * copy() const {
+                return new Infix(Compiler::copy(left), Compiler::copy(right->copy()), type);
             }
 
             std::string toString() const {
@@ -3098,6 +3692,10 @@ public:
                 /* FIXME */
                 return RuntimeValue(false);
             }
+
+            Value * copy() const {
+                return new ValueList();
+            }
         };
 
         return new ValueList();
@@ -3157,6 +3755,13 @@ Value * compile(int immediate){
 Value * compile(double immediate){
     Ast::Number number(immediate);
     return CompileWalker::compileNumber(number);
+}
+    
+Value * copy(Value * value){
+    if (value != NULL){
+        return value->copy();
+    }
+    return NULL;
 }
 
 }

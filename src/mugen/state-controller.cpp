@@ -110,6 +110,13 @@ bool evaluateBool(const Value & value, const Environment & env, double default_)
     }
     return default_;
 }
+
+Value copy(const Value & value){
+    if (value != NULL){
+        return Value(value->copy());
+    }
+    return Value(NULL);
+}
     
 void StateController::resetPersistent(){
     currentPersistent = persistent;
@@ -299,6 +306,11 @@ public:
             parse(section);
         }
 
+    ControllerChangeAnim(const ControllerChangeAnim & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
     Value value;
 
     void parse(Ast::Section * section){
@@ -318,30 +330,38 @@ public:
             guy.setAnimation(value);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerChangeAnim(*this);
+    }
 };
 
 class ControllerChangeState: public StateController {
 public:
     ControllerChangeState(Ast::Section * section, const std::string & name, int state):
-        StateController(name, state, section),
-        value(NULL),
-        control(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * value;
-    Compiler::Value * control;
+    ControllerChangeState(const ControllerChangeState & you):
+    StateController(you),
+    value(copy(you.value)),
+    control(copy(you.control)){
+    }
+
+    Value value;
+    Value control;
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& value, Compiler::Value *& control):
+            Walker(Value & value, Value & control):
                 value(value),
                 control(control){
                 }
 
-            Compiler::Value *& value;
-            Compiler::Value *& control;
+            Value & value;
+            Value & control;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "value"){
@@ -362,8 +382,6 @@ public:
     }
 
     virtual ~ControllerChangeState(){
-        delete value;
-        delete control;
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -377,6 +395,10 @@ public:
             guy.changeState(stage, value, commands);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerChangeState(*this);
+    }
 };
 
 class ControllerCtrlSet: public StateController {
@@ -384,6 +406,11 @@ public:
     ControllerCtrlSet(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerCtrlSet(const ControllerCtrlSet & you):
+    StateController(you),
+    value(copy(you.value)){
     }
 
     Value value;
@@ -401,6 +428,10 @@ public:
         RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
         guy.setControl(toBool(result));
     }
+
+    StateController * deepCopy() const {
+        return new ControllerCtrlSet(*this);
+    }
 };
 
 class ControllerPlaySound: public StateController {
@@ -408,17 +439,22 @@ public:
     ControllerPlaySound(Ast::Section * section, const string & name, int state):
         StateController(name, state, section),
         group(-1),
-        own(false),
-        item(NULL){
+        own(false){
             parse(section);
         }
 
+    ControllerPlaySound(const ControllerPlaySound & you):
+    StateController(you),
+    group(you.group),
+    own(you.own),
+    item(copy(you.item)){
+    }
+
     int group;
     bool own;
-    Compiler::Value * item;
+    Value item;
 
     virtual ~ControllerPlaySound(){
-        delete item;
     }
 
     void parse(Ast::Section * section){
@@ -482,26 +518,41 @@ public:
             sound->play();
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerPlaySound(*this);
+    }
 };
 
 class ControllerVarSet: public StateController {
 public:
     ControllerVarSet(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        value(NULL),
-        variable(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * value;
-    Compiler::Value * variable;
+    ControllerVarSet(const ControllerVarSet & you):
+    StateController(you),
+    value(copy(you.value)),
+    variable(copy(you.variable)){
+        copy_map(variables, you.variables);
+        copy_map(floatVariables, you.floatVariables);
+        copy_map(systemVariables, you.systemVariables);
+    }
+
+    void copy_map(map<int, Compiler::Value*>& mine, const map<int, Compiler::Value*> & his){
+        for (map<int, Compiler::Value*>::const_iterator it = his.begin(); it != his.end(); it++){
+            mine[it->first] = Compiler::copy(it->second);
+        }
+    }
+
+    Value value;
+    Value variable;
     map<int, Compiler::Value*> variables;
     map<int, Compiler::Value*> floatVariables;
     map<int, Compiler::Value*> systemVariables;
 
     virtual ~ControllerVarSet(){
-        delete value;
-        delete variable;
         delete_map(variables);
         delete_map(floatVariables);
         delete_map(systemVariables);
@@ -573,29 +624,38 @@ public:
         }
 
         if (value != NULL && variable != NULL){
+            FullEnvironment environment(stage, guy, commands);
             /* 'value = 23' is value1
              * 'v = 9' is value2
              */
-            guy.setVariable((int) variable->evaluate(FullEnvironment(stage, guy, commands)).toNumber(), value);
+            /* FIXME: whats the default here? 0? */
+            guy.setVariable((int) evaluateNumber(variable, environment, 0),
+                            value->evaluate(environment));
         }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerVarSet(*this);
     }
 };
 
 class ControllerVelSet: public StateController {
 public:
     ControllerVelSet(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        x(NULL),
-        y(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * x;
-    Compiler::Value * y;
+    ControllerVelSet(const ControllerVelSet & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
+    Value x;
+    Value y;
 
     virtual ~ControllerVelSet(){
-        delete x;
-        delete y;
     }
 
     void parse(Ast::Section * section){
@@ -634,23 +694,29 @@ public:
             }
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerVelSet(*this);
+    }
 };
 
 class ControllerHitVelSet: public StateController {
 public:
     ControllerHitVelSet(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        x(NULL),
-        y(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * x;
-    Compiler::Value * y;
+    ControllerHitVelSet(const ControllerHitVelSet & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
+    Value x;
+    Value y;
 
     virtual ~ControllerHitVelSet(){
-        delete x;
-        delete y;
     }
 
     void parse(Ast::Section * section){
@@ -691,23 +757,28 @@ public:
         }
     }
 
+    StateController * deepCopy() const {
+        return new ControllerHitVelSet(*this);
+    }
 };
 
 class ControllerPosAdd: public StateController {
 public:
     ControllerPosAdd(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        x(NULL),
-        y(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * x;
-    Compiler::Value * y;
+    ControllerPosAdd(const ControllerPosAdd & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
+    Value x;
+    Value y;
 
     virtual ~ControllerPosAdd(){
-        delete x;
-        delete y;
     }
 
     void parse(Ast::Section * section){
@@ -749,23 +820,28 @@ public:
         }
     }
 
+    StateController * deepCopy() const {
+        return new ControllerPosAdd(*this);
+    }
 };
 
 class ControllerPosSet: public StateController {
 public:
     ControllerPosSet(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        x(NULL),
-        y(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * x;
-    Compiler::Value * y;
+    ControllerPosSet(const ControllerPosSet & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
+    Value x;
+    Value y;
 
     virtual ~ControllerPosSet(){
-        delete x;
-        delete y;
     }
 
     void parse(Ast::Section * section){
@@ -805,23 +881,28 @@ public:
         }
     }
 
+    StateController * deepCopy() const {
+        return new ControllerPosSet(*this);
+    }
 };
 
 class ControllerVelAdd: public StateController {
 public:
     ControllerVelAdd(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        x(NULL),
-        y(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * x;
-    Compiler::Value * y;
+    ControllerVelAdd(const ControllerVelAdd & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
+    Value x;
+    Value y;
 
     virtual ~ControllerVelAdd(){
-        delete x;
-        delete y;
     }
 
     void parse(Ast::Section * section){
@@ -860,23 +941,29 @@ public:
             }
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerVelAdd(*this);
+    }
 };
 
 class ControllerVelMul: public StateController {
 public:
     ControllerVelMul(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        x(NULL),
-        y(NULL){
+        StateController(name, state, section){
             parse(section);
         }
 
-    Compiler::Value * x;
-    Compiler::Value * y;
+    ControllerVelMul(const ControllerVelMul & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
+    Value x;
+    Value y;
 
     virtual ~ControllerVelMul(){
-        delete x;
-        delete y;
     }
 
     void parse(Ast::Section * section){
@@ -916,6 +1003,10 @@ public:
             }
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerVelMul(*this);
+    }
 };
 
 class ControllerHitDef: public StateController {
@@ -924,6 +1015,11 @@ public:
         StateController(name, state, section){
             parse(section);
         }
+
+    ControllerHitDef(const ControllerHitDef & you):
+    StateController(you),
+    hit(you.hit){
+    }
 
     struct Data{
         Data():
@@ -937,6 +1033,61 @@ public:
             groundType(AttackType::High),
             airType(AttackType::None){
             }
+
+        Data(const Data & you):
+        attribute(you.attribute),
+        hitFlag(you.hitFlag),
+        guardFlag(you.guardFlag),
+        animationType(you.animationType),
+        animationTypeAir(you.animationTypeAir),
+        animationTypeFall(you.animationTypeFall),
+        priority(you.priority),
+        damage(you.damage),
+        pause(you.pause),
+        guardPause(you.guardPause),
+        spark(you.spark),
+        guardSpark(you.guardSpark),
+        sparkPosition(you.sparkPosition),
+        hitSound(you.hitSound),
+        guardHitSound(you.guardHitSound),
+        groundType(you.groundType),
+        airType(you.airType),
+        groundSlideTime(copy(you.groundSlideTime)),
+        guardSlideTime(copy(you.guardSlideTime)),
+        groundHitTime(copy(you.groundHitTime)),
+        guardGroundHitTime(copy(you.guardGroundHitTime)),
+        airHitTime(copy(you.airHitTime)),
+        guardControlTime(copy(you.guardControlTime)),
+        guardDistance(copy(you.guardDistance)),
+        yAcceleration(copy(you.yAcceleration)),
+        groundVelocity(you.groundVelocity),
+        guardVelocity(copy(you.guardVelocity)),
+        airVelocity(you.airVelocity),
+        airGuardVelocity(you.airGuardVelocity),
+        groundCornerPushoff(copy(you.groundCornerPushoff)),
+        airCornerPushoff(copy(you.airCornerPushoff)),
+        downCornerPushoff(copy(you.downCornerPushoff)),
+        guardCornerPushoff(copy(you.guardCornerPushoff)),
+        airGuardCornerPushoff(copy(you.airGuardCornerPushoff)),
+        airGuardControlTime(copy(you.airGuardControlTime)),
+        airJuggle(copy(you.airJuggle)),
+        minimum(you.minimum),
+        maximum(you.maximum),
+        snap(you.snap),
+        player1SpritePriority(copy(you.player1SpritePriority)),
+        player2SpritePriority(copy(you.player2SpritePriority)),
+        player1Facing(copy(you.player1Facing)),
+        player1GetPlayer2Facing(copy(you.player1GetPlayer2Facing)),
+        player2Facing(copy(you.player2Facing)),
+        player1State(copy(you.player1State)),
+        player2State(copy(you.player2State)),
+        player2GetPlayer1State(copy(you.player2GetPlayer1State)),
+        forceStand(copy(you.forceStand)),
+        fall(you.fall),
+        getPower(you.getPower),
+        down(you.down),
+        envShake(you.envShake){
+        }
 
         typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
         /*
@@ -1014,6 +1165,12 @@ public:
             Priority():
                 type("Hit"){
                 }
+
+            Priority(const Priority & you):
+            hit(copy(you.hit)),
+            type(you.type){
+            }
+
             Value hit;
             string type;
         } priority;
@@ -1025,6 +1182,11 @@ public:
             Damage(){
             }
 
+            Damage(const Damage & you):
+            damage(copy(you.damage)),
+            guardDamage(copy(you.guardDamage)){
+            }
+
             Value damage;
             Value guardDamage;
         } damage;
@@ -1033,6 +1195,14 @@ public:
          * This is the time that each player will pause on the hit. p1_pausetime is the time to freeze P1, measured in game-ticks. p2_pausetime is the time to make P2 shake before recoiling from the hit. Defaults to 0,0 if omitted.
          */
         struct PauseTime{
+            PauseTime(){
+            }
+
+            PauseTime(const PauseTime & you):
+            player1(copy(you.player1)),
+            player2(copy(you.player2)){
+            }
+
             Value player1;
             Value player2;
         } pause;
@@ -1041,6 +1211,14 @@ public:
          * Similar to the "pausetime" parameter, these are the times to pause each player if the hit was guarded. Defaults to the same values as the "pausetime" parameter if omitted.
          */
         struct GuardPauseTime{
+            GuardPauseTime(){
+            }
+
+            GuardPauseTime(const GuardPauseTime & you):
+            player1(copy(you.player1)),
+            player2(copy(you.player2)){
+            }
+
             Value player1;
             Value player2;
         } guardPause;
@@ -1059,6 +1237,14 @@ public:
          * This is where to make the hit/guard spark. spark_x is a coordinate relative to the front of P2. A negative value makes the spark deeper inside P2. "Front" refers to the x- position at P2's axis offset towards P1 by the corresponding width value in the [Size] group in P2's player variables. spark_y is relative to P1. A negative value makes a spark higher up. You can use a tool like AirView to determine this value by positioning the cursor at the "attack spot" and reading off the value of the y-position. Defaults to 0,0 if omitted.
          */
         struct SparkPosition{
+            SparkPosition(){
+            }
+
+            SparkPosition(const SparkPosition & you):
+            x(copy(you.x)),
+            y(copy(you.y)){
+            }
+
             Value x, y;
         } sparkPosition;
 
@@ -1069,6 +1255,12 @@ public:
             HitSound():
                 own(false){
                 }
+
+            HitSound(const HitSound & you):
+            own(you.own),
+            group(copy(you.group)),
+            item(copy(you.item)){
+            }
 
             bool own;
             Value group;
@@ -1082,6 +1274,12 @@ public:
             GuardHitSound():
                 own(false){
                 }
+
+            GuardHitSound(const GuardHitSound & you):
+            own(you.own),
+            group(copy(you.group)),
+            item(copy(you.item)){
+            }
 
             bool own;
             Value group;
@@ -1143,6 +1341,14 @@ public:
          * Initial velocity to give P2 after being hit, if P2 is on the ground. If y_velocity is not zero, P2 will be knocked into the air. Both values default to 0 if omitted. You can leave out the y_velocity if you want P2 to remain on the ground.
          */
         struct GroundVelocity{
+            GroundVelocity(){
+            }
+
+            GroundVelocity(const GroundVelocity & you):
+            x(copy(you.x)),
+            y(copy(you.y)){
+            }
+
             Value x, y;
         } groundVelocity;
 
@@ -1155,6 +1361,14 @@ public:
          * Initial velocity to give P2 if P2 is hit in the air. Defaults to 0,0 if omitted.
          */
         struct AirVelocity{
+            AirVelocity(){
+            }
+
+            AirVelocity(const AirVelocity & you):
+            x(copy(you.x)),
+            y(copy(you.y)){
+            }
+
             Value x, y;
         } airVelocity;
 
@@ -1162,6 +1376,14 @@ public:
          * Velocity to give P2 if P2 guards the hit in the air. Defaults to x_velocity * 1.5, y_velocity / 2, where x_velocity and y_velocity are values of the "air.velocity" parameter.
          */
         struct AirGuardVelocity{
+            AirGuardVelocity(){
+            }
+
+            AirGuardVelocity(const AirGuardVelocity & you):
+            x(copy(you.x)),
+            y(copy(you.y)){
+            }
+
             Value x, y;
         } airGuardVelocity;
 
@@ -1206,6 +1428,14 @@ public:
          * These let you control the minimum and maximum distance of P2 relative to P1, after P2 has been hit. These parameters are not commonly used. Defaults to no change in P2's position if omitted.
          */
         struct Distance{
+            Distance(){
+            }
+
+            Distance(const Distance & you):
+            x(copy(you.x)),
+            y(copy(you.y)){
+            }
+
             Value x, y;
         };
 
@@ -1262,6 +1492,20 @@ public:
         Value forceStand;
 
         struct Fall{
+            Fall(){
+            }
+
+            Fall(const Fall & you):
+            fall(copy(you.fall)),
+            xVelocity(copy(you.xVelocity)),
+            yVelocity(copy(you.yVelocity)),
+            recover(copy(you.recover)),
+            recoverTime(copy(you.recoverTime)),
+            damage(copy(you.damage)),
+            airFall(copy(you.airFall)),
+            forceNoFall(copy(you.forceNoFall)),
+            envShake(you.envShake){
+            }
             /* fall = bvalue (boolean)
              * Set to 1 if you want P2 to go into a "fall" state (where P2 hits the ground without regaining control in the air). Use if you want a move to "knock down" P2. Defaults to 0.
              */
@@ -1303,6 +1547,16 @@ public:
             Value forceNoFall;
 
             struct Shake{
+                Shake(){
+                }
+
+                Shake(const Shake & you):
+                time(copy(you.time)),
+                frequency(copy(you.frequency)),
+                amplitude(copy(you.amplitude)),
+                phase(copy(you.phase)){
+                }
+
                 Value time;
                 Value frequency;
                 Value amplitude;
@@ -1314,11 +1568,29 @@ public:
          * p1power specifies the amount of power to give P1 if this HitDef connects successfully. p1gpower specifies the amount of power to give P1 if this HitDef is guarded. If omitted, p1power defaults to hit_damage (from "damage" parameter) multiplied by the value of Default.Attack.LifeToPowerMul specified in data/mugen.cfg. If p1gpower is omitted, it defaults to the value specified for p1power divided by 2.
          */
         struct GetPower{
+            GetPower(){
+            }
+
+            GetPower(const GetPower & you):
+            hit(copy(you.hit)),
+            guarded(copy(you.guarded)){
+            }
+
             Value hit;
             Value guarded;
         } getPower;
 
         struct Down{
+            Down(){
+            }
+
+            Down(const Down & you):
+            x(copy(you.x)),
+            y(copy(you.y)),
+            time(copy(you.time)),
+            bounce(you.bounce){
+            }
+
             Value x;
             Value y;
             Value time;
@@ -1358,6 +1630,16 @@ public:
          */
 
         struct EnvShake{
+            EnvShake(){
+            }
+
+            EnvShake(const EnvShake & you):
+            time(copy(you.time)),
+            frequency(copy(you.frequency)),
+            amplitude(copy(you.amplitude)),
+            phase(copy(you.phase)){
+            }
+
             Value time;
             Value frequency;
             Value amplitude;
@@ -1864,6 +2146,10 @@ public:
 #undef evaluateBool
 
     }
+
+    StateController * deepCopy() const {
+        return new ControllerHitDef(*this);
+    }
 };
 
 class ControllerStateTypeSet: public StateController {
@@ -1875,6 +2161,16 @@ public:
         changePhysics(false){
             parse(section);
         }
+
+    ControllerStateTypeSet(const ControllerStateTypeSet & you):
+    StateController(you),
+    changeMoveType(you.changeMoveType),
+    changeStateType(you.changeStateType),
+    changePhysics(you.changePhysics),
+    moveType(you.moveType),
+    stateType(you.stateType),
+    physics(you.physics){
+    }
 
     bool changeMoveType;
     bool changeStateType;
@@ -1949,60 +2245,66 @@ public:
             guy.setCurrentPhysics(physics);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerStateTypeSet(*this);
+    }
 };
 
 class ControllerSuperPause: public StateController {
 public:
     ControllerSuperPause(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        time(NULL),
-        posX(NULL),
-        posY(NULL),
-        animation(NULL),
-        ownAnimation(false),
-        darken(NULL),
-        p2defmul(NULL),
-        poweradd(NULL),
-        unhittable(NULL){
-            parse(section);
-        }
+    StateController(name, state, section),
+    ownAnimation(false){
+        parse(section);
+    }
+
+    ControllerSuperPause(const ControllerSuperPause & you):
+    StateController(you),
+    time(copy(you.time)),
+    posX(copy(you.posX)),
+    posY(copy(you.posY)),
+    animation(copy(you.animation)),
+    ownAnimation(you.ownAnimation),
+    darken(copy(you.darken)),
+    p2defmul(copy(you.p2defmul)),
+    poweradd(copy(you.poweradd)),
+    unhittable(copy(you.unhittable)),
+    sound(you.sound){
+    }
 
     struct Sound{
         Sound():
-            group(-1),
-        item(NULL),
+        group(-1),
         own(false){
         }
 
+        Sound(const Sound & you):
+        group(you.group),
+        item(copy(you.item)),
+        own(you.own){
+        }
+
         ~Sound(){
-            delete item;
         }
 
         int group;
-        Compiler::Value * item;
+        Value item;
         bool own;
     };
 
-    Compiler::Value * time;
-    Compiler::Value * posX;
-    Compiler::Value * posY;
-    Compiler::Value * animation;
+    Value time;
+    Value posX;
+    Value posY;
+    Value animation;
     bool ownAnimation;
-    Compiler::Value * darken;
-    Compiler::Value * p2defmul;
-    Compiler::Value * poweradd;
-    Compiler::Value * unhittable;
+    Value darken;
+    Value p2defmul;
+    Value poweradd;
+    Value unhittable;
     Sound sound;
 
     virtual ~ControllerSuperPause(){
-        delete time;
-        delete posX;
-        delete posY;
-        delete animation;
-        delete darken;
-        delete p2defmul;
-        delete poweradd;
-        delete unhittable;
     }
 
     void parse(Ast::Section * section){
@@ -2115,6 +2417,10 @@ public:
         /* TODO: handle ownAnimation */
         stage.doSuperPause(time, animation, x, y);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerSuperPause(*this);
+    }
 };
 
 class ControllerAfterImage: public StateController {
@@ -2124,6 +2430,22 @@ public:
         translucent(Default){
             parse(section);
         }
+
+    ControllerAfterImage(const ControllerAfterImage & you):
+    StateController(you),
+    time(copy(you.time)),
+    length(copy(you.length)),
+    timeGap(copy(you.timeGap)),
+    frameGap(copy(you.frameGap)),
+    paletteColor(copy(you.paletteColor)),
+    invertColor(copy(you.invertColor)),
+    bright(you.bright),
+    contrast(you.contrast),
+    postbright(you.postbright),
+    add(you.add),
+    multiply(you.multiply),
+    translucent(you.translucent){
+    }
 
     Value time;
     Value length;
@@ -2288,30 +2610,37 @@ public:
                           paletteColor, invertColor,
                           bright, contrast, postBright, add, multiply);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAfterImage(*this);
+    }
 };
 
 class ControllerAfterImageTime: public StateController {
 public:
     ControllerAfterImageTime(Ast::Section * section, const string & name, int state):
-        StateController(name, state, section),
-        time(NULL){
-            parse(section);
-        }
+    StateController(name, state, section){
+        parse(section);
+    }
 
-    Compiler::Value * time;
+    ControllerAfterImageTime(const ControllerAfterImageTime & you):
+    StateController(you),
+    time(copy(you.time)){
+    }
+
+    Value time;
 
     virtual ~ControllerAfterImageTime(){
-        delete time;
     }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& time):
+            Walker(Value & time):
                 time(time){
                 }
 
-            Compiler::Value *& time;
+            Value & time;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
@@ -2334,30 +2663,37 @@ public:
         int time = this->time->evaluate(environment).toNumber();
         guy.setAfterImageTime(time);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAfterImageTime(*this);
+    }
 };
 
 class ControllerAngleAdd: public StateController {
 public:
     ControllerAngleAdd(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    value(NULL){
+    StateController(name, state, section){
         parse(section);
     }
 
-    Compiler::Value * value;
+    ControllerAngleAdd(const ControllerAngleAdd & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
+    Value value;
 
     virtual ~ControllerAngleAdd(){
-        delete value;
     }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& value):
+            Walker(Value & value):
                 value(value){
                 }
 
-            Compiler::Value *& value;
+            Value & value;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "value"){
@@ -2377,30 +2713,37 @@ public:
         int value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.updateAngleEffect(value + guy.getAngleEffect());
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAngleAdd(*this);
+    }
 };
 
 class ControllerAngleMul: public StateController {
 public:
     ControllerAngleMul(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    value(NULL){
+    StateController(name, state, section){
         parse(section);
     }
 
-    Compiler::Value * value;
+    ControllerAngleMul(const ControllerAngleMul & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
+    Value value;
 
     virtual ~ControllerAngleMul(){
-        delete value;
     }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& value):
+            Walker(Value & value):
                 value(value){
                 }
 
-            Compiler::Value *& value;
+            Value & value;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "value"){
@@ -2420,30 +2763,37 @@ public:
         double value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.updateAngleEffect(guy.getAngleEffect() * value);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAngleMul(*this);
+    }
 };
 
 class ControllerAngleSet: public StateController {
 public:
     ControllerAngleSet(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    value(NULL){
+    StateController(name, state, section){
         parse(section);
     }
 
-    Compiler::Value * value;
+    ControllerAngleSet(const ControllerAngleSet & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
+    Value value;
 
     virtual ~ControllerAngleSet(){
-        delete value;
     }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& value):
+            Walker(Value & value):
                 value(value){
                 }
 
-            Compiler::Value *& value;
+            Value & value;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "value"){
@@ -2463,40 +2813,45 @@ public:
         double value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.updateAngleEffect(value);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAngleSet(*this);
+    }
 };
 
 class ControllerAngleDraw: public StateController {
 public:
     ControllerAngleDraw(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    value(NULL),
-    scaleX(NULL),
-    scaleY(NULL){
+    StateController(name, state, section){
         parse(section);
     }
 
-    Compiler::Value * value;
-    Compiler::Value * scaleX;
-    Compiler::Value * scaleY;
+    ControllerAngleDraw(const ControllerAngleDraw & you):
+    StateController(you),
+    value(copy(you.value)),
+    scaleX(copy(you.scaleX)),
+    scaleY(copy(you.scaleY)){
+    }
+
+    Value value;
+    Value scaleX;
+    Value scaleY;
 
     virtual ~ControllerAngleDraw(){
-        delete value;
-        delete scaleX;
-        delete scaleY;
     }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& value, Compiler::Value *& scaleX, Compiler::Value *& scaleY):
+            Walker(Value & value, Value & scaleX, Value & scaleY):
                 value(value),
                 scaleX(scaleX),
                 scaleY(scaleY){
                 }
 
-            Compiler::Value *& value;
-            Compiler::Value *& scaleX;
-            Compiler::Value *& scaleY;
+            Value & value;
+            Value & scaleX;
+            Value & scaleY;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "value"){
@@ -2534,6 +2889,10 @@ public:
         
         guy.drawAngleEffect(value, setValue, scaleX, scaleY);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAngleDraw(*this);
+    }
 };
 
 class ControllerAssertSpecial: public StateController {
@@ -2541,6 +2900,11 @@ public:
     ControllerAssertSpecial(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerAssertSpecial(const ControllerAssertSpecial & you):
+    StateController(you),
+    asserts(you.asserts){
     }
 
     vector<Character::Specials> asserts;
@@ -2598,6 +2962,10 @@ public:
             guy.assertSpecial(special);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAssertSpecial(*this);
+    }
 };
 
 class ControllerAttackDist: public StateController {
@@ -2605,6 +2973,11 @@ public:
     ControllerAttackDist(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerAttackDist(const ControllerAttackDist & you):
+    StateController(you),
+    value(copy(you.value)){
     }
 
     Value value;
@@ -2620,6 +2993,10 @@ public:
         int value = (int) this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.getHit().guardDistance = value;
     }
+
+    StateController * deepCopy() const {
+        return new ControllerAttackDist(*this);
+    }
 };
 
 class ControllerNull: public StateController {
@@ -2628,8 +3005,16 @@ public:
     StateController(name, state){
     }
 
+    ControllerNull(const ControllerNull & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* nothing */
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerNull(*this);
     }
 };
 
@@ -2639,79 +3024,69 @@ public:
     StateController(name, state, section){
     }
 
+    ControllerTurn(const ControllerTurn & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         guy.doTurn(stage);
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerTurn(*this);
     }
 };
 
 class ControllerVarAdd: public StateController {
 public:
     ControllerVarAdd(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    integerIndex(NULL),
-    floatIndex(NULL),
-    sysIndex(NULL),
-    value(NULL){
+    StateController(name, state, section){
         parse(section, name);
     }
 
-    Compiler::Value * integerIndex;
-    Compiler::Value * floatIndex;
-    Compiler::Value * sysIndex;
-    Compiler::Value * value;
+    ControllerVarAdd(const ControllerVarAdd & you):
+    StateController(you),
+    integerIndex(copy(you.integerIndex)),
+    floatIndex(copy(you.floatIndex)),
+    sysIndex(copy(you.sysIndex)),
+    value(copy(you.value)){
+    }
+
+    Value integerIndex;
+    Value floatIndex;
+    Value sysIndex;
+    Value value;
 
     virtual ~ControllerVarAdd(){
-        delete integerIndex;
-        delete floatIndex;
-        delete sysIndex;
-        delete value;
     }
 
     void parse(Ast::Section * section, const string & name){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& integerIndex, Compiler::Value *& floatIndex, Compiler::Value *& sysIndex, Compiler::Value *& value):
+            Walker(Value & integerIndex, Value & floatIndex, Value & sysIndex, Value & value):
             integerIndex(integerIndex),
             floatIndex(floatIndex),
             sysIndex(sysIndex),
             value(value){
             }
 
-            Compiler::Value *& integerIndex;
-            Compiler::Value *& floatIndex;
-            Compiler::Value *& sysIndex;
-            Compiler::Value *& value;
+            Value & integerIndex;
+            Value & floatIndex;
+            Value & sysIndex;
+            Value & value;
 
             virtual void onAttributeArray(const Ast::AttributeArray & simple){
                 if (simple == "var"){
-                    if (value != NULL){
-                        delete value;
-                    }
-                    if (integerIndex != NULL){
-                        delete integerIndex;
-                    }
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
                     this->value = Compiler::compile(value);
                     this->integerIndex = Compiler::compile(index);
                 } else if (simple == "fvar"){
-                    if (value != NULL){
-                        delete value;
-                    }
-                    if (floatIndex != NULL){
-                        delete floatIndex;
-                    }
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
                     this->value = Compiler::compile(value);
                     this->floatIndex = Compiler::compile(index);
                 } else if (simple == "sysvar"){
-                    if (value != NULL){
-                        delete value;
-                    }
-                    if (sysIndex != NULL){
-                        delete sysIndex;
-                    }
                     int index = simple.getIndex();
                     const Ast::Value * value = simple.getValue();
                     this->value = Compiler::compile(value);
@@ -2721,19 +3096,10 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "v"){
-                    if (integerIndex != NULL){
-                        delete integerIndex;
-                    }
                     integerIndex = Compiler::compile(simple.getValue());
                 } else if (simple == "fv"){
-                    if (floatIndex != NULL){
-                        delete floatIndex;
-                    }
                     floatIndex = Compiler::compile(simple.getValue());
                 } else if (simple == "value"){
-                    if (value != NULL){
-                        delete value;
-                    }
                     value = Compiler::compile(simple.getValue());
                 }
             }
@@ -2764,6 +3130,10 @@ public:
             guy.setSystemVariable(index, RuntimeValue(old + new_));
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerVarAdd(*this);
+    }
 };
 
 class ControllerForceFeedback: public StateController {
@@ -2772,86 +3142,74 @@ public:
     StateController(name, state){
     }
 
+    ControllerForceFeedback(const ControllerForceFeedback & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO, if we care about this controller */
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerForceFeedback(*this);
     }
 };
 
 class ControllerWidth: public StateController {
 public:
     ControllerWidth(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    edgeFront(NULL),
-    edgeBack(NULL),
-    playerFront(NULL),
-    playerBack(NULL){
+    StateController(name, state, section){
         parse(section);
     }
 
-    Compiler::Value * edgeFront;
-    Compiler::Value * edgeBack;
-    Compiler::Value * playerFront;
-    Compiler::Value * playerBack;
+    ControllerWidth(const ControllerWidth & you):
+    StateController(you),
+    edgeFront(copy(you.edgeFront)),
+    edgeBack(copy(you.edgeBack)),
+    playerFront(copy(you.playerFront)),
+    playerBack(copy(you.playerBack)){
+    }
+
+    Value edgeFront;
+    Value edgeBack;
+    Value playerFront;
+    Value playerBack;
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& edgeFront,
-                   Compiler::Value *& edgeBack,
-                   Compiler::Value *& playerFront,
-                   Compiler::Value *& playerBack):
+            Walker(Value & edgeFront,
+                   Value & edgeBack,
+                   Value & playerFront,
+                   Value & playerBack):
                    edgeFront(edgeFront),
                    edgeBack(edgeBack),
                    playerFront(playerFront),
                    playerBack(playerBack){
                    }
 
-            Compiler::Value *& edgeFront;
-            Compiler::Value *& edgeBack;
-            Compiler::Value *& playerFront;
-            Compiler::Value *& playerBack;
+            Value & edgeFront;
+            Value & edgeBack;
+            Value & playerFront;
+            Value & playerBack;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "edge"){
                     const Ast::Value * front;
                     const Ast::Value * back;
                     simple >> front >> back;
-                    if (edgeFront != NULL){
-                        delete edgeFront;
-                    }
-                    if (edgeBack != NULL){
-                        delete edgeBack;
-                    }
                     edgeFront = Compiler::compile(front);
                     edgeBack = Compiler::compile(back);
                 } else if (simple == "player"){
                     const Ast::Value * front;
                     const Ast::Value * back;
                     simple >> front >> back;
-                    if (playerFront != NULL){
-                        delete playerFront;
-                    }
-                    if (playerBack != NULL){
-                        delete playerBack;
-                    }
                     playerFront = Compiler::compile(front);
                     playerBack = Compiler::compile(back);
                 } else if (simple == "value"){
                     const Ast::Value * front;
                     const Ast::Value * back;
                     simple >> front >> back;
-                    if (edgeFront != NULL){
-                        delete edgeFront;
-                    }
-                    if (edgeBack != NULL){
-                        delete edgeBack;
-                    }
-                    if (playerFront != NULL){
-                        delete playerFront;
-                    }
-                    if (playerBack != NULL){
-                        delete playerBack;
-                    }
                     edgeFront = Compiler::compile(front);
                     edgeBack = Compiler::compile(back);
                     playerFront = Compiler::compile(front);
@@ -2865,10 +3223,6 @@ public:
     }
 
     virtual ~ControllerWidth(){
-        delete edgeFront;
-        delete edgeBack;
-        delete playerFront;
-        delete playerBack;
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -2891,42 +3245,45 @@ public:
         }
         guy.setWidthOverride(edgeFront, edgeBack, playerFront, playerBack);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerWidth(*this);
+    }
 };
 
 class ControllerMakeDust: public StateController {
 public:
     ControllerMakeDust(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    posX(NULL),
-    posY(NULL),
-    posX2(NULL),
-    posY2(NULL),
-    spacing(NULL){
+    StateController(name, state, section){
         parse(section);
     }
 
-    Compiler::Value * posX;
-    Compiler::Value * posY;
-    Compiler::Value * posX2;
-    Compiler::Value * posY2;
-    Compiler::Value * spacing;
+    ControllerMakeDust(const ControllerMakeDust & you):
+    StateController(you),
+    posX(copy(you.posX)),
+    posY(copy(you.posY)),
+    posX2(copy(you.posX2)),
+    posY2(copy(you.posY2)),
+    spacing(copy(you.spacing)){
+    }
+
+    Value posX;
+    Value posY;
+    Value posX2;
+    Value posY2;
+    Value spacing;
 
     virtual ~ControllerMakeDust(){
-        delete posX;
-        delete posY;
-        delete posX2;
-        delete posY2;
-        delete spacing;
     }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
         public:
-            Walker(Compiler::Value *& posX,
-                   Compiler::Value *& posY,
-                   Compiler::Value *& posX2,
-                   Compiler::Value *& posY2,
-                   Compiler::Value *& spacing):
+            Walker(Value & posX,
+                   Value & posY,
+                   Value & posX2,
+                   Value & posY2,
+                   Value & spacing):
                    posX(posX),
                    posY(posY),
                    posX2(posX2),
@@ -2934,11 +3291,11 @@ public:
                    spacing(spacing){
             }
 
-            Compiler::Value *& posX;
-            Compiler::Value *& posY;
-            Compiler::Value *& posX2;
-            Compiler::Value *& posY2;
-            Compiler::Value *& spacing;
+            Value & posX;
+            Value & posY;
+            Value & posX2;
+            Value & posY2;
+            Value & spacing;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "pos"){
@@ -2981,6 +3338,10 @@ public:
 
         /* FIXME: use spacing somehow */
     }
+
+    StateController * deepCopy() const {
+        return new ControllerMakeDust(*this);
+    }
 };
 
 class ControllerFallEnvShake: public StateController {
@@ -2989,12 +3350,20 @@ public:
     StateController(name, state, section){
     }
 
+    ControllerFallEnvShake(const ControllerFallEnvShake & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         HitState & state = guy.getHitState();
         if (state.fall.envShake.time != 0){
             stage.Quake(state.fall.envShake.time);
             state.fall.envShake.time = 0;
         }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerFallEnvShake(*this);
     }
 };
 
@@ -3014,6 +3383,22 @@ public:
     ownAnimation(true),
     positionType(Player1){
         parse(section);
+    }
+
+    ControllerExplod(const ControllerExplod & you):
+    StateController(you),
+    animation(copy(you.animation)),
+    ownAnimation(you.ownAnimation),
+    id(copy(you.id)),
+    posX(copy(you.posX)),
+    posY(copy(you.posY)),
+    velocityX(copy(you.velocityX)),
+    velocityY(copy(you.velocityY)),
+    accelerationX(copy(you.accelerationX)),
+    accelerationY(copy(you.accelerationY)),
+    removeTime(copy(you.removeTime)),
+    bindTime(copy(you.bindTime)),
+    positionType(you.positionType){
     }
 
     Value animation;
@@ -3279,6 +3664,10 @@ public:
         ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value);
         stage.addEffect(effect);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerExplod(*this);
+    }
 };
 
 class ControllerGameMakeAnim: public StateController {
@@ -3286,6 +3675,15 @@ public:
     ControllerGameMakeAnim(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerGameMakeAnim(const ControllerGameMakeAnim & you):
+    StateController(you),
+    value(copy(you.value)),
+    under(copy(you.under)),
+    posX(copy(you.posX)),
+    posY(copy(you.posY)),
+    random(copy(you.random)){
     }
 
     Value value;
@@ -3350,13 +3748,16 @@ public:
 
         stage.addEffect(new GameAnimation(new MugenAnimation(*animation), x, y));
     }
+
+    StateController * deepCopy() const {
+        return new ControllerGameMakeAnim(*this);
+    }
 };
 
 class ControllerHitBy: public StateController {
 public:
     ControllerHitBy(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
-    time(NULL),
     slot(-1),
     standing(false),
     crouching(false),
@@ -3364,7 +3765,17 @@ public:
         parse(section);
     }
 
-    Compiler::Value * time;
+    ControllerHitBy(const ControllerHitBy & you):
+    StateController(you),
+    time(copy(you.time)),
+    slot(you.slot),
+    standing(you.standing),
+    crouching(you.crouching),
+    aerial(you.aerial),
+    attributes(you.attributes){
+    }
+
+    Value time;
 
     int slot;
     bool standing;
@@ -3374,7 +3785,6 @@ public:
     vector<AttackType::Attribute> attributes;
 
     virtual ~ControllerHitBy(){
-        delete time;
     }
 
     void parse(Ast::Section * section){
@@ -3456,13 +3866,16 @@ public:
             guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, attributes);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerHitBy(*this);
+    }
 };
 
 class ControllerNotHitBy: public StateController {
 public:
     ControllerNotHitBy(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
-    time(NULL),
     slot(-1),
     standing(true),
     crouching(true),
@@ -3470,7 +3883,17 @@ public:
         parse(section);
     }
 
-    Compiler::Value * time;
+    ControllerNotHitBy(const ControllerNotHitBy & you):
+    StateController(you),
+    time(copy(you.time)),
+    slot(you.slot),
+    standing(you.standing),
+    crouching(you.crouching),
+    aerial(you.aerial),
+    attributes(you.attributes){
+    }
+
+    Value time;
 
     int slot;
     bool standing;
@@ -3480,7 +3903,6 @@ public:
     vector<AttackType::Attribute> attributes;
 
     virtual ~ControllerNotHitBy(){
-        delete time;
     }
 
     void parse(Ast::Section * section){
@@ -3597,6 +4019,10 @@ public:
             guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, notAttributes);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerNotHitBy(*this);
+    }
 };
 
 class ControllerEnvShake: public StateController {
@@ -3604,6 +4030,14 @@ public:
     ControllerEnvShake(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerEnvShake(const ControllerEnvShake & you):
+    StateController(you),
+    time(copy(you.time)),
+    frequency(copy(you.frequency)),
+    amplitude(copy(you.amplitude)),
+    phase(copy(you.phase)){
     }
 
     Value time;
@@ -3645,6 +4079,10 @@ public:
         int quake = evaluateNumber(time, environment, 0);
         stage.Quake(quake);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerEnvShake(*this);
+    }
 };
 
 class ControllerTargetBind: public StateController {
@@ -3652,6 +4090,14 @@ public:
     ControllerTargetBind(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerTargetBind(const ControllerTargetBind & you):
+    StateController(you),
+    time(copy(you.time)),
+    id(copy(you.id)),
+    posX(copy(you.posX)),
+    posY(copy(you.posY)){
     }
 
     Value time;
@@ -3689,6 +4135,10 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* FIXME */
     }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetBind(*this);
+    }
 };
 
 class ControllerDefenceMulSet: public StateController {
@@ -3696,6 +4146,11 @@ public:
     ControllerDefenceMulSet(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerDefenceMulSet(const ControllerDefenceMulSet & you):
+    StateController(you),
+    defense(copy(you.defense)){
     }
 
     Value defense;
@@ -3723,6 +4178,10 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         guy.setDefenseMultiplier(evaluateNumber(defense, FullEnvironment(stage, guy, commands), 1));
     }
+
+    StateController * deepCopy() const {
+        return new ControllerDefenceMulSet(*this);
+    }
 };
 
 class ControllerVarRandom: public StateController {
@@ -3730,6 +4189,13 @@ public:
     ControllerVarRandom(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerVarRandom(const ControllerVarRandom & you):
+    StateController(you),
+    minimum(copy(you.minimum)),
+    maximum(copy(you.maximum)),
+    index(copy(you.index)){
     }
 
     Value minimum;
@@ -3777,12 +4243,20 @@ public:
         int maximum = (int) evaluateNumber(this->maximum, environment, 0);
         guy.setVariable(index, PaintownUtil::rnd(minimum, maximum));
     }
+
+    StateController * deepCopy() const {
+        return new ControllerVarRandom(*this);
+    }
 };
 
 class ControllerHitFallDamage: public StateController {
 public:
     ControllerHitFallDamage(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
+    }
+
+    ControllerHitFallDamage(const ControllerHitFallDamage & you):
+    StateController(you){
     }
 
     bool isFalling(const Character & guy) const {
@@ -3795,6 +4269,10 @@ public:
             guy.takeDamage(stage, (Paintown::ObjectAttack*) stage.getEnemy(&guy), guy.getHitState().fall.damage);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerHitFallDamage(*this);
+    }
 };
 
 class ControllerPosFreeze: public StateController {
@@ -3803,8 +4281,16 @@ public:
     StateController(name, state, section){
     }
 
+    ControllerPosFreeze(const ControllerPosFreeze & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         guy.doFreeze();
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerPosFreeze(*this);
     }
 };
 
@@ -3812,6 +4298,10 @@ class ControllerHitFallVel: public StateController {
 public:
     ControllerHitFallVel(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
+    }
+
+    ControllerHitFallVel(const ControllerHitFallVel & you):
+    StateController(you){
     }
 
     bool isFalling(const Character & guy) const {
@@ -3825,6 +4315,10 @@ public:
             guy.setYVelocity(guy.getHitState().fall.yVelocity);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerHitFallVel(*this);
+    }
 };
 
 class ControllerHitFallSet: public StateController {
@@ -3832,6 +4326,13 @@ public:
     ControllerHitFallSet(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerHitFallSet(const ControllerHitFallSet & you):
+    StateController(you),
+    value(copy(you.value)),
+    xVelocity(copy(you.xVelocity)),
+    yVelocity(copy(you.yVelocity)){
     }
 
     Value value;
@@ -3880,6 +4381,10 @@ public:
             guy.getHitState().fall.yVelocity = evaluateNumber(yVelocity, environment, 0);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerHitFallSet(*this);
+    }
 };
 
 /* 90% */
@@ -3887,6 +4392,10 @@ class ControllerSelfState: public ControllerChangeState {
 public:
     ControllerSelfState(Ast::Section * section, const string & name, int state):
     ControllerChangeState(section, name, state){
+    }
+
+    ControllerSelfState(const ControllerSelfState & you):
+    ControllerChangeState(you){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -3900,6 +4409,10 @@ public:
             guy.changeOwnState(stage, value, commands);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerSelfState(*this);
+    }
 };
 
 /* 0% */
@@ -3908,6 +4421,10 @@ public:
     ControllerPalFX(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerPalFX(const ControllerPalFX & you):
+    StateController(you){
     }
 
     void parse(Ast::Section * section){
@@ -3931,6 +4448,10 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
     }
+
+    StateController * deepCopy() const {
+        return new ControllerPalFX(*this);
+    }
 };
 
 class ControllerBGPalFX: public ControllerPalFX {
@@ -3939,8 +4460,16 @@ public:
     ControllerPalFX(section, name, state){
     }
 
+    ControllerBGPalFX(const ControllerBGPalFX & you):
+    ControllerPalFX(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerBGPalFX(*this);
     }
 };
 
@@ -3949,6 +4478,14 @@ public:
     ControllerVarRangeSet(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerVarRangeSet(const ControllerVarRangeSet & you):
+    StateController(you),
+    value(copy(you.value)),
+    floatValue(copy(you.floatValue)),
+    start(copy(you.start)),
+    end(copy(you.end)){
     }
 
     Value value;
@@ -4002,6 +4539,10 @@ public:
             }
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerVarRangeSet(*this);
+    }
 };
 
 class ControllerSprPriority: public StateController {
@@ -4009,6 +4550,11 @@ public:
     ControllerSprPriority(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerSprPriority(const ControllerSprPriority & you):
+    StateController(you),
+    value(copy(you.value)){
     }
 
     Value value;
@@ -4037,6 +4583,10 @@ public:
         int priority = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
         guy.setSpritePriority(priority);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerSprPriority(*this);
+    }
 };
 
 class ControllerTargetFacing: public StateController {
@@ -4044,6 +4594,12 @@ public:
     ControllerTargetFacing(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerTargetFacing(const ControllerTargetFacing & you):
+    StateController(you),
+    value(copy(you.value)),
+    id(copy(you.id)){
     }
 
     Value value;
@@ -4087,6 +4643,10 @@ public:
             }
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetFacing(*this);
+    }
 };
 
 class ControllerTargetLifeAdd: public StateController {
@@ -4094,6 +4654,14 @@ public:
     ControllerTargetLifeAdd(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerTargetLifeAdd(const ControllerTargetLifeAdd & you):
+    StateController(you),
+    value(copy(you.value)),
+    id(copy(you.id)),
+    kill(copy(you.kill)),
+    absolute(copy(you.absolute)){
     }
 
     Value value;
@@ -4142,6 +4710,10 @@ public:
             target->takeDamage(stage, &guy, amount, kill, absolute);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetLifeAdd(*this);
+    }
 };
 
 class ControllerTargetState: public StateController {
@@ -4149,6 +4721,12 @@ public:
     ControllerTargetState(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerTargetState(const ControllerTargetState & you):
+    StateController(you),
+    value(copy(you.value)),
+    id(copy(you.id)){
     }
 
     Value value;
@@ -4187,12 +4765,20 @@ public:
             target->changeState(stage, state, hisCommands);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetState(*this);
+    }
 };
 
 class ControllerChangeAnim2: public ControllerChangeAnim {
 public:
     ControllerChangeAnim2(Ast::Section * section, const string & name, int state):
     ControllerChangeAnim(section, name, state){
+    }
+
+    ControllerChangeAnim2(const ControllerChangeAnim2 & you):
+    ControllerChangeAnim(you){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -4206,6 +4792,10 @@ public:
             throw MugenException(out.str());
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerChangeAnim2(*this);
+    }
 };
 
 class ControllerScreenBound: public StateController {
@@ -4213,6 +4803,13 @@ public:
     ControllerScreenBound(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerScreenBound(const ControllerScreenBound & you):
+    StateController(you),
+    value(copy(you.value)),
+    moveCameraX(copy(you.moveCameraX)),
+    moveCameraY(copy(you.moveCameraY)){
     }
 
     Value value;
@@ -4252,6 +4849,10 @@ public:
         bool cameraY = evaluateBool(moveCameraY, environment, false);
         /* TODO */
     }
+
+    StateController * deepCopy() const {
+        return new ControllerScreenBound(*this);
+    }
 };
         
 /* 100% */
@@ -4260,6 +4861,11 @@ public:
     ControllerPowerAdd(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerPowerAdd(const ControllerPowerAdd & you):
+    StateController(you),
+    value(copy(you.value)){
     }
 
     Value value;
@@ -4292,6 +4898,10 @@ public:
         int power = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
         guy.addPower(power);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerPowerAdd(*this);
+    }
 };
 
 /* 100% */
@@ -4300,6 +4910,15 @@ public:
     ControllerEnvColor(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerEnvColor(const ControllerEnvColor & you):
+    StateController(you),
+    red(copy(you.red)),
+    green(copy(you.green)),
+    blue(copy(you.blue)),
+    time(copy(you.time)),
+    under(copy(you.under)){
     }
 
     Value red, green, blue;
@@ -4345,6 +4964,10 @@ public:
         bool under = evaluateBool(this->under, environment, false);
         stage.setEnvironmentColor(Bitmap::makeColor(red, green, blue), time, under);
     }
+
+    StateController * deepCopy() const {
+        return new ControllerEnvColor(*this);
+    }
 };
 
 class ControllerDestroySelf: public StateController {
@@ -4353,10 +4976,18 @@ public:
     StateController(name, state, section){
     }
 
+    ControllerDestroySelf(const ControllerDestroySelf & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
             stage.removeHelper(&guy);
         }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerDestroySelf(*this);
     }
 };
 
@@ -4365,6 +4996,13 @@ public:
     ControllerLifeAdd(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerLifeAdd(const ControllerLifeAdd & you):
+    StateController(you),
+    value(copy(you.value)),
+    kill(copy(you.kill)),
+    absolute(copy(you.absolute)){
     }
 
     Value value;
@@ -4402,8 +5040,11 @@ public:
         bool absolute = evaluateBool(this->absolute, environment, false);
         guy.takeDamage(stage, &guy, value, kill, absolute);
     }
-};
 
+    StateController * deepCopy() const {
+        return new ControllerLifeAdd(*this);
+    }
+};
 
 class ControllerLifeSet: public StateController {
 public:
@@ -4416,11 +5057,20 @@ public:
         }
     }
 
+    ControllerLifeSet(const ControllerLifeSet & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
     Value value;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         int life = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
         guy.setHealth(life);
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerLifeSet(*this);
     }
 };
 
@@ -4431,11 +5081,20 @@ public:
         id = extractAttribute(section, "id");
     }
 
+    ControllerRemoveExplod(const ControllerRemoveExplod & you):
+    StateController(you),
+    id(copy(you.id)){
+    }
+
     Value id;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         int id = evaluateNumber(this->id, FullEnvironment(stage, guy, commands), -1);
         stage.removeEffects(&guy, id);
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerRemoveExplod(*this);
     }
 };
         
@@ -4443,6 +5102,10 @@ class ControllerModifyExplod: public ControllerExplod {
 public:
     ControllerModifyExplod(Ast::Section * section, const string & name, int state):
     ControllerExplod(section, name, state){
+    }
+
+    ControllerModifyExplod(const ControllerModifyExplod & you):
+    ControllerExplod(you){
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -4466,6 +5129,10 @@ public:
         effect->setAccelerationY(evaluateNumber(this->accelerationY, environment, effect->getAccelerationY()));
         effect->setRemoveTime((int) evaluateNumber(this->removeTime, environment, effect->getRemoveTime()));
     }
+
+    StateController * deepCopy() const {
+        return new ControllerModifyExplod(*this);
+    }
 };
 
 class ControllerHelper: public StateController {
@@ -4473,6 +5140,29 @@ public:
     ControllerHelper(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerHelper(const ControllerHelper & you):
+    StateController(you),
+    name(you.name),
+    id(copy(you.id)),
+    posX(copy(you.posX)),
+    posY(copy(you.posY)),
+    posType(you.posType),
+    facing(copy(you.facing)),
+    state(copy(you.state)),
+    key(copy(you.key)),
+    ownPalette(copy(you.ownPalette)),
+    superMoveTime(copy(you.superMoveTime)),
+    pauseMoveTime(copy(you.pauseMoveTime)),
+    xscale(copy(you.xscale)),
+    yscale(copy(you.yscale)),
+    ground(you.ground),
+    air(you.air),
+    height(copy(you.height)),
+    projectileScale(copy(you.projectileScale)),
+    headPosition(copy(you.headPosition)),
+    midPosition(copy(you.midPosition)){
     }
 
     enum PosType{
@@ -4496,12 +5186,29 @@ public:
     Value pauseMoveTime;
     Value xscale;
     Value yscale;
+
     struct Ground{
+        Ground(){
+        }
+
+        Ground(const Ground & you):
+        back(copy(you.back)),
+        front(copy(you.front)){
+        }
+
         Value back;
         Value front;
     } ground;
 
     struct Air{
+        Air(){
+        }
+
+        Air(const Air & you):
+        back(copy(you.back)),
+        front(copy(you.front)){
+        }
+
         Value back;
         Value front;
     } air;
@@ -4652,9 +5359,15 @@ public:
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
         /* FIXME */
         Mugen::Helper * helper = new Mugen::Helper(guy);
-        // stage.addObject(helper);
+        helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
+        stage.addObject(helper);
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerHelper(*this);
     }
 };
 
@@ -4664,8 +5377,16 @@ public:
     StateController(name, state, section){
     }
 
+    ControllerStopSnd(const ControllerStopSnd & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO: but im not sure we care about this one */
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerStopSnd(*this);
     }
 };
 
@@ -4679,11 +5400,20 @@ public:
         }
     }
 
+    ControllerHitAdd(const ControllerHitAdd & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
     Value value;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         int combo = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
         guy.addCombo(combo);
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerHitAdd(*this);
     }
 };
 
@@ -4693,8 +5423,16 @@ public:
     StateController(name, state, section){
     }
 
+    ControllerGravity(const ControllerGravity & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         guy.moveYNoCheck(-guy.getGravity());
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerGravity(*this);
     }
 };
 
@@ -4708,12 +5446,21 @@ public:
         }
     }
 
+    ControllerPlayerPush(const ControllerPlayerPush & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
     Value value;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         if (!evaluateBool(value, FullEnvironment(stage, guy, commands), false)){
             guy.disablePushCheck();
         }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerPlayerPush(*this);
     }
 };
 
@@ -4725,6 +5472,14 @@ public:
         buffer = extractAttribute(section, "endcmdbuftime");
         move = extractAttribute(section, "movetime");
         background = extractAttribute(section, "pausebg");
+    }
+
+    ControllerPause(const ControllerPause & you):
+    StateController(you),
+    time(copy(you.time)),
+    buffer(copy(you.buffer)),
+    move(copy(you.move)),
+    background(copy(you.background)){
     }
 
     Value time;
@@ -4739,6 +5494,10 @@ public:
                       (int) evaluateNumber(move, environment, 0),
                       evaluateBool(background, environment, true));
     }
+
+    StateController * deepCopy() const {
+        return new ControllerPause(*this);
+    }
 };
 
 class ControllerParentVarSet: public StateController {
@@ -4750,6 +5509,14 @@ public:
         floatIndex = extractAttribute(section, "fv");
         floatValue = extractAttribute(section, "value");
         parse(section);
+    }
+
+    ControllerParentVarSet(const ControllerParentVarSet & you):
+    StateController(you),
+    integerIndex(copy(you.integerIndex)),
+    floatIndex(copy(you.floatIndex)),
+    integerValue(copy(you.integerValue)),
+    floatValue(copy(you.floatValue)){
     }
 
     Value integerIndex;
@@ -4788,6 +5555,10 @@ public:
             /* TODO */
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerParentVarSet(*this);
+    }
 };
         
 class ControllerDisplayToClipboard: public StateController {
@@ -4797,6 +5568,11 @@ public:
     message(false){
     }
 
+    ControllerDisplayToClipboard(const ControllerDisplayToClipboard & you):
+    StateController(you),
+    message(you.message){
+    }
+
     mutable bool message;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -4804,6 +5580,10 @@ public:
             Global::debug(0) << "Warning: DisplayToClipboard is unimplemented" << endl;
             message = true;
         }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerDisplayToClipboard(*this);
     }
 };
 
@@ -4817,10 +5597,19 @@ public:
         }
     }
 
+    ControllerAttackMulSet(const ControllerAttackMulSet & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
     Value value;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         guy.setAttackMultiplier(evaluateNumber(value, FullEnvironment(stage, guy, commands), 1));
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerAttackMulSet(*this);
     }
 };
 
@@ -4835,11 +5624,24 @@ public:
         parse(section);
     }
 
+    ControllerHitOverride(const ControllerHitOverride & you):
+    StateController(you),
+    attribute(you.attribute),
+    slot(copy(you.slot)),
+    state(copy(you.state)),
+    time(copy(you.time)),
+    forceAir(copy(you.forceAir)){
+    }
+
     string attribute;
     Value slot;
     Value state;
     Value time;
     Value forceAir;
+
+    StateController * deepCopy() const {
+        return new ControllerHitOverride(*this);
+    }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
@@ -4880,10 +5682,22 @@ public:
         parse(section);
     }
 
+    ControllerBindToParent(const ControllerBindToParent & you):
+    StateController(you),
+    time(copy(you.time)),
+    facing(copy(you.facing)),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
     Value time;
     Value facing;
     Value x;
     Value y;
+
+    StateController * deepCopy() const {
+        return new ControllerBindToParent(*this);
+    }
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
@@ -4923,8 +5737,36 @@ public:
         parse(section);
     }
 
+    ControllerReversalDef(const ControllerReversalDef & you):
+    StateController(you),
+    hit(you.hit){
+    }
+
     struct Data{
+        Data(){
+        }
+
+        Data(const Data & you):
+        pause(you.pause),
+        spark(you.spark),
+        hitSound(you.hitSound),
+        player1State(copy(you.player1State)),
+        player2State(copy(you.player2State)),
+        standing(you.standing),
+        crouching(you.crouching),
+        aerial(you.aerial),
+        attributes(you.attributes){
+        }
+
         struct Pause{
+            Pause(){
+            }
+
+            Pause(const Pause & you):
+            player1(copy(you.player1)),
+            player2(copy(you.player2)){
+            }
+
             Value player1;
             Value player2;
         } pause;
@@ -4932,6 +5774,12 @@ public:
         int spark;
 
         struct HitSound{
+            HitSound(const HitSound & you):
+            own(you.own),
+            group(you.group),
+            item(you.item){
+            }
+
             HitSound():
                 own(false),
                 group(-1),
@@ -5076,6 +5924,10 @@ public:
         data.aerial = hit.aerial;
         data.attributes = hit.attributes;
     }
+
+    StateController * deepCopy() const {
+        return new ControllerReversalDef(*this);
+    }
 };
 
 class ControllerProjectile: public StateController {
@@ -5083,6 +5935,10 @@ public:
     ControllerProjectile(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
         parse(section);
+    }
+
+    ControllerProjectile(const ControllerProjectile & you):
+    StateController(you){
     }
 
     void parse(Ast::Section * section){
@@ -5162,6 +6018,10 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
     }
+
+    StateController * deepCopy() const {
+        return new ControllerProjectile(*this);
+    }
 };
 
 class ControllerAllPalFX: public ControllerPalFX {
@@ -5170,11 +6030,18 @@ public:
     ControllerPalFX(section, name, state){
     }
 
+    ControllerAllPalFX(const ControllerAllPalFX & you):
+    ControllerPalFX(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
     }
-};
 
+    StateController * deepCopy() const {
+        return new ControllerAllPalFX(*this);
+    }
+};
 
 class ControllerPowerSet: public StateController {
 public:
@@ -5183,10 +6050,19 @@ public:
         extractValue(value, section);
     }
 
+    ControllerPowerSet(const ControllerPowerSet & you):
+    StateController(you),
+    value(copy(you.value)){
+    }
+
     Value value;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         guy.setPower(evaluateNumber(value, FullEnvironment(stage, guy, commands), 0));
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerPowerSet(*this);
     }
 };
 
@@ -5199,12 +6075,22 @@ public:
         y = extractAttribute(section, "y");
     }
 
+    ControllerOffset(const ControllerOffset & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)){
+    }
+
     Value x, y;
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         guy.setDrawOffset(evaluateNumber(x, environment, 0),
                           evaluateNumber(y, environment, 0));
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerOffset(*this);
     }
 };
 
@@ -5223,6 +6109,12 @@ public:
         }
     }
 
+    ControllerExplodBindTime(const ControllerExplodBindTime & you):
+    StateController(you),
+    id(copy(you.id)),
+    time(copy(you.time)){
+    }
+
     Value id;
     Value time;
 
@@ -5235,6 +6127,10 @@ public:
             effect->setBindTime(bind);
         }
     }
+    
+    StateController * deepCopy() const {
+        return new ControllerExplodBindTime(*this);
+    }
 };
 
 class ControllerTrans: public StateController {
@@ -5243,6 +6139,13 @@ public:
     StateController(name, state, section),
     trans(Default){
         parse(section);
+    }
+
+    ControllerTrans(const ControllerTrans & you):
+    StateController(you),
+    trans(you.trans),
+    alphaSource(copy(you.alphaSource)),
+    alphaDestination(copy(you.alphaDestination)){
     }
 
     TransType trans;
@@ -5290,6 +6193,10 @@ public:
             guy.setTransOverride(trans, alphaFrom, alphaTo);
         }
     }
+
+    StateController * deepCopy() const {
+        return new ControllerTrans(*this);
+    }
 };
 
 class ControllerAppendToClipboard: public StateController {
@@ -5298,8 +6205,16 @@ public:
     StateController(name, state, section){
     }
 
+    ControllerAppendToClipboard(const ControllerAppendToClipboard & you):
+    StateController(you){
+    }
+
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         Global::debug(0) << "AppendToClipboard is not implemented" << endl;
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerAppendToClipboard(*this);
     }
 };
 
@@ -5307,6 +6222,14 @@ class ControllerClearClipboard: public StateController {
 public:
     ControllerClearClipboard(Ast::Section * section, const string & name, int state):
     StateController(name, state, section){
+    }
+
+    ControllerClearClipboard(const ControllerClearClipboard & you):
+    StateController(you){
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerClearClipboard(*this);
     }
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
@@ -5503,8 +6426,16 @@ StateController * StateController::compile(Ast::Section * section, const string 
                     StateController(name, state, section){
                     }
 
+                DefaultController(const DefaultController & you):
+                StateController(you){
+                }
+
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
                     /* nothing */
+                }
+
+                StateController * deepCopy() const {
+                    return new DefaultController(*this);
                 }
             };
 

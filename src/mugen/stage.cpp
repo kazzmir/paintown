@@ -1042,7 +1042,7 @@ void MugenStage::logic( ){
 
                 if (isaPlayer(player)){
                     // Lets check their boundaries and camera whateva
-                    updatePlayer( player );
+                    updatePlayer(player);
 
                     // Update old position
                     playerInfo[player].oldx = player->getX();
@@ -1894,7 +1894,8 @@ void MugenStage::setEnvironmentColor(int color, int time, bool under){
 }
     
 void MugenStage::removeHelper(Mugen::Character * who){
-    /* TODO */
+    /* The character will ultimately be removed in the logic loop */
+    who->setHealth(-1);
 }
     
 void MugenStage::removeEffects(const Mugen::Character * owner, int id){

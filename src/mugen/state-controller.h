@@ -138,6 +138,8 @@ public:
 
     static bool handled(const Ast::AttributeSimple & simple);
 
+    virtual StateController * deepCopy() const = 0;
+
     virtual inline void setType(Type type){
         this->type = type;
     }

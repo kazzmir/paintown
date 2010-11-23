@@ -469,6 +469,8 @@ public:
         return id;
     }
 
+    virtual State * deepCopy() const;
+
     virtual inline void setControl(Compiler::Value * control){
         changeControl = true;
         this->control = control;
@@ -700,6 +702,9 @@ public:
     virtual inline int getCurrentState() const {
         return this->currentState;
     }
+
+    virtual State * getState(int id) const;
+    virtual void setState(int id, State * what);
 
         virtual inline std::string getStateType() const {
             return stateType;

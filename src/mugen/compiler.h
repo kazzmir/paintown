@@ -17,6 +17,7 @@ namespace Compiler{
         Value();
         virtual RuntimeValue evaluate(const Environment & environment) const = 0;
         virtual std::string toString() const;
+        virtual Value * copy() const = 0;
         virtual ~Value();
     };
 
@@ -27,6 +28,7 @@ namespace Compiler{
     Value * compile(const Ast::Value * input);
     Value * compile(int immediate);
     Value * compile(double immediate);
+    Value * copy(Value * value);
 }
 
 }

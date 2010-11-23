@@ -105,6 +105,28 @@ moveType(Move::Idle),
 juggle(0),
 hitDefPersist(false){
 }
+    
+State * State::deepCopy() const {
+    State * state = new State(id);
+    state->type = this->type;
+    state->animation = Compiler::copy(this->animation);
+    state->changeControl = this->changeControl;
+    state->control = Compiler::copy(this->control);
+    state->changeVelocity = this->changeVelocity;
+    state->velocity_x = Compiler::copy(this->velocity_x);
+    state->velocity_y = Compiler::copy(this->velocity_y);
+    state->changePhysics = this->changePhysics;
+    state->changePower = this->changePower;
+    state->powerAdd = Compiler::copy(this->powerAdd);
+    state->moveType = this->moveType;
+    state->juggle = Compiler::copy(this->juggle);
+    state->hitDefPersist = this->hitDefPersist;
+    for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
+        StateController * controller = *it;
+        state->addController(controller->deepCopy());
+    }
+    return state;
+}
 
 void State::addController(StateController * controller){
 #if 0
@@ -1710,6 +1732,10 @@ void Character::fixAssumptions(){
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
                     guy.resetJump(stage, commands);
                 }
+
+                virtual StateController * deepCopy() const {
+                    return new InternalJumpController();
+                }
             };
 
             InternalJumpController * controller = new InternalJumpController();
@@ -1742,6 +1768,10 @@ void Character::fixAssumptions(){
 
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
                     guy.doubleJump(stage, commands);
+                }
+
+                StateController * deepCopy() const {
+                    return new InternalDoubleJumpController();
                 }
             };
 
@@ -1776,6 +1806,10 @@ void Character::fixAssumptions(){
 
                 virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
                     guy.stopGuarding(stage, commands);
+                }
+
+                StateController * deepCopy() const {
+                    return new StopGuardStandController();
                 }
             };
 
@@ -2777,6 +2811,18 @@ void Character::setHitOverride(int slot, const string & attribute, int state, in
 
 void Character::setDrawOffset(double x, double y){
     drawOffset.set(x, y);
+}
+    
+State * Character::getState(int id) const {
+    if (states.find(id) != states.end()){
+        return states.find(id)->second;
+    }
+    return NULL;
+}
+
+void Character::setState(int id, State * what){
+    delete states[id];
+    states[id] = what;
 }
         
 }

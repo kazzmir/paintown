@@ -8,13 +8,25 @@ using namespace std;
 namespace Mugen{
 
 Helper::Helper(Character & owner):
-Object(owner),
+Character(owner),
 owner(owner){
+    behavior = &dummy;
 }
 
 Helper::~Helper(){
 }
+    
+bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, int stateNumber){
+    if (getState(stateNumber) == NULL){
+        State * state = owner.getState(stateNumber);
+        if (state != NULL){
+            setState(stateNumber, state->deepCopy());
+        }
+    }
+    return doStates(stage, active, stateNumber);
+}
 
+#if 0
 /* FIXME */
 bool Helper::isPaused(){
     return false;
@@ -215,5 +227,6 @@ double Helper::minZDistance() const {
 /* FIXME */
 void Helper::attacked( World * world, Paintown::Object * something, std::vector< Paintown::Object * > & objects ){
 }
+#endif
 
 }
