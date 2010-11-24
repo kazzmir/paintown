@@ -5378,7 +5378,7 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         /* FIXME */
-        Mugen::Helper * helper = new Mugen::Helper(guy);
+        Mugen::Helper * helper = new Mugen::Helper(guy, (int) evaluateNumber(id, environment, 0));
         helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
         stage.addObject(helper);
     }
@@ -5569,7 +5569,18 @@ public:
 
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
-            /* TODO */
+            Mugen::Helper & helper = *(Mugen::Helper*)&guy;
+            Character & parent = helper.getParent();
+            FullEnvironment environment(stage, guy, commands);
+            if (floatIndex != NULL && floatValue != NULL){
+                parent.setFloatVariable((int) evaluateNumber(floatIndex, environment, 0), floatValue->evaluate(environment));
+            }
+
+            if (integerIndex != NULL && integerValue != NULL){
+                parent.setVariable((int) evaluateNumber(integerIndex, environment, 0), integerValue->evaluate(environment));
+            }
+        } else {
+            Global::debug(0) << "Warning, trying to use ParentVarSet on a non-helper" << endl;
         }
     }
 

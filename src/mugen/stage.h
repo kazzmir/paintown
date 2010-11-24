@@ -17,6 +17,7 @@ namespace Console{
 
 namespace Mugen{
     class Character;
+    class Helper;
     class Object;
     class Background;
     class Spark;
@@ -220,6 +221,7 @@ public:
     virtual void addEffect(Mugen::Effect * effect);
     virtual void removeEffects(const Mugen::Character * owner, int id);
     virtual int countMyEffects(const Mugen::Character * owner) const;
+    virtual std::vector<Mugen::Helper*> findHelpers(const Mugen::Character * owner, int id) const;
     virtual Mugen::Effect * findEffect(const Mugen::Character * owner, int id);
     virtual std::vector<Mugen::Effect *> findEffects(const Mugen::Character * owner, int id);
 

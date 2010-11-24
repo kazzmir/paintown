@@ -180,6 +180,7 @@ Win
 #include "exception.h"
 #include "characterhud.h"
 #include "character.h"
+#include "helper.h"
 #include "stage.h"
 #include "util/funcs.h"
 #include "util/regex.h"
@@ -1493,8 +1494,14 @@ public:
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    const Character & guy = environment.getCharacter();
+                    if (guy.isHelper()){
+                        const Mugen::Helper & myhelper = *(const Mugen::Helper*)&guy;
+                        Character & parent = myhelper.getParent();
+                        FullEnvironment parentEnvironment(environment.getStage(), parent, environment.getCommands());
+                        return argument->evaluate(parentEnvironment);
+                    }
+                    throw MugenException("Cannot redirect to a parent from a non-helper");
                 }
             };
 
@@ -2447,8 +2454,8 @@ public:
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    std::vector<Mugen::Helper*> helpers = environment.getStage().findHelpers(&environment.getCharacter(), (int) argument->evaluate(environment).toNumber());
+                    return RuntimeValue((int) helpers.size());
                 }
             };
 

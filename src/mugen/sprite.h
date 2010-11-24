@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "mugen/util.h"
+#include "util.h"
 
 class Bitmap;
 

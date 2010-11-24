@@ -7,9 +7,10 @@ using namespace std;
 
 namespace Mugen{
 
-Helper::Helper(Character & owner):
+Helper::Helper(Character & owner, int id):
 Character(owner),
-owner(owner){
+owner(owner),
+id(id){
     behavior = &dummy;
 }
 

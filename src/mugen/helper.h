@@ -6,8 +6,12 @@ namespace Mugen{
 /* copy all data from the parent somehow, maybe lazily. to speed things up */
 class Helper: public Character {
 public:
-    Helper(Character & parent);
+    Helper(Character & parent, int id);
     virtual ~Helper();
+
+    virtual inline int getHelperId() const {
+        return id;
+    }
         
     virtual bool isHelper() const;
     using Character::getAnimation;
@@ -15,12 +19,17 @@ public:
     using Character::getState;
     virtual State * getState(int id) const;
 
+    inline Character & getParent() const {
+        return owner;
+    }
+
 protected:
     Character & owner;
     HitDefinition hit;
     DummyBehavior dummy;
     mutable std::map< int, MugenAnimation * > proxyAnimations;
     mutable std::map< int, State *> proxyStates;
+    int id;
 };
 
 }

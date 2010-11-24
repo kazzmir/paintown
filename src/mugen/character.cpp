@@ -391,6 +391,8 @@ Object(copy),
 commonSounds(NULL),
 currentState(copy.currentState),
 previousState(copy.previousState),
+xscale(copy.xscale),
+yscale(copy.yscale),
 currentAnimation(copy.currentAnimation)
 {
 }
@@ -2437,7 +2439,6 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             MugenSprite::draw(fixed, frame.x - cameraX + drawOffset.x + frame.sprite->xoffset, frame.y - cameraY + drawOffset.y + frame.sprite->yoffset, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
         }
 
-        /* TODO: add transOverride stuff here */
         animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
     }
 

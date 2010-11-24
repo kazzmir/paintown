@@ -30,6 +30,7 @@
 #include "ast/all.h"
 #include "util/timedifference.h"
 #include "character.h"
+#include "helper.h"
 
 #include "parse-cache.h"
 #include "parser/all.h"
@@ -1908,6 +1909,21 @@ void MugenStage::removeEffects(const Mugen::Character * owner, int id){
             it++;
         }
     }
+}
+    
+vector<Mugen::Helper*> MugenStage::findHelpers(const Mugen::Character * owner, int id) const {
+    vector<Mugen::Helper*> out;
+    for (vector<Paintown::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        /* FIXME! dont assume its a character */
+        Mugen::Character * who = (Mugen::Character*) *it;
+        if (who->isHelper()){
+            Mugen::Helper * helper = (Mugen::Helper*) who;
+            if (helper->getHelperId() == id && &helper->getParent() == owner){
+                out.push_back(helper);
+            }
+        }
+    }
+    return out;
 }
     
 Mugen::Effect * MugenStage::findEffect(const Mugen::Character * owner, int id){
