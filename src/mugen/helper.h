@@ -8,15 +8,19 @@ class Helper: public Character {
 public:
     Helper(Character & parent);
     virtual ~Helper();
-
-protected:
-    virtual bool doStates(MugenStage & stage, const std::vector<std::string> & active, int stateNumber);
+        
+    virtual bool isHelper() const;
+    using Character::getAnimation;
+    virtual MugenAnimation * getAnimation(int id) const;
+    using Character::getState;
+    virtual State * getState(int id) const;
 
 protected:
     Character & owner;
     HitDefinition hit;
     DummyBehavior dummy;
-
+    mutable std::map< int, MugenAnimation * > proxyAnimations;
+    mutable std::map< int, State *> proxyStates;
 };
 
 }

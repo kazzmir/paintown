@@ -3131,6 +3131,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int index = (int) this->index->evaluate(environment).toNumber();
                     MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    if (animation == NULL){
+                        throw MugenException("Current animation is NULL");
+                    }
                     return RuntimeValue(animation->animationElementElapsed(index));
                 }
             };

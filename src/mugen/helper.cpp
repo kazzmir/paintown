@@ -14,8 +14,34 @@ owner(owner){
 }
 
 Helper::~Helper(){
-}
+    for (map<int, MugenAnimation*>::iterator it = proxyAnimations.begin(); it != proxyAnimations.end(); it++){
+        MugenAnimation * animation = it->second;
+        delete animation;
+    }
     
+    for (map<int, State*>::iterator it = proxyStates.begin(); it != proxyStates.end(); it++){
+        State * state = (*it).second;
+        delete state;
+    }
+}
+
+State * Helper::getState(int id) const {
+    map<int, State*>::const_iterator findIt = proxyStates.find(id);
+    if (findIt == proxyStates.end()){
+        State * dad = owner.getState(id);
+        if (dad != NULL){
+            /* this is why proxyAnimations has to be mutable */
+            proxyStates[id] = dad->deepCopy();
+            return proxyStates[id];
+        }
+    } else {
+        return findIt->second;
+    }
+    return NULL;
+
+}
+
+/*
 bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, int stateNumber){
     if (getState(stateNumber) == NULL){
         State * state = owner.getState(stateNumber);
@@ -23,7 +49,27 @@ bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, in
             setState(stateNumber, state->deepCopy());
         }
     }
-    return doStates(stage, active, stateNumber);
+    return Character::doStates(stage, active, stateNumber);
+}
+*/
+    
+MugenAnimation * Helper::getAnimation(int id) const {
+    map<int, MugenAnimation*>::const_iterator findIt = proxyAnimations.find(id);
+    if (findIt == proxyAnimations.end()){
+        if (owner.hasAnimation(id)){
+            MugenAnimation * dad = owner.getAnimation(id);
+            /* this is why proxyAnimations has to be mutable */
+            proxyAnimations[id] = new MugenAnimation(*dad);
+            return proxyAnimations[id];
+        }
+    } else {
+        return findIt->second;
+    }
+    return NULL;
+}
+    
+bool Helper::isHelper() const {
+    return true;
 }
 
 #if 0

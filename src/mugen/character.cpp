@@ -388,7 +388,11 @@ commonSounds(NULL){
 
 Character::Character( const Character & copy ):
 Object(copy),
-commonSounds(NULL){
+commonSounds(NULL),
+currentState(copy.currentState),
+previousState(copy.previousState),
+currentAnimation(copy.currentAnimation)
+{
 }
 
 Character::~Character(){
@@ -743,8 +747,8 @@ void Character::changeState(MugenStage & stage, int stateNumber, const vector<st
     previousState = currentState;
     currentState = stateNumber;
     resetStateTime();
-    if (states[currentState] != 0){
-        State * state = states[currentState];
+    if (getState(currentState) != NULL){
+        State * state = getState(currentState);
         state->transitionTo(stage, *this);
         doStates(stage, inputs, currentState);
     } else {
@@ -1608,9 +1612,7 @@ void Character::destroyRaw(const map< unsigned int, std::map< unsigned int, Muge
 }
         
 bool Character::hasAnimation(int index) const {
-    typedef std::map< int, MugenAnimation * > Animations;
-    Animations::const_iterator it = getAnimations().find(index);
-    return it != getAnimations().end();
+    return getAnimation(index) != NULL;
 }
 
 /* completely arbitrary number, just has to be unique and unlikely to
@@ -1965,6 +1967,8 @@ void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensit
 }
 
 MugenAnimation * Character::getCurrentAnimation() const {
+    return getAnimation(currentAnimation);
+    /*
     typedef std::map< int, MugenAnimation * > Animations;
     Animations::const_iterator it = getAnimations().find(currentAnimation);
     if (it != getAnimations().end()){
@@ -1972,6 +1976,7 @@ MugenAnimation * Character::getCurrentAnimation() const {
         return animation;
     }
     return NULL;
+    */
 }
 
 /* returns all the commands that are currently active */
@@ -2203,8 +2208,8 @@ void Character::didHit(Object * enemy, MugenStage & stage){
     hitState.shakeTime = getHit().pause.player1;
     addPower(getHit().getPower.hit);
 
-    if (states[getCurrentState()]->powerChanged()){
-        addPower(states[getCurrentState()]->getPower()->evaluate(FullEnvironment(stage, *this)).toNumber());
+    if (getState(getCurrentState())->powerChanged()){
+        addPower(getState(getCurrentState())->getPower()->evaluate(FullEnvironment(stage, *this)).toNumber());
     }
 
     /* if he is already in a Hit state then increase combo */
@@ -2272,8 +2277,8 @@ void Character::wasHit(MugenStage & stage, Object * enemy, const HitDefinition &
 /* returns true if a state change occured */
 bool Character::doStates(MugenStage & stage, const vector<string> & active, int stateNumber){
     int oldState = getCurrentState();
-    if (states[stateNumber] != 0){
-        State * state = states[stateNumber];
+    if (getState(stateNumber) != 0){
+        State * state = getState(stateNumber);
         for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
             StateController * controller = *it;
             Global::debug(2 * !controller->getDebug()) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
@@ -2328,8 +2333,8 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
     */
 
     MugenAnimation * animation = getCurrentAnimation();
-    /* this should never be 0... */
-    if (animation != 0){
+    /* this should never be NULL... */
+    if (animation != NULL){
         int x = getRX() - cameraX + drawOffset.x;
         int y = getRY() - cameraY + drawOffset.y;
 
