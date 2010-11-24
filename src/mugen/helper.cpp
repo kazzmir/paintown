@@ -27,6 +27,15 @@ Helper::~Helper(){
 }
 
 State * Helper::getState(int id) const {
+    /* states -3 and -2 are disabled for helpers */
+    if (id == -3 || id == -2){
+        return NULL;
+    }
+    /* state -1 should be disabled unless the helper was specifically created
+     * with input enabled. TODO */
+    if (id == -1){
+        return NULL;
+    }
     map<int, State*>::const_iterator findIt = proxyStates.find(id);
     if (findIt == proxyStates.end()){
         State * dad = owner.getState(id);
