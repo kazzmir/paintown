@@ -35,11 +35,11 @@ static int gfx = Global::WINDOWED;
 
 #define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
-static const char * DATAPATH_ARG[] = {"-d", "data", "datapath", "data-path", "path"};
-static const char * DEBUG_ARG[] = {"-l", "debug"};
+static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-path", "path"};
+static const char * DEBUG_ARG[] = {"-l", "--debug", "debug"};
 static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
-static const char * MUGEN_ARG[] = {"mugen"};
+static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
 static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
 static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 
@@ -88,15 +88,16 @@ static const char * all(const char * args[], const int num, const char separate 
 
 static void showOptions(){
 	Global::debug(0) << "Paintown by Jon Rafkind" << endl;
-	Global::debug(0) << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
-	Global::debug(0) << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2().path() << endl;
-	Global::debug(0) << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
-	Global::debug(0) << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
-        Global::debug(0) << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
-        Global::debug(0) << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
-        Global::debug(0) << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
+        Global::debug(0) << "Command line options" << endl;
+	Global::debug(0) << " " << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
+	Global::debug(0) << " " << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2().path() << endl;
+	Global::debug(0) << " " << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
+	Global::debug(0) << " " << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
+        Global::debug(0) << " " << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
+        Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
+        Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
 #ifdef HAVE_NETWORKING
-	Global::debug(0) << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
+	Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
 #endif
 	Global::debug(0) << endl;
 }
@@ -254,6 +255,11 @@ int paintown_main( int argc, char ** argv ){
     showOptions();
 
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
+
+    if (!Filesystem::exists(Util::getDataPath2())){
+        Global::debug(0) << "Cannot find data path '" << Util::getDataPath2().path() << "'! Either use the -d switch to specify the data directory or find the data directory and move it to that path" << endl;
+        return 1;
+    }
 
     /* time how long init takes */
     TimeDifference diff;
