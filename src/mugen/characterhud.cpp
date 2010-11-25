@@ -1124,8 +1124,15 @@ void Round::setState(const State & state, MugenStage & stage, Mugen::Character &
 	    player2.changeState(stage, Mugen::Initialize, vec);
 	    break;
 	case DisplayIntro:
+            /* The initialize state (5900) will call a change state controller
+             * to change to Intro (190) so there doesn't seem to be a need
+             * to force the characters to change to their intro's.
+             * Look in common1.cns
+             */
+            /*
             player1.changeState(stage, Mugen::Intro, vec);
             player2.changeState(stage, Mugen::Intro, vec);
+            */
 	    break;
 	case WaitForRound:
             player1.changeState(stage, Mugen::Standing, vec);

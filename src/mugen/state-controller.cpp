@@ -5154,8 +5154,19 @@ public:
 
 class ControllerHelper: public StateController {
 public:
+    enum PosType{
+        Player1,
+        Player2,
+        Front,
+        Back,
+        Left,
+        Right
+    };
+
+
     ControllerHelper(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section){
+    StateController(name, state, section),
+    posType(Player1){
         parse(section);
     }
 
@@ -5181,15 +5192,6 @@ public:
     headPosition(copy(you.headPosition)),
     midPosition(copy(you.midPosition)){
     }
-
-    enum PosType{
-        Player1,
-        Player2,
-        Front,
-        Back,
-        Left,
-        Right
-    };
 
     string name;
     Value id;
@@ -5380,6 +5382,12 @@ public:
         /* FIXME */
         Mugen::Helper * helper = new Mugen::Helper(guy, (int) evaluateNumber(id, environment, 0));
         helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
+        if (posType == Player1){
+            double x = evaluateNumber(posX, environment, 0) + guy.getRX();
+            double y = evaluateNumber(posY, environment, 0) + guy.getRY();
+            helper->setX(x);
+            helper->setY(y);
+        }
         stage.addObject(helper);
     }
 
