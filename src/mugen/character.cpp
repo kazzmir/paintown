@@ -388,12 +388,13 @@ commonSounds(NULL){
 
 Character::Character( const Character & copy ):
 Object(copy),
+xscale(copy.xscale),
+yscale(copy.yscale),
 commonSounds(NULL),
 currentState(copy.currentState),
 previousState(copy.previousState),
-xscale(copy.xscale),
-yscale(copy.yscale),
-currentAnimation(copy.currentAnimation)
+currentAnimation(copy.currentAnimation),
+debug(false)
 {
 }
 
