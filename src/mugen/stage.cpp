@@ -786,7 +786,7 @@ void MugenStage::physics(Paintown::Object * player){
     if (mugen->canTurn()){
         for (vector<Paintown::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Object * enemy = (Mugen::Object*) *enem;
-            if (enemy->getAlliance() != mugen->getAlliance()){
+            if (isaPlayer(enemy) && enemy->getAlliance() != mugen->getAlliance()){
                 if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Paintown::Object::FACING_RIGHT) ||
                     (enemy->getX() < mugen->getX() && mugen->getFacing() != Paintown::Object::FACING_LEFT)){
 		    mugen->doTurn(*this);
