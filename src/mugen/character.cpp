@@ -629,6 +629,14 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
             } else if (PaintownUtil::matchRegex(head, "state ")){
                 if (currentState != NULL){
                     currentState->addController(parseState(section));
+                } else {
+                    /* not all states in the .cmd file will have a statedef */
+                    StateController * controller = parseState(section);
+                    if (getState(controller->getState()) != NULL){
+                        getState(controller->getState())->addController(controller);
+                    } else {
+                        delete controller;
+                    }
                 }
             }
 
