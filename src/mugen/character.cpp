@@ -2023,6 +2023,8 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
     
     reversalActive = false;
 
+    special.reset();
+
     if (frozen){
         frozen = false;
     }
@@ -2334,6 +2336,10 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
     font.printf( x, y + font.getHeight() + 1, color, *work, "X %f Y %f", 0, (float) getXVelocity(), (float) getYVelocity());
     font.printf( x, y + font.getHeight() * 2 + 1, color, *work, "Time %d", 0, getStateTime());
     */
+
+    if (special.invisible){
+        return;
+    }
 
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be NULL... */
@@ -2728,7 +2734,9 @@ void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, doub
 }
         
 void Character::assertSpecial(Specials special){
-    /* TODO */
+    if (special == Invisible){
+        this->special.invisible = true;
+    }
 }
 
 void Character::enableHit(){

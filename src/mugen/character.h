@@ -1569,6 +1569,18 @@ public:
          * struct definition
          */
         virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply);
+
+        struct SpecialStuff{
+            SpecialStuff():
+            invisible(false){
+            }
+
+            void reset(){
+                invisible = false;
+            }
+
+            bool invisible;
+        } special;
 };
 
 }
