@@ -5163,7 +5163,6 @@ public:
         Right
     };
 
-
     ControllerHelper(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
     posType(Player1){
