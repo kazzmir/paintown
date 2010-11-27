@@ -154,18 +154,20 @@ void InputManager::poll(){
 void InputManager::_poll(){
     /* FIXME: not sure if its a good idea to put the event manager here */
     Util::EventManager eventManager;
+    /*
     if (bufferKeys){
         eventManager.enableKeyBuffer();
     }
-    eventManager.run();
+    */
+    eventManager.run(keyboard);
 
-    keyboard.poll();
+    // keyboard.poll();
     if (joystick != NULL){
         joystick->poll();
     }
 
-    const vector<Util::EventManager::KeyType> & keys = eventManager.getBufferedKeys();
-    bufferedKeys.insert(bufferedKeys.end(), keys.begin(), keys.end());
+    // const vector<Util::EventManager::KeyType> & keys = eventManager.getBufferedKeys();
+    // bufferedKeys.insert(bufferedKeys.end(), keys.begin(), keys.end());
 }
 
 vector<Input::PaintownInput> InputManager::_getInput(const Configuration & configuration, const int facing){

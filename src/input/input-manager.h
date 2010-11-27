@@ -122,11 +122,12 @@ protected:
         std::vector<int> all_keys;
         keyboard.readKeys(all_keys);
 
-        all_keys.insert(all_keys.end(), bufferedKeys.begin(), bufferedKeys.end());
+        // all_keys.insert(all_keys.end(), bufferedKeys.begin(), bufferedKeys.end());
+        // all_keys.insert(all_keys.end(), keyboard.currentKeys().begin(), keyboard.currentKeys.end());
         std::sort(all_keys.begin(), all_keys.end());
         removeDuplicates(all_keys);
         // std::unique(all_keys.begin(), all_keys.end());
-        bufferedKeys.clear();
+        // bufferedKeys.clear();
 
         input.read(all_keys, &output);
 
@@ -150,10 +151,10 @@ protected:
 
         std::vector<int> all_keys;
         keyboard.readKeys(all_keys);
-        all_keys.insert(all_keys.end(), bufferedKeys.begin(), bufferedKeys.end());
+        // all_keys.insert(all_keys.end(), bufferedKeys.begin(), bufferedKeys.end());
         std::sort(all_keys.begin(), all_keys.end());
         removeDuplicates(all_keys);
-        bufferedKeys.clear();
+        // bufferedKeys.clear();
         bool out = false;
 
         out = input.pressed(all_keys, result);
@@ -173,7 +174,7 @@ private:
     void * capture;
     Joystick * joystick;
     Keyboard keyboard;
-    std::vector<int> bufferedKeys;
+    // std::vector<int> bufferedKeys;
     bool bufferKeys;
 };
 

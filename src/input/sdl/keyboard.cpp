@@ -29,6 +29,7 @@ bool Keyboard::keypressed(){
     return false;
 }
 	
+#if 0
 void Keyboard::readKeys( std::vector<int> & all_keys ){
     int keys = 0;
     Uint8 * state = SDL_GetKeyState(&keys);
@@ -38,6 +39,17 @@ void Keyboard::readKeys( std::vector<int> & all_keys ){
     for (int i = 0; i < keys; i++){
         if (i != SDLK_NUMLOCK && state[i] == 1){
             all_keys.push_back(i);
+        }
+    }
+}
+#endif
+
+void Keyboard::readKeys(std::vector<int> & all_keys){
+    for (std::map<KeyType, KeyData>::iterator it = keyState.begin(); it != keyState.end(); it++){
+        KeyType key = it->first;
+        const KeyData & data = it->second;
+        if (data.enabled){
+            all_keys.push_back(key);
         }
     }
 }

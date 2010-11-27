@@ -231,13 +231,16 @@ static void * do_timer(void * arg){
      * 3          8          5
      * 3          9          6
      * Activate
+     *
+     * Can 'now' ever be much larger than 'ticks' due to overflow?
+     * It doesn't seem like it.
      */
     uint32_t ticks = SDL_GetTicks();
 
     /* TODO: pass in some variable that tells this loop to quit */
     while (true){
         uint32_t now = SDL_GetTicks();
-        while (now - ticks > delay){
+        while (now - ticks >= delay){
             // Global::debug(0) << "Tick!" << endl;
             info.tick();
             ticks += delay;
@@ -321,6 +324,7 @@ static void initSystem(ostream & out){
 
     SDL_WM_SetCaption("Paintown", NULL);
 
+    SDL_EnableUNICODE(1);
     SDL_JoystickEventState(1);
 
     atexit(SDL_Quit);

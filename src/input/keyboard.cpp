@@ -323,3 +323,12 @@ void Keyboard::setAllDelay( const int delay ){
     setDelay( Key_NUMLOCK, delay );
     setDelay( Key_CAPSLOCK, delay );
 }
+    
+void Keyboard::press(KeyType key, unicode_t unicode){
+    keyState[key].unicode = unicode;
+    keyState[key].enabled = true;
+}
+
+void Keyboard::release(KeyType key){
+    keyState[key].enabled = false;
+}

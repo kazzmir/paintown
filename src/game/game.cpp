@@ -418,7 +418,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players, dou
 
                 while (runCounter >= 1.0){
                     InputManager::poll();
-                    eventManager.run();
+                    // eventManager.run();
                     draw = true;
                     world.act();
                     console.act();
@@ -448,7 +448,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players, dou
         void rest(){
             Util::rest(1);
             InputManager::poll();
-            eventManager.run();
+            // eventManager.run();
         }
 
         void waitForQuit(){
@@ -635,7 +635,7 @@ void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, 
         }
     };
 
-    InputBuffer buffer;
+    // InputBuffer buffer;
 
     // Level::LevelInfo levelInfo = Level::readLevels( levelFile );
 
