@@ -140,7 +140,8 @@ const int Keyboard::Key_SCRLOCK = ::KEY_SCRLOCK;
 const int Keyboard::Key_NUMLOCK = ::KEY_NUMLOCK;
 const int Keyboard::Key_CAPSLOCK = ::KEY_CAPSLOCK;
 
-Keyboard::Keyboard(){
+Keyboard::Keyboard():
+enableBuffer(false){
 	for ( int q = 0; q < KEY_MAX; q++ ){
 		my_keys[ q ] = 0;
 	}

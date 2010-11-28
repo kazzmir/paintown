@@ -219,6 +219,8 @@ protected:
     std::map<int,int> key_delay;
 
     std::map<KeyType, KeyData> keyState;
+    std::vector<KeyData> buffer;
+    bool enableBuffer;
 };
 
 #endif

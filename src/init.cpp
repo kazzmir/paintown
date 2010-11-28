@@ -326,6 +326,7 @@ static void initSystem(ostream & out){
 
     SDL_EnableUNICODE(1);
     SDL_JoystickEventState(1);
+    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
     atexit(SDL_Quit);
     // atexit(doSDLQuit);

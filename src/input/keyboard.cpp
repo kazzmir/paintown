@@ -328,6 +328,9 @@ void Keyboard::press(KeyType key, unicode_t unicode){
     keyState[key].key = key;
     keyState[key].unicode = unicode;
     keyState[key].enabled = true;
+    if (enableBuffer){
+        buffer.push_back(keyState[key]);
+    }
 }
 
 void Keyboard::release(KeyType key){

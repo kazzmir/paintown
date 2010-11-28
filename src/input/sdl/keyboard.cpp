@@ -2,8 +2,8 @@
 #include "../keyboard.h"
 #include "util/funcs.h"
 
-Keyboard::Keyboard(){
-    /* TODO */
+Keyboard::Keyboard():
+enableBuffer(false){
 }
 
 void Keyboard::poll(){
