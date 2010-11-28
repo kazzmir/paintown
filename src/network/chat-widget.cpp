@@ -23,7 +23,7 @@ removeChatTimer(0),
 enable_chat(false),
 id(id){
     input.set(Keyboard::Key_T, 0, false, Talk);
-    chatInput.addHandle(Keyboard::Key_ENTER, do_finish_chat_input, this);
+    chatInput.addHandle(Keyboard::Key_ENTER, 10, do_finish_chat_input, this);
 }
 
 ChatWidget::~ChatWidget(){

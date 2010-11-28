@@ -15,7 +15,7 @@ struct KeyState{
         block(block),
         out(out),
         pressed(false),
-        last_read(last_read),
+        last_read(0),
         seen(0){
     }
 
@@ -140,12 +140,16 @@ public:
         }
         return false;
     }
+
+    virtual KeyState<X> * getState(int key){
+        return key_states[key];
+    }
     
     void read(const std::vector<int> & keys, Output * output){
         for (std::vector<int>::const_iterator it = keys.begin(); it != keys.end(); it++){
             Keyboard::KeyType key = *it;
-            KeyState<X> * state = key_states[key];
-            if (state != 0){
+            KeyState<X> * state = getState(key);
+            if (state != NULL){
                 bool use = false;
                 // Global::debug(0) << "read " << key << " last read is " << state->last_read << " my last read is " << last_read << std::endl;
                 if (state->block){

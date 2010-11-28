@@ -28,6 +28,7 @@ handle(201){
     set(Keyboard::Key_RSHIFT, 0, false, Shift);
     
     /* ugh, do we really have to enumerate every key?? */
+    /*
     set(Keyboard::Key_A, delay, false, 'a');
     set(Keyboard::Key_B, delay, false, 'b');
     set(Keyboard::Key_C, delay, false, 'c');
@@ -70,6 +71,7 @@ handle(201){
     set(Keyboard::Key_SPACE, delay, false, ' ');
     set(Keyboard::Key_COMMA, delay, false, ',');
     set(Keyboard::Key_STOP, delay, false, '.');
+    */
 }
 
 int TextInput::nextHandle(){
@@ -77,10 +79,16 @@ int TextInput::nextHandle(){
     handle += 1;
     return i;
 }
-    
-void TextInput::addHandle(int key, callback function, void * data){
+
+void TextInput::addBlockingHandle(int key, callback function, void * data){
     int handle = nextHandle();
-    set(key, 10, false, handle);
+    set(key, 1, true, handle);
+    callbacks[handle] = Callback(function, data);
+}
+    
+void TextInput::addHandle(int key, int delay, callback function, void * data){
+    int handle = nextHandle();
+    set(key, delay, false, handle);
     callbacks[handle] = Callback(function, data);
 }
 
@@ -149,6 +157,26 @@ void TextInput::doInput(){
             }
         }
 
+        for (map<int, Callback>::iterator it = callbacks.begin(); it != callbacks.end(); it++){
+            int handle = it->first;
+            if (inputState[handle]){
+                Callback callback = it->second;
+                callback.function(callback.data);
+            }
+        }
+
+        vector<Keyboard::unicode_t> text = InputManager::readText(*this, inputState);
+        for (vector<Keyboard::unicode_t>::iterator it = text.begin(); it != text.end(); it++){
+            Keyboard::unicode_t letter = *it;
+            // Global::debug(0) << "Unicode: " << letter << endl;
+            /* letters below 32 are mostly bogus */
+            /* FIXME: deal with unicodeness */
+            if (letter >= 32){
+                this->text << (unsigned char) letter;
+            }
+        }
+
+        /*
         for (InputMap<unsigned char>::Output::iterator it = inputState.begin(); it != inputState.end(); it++){
             unsigned char c = (*it).first;
             bool pressed = (*it).second;
@@ -163,6 +191,7 @@ void TextInput::doInput(){
                 }
             }
         }
+        */
 
             /*
         if (inputState[Esc]){
@@ -212,15 +241,59 @@ void TextInput::backspace(){
 
 void TextInput::deleteLastWord(){
     string now = text.str();
+    // Global::debug(0) << "Delete last word '" << now << "'" << endl;
+
+    if (now.size() > 0){
+        if (now.at(now.size() - 1) != ' '){
+            int here = now.size() - 1;
+            while (here > 0 && now.at(here) != ' '){
+                here -= 1;
+            }
+            if (now.at(here) == ' '){
+                here += 1;
+            }
+            now.erase(here);
+        } else {
+            int here = now.size() - 1;
+            while (here > 0 && now.at(here) == ' '){
+                here -= 1;
+            }
+            if (here > 0){
+                while (here > 0 && now.at(here) != ' '){
+                    here -= 1;
+                }
+                if (now.at(here) == ' '){
+                    here += 1;
+                }
+            }
+            now.erase(here);
+        }
+        text.str(now);
+        text.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
+        text.clear();
+    }
+
+    /*
     size_t get = now.rfind(" ");
     if (get != string::npos){
-        now = now.substr(0, get + 1);
+        Global::debug(0) << "get " << get << " size " << now.size() << endl;
+        if (get == now.size() - 1){
+            get = now.find_last_not_of(' ');
+            get = now.rfind(' ', get);
+            if (get != string::npos){
+                get = 0;
+            }
+            now.erase(get + 1);
+        } else {
+            now = now.substr(0, get + 1);
+        }
         text.str(now);
         text.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
         text.clear();
     } else {
         clearInput();
     }
+    */
 }
     
 TextInput::~TextInput(){

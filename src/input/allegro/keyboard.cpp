@@ -170,6 +170,18 @@ void Keyboard::poll(){
 		}
 	}
 }
+    
+std::vector<Keyboard::KeyData> Keyboard::readData(){
+    std::vector<Keyboard::KeyData> out;
+    /* TODO */
+    return out;
+}
+    
+std::vector<Keyboard::unicode_t> Keyboard::readText(){
+    std::vector<Keyboard::unicode_t> out;
+    /* TODO */
+    return out;
+}
 
 void Keyboard::readKeys( vector< int > & all_keys ){
 	for ( map<int,int>::const_iterator it = my_keys.begin(); it != my_keys.end(); it++ ){

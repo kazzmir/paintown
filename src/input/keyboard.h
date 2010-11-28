@@ -12,6 +12,21 @@ class Keyboard{
 public:
 
     typedef const int KeyType;
+    typedef uint32_t unicode_t;
+
+    struct KeyData{
+        KeyData():
+        key(-1),
+        unicode(-1),
+        enabled(false){
+        }
+
+        int key;
+        /* Converted to a unicode character in UTF-32 */
+        unicode_t unicode;
+        /* whether the key is being pressed */
+        bool enabled;
+    };
 
     Keyboard();
 
@@ -50,6 +65,9 @@ public:
      * Store all pressed keys in a user supplied vector
      */
     void readKeys(std::vector< int > & all_keys);
+    std::vector<KeyData> readData();
+    std::vector<unicode_t> readText();
+
     int readKey();
     void clear();
 
@@ -191,18 +209,7 @@ public:
     static KeyType Key_NUMLOCK;
     static KeyType Key_CAPSLOCK;
 
-    typedef uint32_t unicode_t;
-    struct KeyData{
-        KeyData():
-        unicode(-1),
-        enabled(false){
-        }
-
-        /* Converted to a unicode character in UTF-32 */
-        unicode_t unicode;
-        /* whether the key is being pressed */
-        bool enabled;
-    };
+    
 
     void press(KeyType key, unicode_t unicode);
     void release(KeyType key);

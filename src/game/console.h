@@ -6,6 +6,7 @@
 #include <sstream>
 #include <map>
 #include "input/input-map.h"
+#include "input/text-input.h"
 #include "util/file-system.h"
 
 class Bitmap;
@@ -56,7 +57,7 @@ public:
 
     /* for arbitrary data */
     template<typename T> Console & operator<<(const T & x){
-        textInput << x;
+        // textInput << x;
         return *this;
     }
 
@@ -91,12 +92,13 @@ protected:
     int textHeight;
     // Text width
     int textWidth;
-    std::vector<std::string>lines;
+    std::vector<std::string> lines;
     // Our text inputer
-    std::stringstream textInput;
-    std::stringstream currentCommand;
+    // std::stringstream textInput;
+    // std::stringstream currentCommand;
     unsigned int offset;
-    InputMap<char> input;
+    // InputMap<char> input;
+    TextInput textInput;
     std::map<std::string, Command*> commands;
     
     void checkStream();

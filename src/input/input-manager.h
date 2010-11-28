@@ -6,7 +6,7 @@
 #include "input.h"
 #include "input-map.h"
 #include "util/funcs.h"
-#include "input/keyboard.h"
+#include "keyboard.h"
 #include "exceptions/exception.h"
 
 class Configuration;
@@ -29,6 +29,15 @@ public:
     static void enableBufferInput();
     static void disableBufferInput();
     static void waitForKeys(int key1, int key2);
+
+    static std::vector<Keyboard::unicode_t> readText(){
+        return manager->keyboard.readText();
+    }
+
+    template <typename X>
+    static std::vector<Keyboard::unicode_t> readText(InputMap<X> & input, typename InputMap<X>::Output & output){
+        return manager->_readText(input, output);
+    }
 
     template <typename X>
     static typename InputMap<X>::Output getMap(InputMap<X> & input){
@@ -97,6 +106,21 @@ protected:
         if (capture == (void*) &input){
             capture = 0;
         }
+    }
+
+    template <typename X>
+    std::vector<Keyboard::unicode_t> _readText(InputMap<X> & input, typename InputMap<X>::Output & output){
+        std::vector<Keyboard::unicode_t> text;
+        std::vector<Keyboard::KeyData> all = keyboard.readData();
+        for (std::vector<Keyboard::KeyData>::iterator it = all.begin(); it != all.end(); it++){
+            const Keyboard::KeyData & data = *it;
+            KeyState<X> * state = input.getState(data.key);
+            if (state != NULL && output[state->out]){
+                text.push_back(data.unicode);
+            }
+        }
+
+        return text;
     }
 
     void removeDuplicates(std::vector<int> & storage){

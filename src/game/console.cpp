@@ -23,6 +23,11 @@ static int Enter = 6;
 
 ConsoleEnd Console::endl;
 
+static void doToggle(void * self){
+    Console * console = (Console*) self;
+    console->toggle();
+}
+
 Console::Console(const int maxHeight, const Filesystem::RelativePath & font):
 state(Closed),
 maxHeight(maxHeight),
@@ -31,6 +36,11 @@ font(font),
 textHeight(15),
 textWidth(15),
 offset(0){
+
+    const int delay = 10;
+    textInput.addBlockingHandle(Keyboard::Key_TILDE, doToggle, this);
+
+#if 0
     const int delay = 10;
     input.set(Keyboard::Key_TILDE, delay * 2, false, Toggle);
     input.set(Keyboard::Key_BACKSPACE, delay, false, Backspace);
@@ -68,10 +78,12 @@ offset(0){
     input.set(Keyboard::Key_SPACE, delay, false, ' ');
     input.set(Keyboard::Key_COMMA, delay, false, ',');
     input.set(Keyboard::Key_STOP, delay, false, '.');
+#endif
 }
 
 Console::~Console(){
-    InputManager::releaseInput(input);
+    textInput.disable();
+    // InputManager::releaseInput(input);
     for (map<string, Command*>::iterator it = commands.begin(); it != commands.end(); it++){
         delete (*it).second;
     }
@@ -127,6 +139,7 @@ bool Console::doInput() {
         return false;
     }
 
+#if 0
     InputMap<char>::Output inputState = InputManager::getMap(input);
 
     /* the order of reading input is arbitrary right now. I'm not
@@ -145,7 +158,11 @@ bool Console::doInput() {
         }
         clearInput();
     }
+#endif
 
+    textInput.doInput();
+
+#if 0
     /* ctrl-X keys */
     if (inputState[Control]){
         /* standard linux console commands */
@@ -160,6 +177,13 @@ bool Console::doInput() {
         }
     }
 
+    vector<Keyboard::unicode_t> text = InputManager::readText();
+    for (vector<Keyboard::unicode_t>::iterator it = text.begin(); it != text.end(); it++){
+        currentCommand << (char) *it;
+    }
+#endif
+
+    /*
     for (InputMap<char>::Output::iterator it = inputState.begin(); it != inputState.end(); it++){
         char c = (*it).first;
         bool pressed = (*it).second;
@@ -167,15 +191,20 @@ bool Console::doInput() {
             currentCommand << c;
         }
     }
+    */
 
+    /*
     if (inputState[Esc]){
         InputManager::releaseInput(input);
         throw Exception::Return(__FILE__, __LINE__);
     }
+    */
 
+    /*
     if (inputState[Backspace]){
         backspace();
     }
+    */
 
     return true;
 }
@@ -199,7 +228,7 @@ void Console::draw(const Bitmap & work){
                     start -= font.getHeight();
                 }
             }
-            font.printf(0, height - font.getHeight(), Bitmap::makeColor(255,255,255), work, "> " + currentCommand.str(), 0);
+            font.printf(0, height - font.getHeight(), Bitmap::makeColor(255,255,255), work, "> " + textInput.getText(), 0);
         // }
     }
 }
@@ -209,13 +238,15 @@ void Console::toggle(){
         case Open:
         case Opening: {
             state = Closing;
-            InputManager::releaseInput(input);
+            textInput.disable();
+            // InputManager::releaseInput(input);
             break;
         }
         case Closed:
         case Closing: {
             state = Opening;
-            InputManager::captureInput(input);
+            textInput.enable();
+            // InputManager::captureInput(input);
             break;
         }
     }
@@ -250,14 +281,17 @@ void Console::process(const string & command){
 }
 
 void Console::backspace(){
+    /*
     string now = currentCommand.str();
     now = now.substr(0, now.size()-1);
     currentCommand.str(now);
     currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
     currentCommand.clear();
+    */
 }
 
 void Console::deleteLastWord(){
+    /*
     string now = currentCommand.str();
     size_t get = now.rfind(" ");
     if (get != string::npos){
@@ -268,35 +302,46 @@ void Console::deleteLastWord(){
     } else {
         clearInput();
     }
+    */
 }
 
 void Console::clearInput(){
+    /*
     currentCommand.str(string());
     currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
     currentCommand.clear();
+    */
 }
     
 Console & Console::operator<<(const ConsoleEnd & e){
-    checkStream();
+    // checkStream();
     return *this;
 }
 
 void Console::clear(){
+    /*
     lines.clear();
     textInput.str("");
     textInput.clear();
+    */
 }
 
 std::stringstream & Console::add(){
+    /*
     checkStream();
     return textInput;
+    */
+    std::stringstream x;
+    return x;
 }
 
 void Console::checkStream(){
+    /*
     if (!textInput.str().empty()){
 	lines.push_back(textInput.str());
 	textInput.str("");
     }
+    */
 }
 
 }

@@ -325,6 +325,7 @@ void Keyboard::setAllDelay( const int delay ){
 }
     
 void Keyboard::press(KeyType key, unicode_t unicode){
+    keyState[key].key = key;
     keyState[key].unicode = unicode;
     keyState[key].enabled = true;
 }

@@ -31,7 +31,8 @@ public:
     void enable();
     void disable();
 
-    void addHandle(int key, callback function, void * data);
+    void addHandle(int key, int delay, callback function, void * data);
+    void addBlockingHandle(int key, callback function, void * data);
 
     std::string getText();
 
@@ -44,6 +45,15 @@ public:
 
     void backspace();
     void deleteLastWord();
+    
+    virtual KeyState<unsigned char> * getState(int key){
+        KeyState<unsigned char> * state = InputMap<unsigned char>::getState(key);
+        if (state == NULL){
+            set(key, 10, false, key);
+            state = InputMap<unsigned char>::getState(key);
+        }
+        return state;
+    }
 
     virtual ~TextInput();
 
