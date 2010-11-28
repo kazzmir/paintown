@@ -486,7 +486,7 @@ public:
 
         if (identifier == "numpartner"){
             /* FIXME: return 1 in team mode */
-            return compile(1);
+            return compile(0);
         }
 
         if (identifier == "p1name" ||

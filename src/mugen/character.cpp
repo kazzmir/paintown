@@ -394,7 +394,8 @@ commonSounds(NULL),
 currentState(copy.currentState),
 previousState(copy.previousState),
 currentAnimation(copy.currentAnimation),
-debug(false)
+debug(false),
+needToGuard(false)
 {
 }
 
@@ -532,7 +533,9 @@ void Character::addCommand(Command * command){
 
 void Character::setAnimation(int animation){
     currentAnimation = animation;
-    getCurrentAnimation()->reset();
+    if (getCurrentAnimation() != NULL){
+        getCurrentAnimation()->reset();
+    }
 }
 
 void Character::loadCmdFile(const Filesystem::RelativePath & path){
