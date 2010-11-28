@@ -54,30 +54,6 @@ void Keyboard::readKeys(std::vector<int> & all_keys){
     }
 }
 
-std::vector<Keyboard::KeyData> Keyboard::readData(){
-    std::vector<Keyboard::KeyData> out;
-    for (std::map<KeyType, KeyData>::iterator it = keyState.begin(); it != keyState.end(); it++){
-        KeyType key = it->first;
-        const KeyData & data = it->second;
-        if (data.enabled){
-            out.push_back(data);
-        }
-    }
-    return out;
-}
-
-std::vector<Keyboard::unicode_t> Keyboard::readText(){
-    std::vector<Keyboard::unicode_t> out;
-    for (std::map<KeyType, KeyData>::iterator it = keyState.begin(); it != keyState.end(); it++){
-        KeyType key = it->first;
-        const KeyData & data = it->second;
-        if (data.enabled){
-            out.push_back(data.unicode);
-        }
-    }
-    return out;
-}
-
 int Keyboard::readKey(){
     std::vector<int> keys;
     do{

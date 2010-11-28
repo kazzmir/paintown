@@ -1,5 +1,6 @@
 #include <allegro.h>
 #include "../keyboard.h"
+#include "util/thread.h"
 #include "util/funcs.h"
 #include "globals.h"
 #include <iostream>
@@ -140,12 +141,38 @@ const int Keyboard::Key_SCRLOCK = ::KEY_SCRLOCK;
 const int Keyboard::Key_NUMLOCK = ::KEY_NUMLOCK;
 const int Keyboard::Key_CAPSLOCK = ::KEY_CAPSLOCK;
 
+static Util::Thread::Lock keyboardData;
+
+static vector<Keyboard::KeyData> stolenKeys;
+static int steal_keys(int unicode, int * scancode){
+    // Global::debug(0) << "Steal key " << unicode << " " << *scancode << endl;
+    Util::Thread::acquireLock(&keyboardData);
+    stolenKeys.push_back(Keyboard::KeyData(*scancode, unicode, true));
+    Util::Thread::releaseLock(&keyboardData);
+    return unicode;
+}
+
+static map<int, bool> stolenPresses;
+static void steal_scancode(int scancode){
+    Util::Thread::acquireLock(&keyboardData);
+    if (scancode & 0x80){
+        stolenPresses[scancode & 0x7f] = false;
+    } else {
+        stolenPresses[scancode & 0x7f] = true;
+    }
+    Util::Thread::releaseLock(&keyboardData);
+}
+
 Keyboard::Keyboard():
 enableBuffer(false){
 	for ( int q = 0; q < KEY_MAX; q++ ){
 		my_keys[ q ] = 0;
 	}
 	setAllDelay( 0 );
+
+        Util::Thread::initializeLock(&keyboardData);
+        ::keyboard_ucallback = steal_keys;
+        ::keyboard_lowlevel_callback = steal_scancode;
 }
 
 /* KEY_MAX is defined in allegro at
@@ -153,6 +180,33 @@ enableBuffer(false){
  */
 void Keyboard::poll(){
 
+    // keyState.clear();
+    Util::Thread::acquireLock(&keyboardData);
+    for (vector<KeyData>::iterator it = stolenKeys.begin(); it != stolenKeys.end(); it++){
+        const KeyData & data = *it;
+        keyState[data.key] = data;
+    }
+    stolenKeys.clear();
+
+    for (map<int, bool>::iterator it = stolenPresses.begin(); it != stolenPresses.end(); it++){
+        int key = it->first;
+        bool pressed = it->second;
+        keyState[key].enabled = pressed;
+    }
+    stolenPresses.clear();
+    Util::Thread::releaseLock(&keyboardData);
+
+    /*
+    ::poll_keyboard();
+    keyState.clear();
+    while (::keypressed()){
+        int unicode;
+        int key = ::ureadkey(&unicode);
+        keyState[key] = KeyData(key, unicode, true);
+    }
+    */
+
+#if 0
 	for ( int q = 0; q < KEY_MAX; q++ ){
 		// my_keys[ q ] = key[ q ];
 		if ( key[ q ] ){
@@ -170,8 +224,10 @@ void Keyboard::poll(){
 			my_keys[ q ] = 0;
 		}
 	}
+#endif
 }
-    
+
+#if 0
 std::vector<Keyboard::KeyData> Keyboard::readData(){
     std::vector<Keyboard::KeyData> out;
     /* TODO */
@@ -183,8 +239,19 @@ std::vector<Keyboard::unicode_t> Keyboard::readText(){
     /* TODO */
     return out;
 }
+#endif
 
 void Keyboard::readKeys( vector< int > & all_keys ){
+
+    for (std::map<KeyType, KeyData>::iterator it = keyState.begin(); it != keyState.end(); it++){
+        KeyType key = it->first;
+        const KeyData & data = it->second;
+        if (data.enabled){
+            all_keys.push_back(key);
+        }
+    }
+
+/*
 	for ( map<int,int>::const_iterator it = my_keys.begin(); it != my_keys.end(); it++ ){
 		const int & key = it->first;
 		const int & delay = it->second;
@@ -199,6 +266,7 @@ void Keyboard::readKeys( vector< int > & all_keys ){
 			my_keys[ key ] = 1;
 		}
 	}
+        */
 }
 	
 int Keyboard::readKey(){
@@ -215,6 +283,8 @@ void Keyboard::wait(){
 }
 
 bool Keyboard::keypressed(){
+    return ::keypressed();
+    /*
 	for ( map<int,int>::const_iterator it = my_keys.begin(); it != my_keys.end(); it++ ){
 		const int & n = (*it).second;
 		if ( n < 0 || n > key_delay[ it->first ] ){
@@ -222,6 +292,7 @@ bool Keyboard::keypressed(){
 		}
 	}
 	return false;
+        */
 }
 
 void Keyboard::clear(){

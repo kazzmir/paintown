@@ -21,6 +21,12 @@ public:
         enabled(false){
         }
 
+        KeyData(int key, unicode_t unicode, bool enabled):
+        key(key),
+        unicode(unicode),
+        enabled(enabled){
+        }
+
         int key;
         /* Converted to a unicode character in UTF-32 */
         unicode_t unicode;
