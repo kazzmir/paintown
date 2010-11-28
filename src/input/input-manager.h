@@ -145,7 +145,7 @@ protected:
 
         std::vector<int> all_keys;
         keyboard.readKeys(all_keys);
-
+        keyboard.readBufferedKeys(all_keys);
         // all_keys.insert(all_keys.end(), bufferedKeys.begin(), bufferedKeys.end());
         // all_keys.insert(all_keys.end(), keyboard.currentKeys().begin(), keyboard.currentKeys.end());
         std::sort(all_keys.begin(), all_keys.end());

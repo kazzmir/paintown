@@ -328,11 +328,19 @@ void Keyboard::press(KeyType key, unicode_t unicode){
     keyState[key].key = key;
     keyState[key].unicode = unicode;
     keyState[key].enabled = true;
-    if (enableBuffer){
+    // if (enableBuffer){
         buffer.push_back(keyState[key]);
-    }
+    // }
 }
 
 void Keyboard::release(KeyType key){
     keyState[key].enabled = false;
+}
+    
+void Keyboard::readBufferedKeys(std::vector<int> & keys){
+    for (std::vector<KeyData>::iterator it = buffer.begin(); it != buffer.end(); it++){
+        const KeyData & data = *it;
+        keys.push_back(data.key);
+    }
+    buffer.clear();
 }

@@ -65,6 +65,7 @@ public:
      * Store all pressed keys in a user supplied vector
      */
     void readKeys(std::vector< int > & all_keys);
+    void readBufferedKeys(std::vector<int> & keys);
     std::vector<KeyData> readData();
     std::vector<unicode_t> readText();
 
@@ -208,8 +209,6 @@ public:
     static KeyType Key_SCRLOCK;
     static KeyType Key_NUMLOCK;
     static KeyType Key_CAPSLOCK;
-
-    
 
     void press(KeyType key, unicode_t unicode);
     void release(KeyType key);
