@@ -11,7 +11,7 @@ static const int Shift = 198;
 static const int Control = 199;
 static const int Backspace = 200;
 
-TextInput::TextInput():
+TextInput::TextInput(const string & start):
 InputMap<unsigned char>(),
 enabled(false),
 handle(201){
@@ -26,52 +26,10 @@ handle(201){
     set(Keyboard::Key_BACKSPACE, delay, false, Backspace);
     set(Keyboard::Key_LSHIFT, 0, false, Shift);
     set(Keyboard::Key_RSHIFT, 0, false, Shift);
-    
-    /* ugh, do we really have to enumerate every key?? */
-    /*
-    set(Keyboard::Key_A, delay, false, 'a');
-    set(Keyboard::Key_B, delay, false, 'b');
-    set(Keyboard::Key_C, delay, false, 'c');
-    set(Keyboard::Key_D, delay, false, 'd');
-    set(Keyboard::Key_E, delay, false, 'e');
-    set(Keyboard::Key_F, delay, false, 'f');
-    set(Keyboard::Key_G, delay, false, 'g');
-    set(Keyboard::Key_H, delay, false, 'h');
-    set(Keyboard::Key_I, delay, false, 'i');
-    set(Keyboard::Key_J, delay, false, 'j');
-    set(Keyboard::Key_K, delay, false, 'k');
-    set(Keyboard::Key_L, delay, false, 'l');
-    set(Keyboard::Key_M, delay, false, 'm');
-    set(Keyboard::Key_N, delay, false, 'n');
-    set(Keyboard::Key_O, delay, false, 'o');
-    set(Keyboard::Key_P, delay, false, 'p');
-    set(Keyboard::Key_Q, delay, false, 'q');
-    set(Keyboard::Key_R, delay, false, 'r');
-    set(Keyboard::Key_S, delay, false, 's');
-    set(Keyboard::Key_T, delay, false, 't');
-    set(Keyboard::Key_U, delay, false, 'u');
-    set(Keyboard::Key_V, delay, false, 'v');
-    set(Keyboard::Key_W, delay, false, 'w');
-    set(Keyboard::Key_X, delay, false, 'x');
-    set(Keyboard::Key_Y, delay, false, 'y');
-    set(Keyboard::Key_Z, delay, false, 'z');
 
-    set(Keyboard::Key_0, delay, false, '0');
-    set(Keyboard::Key_1, delay, false, '1');
-    set(Keyboard::Key_2, delay, false, '2');
-    set(Keyboard::Key_3, delay, false, '3');
-    set(Keyboard::Key_4, delay, false, '4');
-    set(Keyboard::Key_5, delay, false, '5');
-    set(Keyboard::Key_6, delay, false, '6');
-    set(Keyboard::Key_7, delay, false, '7');
-    set(Keyboard::Key_8, delay, false, '8');
-    set(Keyboard::Key_9, delay, false, '9');
-
-    set(Keyboard::Key_SLASH, delay, false, '/');
-    set(Keyboard::Key_SPACE, delay, false, ' ');
-    set(Keyboard::Key_COMMA, delay, false, ',');
-    set(Keyboard::Key_STOP, delay, false, '.');
-    */
+    text.str(start);
+    text.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
+    text.clear();
 }
 
 int TextInput::nextHandle(){
@@ -121,7 +79,8 @@ static unsigned char doShift(unsigned char letter, bool shift){
     }
 }
 
-void TextInput::doInput(){
+bool TextInput::doInput(){
+    bool modified = false;
     if (enabled){
         InputMap<unsigned char>::Output inputState = InputManager::getMap(*this);
 
@@ -149,11 +108,11 @@ void TextInput::doInput(){
             /* standard linux console commands */
             if (inputState['u']){
                 clearInput();
-                return;
+                return true;
             }
             if (inputState['w']){
                 deleteLastWord();
-                return;
+                return true;
             }
         }
 
@@ -173,6 +132,7 @@ void TextInput::doInput(){
             /* FIXME: deal with unicodeness */
             if (letter >= 32){
                 this->text << (unsigned char) letter;
+                modified = true;
             }
         }
 
@@ -202,8 +162,11 @@ void TextInput::doInput(){
 
         if (inputState[Backspace]){
             backspace();
+            modified = true;
         }
     }
+
+    return modified;
 }
 
 void TextInput::enable(){

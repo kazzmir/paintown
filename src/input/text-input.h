@@ -25,9 +25,10 @@ struct Callback{
 
 class TextInput: public InputMap<unsigned char> {
 public:
-    TextInput();
+    TextInput(const std::string & start = "");
 
-    void doInput();
+    /* returns true if the text was modified */
+    bool doInput();
     void enable();
     void disable();
 

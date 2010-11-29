@@ -36,7 +36,7 @@ struct JoystickState{
         block(block),
         out(out),
         pressed(false),
-        last_read(last_read),
+        last_read(0),
         seen(0){
     }
 

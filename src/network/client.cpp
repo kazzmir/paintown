@@ -3,6 +3,9 @@
 #include "util/bitmap.h"
 #include "client.h"
 #include "input/keyboard.h"
+#include "input/input-map.h"
+#include "input/input-manager.h"
+#include "input/text-input.h"
 #include "init.h"
 #include "globals.h"
 #include "util/funcs.h"
@@ -215,17 +218,17 @@ static void playGame( Socket socket ){
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
-	copy.Blit( area );
-	Bitmap::transBlender( 0, 0, 0, 192 );
-	area.drawingMode( Bitmap::MODE_TRANS );
-	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-	area.drawingMode( Bitmap::MODE_SOLID );
-	int color = Bitmap::makeColor( 255, 255, 255 );
-	if ( hasFocus ){
-		color = Bitmap::makeColor( 255, 255, 0 );
-	}
-	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
-	font.printf( 1, 0, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
+    copy.Blit( area );
+    Bitmap::transBlender( 0, 0, 0, 192 );
+    area.drawingMode( Bitmap::MODE_TRANS );
+    area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+    area.drawingMode( Bitmap::MODE_SOLID );
+    int color = Bitmap::makeColor( 255, 255, 255 );
+    if (hasFocus){
+        color = Bitmap::makeColor( 255, 255, 0 );
+    }
+    area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
+    font.printf( 1, 0, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
 }
 
 static char lowerCase( const char * x ){
@@ -316,175 +319,396 @@ static const char * getANumber(){
 	}
 }
 
+static const char * propertyLastClientName = "network:last-client-name";
+static const char * propertyLastClientHost = "network:last-client-host";
+static const char * propertyLastClientPort = "network:last-client-port";
+
+enum ClientActions{
+    Next,
+    Back,
+    Quit,
+    Action
+};
+
+static void runClient(const string & name, const string & host, const string & port, InputMap<ClientActions> & input){
+    Configuration::setStringProperty(propertyLastClientName, name);
+    Configuration::setStringProperty(propertyLastClientHost, host);
+    Configuration::getStringProperty(propertyLastClientPort, port);
+    istringstream stream(port);
+    int portNumber;
+    stream >> portNumber;
+    Network::Socket socket = Network::connect(host, portNumber);
+    ChatClient chat(socket, name);
+    InputManager::waitForRelease(input, Action);
+    chat.run();
+    if (chat.isFinished()){
+        playGame(socket);
+    }
+    Network::close(socket);
+}
+
+enum Focus{
+    Name, Host, Port, Connect, FocusBack
+};
+
+struct FocusBundle{
+    FocusBundle(Focus & focus, TextInput & name, TextInput & port, TextInput & host):
+    focus(focus),
+    name(name),
+    port(port),
+    host(host){
+    }
+
+    Focus & focus;
+    TextInput & name;
+    TextInput & port;
+    TextInput & host;
+};
+
+static void nextFocus(void * stuff){
+    FocusBundle * focus = (FocusBundle*) stuff;
+    focus->name.disable();
+    focus->port.disable();
+    focus->host.disable();
+    switch (focus->focus){
+        case Name: focus->focus = Host; focus->host.enable(); break;
+        case Host: focus->focus = Port; focus->port.enable(); break;
+        case Port: focus->focus = Connect; break;
+        case Connect: focus->focus = FocusBack; break;
+        case FocusBack: focus->focus = Name; focus->name.enable(); break;
+        default: focus->focus = Host; focus->host.enable(); break;
+    }
+}
+
+static void previousFocus(void * stuff){
+    FocusBundle * focus = (FocusBundle*) stuff;
+    focus->name.disable();
+    focus->host.disable();
+    focus->port.disable();
+    switch (focus->focus){
+        case Name: focus->focus = FocusBack; break;
+        case Host: focus->focus = Name; focus->name.enable(); break;
+        case Port: focus->focus = Host; focus->host.enable(); break;
+        case Connect: focus->focus = Port; focus->port.enable(); break;
+        case FocusBack: focus->focus = Connect; break;
+        default: focus->focus = Host; focus->host.enable(); break;
+    }
+}
 
 void networkClient(){
-	Bitmap background(Global::titleScreen().path());
-	Global::speed_counter = 0;
-	Keyboard keyboard;
-	keyboard.setAllDelay( 200 );
-        
-        const char * propertyLastClientName = "network:last-client-name";
-        const char * propertyLastClientHost = "network:last-client-host";
-        const char * propertyLastClientPort = "network:last-client-port";
+    Bitmap background(Global::titleScreen().path());
+    Global::speed_counter = 0;
+    
+    InputMap<ClientActions> input;
+    input.set(Keyboard::Key_TAB, 0, true, Next);
+    input.set(Keyboard::Key_DOWN, 0, true, Next);
+    input.set(Keyboard::Key_UP, 0, true, Back);
+    input.set(Keyboard::Key_ESC, 0, true, Quit);
+    input.set(Keyboard::Key_ENTER, 0, true, Action);
 
-	string name = Configuration::getStringProperty(propertyLastClientName, string("player") + getANumber() + getANumber());
-	string host = Configuration::getStringProperty(propertyLastClientHost, "localhost");
-	string port = Configuration::getStringProperty(propertyLastClientPort, "7887");
+    TextInput nameInput(Configuration::getStringProperty(propertyLastClientName, string("player") + getANumber() + getANumber()));
+    TextInput hostInput(Configuration::getStringProperty(propertyLastClientHost, "localhost"));
+    TextInput portInput(Configuration::getStringProperty(propertyLastClientPort, "7887"));
 
-	enum Focus{
-		NAME, HOST, PORT, CONNECT, BACK
-	};
-			
-	const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
-	Bitmap work( GFX_X, GFX_Y );
-	
-	Focus focus = NAME;
+    Bitmap work(GFX_X, GFX_Y);
 
-	bool done = false;
-	bool draw = true;
-	while ( ! done ){
-		int think = Global::speed_counter;
-		while ( think > 0 ){
-			think -= 1;
-			keyboard.poll();
+    Focus focus = Name;
+    nameInput.enable();
 
-			if ( keyboard[ Keyboard::Key_TAB ] || keyboard[ Keyboard::Key_DOWN ] ){
-				draw = true;
-				switch ( focus ){
-					case NAME : focus = HOST; break;
-					case HOST : focus = PORT; break;
-					case PORT : focus = CONNECT; break;
-					case CONNECT : focus = BACK; break;
-					case BACK : focus = NAME; break;
-					default : focus = HOST;
-				}
-			}
+    FocusBundle bundle(focus, nameInput, portInput, hostInput);
+
+    nameInput.addBlockingHandle(Keyboard::Key_TAB, nextFocus, &bundle);
+    portInput.addBlockingHandle(Keyboard::Key_TAB, nextFocus, &bundle);
+    hostInput.addBlockingHandle(Keyboard::Key_TAB, nextFocus, &bundle);
+    
+    nameInput.addBlockingHandle(Keyboard::Key_DOWN, nextFocus, &bundle);
+    portInput.addBlockingHandle(Keyboard::Key_DOWN, nextFocus, &bundle);
+    hostInput.addBlockingHandle(Keyboard::Key_DOWN, nextFocus, &bundle);
+    
+    nameInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
+    portInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
+    hostInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
+
+    bool done = false;
+    bool draw = true;
+    while ( ! done ){
+        int think = Global::speed_counter;
+        Global::speed_counter = 0;
+        Focus oldFocus = focus;
+        while (think > 0){
+            InputManager::poll();
+            think -= 1;
+
+            InputMap<ClientActions>::Output output = InputManager::getMap(input);
+
+            draw = draw || nameInput.doInput() || portInput.doInput() || hostInput.doInput();
+
+            if (output[Next]){
+                nextFocus(&bundle);
+            }
+
+            if (output[Back]){
+                previousFocus(&bundle);
+            }
+
+            if (output[Quit]){
+                throw Exception::Return(__FILE__, __LINE__);
+            }
+
+            if (output[Action]){
+                switch (focus){
+                    case Name:
+                    case Host:
+                    case Port: break;
+                    case Connect: {
+                        done = true;
+                        try{
+                            runClient(nameInput.getText(), hostInput.getText(), portInput.getText(), input);
+                        } catch ( const NetworkException & e ){
+                            popup( work, font, e.getMessage() );
+                            InputManager::waitForRelease(input, Action);
+                            InputManager::waitForPress(input, Action);
+                            InputManager::waitForRelease(input, Action);
+                            /*
+                            keyboard.wait();
+                            keyboard.readKey();
+                            */
+                            /*
+                               Global::showTitleScreen();
+                               font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
+                               font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
+                               font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
+                               font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
+                               */
+                            done = false;
+                            draw = true;
+                            think = 0;
+                        }
+                        break;
+                    }
+                    case FocusBack : done = true; break;
+                }
+            }
+
+            draw = draw || oldFocus != focus;
+        }
+
+        if (draw){
+            draw = false;
+
+            background.Blit(work);
+
+            const int inputBoxLength = font.textLength( "a" ) * 40;
+            const int min_y = 140;
+
+            font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Your name", 0 );
+            Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
+            Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
+            nameBox.Blit(copyNameBox);
+
+            font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
+            Bitmap hostBox(work, 20, min_y, inputBoxLength, font.getHeight());
+            Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
+            hostBox.Blit(copyHostBox);
+
+            font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
+            Bitmap portBox(work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight());
+            Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
+            portBox.Blit(copyPortBox);
+
+            font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
+
+            int focusColor = Bitmap::makeColor( 255, 255, 0 );
+            int unFocusColor = Bitmap::makeColor( 255, 255, 255 );
+
+            drawBox(nameBox, copyNameBox, nameInput.getText(), font, focus == Name);
+            drawBox(hostBox, copyHostBox, hostInput.getText(), font, focus == Host);
+            drawBox(portBox, copyPortBox, portInput.getText(), font, focus == Port);
+            font.printf( 20, min_y + font.getHeight() * 5, focus == Connect ? focusColor : unFocusColor, work, "Connect", 0 );
+            font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == FocusBack ? focusColor : unFocusColor, work, "Back", 0 );
+
+            work.BlitToScreen();
+        }
+
+        while ( Global::speed_counter == 0 ){
+            Util::rest(1);
+            InputManager::poll();
+        }
+    }
+}
+
+#if 0
+void networkClient(){
+    Bitmap background(Global::titleScreen().path());
+    Global::speed_counter = 0;
+    Keyboard keyboard;
+    keyboard.setAllDelay( 200 );
+
+    const char * propertyLastClientName = "network:last-client-name";
+    const char * propertyLastClientHost = "network:last-client-host";
+    const char * propertyLastClientPort = "network:last-client-port";
+
+    string name = Configuration::getStringProperty(propertyLastClientName, string("player") + getANumber() + getANumber());
+    string host = Configuration::getStringProperty(propertyLastClientHost, "localhost");
+    string port = Configuration::getStringProperty(propertyLastClientPort, "7887");
+
+    enum Focus{
+        NAME, HOST, PORT, CONNECT, BACK
+    };
+
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+
+    Bitmap work(GFX_X, GFX_Y);
+
+    Focus focus = NAME;
+
+    bool done = false;
+    bool draw = true;
+    while ( ! done ){
+        int think = Global::speed_counter;
+        while ( think > 0 ){
+            think -= 1;
+            keyboard.poll();
+
+            if ( keyboard[ Keyboard::Key_TAB ] || keyboard[ Keyboard::Key_DOWN ] ){
+                draw = true;
+                switch ( focus ){
+                    case NAME : focus = HOST; break;
+                    case HOST : focus = PORT; break;
+                    case PORT : focus = CONNECT; break;
+                    case CONNECT : focus = BACK; break;
+                    case BACK : focus = NAME; break;
+                    default : focus = HOST;
+                }
+            }
 
             if ( keyboard[ Keyboard::Key_UP ] ){
                 draw = true;
                 switch ( focus ){
                     case NAME : focus = BACK; break;
                     case HOST : focus = NAME; break;
-					case PORT : focus = HOST; break;
-					case CONNECT : focus = PORT; break;
-					case BACK : focus = CONNECT; break;
+                    case PORT : focus = HOST; break;
+                    case CONNECT : focus = PORT; break;
+                    case BACK : focus = CONNECT; break;
                 }
             }
 
-			if ( keyboard[ Keyboard::Key_ESC ] ){
-				throw Exception::Return(__FILE__, __LINE__);
-			}
+            if ( keyboard[ Keyboard::Key_ESC ] ){
+                throw Exception::Return(__FILE__, __LINE__);
+            }
 
-			if ( keyboard[ Keyboard::Key_ENTER ] ){
-				switch ( focus ){
-					case NAME :
-					case HOST :
-					case PORT : break;
-					case CONNECT : {
-						done = true;
-						try{
-                                                    Configuration::setStringProperty(propertyLastClientName, name);
-                                                    Configuration::setStringProperty(propertyLastClientHost, host);
-                                                    Configuration::getStringProperty(propertyLastClientPort, port);
-							istringstream is( port );
-							int porti;
-							is >> porti;
-							Network::Socket socket = Network::connect( host, porti );
-							ChatClient chat( socket, name );
-							keyboard.wait();
-							chat.run();
-							if ( chat.isFinished() ){
-                                                            playGame( socket );
-							}
-							Network::close( socket );
-						} catch ( const NetworkException & e ){
-							popup( work, font, e.getMessage() );
-							keyboard.wait();
-							keyboard.readKey();
-							/*
-							Global::showTitleScreen();
-							font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
-							font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
-							font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
-							font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
-							*/
-							done = false;
-							draw = true;
-							think = 0;
-						}
-						break;
-					}
-					case BACK : done = true; break;
-				}
-			}
+            if ( keyboard[ Keyboard::Key_ENTER ] ){
+                switch ( focus ){
+                    case NAME :
+                    case HOST :
+                    case PORT : break;
+                    case CONNECT : {
+                        done = true;
+                        try{
+                            Configuration::setStringProperty(propertyLastClientName, name);
+                            Configuration::setStringProperty(propertyLastClientHost, host);
+                            Configuration::getStringProperty(propertyLastClientPort, port);
+                            istringstream is( port );
+                            int porti;
+                            is >> porti;
+                            Network::Socket socket = Network::connect( host, porti );
+                            ChatClient chat( socket, name );
+                            keyboard.wait();
+                            chat.run();
+                            if ( chat.isFinished() ){
+                                playGame( socket );
+                            }
+                            Network::close( socket );
+                        } catch ( const NetworkException & e ){
+                            popup( work, font, e.getMessage() );
+                            keyboard.wait();
+                            keyboard.readKey();
+                            /*
+                               Global::showTitleScreen();
+                               font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
+                               font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
+                               font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
+                               font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
+                               */
+                            done = false;
+                            draw = true;
+                            think = 0;
+                        }
+                        break;
+                    }
+                    case BACK : done = true; break;
+                }
+            }
 
-			vector< int > keys;
-			keyboard.readKeys( keys );
-			switch ( focus ){
-				case HOST : {
-					draw = draw || handleHostInput( host, keys );
-					break;
-				}
-				case PORT : {
-					draw = draw || handlePortInput( port, keys );
-					break;
-				}
-				case NAME : {
-					draw = draw || handleNameInput( name, keys );
-					break;
-				}
-				default : {
-					break;
-				}
-			}
-			
-			Global::speed_counter = 0;
-		}
+            vector< int > keys;
+            keyboard.readKeys( keys );
+            switch ( focus ){
+                case HOST : {
+                    draw = draw || handleHostInput( host, keys );
+                    break;
+                }
+                case PORT : {
+                    draw = draw || handlePortInput( port, keys );
+                    break;
+                }
+                case NAME : {
+                    draw = draw || handleNameInput( name, keys );
+                    break;
+                }
+                default : {
+                    break;
+                }
+            }
 
-		if ( draw ){
-			draw = false;
+            Global::speed_counter = 0;
+        }
 
-			background.Blit( work );
+        if ( draw ){
+            draw = false;
 
-			const int inputBoxLength = font.textLength( "a" ) * 30;
-			const int min_y = 140;
+            background.Blit( work );
 
-			font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Your name", 0 );
-			Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
-			Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
-			nameBox.Blit( copyNameBox );
+            const int inputBoxLength = font.textLength( "a" ) * 30;
+            const int min_y = 140;
 
-			font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
-			Bitmap hostBox( work, 20, min_y, inputBoxLength, font.getHeight() );
-			Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
-			hostBox.Blit( copyHostBox );
+            font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Your name", 0 );
+            Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
+            Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
+            nameBox.Blit( copyNameBox );
 
-			font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
-			Bitmap portBox( work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight() );
-			Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
-			portBox.Blit( copyPortBox );
+            font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
+            Bitmap hostBox( work, 20, min_y, inputBoxLength, font.getHeight() );
+            Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
+            hostBox.Blit( copyHostBox );
 
-			font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
+            font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
+            Bitmap portBox( work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight() );
+            Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
+            portBox.Blit( copyPortBox );
 
-			int focusColor = Bitmap::makeColor( 255, 255, 0 );
-			int unFocusColor = Bitmap::makeColor( 255, 255, 255 );
+            font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
 
-			drawBox( nameBox, copyNameBox, name, font, focus == NAME );
-			drawBox( hostBox, copyHostBox, host, font, focus == HOST );
-			drawBox( portBox, copyPortBox, port, font, focus == PORT );
-			font.printf( 20, min_y + font.getHeight() * 5, focus == CONNECT ? focusColor : unFocusColor, work, "Connect", 0 );
-			font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == BACK ? focusColor : unFocusColor, work, "Back", 0 );
+            int focusColor = Bitmap::makeColor( 255, 255, 0 );
+            int unFocusColor = Bitmap::makeColor( 255, 255, 255 );
 
-			work.BlitToScreen();
-		}
+            drawBox( nameBox, copyNameBox, name, font, focus == NAME );
+            drawBox( hostBox, copyHostBox, host, font, focus == HOST );
+            drawBox( portBox, copyPortBox, port, font, focus == PORT );
+            font.printf( 20, min_y + font.getHeight() * 5, focus == CONNECT ? focusColor : unFocusColor, work, "Connect", 0 );
+            font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == BACK ? focusColor : unFocusColor, work, "Back", 0 );
 
-		while ( Global::speed_counter == 0 ){
-			Util::rest( 1 );
-			keyboard.poll();
-		}
-	}
+            work.BlitToScreen();
+        }
+
+        while ( Global::speed_counter == 0 ){
+            Util::rest( 1 );
+            keyboard.poll();
+        }
+    }
 }
+#endif
 
 }
 

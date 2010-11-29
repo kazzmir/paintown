@@ -104,72 +104,7 @@ bool Console::doInput() {
         return false;
     }
 
-#if 0
-    InputMap<char>::Output inputState = InputManager::getMap(input);
-
-    /* the order of reading input is arbitrary right now. I'm not
-     * sure it matters what order things are done in, but probably
-     * a few corner cases exist. When they come up please document them.
-     */
-
-    if (inputState[Toggle]){
-        toggle();
-        return false;
-    }
-
-    if (inputState[Enter]){
-        if (currentCommand.str() != ""){
-            process(currentCommand.str());
-        }
-        clearInput();
-    }
-#endif
-
     textInput.doInput();
-
-#if 0
-    /* ctrl-X keys */
-    if (inputState[Control]){
-        /* standard linux console commands */
-        if (inputState['u']){
-            clearInput();
-            /* ignore any other input */
-            return true;
-        }
-        if (inputState['w']){
-            deleteLastWord();
-            return true;
-        }
-    }
-
-    vector<Keyboard::unicode_t> text = InputManager::readText();
-    for (vector<Keyboard::unicode_t>::iterator it = text.begin(); it != text.end(); it++){
-        currentCommand << (char) *it;
-    }
-#endif
-
-    /*
-    for (InputMap<char>::Output::iterator it = inputState.begin(); it != inputState.end(); it++){
-        char c = (*it).first;
-        bool pressed = (*it).second;
-        if (pressed && isChar(c)){
-            currentCommand << c;
-        }
-    }
-    */
-
-    /*
-    if (inputState[Esc]){
-        InputManager::releaseInput(input);
-        throw Exception::Return(__FILE__, __LINE__);
-    }
-    */
-
-    /*
-    if (inputState[Backspace]){
-        backspace();
-    }
-    */
 
     return true;
 }
