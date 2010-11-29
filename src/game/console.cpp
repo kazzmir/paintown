@@ -23,6 +23,11 @@ static int Enter = 6;
 
 ConsoleEnd Console::endl;
 
+static void doProcess(void * self){
+    Console * console = (Console*) self;
+    console->activate();
+}
+
 static void doToggle(void * self){
     Console * console = (Console*) self;
     console->toggle();
@@ -39,6 +44,7 @@ offset(0){
 
     const int delay = 10;
     textInput.addBlockingHandle(Keyboard::Key_TILDE, doToggle, this);
+    textInput.addBlockingHandle(Keyboard::Key_ENTER, doProcess, this);
 
 #if 0
     const int delay = 10;
@@ -131,6 +137,13 @@ void Console::act(){
 static bool isChar(char c){
     const char * letters = "abcdefghijklmnopqrstuvwxyz ,.";
     return strchr(letters, c) != NULL;
+}
+
+void Console::activate(){
+    if (textInput.getText() != ""){
+        process(textInput.getText());
+    }
+    textInput.clearInput();
 }
 
 /* console input */
@@ -228,7 +241,7 @@ void Console::draw(const Bitmap & work){
                     start -= font.getHeight();
                 }
             }
-            font.printf(0, height - font.getHeight(), Bitmap::makeColor(255,255,255), work, "> " + textInput.getText(), 0);
+            font.printf(0, height - font.getHeight(), Bitmap::makeColor(255,255,255), work, "> " + textInput.getText() + "|", 0);
         // }
     }
 }
@@ -326,6 +339,7 @@ void Console::clear(){
     */
 }
 
+#if 0
 std::stringstream & Console::add(){
     /*
     checkStream();
@@ -334,6 +348,7 @@ std::stringstream & Console::add(){
     std::stringstream x;
     return x;
 }
+#endif
 
 void Console::checkStream(){
     /*

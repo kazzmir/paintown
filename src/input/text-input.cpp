@@ -220,10 +220,12 @@ string TextInput::getText(){
     return text.str();
 }
 
+/*
 void TextInput::clear(){
     text.str("");
     text.clear();
 }
+*/
 
 void TextInput::clearInput(){
     text.str(string());

@@ -68,13 +68,15 @@ public:
 
     static ConsoleEnd endl;
 
+    void activate();
+
 protected:
 
     void process(const std::string & command);
     void backspace();
     void clearInput();
     void deleteLastWord();
-    virtual std::stringstream & add();
+    // virtual std::stringstream & add();
 
     enum State{
         Closed,

@@ -37,7 +37,7 @@ public:
     std::string getText();
 
     void clearInput();
-    void clear();
+    // void clear();
 
     bool isEnabled() const {
         return enabled;
