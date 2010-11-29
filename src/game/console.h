@@ -32,17 +32,21 @@ public:
     }
 };
 
+/* starts disabled */
 class Console{
 public:
     Console(const int maxHeight, const Filesystem::RelativePath & font = Global::DEFAULT_FONT);
     virtual ~Console();
 
+    /* handle input and whatnot */
     virtual void act();
     virtual void draw(const Bitmap & work);
+    /* enable / disable */
     virtual void toggle();
-    
-    virtual void clear();
 
+    /* removes all output from the console */
+    virtual void clear();
+    
     virtual bool doInput();
     
     inline int getTextHeight(){ return textHeight; };
@@ -73,10 +77,6 @@ public:
 protected:
 
     void process(const std::string & command);
-    void backspace();
-    void clearInput();
-    void deleteLastWord();
-    // virtual std::stringstream & add();
 
     enum State{
         Closed,

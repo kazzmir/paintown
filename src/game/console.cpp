@@ -15,12 +15,6 @@ using namespace std;
 
 namespace Console{
 
-static int Toggle = 254;
-static int Backspace = 9;
-static int Esc = 8;
-static int Control = 7;
-static int Enter = 6;
-
 ConsoleEnd Console::endl;
 
 static void doProcess(void * self){
@@ -41,50 +35,8 @@ font(font),
 textHeight(15),
 textWidth(15),
 offset(0){
-
-    const int delay = 10;
     textInput.addBlockingHandle(Keyboard::Key_TILDE, doToggle, this);
     textInput.addBlockingHandle(Keyboard::Key_ENTER, doProcess, this);
-
-#if 0
-    const int delay = 10;
-    input.set(Keyboard::Key_TILDE, delay * 2, false, Toggle);
-    input.set(Keyboard::Key_BACKSPACE, delay, false, Backspace);
-    input.set(Keyboard::Key_ESC, delay, false, Esc);
-    input.set(Keyboard::Key_LCONTROL, 0, false, Control);
-    input.set(Keyboard::Key_ENTER, 0, false, Enter);
-    
-    /* ugh, do we really have to enumerate every key?? */
-    input.set(Keyboard::Key_A, delay, false, 'a');
-    input.set(Keyboard::Key_B, delay, false, 'b');
-    input.set(Keyboard::Key_C, delay, false, 'c');
-    input.set(Keyboard::Key_D, delay, false, 'd');
-    input.set(Keyboard::Key_E, delay, false, 'e');
-    input.set(Keyboard::Key_F, delay, false, 'f');
-    input.set(Keyboard::Key_G, delay, false, 'g');
-    input.set(Keyboard::Key_H, delay, false, 'h');
-    input.set(Keyboard::Key_I, delay, false, 'i');
-    input.set(Keyboard::Key_J, delay, false, 'j');
-    input.set(Keyboard::Key_K, delay, false, 'k');
-    input.set(Keyboard::Key_L, delay, false, 'l');
-    input.set(Keyboard::Key_M, delay, false, 'm');
-    input.set(Keyboard::Key_N, delay, false, 'n');
-    input.set(Keyboard::Key_O, delay, false, 'o');
-    input.set(Keyboard::Key_P, delay, false, 'p');
-    input.set(Keyboard::Key_Q, delay, false, 'q');
-    input.set(Keyboard::Key_R, delay, false, 'r');
-    input.set(Keyboard::Key_S, delay, false, 's');
-    input.set(Keyboard::Key_T, delay, false, 't');
-    input.set(Keyboard::Key_U, delay, false, 'u');
-    input.set(Keyboard::Key_V, delay, false, 'v');
-    input.set(Keyboard::Key_W, delay, false, 'w');
-    input.set(Keyboard::Key_X, delay, false, 'x');
-    input.set(Keyboard::Key_Y, delay, false, 'y');
-    input.set(Keyboard::Key_Z, delay, false, 'z');
-    input.set(Keyboard::Key_SPACE, delay, false, ' ');
-    input.set(Keyboard::Key_COMMA, delay, false, ',');
-    input.set(Keyboard::Key_STOP, delay, false, '.');
-#endif
 }
 
 Console::~Console(){
@@ -252,14 +204,12 @@ void Console::toggle(){
         case Opening: {
             state = Closing;
             textInput.disable();
-            // InputManager::releaseInput(input);
             break;
         }
         case Closed:
         case Closing: {
             state = Opening;
             textInput.enable();
-            // InputManager::captureInput(input);
             break;
         }
     }
@@ -292,63 +242,11 @@ void Console::process(const string & command){
         lines.push_back("Unknown command '" + command + "'");
     }
 }
-
-void Console::backspace(){
-    /*
-    string now = currentCommand.str();
-    now = now.substr(0, now.size()-1);
-    currentCommand.str(now);
-    currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
-    currentCommand.clear();
-    */
-}
-
-void Console::deleteLastWord(){
-    /*
-    string now = currentCommand.str();
-    size_t get = now.rfind(" ");
-    if (get != string::npos){
-        now = now.substr(0, get + 1);
-        currentCommand.str(now);
-        currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
-        currentCommand.clear();
-    } else {
-        clearInput();
-    }
-    */
-}
-
-void Console::clearInput(){
-    /*
-    currentCommand.str(string());
-    currentCommand.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
-    currentCommand.clear();
-    */
-}
     
 Console & Console::operator<<(const ConsoleEnd & e){
     // checkStream();
     return *this;
 }
-
-void Console::clear(){
-    /*
-    lines.clear();
-    textInput.str("");
-    textInput.clear();
-    */
-}
-
-#if 0
-std::stringstream & Console::add(){
-    /*
-    checkStream();
-    return textInput;
-    */
-    std::stringstream x;
-    return x;
-}
-#endif
 
 void Console::checkStream(){
     /*
@@ -357,6 +255,10 @@ void Console::checkStream(){
 	textInput.str("");
     }
     */
+}
+
+void Console::clear(){
+    lines.clear();
 }
 
 }
