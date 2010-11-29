@@ -28,6 +28,8 @@
 #include "util/file-system.h"
 #include "util/system.h"
 #include "input/keyboard.h"
+#include "input/input-manager.h"
+#include "input/text-input.h"
 
 #include "menu/options.h"
 
@@ -158,6 +160,7 @@ static const string selectLevelSet( const string & base ) throw( ReturnException
 }
 #endif
 
+#if 0
 static int getServerPort(){
     Bitmap background(Global::titleScreen().path());
     const int drawY = 250;
@@ -241,6 +244,79 @@ static int getServerPort(){
     int i;
     str >> i;
     return i;
+}
+#endif
+
+static void set_to_true(void * what){
+    bool * b = (bool *) what;
+    *b = true;
+}
+
+static void do_quit(void * what){
+    throw Exception::Return(__FILE__, __LINE__);
+}
+
+static int getServerPort(){
+    Bitmap background(Global::titleScreen().path());
+    const int drawY = 250;
+    {
+        // background.BlitToScreen();
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+        Bitmap black( 300, font.getHeight() * 4 );
+        black.clear();
+        black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
+        Bitmap::transBlender( 0, 0, 0, 92 );
+        black.drawTrans( 20, drawY - font.getHeight() - 20, background );
+        font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
+        font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
+        background.BlitToScreen();
+    }
+
+    {
+        /* wait for enter to be released */
+        InputMap<int> hack;
+        hack.set(Keyboard::Key_ENTER, 0, true, 0);
+        InputManager::waitForRelease(hack, 0);
+    }
+
+    bool done = false;
+    /* TODO: add filter for numbers */
+    TextInput input("7887");
+    input.addBlockingHandle(Keyboard::Key_ENTER, set_to_true, &done);
+    input.addBlockingHandle(Keyboard::Key_ESC, do_quit, NULL);
+    input.enable();
+
+    Bitmap work(200, 25);
+
+    bool draw = true;
+    Global::speed_counter = 0;
+    while ( ! done ){
+        while ( Global::speed_counter > 0 ){
+            InputManager::poll();
+            draw = input.doInput();
+            Global::speed_counter -= 1;
+        }
+
+        if (draw){
+            work.clear();
+            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+            font.printf(0, 0, Bitmap::makeColor( 255, 255, 255 ), work, input.getText(), 0);
+            work.Blit( 100, drawY, background );
+            background.BlitToScreen();
+        }
+        
+        draw = false;
+
+        while ( Global::speed_counter == 0 ){
+            Util::rest(1);
+            InputManager::poll();
+        }
+    }
+
+    istringstream str(input.getText());
+    int port;
+    str >> port;
+    return port;
 }
 
 #if 0
@@ -746,119 +822,119 @@ static void popup( const Font & font, const string & message ){
 
 void networkServer(){
 
-	// const int startingLives = 4;
-	int port = getServerPort();
+    // const int startingLives = 4;
+    int port = getServerPort();
 
-	Keyboard key;
+    Keyboard key;
 
-	debug( 1 ) << "Port is " << port << endl;
+    debug(1) << "Port is " << port << endl;
 
-	const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-	try{
-		/*
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    try{
+        /*
 #ifdef _WIN32
-		Network::blocking( false );
+Network::blocking( false );
 #endif
 */
-		debug( 1 ) << "Get socket" << endl;
-		Network::Socket server = Network::open( port );
-		
-		/*
-		// NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
-		if ( server == NL_INVALID ){
-			Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
-			throw ReturnException();
-		}
-		*/
-		
-		debug( 1 ) << "Run chat server" << endl;
+        debug( 1 ) << "Get socket" << endl;
+        Network::Socket server = Network::open( port );
 
-		ChatServer chat( "server", server );
-		chat.run();
-		/*
+        /*
+        // NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
+        if ( server == NL_INVALID ){
+        Global::debug( 0 ) << "hawknl error: " << nlGetSystemErrorStr( nlGetSystemError() ) << endl;
+        throw ReturnException();
+        }
+        */
+
+        debug( 1 ) << "Run chat server" << endl;
+
+        ChatServer chat( "server", server );
+        chat.run();
+        /*
 #ifdef _WIN32
-		Network::blocking( true );
+Network::blocking( true );
 #endif
 */
-		vector<Client*> clients = chat.getConnectedClients();
-		if (! clients.empty()){
-			debug( 1 ) << "Start game with " << clients.size() << " clients" << endl;
-			playGame(clients);
-		} else {
-			key.poll();
-			popup( font, "No clients connected" );
-			key.wait();
-			key.readKey();
-		}
-		Network::close( server );
-	} catch ( const NetworkException & ne ){
-		debug( 0 ) << "Network error: " << ne.getMessage() << endl;
-		key.poll();
-		popup( font, "Network error: " + ne.getMessage() );
-		key.wait();
-		key.readKey();
-	}
-	return;
+        vector<Client*> clients = chat.getConnectedClients();
+        if (! clients.empty()){
+            debug( 1 ) << "Start game with " << clients.size() << " clients" << endl;
+            playGame(clients);
+        } else {
+            key.poll();
+            popup( font, "No clients connected" );
+            key.wait();
+            key.readKey();
+        }
+        Network::close( server );
+    } catch ( const NetworkException & ne ){
+        debug( 0 ) << "Network error: " << ne.getMessage() << endl;
+        key.poll();
+        popup( font, "Network error: " + ne.getMessage() );
+        key.wait();
+        key.readKey();
+    }
+    return;
 
 #if 0
-	Object * player = NULL;
-	try{
-		Global::showTitleScreen();
+    Object * player = NULL;
+    try{
+        Global::showTitleScreen();
 
-		const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
-		font.printf( 100, 200, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Waiting for a connection", 0 );
-		nlListen( server );
-		NLsocket client = nlAcceptConnection( server );
-		while ( client == NL_INVALID ){
-			Util::rest( 1 );
-			client = nlAcceptConnection( server );
-		}
-		NLint group;
-		group = nlGroupCreate();
-		nlGroupAddSocket( group, client );
+        const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
+        font.printf( 100, 200, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Waiting for a connection", 0 );
+        nlListen( server );
+        NLsocket client = nlAcceptConnection( server );
+        while ( client == NL_INVALID ){
+            Util::rest( 1 );
+            client = nlAcceptConnection( server );
+        }
+        NLint group;
+        group = nlGroupCreate();
+        nlGroupAddSocket( group, client );
 
-		NLaddress client_addr;
-		nlGetRemoteAddr( client, &client_addr );
+        NLaddress client_addr;
+        nlGetRemoteAddr( client, &client_addr );
 
-		Global::debug( 0 ) << "client is " << client << " port " << nlGetPortFromAddr( &client_addr ) << endl;
+        Global::debug( 0 ) << "client is " << client << " port " << nlGetPortFromAddr( &client_addr ) << endl;
 
-		// NLsocket polled;
-		// nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
-		int length = Network::read16( client );
-		string clientPath = Network::readStr( client, length );
+        // NLsocket polled;
+        // nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
+        int length = Network::read16( client );
+        string clientPath = Network::readStr( client, length );
 
-		// NetworkWorld world( port );
-		string level = selectLevelSet( Util::getDataPath() + "/levels" );
-		key.wait();
+        // NetworkWorld world( port );
+        string level = selectLevelSet( Util::getDataPath() + "/levels" );
+        key.wait();
 
-		vector< NLsocket > sockets;
-		sockets.push_back( client );
+        vector< NLsocket > sockets;
+        sockets.push_back( client );
 
-		player = selectPlayer( false, "Pick a player" );
-		Global::debug( 0 ) << "Player path '" << ((Character *)player)->getPath() << "'" << endl;
-		player->setId( 1 );
-		((Character *)player)->setLives( startingLives );
-		vector< Object * > players;
-		players.push_back( player );
-		Character * client_character = new NetworkCharacter( Util::getDataPath() + clientPath, ALLIANCE_PLAYER );
-		client_character->setLives( startingLives );
-		client_character->setId( 2 );
-		Network::send16( client, 2 );
-		players.push_back( client_character );
-		networkGame( players, level, sockets );
+        player = selectPlayer( false, "Pick a player" );
+        Global::debug( 0 ) << "Player path '" << ((Character *)player)->getPath() << "'" << endl;
+        player->setId( 1 );
+        ((Character *)player)->setLives( startingLives );
+        vector< Object * > players;
+        players.push_back( player );
+        Character * client_character = new NetworkCharacter( Util::getDataPath() + clientPath, ALLIANCE_PLAYER );
+        client_character->setLives( startingLives );
+        client_character->setId( 2 );
+        Network::send16( client, 2 );
+        players.push_back( client_character );
+        networkGame( players, level, sockets );
 
-	} catch ( const LoadException & le ){
-		Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
-	} catch ( const ReturnException & r ){
-		// key.wait();
-	} catch ( const Network::NetworkException & e ){
-		Global::debug( 0 ) << "Network exception: " << e.getMessage() << endl;
-	}
+    } catch ( const LoadException & le ){
+        Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
+    } catch ( const ReturnException & r ){
+        // key.wait();
+    } catch ( const Network::NetworkException & e ){
+        Global::debug( 0 ) << "Network exception: " << e.getMessage() << endl;
+    }
 
-	if ( player != NULL ){
-		delete player;
-	}
-	nlClose( server );
+    if ( player != NULL ){
+        delete player;
+    }
+    nlClose( server );
 #endif
 }
 

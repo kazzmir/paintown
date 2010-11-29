@@ -262,4 +262,5 @@ void TextInput::deleteLastWord(){
 }
     
 TextInput::~TextInput(){
+    disable();
 }
