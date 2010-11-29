@@ -1,4 +1,7 @@
 #include <allegro.h>
+#ifdef WINDOWS
+#include <winalleg.h>
+#endif
 #include "../keyboard.h"
 #include "util/thread.h"
 #include "util/funcs.h"
