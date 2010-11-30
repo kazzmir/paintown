@@ -287,14 +287,14 @@ static void enter_pressed(void * self){
 }
 
 ChatServer::ChatServer( const string & name, Network::Socket socket ):
-need_update( true ),
-socket( socket ),
-messages( 400, 350 ),
-focus( INPUT_BOX ),
-client_id( 1 ),
-name( name ),
-accepting( true ),
-enterPressed( false ){
+need_update(true),
+socket(socket),
+messages(400, 350),
+focus(INPUT_BOX),
+client_id(1),
+name(name),
+accepting(true),
+enterPressed(false){
     background = new Bitmap(Global::titleScreen().path());
 
     debug(1) << "Start accepting connections" << endl;

@@ -29,6 +29,7 @@ textColor(0),
 textSizeH(0),
 limit(0),
 blinkRate(500),
+blink(false),
 focused(false),
 changeCounter(0){
     cursorTime.reset();
@@ -55,12 +56,21 @@ void LineEdit::fontChange(){
 
 // Update
 void LineEdit::act(const Font & font){
+    if (cursorTime.msecs() >= blinkRate){
+        cursorTime.reset();
+        blink = !blink;
+        changed();
+    }
+    /*
     if ((blinkRate * 2) <= cursorTime.msecs()){
         cursorTime.reset();
+        changed();
     }
+    */
 
     if (input.doInput()){
         changed();
+        cursorIndex = input.getText().size();
     }
 
     if (changed_){
@@ -154,7 +164,12 @@ void LineEdit::render(const Bitmap & work){
     }
 
     if (focused){
-        if (cursorTime.msecs()<=blinkRate){
+        /*
+        if (cursorTime.msecs() <= blinkRate){
+            workArea->line(cursorX,cursorY,cursorX,cursorY+textSizeH-5,textColor);
+        }
+        */
+        if (blink){
             workArea->line(cursorX,cursorY,cursorX,cursorY+textSizeH-5,textColor);
         }
     }

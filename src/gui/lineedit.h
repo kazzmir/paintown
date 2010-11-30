@@ -150,6 +150,7 @@ protected:
 
     //! Cursor blink rate
     unsigned int blinkRate;
+    bool blink;
 
     //! Focused?
     bool focused;
