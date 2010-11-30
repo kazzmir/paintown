@@ -36,6 +36,7 @@ public:
     void addBlockingHandle(int key, callback function, void * data);
 
     std::string getText();
+    void setText(const std::string & text);
 
     void clearInput();
     // void clear();

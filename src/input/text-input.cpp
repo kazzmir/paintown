@@ -24,8 +24,10 @@ handle(201){
     
     set(Keyboard::Key_LCONTROL, 0, false, Control);
     set(Keyboard::Key_BACKSPACE, delay, false, Backspace);
+    /*
     set(Keyboard::Key_LSHIFT, 0, false, Shift);
     set(Keyboard::Key_RSHIFT, 0, false, Shift);
+    */
 
     text.str(start);
     text.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
@@ -189,6 +191,12 @@ void TextInput::clear(){
     text.clear();
 }
 */
+    
+void TextInput::setText(const std::string & text){
+    this->text.str(text);
+    this->text.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
+    this->text.clear();
+}
 
 void TextInput::clearInput(){
     text.str(string());

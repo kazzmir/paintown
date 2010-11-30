@@ -3,17 +3,16 @@
 
 #include "network.h"
 #include "messages.h"
-#include "gui/sigslot.h"
 #include "util/thread.h"
 #include <string>
 #include <vector>
 
-class Bitmap;
-class Keyboard;
-
 namespace Gui{
     class LineEdit;
 }
+
+class Bitmap;
+class Keyboard;
 
 enum Focus{
 	INPUT_BOX,
@@ -86,7 +85,7 @@ private:
 	std::vector< Network::Message > outgoing;
 };
 
-class ChatServer: public sigslot::has_slots<> {
+class ChatServer{
 public:
 	ChatServer( const std::string & name, Network::Socket socket );
 
@@ -122,6 +121,9 @@ public:
         
         /* each new client starts an accepting thread */
         void addAccepter(Util::Thread::Id accepter);
+        
+        /* add a message to the chat box */
+        void addLine();
 
 	/* get the list of connected clients */
         std::vector<Client*> getConnectedClients();
@@ -140,7 +142,7 @@ protected:
 	void shutdownClientThreads();
 
 	/* do chat logic */
-	bool logic( Keyboard & keyboard );
+	bool logic();
 
 	/* true if a redraw is needed */
 	bool needToDraw();
@@ -174,9 +176,6 @@ protected:
 		return client_id++;
 	}
 	
-	sigslot::slot keyPress(const keys &k);
-	sigslot::slot keyRelease(const keys &k);
-
 protected:
 	bool need_update;
 	Network::Socket socket;
@@ -190,10 +189,10 @@ protected:
 	std::vector< Client * > clients;
 	std::string name;
 	bool accepting;
-    Gui::LineEdit * lineEdit;
 	unsigned long long editCounter;
 	bool enterPressed;
         std::vector<Util::Thread::Id> accepted;
+        Gui::LineEdit * lineEdit;
 };
 
 #endif

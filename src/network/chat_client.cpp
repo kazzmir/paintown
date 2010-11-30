@@ -92,42 +92,44 @@ socket( socket ),
 focus( INPUT_BOX ),
 finished( false ),
 enterPressed( false ){
-	background = new Bitmap(Global::titleScreen().path());
-        Util::Thread::initializeLock(&lock);
+    background = new Bitmap(Global::titleScreen().path());
+    Util::Thread::initializeLock(&lock);
 
-        Util::Thread::createThread( &inputThread, NULL, (Util::Thread::ThreadFunction) serverInput, this );
+    Util::Thread::createThread(&inputThread, NULL, (Util::Thread::ThreadFunction) serverInput, this);
 
-	try{
-		Network::Message nameMessage;
-		nameMessage.path = name;
-		nameMessage << HELLO;
-                nameMessage << Global::MagicId;
-                nameMessage << Global::getVersion();
-		nameMessage.send(socket);
-	} catch ( const Network::NetworkException & n ){
-		debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
-	}
+    try{
+        Network::Message nameMessage;
+        nameMessage.path = name;
+        nameMessage << HELLO;
+        nameMessage << Global::MagicId;
+        nameMessage << Global::getVersion();
+        nameMessage.send(socket);
+    } catch ( const Network::NetworkException & n ){
+        debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
+    }
 
     lineEdit = new Gui::LineEdit();
     lineEdit->location.setPosition(Gui::AbsolutePoint(20, 20 + messages.getHeight() + 5));
     lineEdit->location.setDimensions(400, 30);
     lineEdit->location.setRadius(5);
-	
-	lineEdit->colors.body = Bitmap::makeColor( 0, 0, 0 );
-	lineEdit->colors.bodyAlpha = 128;
-	lineEdit->colors.border = Bitmap::makeColor( 255, 255, 0 );
-	lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
-	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
-	
-	lineEdit->setText("Hi!");
-	// lineEdit->setFont(Menu::getFont());
-	lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
-	keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
-	keyInputManager::pressed.connect(this, &ChatClient::keyPress);
-	keyInputManager::released.connect(this, &ChatClient::keyRelease);
-	lineEdit->setFocused(true);
 
-	editCounter = 0;
+    lineEdit->colors.body = Bitmap::makeColor(0, 0, 0);
+    lineEdit->colors.bodyAlpha = 128;
+    lineEdit->colors.border = Bitmap::makeColor(255, 255, 0);
+    lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
+    lineEdit->setTextColor(Bitmap::makeColor(255, 255, 255));
+
+    lineEdit->setText("Hi!");
+    // lineEdit->setFont(Menu::getFont());
+    lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
+    /*
+    keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
+    keyInputManager::pressed.connect(this, &ChatClient::keyPress);
+    keyInputManager::released.connect(this, &ChatClient::keyRelease);
+    */
+    lineEdit->setFocused(true);
+
+    editCounter = 0;
 }
 
 sigslot::slot ChatClient::keyPress(const keys &k){

@@ -1,20 +1,19 @@
 #include "util/bitmap.h"
+#include "util/font.h"
 #include "lineedit.h"
-#include <iostream>
+#include "keys.h"
 #include "globals.h"
-
-#include "gui/keys.h"
+#include <iostream>
 
 using namespace Gui;
 
 static std::ostream & debug( int level ){
-	Global::debug( level ) << "[line edit] ";
-	return Global::debug( level );
+    Global::debug(level) << "[line edit] ";
+    return Global::debug(level);
 }
 
 LineEdit::LineEdit() : 
 currentSetFont(0), 
-currentSetText(""),
 hAlignment(T_Middle),
 hAlignMod(T_Middle),
 vAlignment(T_Middle),
@@ -31,61 +30,72 @@ textSizeH(0),
 limit(0),
 blinkRate(500),
 focused(false),
-changeCounter(0)
-{
-	cursorTime.reset();
+changeCounter(0){
+    cursorTime.reset();
 }
 
 LineEdit::~LineEdit()
 {
 }
+    
+void LineEdit::hookEnter(void (*callback)(void *), void * arg){
+    input.addBlockingHandle(Keyboard::Key_ENTER, callback, arg);
+}
 	
-bool LineEdit::didChanged( unsigned long long & counter ){
-	bool did = counter < changeCounter;
-	counter = changeCounter;
-	return did;
+bool LineEdit::didChanged(unsigned long long & counter){
+    bool did = counter < changeCounter;
+    counter = changeCounter;
+    return did;
 }
 
 // If the font size changes
-void LineEdit::fontChange()
-{
-	changed();
+void LineEdit::fontChange(){
+    changed();
 }
 
 // Update
 void LineEdit::act(const Font & font){
-    if((blinkRate*2)<=cursorTime.msecs())cursorTime.reset();
-    if(changed_){
+    if ((blinkRate * 2) <= cursorTime.msecs()){
+        cursorTime.reset();
+    }
+
+    if (input.doInput()){
+        changed();
+    }
+
+    if (changed_){
         textSizeH = currentSetFont->getHeight();
-        if(autoResizable) {
-            location.setDimensions(textSizeH+2, currentSetFont->textLength(currentSetText.c_str())+4);
+        if (autoResizable) {
+            location.setDimensions(textSizeH+2, currentSetFont->textLength(input.getText().c_str()) + 4);
         } else {
-            if(hAlignMod==T_Left) {
-                if(currentSetFont->textLength(currentSetText.c_str())>location.getWidth()) {
-                    hAlignment=T_Right;
+            if (hAlignMod==T_Left){
+                if (currentSetFont->textLength(input.getText().c_str())>location.getWidth()){
+                    hAlignment = T_Right;
+                } else {
+                    hAlignment = T_Left;
                 }
-                else hAlignment=T_Left;
             }
         }
-        switch(hAlignment) {
+
+        switch (hAlignment) {
             case T_Left:
                 textX = 2;
-                cursorX = textX + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
+                cursorX = textX + currentSetFont->textLength(input.getText().substr(0,cursorIndex).c_str()) + 1;
                 break;
             case T_Middle:
-                textX = (location.getWidth()/2) - (currentSetFont->textLength(currentSetText.c_str())/2);
-                cursorX = (textX) + currentSetFont->textLength(currentSetText.substr(0,cursorIndex).c_str()) + 1;
+                textX = (location.getWidth()/2) - (currentSetFont->textLength(input.getText().c_str())/2);
+                cursorX = (textX) + currentSetFont->textLength(input.getText().substr(0,cursorIndex).c_str()) + 1;
                 break;
             case T_Right:
-                textX = location.getWidth() - currentSetFont->textLength(currentSetText.c_str());//(position.width - 1)-2;
-                cursorX = location.getWidth() - currentSetFont->textLength(currentSetText.substr(0,currentSetText.length()-cursorIndex).c_str());
+                textX = location.getWidth() - currentSetFont->textLength(input.getText().c_str());//(position.width - 1)-2;
+                cursorX = location.getWidth() - currentSetFont->textLength(input.getText().substr(0, input.getText().length()-cursorIndex).c_str());
                 break;
             case T_Bottom:
             case T_Top:
                 break;
         }
 
-        switch(vAlignment) {
+        switch (vAlignment) {
             case T_Top:
                 textY = 1;
                 cursorY = 1;
@@ -111,47 +121,48 @@ void LineEdit::act(const Font & font){
 // Draw
 void LineEdit::render(const Bitmap & work){
 
-	checkWorkArea();
-	// Check if we are using a rounded box
-	if(location.getRadius()>0) {
-		Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
-		roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
-		workArea->drawTrans(location.getX(),location.getY(),work);
-		
-		workArea->fill(Bitmap::makeColor(255,0,255));
-		
-		Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
-		roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
-		workArea->drawTrans(location.getX(),location.getY(),work);
-	} else {
-		Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
-		workArea->rectangleFill( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
-		workArea->drawTrans(location.getX(),location.getY(),work);
-		
-		workArea->fill(Bitmap::makeColor(255,0,255));
-		
-		Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
-		workArea->rectangle( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
-		workArea->drawTrans(location.getX(),location.getY(),work);
-	}
+    checkWorkArea();
+    // Check if we are using a rounded box
+    if (location.getRadius()>0) {
+        Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
+        roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+        workArea->drawTrans(location.getX(),location.getY(),work);
 
-	work.drawingMode( Bitmap::MODE_SOLID );
-	
-	workArea->fill(Bitmap::makeColor(255,0,255));
-	
-	if (currentSetFont){
-		currentSetFont->printf(textX,textY,textColor,*workArea,currentSetText,0);
-	}
+        workArea->fill(Bitmap::makeColor(255,0,255));
 
-	if(focused){
-		if(cursorTime.msecs()<=blinkRate){
-			workArea->line(cursorX,cursorY,cursorX,cursorY+textSizeH-5,textColor);
-		}
-	}
-	
-	workArea->draw(location.getX(),location.getY(),work);
+        Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
+        roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
+        workArea->drawTrans(location.getX(),location.getY(),work);
+    } else {
+        Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
+        workArea->rectangleFill( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+        workArea->drawTrans(location.getX(),location.getY(),work);
+
+        workArea->fill(Bitmap::makeColor(255,0,255));
+
+        Bitmap::transBlender( 0, 0, 0, colors.borderAlpha );
+        workArea->rectangle( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
+        workArea->drawTrans(location.getX(),location.getY(),work);
+    }
+
+    work.drawingMode( Bitmap::MODE_SOLID );
+
+    workArea->fill(Bitmap::makeColor(255,0,255));
+
+    if (currentSetFont){
+        currentSetFont->printf(textX,textY,textColor,*workArea, input.getText(), 0);
+    }
+
+    if (focused){
+        if (cursorTime.msecs()<=blinkRate){
+            workArea->line(cursorX,cursorY,cursorX,cursorY+textSizeH-5,textColor);
+        }
+    }
+
+    workArea->draw(location.getX(), location.getY(), work);
 }
 
+#if 0
 // Keypresses
 sigslot::slot LineEdit::keyPress(const keys &k)
 {
@@ -230,116 +241,103 @@ sigslot::slot LineEdit::keyPress(const keys &k)
 		}
 	}
 }
+#endif
 
 // Set text
-void LineEdit::setText(const std::string & text)
-{
-	currentSetText = text;
-	if(limit!=0)
-	{
-		if(currentSetText.length()>limit)
-		{
-			while(currentSetText.length()>limit)
-			{
-				currentSetText.erase(currentSetText.begin()+currentSetText.length()-1);
-			}
-		}
-	}
-	cursorIndex = currentSetText.length();
-	changed();
+void LineEdit::setText(const std::string & text){
+    input.setText(text);
+    if (limit!=0) {
+        if (input.getText().length() > limit) {
+            while (input.getText().length() > limit){
+                // currentSetText.erase(currentSetText.begin()+currentSetText.length()-1);
+            }
+        }
+    }
+    cursorIndex = input.getText().length();
+    changed();
 }
 
 
 //! Get text
-const std::string & LineEdit::getText()
-{
-	return currentSetText;
+const std::string LineEdit::getText(){
+    return input.getText();
 }
 		
 //! Clear text
-void LineEdit::clearText()
-{
-	currentSetText.clear();
-	cursorIndex=0;
-	changed();
+void LineEdit::clearText(){
+    input.clearInput();
+    cursorIndex=0;
+    changed();
 }
 
 //! Set text limit
-void LineEdit::setLimit(unsigned int l)
-{
-	limit = l;
-	if(limit!=0)
-	{
-		if(currentSetText.length()>limit)
-		{
-			while(currentSetText.length()>limit)
-			{
-				currentSetText.erase(currentSetText.begin()+currentSetText.length()-1);
-			}
-		}
-	}
-	cursorIndex = currentSetText.length();
-	changed();
+void LineEdit::setLimit(unsigned int l){
+    limit = l;
+    if (limit!=0){
+        if (input.getText().length()>limit){
+            while (input.getText().length()>limit){
+                // currentSetText.erase(currentSetText.begin()+currentSetText.length()-1);
+            }
+        }
+    }
+    cursorIndex = input.getText().length();
+    changed();
 }
 		
 // Set Horizontal Alignment
-void LineEdit::setHorizontalAlign(const textAlign a)
-{
-	hAlignment = hAlignMod = a;
-	changed();
+void LineEdit::setHorizontalAlign(const textAlign & a){
+    hAlignment = hAlignMod = a;
+    changed();
 }
 		
 // Set Vertical Alignment
-void LineEdit::setVerticalAlign(const textAlign a)
-{
-	vAlignment = a;
-	changed();
+void LineEdit::setVerticalAlign(const textAlign & a){
+    vAlignment = a;
+    changed();
 }
 
 //! Set the type of input default general
 void LineEdit::setInputType(const inputType i){
-	inputTypeValue = i;
+    inputTypeValue = i;
 }
 		
 // Set textColor
-void LineEdit::setTextColor(const int color)
-{
-	textColor = color;
+void LineEdit::setTextColor(const int color){
+    textColor = color;
 }
 
-
 //! Set textColor
-void LineEdit::setCursorColor(const int color)
-{
-	textColor = color;
+void LineEdit::setCursorColor(const int color){
+    textColor = color;
 }
 
 // Set font
-void LineEdit::setFont(const Font *f)
-{
-	currentSetFont = f;
-	if(currentSetFont) changed();
+void LineEdit::setFont(const Font *f){
+    currentSetFont = f;
+    if (currentSetFont) changed();
 }
 
 // Set autoResizeable
-void LineEdit::setAutoResize(bool r)
-{
-	autoResizable = r;
+void LineEdit::setAutoResize(bool r){
+    autoResizable = r;
 }
 
 // Set the cursor blink rate in miliseconds (default 500)
-void LineEdit::setCursorBlinkRate(unsigned int msecs)
-{
-	blinkRate = msecs;
+void LineEdit::setCursorBlinkRate(unsigned int msecs){
+    blinkRate = msecs;
 }
 
 //! set Focus
-void LineEdit::setFocused(bool focus)
-{
-	focused = focus;
+void LineEdit::setFocused(bool focus){
+    focused = focus;
+    if (focus){
+        input.enable();
+    } else {
+        input.disable();
+    }
 }
 
 //! check Focus
-bool LineEdit::isFocused()
-{ return focused; }
-
+bool LineEdit::isFocused(){
+    return focused;
+}

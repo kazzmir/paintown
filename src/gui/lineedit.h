@@ -4,169 +4,172 @@
 #include <iostream>
 #include <vector>
 
-#include "gui/widget.h"
-#include "gui/timer.h"
+#include "widget.h"
+#include "timer.h"
+#include "sigslot.h"
+#include "input/text-input.h"
 
-#include "util/font.h"
-
-#include "gui/sigslot.h"
-
+class Font;
 
 class keys;
 
 namespace Gui{
 
-class LineEdit : public Widget, public sigslot::has_slots<>{
+class LineEdit: public Widget, public sigslot::has_slots<> {
 public:
-	//! enumerator housing alignment positions
-	enum textAlign {
-		T_Left = 0,
-		T_Middle,
-		T_Right,
-		T_Top,
-		T_Bottom
-	};
-	
-	//! enumerator housing alignment positions
-	enum inputType {
-		inputGeneral = 0,
-		inputAllCaps,
-		inputNoCaps,
-		inputNumerical
-	};
-	
-	//! Constructor
-	LineEdit();
+    //! enumerator housing alignment positions
+    enum textAlign {
+        T_Left = 0,
+        T_Middle,
+        T_Right,
+        T_Top,
+        T_Bottom
+    };
 
-	//! Destructor
-	~LineEdit();
+    //! enumerator housing alignment positions
+    enum inputType {
+        inputGeneral = 0,
+        inputAllCaps,
+        inputNoCaps,
+        inputNumerical
+    };
 
-	//! Set text
-	void setText(const std::string & text);
+    //! Constructor
+    LineEdit();
 
-	//! Get text
-	const std::string & getText();
+    //! Destructor
+    virtual ~LineEdit();
 
-	//! Clear text
-	void clearText();
+    //! Set text
+    void setText(const std::string & text);
 
-	//! Set text limit (default 0, no limit)
-	void setLimit(unsigned int l);
+    //! Get text
+    const std::string getText();
 
-	//! Set Horizontal Alignment
-	void setHorizontalAlign(const textAlign a);
+    //! Clear text
+    void clearText();
 
-	//! Set Vertical Alignment
-	void setVerticalAlign(const textAlign a);
-	
-	//! Set the type of input default general
-	void setInputType(const inputType i = inputGeneral);
+    //! Set text limit (default 0, no limit)
+    void setLimit(unsigned int l);
 
-	//! Set textColor
-	void setTextColor(const int color);
+    void hookEnter(void (*callback)(void *), void * arg);
 
-	//! Set textColor
-	void setCursorColor(const int color);
+    //! Set Horizontal Alignment
+    void setHorizontalAlign(const textAlign & a);
 
-	//! Set font
-	void setFont(const Font *f);
+    //! Set Vertical Alignment
+    void setVerticalAlign(const textAlign & a);
 
-	//! Set autoResizeable
-	void setAutoResize(bool r);
+    //! Set the type of input default general
+    void setInputType(const inputType i = inputGeneral);
 
-	//! Set the cursor blink rate in miliseconds (default 500)
-	void setCursorBlinkRate(unsigned int msecs);
+    //! Set textColor
+    void setTextColor(const int color);
 
-	//! Update
-	void act(const Font &);
+    //! Set textColor
+    void setCursorColor(const int color);
 
-	//! Draw
-        using Widget::render;
-	void render(const Bitmap &);
+    //! Set font
+    void setFont(const Font *f);
 
-	//! set Focus
-	void setFocused(bool focus);
+    //! Set autoResizeable
+    void setAutoResize(bool r);
 
-	//! check Focus
-	bool isFocused();
+    //! Set the cursor blink rate in miliseconds (default 500)
+    void setCursorBlinkRate(unsigned int msecs);
 
-	//! Keypresses
-	sigslot::slot keyPress(const keys &k);
+    //! Update
+    void act(const Font &);
 
-	bool didChanged( unsigned long long & counter );
+    //! Draw
+    using Widget::render;
+    void render(const Bitmap &);
+
+    //! set Focus
+    void setFocused(bool focus);
+
+    //! check Focus
+    bool isFocused();
+
+    //! Keypresses
+    // sigslot::slot keyPress(const keys &k);
+
+    bool didChanged( unsigned long long & counter );
 
 protected:
-	//! Current font the label is currently using (uses systemFont by default)
-	const Font *currentSetFont;
+    //! Current font the label is currently using (uses systemFont by default)
+    const Font *currentSetFont;
 
-	//! Current set text
-	std::string currentSetText;
+    //! Current set text
+    // std::string currentSetText;
 
-	//! Horizontal Alignment (RIGHT, MIDDLE, LEFT)
-	textAlign hAlignment;
+    //! Horizontal Alignment (RIGHT, MIDDLE, LEFT)
+    textAlign hAlignment;
 
-	//! Additional checker for Horizontal alignment for easy adjustment
-	textAlign hAlignMod;
+    //! Additional checker for Horizontal alignment for easy adjustment
+    textAlign hAlignMod;
 
-	//! Vertical Alignment (TOP, MIDDLE, BOTTOM)
-	textAlign vAlignment;
-	
-	//! Input type
-	inputType inputTypeValue;
+    //! Vertical Alignment (TOP, MIDDLE, BOTTOM)
+    textAlign vAlignment;
 
-	//! Has changed?
-	bool changed_;
+    //! Input type
+    inputType inputTypeValue;
 
-	//! Auto resize
-	bool autoResizable;
+    //! Has changed?
+    bool changed_;
 
-	//! Text horizontal position
-	int textX;
+    //! Auto resize
+    bool autoResizable;
 
-	//! Text vertical position
-	int textY;
+    //! Text horizontal position
+    int textX;
 
-	//! Cursor horizontal position
-	int cursorX;
+    //! Text vertical position
+    int textY;
 
-	//! Cursor vertical position
-	int cursorY;
+    //! Cursor horizontal position
+    int cursorX;
 
-	//! Cursor index relative to the string
-	unsigned int cursorIndex;
+    //! Cursor vertical position
+    int cursorY;
 
-	//! Text color
-	int textColor;
+    //! Cursor index relative to the string
+    unsigned int cursorIndex;
 
-	//! Text size Height check in case it changes
-	int textSizeH;
+    //! Text color
+    int textColor;
 
-	//! Text limit
-	unsigned int limit;
+    //! Text size Height check in case it changes
+    int textSizeH;
 
-	//! Cursor timer
-	guiTimer cursorTime;
+    //! Text limit
+    unsigned int limit;
 
-	//! Cursor blink rate
-	unsigned int blinkRate;
+    //! Cursor timer
+    guiTimer cursorTime;
 
-	//! Focused?
-	bool focused;
+    //! Cursor blink rate
+    unsigned int blinkRate;
 
-	// keeps track of changes
-	unsigned long long changeCounter;
-	
-	//! If the font size changes
-	void fontChange();
-	
-	inline void changed(){
-		changed_ = true;
-		changeCounter += 1;
-	}
+    //! Focused?
+    bool focused;
 
-	inline void stable(){
-		changed_ = false;
-	}
+    TextInput input;
+
+    // keeps track of changes
+    unsigned long long changeCounter;
+
+    //! If the font size changes
+    void fontChange();
+
+    inline void changed(){
+        changed_ = true;
+        changeCounter += 1;
+    }
+
+    inline void stable(){
+        changed_ = false;
+    }
 };
 
 }

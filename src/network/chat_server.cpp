@@ -14,8 +14,7 @@
 #include "globals.h"
 #include "init.h"
 #include "gui/lineedit.h"
-#include "gui/keyinput_manager.h"
-#include "gui/keys.h"
+#include "input/input-manager.h"
 #include "menu/menu.h"
 #include "util/timer.h"
 #include <iostream>
@@ -282,6 +281,11 @@ static void * acceptConnections( void * server_ ){
 	return NULL;
 }
 
+static void enter_pressed(void * self){
+    ChatServer * chat = (ChatServer *) self;
+    chat->addLine();
+}
+
 ChatServer::ChatServer( const string & name, Network::Socket socket ):
 need_update( true ),
 socket( socket ),
@@ -291,38 +295,47 @@ client_id( 1 ),
 name( name ),
 accepting( true ),
 enterPressed( false ){
-	debug( 1 ) << "Constructor" << endl;
-	background = new Bitmap(Global::titleScreen().path());
+    background = new Bitmap(Global::titleScreen().path());
 
-	debug( 1 ) << "Start accepting connections" << endl;
-	lineEdit = new Gui::LineEdit();
-	lineEdit = new Gui::LineEdit();
+    debug(1) << "Start accepting connections" << endl;
+    lineEdit = new Gui::LineEdit();
     lineEdit->location.setPosition(Gui::AbsolutePoint(20, 20 + messages.getHeight() + 5));
     lineEdit->location.setDimensions(400, 30);
     lineEdit->location.setRadius(5);
-    
-	lineEdit->colors.body = Bitmap::makeColor( 0, 0, 0 );
-	lineEdit->colors.bodyAlpha = 128;
-	lineEdit->colors.border = Bitmap::makeColor( 255, 255, 0 );
-	lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
-	lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
-	
-	lineEdit->setText("Hi!");
-	// lineEdit->setFont(Menu::getFont());
-	lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
-	keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
-	keyInputManager::pressed.connect(this,&ChatServer::keyPress);
-	keyInputManager::released.connect(this,&ChatServer::keyRelease);
-	lineEdit->setFocused(true);
 
-	editCounter = 0;
-	
-	/* listen() may throw an exception, so call it here so that the destructor
-	 * can properly delete the other objects that were created.
-	 */
-	debug( 1 ) << "Listen on socket" << endl;
-	Network::listen( socket );
-        Util::Thread::initializeLock(&lock);
+    lineEdit->colors.body = Bitmap::makeColor( 0, 0, 0 );
+    lineEdit->colors.bodyAlpha = 128;
+    lineEdit->colors.border = Bitmap::makeColor( 255, 255, 0 );
+    lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
+    lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
+
+    lineEdit->setText("Hi!");
+    // lineEdit->setFont(Menu::getFont());
+    lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
+    lineEdit->setFocused(true);
+    lineEdit->hookEnter(enter_pressed, this);
+    /*
+    keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
+    keyInputManager::pressed.connect(this,&ChatServer::keyPress);
+    keyInputManager::released.connect(this,&ChatServer::keyRelease);
+    */
+
+    editCounter = 0;
+
+    /* listen() may throw an exception, so call it here so that the destructor
+     * can properly delete the other objects that were created.
+     */
+    debug(1) << "Listen on socket" << endl;
+    Network::listen( socket );
+    Util::Thread::initializeLock(&lock);
+}
+
+void ChatServer::addLine(){
+    if (lineEdit->getText().size() > 0){
+        addMessage(name + ": " + lineEdit->getText(), 0);
+        lineEdit->clearText();
+        needUpdate();
+    }
 }
 	
 bool ChatServer::isAccepting(){
@@ -491,72 +504,76 @@ void ChatServer::addMessage( const string & s, unsigned int id ){
 	*/
 }
 	
+/*
 sigslot::slot ChatServer::keyPress(const keys &k){
-	switch ( k.getValue() ){
-		case keys::ENTER : {
-			enterPressed = true;
-			break;
-		}
-	}
+    switch ( k.getValue() ){
+        case keys::ENTER : {
+            enterPressed = true;
+            break;
+        }
+    }
 }
 
 sigslot::slot ChatServer::keyRelease(const keys &k){
-	switch ( k.getValue() ){
-		case keys::ENTER : {
-			enterPressed = false;
-			break;
-		}
-	}
+    switch ( k.getValue() ){
+        case keys::ENTER : {
+            enterPressed = false;
+            break;
+        }
+    }
 }
+*/
 
 void ChatServer::handleInput( Keyboard & keyboard ){
 
+#if 0
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-	lineEdit->act(font);
+    lineEdit->act(font);
 
-	if ( lineEdit->didChanged( editCounter ) ){
-		needUpdate();
-	}
+    if ( lineEdit->didChanged( editCounter ) ){
+        needUpdate();
+    }
 
-	/*
-	if ( keyboard[ Keyboard::Key_ENTER ] ){
-		addMessage( name + ": " + lineEdit->getText(), 0 );
-		lineEdit->clearText();
-		needUpdate();
-	}
-	*/
-		
-	if ( enterPressed && lineEdit->getText().length() > 0 ){
-		// enterPressed = false;
-		addMessage( name + ": " + lineEdit->getText(), 0 );
-		lineEdit->clearText();
-		needUpdate();
-	}
+    /*
+       if ( keyboard[ Keyboard::Key_ENTER ] ){
+       addMessage( name + ": " + lineEdit->getText(), 0 );
+       lineEdit->clearText();
+       needUpdate();
+       }
+       */
 
-	/*
-	vector< int > keys;
-	keyboard.readKeys( keys );
+    if ( enterPressed && lineEdit->getText().length() > 0 ){
+        // enterPressed = false;
+        addMessage( name + ": " + lineEdit->getText(), 0 );
+        lineEdit->clearText();
+        needUpdate();
+    }
 
-	for ( vector< int >::iterator it = keys.begin(); it != keys.end(); it++ ){
-		int key = *it;
-		if ( key == Keyboard::Key_BACKSPACE ){
-			if ( input != "" ){
-				input = input.substr( 0, input.length() - 1 );
-				needUpdate();
-			}
-		} else if ( Keyboard::isAlpha( key ) ){
-			input += lowerCase( Keyboard::keyToName( key ) );
-			needUpdate();
-		} else if ( key == Keyboard::Key_SPACE ){
-			input += " ";
-			needUpdate();
-		} else if ( key == Keyboard::Key_ENTER ){
-			addMessage( name + ": " + input, 0 );
-			input = "";
-			needUpdate();
-		}
-	}
-	*/
+    /*
+       vector< int > keys;
+       keyboard.readKeys( keys );
+
+       for ( vector< int >::iterator it = keys.begin(); it != keys.end(); it++ ){
+       int key = *it;
+       if ( key == Keyboard::Key_BACKSPACE ){
+       if ( input != "" ){
+       input = input.substr( 0, input.length() - 1 );
+       needUpdate();
+       }
+       } else if ( Keyboard::isAlpha( key ) ){
+       input += lowerCase( Keyboard::keyToName( key ) );
+       needUpdate();
+       } else if ( key == Keyboard::Key_SPACE ){
+       input += " ";
+       needUpdate();
+       } else if ( key == Keyboard::Key_ENTER ){
+       addMessage( name + ": " + input, 0 );
+       input = "";
+       needUpdate();
+       }
+       }
+       */
+#endif
 }
 	
 void ChatServer::shutdownClientThreads(){
@@ -654,61 +671,68 @@ void ChatServer::killClient( Client * c ){
 	sendMessage( remove, 0 );
 }
 
-bool ChatServer::logic( Keyboard & keyboard ){
-	if ( keyboard[ Keyboard::Key_TAB ] ){
-		focus = nextFocus( focus );
-		needUpdate();
-	}
-		
-	keyInputManager::update();
-	/*
-	lineEdit->setFont(Menu::getFont());
-	lineEdit->logic();
-	*/
+bool ChatServer::logic(){
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+    lineEdit->act(font);
+    if (lineEdit->didChanged(editCounter)){
+        needUpdate();
+    }
 
-	lineEdit->setFocused(false);
-	switch ( focus ){
-		case INPUT_BOX : {
-			lineEdit->setFocused(true);
-			handleInput( keyboard );
-			// handleInput( keyboard );
-			lineEdit->colors.border = Bitmap::makeColor(255,255,0);
-			break;
-		}
-		case START_GAME : {
-			if ( keyboard[ Keyboard::Key_ENTER ] ){
-				return true;
-			}
-			lineEdit->colors.border = Bitmap::makeColor(255,255,255);
-			break;
-		}
-		case QUIT : {
-			if ( keyboard[ Keyboard::Key_ENTER ] ){
-				return true;
-			}
-			lineEdit->colors.border = Bitmap::makeColor(255,255,255);
-			break;
-		}
-	}
+#if 0
+    if (keyboard[Keyboard::Key_TAB]){
+        focus = nextFocus( focus );
+        needUpdate();
+    }
 
-	return false;
+    keyInputManager::update();
+    /*
+       lineEdit->setFont(Menu::getFont()); lineEdit->logic();
+       */
+
+    lineEdit->setFocused(false);
+    switch (focus){
+        case INPUT_BOX : {
+            lineEdit->setFocused(true);
+            handleInput( keyboard );
+            // handleInput( keyboard );
+            lineEdit->colors.border = Bitmap::makeColor(255,255,0);
+            break;
+        }
+        case START_GAME : {
+            if ( keyboard[ Keyboard::Key_ENTER ] ){
+                return true;
+            }
+            lineEdit->colors.border = Bitmap::makeColor(255,255,255);
+            break;
+        }
+        case QUIT : {
+            if ( keyboard[ Keyboard::Key_ENTER ] ){
+                return true;
+            }
+            lineEdit->colors.border = Bitmap::makeColor(255,255,255);
+            break;
+        }
+    }
+#endif
+
+    return false;
 }
 	
 void ChatServer::needUpdate(){
-	need_update = true;
+    need_update = true;
 }
 	
 Focus ChatServer::nextFocus( Focus f ){
-	switch ( f ){
-		case INPUT_BOX : return START_GAME;
-		case START_GAME : return QUIT;
-		case QUIT : return INPUT_BOX;
-		default : return INPUT_BOX;
-	}
+    switch (f){
+        case INPUT_BOX : return START_GAME;
+        case START_GAME : return QUIT;
+        case QUIT : return INPUT_BOX;
+        default : return INPUT_BOX;
+    }
 }
 
 bool ChatServer::needToDraw(){
-	return need_update;
+    return need_update;
 }
 
 void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
@@ -746,98 +770,105 @@ void ChatServer::drawBuddyList( int x, int y, const Bitmap & work, const Font & 
 }
 	
 int ChatServer::focusColor( Focus f ){
-	if ( f == focus ){
-		return Bitmap::makeColor( 255, 255, 0 );
-	}
-	return Bitmap::makeColor( 255, 255, 255 );
+    if (f == focus){
+        return Bitmap::makeColor( 255, 255, 0 );
+    }
+    return Bitmap::makeColor( 255, 255, 255 );
 }
 
 void ChatServer::draw( const Bitmap & work ){
-	int start_x = 20;
-	int start_y = 20;
-	const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-	background->Blit( work );
-	messages.draw( start_x, start_y, work, font );
-		
-	// drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
+    int start_x = 20;
+    int start_y = 20;
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    background->Blit( work );
+    messages.draw( start_x, start_y, work, font );
 
-	drawBuddyList( start_x + messages.getWidth() + 10, start_y, work, font );
+    // drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 
-	font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( START_GAME ), work, "Start the game", 0 );
-	font.printf( start_x + font.textLength( "Start the game" ) + 20, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( QUIT ), work, "Quit", 0 );
-	
-	lineEdit->render(work);
+    drawBuddyList( start_x + messages.getWidth() + 10, start_y, work, font );
 
-	need_update = false;
+    font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( START_GAME ), work, "Start the game", 0 );
+    font.printf( start_x + font.textLength( "Start the game" ) + 20, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( QUIT ), work, "Quit", 0 );
+
+    lineEdit->render(work);
+
+    need_update = false;
 }
 
 void ChatServer::startThreadsHack(){
     Util::Thread::acquireLock( &lock );
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * c = *it;
-		c->startThreads();
-	}
-        Util::Thread::releaseLock( &lock );
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+        Client * c = *it;
+        c->startThreads();
+    }
+    Util::Thread::releaseLock( &lock );
 }
 	
 void ChatServer::run(){
-	Global::speed_counter = 0;
-	Bitmap work( GFX_X, GFX_Y );
-	Keyboard keyboard;
+    Global::speed_counter = 0;
+    Bitmap work(GFX_X, GFX_Y);
+    /*
+       Keyboard keyboard;
 
-	keyboard.setAllDelay( 200 );
-	keyboard.setDelay( Keyboard::Key_TAB, 200 );
-	keyboard.setDelay( Keyboard::Key_ESC, 0 );
-	
-        Util::Thread::createThread( &acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this );
+       keyboard.setAllDelay( 200 );
+       keyboard.setDelay( Keyboard::Key_TAB, 200 );
+       keyboard.setDelay( Keyboard::Key_ESC, 0 );
+       */
 
-	bool done = false;
-	while ( ! done ){
-		int think = Global::speed_counter;
-		while ( think > 0 ){
-			startThreadsHack();
-			keyboard.poll();
-			done = logic( keyboard );
-			think -= 1;
-			Global::speed_counter = 0;
-			if ( keyboard[ Keyboard::Key_ESC ] || (done && focus == QUIT) ){
-				addMessage( "** Server quit", 0 );
-				stopAccepting();
-				killAllClients();
-				done = true;
-				throw Exception::Return(__FILE__, __LINE__);
-			} else if ( done && focus == START_GAME ){
-				stopAccepting();
-				debug( 1 ) << "Shut down client threads" << endl;
-				shutdownClientThreads();
-				debug( 1 ) << "Finished shutting things down. Done is " << done << endl;
-				done = true;
-				debug( 1 ) << "Done is " << done << endl;
-				break;
-			}
-		}
+    Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
-		if ( needToDraw() ){
-			draw( work );
-			work.BlitToScreen();
-			work.clear();
-		}
+    bool done = false;
+    while ( ! done ){
+        int think = Global::speed_counter;
+        Global::speed_counter = 0;
+        while (think > 0){
+            InputManager::poll();
+            startThreadsHack();
+            // keyboard.poll();
+            done = logic();
+            think -= 1;
 
-		while ( Global::speed_counter == 0 ){
-			Util::rest( 1 );
-			keyboard.poll();
-		}
-	}
+            /*
+            if (keyboard[ Keyboard::Key_ESC ] || (done && focus == QUIT) ){
+                addMessage( "** Server quit", 0 );
+                stopAccepting();
+                killAllClients();
+                done = true;
+                throw Exception::Return(__FILE__, __LINE__);
+            } else if ( done && focus == START_GAME ){
+                stopAccepting();
+                debug( 1 ) << "Shut down client threads" << endl;
+                shutdownClientThreads();
+                debug( 1 ) << "Finished shutting things down. Done is " << done << endl;
+                done = true;
+                debug( 1 ) << "Done is " << done << endl;
+                break;
+            }
+            */
+        }
 
-	debug( 1 ) << "Chat server done" << endl;
+        if (needToDraw()){
+            draw(work);
+            work.BlitToScreen();
+            work.clear();
+        }
+
+        while (Global::speed_counter == 0){
+            Util::rest(1);
+            InputManager::poll();
+            // keyboard.poll();
+        }
+    }
+
+    debug(1) << "Chat server done" << endl;
 }
 	
 ChatServer::~ChatServer(){
-	delete background;
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		delete *it;
-	}
-	delete lineEdit;
+    delete background;
+    for (vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
+        delete *it;
+    }
+    delete lineEdit;
 }
 
 #endif
