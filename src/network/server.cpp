@@ -32,6 +32,7 @@
 #include "input/text-input.h"
 
 #include "menu/options.h"
+#include "menu/font-info.h"
 
 #include "configuration.h"
 
@@ -588,7 +589,12 @@ static void playGame(vector<Client*> & clients){
         players.push_back( player );
         /* then the user selects a set of levels to play */
         // Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
-        Level::LevelInfo levelInfo = doLevelMenu("/levels", Menu::Context());
+        Menu::Context context;
+        /* FIXME: get a better Menu::Context object, one that already has
+         * a font set and a background.
+         */
+        context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, 20, 20)));
+        Level::LevelInfo levelInfo = doLevelMenu("/levels", context);
 
         /* show the loading screen */
         Loader::startLoading( &loading_screen_thread );
@@ -598,7 +604,7 @@ static void playGame(vector<Client*> & clients){
 
         /* the server player is network id 1 */
         Paintown::Object::networkid_t id = 1;
-        player->setId( id );
+        player->setId(id);
         /* the server's player alliance can just be ALLIANCE_PLAYER, so no
          * need to change it
          */
