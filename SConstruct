@@ -1092,7 +1092,7 @@ if isWindows():
     
     if not useMinpspw() and not useWii():
         env.Append( CPPDEFINES = 'WINDOWS' )
-        env.Append(LINKFLAGS = ['-static-libstdc++'])
+        env.Append(LINKFLAGS = ['-static-libstdc++', '-static-libgcc'])
         if getDebug():
             env.Append( CCFLAGS = ['-mthreads'] )
             env.Append( LINKFLAGS = ['-mthreads'] )
