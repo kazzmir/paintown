@@ -651,11 +651,11 @@ void ChatServer::needUpdate(){
     need_update = true;
 }
 	
-Focus ChatServer::nextFocus( Focus f ){
+Focus ChatServer::nextFocus(Focus f){
     switch (f){
-        case INPUT_BOX : return START_GAME;
-        case START_GAME : return QUIT;
-        case QUIT : return INPUT_BOX;
+        case INPUT_BOX: return START_GAME;
+        case START_GAME: return QUIT;
+        case QUIT: return INPUT_BOX;
         default : return INPUT_BOX;
     }
 }
@@ -683,19 +683,19 @@ void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
 }
 
 void ChatServer::drawBuddyList( int x, int y, const Bitmap & work, const Font & font ){
-	Bitmap buddyList( work, x, y, GFX_X - x - 5, 200 );
-	buddyList.drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-	buddyList.drawingMode( Bitmap::MODE_SOLID );
-	buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
-	int fy = 1;
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * client = *it;
-		const string & name = client->getName();
-		font.printf( 1, fy, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
-		fy += font.getHeight();
-	}
+    Bitmap buddyList( work, x, y, GFX_X - x - 5, 200 );
+    buddyList.drawingMode( Bitmap::MODE_TRANS );
+    Bitmap::transBlender( 0, 0, 0, 128 );
+    buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
+    buddyList.drawingMode( Bitmap::MODE_SOLID );
+    buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
+    int fy = 1;
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+        Client * client = *it;
+        const string & name = client->getName();
+        font.printf( 1, fy, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
+        fy += font.getHeight();
+    }
 }
 	
 int ChatServer::focusColor( Focus f ){
@@ -737,6 +737,13 @@ static void set_to_true(void * b){
     bool * what = (bool *) b;
     *what = true;
 }
+
+void ChatServer::next_focus(void * self){
+    ChatServer * chat = (ChatServer*) self;
+    chat->focus = chat->nextFocus(chat->focus);
+    chat->lineEdit->setFocused(chat->focus == INPUT_BOX);
+    chat->needUpdate();
+}
 	
 void ChatServer::run(){
     Global::speed_counter = 0;
@@ -751,8 +758,12 @@ void ChatServer::run(){
 
     Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
+    InputMap<int> input;
+    input.set(Keyboard::Key_TAB, 0, true, 0);
+    input.set(Keyboard::Key_ENTER, 0, true, 1);
     bool forceQuit = false;
     lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
+    lineEdit->hookKey(Keyboard::Key_TAB, ChatServer::next_focus, this);
     bool done = false;
     while ( ! done ){
         int think = Global::speed_counter;
@@ -771,16 +782,40 @@ void ChatServer::run(){
                 done = true;
                 throw Exception::Return(__FILE__, __LINE__);
             }
+
+            InputMap<int>::Output output = InputManager::getMap(input);
+            if (output[0]){
+                next_focus(this);
+            }
+
+            if (output[1]){
+                switch (focus){
+                    case START_GAME: {
+                        stopAccepting();
+                        debug( 1 ) << "Shut down client threads" << endl;
+                        shutdownClientThreads();
+                        debug( 1 ) << "Finished shutting things down. Done is " << done << endl;
+                        done = true;
+                        debug( 1 ) << "Done is " << done << endl;
+                        break;
+                    }
+                    case QUIT: {
+                        addMessage( "** Server quit", 0 );
+                        stopAccepting();
+                        killAllClients();
+                        done = true;
+                        throw Exception::Return(__FILE__, __LINE__);
+                    }
+                    case INPUT_BOX: {
+                        Global::debug(0) << "Shouldn't get here" << endl;
+                        throw Exception::Return(__FILE__, __LINE__);
+                    }
+                }
+            }
+
             /*
             } else if ( done && focus == START_GAME ){
-                stopAccepting();
-                debug( 1 ) << "Shut down client threads" << endl;
-                shutdownClientThreads();
-                debug( 1 ) << "Finished shutting things down. Done is " << done << endl;
-                done = true;
-                debug( 1 ) << "Done is " << done << endl;
-                break;
-            }
+                            }
             */
         }
 

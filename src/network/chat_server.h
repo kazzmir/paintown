@@ -172,6 +172,8 @@ protected:
 	inline int clientId(){
 		return client_id++;
 	}
+
+        static void next_focus(void * self);
 	
 protected:
 	bool need_update;
