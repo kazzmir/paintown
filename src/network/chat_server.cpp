@@ -491,23 +491,23 @@ void ChatServer::sendMessage( const Network::Message & message, unsigned int id 
 }
 
 void ChatServer::addMessage( const string & s, unsigned int id ){
-	Network::Message message;
-	message << ADD_MESSAGE;
-	message.path = s;
-        Util::Thread::acquireLock( &lock );
-	messages.addMessage( s );
-	needUpdate();
-        Util::Thread::releaseLock( &lock );
+    Network::Message message;
+    message << ADD_MESSAGE;
+    message.path = s;
+    Util::Thread::acquireLock( &lock );
+    messages.addMessage( s );
+    needUpdate();
+    Util::Thread::releaseLock( &lock );
 
-	sendMessage( message, id );
-	/*
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
-		Client * c = *it;
-		if ( c->getId() != id ){
-			c->addOutputMessage( message );
-		}
-	}
-	*/
+    sendMessage( message, id );
+    /*
+       for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+       Client * c = *it;
+       if ( c->getId() != id ){
+       c->addOutputMessage( message );
+       }
+       }
+       */
 }
 	
 void ChatServer::shutdownClientThreads(){
@@ -566,43 +566,43 @@ void ChatServer::killAllClients(){
 }
 
 void ChatServer::killClient( Client * c ){
-	int id = c->getId();
-	string name = c->getName();
-        Util::Thread::acquireLock( &lock );
-	for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
-		Client * client = *it;
-		if ( client == c ){
-			debug( 1 ) << "Killing client " << c->getId() << endl;
-			c->kill();
-			debug( 1 ) << "Closing client socket " << c->getSocket() << endl;
-			Network::close( c->getSocket() );
-			/* It looks like the client that called killClient is waiting
-			 * for itself to exit but pthread_join won't block if the
-			 * argument is the same as the calling thread, so its ok.
-                         * TODO: ensure this semantics works with SDL threads too
-			 */
-			debug( 1 ) << "Waiting for input thread to die" << endl;
-                        Util::Thread::joinThread(c->getInputThread());
-			debug( 1 ) << "Waiting for output thread to die" << endl;
-                        Util::Thread::joinThread(c->getOutputThread());
-			debug( 1 ) << "Deleting client" << endl;
-			/* delete can be moved to the input/output thread exit part
-			 * if need be.
-			 */
-			delete client;
-			it = clients.erase( it );
-		} else {
-			it++;
-		}
-	}
-	needUpdate();
-        Util::Thread::releaseLock( &lock );
-	addMessage( "** " + name + " quit", 0 );
-        Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
-	Network::Message remove;
-	remove << REMOVE_BUDDY;
-	remove << id;
-	sendMessage( remove, 0 );
+    int id = c->getId();
+    string name = c->getName();
+    Util::Thread::acquireLock( &lock );
+    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
+        Client * client = *it;
+        if ( client == c ){
+            debug( 1 ) << "Killing client " << c->getId() << endl;
+            c->kill();
+            debug( 1 ) << "Closing client socket " << c->getSocket() << endl;
+            Network::close( c->getSocket() );
+            /* It looks like the client that called killClient is waiting
+             * for itself to exit but pthread_join won't block if the
+             * argument is the same as the calling thread, so its ok.
+             * TODO: ensure this semantics works with SDL threads too
+             */
+            debug( 1 ) << "Waiting for input thread to die" << endl;
+            Util::Thread::joinThread(c->getInputThread());
+            debug( 1 ) << "Waiting for output thread to die" << endl;
+            Util::Thread::joinThread(c->getOutputThread());
+            debug( 1 ) << "Deleting client" << endl;
+            /* delete can be moved to the input/output thread exit part
+             * if need be.
+             */
+            delete client;
+            it = clients.erase( it );
+        } else {
+            it++;
+        }
+    }
+    needUpdate();
+    Util::Thread::releaseLock( &lock );
+    addMessage( "** " + name + " quit", 0 );
+    Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
+    Network::Message remove;
+    remove << REMOVE_BUDDY;
+    remove << id;
+    sendMessage( remove, 0 );
 }
 
 bool ChatServer::logic(){
@@ -762,6 +762,7 @@ void ChatServer::run(){
     InputMap<int> input;
     input.set(Keyboard::Key_TAB, 0, true, 0);
     input.set(Keyboard::Key_ENTER, 0, true, 1);
+    input.set(Keyboard::Key_ESC, 0, true, 2);
     bool forceQuit = false;
     lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
     lineEdit->hookKey(Keyboard::Key_TAB, ChatServer::next_focus, this);
@@ -774,8 +775,10 @@ void ChatServer::run(){
             startThreadsHack();
             done = logic();
             think -= 1;
+            
+            InputMap<int>::Output output = InputManager::getMap(input);
 
-            if (forceQuit || (done && focus == QUIT) ){
+            if (forceQuit || (done && focus == QUIT) || output[2]){
                 addMessage( "** Server quit", 0 );
                 stopAccepting();
                 killAllClients();
@@ -783,7 +786,6 @@ void ChatServer::run(){
                 throw Exception::Return(__FILE__, __LINE__);
             }
 
-            InputMap<int>::Output output = InputManager::getMap(input);
             if (output[0]){
                 next_focus(this);
             }

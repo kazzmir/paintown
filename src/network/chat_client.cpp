@@ -15,78 +15,91 @@
 #include "gui/keyinput_manager.h"
 #include "gui/keys.h"
 #include "resource.h"
+#include "input/input-manager.h"
+#include "input/input-map.h"
 #include "util/sound.h"
 
 using namespace std;
 
 static std::ostream & debug( int level ){
-	Global::debug( level ) << "[chat-client] ";
-	return Global::debug( level );
+    Global::debug( level ) << "[chat-client] ";
+    return Global::debug( level );
 }
-static void * serverInput( void * client_ ){
-	ChatClient * client = (ChatClient *) client_;
-	bool done = false;
-	while ( ! done ){
-		try{
-                    debug(1) << "Waiting to receive a message" << endl;
-			Network::Message message( client->getSocket() );
-			int x;
-			ChatType kind;
-			message >> x;
-			kind = (ChatType) x;
-			debug( 1 ) << "Received message type " << kind << endl;
-			switch ( kind ){
-                            case HELLO : {
-                                debug(0) << "Client should not see a HELLO message!" << endl;
-                                break;
-                            }
-				case ADD_MESSAGE : {
-					client->addMessage( message.path, 0 );
-					break;
-				}
-				case CHANGE_NAME : {
-					int id;
-					string name;
-					message >> id;
-					name = message.path;
-					client->changeName( id, name );
-					break;
-				}
-				case REMOVE_BUDDY : {
-					int id;
-					message >> id;
-					client->removeBuddy( id );
-					break;
-				}
-				case OK_TO_START : {
-					break;
-				}
-				case START_THE_GAME : {
-					/* shut down threads and prepare to play */
-					done = true;
-					client->finish();
-					break;
-				}
-				case ADD_BUDDY : {
-					int id;
-					string name;
-					message >> id;
-					name = message.path;
-					client->addBuddy( id, name );
-					break;
-				}
-			}
-		} catch ( const Network::NetworkException & e ){
-			debug( 0 ) << "Input thread died" << endl;
-			done = true;
-		}
-	}
 
-	return NULL;
+static void * serverInput( void * client_ ){
+    ChatClient * client = (ChatClient *) client_;
+    bool done = false;
+    while ( ! done ){
+        try{
+            debug(1) << "Waiting to receive a message" << endl;
+            Network::Message message( client->getSocket() );
+            int x;
+            ChatType kind;
+            message >> x;
+            kind = (ChatType) x;
+            debug( 1 ) << "Received message type " << kind << endl;
+            switch ( kind ){
+                case HELLO : {
+                    debug(0) << "Client should not see a HELLO message!" << endl;
+                    break;
+                }
+                case ADD_MESSAGE : {
+                    client->addMessage( message.path, 0 );
+                    break;
+                }
+                case CHANGE_NAME : {
+                    int id;
+                    string name;
+                    message >> id;
+                    name = message.path;
+                    client->changeName( id, name );
+                    break;
+                }
+                case REMOVE_BUDDY : {
+                    int id;
+                    message >> id;
+                    client->removeBuddy( id );
+                    break;
+                }
+                case OK_TO_START : {
+                    break;
+                }
+                case START_THE_GAME : {
+                    /* shut down threads and prepare to play */
+                    done = true;
+                    client->finish();
+                    break;
+                }
+                case ADD_BUDDY : {
+                    int id;
+                    string name;
+                    message >> id;
+                    name = message.path;
+                    client->addBuddy( id, name );
+                    break;
+                }
+            }
+        } catch ( const Network::NetworkException & e ){
+            debug( 0 ) << "Input thread died" << endl;
+            done = true;
+        }
+    }
+
+    return NULL;
+}
+
+void ChatClient::enter_pressed(void * self){
+    ChatClient * chat = (ChatClient*) self;
+    if (chat->lineEdit->getText().size() > 0){
+        chat->addMessage("You: " + chat->lineEdit->getText(), 0);
+        chat->toSend.push(chat->lineEdit->getText());
+        chat->lineEdit->clearText();
+        chat->needUpdate();
+    }
 }
 
 ChatClient::ChatClient( Network::Socket socket, const string & name ):
-need_update( true ),
+need_update(true),
 messages( 400, 300 ),
 socket( socket ),
 focus( INPUT_BOX ),
@@ -122,6 +135,8 @@ enterPressed( false ){
     lineEdit->setText("Hi!");
     // lineEdit->setFont(Menu::getFont());
     lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
+    lineEdit->hookKey(Keyboard::Key_ENTER, enter_pressed, this);
+    lineEdit->hookKey(Keyboard::Key_TAB, next_focus, this);
     /*
     keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
     keyInputManager::pressed.connect(this, &ChatClient::keyPress);
@@ -132,6 +147,7 @@ enterPressed( false ){
     editCounter = 0;
 }
 
+/*
 sigslot::slot ChatClient::keyPress(const keys &k){
 	switch ( k.getValue() ){
 		case keys::ENTER : {
@@ -149,17 +165,18 @@ sigslot::slot ChatClient::keyRelease(const keys &k){
 		}
 	}
 }
+*/
 
 bool ChatClient::needToDraw(){
-	return need_update;
+    return need_update;
 }
 
-Focus ChatClient::nextFocus( Focus f ){
-	switch ( f ){
-		case INPUT_BOX : return QUIT;
-		case QUIT : return INPUT_BOX;
-		default : return INPUT_BOX;
-	}
+Focus ChatClient::nextFocus(Focus f){
+    switch (f){
+        case INPUT_BOX: return QUIT;
+        case QUIT: return INPUT_BOX;
+        default: return INPUT_BOX;
+    }
 }
 	
 void ChatClient::addBuddy( int id, const std::string & s ){
@@ -167,7 +184,7 @@ void ChatClient::addBuddy( int id, const std::string & s ){
     b.id = id;
     b.name = s;
     Util::Thread::acquireLock( &lock );
-    buddies.push_back( b );
+    buddies.push_back(b);
     needUpdate();
     Util::Thread::releaseLock( &lock );
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-in.wav"))->play();
@@ -175,14 +192,14 @@ void ChatClient::addBuddy( int id, const std::string & s ){
 	
 void ChatClient::changeName( int id, const std::string & s ){
     Util::Thread::acquireLock( &lock );
-	for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
-		Buddy & b = *it;
-		if ( b.id == id ){
-			b.name = s;
-		}
-	}
-	needUpdate();
-        Util::Thread::releaseLock( &lock );
+    for ( vector< Buddy >::iterator it = buddies.begin(); it != buddies.end(); it++ ){
+        Buddy & buddy = *it;
+        if (buddy.id == id){
+            buddy.name = s;
+        }
+    }
+    needUpdate();
+    Util::Thread::releaseLock( &lock );
 }
 
 void ChatClient::removeBuddy( int id ){
@@ -229,7 +246,7 @@ bool ChatClient::sendMessage( const string & message ){
     return false;
 }
 
-void ChatClient::popup( Bitmap & work, Keyboard & key, const std::string & str ){
+void ChatClient::popup( Bitmap & work, const std::string & str ){
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
     int length = font.textLength( str.c_str() ) + 20;
     int height = font.getHeight() * 2;
@@ -242,10 +259,13 @@ void ChatClient::popup( Bitmap & work, Keyboard & key, const std::string & str )
     font.printf( 10, area.getHeight() / 3, Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
     work.BlitToScreen();
 
+    /*
     key.wait();
     key.readKey();
+    */
 }
 
+#if 0
 void ChatClient::handleInput( Keyboard & keyboard ){
     /*
        vector< int > keys;
@@ -290,12 +310,34 @@ void ChatClient::handleInput( Keyboard & keyboard ){
         needUpdate();
     }
 }
+#endif
 
 void ChatClient::needUpdate(){
 	need_update = true;
 }
+
+void ChatClient::next_focus(void * self){
+    ChatClient * chat = (ChatClient*) self;
+    chat->focus = chat->nextFocus(chat->focus);
+    chat->lineEdit->setFocused(chat->focus == INPUT_BOX);
+    if (chat->focus == INPUT_BOX){
+        chat->lineEdit->colors.border = Bitmap::makeColor(255,255,0);
+    } else {
+        chat->lineEdit->colors.border = Bitmap::makeColor(255,255,255);
+    }
+    chat->needUpdate();
+}
 	
-bool ChatClient::logic( Keyboard & keyboard ){
+bool ChatClient::logic(){
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+    lineEdit->act(font);
+    if (lineEdit->didChanged(editCounter)){
+        needUpdate();
+    }
+
+    return false;
+
+    /*
 	if ( keyboard[ Keyboard::Key_TAB ] ){
 		focus = nextFocus( focus );
                 debug(1) << "Focus is " << focus << endl;
@@ -321,6 +363,7 @@ bool ChatClient::logic( Keyboard & keyboard ){
 		}
 	}
 	return false;
+        */
 }
 
 void ChatClient::drawInputBox( int x, int y, const Bitmap & work ){
@@ -368,7 +411,7 @@ void ChatClient::draw( const Bitmap & work ){
     drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
 
     int color = Bitmap::makeColor( 255, 255, 255 );
-    if ( focus == QUIT ){
+    if (focus == QUIT){
         color = Bitmap::makeColor( 255, 255, 0 );
     }
     font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() + 20, color, work, "Back", 0 );
@@ -398,57 +441,80 @@ void ChatClient::killInputThread(){
     debug( 0 ) << "Input thread killed" << endl;
 }
 
+static void set_to_true(void * b){
+    bool * what = (bool*) b;
+    *what = true;
+}
+
 void ChatClient::run(){
     Global::speed_counter = 0;
-    Bitmap work( GFX_X, GFX_Y );
-    Keyboard keyboard;
+    Bitmap work(GFX_X, GFX_Y);
+    // Keyboard keyboard;
 
-    keyboard.setAllDelay( 200 );
-    keyboard.setDelay( Keyboard::Key_TAB, 200 );
-    keyboard.setDelay( Keyboard::Key_ESC, 0 );
+    InputMap<int> input;
+    input.set(Keyboard::Key_TAB, 0, true, 0);
+    input.set(Keyboard::Key_ENTER, 0, true, 1);
+    input.set(Keyboard::Key_ESC, 0, true, 2);
 
+    bool forceQuit = false;
     bool done = false;
     bool kill = false;
+    lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
     while ( ! done ){
         int think = Global::speed_counter;
-        while ( think > 0 ){
-            keyboard.poll();
-            if ( logic( keyboard ) ){
+        Global::speed_counter = 0;
+        while (think > 0){
+            InputManager::poll();
+            InputMap<int>::Output output = InputManager::getMap(input);
+
+            if (logic() || forceQuit || output[2]){
                 kill = true;
                 done = true;
                 break;
             }
 
-            while ( ! toSend.empty() ){
-                if ( ! sendMessage( toSend.front() ) ){
-                    popup( work, keyboard, "Could not send message" );
+            if (output[0]){
+                next_focus(this);
+            }
+
+            if (output[1] && focus == QUIT){
+                Global::debug(0) << "Quit!" << endl;
+                kill = true;
+                done = true;
+            }
+
+            while (! toSend.empty()){
+                if (! sendMessage( toSend.front() )){
+                    popup(work, "Could not send message" );
                 }
                 toSend.pop();
             }
 
             think -= 1;
-            Global::speed_counter = 0;
-            done = isFinished();
+            done = done || isFinished();
+
+            /*
             if ( keyboard[ Keyboard::Key_ESC ] ){
                 kill = true;
                 done = true;
                 break;
             }
+            */
         }
 
-        if ( needToDraw() ){
-            draw( work );
+        if (needToDraw()){
+            draw(work);
             work.BlitToScreen();
             work.clear();
         }
 
         while ( Global::speed_counter == 0 ){
-            Util::rest( 1 );
-            keyboard.poll();
+            Util::rest(1);
+            InputManager::poll();
         }
     }
 
-    if ( kill ){
+    if (kill){
         killInputThread();
     } else {
         /* when OK_TO_START is sent there are guaranteed to be no other
@@ -456,7 +522,7 @@ void ChatClient::run(){
          */
         Network::Message message;
         message << OK_TO_START;
-        message.send( getSocket() );
+        message.send(getSocket());
     }
 }
 

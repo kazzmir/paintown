@@ -46,19 +46,23 @@ public:
 
 protected:
 	void killInputThread();
-	bool logic( Keyboard & keyboard );
+	bool logic();
 	Focus nextFocus( Focus f );
 	bool needToDraw();
 	void draw( const Bitmap & bitmap );
 	void needUpdate();
-	void handleInput( Keyboard & keyboard );
 	void drawInputBox( int x, int y, const Bitmap & work );
 	void drawBuddies( const Bitmap & area, int x, int y, const Font & f );
 	bool sendMessage( const std::string & message );
-	void popup( Bitmap & work, Keyboard & key, const std::string & str );
+	void popup( Bitmap & work, const std::string & str );
 
+        static void enter_pressed(void * self);
+        static void next_focus(void * self);
+
+        /*
 	sigslot::slot keyPress(const keys &k);
 	sigslot::slot keyRelease(const keys &k);
+        */
 
 private:
 	Bitmap * background;
