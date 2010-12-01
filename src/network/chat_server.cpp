@@ -759,6 +759,21 @@ void ChatServer::run(){
     Bitmap work(GFX_X, GFX_Y);
     Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
+    class Release{
+    public:
+        Release(Gui::LineEdit * line):
+        line(line){
+        }
+
+        Gui::LineEdit * line;
+
+        ~Release(){
+            line->setFocused(false);
+        }
+    };
+
+    Release release(lineEdit);
+
     InputMap<int> input;
     input.set(Keyboard::Key_TAB, 0, true, 0);
     input.set(Keyboard::Key_ENTER, 0, true, 1);

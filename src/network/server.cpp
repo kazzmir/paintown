@@ -825,7 +825,7 @@ void networkServer(){
     // const int startingLives = 4;
     int port = getServerPort();
 
-    Keyboard key;
+    // Keyboard key;
 
     debug(1) << "Port is " << port << endl;
 
@@ -849,7 +849,7 @@ Network::blocking( false );
 
         debug( 1 ) << "Run chat server" << endl;
 
-        ChatServer chat( "server", server );
+        ChatServer chat("server", server);
         chat.run();
         /*
 #ifdef _WIN32
@@ -861,18 +861,22 @@ Network::blocking( true );
             debug( 1 ) << "Start game with " << clients.size() << " clients" << endl;
             playGame(clients);
         } else {
-            key.poll();
-            popup( font, "No clients connected" );
-            key.wait();
-            key.readKey();
+            // key.poll();
+            popup(font, "No clients connected" );
+            InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+            // key.wait();
+            // key.readKey();
         }
         Network::close( server );
     } catch ( const NetworkException & ne ){
         debug( 0 ) << "Network error: " << ne.getMessage() << endl;
-        key.poll();
+        // key.poll();
         popup( font, "Network error: " + ne.getMessage() );
+        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+        /*
         key.wait();
         key.readKey();
+        */
     }
     return;
 

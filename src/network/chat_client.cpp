@@ -514,6 +514,8 @@ void ChatClient::run(){
         }
     }
 
+    lineEdit->setFocused(false);
+
     if (kill){
         killInputThread();
     } else {
