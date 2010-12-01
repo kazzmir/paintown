@@ -313,7 +313,8 @@ enterPressed(false){
     // lineEdit->setFont(Menu::getFont());
     lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
     lineEdit->setFocused(true);
-    lineEdit->hookEnter(enter_pressed, this);
+    lineEdit->hookKey(Keyboard::Key_ENTER, enter_pressed, this);
+
     /*
     keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
     keyInputManager::pressed.connect(this,&ChatServer::keyPress);
@@ -502,78 +503,6 @@ void ChatServer::addMessage( const string & s, unsigned int id ){
 		}
 	}
 	*/
-}
-	
-/*
-sigslot::slot ChatServer::keyPress(const keys &k){
-    switch ( k.getValue() ){
-        case keys::ENTER : {
-            enterPressed = true;
-            break;
-        }
-    }
-}
-
-sigslot::slot ChatServer::keyRelease(const keys &k){
-    switch ( k.getValue() ){
-        case keys::ENTER : {
-            enterPressed = false;
-            break;
-        }
-    }
-}
-*/
-
-void ChatServer::handleInput( Keyboard & keyboard ){
-
-#if 0
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-    lineEdit->act(font);
-
-    if ( lineEdit->didChanged( editCounter ) ){
-        needUpdate();
-    }
-
-    /*
-       if ( keyboard[ Keyboard::Key_ENTER ] ){
-       addMessage( name + ": " + lineEdit->getText(), 0 );
-       lineEdit->clearText();
-       needUpdate();
-       }
-       */
-
-    if ( enterPressed && lineEdit->getText().length() > 0 ){
-        // enterPressed = false;
-        addMessage( name + ": " + lineEdit->getText(), 0 );
-        lineEdit->clearText();
-        needUpdate();
-    }
-
-    /*
-       vector< int > keys;
-       keyboard.readKeys( keys );
-
-       for ( vector< int >::iterator it = keys.begin(); it != keys.end(); it++ ){
-       int key = *it;
-       if ( key == Keyboard::Key_BACKSPACE ){
-       if ( input != "" ){
-       input = input.substr( 0, input.length() - 1 );
-       needUpdate();
-       }
-       } else if ( Keyboard::isAlpha( key ) ){
-       input += lowerCase( Keyboard::keyToName( key ) );
-       needUpdate();
-       } else if ( key == Keyboard::Key_SPACE ){
-       input += " ";
-       needUpdate();
-       } else if ( key == Keyboard::Key_ENTER ){
-       addMessage( name + ": " + input, 0 );
-       input = "";
-       needUpdate();
-       }
-       }
-       */
-#endif
 }
 	
 void ChatServer::shutdownClientThreads(){
@@ -803,6 +732,11 @@ void ChatServer::startThreadsHack(){
     }
     Util::Thread::releaseLock( &lock );
 }
+
+static void set_to_true(void * b){
+    bool * what = (bool *) b;
+    *what = true;
+}
 	
 void ChatServer::run(){
     Global::speed_counter = 0;
@@ -817,6 +751,8 @@ void ChatServer::run(){
 
     Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
+    bool forceQuit = false;
+    lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
     bool done = false;
     while ( ! done ){
         int think = Global::speed_counter;
@@ -828,13 +764,14 @@ void ChatServer::run(){
             done = logic();
             think -= 1;
 
-            /*
-            if (keyboard[ Keyboard::Key_ESC ] || (done && focus == QUIT) ){
+            if (forceQuit || (done && focus == QUIT) ){
                 addMessage( "** Server quit", 0 );
                 stopAccepting();
                 killAllClients();
                 done = true;
                 throw Exception::Return(__FILE__, __LINE__);
+            }
+            /*
             } else if ( done && focus == START_GAME ){
                 stopAccepting();
                 debug( 1 ) << "Shut down client threads" << endl;

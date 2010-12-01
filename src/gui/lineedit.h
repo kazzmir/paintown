@@ -52,7 +52,7 @@ public:
     //! Set text limit (default 0, no limit)
     void setLimit(unsigned int l);
 
-    void hookEnter(void (*callback)(void *), void * arg);
+    void hookKey(int key, void (*callback)(void *), void * arg);
 
     //! Set Horizontal Alignment
     void setHorizontalAlign(const textAlign & a);

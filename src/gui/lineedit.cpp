@@ -39,8 +39,8 @@ LineEdit::~LineEdit()
 {
 }
     
-void LineEdit::hookEnter(void (*callback)(void *), void * arg){
-    input.addBlockingHandle(Keyboard::Key_ENTER, callback, arg);
+void LineEdit::hookKey(int key, void (*callback)(void *), void * arg){
+    input.addBlockingHandle(key, callback, arg);
 }
 	
 bool LineEdit::didChanged(unsigned long long & counter){

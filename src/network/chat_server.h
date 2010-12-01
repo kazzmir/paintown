@@ -159,9 +159,6 @@ protected:
 	/* get the next widget to be focused */
 	Focus nextFocus( Focus f );
 
-	/* accept input from the keyboard */
-	void handleInput( Keyboard & keyboard );
-
 	/* get the color a focused widget should be drawn with */
 	int focusColor( Focus f );
 
