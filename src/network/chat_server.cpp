@@ -110,90 +110,90 @@ static void * clientInput( void * client_ ){
 
 	debug( 1 ) << client->getId() << " is done" << endl;
 	
-	// if ( client->canKill() ){
-	if (error){
+        // if ( client->canKill() ){
+        if (error){
             debug( 1 ) << "Input thread killing client" << endl;
             client->getServer()->killClient( client );
-	}
+        }
 
-	return NULL;
+        return NULL;
 }
 
 static void * clientOutput( void * client_ ){
-	Client * client = (Client *) client_;
-	bool done = false;
-        bool error = false;
-	while ( ! done ){
-		Network::Message message;
-		done = ! client->isAlive();
-		if ( client->getOutgoing( message ) != false ){
-			debug(1) << "Sending a message to " << client->getId() << endl;
-			try{
-				/*
-				Network::Message net;
-				net.path = message;
-				net.send( client->getSocket() );
-				*/
-				message.send( client->getSocket() );
-                                debug(1) << "Sent a message to " << client->getId() << endl;
-			} catch ( const Network::NetworkException & e ){
-				debug( 0 ) << "Client output " << client->getId() << " died" << endl;
-				done = true;
-                                error = true;
-			}
-		} else {
-			Util::rest( 1 );
-		}
-	}
+    Client * client = (Client *) client_;
+    bool done = false;
+    bool error = false;
+    while ( ! done ){
+        Network::Message message;
+        done = ! client->isAlive();
+        if ( client->getOutgoing( message ) != false ){
+            debug(1) << "Sending a message to " << client->getId() << endl;
+            try{
+                /*
+                   Network::Message net;
+                   net.path = message;
+                   net.send( client->getSocket() );
+                   */
+                message.send( client->getSocket() );
+                debug(1) << "Sent a message to " << client->getId() << endl;
+            } catch ( const Network::NetworkException & e ){
+                debug( 0 ) << "Client output " << client->getId() << " died" << endl;
+                done = true;
+                error = true;
+            }
+        } else {
+            Util::rest( 1 );
+        }
+    }
 
-        debug(1) << "Output thread for client " << client->getId() << " is done" << endl;
+    debug(1) << "Output thread for client " << client->getId() << " is done" << endl;
 
-	if (error){
-            debug( 1 ) << "Output thread killing client" << endl;
-            client->getServer()->killClient( client );
-	}
+    if (error){
+        debug( 1 ) << "Output thread killing client" << endl;
+        client->getServer()->killClient( client );
+    }
 
-	return NULL;
+    return NULL;
 }
 	
 bool Client::canKill(){
-	bool f;
-        Util::Thread::acquireLock( &lock );
-	f = alive;
-        /* why set alive to false here?
-         * it was supposed to check if the client was already dead.
-         */
-	alive = false;
-        Util::Thread::releaseLock( &lock );
-	return f;
+    bool f;
+    Util::Thread::acquireLock( &lock );
+    f = alive;
+    /* why set alive to false here?
+     * it was supposed to check if the client was already dead.
+     */
+    alive = false;
+    Util::Thread::releaseLock( &lock );
+    return f;
 }
 
 bool Client::getOutgoing( Network::Message & m ){
-	bool has;
-        Util::Thread::acquireLock( &lock );
-	has = ! outgoing.empty();
-	if ( has ){
-		m = outgoing.front();
-		outgoing.erase( outgoing.begin() );
-	}
-        Util::Thread::releaseLock( &lock );
-	return has;
+    bool has;
+    Util::Thread::acquireLock( &lock );
+    has = ! outgoing.empty();
+    if ( has ){
+        m = outgoing.front();
+        outgoing.erase( outgoing.begin() );
+    }
+    Util::Thread::releaseLock( &lock );
+    return has;
 }
 
 void Client::addOutputMessage( const Network::Message & s ){
     Util::Thread::acquireLock( &lock );
-	outgoing.push_back( s );
-        Util::Thread::releaseLock( &lock );
+    outgoing.push_back( s );
+    Util::Thread::releaseLock( &lock );
 }
 
 void Client::startThreads(){
     Util::Thread::acquireLock( &lock );
-	if ( ! started ){
-            Util::Thread::createThread( &inputThread, NULL, (Util::Thread::ThreadFunction) clientInput, this );
-            Util::Thread::createThread( &outputThread, NULL, (Util::Thread::ThreadFunction) clientOutput, this );
-		started = true;
-	}
-        Util::Thread::releaseLock( &lock );
+    if ( ! started ){
+        Util::Thread::createThread( &inputThread, NULL, (Util::Thread::ThreadFunction) clientInput, this );
+        Util::Thread::createThread( &outputThread, NULL, (Util::Thread::ThreadFunction) clientOutput, this );
+        started = true;
+    }
+    Util::Thread::releaseLock( &lock );
 }
 
 struct do_add_stuff{
@@ -248,42 +248,53 @@ static void * do_add(void * stuff_){
 }
 
 static void * acceptConnections( void * server_ ){
-	bool done = false;
-	ChatServer * server = (ChatServer *) server_;
-	Network::Socket socket = server->getSocket();
-	debug( 1 ) << "Accepting connections" << endl;
-	while ( ! done ){
-		done = ! server->isAccepting();
-		try{
-                    /* start the accepting handshake in a thread in case
-                     * the client dies or has an invalid version.
-                     */
-                    Network::Socket client = Network::accept(socket);
-                    Util::Thread::Id accepter;
-                    do_add_stuff * stuff = new do_add_stuff(server, client);
-                    Util::Thread::createThread(&accepter, NULL, (Util::Thread::ThreadFunction) do_add, stuff);
-                    server->addAccepter(accepter);
-                    // server->addConnection(client);
-		} catch ( const Network::NoConnectionsPendingException & e ){
-		} catch ( const Network::NetworkException & e ){
-			debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
-			done = true;
-		}
-		Util::rest( 1 );
-	}
-	
+    bool done = false;
+    ChatServer * server = (ChatServer *) server_;
+    Network::Socket socket = server->getSocket();
+    debug( 1 ) << "Accepting connections" << endl;
+    while ( ! done ){
+        done = ! server->isAccepting();
+        try{
+            /* start the accepting handshake in a thread in case
+             * the client dies or has an invalid version.
+             */
+            Network::Socket client = Network::accept(socket);
+            Util::Thread::Id accepter;
+            do_add_stuff * stuff = new do_add_stuff(server, client);
+            Util::Thread::createThread(&accepter, NULL, (Util::Thread::ThreadFunction) do_add, stuff);
+            server->addAccepter(accepter);
+            // server->addConnection(client);
+        } catch ( const Network::NoConnectionsPendingException & e ){
+        } catch ( const Network::NetworkException & e ){
+            debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
+            done = true;
+        }
+        Util::rest( 1 );
+    }
+
 #ifdef _WIN32
-	Network::close( socket );
+    Network::close( socket );
 #endif
 
-	debug( 1 )  << "Accept connection thread is done" << endl;
+    debug( 1 )  << "Accept connection thread is done" << endl;
 
-	return NULL;
+    return NULL;
 }
 
 static void enter_pressed(void * self){
     ChatServer * chat = (ChatServer *) self;
     chat->addLine();
+}
+
+static const char * welcomeMessage(){
+    switch (Util::rnd(5)){
+        case 0: return "Hi!";
+        case 1: return "Hey!";
+        case 2: return "What's up?";
+        case 3: return "Cool!";
+        case 4: return "Rockin!";
+        default: return "Hi!";
+    }
 }
 
 ChatServer::ChatServer( const string & name, Network::Socket socket ):
@@ -309,17 +320,11 @@ enterPressed(false){
     lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
     lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
 
-    lineEdit->setText("Hi!");
+    lineEdit->setText(welcomeMessage());
     // lineEdit->setFont(Menu::getFont());
     lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
     lineEdit->setFocused(true);
     lineEdit->hookKey(Keyboard::Key_ENTER, enter_pressed, this);
-
-    /*
-    keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
-    keyInputManager::pressed.connect(this,&ChatServer::keyPress);
-    keyInputManager::released.connect(this,&ChatServer::keyRelease);
-    */
 
     editCounter = 0;
 
@@ -327,7 +332,7 @@ enterPressed(false){
      * can properly delete the other objects that were created.
      */
     debug(1) << "Listen on socket" << endl;
-    Network::listen( socket );
+    Network::listen(socket);
     Util::Thread::initializeLock(&lock);
 }
 
@@ -665,21 +670,20 @@ bool ChatServer::needToDraw(){
 }
 
 void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
-	const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
-	work.drawingMode( Bitmap::MODE_TRANS );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	work.rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Bitmap::makeColor( 0, 0, 0 ) );
-	work.drawingMode( Bitmap::MODE_SOLID );
-	int color = Bitmap::makeColor( 255, 255, 255 );
-	if ( focus == INPUT_BOX ){
-		color = Bitmap::makeColor( 255, 255, 0 );
-	}
-	work.rectangle( x, y, x + messages.getWidth(), y + font.getHeight(), color );
-	Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
-	// font.printf( x + 1, y, Bitmap::makeColor( 255, 255, 255 ), work, input, 0 );
-	// font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
-
+    work.drawingMode( Bitmap::MODE_TRANS );
+    Bitmap::transBlender( 0, 0, 0, 128 );
+    work.rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Bitmap::makeColor( 0, 0, 0 ) );
+    work.drawingMode( Bitmap::MODE_SOLID );
+    int color = Bitmap::makeColor( 255, 255, 255 );
+    if ( focus == INPUT_BOX ){
+        color = Bitmap::makeColor( 255, 255, 0 );
+    }
+    work.rectangle( x, y, x + messages.getWidth(), y + font.getHeight(), color );
+    Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
+    // font.printf( x + 1, y, Bitmap::makeColor( 255, 255, 255 ), work, input, 0 );
+    // font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
 }
 
 void ChatServer::drawBuddyList( int x, int y, const Bitmap & work, const Font & font ){
@@ -742,20 +746,17 @@ void ChatServer::next_focus(void * self){
     ChatServer * chat = (ChatServer*) self;
     chat->focus = chat->nextFocus(chat->focus);
     chat->lineEdit->setFocused(chat->focus == INPUT_BOX);
+    if (chat->focus == INPUT_BOX){
+        chat->lineEdit->colors.border = Bitmap::makeColor(255,255,0);
+    } else {
+        chat->lineEdit->colors.border = Bitmap::makeColor(255,255,255);
+    }
     chat->needUpdate();
 }
 	
 void ChatServer::run(){
     Global::speed_counter = 0;
     Bitmap work(GFX_X, GFX_Y);
-    /*
-       Keyboard keyboard;
-
-       keyboard.setAllDelay( 200 );
-       keyboard.setDelay( Keyboard::Key_TAB, 200 );
-       keyboard.setDelay( Keyboard::Key_ESC, 0 );
-       */
-
     Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
     InputMap<int> input;
@@ -771,7 +772,6 @@ void ChatServer::run(){
         while (think > 0){
             InputManager::poll();
             startThreadsHack();
-            // keyboard.poll();
             done = logic();
             think -= 1;
 
@@ -812,11 +812,6 @@ void ChatServer::run(){
                     }
                 }
             }
-
-            /*
-            } else if ( done && focus == START_GAME ){
-                            }
-            */
         }
 
         if (needToDraw()){
@@ -828,7 +823,6 @@ void ChatServer::run(){
         while (Global::speed_counter == 0){
             Util::rest(1);
             InputManager::poll();
-            // keyboard.poll();
         }
     }
 
