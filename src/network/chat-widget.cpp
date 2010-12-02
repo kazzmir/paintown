@@ -23,11 +23,11 @@ removeChatTimer(0),
 enable_chat(false),
 id(id){
     input.set(Keyboard::Key_T, 0, false, Talk);
-    chatInput.addHandle(Keyboard::Key_ENTER, 10, do_finish_chat_input, this);
+    chatInput.setBlockingKeys();
+    chatInput.addBlockingHandle(Keyboard::Key_ENTER, do_finish_chat_input, this);
 }
 
 ChatWidget::~ChatWidget(){
-    chatInput.disable();
 }
 
 void ChatWidget::act(){
@@ -43,6 +43,14 @@ void ChatWidget::act(){
     */
     
     InputMap<Inputs>::Output inputState = InputManager::getMap(input);
+
+    /*
+    if (inputState[Talk]){
+        chatInput.enable();
+    }
+    */
+
+    /* This prevents 't' from being pressed in the chat thing immediately */
     if (inputState[Talk]){
         enable_chat = true;
     } else {

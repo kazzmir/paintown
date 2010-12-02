@@ -35,6 +35,10 @@ public:
     void addHandle(int key, int delay, callback function, void * data);
     void addBlockingHandle(int key, callback function, void * data);
 
+    inline void setBlockingKeys(){
+        blockingKeys = true;
+    }
+
     std::string getText();
     void setText(const std::string & text);
 
@@ -51,7 +55,11 @@ public:
     virtual KeyState<unsigned char> * getState(int key){
         KeyState<unsigned char> * state = InputMap<unsigned char>::getState(key);
         if (state == NULL){
-            set(key, 10, false, key);
+            if (blockingKeys){
+                set(key, 0, true, key);
+            } else {
+                set(key, 10, false, key);
+            }
             state = InputMap<unsigned char>::getState(key);
         }
         return state;
@@ -63,6 +71,8 @@ protected:
     int nextHandle();
 
     std::ostringstream text;
+    /* whether key repeat is on or off */
+    bool blockingKeys;
     bool enabled;
     std::map<int, Callback> callbacks;
     int handle;

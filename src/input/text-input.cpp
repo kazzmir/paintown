@@ -13,6 +13,7 @@ static const int Backspace = 200;
 
 TextInput::TextInput(const string & start):
 InputMap<unsigned char>(),
+blockingKeys(false),
 enabled(false),
 handle(201){
     const int delay = 100;
