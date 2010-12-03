@@ -930,7 +930,7 @@ void OptionJoystick::run(const Menu::Context & context){
     dialog.colors.border = Bitmap::makeColor(255,255,255);
     dialog.colors.borderAlpha = 255;
     Bitmap temp = Bitmap::temporaryBitmap(width,height);
-    dialog.render(temp);
+    dialog.render(temp, vFont);
     vFont.printf( 5, 5, Bitmap::makeColor(255,255,255), temp, message, -1);
     temp.BlitToScreen(x,y);
     
@@ -947,64 +947,60 @@ void OptionJoystick::run(const Menu::Context & context){
     */
 }
 
-static OptionKey::keyType convertToKeyboardKey(const std::string &k)
-{
-	std::string temp = k;
-	for(unsigned int i=0;i<temp.length();i++)
-	{
-		temp[i] = tolower(temp[i]);
-	}
-	if(temp == "up")return OptionKey::up;
-	if(temp == "down")return OptionKey::down;
-	if(temp == "left")return OptionKey::left;
-	if(temp == "right")return OptionKey::right;
-	if(temp == "jump")return OptionKey::jump;
-	if(temp == "attack1")return OptionKey::attack1;
-	if(temp == "attack2")return OptionKey::attack2;
-	if(temp == "attack3")return OptionKey::attack3;
-	if(temp == "attack4")return OptionKey::attack4;
-	if(temp == "attack5")return OptionKey::attack5;
-	if(temp == "attack6")return OptionKey::attack6;
-	
-	return OptionKey::invalidkey;
+static OptionKey::keyType convertToKeyboardKey(const std::string &k){
+    std::string temp = k;
+    for(unsigned int i=0;i<temp.length();i++){
+        temp[i] = tolower(temp[i]);
+    }
+    if (temp == "up") return OptionKey::up;
+    if (temp == "down") return OptionKey::down;
+    if (temp == "left") return OptionKey::left;
+    if (temp == "right") return OptionKey::right;
+    if (temp == "jump") return OptionKey::jump;
+    if (temp == "attack1") return OptionKey::attack1;
+    if (temp == "attack2") return OptionKey::attack2;
+    if (temp == "attack3") return OptionKey::attack3;
+    if (temp == "attack4") return OptionKey::attack4;
+    if (temp == "attack5") return OptionKey::attack5;
+    if (temp == "attack6") return OptionKey::attack6;
+
+    return OptionKey::invalidkey;
 }
 
-static int getKey(int player, OptionKey::keyType k)
-{
-	switch(k)
-	{
-		case OptionKey::up:
-			return Configuration::config( player ).getUp();
-			break;
-		case OptionKey::down:
-			return Configuration::config( player ).getDown();
-			break;
-		case OptionKey::left:
-			return Configuration::config( player ).getLeft();
-			break;
-		case OptionKey::right:
-			return Configuration::config( player ).getRight();
-			break;
-		case OptionKey::jump:
-			return Configuration::config( player ).getJump();
-			break;
-		case OptionKey::attack1:
-			return Configuration::config( player ).getAttack1();
-			break;
-		case OptionKey::attack2:
-			return Configuration::config( player ).getAttack2();
-			break;
-		case OptionKey::attack3:
-			return Configuration::config( player ).getAttack3();
-			break;
-		case OptionKey::attack4:
-		case OptionKey::attack5:
-		case OptionKey::attack6:
-		default:
-			break;
-	}
-	
-	return 0;
+static int getKey(int player, OptionKey::keyType k){
+    switch(k){
+        case OptionKey::up:
+            return Configuration::config( player ).getUp();
+            break;
+        case OptionKey::down:
+            return Configuration::config( player ).getDown();
+            break;
+        case OptionKey::left:
+            return Configuration::config( player ).getLeft();
+            break;
+        case OptionKey::right:
+            return Configuration::config( player ).getRight();
+            break;
+        case OptionKey::jump:
+            return Configuration::config( player ).getJump();
+            break;
+        case OptionKey::attack1:
+            return Configuration::config( player ).getAttack1();
+            break;
+        case OptionKey::attack2:
+            return Configuration::config( player ).getAttack2();
+            break;
+        case OptionKey::attack3:
+            return Configuration::config( player ).getAttack3();
+            break;
+        case OptionKey::attack4:
+        case OptionKey::attack5:
+        case OptionKey::attack6:
+        default:
+            break;
+    }
+
+    return 0;
 }
 
 static void setKey(int player, OptionKey::keyType k, int key)
@@ -1044,9 +1040,9 @@ static void setKey(int player, OptionKey::keyType k, int key)
 }
 
 static int readKey( Keyboard & key ){
-	int k = key.readKey();
-	key.wait();
-	return k;
+    int k = key.readKey();
+    key.wait();
+    return k;
 }
 
 OptionKey::OptionKey(const Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0)
@@ -1093,9 +1089,9 @@ OptionKey::~OptionKey(){
 }
 
 void OptionKey::logic(){
-	char temp[255];
-	sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
-	setText(std::string(temp));
+    char temp[255];
+    sprintf( temp, "%s: %s", name.c_str(), Keyboard::keyToName(getKey(player,type)));
+    setText(std::string(temp));
 }
 
 void OptionKey::run(const Menu::Context & context){
@@ -1129,12 +1125,12 @@ void OptionKey::run(const Menu::Context & context){
 	    key.poll();
 	}
 	tempContext.act();
-	tempContext.render(0,temp);
-	keyDialog.render(temp);
+	tempContext.render(0, temp);
+	keyDialog.render(temp, font);
 	temp.BlitToScreen();
     }
     tempContext.finish();
-    keyCode = readKey( key );
+    keyCode = readKey(key);
     setKey(player,type, keyCode);
 }
 
