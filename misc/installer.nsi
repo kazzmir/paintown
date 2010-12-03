@@ -39,7 +39,9 @@ Section "Paintown (required)"
 	File "..\misc\dlls\python24.dll"
 	File "..\misc\dlls\msvcr71.dll"
 	File "..\editor\editor.jar"
+	SetOutPath $INSTDIR\data
 	File /r /x .svn /x graveyard /x *~ "..\data\*.*"
+	SetOutPath $INSTDIR
 	WriteUninstaller "uninstall.exe"
 SectionEnd
 
