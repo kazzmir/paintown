@@ -35,8 +35,7 @@ Section "Paintown (required)"
 	File "..\misc\dlls\libpng3.dll"
 	File "..\misc\dlls\regex2.dll"
 	File "..\misc\dlls\mingwm10.dll"
-    # FIXME: update to python26
-	File "..\misc\dlls\python24.dll"
+	File "..\misc\dlls\python26.dll"
 	File "..\misc\dlls\msvcr71.dll"
 	File "..\editor\editor.jar"
 	SetOutPath $INSTDIR\data
