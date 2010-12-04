@@ -168,9 +168,11 @@ static void steal_scancode(int scancode){
 
 Keyboard::Keyboard():
 enableBuffer(false){
+    /*
 	for ( int q = 0; q < KEY_MAX; q++ ){
 		my_keys[ q ] = 0;
 	}
+        */
 	setAllDelay( 0 );
 
         Util::Thread::initializeLock(&keyboardData);
@@ -272,9 +274,11 @@ void Keyboard::readKeys( vector< int > & all_keys ){
         */
 }
 	
+/*
 int Keyboard::readKey(){
     return ::readkey() >> 8;
 }
+*/
 
 void Keyboard::wait(){
 	clear();
@@ -299,6 +303,8 @@ bool Keyboard::keypressed(){
 }
 
 void Keyboard::clear(){
-	::clear_keybuf();
-	my_keys.clear();
+    ::clear_keybuf();
+    buffer.clear();
+    keyState.clear();
+    // my_keys.clear();
 }

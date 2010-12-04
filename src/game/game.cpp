@@ -842,6 +842,7 @@ static bool closeFloat(double a, double b){
     return fabs(a-b) < epsilon;
 }
 
+/* TODO: deprecated */
 void playVersusMode( Paintown::Character * player1, Paintown::Character * player2, int round ){
 
 	player1->setY( 0 );
@@ -921,8 +922,10 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 				}
 			}
 
+                        /* FIXME */
+                        /*
 			const double SPEED_INC = 0.02;
-			if ( key[ Keyboard::Key_MINUS_PAD ] ){
+			if ( key[Keyboard::Key_MINUS_PAD] ){
 				gameSpeed -= SPEED_INC;
 				if ( gameSpeed < SPEED_INC ){
 					gameSpeed = SPEED_INC;
@@ -948,6 +951,7 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 				gameSpeed = 1;
 				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
 			}
+                        */
 
 			Global::speed_counter = 0;
 		} else {
@@ -1121,10 +1125,12 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 			/* getX/Y move when the world is quaking */
 			screen_buffer.BlitToScreen( world.getX(), world.getY() );
 
+                        /*
 			if ( key[ Keyboard::Key_F12 ] ){
 				Global::debug( 2 ) << "Saved screenshot to scr.bmp" << endl;
 				work.save( "scr.bmp" );
 			}
+                        */
 
 			work.clear();
 		}

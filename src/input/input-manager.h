@@ -29,6 +29,8 @@ public:
     static void enableBufferInput();
     static void disableBufferInput();
     static void waitForKeys(int key1, int key2);
+    static int readKey();
+    static void waitForClear();
 
     static std::vector<Keyboard::unicode_t> readText(){
         return manager->keyboard.readText();
@@ -93,6 +95,8 @@ protected:
     virtual ~InputManager();
     
     virtual bool _anyInput();
+
+    virtual int _readKey();
     
     virtual std::vector<Input::PaintownInput> _getInput(const Configuration & configuration, const int facing);
 

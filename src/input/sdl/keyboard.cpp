@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include "../keyboard.h"
+#include "../input-manager.h"
 #include "util/funcs.h"
 
 Keyboard::Keyboard():
@@ -54,18 +55,22 @@ void Keyboard::readKeys(std::vector<int> & all_keys){
     }
 }
 
+/*
 int Keyboard::readKey(){
     std::vector<int> keys;
     do{
         readKeys(keys);
         Util::rest(1);
+        InputManager::poll();
         poll();
     } while (keys.size() == 0);
     return keys.front();
 }
+*/
 
 void Keyboard::clear(){
-    /* TODO */
+    buffer.clear();
+    keyState.clear();
 }
 
 Keyboard::KeyType Keyboard::Key_A = SDLK_a;

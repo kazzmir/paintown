@@ -47,6 +47,7 @@ public:
     /* []:
      * Extract a boolean value given a key number
      */
+#if 0
     inline bool operator[] ( const int i ){
 
         /* if the key has been pressed for the first time return true */
@@ -61,6 +62,7 @@ public:
         }
         return b;
     }
+#endif
 
     /* keypressed:
      * Returns true if a key is pressed
@@ -75,7 +77,7 @@ public:
     std::vector<KeyData> readData();
     std::vector<unicode_t> readText();
 
-    int readKey();
+    // int readKey();
     void clear();
 
     void setDelay( const int key, const int delay );
@@ -220,7 +222,7 @@ public:
     void release(KeyType key);
 
 protected:
-    std::map<int,int> my_keys;
+    // std::map<int,int> my_keys;
     std::map<int,int> key_delay;
 
     std::map<KeyType, KeyData> keyState;

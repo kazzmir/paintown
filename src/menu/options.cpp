@@ -1039,11 +1039,13 @@ static void setKey(int player, OptionKey::keyType k, int key)
 	}
 }
 
+/*
 static int readKey( Keyboard & key ){
     int k = key.readKey();
     key.wait();
     return k;
 }
+*/
 
 OptionKey::OptionKey(const Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0)
 {
@@ -1098,8 +1100,10 @@ void OptionKey::run(const Menu::Context & context){
     // Do dialog
     //Box::messageDialog(Menu::Menu::Width, Menu::Menu::Height, "Press a Key!",2);
 
+    /*
     Keyboard key;
     key.wait();
+    */
     Bitmap temp(Menu::Menu::Width, Menu::Menu::Height);
     Menu::Context tempContext = context;
     tempContext.initialize();
@@ -1119,19 +1123,24 @@ void OptionKey::run(const Menu::Context & context){
     keyDialog.colors.borderAlpha = 255;
     keyDialog.open();
     const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
-    while (!key.keypressed() && keyDialog.isActive()){
+    InputManager::waitForClear();
+    while (!InputManager::anyInput() && keyDialog.isActive()){
+        InputManager::poll();
 	keyDialog.act(font);
+        /*
 	if (keyDialog.isActive()){
-	    key.poll();
+            InputManager::poll();
 	}
+        */
 	tempContext.act();
 	tempContext.render(0, temp);
 	keyDialog.render(temp, font);
 	temp.BlitToScreen();
     }
     tempContext.finish();
-    keyCode = readKey(key);
+    keyCode = InputManager::readKey();
     setKey(player,type, keyCode);
+    InputManager::waitForClear();
 }
 
 OptionLevel::OptionLevel(const Token *token, int * set, int value):

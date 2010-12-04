@@ -65,6 +65,14 @@ void InputManager::enableBufferInput(){
 void InputManager::disableBufferInput(){
     manager->bufferKeys = false;
 }
+    
+void InputManager::waitForClear(){
+    manager->keyboard.clear();
+    while (anyInput()){
+        poll();
+        Util::rest(1);
+    }
+}
 
 void InputManager::waitForKeys(int key1, int key2){
     InputMap<int> wait;
@@ -149,6 +157,22 @@ void InputManager::poll(){
     }
 
     return manager->_poll();
+}
+
+int InputManager::readKey(){
+    return manager->_readKey();
+}
+
+int InputManager::_readKey(){
+    std::vector<int> keys;
+    do{
+        keyboard.readKeys(keys);
+        if (keys.size() == 0){
+            Util::rest(1);
+            poll();
+        }
+    } while (keys.size() == 0);
+    return keys.front();
 }
 
 void InputManager::_poll(){
