@@ -66,6 +66,10 @@ def client_side():
                 connection.sendall(out)
                 out = stdout.readline()
             process.wait()
+            if process.returncode != 0:
+                log_debug("'%s' failed!" % args.join(' '))
+                connection.sendall("*FAILURE* '%s' did not succeed. returncode was %s" % process.returncode)
+                raise CommandFailure(args)
 
     def send_file(connection, port, path):
         send = connect(server_ip, port)

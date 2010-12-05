@@ -60,7 +60,7 @@ winsdl:
 	@scons env=mingw sdl=1
 
 nsis:
-	makensis misc/installer.nsi
+	makensis /V 2 misc/installer.nsi
 
 count:
 	bash -c 'wc src/{.,factory,object,network,level,environment,util,script,script/modules,menu,gui,mugen,game,input,util/allegro,util/sdl}/*.{h,cpp} src/mugen/parser/*.peg'
