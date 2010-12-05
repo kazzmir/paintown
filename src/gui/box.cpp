@@ -37,11 +37,11 @@ void Box::render(const Bitmap & work){
     checkWorkArea();
     // Check if we are using a rounded box
     if (location.getRadius() > 0){
-        roundRectFill( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
-        roundRect( *workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
+        roundRectFill(*workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body);
+        roundRect(*workArea, (int)location.getRadius(), 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border);
     } else {
-        workArea->rectangleFill( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
-        workArea->rectangle( 0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
+        workArea->rectangleFill(0, 0, location.getWidth()-1, location.getHeight()-1, colors.body );
+        workArea->rectangle(0, 0, location.getWidth()-1, location.getHeight()-1, colors.border );
     }
     Bitmap::transBlender( 0, 0, 0, colors.bodyAlpha );
     // workArea->drawingMode( Bitmap::MODE_TRANS );

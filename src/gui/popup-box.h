@@ -11,7 +11,7 @@
 
 namespace Gui{
     
-class PopupBox : public Widget{
+class PopupBox : public Widget {
     public:
         PopupBox();
         PopupBox(const PopupBox &);

@@ -1,6 +1,5 @@
 #include "util/bitmap.h"
-
-#include "gui/popup-box.h"
+#include "popup-box.h"
 
 using namespace std;
 using namespace Gui;
@@ -9,12 +8,15 @@ PopupBox::PopupBox():
 fadeState(Closed),
 fadeSpeed(12){
 }
+
 PopupBox::PopupBox( const PopupBox & copy ):
 fadeState(Closed){
     this->fadeSpeed = copy.fadeSpeed;
 }
+
 PopupBox::~PopupBox(){
 }
+
 PopupBox & PopupBox::operator=( const PopupBox & copy){
     this->fadeState = Closed;
     this->fadeSpeed = copy.fadeSpeed;
@@ -42,7 +44,6 @@ void PopupBox::open(){
 void PopupBox::close(){
     fadeState = FadeOut;
 }
-
 
 void PopupBox::doFade(){
     switch (fadeState){

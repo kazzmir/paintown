@@ -227,19 +227,22 @@ static void foobar(int a, int b){
 }
 
 void Widget::checkWorkArea(){
+    /*
     if (location.getWidth() < 0 || location.getHeight() < 0){
         foobar(location.getWidth(), location.getHeight());
     }
+    */
 
     if ( ! workArea ){
-        workArea = new Bitmap(location.getWidth(),location.getHeight());
-    } else if(location.getWidth() < workArea->getWidth() || location.getHeight() < workArea->getHeight()) {
+        workArea = new Bitmap(location.getWidth(), location.getHeight());
+    } else if (location.getWidth() < workArea->getWidth() || location.getHeight() < workArea->getHeight()){
         delete workArea;
         workArea = new Bitmap(location.getWidth(), location.getHeight());
-    } else if(location.getWidth() > workArea->getWidth() || location.getHeight() > workArea->getHeight()) {
+    } else if (location.getWidth() > workArea->getWidth() || location.getHeight() > workArea->getHeight()){
         delete workArea;
-        workArea = new Bitmap(location.getWidth(),location.getHeight());
+        workArea = new Bitmap(location.getWidth(), location.getHeight());
     }
+
     if (workArea){
         workArea->fill(Bitmap::makeColor(255,0,255));
     }

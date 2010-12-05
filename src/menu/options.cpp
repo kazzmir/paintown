@@ -1105,24 +1105,27 @@ void OptionKey::run(const Menu::Context & context){
     key.wait();
     */
     Bitmap temp(Menu::Menu::Width, Menu::Menu::Height);
-    Menu::Context tempContext = context;
+    // Menu::Context tempContext = context;
+    Menu::Context tempContext(context);
     tempContext.initialize();
     Menu::InfoBox keyDialog;
     // keyDialog.setFont(tempContext.getFont());
     //keyDialog.location.set(-1,-1,1,1);
     const int width = temp.getWidth();
     const int height = temp.getHeight();
+    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const int radius = 15;
     keyDialog.setText("Press a Key!");
-    keyDialog.location.setPosition(Gui::AbsolutePoint((width/2)-(keyDialog.location.getWidth()/2), (height/2)-(keyDialog.location.getHeight()/2)));
-    // Reset width
-    keyDialog.setText("Press a Key!");
-    keyDialog.location.setRadius(15);
+    keyDialog.location.setDimensions(font.textLength("Press a Key!") + radius, font.getHeight() + radius);
+    keyDialog.location.setCenterPosition(Gui::RelativePoint(0, 0));
+    // keyDialog.location.setPosition(Gui::AbsolutePoint((width/2)-(keyDialog.location.getWidth()/2), (height/2)-(keyDialog.location.getHeight()/2)));
+    // keyDialog.location.setPosition2(Gui::AbsolutePoint((
+    keyDialog.location.setRadius(radius);
     keyDialog.colors.body = Bitmap::makeColor(0,0,0);
     keyDialog.colors.bodyAlpha = 180;
     keyDialog.colors.border = Bitmap::makeColor(255,255,255);
     keyDialog.colors.borderAlpha = 255;
     keyDialog.open();
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
     InputManager::waitForClear();
     while (!InputManager::anyInput() && keyDialog.isActive()){
         InputManager::poll();

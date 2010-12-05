@@ -140,8 +140,15 @@ class Coordinate {
         virtual int getHeight() const;
         virtual int getX2() const;
         virtual int getY2() const;
+        /* give a relative quantity */
         virtual void growHorizontal(double by);
+        /* give an absolute quantity */
+        virtual void growHorizontalAbsolute(int by);
+        /* give a relative quantity */
         virtual void growVertical(double by);
+        /* give an absolute quantity */
+        virtual void growVerticalAbsolute(int by);
+
         virtual void growTo(const Coordinate &, double percent = 0.005);
         virtual void center(const Coordinate &);
         virtual void moveBy(double x, double y);
@@ -157,12 +164,14 @@ class Coordinate {
         virtual inline double getRelativeY2() const{
             return this->position2.getRelativeY();
         }
+
         virtual inline void set(double x1, double y1, double x2, double y2){
             this->position.setX(x1);
             this->position.setY(y1);
             this->position2.setX(x2);
             this->position2.setY(y2);
         }
+
         virtual inline void setX1(double x){
             this->position.setX(x);
         }
@@ -180,6 +189,11 @@ class Coordinate {
         bool operator!=( const Coordinate &);
         bool operator==( const Bitmap &);
         bool operator!=( const Bitmap &);
+
+        /* moves the positions so that `center' is in the middle but the
+         * width/height is maintained
+         */
+        virtual void setCenterPosition(const RelativePoint & center);
 
         virtual void setPosition(const RelativePoint &);
         virtual void setPosition(const AbsolutePoint &);

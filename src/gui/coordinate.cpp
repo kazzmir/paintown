@@ -125,6 +125,21 @@ static int amountFromCenterY(int y){
     return y - (480 / 2);
 }
 
+/* scale an absolute distance to a relative distance
+ * distance / absolute = X / relative
+ * absolute space = 0 to 640
+ * relative space = -1 to 1
+ * X = distance * relative / absolute
+ */
+static double scaleAbsoluteToRelativeDistanceX(int distance){
+    return distance * (1.0 - (-1.0)) / (640.0 - 0); 
+}
+
+static double scaleAbsoluteToRelativeDistanceY(int distance){
+    return distance * (1.0 - (-1.0)) / (480.0 - 0); 
+}
+
+/* convert a point in absolute space to relative space */
 static double absoluteToRelative(int x, int center){
     return (double)(x-center)/center;
 }
@@ -233,11 +248,11 @@ int RelativePoint::getDistanceFromCenterY(){
 }
 
 void RelativePoint::moveX(double percent){
-    x+=percent;
+    x += percent;
 }
 
 void RelativePoint::moveY(double percent){
-    y+=percent;
+    y += percent;
 }
 
 void RelativePoint::moveBy(double x, double y){
@@ -322,6 +337,14 @@ void Coordinate::growHorizontal(double by){
     position2.moveX(by);
 }
 
+void Coordinate::growHorizontalAbsolute(int distance){
+    growHorizontal(scaleAbsoluteToRelativeDistanceX(distance));
+}
+
+void Coordinate::growVerticalAbsolute(int distance){
+    growVertical(scaleAbsoluteToRelativeDistanceY(distance));
+}
+
 void Coordinate::growVertical(double by){
     position.moveY(-(by));
     position2.moveY(by);
@@ -378,7 +401,7 @@ void Coordinate::center(const Coordinate & coord){
     const double centerx = (coord.getRelativeX1() + coord.getRelativeX2())/2;
     const double centery = (coord.getRelativeY1() + coord.getRelativeY2())/2;
     
-    set(centerx,centery,centerx,centery);
+    set(centerx, centery, centerx, centery);
 }
 
 void Coordinate::moveBy(double x, double y){
@@ -440,4 +463,13 @@ void Coordinate::checkDimensions(){
 
 void Coordinate::setDimensions(int width, int height){
     position2 = RelativePoint(AbsolutePoint(getX() + width, getY() + height));
+}
+        
+void Coordinate::setCenterPosition(const RelativePoint & center){
+    int width = getWidth();
+    int height = getHeight();
+    this->position = center;
+    this->position2 = center;
+    growHorizontalAbsolute(width / 2.0);
+    growVerticalAbsolute(height / 2.0);
 }
