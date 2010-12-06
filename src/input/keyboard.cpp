@@ -342,8 +342,9 @@ void Keyboard::press(KeyType key, unicode_t unicode){
 
 void Keyboard::release(KeyType key){
     keyState[key].enabled = false;
-    KeyData data(key, 0, false);
+    buffer.push_back(keyState[key]);
     /*
+    KeyData data(key, 0, false);
     for (std::vector<Observer>::iterator it = observers.begin(); it != observers.end(); it++){
         Observer observer = (*it);
         observer.callback(data, observer.extra);

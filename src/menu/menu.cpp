@@ -1346,8 +1346,7 @@ void Menu::Menu::run(const Context & parentContext){
     /* do any lazy loading options want to do */
     openOptions();
 
-    // TODO Keys need a home
-    // Set keys
+    /* Set keys */
     input.set(Keyboard::Key_J, 0, true, Down);
     input.set(Keyboard::Key_K, 0, true, Up);
     input.set(Keyboard::Key_H, 0, true, Left);

@@ -183,7 +183,6 @@ void InputManager::_poll(){
         eventManager.enableKeyBuffer();
     }
     */
-    keyboard.poll();
     eventManager.run(keyboard);
 
     // keyboard.poll();

@@ -184,6 +184,7 @@ enableBuffer(false){
  * allegro/include/allegro/keyboard.h
  */
 void Keyboard::poll(){
+    buffer.clear();
 
     // keyState.clear();
     Util::Thread::acquireLock(&keyboardData);
@@ -197,6 +198,12 @@ void Keyboard::poll(){
         int key = it->first;
         bool pressed = it->second;
         keyState[key].enabled = pressed;
+
+        if (pressed){
+            press(key, keyState[key].unicode);
+        } else {
+            release(key);
+        }
     }
     stolenPresses.clear();
     Util::Thread::releaseLock(&keyboardData);
