@@ -111,7 +111,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     InputMap<Select::Input> input;
 
     // Bitmap work( GFX_X / 2, GFX_Y / 2 );
-    Bitmap work( GFX_X, GFX_Y );
+    Bitmap work(GFX_X, GFX_Y);
 
     /* TODO: the background should be configurable */
     Bitmap background(Global::titleScreen().path());
@@ -192,84 +192,100 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
     try{
         while (! done){
-            /* bad variable name */
-            Paintown::DisplayCharacter * ch = players[ current ].guy;
+            /* FIXME: bad variable name */
+            Paintown::DisplayCharacter * ch = players[current].guy;
 
-            if ( Global::speed_counter > 0 ){
+            if (Global::speed_counter > 0){
                 // double think = Global::speed_counter;
                 runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
-                while ( runCounter >= 1.0 ){
+                Global::speed_counter = 0;
+                while (runCounter >= 1.0){
                     int old = current;
                     runCounter -= 1;
                     clock += 1;
                     InputManager::poll();
-                    
-                    InputMap<Select::Input>::Output inputState = InputManager::getMap(input);
+
                     if (Global::shutdown()){
                         loader.stop();
                         Util::Thread::joinThread(loadingThread);
                         throw ShutdownException();
                     }
-
-                    if ( clock % 5 == 0 ){
+                    
+                    // InputMap<Select::Input>::Output inputState = InputManager::getMap(input);
+                    if (clock % 5 == 0){
                         backgroundX -= 1;
-                        if ( backgroundX < - work.getWidth() ){
+                        if (backgroundX < - work.getWidth()){
                             backgroundX = 0;
                         }
                     }
+                    
+                    vector<InputMap<Select::Input>::InputEvent> events = InputManager::getEvents(input);
 
-                    if (inputState[Select::Left]){
-                        current = current - 1;
-                        beep.play();
-                    }
-
-                    if (inputState[Select::Right]){
-                        current = current + 1;
-                        beep.play();
-                    }
-
-                    if (inputState[Select::Up]){
-                        current = current - boxesPerLine;
-                        beep.play();
-                    }
-
-                    if (inputState[Select::Down]){
-                        current = current + boxesPerLine;
-                        beep.play();
-                    }
-
-                    if (ch->isLoaded()){
-                        if (inputState[Select::Remap]){
-                            ch->nextMap();
+                    bool choose = false;
+                    for (vector<InputMap<Select::Input>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                        const InputMap<Select::Input>::InputEvent & event = *it;
+                        if (!event.enabled){
+                            continue;
+                        }
+                        switch (event.out){
+                            case Select::Left: {
+                                current = current - 1;
+                                beep.play();
+                                break;
+                            }
+                            case Select::Right: {
+                                current = current + 1;
+                                beep.play();
+                                break;
+                            }
+                            case Select::Up: {
+                                current = current - boxesPerLine;
+                                beep.play();
+                                break;
+                            }
+                            case Select::Down: {
+                                current = current + boxesPerLine;
+                                beep.play();
+                                break;
+                            }
+                            case Select::Quit: {
+                                loader.stop();
+                                Util::Thread::joinThread(loadingThread);
+                                InputManager::waitForRelease(input, Select::Quit);
+                                throw Exception::Return(__FILE__, __LINE__);
+                            }
+                            case Select::Choose: {
+                                choose = true;
+                                break;
+                            }
+                            case Select::Remap: {
+                                if (ch->isLoaded()){
+                                    ch->nextMap();
+                                }
+                                break;
+                            }
                         }
                     }
 
-                    if (inputState[Select::Quit]){
-                        loader.stop();
-                        Util::Thread::joinThread(loadingThread);
-                        InputManager::waitForRelease(input, Select::Quit);
-                        throw Exception::Return(__FILE__, __LINE__);
-                    }
-
-                    if ( current < 0 ){
+                    if (current < 0){
                         current = 0;
                     }
 
-                    if ( current >= (signed) players.size() ){
+                    if (current >= (signed) players.size()){
                         current = players.size() - 1;
                     }
 
                     if (ch->isLoaded()){
-                        if ( ch->testAnimation() ){
+                        if (ch->testAnimation()){
                             ch->testReset();
                         }
                     }
 
-                    while ( current < top ){
+                    while (current < top){
                         top -= boxesPerLine;
                     }
 
-                    while ( current >= top + boxesPerLine * boxesPerColumn ){
+                    while (current >= top + boxesPerLine * boxesPerColumn){
                         top += boxesPerLine;
                     }
 
@@ -277,16 +293,15 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         loader.update(players[current].guy);
                     }
 
-                    done |= inputState[Select::Choose] && ch->isLoaded();
+                    done |= choose && ch->isLoaded();
 
                     // think--;
                 }
 
-                Global::speed_counter = 0;
                 draw = true;
             }
 
-            if ( draw ){
+            if (draw){
 
                 // background.Stretch( work );
                 background.Blit( backgroundX, 0, work );
@@ -421,7 +436,6 @@ static int choosePlayer(const PlayerVector & players, const string & message){
             }
 
             while ( Global::speed_counter == 0 ){
-                InputManager::poll();
                 Util::rest(1);
             }
         }
