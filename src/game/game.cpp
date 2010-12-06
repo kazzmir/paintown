@@ -624,6 +624,7 @@ static string funnyGo(){
 void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
 
     /* disables buffer input on entry, enables buffering on function exit */
+    /*
     class InputBuffer{
     public:
         InputBuffer(){
@@ -634,6 +635,7 @@ void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, 
             InputManager::enableBufferInput();
         }
     };
+    */
 
     // InputBuffer buffer;
 

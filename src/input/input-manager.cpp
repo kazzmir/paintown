@@ -13,8 +13,7 @@ InputManager * InputManager::manager = 0;
 
 InputManager::InputManager():
 capture(0),
-joystick(NULL),
-bufferKeys(false){
+joystick(NULL){
     manager = this;
     if (Configuration::isJoystickEnabled()){
         joystick = Joystick::create();
@@ -58,6 +57,7 @@ vector<Input::PaintownInput> InputManager::getInput(const Configuration & config
     return manager->_getInput(configuration, facing);
 }
     
+/*
 void InputManager::enableBufferInput(){
     manager->bufferKeys = true;
 }
@@ -65,6 +65,7 @@ void InputManager::enableBufferInput(){
 void InputManager::disableBufferInput(){
     manager->bufferKeys = false;
 }
+*/
     
 void InputManager::waitForClear(){
     manager->keyboard.clear();

@@ -53,39 +53,14 @@ void TextInput::addHandle(int key, int delay, callback function, void * data){
     callbacks[handle] = Callback(function, data);
 }
 
-static bool isChar(char c){
-    const char * letters = "abcdefghijklmnopqrstuvwxyz ,.0123456789/";
-    return strchr(letters, c) != NULL;
-}
-
-static unsigned char doShift(unsigned char letter, bool shift){
-    if (shift){
-        if (letter >= 'a' && letter <= 'z'){
-            return toupper(letter);
-        }
-        switch (letter){
-            case '/' : return '?';
-            case '0' : return ')';
-            case '1' : return '!';
-            case '2' : return '@';
-            case '3' : return '#';
-            case '4' : return '$';
-            case '5' : return '%';
-            case '6' : return '^';
-            case '7' : return '&';
-            case '8' : return '*';
-            case '9' : return '(';
-            default : return letter;
-        }
-    } else {
-        return letter;
-    }
-}
-
 bool TextInput::doInput(){
     bool modified = false;
+    /* TODO: ensure these codes are consistent across platforms. So far
+     * they seem to work in windows xp and linux (ubuntu)
+     */
     const Keyboard::unicode_t control_u = 21;
     const Keyboard::unicode_t control_w = 23;
+
     if (enabled){
         vector<InputEvent> events = InputManager::getEvents(*this);
 
@@ -128,98 +103,6 @@ bool TextInput::doInput(){
 
     return modified;
 }
-
-#if 0
-bool TextInput::doInput(){
-    bool modified = false;
-    if (enabled){
-        InputMap<unsigned char>::Output inputState = InputManager::getMap(*this);
-
-        /* the order of reading input is arbitrary right now. I'm not
-         * sure it matters what order things are done in, but probably
-         * a few corner cases exist. When they come up please document them.
-         */
-
-        /*
-        if (inputState[Toggle]){
-            toggle();
-            return false;
-        }
-
-        if (inputState[Enter]){
-            if (currentCommand.str() != ""){
-                process(currentCommand.str());
-            }
-            clearInput();
-        }
-        */
-
-        /* ctrl-X keys */
-        if (inputState[Control]){
-            /* standard linux console commands */
-            if (inputState['u']){
-                clearInput();
-                return true;
-            }
-            if (inputState['w']){
-                deleteLastWord();
-                return true;
-            }
-        }
-
-        for (map<int, Callback>::iterator it = callbacks.begin(); it != callbacks.end(); it++){
-            int handle = it->first;
-            if (inputState[handle]){
-                Callback callback = it->second;
-                callback.function(callback.data);
-            }
-        }
-
-        vector<Keyboard::unicode_t> text = InputManager::readText(*this, inputState);
-        for (vector<Keyboard::unicode_t>::iterator it = text.begin(); it != text.end(); it++){
-            Keyboard::unicode_t letter = *it;
-            // Global::debug(0) << "Unicode: " << letter << endl;
-            /* letters below 32 are mostly bogus */
-            /* FIXME: deal with unicodeness */
-            if (letter >= 32){
-                this->text << (unsigned char) letter;
-                modified = true;
-            }
-        }
-
-        /*
-        for (InputMap<unsigned char>::Output::iterator it = inputState.begin(); it != inputState.end(); it++){
-            unsigned char c = (*it).first;
-            bool pressed = (*it).second;
-            if (pressed){
-                if (isChar(c)){
-                    text << doShift(c, inputState[Shift]);
-                } else {
-                    if (callbacks.find(c) != callbacks.end()){
-                        Callback back = callbacks[c];
-                        back.function(back.data);
-                    }
-                }
-            }
-        }
-        */
-
-            /*
-        if (inputState[Esc]){
-            InputManager::releaseInput(input);
-            throw ReturnException();
-        }
-        */
-
-        if (inputState[Backspace]){
-            backspace();
-            modified = true;
-        }
-    }
-
-    return modified;
-}
-#endif
 
 void TextInput::enable(){
     InputManager::captureInput(*this);

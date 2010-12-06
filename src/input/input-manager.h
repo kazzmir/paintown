@@ -26,8 +26,10 @@ public:
 
     static std::vector<Input::PaintownInput> getInput(const Configuration & configuration, const int facing);
     static void poll();
+    /*
     static void enableBufferInput();
     static void disableBufferInput();
+    */
     static void waitForKeys(int key1, int key2);
     static int readKey();
     static void waitForClear();
@@ -239,7 +241,7 @@ private:
     Joystick * joystick;
     Keyboard keyboard;
     // std::vector<int> bufferedKeys;
-    bool bufferKeys;
+    // bool bufferKeys;
 };
 
 #endif

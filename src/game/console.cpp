@@ -49,8 +49,7 @@ Console::~Console(){
 }
     
 void Console::addCommand(const std::string & name, Command * command){
-    if (commands[name] != 0){
-        Global::debug(0) << "Warning: duplicate console command for '" << name << "'" << std::endl;
+    if (commands[name] != 0){ Global::debug(0) << "Warning: duplicate console command for '" << name << "'" << std::endl;
         delete commands[name];
     }
     commands[name] = command;
@@ -87,10 +86,12 @@ void Console::act(){
     checkStream();
 }
 
+/*
 static bool isChar(char c){
     const char * letters = "abcdefghijklmnopqrstuvwxyz ,.";
     return strchr(letters, c) != NULL;
 }
+*/
 
 void Console::activate(){
     if (textInput.getText() != ""){

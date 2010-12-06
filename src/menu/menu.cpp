@@ -1376,7 +1376,7 @@ void Menu::Menu::run(const Context & parentContext){
     double runCounter = 0;
     Global::speed_counter = 0;
 
-    InputManager::enableBufferInput();
+    // InputManager::enableBufferInput();
         
     // MenuException or something
     bool specialExit = false;
