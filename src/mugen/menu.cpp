@@ -598,26 +598,130 @@ void MugenMenu::run(){
         /* Extra scope to force temporary bitmaps to be destroyed */
         {
             Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
-            Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-            while ( ! done && (*currentOption)->getState() != MenuOption::Run && fader.getState() != Gui::FadeTool::EndFade ){
+            Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+            while (!done &&
+                   (*currentOption)->getState() != MenuOption::Run &&
+                   fader.getState() != Gui::FadeTool::EndFade){
 
                 bool draw = false;
-
-                //input
-                InputManager::poll();
 
                 if ( Global::speed_counter > 0 ){
                     draw = true;
                     runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-                    while ( runCounter >= 1.0 ){
+                    Global::speed_counter = 0;
+                    while (runCounter >= 1.0){
+                        //input
+                        InputManager::poll();
                         ticker++;
                         runCounter -= 1;
                         // Keys
+                        //
+                        vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input);
+                        vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input);
+
+                        if (fader.getState() == Gui::FadeTool::NoFade){
+                            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+                                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                                if (!event.enabled){
+                                    continue;
+                                }
+
+                                switch (event.out){
+                                    case Mugen::Up: {
+                                        moveMenuUp();
+                                        break;
+                                    }
+                                    case Mugen::Down: {
+                                        moveMenuDown();
+                                        break;
+                                    }
+                                    case Mugen::A:
+                                    case Mugen::B:
+                                    case Mugen::C:
+                                    case Mugen::X:
+                                    case Mugen::Y:
+                                    case Mugen::Z:
+                                    case Mugen::Start: {
+                                        if((*currentOption)->isRunnable()){
+                                            (*currentOption)->setState(MenuOption::Run);
+                                        }
+                                        // Set the fade state
+                                        fader.setState(Gui::FadeTool::FadeOut);
+                                        if (sounds[doneSound.x][doneSound.y] != 0){
+                                            sounds[doneSound.x][doneSound.y]->play();
+                                        }
+                                        selectingPlayer = Mugen::Player1;
+                                        break;
+                                    }
+                                    case Mugen::Esc: {
+                                        endGame = done = true;
+                                        // Set the fade state
+                                        fader.setState(Gui::FadeTool::FadeOut);
+                                        (*currentOption)->setState(MenuOption::Deselected);
+                                        InputManager::waitForRelease(player1Input, Mugen::Esc);
+                                        if (sounds[cancelSound.x][cancelSound.y] != 0){
+                                            sounds[cancelSound.x][cancelSound.y]->play();
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+
+                            /* FIXME: don't copy/paste this code, move it to a function */
+                            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out2.begin(); it != out2.end(); it++){
+                                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                                if (!event.enabled){
+                                    continue;
+                                }
+
+                                switch (event.out){
+                                    case Mugen::Up: {
+                                        moveMenuUp();
+                                        break;
+                                    }
+                                    case Mugen::Down: {
+                                        moveMenuDown();
+                                        break;
+                                    }
+                                    case Mugen::A:
+                                    case Mugen::B:
+                                    case Mugen::C:
+                                    case Mugen::X:
+                                    case Mugen::Y:
+                                    case Mugen::Z:
+                                    case Mugen::Start: {
+                                        if((*currentOption)->isRunnable()){
+                                            (*currentOption)->setState(MenuOption::Run);
+                                        }
+                                        // Set the fade state
+                                        fader.setState(Gui::FadeTool::FadeOut);
+                                        if (sounds[doneSound.x][doneSound.y] != 0){
+                                            sounds[doneSound.x][doneSound.y]->play();
+                                        }
+                                        selectingPlayer = Mugen::Player2;
+                                        break;
+                                    }
+                                    case Mugen::Esc: {
+                                        endGame = done = true;
+                                        // Set the fade state
+                                        fader.setState(Gui::FadeTool::FadeOut);
+                                        (*currentOption)->setState(MenuOption::Deselected);
+                                        InputManager::waitForRelease(player1Input, Mugen::Esc);
+                                        if (sounds[cancelSound.x][cancelSound.y] != 0){
+                                            sounds[cancelSound.x][cancelSound.y]->play();
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        /*
                         InputMap<Mugen::Keys>::Output out1 = InputManager::getMap(player1Input);
                         InputMap<Mugen::Keys>::Output out2 = InputManager::getMap(player2Input);
 
                         if (fader.getState() == Gui::FadeTool::NoFade){
-                            if ( out1[Mugen::Up] || out2[Mugen::Up]){	
+                            if (out1[Mugen::Up] || out2[Mugen::Up]){
                                 moveMenuUp();
                             }
 
@@ -638,7 +742,8 @@ void MugenMenu::run(){
                                     }
                                     selectingPlayer = Mugen::Player1;
                                 }
-                                if ( out2[selectable[key]] ){
+
+                                if (out2[selectable[key]]){
                                     if((*currentOption)->isRunnable()){
                                         (*currentOption)->setState( MenuOption::Run );
                                     }
@@ -662,6 +767,8 @@ void MugenMenu::run(){
                                 }
                             }
                         }
+                        */
+
                         // Update menu position
                         doMenuMovement(); 
 
@@ -674,11 +781,9 @@ void MugenMenu::run(){
                         // Backgrounds
                         background->act();
                     }
-
-                    Global::speed_counter = 0;
                 }
 
-                while ( Global::second_counter > 0 ){
+                while (Global::second_counter > 0){
                     game_time--;
                     Global::second_counter--;
                     if ( game_time < 0 ){
