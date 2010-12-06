@@ -23,7 +23,7 @@ handle(201){
     set(Keyboard::Key_ENTER, 0, false, Enter);
     */
     
-    set(Keyboard::Key_LCONTROL, 0, false, Control);
+    // set(Keyboard::Key_LCONTROL, 0, false, Control);
     set(Keyboard::Key_BACKSPACE, delay, false, Backspace);
     /*
     set(Keyboard::Key_LSHIFT, 0, false, Shift);
@@ -82,6 +82,54 @@ static unsigned char doShift(unsigned char letter, bool shift){
     }
 }
 
+bool TextInput::doInput(){
+    bool modified = false;
+    const Keyboard::unicode_t control_u = 21;
+    const Keyboard::unicode_t control_w = 23;
+    if (enabled){
+        vector<InputEvent> events = InputManager::getEvents(*this);
+
+        /* the order of reading input is arbitrary right now. I'm not
+         * sure it matters what order things are done in, but probably
+         * a few corner cases exist. When they come up please document them.
+         */
+
+        for (vector<InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+            InputEvent event = *it;
+
+            if (event.enabled){
+                if (event.out == Backspace){
+                    backspace();
+                    modified = true;
+                }
+
+                if (callbacks.find(event.out) != callbacks.end()){
+                    Callback & callback = callbacks[event.out];
+                    callback.function(callback.data);
+                }
+
+                if (event.unicode == control_u){
+                    clearInput();
+                    modified = true;
+                }
+                if (event.unicode == control_w){
+                    deleteLastWord();
+                    modified = true;
+                }
+
+                /* FIXME: whats the maximum unicode value? */
+                if (event.unicode >= 32 && event.unicode < 0xffffff){
+                    this->text << (unsigned char) event.unicode;
+                    modified = true;
+                }
+            }
+        }
+    }
+
+    return modified;
+}
+
+#if 0
 bool TextInput::doInput(){
     bool modified = false;
     if (enabled){
@@ -171,6 +219,7 @@ bool TextInput::doInput(){
 
     return modified;
 }
+#endif
 
 void TextInput::enable(){
     InputManager::captureInput(*this);

@@ -158,8 +158,12 @@ protected:
 
     template <typename X>
     typename std::vector<typename InputMap<X>::InputEvent> _getEvents(InputMap<X> & input){
-        const std::vector<typename Keyboard::KeyData> & buffer = keyboard.getBufferedKeys();
         std::vector<typename InputMap<X>::InputEvent> events;
+        if (capture != NULL && capture != &input){
+            return events;
+        }
+
+        const std::vector<typename Keyboard::KeyData> & buffer = keyboard.getBufferedKeys();
         for (std::vector<Keyboard::KeyData>::const_iterator it = buffer.begin(); it != buffer.end(); it++){
             const Keyboard::KeyData & data = *it;
             KeyState<X> * state = input.getState(data.key);
