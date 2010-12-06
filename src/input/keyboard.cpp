@@ -331,10 +331,24 @@ void Keyboard::press(KeyType key, unicode_t unicode){
     // if (enableBuffer){
         buffer.push_back(keyState[key]);
     // }
+    /*
+    KeyData data(key, unicode, true);
+    for (std::vector<Observer>::iterator it = observers.begin(); it != observers.end(); it++){
+        Observer observer = (*it);
+        observer.callback(data, observer.extra);
+    }
+    */
 }
 
 void Keyboard::release(KeyType key){
     keyState[key].enabled = false;
+    KeyData data(key, 0, false);
+    /*
+    for (std::vector<Observer>::iterator it = observers.begin(); it != observers.end(); it++){
+        Observer observer = (*it);
+        observer.callback(data, observer.extra);
+    }
+    */
 }
     
 void Keyboard::readBufferedKeys(std::vector<int> & keys){
@@ -342,7 +356,6 @@ void Keyboard::readBufferedKeys(std::vector<int> & keys){
         const KeyData & data = *it;
         keys.push_back(data.key);
     }
-    buffer.clear();
 }
 
 std::vector<Keyboard::KeyData> Keyboard::readData(){
@@ -369,3 +382,18 @@ std::vector<Keyboard::unicode_t> Keyboard::readText(){
     return out;
 }
 
+/*
+void Keyboard::addObserver(ObserverCallback observer, void * data){
+    observers.push_back(Observer(observer, data));
+}
+
+void Keyboard::removeObserver(ObserverCallback observer, void * data){
+    for (std::vector<Observer>::iterator it = observers.begin(); it != observers.end(); it++){
+        const Observer & what = *it;
+        if (what.callback == observer && what.extra == data){
+            observers.erase(it);
+            break;
+        }
+    }
+}
+*/

@@ -758,7 +758,7 @@ pspnet_inet
             # for gcov:
             # ['-fprofile-arcs', '-ftest-coverage']
             # cflags.append( ['-g3','-ggdb', '-Werror'])
-            cflags.extend(['-g3','-ggdb'])
+            cflags.extend(['-g3','-ggdb', '-Wfatal-errors'])
         else:
             # -march=native
             if nativeCompile():

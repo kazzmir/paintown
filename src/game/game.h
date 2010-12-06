@@ -35,7 +35,7 @@ void fadeOut( Bitmap & work, const std::string & message );
 
 std::vector<Paintown::Object *> versusSelect( bool invincible );
 
-void playVersusMode( Paintown::Character * player1, Paintown::Character * player2, int round );
+// void playVersusMode( Paintown::Character * player1, Paintown::Character * player2, int round );
 
 }
 

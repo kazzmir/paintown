@@ -9,7 +9,10 @@
  * and readkey()
  */
 class Keyboard{
+private:
+    Keyboard();
 public:
+    friend class InputManager;
 
     typedef const int KeyType;
     typedef uint32_t unicode_t;
@@ -34,7 +37,23 @@ public:
         bool enabled;
     };
 
-    Keyboard();
+    /*
+    typedef void (*ObserverCallback)(const KeyData & data, void * extra);
+    struct Observer{
+        Observer():
+            callback(NULL),
+            extra(NULL){
+            }
+
+        Observer(ObserverCallback callback, void * extra):
+        callback(callback),
+        extra(extra){
+        }
+
+        ObserverCallback callback;
+        void * extra;
+    };
+    */
 
     /* poll:
      * Put the keys in Allegro's key[] array into our map of int -> bool
@@ -82,6 +101,10 @@ public:
 
     void setDelay( const int key, const int delay );
     void setAllDelay( const int delay );
+
+    inline const std::vector<KeyData> & getBufferedKeys() const {
+        return buffer;
+    }
 
     static const char * keyToName( int key );
     static bool isNumber( int key );
@@ -220,10 +243,15 @@ public:
 
     void press(KeyType key, unicode_t unicode);
     void release(KeyType key);
+    /*
+    virtual void addObserver(ObserverCallback observer, void * extra);
+    virtual void removeObserver(ObserverCallback observer, void * extra);
+    */
 
 protected:
     // std::map<int,int> my_keys;
     std::map<int,int> key_delay;
+    // std::vector<Observer> observers;
 
     std::map<KeyType, KeyData> keyState;
     std::vector<KeyData> buffer;

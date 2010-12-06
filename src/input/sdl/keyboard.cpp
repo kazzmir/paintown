@@ -8,6 +8,7 @@ enableBuffer(false){
 }
 
 void Keyboard::poll(){
+    buffer.clear();
     SDL_PumpEvents();
 }
 

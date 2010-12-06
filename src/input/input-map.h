@@ -3,8 +3,8 @@
 
 #include <map>
 #include <vector>
-#include "input/joystick.h"
-#include "input/keyboard.h"
+#include "joystick.h"
+#include "keyboard.h"
 #include "globals.h"
 #include <iostream>
 
@@ -54,7 +54,28 @@ struct JoystickState{
 template <typename X>
 class InputMap{
 public:
-    typedef std::map<X,bool> Output;
+    typedef std::map<X, bool> Output;
+
+    struct InputEvent{
+        InputEvent(const X & out, Keyboard::unicode_t unicode, bool enabled):
+        out(out),
+        unicode(unicode),
+        enabled(enabled){
+        }
+
+        InputEvent(const InputEvent & input):
+        out(input.out),
+        unicode(input.unicode),
+        enabled(input.enabled){
+        }
+
+        InputEvent(){
+        }
+
+        X out;
+        Keyboard::unicode_t unicode;
+        bool enabled;
+    };
 
     InputMap():
         last_read(0){
@@ -127,6 +148,17 @@ public:
 
         return out;
     }
+
+    /*
+    static void observeKey(const Keyboard::KeyData & data, void * self){
+        InputMap<X> * me = (InputMap<X>*) self;
+
+        KeyState<X> * state = state = getState(data.key);
+        if (state != NULL){
+            events.push_back(InputEvent(state->out, data.unicode, data.enabled));
+        }
+    }
+    */
 
     bool pressed(const std::vector<int> & keys, X out){
         for (std::vector<int>::const_iterator it = keys.begin(); it != keys.end(); it++){

@@ -32,6 +32,18 @@ public:
     static int readKey();
     static void waitForClear();
 
+    /*
+    template <class X>
+    static void observeKeyboard(InputMap<X> & input){
+        manager->keyboard.addObserver(InputMap<X>::observeKey, &input);
+    }
+    
+    template <class X>
+    static void unObserveKeyboard(InputMap<X> & input){
+        manager->keyboard.removeObserver(InputMap<X>::observeKey, &input);
+    }
+    */
+
     static std::vector<Keyboard::unicode_t> readText(){
         return manager->keyboard.readText();
     }
@@ -50,6 +62,11 @@ public:
         throw Exception::Base(__FILE__, __LINE__);
         /* make the compiler happy about returning something */
         return *(typename InputMap<X>::Output*)1;
+    }
+
+    template <typename X>
+    static typename std::vector<typename InputMap<X>::InputEvent> getEvents(InputMap<X> & input){
+        return manager->_getEvents(input);
     }
 
     template <typename X>
@@ -137,6 +154,21 @@ protected:
             }
         }
         storage = output;
+    }
+
+    template <typename X>
+    typename std::vector<typename InputMap<X>::InputEvent> _getEvents(InputMap<X> & input){
+        const std::vector<typename Keyboard::KeyData> & buffer = keyboard.getBufferedKeys();
+        std::vector<typename InputMap<X>::InputEvent> events;
+        for (std::vector<Keyboard::KeyData>::const_iterator it = buffer.begin(); it != buffer.end(); it++){
+            const Keyboard::KeyData & data = *it;
+            KeyState<X> * state = input.getState(data.key);
+            if (state != NULL){
+                events.push_back(typename InputMap<X>::InputEvent(state->out, data.unicode, data.enabled));
+            }
+        }
+
+        return events;
     }
 
     template <typename X>

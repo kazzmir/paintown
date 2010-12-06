@@ -172,7 +172,7 @@ static string nthWord(int i){
 void OptionAdventureCpu::run(const Menu::Context & context){
     int max_buddies = Configuration::getNpcBuddies();
 
-    Keyboard key;
+    // Keyboard key;
     Paintown::Object * player = NULL;
     vector<Util::Future<Paintown::Object*>* > futures;
     vector<Paintown::Object *> buddies;
@@ -500,8 +500,11 @@ title(Bitmap::makeColor(0,255,255)){
 	}
     }
 	
+    /* FIXME */
+    /*
     input.set(Keyboard::Key_ESC, 0, true, Exit);
     input.set(Joystick::Button2, 0, true, Exit);
+    */
 }
 
 OptionCredits::~OptionCredits(){
@@ -516,7 +519,7 @@ void OptionCredits::logic(){
 }
 
 void OptionCredits::run(const Menu::Context & context){
-    Keyboard key;
+    // Keyboard key;
     Bitmap backgroundImage(Filesystem::find(background).path());
 
     const int maxCredits = credits.size();
@@ -1347,14 +1350,17 @@ void OptionNetworkHost::logic(){
 }
 
 void OptionNetworkHost::run(const Menu::Context & context){
-    Keyboard key;
+    // Keyboard key;
     try{
         Network::networkServer();
     } catch (const Exception::Return &e){
     }
+    /* FIXME */
+    /*
     key.clear();
     key.poll();
     key.wait();
+    */
     throw Menu::Reload(__FILE__, __LINE__);
     // throw Exception::Return(__FILE__, __LINE__);
 }
@@ -1376,17 +1382,22 @@ void OptionNetworkJoin::logic(){
 }
 
 void OptionNetworkJoin::run(const Menu::Context & context){
+    /*
     Keyboard key;
     key.poll();
     key.wait();
+    */
+    /* FIXME */
     try{
         Network::networkClient();
     } catch (const Exception::Return &r){
     }
 
+    /* 
     key.clear();
     key.poll();
     key.wait();
+    */
     throw Menu::Reload(__FILE__, __LINE__);
     // throw Exception::Return(__FILE__, __LINE__);
 }

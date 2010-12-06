@@ -1418,9 +1418,8 @@ void Menu::Menu::run(const Context & parentContext){
             work.BlitToScreen();
         }
 
-        while ( Global::speed_counter < 1 ){
-            Util::rest( 1 );
-            InputManager::poll();
+        while (Global::speed_counter < 1){
+            Util::rest(1);
         }
     }
 
@@ -1433,34 +1432,40 @@ void Menu::Menu::run(const Context & parentContext){
 void Menu::Menu::act(Context & ourContext){
     // Keys
     InputManager::poll();
-    InputMap<Actions>::Output inputState = InputManager::getMap(input);
-    if (inputState[Cancel]){
+    // InputMap<Actions>::Output inputState = InputManager::getMap(input);
+    vector<InputMap<Actions>::InputEvent> events = InputManager::getEvents(input);
+
+    for (vector<InputMap<Actions>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+        InputMap<Actions>::InputEvent event = *it;
+
+        if (!event.enabled){
+            continue;
+        }
+
+        if (event.out == Cancel){
+            if (renderer){
+                InputManager::waitForRelease(input, Cancel);
+                renderer->doAction(Cancel, ourContext);
+            } else {
+                ourContext.playSound(Cancel);
+                InputManager::waitForRelease(input, Cancel);
+                throw Exception::Return(__FILE__, __LINE__);
+            }
+        }
+
         if (renderer){
-            InputManager::waitForRelease(input, Cancel);
-            renderer->doAction(Cancel, ourContext);
-        } else {
-            ourContext.playSound(Cancel);
-            InputManager::waitForRelease(input, Cancel);
-            throw Exception::Return(__FILE__, __LINE__);
+            switch (event.out){
+                case Up: renderer->doAction(Up, ourContext); break;
+                case Down: renderer->doAction(Down, ourContext); break;
+                case Left: renderer->doAction(Left, ourContext); break;
+                case Right: renderer->doAction(Right, ourContext); break;
+                case Select: renderer->doAction(Select, ourContext); break;
+                default: break;
+            }
         }
     }
-
+            
     if (renderer){
-        if (inputState[Up]){
-            renderer->doAction(Up, ourContext);
-        }
-        if (inputState[Down]){
-            renderer->doAction(Down, ourContext);
-        }
-        if (inputState[Left]){
-            renderer->doAction(Left, ourContext);
-        }
-        if (inputState[Right]){
-            renderer->doAction(Right, ourContext);
-        }
-        if (inputState[Select]){
-            renderer->doAction(Select, ourContext);
-        }
         // Menu act
         renderer->act(ourContext);
     }

@@ -843,6 +843,7 @@ static bool closeFloat(double a, double b){
 }
 
 /* TODO: deprecated */
+#if 0
 void playVersusMode( Paintown::Character * player1, Paintown::Character * player2, int round ){
 
 	player1->setY( 0 );
@@ -855,9 +856,9 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 	player1->setHealth( 150 );
 	player2->setHealth( 150 );
 
-	Keyboard key;
+	// Keyboard key;
 
-	key.setDelay( Keyboard::Key_P, 100 );
+	// key.setDelay( Keyboard::Key_P, 100 );
 
 	bool done = false;
 	bool paused = false;
@@ -898,7 +899,7 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 	while ( ! done ){
 
 		bool draw = false;
-		key.poll();
+		// key.poll();
 
 		if ( Global::speed_counter > 0 ){
 			if ( ! paused ){
@@ -1139,5 +1140,6 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 		done = world.finished();
 	}
 }
+#endif
 
 }
