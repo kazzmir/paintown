@@ -635,6 +635,11 @@ void MugenMenu::run(){
                                         moveMenuDown();
                                         break;
                                     }
+                                    case Mugen::Enter:
+                                    case Mugen::Right:
+                                    case Mugen::Left: {
+                                        break;
+                                    }
                                     case Mugen::A:
                                     case Mugen::B:
                                     case Mugen::C:
@@ -642,7 +647,7 @@ void MugenMenu::run(){
                                     case Mugen::Y:
                                     case Mugen::Z:
                                     case Mugen::Start: {
-                                        if((*currentOption)->isRunnable()){
+                                        if ((*currentOption)->isRunnable()){
                                             (*currentOption)->setState(MenuOption::Run);
                                         }
                                         // Set the fade state
@@ -681,6 +686,11 @@ void MugenMenu::run(){
                                     }
                                     case Mugen::Down: {
                                         moveMenuDown();
+                                        break;
+                                    }
+                                    case Mugen::Enter:
+                                    case Mugen::Right:
+                                    case Mugen::Left: {
                                         break;
                                     }
                                     case Mugen::A:

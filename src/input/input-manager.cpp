@@ -184,7 +184,7 @@ void InputManager::_poll(){
         eventManager.enableKeyBuffer();
     }
     */
-    eventManager.run(keyboard);
+    eventManager.run(keyboard, joystick);
 
     // keyboard.poll();
     if (joystick != NULL){
