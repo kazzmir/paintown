@@ -61,7 +61,7 @@ public:
     }
 
     virtual Value * get(unsigned int index) const {
-        if (index >= 0 && index < values.size()){
+        if (index < values.size()){
             unsigned int count = 0;
             std::list<Value*>::const_iterator it;
             for (it = values.begin(); count < index && it != values.end(); it++, count++){
