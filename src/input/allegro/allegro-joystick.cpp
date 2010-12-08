@@ -48,5 +48,9 @@ AllegroJoystick::~AllegroJoystick(){
 
 AllegroJoystick::AllegroJoystick(){
 }
+    
+int AllegroJoystick::getDeviceId() const {
+    return 0;
+}
 
 #endif

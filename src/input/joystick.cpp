@@ -67,3 +67,9 @@ const char * Joystick::keyToName(Key key){
     }
     return "Unknown";
 }
+    
+void Joystick::press(int button){
+}
+
+void Joystick::release(int button){
+}

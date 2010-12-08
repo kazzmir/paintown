@@ -7,6 +7,7 @@ class AllegroJoystick: public Joystick {
 public:
     virtual void poll();
     virtual JoystickInput readAll();
+    virtual int getDeviceId() const;
 
     virtual ~AllegroJoystick();
 

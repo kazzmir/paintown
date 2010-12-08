@@ -49,6 +49,10 @@ public:
     virtual bool pressed();
     virtual ~Joystick();
 
+    virtual int getDeviceId() const = 0;
+    virtual void press(int button);
+    virtual void release(int button);
+
     static Joystick * create();
 
     enum Key{

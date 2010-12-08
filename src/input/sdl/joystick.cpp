@@ -61,4 +61,12 @@ joystick(NULL){
     }
 }
 
+int SDLJoystick::getDeviceId() const {
+    if (joystick){
+        return SDL_JoystickIndex(joystick);
+    }
+
+    return -1;
+}
+
 #endif
