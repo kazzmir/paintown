@@ -4,7 +4,7 @@
 #include "joystick.h"
 
 void SDLJoystick::poll(){
-    /* TODO */
+    events.clear();
 }
 
 static bool read_button(SDL_Joystick * joystick, int button){
@@ -58,6 +58,41 @@ SDLJoystick::SDLJoystick():
 joystick(NULL){
     if (SDL_NumJoysticks() > 0){
         joystick = SDL_JoystickOpen(0);
+    }
+}
+    
+void SDLJoystick::pressButton(int button){
+    if (joystick){
+        Event event = Invalid;
+        switch (button){
+            case 0: event = Button1; break;
+            case 1: event = Button2; break;
+            case 2: event = Button3; break;
+            case 3: event = Button4; break;
+            default: break;
+        }
+        events.push_back(event);
+    }
+}
+
+void SDLJoystick::releaseButton(int button){
+}
+
+void SDLJoystick::axisMotion(int axis, int motion){
+    if (joystick){
+        if (axis == 0){
+            if (motion < 0){
+                events.push_back(Left);
+            } else if (motion > 0){
+                events.push_back(Right);
+            }
+        } else if (axis == 1){
+            if (motion < 0){
+                events.push_back(Up);
+            } else if (motion > 0){
+                events.push_back(Down);
+            }
+        }
     }
 }
 

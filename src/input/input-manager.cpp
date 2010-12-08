@@ -187,9 +187,11 @@ void InputManager::_poll(){
     eventManager.run(keyboard, joystick);
 
     // keyboard.poll();
+    /*
     if (joystick != NULL){
         joystick->poll();
     }
+    */
 
     // const vector<Util::EventManager::KeyType> & keys = eventManager.getBufferedKeys();
     // bufferedKeys.insert(bufferedKeys.end(), keys.begin(), keys.end());

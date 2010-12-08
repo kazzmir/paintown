@@ -176,6 +176,10 @@ public:
     virtual KeyState<X> * getState(int key){
         return key_states[key];
     }
+
+    virtual JoystickState<X> * getJoystickState(Joystick::Key key){
+        return joy_states[key];
+    }
     
     void read(const std::vector<int> & keys, Output * output){
         for (std::vector<int>::const_iterator it = keys.begin(); it != keys.end(); it++){

@@ -174,6 +174,17 @@ protected:
             }
         }
 
+        if (joystick){
+            const std::vector<typename Joystick::Event> & joystickEvents = joystick->getEvents();
+            for (std::vector<Joystick::Event>::const_iterator it = joystickEvents.begin(); it != joystickEvents.end(); it++){
+                Joystick::Event event = *it;
+                JoystickState<X> * state = input.getJoystickState(event);
+                if (state != NULL){
+                    events.push_back(typename InputMap<X>::InputEvent(state->out, -1, true));
+                }
+            }
+        }
+
         return events;
     }
 

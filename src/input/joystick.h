@@ -50,8 +50,9 @@ public:
     virtual ~Joystick();
 
     virtual int getDeviceId() const = 0;
-    virtual void press(int button);
-    virtual void release(int button);
+    virtual void pressButton(int button);
+    virtual void releaseButton(int button);
+    virtual void axisMotion(int axis, int motion);
 
     static Joystick * create();
 
@@ -66,10 +67,18 @@ public:
         Button3,
         Button4,
     };
+
+    typedef Key Event;
+    
+    virtual inline const std::vector<Event> & getEvents() const {
+        return events;
+    }
 	
     static const char * keyToName(Key key);
 
 protected:
+
+    std::vector<Event> events;
 
     Joystick();
 };

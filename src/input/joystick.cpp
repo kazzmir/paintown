@@ -68,8 +68,11 @@ const char * Joystick::keyToName(Key key){
     return "Unknown";
 }
     
-void Joystick::press(int button){
+void Joystick::pressButton(int button){
 }
 
-void Joystick::release(int button){
+void Joystick::releaseButton(int button){
+}
+
+void Joystick::axisMotion(int axis, int motion){
 }
