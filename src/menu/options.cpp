@@ -500,11 +500,8 @@ title(Bitmap::makeColor(0,255,255)){
 	}
     }
 	
-    /* FIXME */
-    /*
     input.set(Keyboard::Key_ESC, 0, true, Exit);
     input.set(Joystick::Button2, 0, true, Exit);
-    */
 }
 
 OptionCredits::~OptionCredits(){
@@ -550,8 +547,15 @@ void OptionCredits::run(const Menu::Context & context){
     while (!quit){
 
         InputManager::poll();
-        InputMap<CreditKey>::Output out = InputManager::getMap(input);
-        quit = out[Exit];
+        vector<InputMap<CreditKey>::InputEvent> out = InputManager::getEvents(input);
+        for (vector<InputMap<CreditKey>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<CreditKey>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Exit){
+                    quit = true;
+                }
+            }
+        }
 
         bool draw = false;
         if (Global::speed_counter > 0){
@@ -607,7 +611,7 @@ void OptionCredits::run(const Menu::Context & context){
 
             tmp.BlitToScreen();
         } else {
-            Util::rest( 1 );
+            Util::rest(1);
         }
     }
 
