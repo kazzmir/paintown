@@ -7,13 +7,13 @@ def isPlatform(platform):
 def isWindows():
     return isPlatform("win32")
 
-# Assume 10.6 and up
-def isOSX():
-    return isPlatform("darwin")
-
 def isOSX104():
     import platform
     return isPlatform("darwin") and platform.processor() == 'powerpc'
+
+# Assume 10.6 and up
+def isOSX():
+    return isPlatform("darwin") and not isOSX104()
 
 def isLinux():
     return isPlatform("linux")
@@ -260,7 +260,7 @@ def checkStaticSDL(context):
         env.Append(LIBS = [sdl])
         env.ParseConfig('sdl-config --cflags')
         env.Append(CPPDEFINES = ['USE_SDL'])
-        if isOSX():
+        if isOSX() or isOSX104():
             def framework(x):
                 return "-framework %s" % x
             frameworks = Split("""
@@ -378,7 +378,7 @@ def checkPython(context):
         lib_path = os.path.join(os.path.dirname(include_path),'libs')
 
     # hacks for osx because distutils doesn't quote things
-    if isOSX():
+    if isOSX() or isOSX104():
         import re
         f = re.compile('(-framework System Python.framework/Versions/.*/Python)')
         link_stuff = re.sub(f, r"'\1'", link_stuff)
@@ -755,7 +755,7 @@ pspnet_inet
         return env
     def raw():
         defines = []
-        if isOSX():
+        if isOSX() or isOSX104():
             defines.append('MACOSX')
             # env.Append(CPPDEFINES = 'MACOSX')
         cflags = []
