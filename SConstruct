@@ -7,8 +7,13 @@ def isPlatform(platform):
 def isWindows():
     return isPlatform("win32")
 
+# Assume 10.6 and up
 def isOSX():
     return isPlatform("darwin")
+
+def isOSX104():
+    import platform
+    return isPlatform("darwin") and platform.processor() == 'powerpc'
 
 def isLinux():
     return isPlatform("linux")
@@ -1118,7 +1123,7 @@ else:
         if not getDebug():
             env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
 
-    if isOSX():
+    if isOSX104():
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
