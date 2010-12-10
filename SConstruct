@@ -1165,8 +1165,11 @@ else:
     
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
-    png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
-    staticEnv.Append(LIBS = [png])
+    if not isOSX():
+        png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
+        staticEnv.Append(LIBS = [png])
+    else:
+        staticEnv.ParseConfig('freetype-config --libs')
 
     #if useSDL():
     #    sdl = staticEnv.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
@@ -1175,9 +1178,10 @@ else:
     #    staticEnv.ParseConfig('sdl-config --cflags')
     #    staticEnv.Append(CPPDEFINES = ['USE_SDL'])
 
-    staticEnv.Append( LIBS = ['z','m'] )
-    freetype = staticEnv.Install( 'misc', readExec('freetype-config --prefix') + '/lib/libfreetype.a' )
-    staticEnv.Append(LIBS = freetype)
+    staticEnv.Append(LIBS = ['z','m'])
+    if not isOSX():
+        freetype = staticEnv.Install( 'misc', readExec('freetype-config --prefix') + '/lib/libfreetype.a' )
+        staticEnv.Append(LIBS = freetype)
 
     if not config.TryCompile("int main(){ return 0; }\n", ".c"):
         print "You need a C compiler such as gcc installed"
@@ -1272,4 +1276,5 @@ for i in shared:
     Default(safe)
 
 for i in static:
-    Alias('static', env.InstallAs( i[0].name + '-static', i ))
+    installed = staticEnv.InstallAs(i[0].name + '-static', i)
+    Alias('static', installed)
