@@ -72,6 +72,10 @@ public:
         InputEvent(){
         }
 
+        bool operator[](const X & is) const {
+            return this->out == is;
+        }
+
         X out;
         Keyboard::unicode_t unicode;
         bool enabled;

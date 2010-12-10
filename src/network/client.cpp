@@ -238,6 +238,7 @@ static char lowerCase( const char * x ){
 	return x[0];
 }
 
+/*
 static bool handleNameInput( string & str, const vector< int > & keys ){
 	bool cy = false;
 	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
@@ -254,7 +255,9 @@ static bool handleNameInput( string & str, const vector< int > & keys ){
 	}
 	return cy;
 }
+*/
 
+/*
 static bool handleHostInput( string & str, const vector< int > & keys ){
 	bool cy = false;
 	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
@@ -271,7 +274,9 @@ static bool handleHostInput( string & str, const vector< int > & keys ){
 	}
 	return cy;
 }
+*/
 
+/*
 static bool handlePortInput( string & str, const vector< int > & keys ){
 	bool cy = false;
 	for ( vector< int >::const_iterator it = keys.begin(); it != keys.end(); it++ ){
@@ -288,6 +293,7 @@ static bool handlePortInput( string & str, const vector< int > & keys ){
 	}
 	return cy;
 }
+*/
 
 static void popup( Bitmap & work, const Font & font, const string & message ){
 	int length = font.textLength( message.c_str() ) + 20; 
@@ -395,6 +401,10 @@ static void previousFocus(void * stuff){
     }
 }
 
+static void doQuit(void * stuff){
+    throw Exception::Return(__FILE__, __LINE__);
+}
+
 void networkClient(){
     Bitmap background(Global::titleScreen().path());
     Global::speed_counter = 0;
@@ -430,6 +440,10 @@ void networkClient(){
     nameInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     portInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     hostInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
+    
+    nameInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
+    portInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
+    hostInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
 
     bool done = false;
     bool draw = true;
@@ -441,55 +455,70 @@ void networkClient(){
             InputManager::poll();
             think -= 1;
 
-            InputMap<ClientActions>::Output output = InputManager::getMap(input);
+            vector<InputMap<ClientActions>::InputEvent> events = InputManager::getEvents(input);
 
-            draw = draw || nameInput.doInput() || portInput.doInput() || hostInput.doInput();
-
-            if (output[Next]){
-                nextFocus(&bundle);
+            switch (focus){
+                case Name: draw = draw || nameInput.doInput(); break;
+                case Port: draw = draw || portInput.doInput(); break;
+                case Host: draw = draw || hostInput.doInput(); break;
+                default: break;
             }
 
-            if (output[Back]){
-                previousFocus(&bundle);
-            }
+            // draw = draw || nameInput.doInput() || portInput.doInput() || hostInput.doInput();
 
-            if (output[Quit]){
-                throw Exception::Return(__FILE__, __LINE__);
-            }
-
-            if (output[Action]){
-                switch (focus){
-                    case Name:
-                    case Host:
-                    case Port: break;
-                    case Connect: {
-                        done = true;
-                        try{
-                            runClient(nameInput.getText(), hostInput.getText(), portInput.getText(), input);
-                        } catch ( const NetworkException & e ){
-                            popup( work, font, e.getMessage() );
-                            InputManager::waitForRelease(input, Action);
-                            InputManager::waitForPress(input, Action);
-                            InputManager::waitForRelease(input, Action);
-                            /*
-                            keyboard.wait();
-                            keyboard.readKey();
-                            */
-                            /*
-                               Global::showTitleScreen();
-                               font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
-                               font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
-                               font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
-                               font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
-                               */
-                            done = false;
-                            draw = true;
-                            think = 0;
-                        }
-                        break;
-                    }
-                    case FocusBack : done = true; break;
+            for (vector<InputMap<ClientActions>::InputEvent>::iterator it = events.begin(); it != events.end() && !done; it++){
+                const InputMap<ClientActions>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
                 }
+
+                if (event[Next]){
+                    nextFocus(&bundle);
+                }
+
+                if (event[Back]){
+                    previousFocus(&bundle);
+                }
+
+                if (event[Quit]){
+                    throw Exception::Return(__FILE__, __LINE__);
+                }
+
+                if (event[Action]){
+                    switch (focus){
+                        case Name:
+                        case Host:
+                        case Port: break;
+                        case Connect: {
+                            done = true;
+                            try{
+                                runClient(nameInput.getText(), hostInput.getText(), portInput.getText(), input);
+                            } catch ( const NetworkException & e ){
+                                popup( work, font, e.getMessage() );
+                                InputManager::waitForRelease(input, Action);
+                                InputManager::waitForPress(input, Action);
+                                InputManager::waitForRelease(input, Action);
+                                /*
+                                   keyboard.wait();
+                                   keyboard.readKey();
+                                   */
+                                /*
+                                   Global::showTitleScreen();
+                                   font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
+                                   font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
+                                   font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
+                                   font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
+                                   */
+                                done = false;
+                                draw = true;
+                                think = 0;
+                            }
+                            break;
+                        }
+                        case FocusBack : done = true; break;
+                    }
+                }
+
             }
 
             draw = draw || oldFocus != focus;
@@ -532,9 +561,8 @@ void networkClient(){
             work.BlitToScreen();
         }
 
-        while ( Global::speed_counter == 0 ){
+        while (Global::speed_counter == 0){
             Util::rest(1);
-            InputManager::poll();
         }
     }
 }
