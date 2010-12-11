@@ -43,80 +43,81 @@ Client::~Client(){
 }
 	
 string Client::getName(){
-	string s;
-        Util::Thread::acquireLock(&lock);
-	s = name;
-        Util::Thread::releaseLock(&lock);
-	return s;
+    string s;
+    Util::Thread::acquireLock(&lock);
+    s = name;
+    Util::Thread::releaseLock(&lock);
+    return s;
 }
 
 void Client::kill(){
     Util::Thread::acquireLock(&lock);
-	alive = false;
-        Util::Thread::releaseLock( &lock );
+    alive = false;
+    Util::Thread::releaseLock( &lock );
 }
 
 bool Client::isAlive(){
-	bool b;
-        Util::Thread::acquireLock( &lock );
-	b = alive;
-        Util::Thread::releaseLock( &lock );
-	return b;
+    bool b;
+    Util::Thread::acquireLock( &lock );
+    b = alive;
+    Util::Thread::releaseLock( &lock );
+    return b;
 }
 
 void Client::setName( const std::string & s ){
     Util::Thread::acquireLock( &lock );
-	name = s;
-        Util::Thread::releaseLock( &lock );
+    name = s;
+    Util::Thread::releaseLock( &lock );
 }
 
 static void * clientInput( void * client_ ){
-	Client * client = (Client *) client_;
-	bool done = false;
-        bool error = false;
-	while ( ! done ){
-		try{
-			debug( 1 ) << "Client " << client->getId() << " waiting for message" << endl;
-			Network::Message message( client->getSocket() );
-			debug( 1 ) << client->getId() << " Got a message: '" << message.path << "'" << endl;
-			int type;
-			message >> type;
-			switch ( type ){
-				case CHANGE_NAME : {
-					message << client->getId();
-					client->getServer()->sendMessage( message, client->getId() );
-					client->setName( message.path );
-					client->getServer()->needUpdate();
-					break;
-				}
-				case ADD_MESSAGE : {
-					client->getServer()->addMessage( client->getName() + ":" + message.path, client->getId() );
-					break;
-				}
-				case OK_TO_START : {
-					client->setOk();
-                                        done = true;
-					break;
-				}
-			}
-			// done = ! client->isAlive();
-			Util::rest( 1 );
-		} catch ( const Network::NetworkException & e ){
-			debug( 0 ) << "Client input " << client->getId() << " died" << endl;
-			done = true;
-                        error = true;
-		}
-	}
-
-	debug( 1 ) << client->getId() << " is done" << endl;
-	
-        // if ( client->canKill() ){
-        if (error){
-            debug( 1 ) << "Input thread killing client" << endl;
-            client->getServer()->killClient( client );
+    Client * client = (Client *) client_;
+    bool done = false;
+    bool error = false;
+    while ( ! done ){
+        try{
+            debug(1) << "Client " << client->getId() << " waiting for message" << endl;
+            Network::Message message( client->getSocket() );
+            debug(1) << client->getId() << " Got a message: '" << message.path << "'" << endl;
+            int type;
+            message >> type;
+            switch (type){
+                case CHANGE_NAME : {
+                    message << client->getId();
+                    client->getServer()->sendMessage( message, client->getId() );
+                    client->setName( message.path );
+                    client->getServer()->needUpdate();
+                    break;
+                }
+                case ADD_MESSAGE : {
+                    client->getServer()->addMessage( client->getName() + ":" + message.path, client->getId() );
+                    break;
+                }
+                case OK_TO_START : {
+                    client->setOk();
+                    done = true;
+                    break;
+                }
+            }
+            // done = ! client->isAlive();
+            Util::rest(1);
+        } catch ( const Network::NetworkException & e ){
+            debug( 0 ) << "Client input " << client->getId() << " died" << endl;
+            done = true;
+            error = true;
         }
+    }
 
-        return NULL;
+    debug(1) << client->getId() << " is done" << endl;
+
+    // if ( client->canKill() ){
+    // }
+    if (error){
+        debug(1) << "Input thread killing client" << endl;
+        client->getServer()->killClient( client );
+    }
+
+    return NULL;
 }
 
 static void * clientOutput( void * client_ ){
@@ -137,7 +138,7 @@ static void * clientOutput( void * client_ ){
                 message.send( client->getSocket() );
                 debug(1) << "Sent a message to " << client->getId() << endl;
             } catch ( const Network::NetworkException & e ){
-                debug( 0 ) << "Client output " << client->getId() << " died" << endl;
+                debug(0) << "Client output " << client->getId() << " died" << endl;
                 done = true;
                 error = true;
             }
@@ -149,7 +150,7 @@ static void * clientOutput( void * client_ ){
     debug(1) << "Output thread for client " << client->getId() << " is done" << endl;
 
     if (error){
-        debug( 1 ) << "Output thread killing client" << endl;
+        debug(1) << "Output thread killing client" << endl;
         client->getServer()->killClient( client );
     }
 
@@ -168,32 +169,32 @@ bool Client::canKill(){
     return f;
 }
 
-bool Client::getOutgoing( Network::Message & m ){
+bool Client::getOutgoing(Network::Message & m){
     bool has;
-    Util::Thread::acquireLock( &lock );
+    Util::Thread::acquireLock(&lock);
     has = ! outgoing.empty();
-    if ( has ){
+    if (has){
         m = outgoing.front();
-        outgoing.erase( outgoing.begin() );
+        outgoing.erase(outgoing.begin());
     }
     Util::Thread::releaseLock( &lock );
     return has;
 }
 
-void Client::addOutputMessage( const Network::Message & s ){
-    Util::Thread::acquireLock( &lock );
-    outgoing.push_back( s );
-    Util::Thread::releaseLock( &lock );
+void Client::addOutputMessage(const Network::Message & s){
+    Util::Thread::acquireLock(&lock);
+    outgoing.push_back(s);
+    Util::Thread::releaseLock(&lock);
 }
 
 void Client::startThreads(){
-    Util::Thread::acquireLock( &lock );
-    if ( ! started ){
-        Util::Thread::createThread( &inputThread, NULL, (Util::Thread::ThreadFunction) clientInput, this );
-        Util::Thread::createThread( &outputThread, NULL, (Util::Thread::ThreadFunction) clientOutput, this );
+    Util::Thread::acquireLock(&lock);
+    if (! started){
+        Util::Thread::createThread(&inputThread, NULL, (Util::Thread::ThreadFunction) clientInput, this);
+        Util::Thread::createThread(&outputThread, NULL, (Util::Thread::ThreadFunction) clientOutput, this);
         started = true;
     }
-    Util::Thread::releaseLock( &lock );
+    Util::Thread::releaseLock(&lock);
 }
 
 struct do_add_stuff{
@@ -252,7 +253,7 @@ static void * acceptConnections( void * server_ ){
     ChatServer * server = (ChatServer *) server_;
     Network::Socket socket = server->getSocket();
     debug( 1 ) << "Accepting connections" << endl;
-    while ( ! done ){
+    while (! done){
         done = ! server->isAccepting();
         try{
             /* start the accepting handshake in a thread in case
@@ -269,7 +270,7 @@ static void * acceptConnections( void * server_ ){
             debug( 0 ) << "Error accepting connections: " << e.getMessage() << endl;
             done = true;
         }
-        Util::rest( 1 );
+        Util::rest(1);
     }
 
 #ifdef _WIN32
@@ -346,9 +347,9 @@ void ChatServer::addLine(){
 	
 bool ChatServer::isAccepting(){
     bool f;
-    Util::Thread::acquireLock( &lock );
+    Util::Thread::acquireLock(&lock);
     f = accepting;	
-    Util::Thread::releaseLock( &lock );
+    Util::Thread::releaseLock(&lock);
     return f;
 }
         
@@ -359,28 +360,28 @@ void ChatServer::addAccepter(Util::Thread::Id accepter){
 }
 
 void ChatServer::stopAccepting(){
-	debug( 1 ) << "Stop accepting" << endl;
-        Util::Thread::acquireLock( &lock );
-	accepting = false;
-        Util::Thread::releaseLock( &lock );
-// #ifndef WINDOWS
-	Network::close( socket );
-// #endif
-        debug(1) << "Waiting for client accept threads to stop" << endl;
-        Util::Thread::acquireLock(&lock);
-        for (vector<Util::Thread::Id>::iterator it = accepted.begin(); it != accepted.end(); it++){
-            Util::Thread::Id accept = *it;
-            debug(2) << "Waiting for client accept thread " << endl;
-            Util::Thread::joinThread(accept);
-        }
-        Util::Thread::releaseLock( &lock );
-	debug( 1 ) << "Waiting for accepting thread to stop" << endl;
-        Util::Thread::joinThread(acceptThread);
-	debug( 1 ) << "Not accepting any connections" << endl;
+    debug(1) << "Stop accepting" << endl;
+    Util::Thread::acquireLock( &lock );
+    accepting = false;
+    Util::Thread::releaseLock( &lock );
+    // #ifndef WINDOWS
+    Network::close( socket );
+    // #endif
+    debug(1) << "Waiting for client accept threads to stop" << endl;
+    Util::Thread::acquireLock(&lock);
+    for (vector<Util::Thread::Id>::iterator it = accepted.begin(); it != accepted.end(); it++){
+        Util::Thread::Id accept = *it;
+        debug(2) << "Waiting for client accept thread " << endl;
+        Util::Thread::joinThread(accept);
+    }
+    Util::Thread::releaseLock( &lock );
+    debug(1) << "Waiting for accepting thread to stop" << endl;
+    Util::Thread::joinThread(acceptThread);
+    debug(1) << "Not accepting any connections" << endl;
 }
 
-void ChatServer::addConnection( Network::Socket s ){
-    Client * client = new Client( s, this, clientId() );
+void ChatServer::addConnection(Network::Socket s){
+    Client * client = new Client(s, this, clientId());
 
     /* the client should send a hello message to us immediately */
     try{
@@ -424,7 +425,7 @@ void ChatServer::addConnection( Network::Socket s ){
         message << ADD_BUDDY;
         message << 0;
         message.path = getName();
-        client->addOutputMessage( message );
+        client->addOutputMessage(message);
     }
 
     /* send all the other client names to the just connected client */
@@ -439,22 +440,22 @@ void ChatServer::addConnection( Network::Socket s ){
     }
     Util::Thread::releaseLock( &lock );
 
-    debug( 1 ) << "Adding client " << client->getId() << endl;
+    debug(1) << "Adding client " << client->getId() << endl;
 
     /* don't know the name of the client yet. the client will send
      * a CHANGE_NAME packet very soon.
      */
-    addMessage( string("** Client ") + client->getName() + " joined", 0 );
+    addMessage(string("** Client ") + client->getName() + " joined", 0);
 
     Network::Message message;
     message << ADD_BUDDY;
     message << client->getId();
     message << client->getName();
-    sendMessage( message, 0 );
+    sendMessage(message, 0);
 
-    Util::Thread::acquireLock( &lock );
+    Util::Thread::acquireLock(&lock);
     clients.push_back( client );
-    Util::Thread::releaseLock( &lock );
+    Util::Thread::releaseLock(&lock);
 
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-in.wav"))->play();
 }
@@ -470,9 +471,9 @@ static char lowerCase( const char * x ){
 
 void ChatServer::sendMessageNow(const Network::Message & message, unsigned int id){
     Util::Thread::acquireLock( &lock );
-    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+    for (vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
         Client * c = *it;
-        if ( c->getId() != id ){
+        if (c->getId() != id){
             message.send(c->getSocket());
         }
     }
@@ -490,16 +491,16 @@ void ChatServer::sendMessage( const Network::Message & message, unsigned int id 
     Util::Thread::releaseLock( &lock );
 }
 
-void ChatServer::addMessage( const string & s, unsigned int id ){
+void ChatServer::addMessage(const string & s, unsigned int id){
     Network::Message message;
     message << ADD_MESSAGE;
     message.path = s;
     Util::Thread::acquireLock( &lock );
-    messages.addMessage( s );
+    messages.addMessage(s);
     needUpdate();
     Util::Thread::releaseLock( &lock );
 
-    sendMessage( message, id );
+    sendMessage(message, id);
     /*
        for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
        Client * c = *it;
@@ -509,7 +510,7 @@ void ChatServer::addMessage( const string & s, unsigned int id ){
        }
        */
 }
-	
+
 void ChatServer::shutdownClientThreads(){
     debug(1) << "Shutting down client threads" << endl;
 
@@ -530,16 +531,16 @@ void ChatServer::shutdownClientThreads(){
     /* wait for clients to finish processing. clients should receive START_THE_GAME
      * then send back OK_TO_START and then finish.
      */
-    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+    for (vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++){
         Client * c = *it;
-        debug( 1 ) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
+        debug(1) << "Waiting for client " << c->getId() << " to finish input/output threads" << endl;
         Util::Thread::joinThread(c->getInputThread());
-        debug( 1 ) << "Input thread done for " << c->getId() << endl;
+        debug(1) << "Input thread done for " << c->getId() << endl;
         // debug( 1 ) << "Output thread done for " << c->getId() << endl;
-        debug( 1 ) << "Client " << c->getId() << " is done" << endl;
+        debug(1) << "Client " << c->getId() << " is done" << endl;
     }
 
-    debug( 1 ) << "Shut down all clients" << endl;
+    debug(1) << "Shut down all clients" << endl;
 }
 	
 vector<Client*> ChatServer::getConnectedClients(){
@@ -556,36 +557,36 @@ vector<Client*> ChatServer::getConnectedClients(){
 }
 
 void ChatServer::killAllClients(){
-	vector< Client * > all;
-        Util::Thread::acquireLock( &lock );
-	all = clients;
-        Util::Thread::releaseLock( &lock );
-	for ( vector< Client * >::iterator it = all.begin(); it != all.end(); it++ ){
-		killClient( *it );
-	}
+    vector< Client * > all;
+    Util::Thread::acquireLock( &lock );
+    all = clients;
+    Util::Thread::releaseLock( &lock );
+    for ( vector< Client * >::iterator it = all.begin(); it != all.end(); it++ ){
+        killClient( *it );
+    }
 }
 
-void ChatServer::killClient( Client * c ){
+void ChatServer::killClient(Client * c){
     int id = c->getId();
     string name = c->getName();
     Util::Thread::acquireLock( &lock );
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
         Client * client = *it;
         if ( client == c ){
-            debug( 1 ) << "Killing client " << c->getId() << endl;
+            debug(1) << "Killing client " << c->getId() << endl;
             c->kill();
-            debug( 1 ) << "Closing client socket " << c->getSocket() << endl;
+            debug(1) << "Closing client socket " << c->getSocket() << endl;
             Network::close( c->getSocket() );
             /* It looks like the client that called killClient is waiting
              * for itself to exit but pthread_join won't block if the
              * argument is the same as the calling thread, so its ok.
              * TODO: ensure this semantics works with SDL threads too
              */
-            debug( 1 ) << "Waiting for input thread to die" << endl;
+            debug(1) << "Waiting for input thread to die" << endl;
             Util::Thread::joinThread(c->getInputThread());
-            debug( 1 ) << "Waiting for output thread to die" << endl;
+            debug(1) << "Waiting for output thread to die" << endl;
             Util::Thread::joinThread(c->getOutputThread());
-            debug( 1 ) << "Deleting client" << endl;
+            debug(1) << "Deleting client" << endl;
             /* delete can be moved to the input/output thread exit part
              * if need be.
              */
@@ -597,12 +598,12 @@ void ChatServer::killClient( Client * c ){
     }
     needUpdate();
     Util::Thread::releaseLock( &lock );
-    addMessage( "** " + name + " quit", 0 );
+    addMessage("** " + name + " quit", 0);
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
     Network::Message remove;
     remove << REMOVE_BUDDY;
     remove << id;
-    sendMessage( remove, 0 );
+    sendMessage(remove, 0);
 }
 
 bool ChatServer::logic(){
@@ -729,12 +730,12 @@ void ChatServer::draw( const Bitmap & work ){
 }
 
 void ChatServer::startThreadsHack(){
-    Util::Thread::acquireLock( &lock );
+    Util::Thread::acquireLock(&lock);
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         c->startThreads();
     }
-    Util::Thread::releaseLock( &lock );
+    Util::Thread::releaseLock(&lock);
 }
 
 static void set_to_true(void * b){
@@ -787,13 +788,41 @@ void ChatServer::run(){
         Global::speed_counter = 0;
         while (think > 0){
             InputManager::poll();
+            /* I forgot why this hack needs to be put inside the main loop.
+             * When I remember please explain it here.
+             * Possible reason: the client thread can't be started as soon
+             * as the client connects (why?) but has to be started at some point.
+             * Putting the hack here ensures that the client thread starts at some
+             * point but after the server has initialized whatever it needs.
+             */
             startThreadsHack();
+
+            /* hack to know if the input box had the focus so we don't register
+             * the TAB key too many times.
+             * if the input box has focus and tab is pressed, the next_focus()
+             * function will be executed twice, once due to the input box
+             * and once due to the loop below.
+             */
+            bool inputHadFocus = focus == INPUT_BOX;
+
             done = logic();
             think -= 1;
             
-            InputMap<int>::Output output = InputManager::getMap(input);
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
+            bool select = false;
+            bool next = false;
+            bool quit = false;
+            for (vector<InputMap<int>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                const InputMap<int>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+                next = next || event[0];
+                select = select || event[1];
+                quit = quit || event[2];
+            }
 
-            if (forceQuit || (done && focus == QUIT) || output[2]){
+            if (forceQuit || (done && focus == QUIT) || quit){
                 addMessage( "** Server quit", 0 );
                 stopAccepting();
                 killAllClients();
@@ -801,19 +830,19 @@ void ChatServer::run(){
                 throw Exception::Return(__FILE__, __LINE__);
             }
 
-            if (output[0]){
+            if (next && !inputHadFocus){
                 next_focus(this);
             }
 
-            if (output[1]){
+            if (select){
                 switch (focus){
                     case START_GAME: {
                         stopAccepting();
-                        debug( 1 ) << "Shut down client threads" << endl;
+                        debug(1) << "Shut down client threads" << endl;
                         shutdownClientThreads();
-                        debug( 1 ) << "Finished shutting things down. Done is " << done << endl;
+                        debug(1) << "Finished shutting things down. Done is " << done << endl;
                         done = true;
-                        debug( 1 ) << "Done is " << done << endl;
+                        debug(1) << "Done is " << done << endl;
                         break;
                     }
                     case QUIT: {
@@ -839,7 +868,6 @@ void ChatServer::run(){
 
         while (Global::speed_counter == 0){
             Util::rest(1);
-            InputManager::poll();
         }
     }
 

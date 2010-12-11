@@ -45,209 +45,6 @@ static std::ostream & debug( int level ){
 	return Global::debug( level );
 }
 
-// static const char * DEFAULT_FONT = "/fonts/arial.ttf";
-
-/*
-static void showTitleScreen(){
-	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
-}
-*/
-
-#if 0
-static void fadeOut( const string & str ){
-	/* fill in */
-}
-
-static int playLevel( const World & w, vector< Object * > players, int time ){
-	return 0;
-}
-
-static void networkSendLevel( const vector< NLsocket > & sockets, string level ){
-	level.erase( 0, Util::getDataPath().length() );
-	for ( vector< NLsocket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-		NLsocket socket = *it;
-		Network::send16( socket, level.length() + 1 );
-		Network::sendStr( socket, level );
-		/*
-		nlWrite( socket, buf, sizeof(uint16_t) );
-		nlWrite( socket, level.c_str(), level.length() + 1 );
-		*/
-	}
-}
-#endif
-
-#if 0
-static const string selectLevelSet( const string & base ) throw( ReturnException ){
-	Bitmap::Screen->Blit( Util::getDataPath() + "/paintown-title.png" );
-	int fontY = 20;
-	const Font & font = Font::getFont( Util::getDataPath() + Global::DEFAULT_FONT, 20, fontY );
-	vector< string > possible = Util::getFiles( base + "/", "*.txt" );
-	if ( possible.size() == 0 ){
-		return "no-files!!!";
-	}
-
-	/*
-	for ( vector< string >::iterator it = possible.begin(); it != possible.end(); it++ ){
-		string & s = *it;
-		s.insert( 0, base + "/" );
-	}
-	*/
-	int choose = 0;
-
-	font.printf( 180, (int)(200 - fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Select a set of levels to play", 0 );
-	for ( unsigned int i = 0; i < possible.size(); i++ ){
-		int yellow = Bitmap::makeColor( 255, 255, 0 );
-		int white = Bitmap::makeColor( 255, 255, 255 );
-		unsigned int color = i == (unsigned) choose ? yellow : white;
-		font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
-	}
-
-	Keyboard key;
-	bool done = false;
-
-	int LAZY_KEY_DELAY = 200;
-	key.setDelay( Keyboard::Key_UP, LAZY_KEY_DELAY );
-	key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
-	Global::speed_counter = 0;
-
-	while ( ! done ){
-		
-		key.poll();
-		bool draw = false;
-		if ( Global::speed_counter > 0 ){
-			double think = Global::speed_counter;
-
-			while ( think > 0 ){
-				think--;
-
-				if ( key[ Keyboard::Key_UP ] ){
-					draw = true;
-					choose = (choose - 1 + possible.size()) % possible.size();
-				}
-
-				if ( key[ Keyboard::Key_DOWN ] ){
-					draw = true;
-					choose = (choose + 1 + possible.size()) % possible.size();
-				}
-
-				if ( key[ Keyboard::Key_ENTER ] ){
-					return possible[ choose ];
-				}
-
-				if ( key[ Keyboard::Key_ESC ] ){
-					throw ReturnException();
-				}
-			}
-
-			Global::speed_counter = 0;
-		}
-
-		if ( draw ){
-			for ( unsigned int i = 0; i < possible.size(); i++ ){
-				int yellow = Bitmap::makeColor( 255, 255, 0 );
-				int white = Bitmap::makeColor( 255, 255, 255 );
-				unsigned int color = i == (unsigned) choose ? yellow : white;
-				font.printf( 200, (int)(200 + i * fontY * 1.2), color, *Bitmap::Screen, possible[ i ], 0 );
-			}		
-		}
-		
-		while ( Global::speed_counter == 0 ){
-			Util::rest( 1 );
-			key.poll();
-		}
-	}
-
-	return "nothing-selected";
-}
-#endif
-
-#if 0
-static int getServerPort(){
-    Bitmap background(Global::titleScreen().path());
-    const int drawY = 250;
-    {
-        // background.BlitToScreen();
-        const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-        Bitmap black( 300, font.getHeight() * 4 );
-        black.clear();
-        black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
-        Bitmap::transBlender( 0, 0, 0, 92 );
-        black.drawTrans( 20, drawY - font.getHeight() - 20, background );
-        font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
-        font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
-    }
-
-    /* FIXME: replace with input manager */
-
-    Keyboard key;
-    key.setAllDelay( 150 );
-    key.setDelay( Keyboard::Key_BACKSPACE, 30 );
-    key.setDelay( Keyboard::Key_ESC, 0 );
-
-    Bitmap work( 200, 25 );
-
-    char buffer[ 10 ];
-    unsigned int index = 0;
-    Global::speed_counter = 0;
-    bool done = false;
-    vector< int > pressed;
-    pressed.push_back( Keyboard::Key_7 );
-    pressed.push_back( Keyboard::Key_8 );
-    pressed.push_back( Keyboard::Key_8 );
-    pressed.push_back( Keyboard::Key_7 );
-    while ( ! done ){
-
-        while ( Global::speed_counter > 0 ){
-            Global::speed_counter -= 1;
-            key.readKeys( pressed );
-            if ( key[ Keyboard::Key_ESC ] ){
-                throw Exception::Return(__FILE__, __LINE__);
-            }
-        }
-
-        if ( pressed.size() > 0 ){
-            for ( vector< int >::iterator it = pressed.begin(); it != pressed.end(); it++ ){
-                int xkey = *it;
-                // Global::debug( 0 ) << "Pressed " << Keyboard::keyToName( key ) << endl;
-                if ( xkey == Keyboard::Key_BACKSPACE ){
-                    if ( index > 0 ){
-                        index -= 1;
-                    }
-                    buffer[ index ] = 0;
-                } else if ( xkey == Keyboard::Key_ENTER ){
-                    done = true;
-                    key.wait();
-                } else if ( Keyboard::isNumber( xkey ) ){
-                    const char * name = Keyboard::keyToName( xkey );
-                    buffer[ index ] = name[ 0 ];
-                    index += 1;
-                    if ( index > sizeof(buffer) / sizeof(char) - 1 ){
-                        index = sizeof(buffer) / sizeof(char) - 1;
-                    }
-                    buffer[ index ] = 0;
-                }
-            }
-            pressed.clear();
-            work.clear();
-            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-            font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), work, buffer, 0 );
-            work.Blit( 100, drawY, background );
-            background.BlitToScreen();
-        }
-
-        while ( Global::speed_counter == 0 ){
-            Util::rest( 1 );
-            key.poll();
-        }
-    }
-
-    istringstream str( buffer );
-    int i;
-    str >> i;
-    return i;
-}
-#endif
-
 static void set_to_true(void * what){
     bool * b = (bool *) what;
     *b = true;
@@ -396,123 +193,6 @@ static void sendToAll( const vector< Socket > & sockets, const Message & message
         message.send( socket );
     }
 }
-
-#if 0
-static void playLevel( World & world, const vector< Object * > & players ){
-	Keyboard key;
-	
-	key.setDelay( Keyboard::Key_F2, 100 );
-	key.setDelay( Keyboard::Key_F12, 50 );
-
-	key.setDelay( Keyboard::Key_MINUS_PAD, 2 );
-	key.setDelay( Keyboard::Key_PLUS_PAD, 2 );
-	key.setDelay( Keyboard::Key_P, 100 );
-
-	key.setDelay( Keyboard::Key_F4, 200 );
-
-	key.setDelay( Keyboard::Key_F8, 300 );
-	key.setDelay( Keyboard::Key_TAB, 300 );
-	
-	/* the game graphics are meant for 320x240 and will be stretched
-	 * to fit the screen
-	 */
-	Bitmap work( 320, 240 );
-	// Bitmap work( GFX_X, GFX_Y );
-	Bitmap screen_buffer( GFX_X, GFX_Y );
-
-	Global::speed_counter = 0;
-	Global::second_counter = 0;
-	int game_time = 100;
-	bool done = false;
-
-	double gameSpeed = 1.0;
-	
-	double runCounter = 0;
-	while ( ! done ){
-
-		bool draw = false;
-		key.poll();
-
-		if ( Global::speed_counter > 0 ){
-			runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
-
-			while ( runCounter >= 1.0 ){
-				draw = true;
-				world.act();
-				runCounter -= 1.0;
-
-				if ( key[ Keyboard::Key_ESC ] ){
-					throw ReturnException();
-				}
-
-				for ( vector< Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-					Character * player = (Character *) *it;
-					if ( player->getHealth() <= 0 ){
-						if ( player->spawnTime() == 0 ){
-							player->deathReset();
-							world.addMessage( removeMessage( player->getId() ) );
-							world.addObject( player );
-							world.addMessage( player->getCreateMessage() );
-							world.addMessage( player->movedMessage() );
-							world.addMessage( player->animationMessage() );
-						}
-					}
-				}
-			}
-
-			if ( key[ Keyboard::Key_TAB ] ){
-				world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
-			}
-
-			Global::speed_counter = 0;
-		}
-		
-		while ( Global::second_counter > 0 ){
-			game_time--;
-			Global::second_counter--;
-			if ( game_time < 0 )
-				game_time = 0;
-		}
-	
-		if ( draw ){
-			world.draw( &work );
-
-			work.Stretch( screen_buffer );
-			FontRender * render = FontRender::getInstance();
-			render->render( &screen_buffer );
-	
-			// const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
-
-			/* getX/Y move when the world is quaking */
-			screen_buffer.BlitToScreen( world.getX(), world.getY() );
-
-			/*
-			if ( key[ Keyboard::Key_F12 ] ){
-				string file = findNextFile( "scr.bmp" );
-				Global::debug( 2 ) << "Saved screenshot to " << file << endl;
-				work.save( file );
-			}
-			*/
-
-			work.clear();
-		}
-
-		while ( Global::speed_counter < 1 ){
-			Util::rest( 1 );
-			key.poll();
-		}
-
-		done |= world.finished();
-	}
-
-	if ( key[ Keyboard::Key_ESC ] ){
-		while ( key[ Keyboard::Key_ESC ] ){
-			key.poll();
-			Util::rest( 1 );
-		}
-	}
-}
-#endif
 
 static int allAlliance = ALLIANCE_FREE_FOR_ALL;
 static int playerAlliance(){
@@ -834,8 +514,8 @@ void networkServer(){
 Network::blocking( false );
 #endif
 */
-        debug( 1 ) << "Get socket" << endl;
-        Network::Socket server = Network::open( port );
+        debug(1) << "Get socket" << endl;
+        Network::Socket server = Network::open(port);
 
         /*
         // NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
@@ -845,7 +525,7 @@ Network::blocking( false );
         }
         */
 
-        debug( 1 ) << "Run chat server" << endl;
+        debug(1) << "Run chat server" << endl;
 
         ChatServer chat("server", server);
         chat.run();
@@ -856,7 +536,7 @@ Network::blocking( true );
 */
         vector<Client*> clients = chat.getConnectedClients();
         if (! clients.empty()){
-            debug( 1 ) << "Start game with " << clients.size() << " clients" << endl;
+            debug(1) << "Start game with " << clients.size() << " clients" << endl;
             playGame(clients);
         } else {
             // key.poll();
@@ -867,9 +547,9 @@ Network::blocking( true );
         }
         Network::close( server );
     } catch ( const NetworkException & ne ){
-        debug( 0 ) << "Network error: " << ne.getMessage() << endl;
+        debug(0) << "Network error: " << ne.getMessage() << endl;
         // key.poll();
-        popup( font, "Network error: " + ne.getMessage() );
+        popup(font, "Network error: " + ne.getMessage());
         InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
         /*
         key.wait();
@@ -877,67 +557,6 @@ Network::blocking( true );
         */
     }
     return;
-
-#if 0
-    Object * player = NULL;
-    try{
-        Global::showTitleScreen();
-
-        const Font & font = Font::getFont( Util::getDataPath() + DEFAULT_FONT, 20, 20 );
-        font.printf( 100, 200, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Waiting for a connection", 0 );
-        nlListen( server );
-        NLsocket client = nlAcceptConnection( server );
-        while ( client == NL_INVALID ){
-            Util::rest( 1 );
-            client = nlAcceptConnection( server );
-        }
-        NLint group;
-        group = nlGroupCreate();
-        nlGroupAddSocket( group, client );
-
-        NLaddress client_addr;
-        nlGetRemoteAddr( client, &client_addr );
-
-        Global::debug( 0 ) << "client is " << client << " port " << nlGetPortFromAddr( &client_addr ) << endl;
-
-        // NLsocket polled;
-        // nlPollGroup( group, NL_READ_STATUS, &polled, 1, -1 );
-        int length = Network::read16( client );
-        string clientPath = Network::readStr( client, length );
-
-        // NetworkWorld world( port );
-        string level = selectLevelSet( Util::getDataPath() + "/levels" );
-        key.wait();
-
-        vector< NLsocket > sockets;
-        sockets.push_back( client );
-
-        player = selectPlayer( false, "Pick a player" );
-        Global::debug( 0 ) << "Player path '" << ((Character *)player)->getPath() << "'" << endl;
-        player->setId( 1 );
-        ((Character *)player)->setLives( startingLives );
-        vector< Object * > players;
-        players.push_back( player );
-        Character * client_character = new NetworkCharacter( Util::getDataPath() + clientPath, ALLIANCE_PLAYER );
-        client_character->setLives( startingLives );
-        client_character->setId( 2 );
-        Network::send16( client, 2 );
-        players.push_back( client_character );
-        networkGame( players, level, sockets );
-
-    } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Could not load player: " << le.getReason() << endl;
-    } catch ( const ReturnException & r ){
-        // key.wait();
-    } catch ( const Network::NetworkException & e ){
-        Global::debug( 0 ) << "Network exception: " << e.getMessage() << endl;
-    }
-
-    if ( player != NULL ){
-        delete player;
-    }
-    nlClose( server );
-#endif
 }
 
 }
