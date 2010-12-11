@@ -1382,18 +1382,21 @@ void Menu::Menu::run(const Context & parentContext){
     bool specialExit = false;
         
     // Run while till the localContext is done
-    while (localContext.getState() != Context::Completed && (renderer && renderer->active())){
-        bool draw = false;
+    while (localContext.getState() != Context::Completed &&
+          (renderer && renderer->active())){
 
-        if ( Global::speed_counter > 0 ){
-            draw = true;
+        if (Global::speed_counter > 0){
             runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+            Global::speed_counter = 0;
             
             /* Added to make the psp update more frequently. */
+            /*
             if (runCounter > 3){
                 runCounter = 3;
             }
-            while ( runCounter >= 1.0 ){
+            */
+
+            while (runCounter >= 1.0){
                 runCounter -= 1;
                 try {
                     act(localContext);
@@ -1406,13 +1409,8 @@ void Menu::Menu::run(const Context & parentContext){
                 }
             }
 
-            Global::speed_counter = 0;
-        }
-
-        if (draw){
             // Render
             render(localContext, work);
-            
             // screen
             work.BlitToScreen();
         }
@@ -1424,7 +1422,7 @@ void Menu::Menu::run(const Context & parentContext){
 
     closeOptions();
     
-    // FIXME Menu is finished, lets return is this even required anymore?
+    // FIXME Menu is finished, lets return. Is this even required anymore?
     throw Exception::Return(__FILE__, __LINE__);
 }
 

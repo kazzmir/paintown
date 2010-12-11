@@ -902,6 +902,25 @@ def peg_emitter(target, source, env):
     return (target + [file for file in files if not isHeader(file)], source)
     #return (target + files, source)
 
+# This is the architecture for the new SConstruct design
+def newGetEnvironments():
+    def osxEnvironments():
+        # Build the environments here
+        environment = False
+        staticEnvironment = False
+        return (environment, staticEnvironment)
+
+    def unixEnvironments():
+        environment = False
+        staticEnvironment = False
+        return (environment, staticEnvironment)
+
+    if isOSX():
+        return osxEnvironments()
+    elif isLinux():
+        return unixEnvironments()
+    # ... do rest of platforms ...
+
 import sys
 sys.path.append('src/mugen/parser')
 import peg
