@@ -1292,8 +1292,21 @@ public:
         return out;
     }
 
+    static vector<string> putEnglishFirst(vector<string> languages){
+        vector<string> out;
+        for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
+            const string & name = *it;
+            if (name == "English"){
+                out.insert(out.begin(), name);
+            } else {
+                out.push_back(name);
+            }
+        }
+        return out;
+    }
+
     LanguageMenu(const MenuClass & original){
-        vector<string> languages = findLanguages(original);
+        vector<string> languages = putEnglishFirst(findLanguages(original));
         for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
             addOption(new LanguageOption(*it));
         }
