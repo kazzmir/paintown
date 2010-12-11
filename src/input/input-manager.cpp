@@ -84,6 +84,14 @@ void InputManager::waitForKeys(int key1, int key2){
     InputManager::waitForRelease(wait, 1);
 }
 
+void InputManager::waitForKeys(int key){
+    InputMap<int> wait;
+    wait.set(key, 0, false, 1);
+    InputManager::waitForRelease(wait, 1);
+    InputManager::waitForPress(wait, 1);
+    InputManager::waitForRelease(wait, 1);
+}
+
 /* these mappings should agree with configuration.cpp:defaultJoystick1Keys,
  * but otherwise they are completely arbitrary
  */

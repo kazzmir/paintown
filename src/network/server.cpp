@@ -273,13 +273,6 @@ static int getServerPort(){
         background.BlitToScreen();
     }
 
-    {
-        /* wait for enter to be released */
-        InputMap<int> hack;
-        hack.set(Keyboard::Key_ENTER, 0, true, 0);
-        InputManager::waitForRelease(hack, 0);
-    }
-
     bool done = false;
     /* TODO: add filter for numbers */
     TextInput input("7887");
@@ -291,8 +284,8 @@ static int getServerPort(){
 
     bool draw = true;
     Global::speed_counter = 0;
-    while ( ! done ){
-        while ( Global::speed_counter > 0 ){
+    while (! done){
+        while (Global::speed_counter > 0){
             InputManager::poll();
             draw = input.doInput();
             Global::speed_counter -= 1;
@@ -310,7 +303,6 @@ static int getServerPort(){
 
         while ( Global::speed_counter == 0 ){
             Util::rest(1);
-            InputManager::poll();
         }
     }
 

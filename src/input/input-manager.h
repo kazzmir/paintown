@@ -31,6 +31,7 @@ public:
     static void disableBufferInput();
     */
     static void waitForKeys(int key1, int key2);
+    static void waitForKeys(int key1);
     static int readKey();
     static void waitForClear();
 
