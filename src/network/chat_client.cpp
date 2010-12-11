@@ -12,7 +12,6 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "gui/lineedit.h"
-#include "gui/keyinput_manager.h"
 #include "gui/keys.h"
 #include "resource.h"
 #include "input/input-manager.h"
@@ -137,11 +136,6 @@ enterPressed( false ){
     lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
     lineEdit->hookKey(Keyboard::Key_ENTER, enter_pressed, this);
     lineEdit->hookKey(Keyboard::Key_TAB, next_focus, this);
-    /*
-    keyInputManager::pressed.connect(lineEdit,&Gui::LineEdit::keyPress);
-    keyInputManager::pressed.connect(this, &ChatClient::keyPress);
-    keyInputManager::released.connect(this, &ChatClient::keyRelease);
-    */
     lineEdit->setFocused(true);
 
     editCounter = 0;
@@ -343,8 +337,6 @@ bool ChatClient::logic(){
                 debug(1) << "Focus is " << focus << endl;
 		needUpdate();
 	}
-	
-	keyInputManager::update();
 
 	lineEdit->setFocused(false);
 	switch ( focus ){
@@ -434,11 +426,11 @@ void ChatClient::finish(){
 }
 
 void ChatClient::killInputThread(){
-    debug( 0 ) << "Killing input socket" << endl;
-    Network::close( getSocket() );
-    debug( 0 ) << "Waiting for input thread to die" << endl;
+    debug(0) << "Killing input socket" << endl;
+    Network::close(getSocket());
+    debug(0) << "Waiting for input thread to die" << endl;
     Util::Thread::joinThread(inputThread);
-    debug( 0 ) << "Input thread killed" << endl;
+    debug(0) << "Input thread killed" << endl;
 }
 
 static void set_to_true(void * b){
@@ -460,24 +452,38 @@ void ChatClient::run(){
     bool done = false;
     bool kill = false;
     lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
-    while ( ! done ){
+    while (! done){
         int think = Global::speed_counter;
         Global::speed_counter = 0;
         while (think > 0){
             InputManager::poll();
-            InputMap<int>::Output output = InputManager::getMap(input);
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
 
-            if (logic() || forceQuit || output[2]){
+            bool hasInputFocus = focus == INPUT_BOX;
+            bool next = false;
+            bool select = false;
+            bool quit = false;
+            for (vector<InputMap<int>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                const InputMap<int>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+                next = next || event[0];
+                select = select || event[1];
+                quit = quit || event[2];
+            }
+
+            if (logic() || forceQuit || quit){
                 kill = true;
                 done = true;
                 break;
             }
 
-            if (output[0]){
+            if (next && !hasInputFocus){
                 next_focus(this);
             }
 
-            if (output[1] && focus == QUIT){
+            if (quit || (select && focus == QUIT)){
                 Global::debug(0) << "Quit!" << endl;
                 kill = true;
                 done = true;
@@ -508,9 +514,8 @@ void ChatClient::run(){
             work.clear();
         }
 
-        while ( Global::speed_counter == 0 ){
+        while (Global::speed_counter == 0){
             Util::rest(1);
-            InputManager::poll();
         }
     }
 
