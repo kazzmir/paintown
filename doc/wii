@@ -6,7 +6,7 @@ Issues with porting paintown to the Wii:
 
   * Reading data files is incredibly slow. WiiOs doesn't cache files and reading from FAT partition is slow in itself which yields load times upto 10x slower than Paintown on the PC.
 
-How to install on homebrew:
+* How to install on homebrew:
   1. Get the wii build environment:
     svn co https://paintown.svn.sourceforge.net/svnroot/paintown/build-environments/devkitpro
 
@@ -24,6 +24,23 @@ How to install on homebrew:
     make
 
   5. The build system will tell you to run 'elf2dol' on the resulting 'paintown' executable.
-    /opt/devkitpro/devkitPPC/bin/elf2dol paintown
+    /opt/devkitpro/devkitPPC/bin/elf2dol paintown paintown.dol
 
   6. Copy paintown.dol, data/wii/meta.xml, data/wii/icon.png and the data/ directory into a directory inside the apps directory of the homebrew channel SD card that you can insert into the wii. Load up the homebrew channel, navigate to paintown and play.
+
+* Running on the Dolphin emulator
+
+  1. Build paintown.dol using the same steps above for the wii
+  2. Make an sd card that dolphin will use and copy the data in. Dolphin comes with
+  a default sd.raw card in the User directory you can use
+    $ mkdir x
+    $ mount -o loop dolphin/User/sd.raw x
+    $ cp -a data x/.
+    $ umount x
+  3. Load paintown.dol in dolphin
+
+  Extra: Jon uses an ubuntu box running in virtualbox to build the wii version. To mount
+  a windows directory inside virtualbox do this:
+   1. devices -> shared folders -> add, add the dolphin root directory and give it a name, like 'foo'
+   2. mkdir x2
+      mount -t vboxsf foo x2
