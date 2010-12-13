@@ -121,6 +121,11 @@ JoystickInput WiiJoystick::readAll(){
 
     return input;
 }
+    
+int WiiJoystick::getDeviceId() const {
+    /* FIXME! Figure out the device id */
+    return 0;
+}
 
 WiiJoystick::~WiiJoystick(){
     WPAD_Shutdown();
