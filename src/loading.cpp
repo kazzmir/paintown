@@ -429,14 +429,15 @@ bool LoadingContext::done(){
     return ok;
 }
     
-int LoadingContext::load_it(void * arg){
+void * LoadingContext::load_it(void * arg){
     LoadingContext * context = (LoadingContext*) arg;
     context->doLoad();
+    return NULL;
 }
 
 void loadScreen(LoadingContext & context, const Level::LevelInfo & info){
     Util::Thread::Id loadingThread;
-    bool created = Util::Thread::createThread(&loadingThread, NULL, LoadingContext::load_it, &context);
+    bool created = Util::Thread::createThread(&loadingThread, NULL, (Util::Thread::ThreadFunction) LoadingContext::load_it, &context);
     if (!created){
         throw LoadException(__FILE__, __LINE__, "Could not create loader thread");
     }

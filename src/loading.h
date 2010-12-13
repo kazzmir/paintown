@@ -22,7 +22,7 @@ public:
     virtual void doLoad();
     virtual void load() = 0;
     virtual bool done();
-    static int load_it(void * arg);
+    static void * load_it(void * arg);
 protected:
     Util::Thread::Lock lock;
     bool finished;
