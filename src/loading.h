@@ -34,7 +34,7 @@ extern Util::Thread::Lock loading_screen_mutex;
 void startLoading(Util::Thread::Id * thread, void * arg = 0, Kind kind = Default);
 void stopLoading(Util::Thread::Id thread);
 
-void loadScreen(LoadingContext & context, const Level::LevelInfo & info);
+void loadScreen(LoadingContext & context, const Level::LevelInfo & info, Kind kind = Default);
 
 void * loadingScreen(void *);
 

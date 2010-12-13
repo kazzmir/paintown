@@ -46,7 +46,7 @@ struct playerInfo{
 };
 
 typedef vector<playerInfo> PlayerVector;
-static PlayerVector loadPlayers( const string & path ){
+static PlayerVector loadPlayers(const string & path){
     PlayerVector players;
     vector<Filesystem::AbsolutePath> files = Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath(path + "/")), "*" );
     std::sort(files.begin(), files.end());
@@ -484,15 +484,32 @@ static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, con
     }
 }
 
+static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
+    class Context: public Loader::LoadingContext {
+    public:
+        Context(const string & path):
+        path(path){
+        }
+
+        virtual void load(){
+            players = loadPlayers(path);
+        }
+
+        string path;
+        PlayerVector players;
+    };
+
+    /* hm, it would be nice to cache this I suppose */
+    Context context(info.getPlayerPath());
+    Loader::loadScreen(context, info, Loader::SimpleCircle);
+
+    return context.players;
+}
+
 namespace Paintown{
 
 Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
-    /* hm, it would be nice to cache this I suppose */
-    Util::Thread::Id wait;
-    Loader::startLoading(&wait, NULL, Loader::SimpleCircle);
-    PlayerVector players = loadPlayers(info.getPlayerPath());
-    Loader::stopLoading(wait);
-    return doSelectPlayer(players, message, info, remap);
+    return doSelectPlayer(getDisplayPlayers(info), message, info, remap);
 }
 
 }

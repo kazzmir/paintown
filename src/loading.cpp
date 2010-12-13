@@ -135,6 +135,7 @@ public:
     unsigned int last;
 };
 
+/* FIXME: get rid of this method */
 void * loadingScreen(void * arg){
     int load_x = 80;
     int load_y = 220;
@@ -352,6 +353,7 @@ static void loadingScreen1(LoadingContext & context, const Level::LevelInfo & le
 }
 
 /* shows some circles rotating around a center point */
+/* FIXME: get rid of this method */
 void * loadingScreenSimple1(void * arg){
     Bitmap work(40, 40);
     Bitmap original(40, 40);
@@ -406,6 +408,57 @@ void * loadingScreenSimple1(void * arg){
     return NULL;
 }
 
+static void loadingScreenSimpleX1(LoadingContext & context, const Level::LevelInfo & levelInfo){
+    Bitmap work(40, 40);
+    Bitmap original(40, 40);
+    original.BlitFromScreen(0, 0);
+    Global::speed_counter = 0;
+    int angle = 0;
+    int color1 = Bitmap::makeColor(0, 0, 0);
+    int color2 = Bitmap::makeColor(0x00, 0x99, 0xff);
+    int color3 = Bitmap::makeColor(0xff, 0x22, 0x33);
+    int color4 = Bitmap::makeColor(0x44, 0x77, 0x33);
+    /* the length of this array is the number of circles to show */
+    int colors[4] = {color1, color2, color3, color4};
+    Bitmap::transBlender(0, 0, 0, 64);
+    /* speed of rotation */
+    int speed = 7;
+    while (! context.done()){
+        bool draw = false;
+
+        if (Global::speed_counter > 0){
+            double think = Global::speed_counter;	
+            Global::speed_counter = 0;
+            draw = true;
+
+            while (think > 0){
+                angle += speed;
+                think -= 1;
+            }
+        } else {
+            Util::rest(1);
+        }
+
+        if (draw){
+            int max = sizeof(colors) / sizeof(int);
+            double middleX = work.getWidth() / 2;
+            double middleY = work.getHeight() / 2;
+            original.Blit(work);
+            for (int i = 0; i < max; i++){
+                double x = cos(Util::radians(angle + 360 / max * i)) * 15;
+                double y = sin(Util::radians(angle + 360 / max * i)) * 15;
+                /* ghost circle */
+                work.translucent().circleFill(middleX + x, middleY + y, 2, colors[i]);
+                x = cos(Util::radians(angle + speed + 360 / max * i)) * 15;
+                y = sin(Util::radians(angle + speed + 360 / max * i)) * 15;
+                /* real circle */
+                work.circleFill(middleX + x, middleY + y, 2, colors[i]);
+            }
+            work.BlitAreaToScreen(0, 0);
+        }
+    }
+}
+
 LoadingContext::LoadingContext():
 finished(false){
     Util::Thread::initializeLock(&lock);
@@ -435,13 +488,18 @@ void * LoadingContext::load_it(void * arg){
     return NULL;
 }
 
-void loadScreen(LoadingContext & context, const Level::LevelInfo & info){
+void loadScreen(LoadingContext & context, const Level::LevelInfo & info, Kind kind){
     Util::Thread::Id loadingThread;
     bool created = Util::Thread::createThread(&loadingThread, NULL, (Util::Thread::ThreadFunction) LoadingContext::load_it, &context);
     if (!created){
         throw LoadException(__FILE__, __LINE__, "Could not create loader thread");
     }
-    loadingScreen1(context, info);
+    switch (kind){
+        case Default: loadingScreen1(context, info); break;
+        case SimpleCircle: loadingScreenSimpleX1(context, info); break;
+        default: loadingScreen1(context, info); break;
+    }
+
     Util::Thread::joinThread(loadingThread);
 }
 
