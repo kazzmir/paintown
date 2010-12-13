@@ -161,7 +161,7 @@ static void playGame( Socket socket ){
                     Loader::stopLoading(loadingThread);
                     try{
                         vector<Paintown::Object*> xplayers;
-                        bool forceQuit = ! Game::playLevel(world, xplayers, showHelp);
+                        bool forceQuit = ! Game::playLevel(world, xplayers);
                         showHelp = 0;
 
                         ObjectFactory::destroy();

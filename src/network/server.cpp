@@ -406,7 +406,7 @@ static void playGame(vector<Client*> & clients){
             world.startMessageHandlers();
 
             Loader::stopLoading(loading_screen_thread);
-            bool played = Game::playLevel(world, players, showHelp);
+            bool played = Game::playLevel(world, players);
             showHelp = 0;
 
             ObjectFactory::destroy();

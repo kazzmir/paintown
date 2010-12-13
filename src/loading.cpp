@@ -247,6 +247,110 @@ void * loadingScreen(void * arg){
     return NULL;
 }
 
+static void loadingScreen1(LoadingContext & context, const Level::LevelInfo & levelInfo){
+    int load_x = 80;
+    int load_y = 220;
+    const int infobox_width = 300;
+    const int infobox_height = 150;
+    Info info;
+    const Font & myFont = Font::getFont(Global::DEFAULT_FONT, 24, 24);
+    const Font & infoFont = Font::getFont(Global::DEFAULT_FONT, 24, 24);
+
+    if (levelInfo.getPositionX() != -1){
+        load_x = levelInfo.getPositionX();
+    }
+    
+    if (levelInfo.getPositionY() != -1){
+        load_y = levelInfo.getPositionY();
+    }
+
+    // const char * the_string = (arg != NULL) ? (const char *) arg : "Loading...";
+    int load_width = myFont.textLength(levelInfo.loadingMessage().c_str());
+    int load_height = myFont.getHeight(levelInfo.loadingMessage().c_str());
+
+    const int infobox_x = load_x;
+    const int infobox_y = load_y + load_height * 2;
+
+    Global::debug(2) << "loading screen" << endl;
+
+    Bitmap work(load_width, load_height);
+
+    vector<ppair> pairs = generateFontPixels(myFont, levelInfo.loadingMessage(), load_width, load_height);
+
+    Messages infobox(infobox_width, infobox_height);
+    Bitmap infoWork(infobox_width, infobox_height);
+    Bitmap infoBackground(infobox_width, infobox_height);
+
+    const int MAX_COLOR = 200;
+
+    /* blend from dark grey to light red */
+    Effects::Gradient gradient(MAX_COLOR, Bitmap::makeColor(16, 16, 16), Bitmap::makeColor(192, 8, 8));
+
+    Global::speed_counter = 0;
+
+    if (levelInfo.getBackground() != 0){
+        setupBackground(*levelInfo.getBackground(), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
+    } else {
+        setupBackground(Bitmap(levelInfo.loadingBackground().path()), load_x, load_y, load_width, load_height, infobox_x, infobox_y, infoBackground.getWidth(), infoBackground.getHeight(), infoBackground, work);
+    }
+
+    TimeCounter counter;
+
+    bool firstDraw = true;
+
+    while (! context.done()){
+
+        /* true if a logic loop has passed */
+        bool draw = firstDraw;
+
+        /* will be true if any new info messages appeared */
+        bool drawInfo = firstDraw;
+        firstDraw = false;
+        if ( Global::speed_counter > 0 ){
+            double think = Global::speed_counter;	
+            Global::speed_counter = 0;
+            draw = true;
+
+            while ( think > 0 ){
+                gradient.backward();
+                think -= 1;
+            }
+
+            /* if no new messages appeared this will be false */
+            drawInfo = info.transferMessages(infobox);
+        } else {
+            Util::rest( 1 );
+        }
+
+        if (draw){
+            for ( vector< ppair >::iterator it = pairs.begin(); it != pairs.end(); it++ ){
+                int color = gradient.current(it->x);
+                work.putPixel(it->x, it->y, color);
+            }
+
+            // counter.draw(200, 100);
+
+            /* we might not have to draw the whole info box again if no new
+             * messages appeared.
+             */
+            if (drawInfo){
+                infoBackground.Blit(infoWork);
+
+                /* cheesy hack to change the font size. the font
+                 * should store the size and change it on its own
+                 */
+                Font::getFont(Global::DEFAULT_FONT, 13, 13);
+                infobox.draw(0, 0, infoWork, infoFont);
+                Font::getFont(Global::DEFAULT_FONT, 24, 24);
+                infoWork.BlitAreaToScreen(infobox_x, infobox_y);
+            }
+            /* work already contains the correct background */
+            // work.Blit( load_x, load_y, *Bitmap::Screen );
+            work.BlitAreaToScreen(load_x, load_y);
+        }
+    }
+}
+
 /* shows some circles rotating around a center point */
 void * loadingScreenSimple1(void * arg){
     Bitmap work(40, 40);
@@ -300,6 +404,44 @@ void * loadingScreenSimple1(void * arg){
     }
 
     return NULL;
+}
+
+LoadingContext::LoadingContext():
+finished(false){
+    Util::Thread::initializeLock(&lock);
+}
+
+LoadingContext::~LoadingContext(){
+}
+
+void LoadingContext::doLoad(){
+    this->load();
+    Util::Thread::acquireLock(&lock);
+    finished = true;
+    Util::Thread::releaseLock(&lock);
+}
+
+bool LoadingContext::done(){
+    bool ok = false;
+    Util::Thread::acquireLock(&lock);
+    ok = this->finished;
+    Util::Thread::releaseLock(&lock);
+    return ok;
+}
+    
+int LoadingContext::load_it(void * arg){
+    LoadingContext * context = (LoadingContext*) arg;
+    context->doLoad();
+}
+
+void loadScreen(LoadingContext & context, const Level::LevelInfo & info){
+    Util::Thread::Id loadingThread;
+    bool created = Util::Thread::createThread(&loadingThread, NULL, LoadingContext::load_it, &context);
+    if (!created){
+        throw LoadException(__FILE__, __LINE__, "Could not create loader thread");
+    }
+    loadingScreen1(context, info);
+    Util::Thread::joinThread(loadingThread);
 }
 
 }

@@ -226,7 +226,7 @@ static bool doMenu(const Bitmap & screen_buffer){
     }
 }
 
-bool playLevel( World & world, const vector< Paintown::Object * > & players, double helpTime){
+bool playLevel( World & world, const vector< Paintown::Object * > & players){
     
     Bitmap screen_buffer(GFX_X, GFX_Y);
 
@@ -621,6 +621,112 @@ static string funnyGo(){
     }
 }
 
+static void initializePlayers(const vector<Paintown::Object*> & players){
+    for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++){
+        Paintown::Player * playerX = (Paintown::Player *) *it;
+        playerX->setTrails(0, 0);
+        playerX->setY(200);
+        /* setMoving(false) sets all velocities to 0 */
+        playerX->setMoving(false);
+        /* but the player is falling so set it back to true */
+        playerX->setMoving(true);
+
+        playerX->setStatus(Paintown::Status_Falling);
+    }
+}
+
+static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, const string & level){
+    class GameContext: public Loader::LoadingContext {
+    public:
+        GameContext(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Filesystem::RelativePath & path):
+        data(NULL),
+        futurePlayers(futurePlayers),
+        path(path),
+        failed(NULL){
+        }
+
+        ~GameContext(){
+            delete data;
+            delete failed;
+        }
+
+        virtual void failure(){
+            if (failed){
+                throw LoadException(*failed);
+            }
+        }
+
+        virtual void load(){
+            try{
+                vector<Paintown::Object*> players;
+                for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
+                    Util::Future<Paintown::Object*> * future = *fit;
+                    players.push_back(future->get());
+                }
+                data = new Data(players, Filesystem::find(path));
+            } catch (const LoadException & exception){
+                failed = new LoadException(exception);
+            }
+        }
+
+        World & getWorld(){
+            if (data == NULL){
+                throw LoadException(__FILE__, __LINE__, "World didn't load");
+            }
+            return data->world;
+        }
+
+        vector<Paintown::Object*> & getPlayers(){
+            if (data == NULL){
+                throw LoadException(__FILE__, __LINE__, "Players didn't load");
+            }
+            return data->players;
+        }
+
+        struct Data{
+            Data(vector<Paintown::Object*> players, const Filesystem::AbsolutePath & path):
+            world(players, path){
+            }
+
+            AdventureWorld world;
+            vector<Paintown::Object*> players;
+        };
+
+        Data * data;
+        vector<Util::Future<Paintown::Object*> * > futurePlayers;
+        Filesystem::RelativePath path;
+        LoadException * failed;
+    };
+
+    Global::info("Setting up world");
+    GameContext context(futurePlayers, Filesystem::RelativePath(level));
+    Loader::loadScreen(context, levelInfo);
+    Global::info("World setup");
+    Global::info(funnyGo());
+
+    Music::pause();
+    Music::fadeIn( 0.3 );
+    Music::loadSong(Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
+    Music::play();
+
+    initializePlayers(context.getPlayers());
+
+    bool gameState = playLevel(context.getWorld(), context.getPlayers());
+    ObjectFactory::destroy();
+    HeartFactory::destroy();
+
+    if (! gameState){
+        throw Exception::Return(__FILE__, __LINE__);
+    }
+}
+
+void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+    for (vector<string>::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
+        realGame(futurePlayers, levelInfo, *it);
+    }
+}
+
+#if 0
 void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
 
     /* disables buffer input on entry, enables buffering on function exit */
@@ -644,9 +750,9 @@ void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, 
     // global_debug = true;
 
     int showHelp = 800;
-    for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
+    for ( vector<string>::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
         Util::Thread::Id loading_screen_thread;
-        startLoading( &loading_screen_thread, levelInfo );
+        startLoading(&loading_screen_thread, levelInfo);
 
         bool gameState = false;
         try {
@@ -681,18 +787,18 @@ void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, 
             for ( vector< Paintown::Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
                 Paintown::Player * playerX = (Paintown::Player *) *it;
                 playerX->setTrails(0, 0);
-                playerX->setY( 200 );
+                playerX->setY(200);
                 /* setMoving(false) sets all velocities to 0 */
-                playerX->setMoving( false );
+                playerX->setMoving(false);
                 /* but the player is falling so set it back to true */
-                playerX->setMoving( true );
+                playerX->setMoving(true);
 
-                playerX->setStatus( Paintown::Status_Falling );
+                playerX->setStatus(Paintown::Status_Falling);
             }
 
-            stopLoading( loading_screen_thread );
+            stopLoading(loading_screen_thread);
 
-            gameState = playLevel( world, players, showHelp );
+            gameState = playLevel(world, players, showHelp);
             showHelp = 0;
         } catch ( const LoadException & le ){
             Global::debug( 0 ) << "Could not load " << *it << " because " << le.getTrace() << endl;
@@ -718,6 +824,7 @@ void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, 
     /* fix.. */
     // fadeOut( "You win!" );
 }
+#endif
 
 #if 0
 /* use MenuGlobal::doLevelMenu instead */
