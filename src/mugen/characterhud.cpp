@@ -1323,7 +1323,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(ParseCache::parseDef(ourDefFile.path()));
+    Ast::AstParse parsed(Util::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 

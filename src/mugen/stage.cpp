@@ -475,16 +475,6 @@ static string regexResult(const string & str, const string & regex){
     return "";
 }
 
-/*
-static list<Ast::Section*>* parseDef(const string & path){
-    try{
-        return Mugen::ParseCache::parseDef(path);
-    } catch (const Mugen::Def::ParseException & p){
-        throw MugenException(p.getReason());
-    }
-}
-*/
-
 static Filesystem::AbsolutePath getMotifFile(const string & path){
     return Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(path));
 }

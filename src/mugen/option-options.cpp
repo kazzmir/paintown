@@ -343,7 +343,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(ParseCache::parseDef(systemFile.path()));
+    Ast::AstParse parsed(Util::parseDef(systemFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
