@@ -981,25 +981,59 @@ namespace Mugen{
 
 void run(){
     // Load er up and throw up a load box to inform the user
-    MugenMenu menu(Mugen::Data::getInstance().getMotif());
+    class Context: public Loader::LoadingContext {
+    public:
+        Context():
+        menu(Mugen::Data::getInstance().getMotif()),
+        exception(NULL){
+        }
+
+        virtual void load(){
+            try{
+                menu.loadData();
+            } catch (const MugenException & e){
+                exception = (MugenException*) e.copy();
+            }
+        }
+
+        virtual void failure(){
+            if (exception != NULL){
+                throw *exception;
+            }
+        }
+
+        virtual ~Context(){
+            delete exception;
+        }
+
+        MugenMenu & getMenu(){
+            return menu;
+        }
+
+        MugenMenu menu;
+        MugenException * exception;
+    };
+    /*
     PaintownUtil::Thread::Id loading;
     Level::LevelInfo info;
     info.setLoadingMessage("Loading M.U.G.E.N");
     Loader::startLoading(&loading, (void*) &info);
+    */
+    Level::LevelInfo info;
+    info.setLoadingMessage("Loading M.U.G.E.N");
+    Context menuLoader;
+    Loader::loadScreen(menuLoader, info);
 
     try {
-        menu.loadData();
-        Loader::stopLoading(loading);
-        menu.run();
+        menuLoader.failure();
+        menuLoader.getMenu().run();
     } catch (const Exception::Return & re){
         // Say what?
         // Do not quit game
         // Make waffles?
-        Loader::stopLoading(loading);
     } catch (const MugenException & ex){
         string m("Problem with loading MUGEN menu: ");
         m += ex.getFullReason();
-        Loader::stopLoading(loading);
         throw LoadException(__FILE__, __LINE__, m);
     }
 }
