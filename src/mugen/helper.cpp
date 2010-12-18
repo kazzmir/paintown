@@ -40,7 +40,7 @@ State * Helper::getState(int id) const {
     if (findIt == proxyStates.end()){
         State * dad = owner.getState(id);
         if (dad != NULL){
-            /* this is why proxyAnimations has to be mutable */
+            /* this is why proxyStates has to be mutable */
             proxyStates[id] = dad->deepCopy();
             return proxyStates[id];
         }

@@ -59,11 +59,13 @@ const std::string Mugen::Util::removeSpaces( const std::string &str ){
     return tempStr;
 }
 
-const std::string Mugen::Util::invertSlashes( const std::string &str ){
+const std::string Mugen::Util::invertSlashes(const std::string &str){
     std::string tempStr = str;
-    if( tempStr.find('\\') != std::string::npos ){
-	for( int i = tempStr.size()-1; i>-1; --i){
-	    if( tempStr[i] == '\\' )tempStr[i] = '/';
+    if (tempStr.find('\\') != std::string::npos){
+	for (int i = tempStr.size()-1; i>-1; --i){
+	    if (tempStr[i] == '\\'){
+                tempStr[i] = '/';
+            }
 	}
     }
     return tempStr;

@@ -35,7 +35,9 @@ takeAScreenshot(false),
 is_paused(false),
 slowmotion(0),
 descriptionTime(0),
-descriptionGradient(0){
+descriptionGradient(0),
+gameTicks(0),
+replayEnabled(false){
 	scene = NULL;
 	bang = NULL;
 }
@@ -52,7 +54,9 @@ is_paused(false),
 slowmotion(0),
 cacher(cacher),
 descriptionTime(DESCRIPTION_TIME),
-descriptionGradient(new Effects::Gradient(100, Bitmap::makeColor(255, 255, 255), Bitmap::makeColor(128, 128, 128))){
+descriptionGradient(new Effects::Gradient(100, Bitmap::makeColor(255, 255, 255), Bitmap::makeColor(128, 128, 128))),
+gameTicks(0),
+replayEnabled(false){
 	scene = NULL;
 	bang = NULL;
 	screen_size = _screen_size;
@@ -89,38 +93,37 @@ descriptionGradient(new Effects::Gradient(100, Bitmap::makeColor(255, 255, 255),
 }
 
 AdventureWorld::~AdventureWorld(){
+    if (bang){
+        delete bang;
+    }
 
-	if ( bang ){
-		delete bang;
-	}
+    if (scene){
+        delete scene;
+    }
 
-	if ( scene ){
-		delete scene;
-	}
-	
-	if ( mini_map ){
-		delete mini_map;
-	}
+    if (mini_map){
+        delete mini_map;
+    }
 
-        delete cacher;
+    delete cacher;
 
-        delete descriptionGradient;
+    delete descriptionGradient;
 
-	deleteObjects( &objects );
-            
-        for (deque<Bitmap*>::iterator it = screenshots.begin(); it != screenshots.end(); it++){
-            delete *it;
+    deleteObjects(&objects);
+
+    for (deque<Bitmap*>::iterator it = screenshots.begin(); it != screenshots.end(); it++){
+        delete *it;
+    }
+
+    /* this prevents the object from being destroyed in the Object destructor */
+    for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++){
+        PlayerTracker & tracker = *it;
+        void * handle = tracker.script;
+        if (handle != NULL){
+            Script::Engine::getEngine()->destroyObject(handle);
         }
-	
-        /* this prevents the object from being destroyed in the Object destructor */
-        for ( vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
-            PlayerTracker & tracker = *it;
-            void * handle = tracker.script;
-            if (handle != NULL){
-                Script::Engine::getEngine()->destroyObject(handle);
-            }
-            tracker.player->setScriptObject(NULL);
-        }
+        tracker.player->setScriptObject(NULL);
+    }
 }
         
 Script::Engine * AdventureWorld::getEngine() const {
@@ -260,16 +263,18 @@ bool AdventureWorld::finished() const {
 }
 	
 bool AdventureWorld::isPlayer( Paintown::Object * o ) const {
-    for ( vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++ ){
-        if ( it->player == o ){
+    for (vector< PlayerTracker >::const_iterator it = players.begin(); it != players.end(); it++){
+        if (it->player == o){
             return true;
         }
     }
     return false;
 }
 
-void AdventureWorld::addMessage( Network::Message m, Network::Socket from, Network::Socket to){
-	/* nothing */
+void AdventureWorld::addMessage(Network::Message message, Network::Socket from, Network::Socket to){
+    if (replayEnabled){
+        replay.push_back(ReplayEvent(gameTicks, message));
+    }
 }
 	
 Network::Message AdventureWorld::createBangMessage( int x, int y, int z ){
@@ -343,6 +348,9 @@ void AdventureWorld::doLogic(){
     if (slowmotion > 0){
         slowmotion -= 1;
     }
+
+    /* increase game time */
+    gameTicks += 1;
 
     vector< Paintown::Object * > added_effects;
     for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){

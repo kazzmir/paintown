@@ -205,6 +205,7 @@ enum PlayerType{
 };
 
 /*! Player1 keys for menus including keyboard shortcuts */
+/* FIXME: use the same keys as in paintown, get them from Configuration */
 inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     InputMap<Mugen::Keys> input;
     input.set(Keyboard::Key_UP, delay, false, Mugen::Up);

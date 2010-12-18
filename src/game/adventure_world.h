@@ -131,25 +131,56 @@ protected:
 
 protected:
     std::vector< PlayerTracker > players;
+    /* when an attack hits show this graphic. this should be changed to a
+     * per-character effect.
+     */
     Paintown::Object * bang;
 
     Scene * scene;
 
     // int min_x;
     int screen_size;
+    /* path to the current level */
     Filesystem::AbsolutePath path;
 
     bool draw_minimaps;
 
     Bitmap * mini_map;
 
+    /* screenshots that are shown at the end of the level */
     std::deque<Bitmap*> screenshots;
+    /* set during the logic but a screenshot actually happens in draw */
     bool takeAScreenshot;
+    /* run the logic or not */
     bool is_paused;
+    /* if the game should run in slow motion, like when a boss dies */
     int slowmotion;
+    /* caches objects to make quick copies */
     Level::Cacher * cacher;
+    /* for showing the current help */
     int descriptionTime;
     Effects::Gradient * descriptionGradient;
+    /* count of ticks that have passed. how much time of gameplay can this hold
+     * before overflowing?
+     * there should be 90 logic loops per second and the max size of gameticks
+     * is roughly 2^32.
+     * 2^32 / (90 ticks * 60 seconds * 60 minutes * 24 hours)
+     * = 552.33 days
+     */
+    unsigned int gameTicks;
+
+    struct ReplayEvent{
+        ReplayEvent(unsigned int time, const Network::Message & message):
+        time(time),
+        message(message){
+        }
+        /* what game tick the event occured on */
+        unsigned int time;
+        Network::Message message;
+    };
+
+    std::vector<ReplayEvent> replay;
+    bool replayEnabled;
 };
 
 #endif

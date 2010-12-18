@@ -84,7 +84,7 @@ CursorHandler::~CursorHandler(){
 }
 
 void CursorHandler::act(){
-    if(cursor.visible){
+    if (cursor.visible){
 	cursor.alpha += cursor.alphaMove;
 	if (cursor.alpha <= 0){
 	    cursor.alpha = 0;
@@ -486,7 +486,7 @@ void MugenMenu::loadData(){
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cancel.snd"){
-                            int g=0,s=0;
+                            int g=0, s=0;
                             try{
                                 simple >> menu.cancelSound.x >> menu.cancelSound.y;
                             } catch (const Ast::Exception & e){
