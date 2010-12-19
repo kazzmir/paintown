@@ -121,7 +121,7 @@ void OptionAdventure::run(const Menu::Context & context){
         players.push_back(&future);
         Game::realGame(players, info);
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Error while loading: " << le.getTrace() << endl;
+        Global::debug(0) << "Error while loading: " << le.getTrace() << endl;
     } catch (const Exception::Return & ignore){
         throw Menu::Reload(__FILE__, __LINE__);
     }

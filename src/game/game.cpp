@@ -67,18 +67,18 @@ static void startLoading(Util::Thread::Id * thread, const Level::LevelInfo & inf
     }
 }
 
-static Network::Message removeMessage( int id ){
-	Network::Message message;
+static Network::Message removeMessage(int id){
+    Network::Message message;
 
-	message.id = 0;
-	message << World::REMOVE;
-	message << id;
+    message.id = 0;
+    message << World::REMOVE;
+    message << id;
 
-	return message;
+    return message;
 }
 
-static vector< Background > readBackgrounds( const Filesystem::AbsolutePath & path ){
-    vector< Background > backgrounds;
+static vector<Background> readBackgrounds( const Filesystem::AbsolutePath & path ){
+    vector<Background> backgrounds;
 
     try{
         TokenReader reader( path.path() + "/bgs.txt" );
@@ -534,7 +534,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
             for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
                 Bitmap * shot = *it;
-                int angle = Util::rnd(13) - 6;
+                int angle = Util::rnd(-6, 6);
 
                 /*
                    int gap = 4;
@@ -646,6 +646,9 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         }
 
         ~GameContext(){
+            /* who will delete the players contained in the data? the futures
+             * passed in as `futurePlayers'
+             */
             delete data;
             delete failed;
         }
@@ -685,7 +688,8 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
 
         struct Data{
             Data(vector<Paintown::Object*> players, const Filesystem::AbsolutePath & path):
-            world(players, path){
+            world(players, path),
+            players(players){
             }
 
             AdventureWorld world;
@@ -705,7 +709,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
     Global::info(funnyGo());
 
     Music::pause();
-    Music::fadeIn( 0.3 );
+    Music::fadeIn(0.3);
     Music::loadSong(Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
     Music::play();
 
