@@ -207,8 +207,9 @@ static bool respawnPlayers(const vector<Paintown::Object*> & players, World & wo
 }
 
 /* in-game menu */
-static bool doMenu(const Bitmap & screen_buffer){
-    Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
+static bool doMenu(const Bitmap & screen_buffer, const Token * data){
+    // Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
+    Menu::Menu menu(data);
     Menu::Context context;
     /* use the current screen as the background */
     context.addBackground(screen_buffer);
@@ -227,7 +228,6 @@ static bool doMenu(const Bitmap & screen_buffer){
 }
 
 bool playLevel( World & world, const vector< Paintown::Object * > & players){
-    
     Bitmap screen_buffer(GFX_X, GFX_Y);
 
     /* 150 pixel tall console */
@@ -560,6 +560,9 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
         }
     };
+    
+    TokenReader reader;
+    Token * menuData = reader.readToken(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")).path());
 
     bool finish = true;
     Logic logic(players, world, console);
@@ -582,7 +585,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
 
             if (state.force_quit){
-                state.force_quit = doMenu(screen_buffer);
+                state.force_quit = doMenu(screen_buffer, menuData);
             }
 
             while (Global::speed_counter < 1){
