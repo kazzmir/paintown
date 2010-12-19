@@ -90,7 +90,7 @@ static void playGame( Socket socket ){
         Filesystem::RelativePath path = Filesystem::cleanse(playerPath);
         // path.erase( 0, Util::getDataPath().length() );
 
-        Loader::startLoading( &loadingThread );
+        // Loader::startLoading( &loadingThread );
 
         /* send the path of the chosen player */
         Message create;
@@ -104,23 +104,23 @@ static void playGame( Socket socket ){
         int alliance;
         myid >> type;
         Paintown::Object::networkid_t client_id = (Paintown::Object::networkid_t) -1;
-        if ( type == World::SET_ID ){
+        if (type == World::SET_ID){
             myid >> client_id >> alliance;
-            player->setId( client_id );
+            player->setId(client_id);
             player->setAlliance(alliance);
-            Global::debug( 1 ) << "Client id is " << client_id << endl;
+            Global::debug(1) << "Client id is " << client_id << endl;
         } else {
-            Global::debug( 0 ) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
+            Global::debug(0) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
         }
 
-        vector< Paintown::Object * > players;
-        players.push_back( player );
+        vector<Paintown::Object *> players;
+        players.push_back(player);
 
         map<Paintown::Object::networkid_t, string> clientNames;
 
         bool done = false;
         int showHelp = 800;
-        while ( ! done ){
+        while (! done){
             Message next( socket );
             int type;
             next >> type;
@@ -129,7 +129,7 @@ static void playGame( Socket socket ){
                     Paintown::Object::networkid_t id;
                     int alliance;
                     next >> id >> alliance;
-                    if ( uniqueId( players, id ) ){
+                    if (uniqueId(players, id)){
                         Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
                         Paintown::Character * c = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(next.path)), alliance);
                         c->setId( id );
@@ -158,7 +158,7 @@ static void playGame( Socket socket ){
 
                     world.startMessageHandler();
 
-                    Loader::stopLoading(loadingThread);
+                    // Loader::stopLoading(loadingThread);
                     try{
                         vector<Paintown::Object*> xplayers;
                         bool forceQuit = ! Game::playLevel(world, xplayers);
@@ -167,7 +167,7 @@ static void playGame( Socket socket ){
                         ObjectFactory::destroy();
                         HeartFactory::destroy();
 
-                        Loader::startLoading( &loadingThread );
+                        // Loader::startLoading( &loadingThread );
 
                         if (forceQuit){
                             Global::debug(1, __FILE__) << "Force quit" << endl;
@@ -195,7 +195,7 @@ static void playGame( Socket socket ){
                          * when this function returns the socket will be
                          * close anyway.
                          */
-                        Network::close( socket );
+                        Network::close(socket);
                     }
                     break;
                 }
@@ -214,7 +214,7 @@ static void playGame( Socket socket ){
         Global::debug(0, "client") << "Load exception: " + le.getTrace() << endl;
     }
 
-    Loader::stopLoading(loadingThread);
+    // Loader::stopLoading(loadingThread);
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){

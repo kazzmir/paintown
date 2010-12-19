@@ -1994,17 +1994,36 @@ bool OptionSelectFont::rightKey(){
 }
 
 static bool saneFont(const Util::ReferenceCount<Menu::FontInfo> & info){
-    Util::Thread::Id load;
-    Loader::startLoading(&load, NULL, Loader::SimpleCircle);
-    try{
-        const Font & font = info->get();
-        Loader::stopLoading(load);
-        return font.textLength("A") != 0 &&
-               font.getHeight() != 0;
-    } catch (const Exception::Base & ignore){
-        Loader::stopLoading(load);
-        return true;
-    }
+    class Context: public Loader::LoadingContext {
+    public:
+        Context(const Util::ReferenceCount<Menu::FontInfo> & info):
+            info(info),
+            isok(false){
+            }
+
+        bool ok(){
+            try{
+                const Font & font = info->get();
+                return font.textLength("A") != 0 &&
+                    font.getHeight() != 0;
+            } catch (const Exception::Base & ignore){
+                return true;
+            }
+        }
+
+        virtual void load(){
+            isok = ok();
+        }
+
+        const Util::ReferenceCount<Menu::FontInfo> & info;
+        bool isok;
+    };
+
+    Context context(info);
+    /* an empty LevelInfo object, we don't really care about it */
+    Level::LevelInfo level;
+    Loader::loadScreen(context, level, Loader::SimpleCircle);
+    return context.isok;
 }
 
 void OptionSelectFont::nextIndex(bool forward){

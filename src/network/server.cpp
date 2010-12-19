@@ -260,8 +260,8 @@ static void playGame(vector<Client*> & clients){
         player->ignoreLives();
         players.push_back( player );
         /* then the user selects a set of levels to play */
-        // Level::LevelInfo levelInfo = Game::selectLevelSet(Filesystem::find("/levels"));
         Menu::Context context;
+
         /* FIXME: get a better Menu::Context object, one that already has
          * a font set and a background.
          */
@@ -269,7 +269,7 @@ static void playGame(vector<Client*> & clients){
         Level::LevelInfo levelInfo = doLevelMenu("/levels", context);
 
         /* show the loading screen */
-        Loader::startLoading( &loading_screen_thread );
+        // Loader::startLoading( &loading_screen_thread );
 
         /* reset the alliance settings */
         allAlliance = ALLIANCE_FREE_FOR_ALL;
@@ -301,15 +301,15 @@ static void playGame(vector<Client*> & clients){
             debug(1) << "Setting up client " << client->getName() << endl;
             Socket socket = client->getSocket();
             sockets.push_back(socket);
-            debug( 1 ) << "Read character path from " << id << endl;
-            Message message( socket );
+            debug(1) << "Read character path from " << id << endl;
+            Message message(socket);
             int type;
             message >> type;
             if ( type == World::CREATE_CHARACTER ){
                 int alliance = playerAlliance();
                 Paintown::Character * client_character = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
                 characterToSocket[client_character] = socket;
-                /* Don't need this line now that NetworkPlayer exists.
+                /* FIXME: Don't need this line now that NetworkPlayer exists.
                  * take it out at some point.
                  */
                 ((Paintown::NetworkCharacter *)client_character)->alwaysShowName();
@@ -321,7 +321,7 @@ static void playGame(vector<Client*> & clients){
                 clientId << World::SET_ID;
                 clientId << id;
                 clientId << alliance;
-                clientId.send( socket );
+                clientId.send(socket);
 
                 clientNames[id] = client->getName();
 
@@ -334,7 +334,7 @@ static void playGame(vector<Client*> & clients){
 
                 id += 1;
             } else {
-                debug( 0 ) << "Got a bogus message: " << type << endl;
+                debug(0) << "Got a bogus message: " << type << endl;
             }
         }
         
@@ -352,7 +352,7 @@ static void playGame(vector<Client*> & clients){
             add << c->getId();
             add << c->getAlliance();
             add.path = path.path();
-            sendToAll( sockets, add );
+            sendToAll(sockets, add);
         }
 
         /*
@@ -367,35 +367,29 @@ static void playGame(vector<Client*> & clients){
         int showHelp = 800;
         for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
             string level = *it;
-            debug( 1 ) << "Sending level '" << level << "'" << endl;
+            debug(1) << "Sending level '" << level << "'" << endl;
             Message loadLevel;
             loadLevel << World::LOAD_LEVEL;
             loadLevel.path = level;
-            sendToAll( sockets, loadLevel );
+            sendToAll(sockets, loadLevel);
 
-            for ( vector< Paintown::Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
+            for (vector< Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
                 Paintown::Character * playerX = (Paintown::Character *) *it;
-                playerX->setY( 200 );
+                playerX->setY(200);
                 /* setMoving(false) sets all velocities to 0 */
-                playerX->setMoving( false );
+                playerX->setMoving(false);
                 /* but the player is falling so set it back to true */
-                playerX->setMoving( true );
+                playerX->setMoving(true);
 
-                playerX->setStatus( Paintown::Status_Falling );
+                playerX->setStatus(Paintown::Status_Falling);
             }
 
-            debug( 1 ) << "Create network world" << endl;
-            NetworkWorld world( sockets, players, characterToSocket, Filesystem::find(Filesystem::RelativePath(level)), clientNames);
+            debug(1) << "Create network world" << endl;
+            NetworkWorld world(sockets, players, characterToSocket, Filesystem::find(Filesystem::RelativePath(level)), clientNames);
 
-            debug( 1 ) << "Load music" << endl;
+            debug(1) << "Load music" << endl;
 
             Music::changeSong();
-            /* old stuff..
-            Music::pause();
-            Music::fadeIn( 0.3 );
-            Music::loadSong(Util::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*" ));
-            Music::play();
-            */
 
             /* wait for an ok from all the clients, then send another
              * ok to continue
@@ -405,7 +399,7 @@ static void playGame(vector<Client*> & clients){
 
             world.startMessageHandlers();
 
-            Loader::stopLoading(loading_screen_thread);
+            // Loader::stopLoading(loading_screen_thread);
             bool played = Game::playLevel(world, players);
             showHelp = 0;
 
@@ -413,7 +407,7 @@ static void playGame(vector<Client*> & clients){
             HeartFactory::destroy();
 
             world.stopRunning();
-            Loader::startLoading(&loading_screen_thread);
+            // Loader::startLoading(&loading_screen_thread);
             Message finish;
             finish << World::FINISH;
             finish.id = 0;
@@ -481,7 +475,7 @@ static void playGame(vector<Client*> & clients){
         Network::close((*it)->getSocket());
     }
 
-    Loader::stopLoading(loading_screen_thread);
+    // Loader::stopLoading(loading_screen_thread);
 }
 
 static void popup( const Font & font, const string & message ){

@@ -55,6 +55,7 @@ static double startingGameSpeed(){
     return 1.0;
 }
 
+/*
 static void stopLoading(Util::Thread::Id thread){
     if (show_loading_screen){
         Loader::stopLoading(thread);
@@ -66,6 +67,7 @@ static void startLoading(Util::Thread::Id * thread, const Level::LevelInfo & inf
         Loader::startLoading(thread, (void*) &info);
     }
 }
+*/
 
 static Network::Message removeMessage(int id){
     Network::Message message;
@@ -711,10 +713,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
     Global::info("World setup");
     Global::info(funnyGo());
 
-    Music::pause();
-    Music::fadeIn(0.3);
-    Music::loadSong(Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("music/")), "*"));
-    Music::play();
+    Music::changeSong();
 
     initializePlayers(context.getPlayers());
 

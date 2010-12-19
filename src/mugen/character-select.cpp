@@ -993,7 +993,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 		// Logic
                 /* if done, dont run the loader again, just wait for the fadeout */
 		if (ticker >= time && !done){
-                    PaintownUtil::Thread::Id loader;
+                    // PaintownUtil::Thread::Id loader;
 		    try{
 			Level::LevelInfo info;
 			info.setBackground(&bmp);
@@ -1030,7 +1030,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                         done = true;
                         fader.setState(Gui::FadeTool::FadeOut);
 		    } catch (const MugenException & e){
-			Loader::stopLoading(loader);
+			// Loader::stopLoading(loader);
 			throw e;
 		    }
 		}

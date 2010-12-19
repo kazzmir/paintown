@@ -31,8 +31,9 @@ protected:
 extern volatile bool done_loading;
 extern Util::Thread::Lock loading_screen_mutex;
 
-void startLoading(Util::Thread::Id * thread, void * arg = 0, Kind kind = Default);
-void stopLoading(Util::Thread::Id thread);
+/* deprecated, remove */
+void startLoadingX(Util::Thread::Id * thread, void * arg = 0, Kind kind = Default);
+void stopLoadingX(Util::Thread::Id thread);
 
 void loadScreen(LoadingContext & context, const Level::LevelInfo & info, Kind kind = Default);
 
