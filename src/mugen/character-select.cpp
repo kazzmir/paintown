@@ -929,7 +929,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     InputMap<Mugen::Keys> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
 
-    class PlayerLoader: public PaintownUtil::Future<int>{
+    class PlayerLoader: public PaintownUtil::Future<int> {
     public:
         PlayerLoader(CharacterInfo & player1, CharacterInfo & player2):
             player1(player1),
@@ -999,16 +999,34 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 			info.setBackground(&bmp);
 			info.setLoadingMessage("Loading...");
                         info.setPosition(-1, 400);
-			Loader::startLoading(&loader, (void*) &info);
 
-                        /* future */
-                        int ok = playerLoader.get();
+                        class Context: public Loader::LoadingContext {
+                        public:
+                            Context(PlayerLoader & playerLoader, MugenStage *& stage):
+                            playerLoader(playerLoader),
+                            stage(stage){
+                            }
 
-			// Load stage
-                        stage->addPlayer1(player1.getPlayer1());
-			stage->addPlayer2(player2.getPlayer2());
-			stage->load();
-			Loader::stopLoading(loader);
+                            virtual void load(){
+                                /* future */
+                                int ok = playerLoader.get();
+
+                                // Load stage
+                                stage->addPlayer1(playerLoader.player1.getPlayer1());
+                                stage->addPlayer2(playerLoader.player2.getPlayer2());
+                                stage->load();
+                            }
+
+                            PlayerLoader & playerLoader;
+                            MugenStage *& stage;
+
+                        };
+
+                        Context context(playerLoader, stage);
+			// Loader::startLoading(&loader, (void*) &info);
+                        Loader::loadScreen(context, info);
+
+                        // Loader::stopLoading(loader);
                         done = true;
                         fader.setState(Gui::FadeTool::FadeOut);
 		    } catch (const MugenException & e){
