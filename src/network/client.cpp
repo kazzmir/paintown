@@ -76,43 +76,65 @@ static void sendQuit(Socket socket){
     quit.send(socket);
 }
 
+/* select a player through the usual select screen then tell the server
+ * about our existence and get back an id for the player
+ */
 static Paintown::Player * createNetworkPlayer(Socket socket){
+    class Context: public Loader::LoadingContext {
+    public:
+        Context(Socket socket, Level::LevelInfo & info, const Filesystem::AbsolutePath & playerPath, int remap):
+        socket(socket),
+        info(info),
+        playerPath(playerPath),
+        remap(remap),
+        player(NULL){
+        }
+
+        Socket socket;
+        Level::LevelInfo & info;
+        const Filesystem::AbsolutePath & playerPath;
+        int remap;
+        Paintown::Player * player;
+
+        virtual void load(){
+            player = new Paintown::Player(playerPath);
+            player->setMap(remap);
+            player->ignoreLives();
+            Filesystem::RelativePath cleanPath = Filesystem::cleanse(playerPath);
+
+            /* send the path of the chosen player */
+            Message create;
+            create << World::CREATE_CHARACTER;
+            create.path = cleanPath.path();
+            create.send(socket);
+
+            /* get the id from the server */
+            Message myid(socket);
+            int type;
+            int alliance;
+            myid >> type;
+            Paintown::Object::networkid_t client_id = (Paintown::Object::networkid_t) -1;
+            if (type == World::SET_ID){
+                myid >> client_id >> alliance;
+                player->setId(client_id);
+                player->setAlliance(alliance);
+                Global::debug(1) << "Client id is " << client_id << endl;
+            } else {
+                Global::debug(0) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
+            }
+        }
+    };
+
     /* TODO: get the info from the server */
     Level::LevelInfo info;
+
     /* remap will be modified by the selectPlayer method */
     int remap = 0;
     Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
-    Paintown::Player * player = new Paintown::Player(playerPath);
-    player->setMap(remap);
-    ((Paintown::Player *) player)->ignoreLives();
-    Filesystem::RelativePath path = Filesystem::cleanse(playerPath);
 
-    // path.erase( 0, Util::getDataPath().length() );
-
-    // Loader::startLoading( &loadingThread );
-
-    /* send the path of the chosen player */
-    Message create;
-    create << World::CREATE_CHARACTER;
-    create.path = path.path();
-    create.send(socket);
-
-    /* get the id from the server */
-    Message myid(socket);
-    int type;
-    int alliance;
-    myid >> type;
-    Paintown::Object::networkid_t client_id = (Paintown::Object::networkid_t) -1;
-    if (type == World::SET_ID){
-        myid >> client_id >> alliance;
-        player->setId(client_id);
-        player->setAlliance(alliance);
-        Global::debug(1) << "Client id is " << client_id << endl;
-    } else {
-        Global::debug(0) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
-    }
-
-    return player;
+    Context context(socket, info, playerPath, remap);
+    Loader::loadScreen(context, info);
+    return context.player;
 }
 
 /* TODO: simplify this code */
