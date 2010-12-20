@@ -82,14 +82,13 @@ static void * playMusic( void * _music ){
        */
 
     bool playing = true;
-    while ( playing ){
-
+    while (playing){
         LOCK;{
             playing = alive;
             music->doPlay();
         }
         UNLOCK;
-        Util::rest( 10 );
+        Util::rest(10);
 
         // Util::YIELD();
         // pthread_yield();
@@ -110,29 +109,29 @@ double Music::getVolume(){
 }
 
 void Music::doPlay(){
-    if ( this->playing ){
+    if (this->playing){
         double f = fading / 500.0;
-        switch ( fading ){
-            case -1 : {
-                          if ( volume + f < 0 ){
-                              fading = 0;
-                              volume = 0;
-                          } else {
-                              volume += f;
-                              this->_setVolume( volume );
-                          }
-                          break;
-                      }
-            case 1 : {
-                         if ( volume + f > 1.0 ){
-                             fading = 0;
-                             volume = 1.0;
-                         } else {
-                             volume += f;
-                             this->_setVolume( volume );
-                         }
-                         break;
-                     }
+        switch (fading){
+            case -1: {
+                if (volume + f < 0){
+                    fading = 0;
+                    volume = 0;
+                } else {
+                    volume += f;
+                    this->_setVolume(volume);
+                }
+                break;
+            }
+            case 1: {
+                if (volume + f > 1.0){
+                    fading = 0;
+                    volume = 1.0;
+                } else {
+                    volume += f;
+                    this->_setVolume(volume);
+                }
+                break;
+            }
         }
         musicPlayer->poll();
     }

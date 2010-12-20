@@ -37,9 +37,9 @@ static std::ostream & debug( int level ){
     return Global::debug(level, "network-world-client");
 }
 
-static void * handleMessages( void * arg ){
+static void * handleMessages(void * arg){
     NetworkWorldClient * world = (NetworkWorldClient *) arg;
-    NLsocket socket = world->getServer();
+    Network::Socket socket = world->getServer();
 
     /* at 100 messages per second (which is more than normal)
      * this can count 1.36 years worth of messages.
@@ -49,15 +49,15 @@ static void * handleMessages( void * arg ){
     unsigned int received = 0;
 
     try{
-        while ( world->isRunning() ){
+        while (world->isRunning()){
             received += 1;
             {
                 ostringstream context;
                 context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
                 Global::debug(2, context.str()) << "Receiving message " << received << endl;
             }
-            Network::Message m( socket );
-            world->addIncomingMessage( m );
+            Network::Message m(socket);
+            world->addIncomingMessage(m);
 
             {
                 ostringstream context;
@@ -68,10 +68,10 @@ static void * handleMessages( void * arg ){
     } catch (const Network::MessageEnd & end){
         debug(1) << "Closed connection with socket " << socket << endl;
     } catch (const Network::NetworkException & n){
-        debug( 0 ) << "Network exception: " << n.getMessage() << endl;
+        debug(0) << "Network exception: " << n.getMessage() << endl;
     }
 
-    debug( 1 ) << "Client input stopped" << endl;
+    debug(1) << "Client input stopped" << endl;
 
     return NULL;
 }

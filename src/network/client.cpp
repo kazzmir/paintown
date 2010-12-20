@@ -1,6 +1,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "client.h"
 #include "input/keyboard.h"
 #include "input/input-map.h"
@@ -97,17 +98,20 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
         Paintown::Player * player;
 
         virtual void load(){
+            Global::info("Create player " + playerPath.path());
             player = new Paintown::Player(playerPath);
             player->setMap(remap);
             player->ignoreLives();
             Filesystem::RelativePath cleanPath = Filesystem::cleanse(playerPath);
 
+            Global::info("Notify server");
             /* send the path of the chosen player */
             Message create;
             create << World::CREATE_CHARACTER;
             create.path = cleanPath.path();
             create.send(socket);
 
+            Global::info("Waiting for id from server");
             /* get the id from the server */
             Message myid(socket);
             int type;
@@ -122,6 +126,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
             } else {
                 Global::debug(0) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
             }
+            Global::info("Received an id");
         }
     };
 
@@ -149,84 +154,142 @@ static void playGame(Socket socket){
 
         bool done = false;
         while (! done){
-            Message next(socket);
-            int type;
-            next >> type;
-            switch (type){
-                case World::CREATE_CHARACTER : {
+            class Dispatcher: public Loader::LoadingContext {
+            public:
+                Dispatcher(vector<Paintown::Object*> & players,
+                           Paintown::Player * player,
+                           map<Paintown::Object::networkid_t, string> & clientNames,
+                           bool & done,
+                           Socket socket):
+                players(players),
+                player(player),
+                clientNames(clientNames),
+                done(done),
+                socket(socket),
+                play(false),
+                world(NULL){
+                }
+
+                vector<Paintown::Object*> & players;
+                Paintown::Player * player;
+                map<Paintown::Object::networkid_t, string> & clientNames;
+                bool & done;
+                Socket socket;
+                bool play;
+
+                NetworkWorldClient * world;
+
+                virtual ~Dispatcher(){
+                    delete world;
+                }
+
+                void createCharacter(Message & next){
                     Paintown::Object::networkid_t id;
                     int alliance;
                     next >> id >> alliance;
                     if (uniqueId(players, id)){
                         Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
+                        Global::info("Create character " + next.path);
                         Paintown::Character * c = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(next.path)), alliance);
                         c->setId(id);
                         ((Paintown::NetworkCharacter *)c)->alwaysShowName();
                         players.push_back(c);
                     }
-                    break;
+
                 }
-                case World::CLIENT_INFO : {
+
+                void clientInfo(Message & next){
                     Paintown::Object::networkid_t id;
                     next >> id;
                     string name = next.path;
                     clientNames[id] = name;
-                    break;
+                    Global::info("Player " + name);
                 }
-                case World::LOAD_LEVEL : {
+
+                void loadLevel(Message & next){
                     Filesystem::AbsolutePath level = Filesystem::find(Filesystem::RelativePath(next.path));
-                    NetworkWorldClient world(socket, players, level, player->getId(), clientNames);
+                    this->world = new NetworkWorldClient(socket, players, level, player->getId(), clientNames);
                     Music::changeSong();
 
                     Global::info("Waiting for ok from server");
                     waitForServer(socket);
 
-                    world.startMessageHandler();
-
-                    // Loader::stopLoading(loadingThread);
-                    try{
-                        vector<Paintown::Object*> xplayers;
-                        bool forceQuit = ! Game::playLevel(world, xplayers);
-
-                        ObjectFactory::destroy();
-                        HeartFactory::destroy();
-
-                        // Loader::startLoading( &loadingThread );
-
-                        if (forceQuit){
-                            Global::debug(1, __FILE__) << "Force quit" << endl;
-                            sendQuit(socket);
-                            /* After quit is sent the socket will be closed
-                             * by someone later on. The input handler in the client
-                             * world will throw a network exception and then
-                             * the thread will die.
-                             */
-                            done = true;
-                        } else {
-                            Global::debug(1) << "Stop running client world" << endl;
-                            /* this dummy lets the server message handler
-                             * stop running. its currently blocked waiting for
-                             * a message to come through.
-                             */
-                            sendDummy(socket);
-                            world.stopRunning();
-                            Global::debug(1) << "Wait for server " << endl;
-                            /* then wait for a barrier */
-                            waitForServer(socket);
-                        }
-                    } catch ( const Exception::Return & e ){
-                        /* do we need to close the socket here?
-                         * when this function returns the socket will be
-                         * close anyway.
-                         */
-                        Network::close(socket);
-                    }
-                    break;
+                    this->world->startMessageHandler();
+                    play = true;
                 }
-                /* thats all folks! */
-                case World::GAME_OVER : {
+
+                void gameOver(){
                     done = true;
-                    break;
+                }
+
+                virtual void load(){
+                    while (!done && !play){
+                        Message next(socket);
+                        int type;
+                        next >> type;
+                        switch (type){
+                            case World::CREATE_CHARACTER : {
+                                createCharacter(next);
+                                break;
+                            }
+                            case World::CLIENT_INFO : {
+                                clientInfo(next);
+                                break;
+                            }
+                            case World::LOAD_LEVEL : {
+                                loadLevel(next);
+                                break;
+                            }
+                            /* thats all folks! */
+                            case World::GAME_OVER : {
+                                gameOver();
+                                break;
+                            }
+                        }
+                    }
+                }
+            };
+
+            Dispatcher dispatch(players, player, clientNames, done, socket);
+            Level::LevelInfo info;
+            Loader::loadScreen(dispatch, info);
+
+            if (dispatch.play){
+                NetworkWorldClient & world = *dispatch.world;
+                try{
+                    vector<Paintown::Object*> xplayers;
+                    bool forceQuit = ! Game::playLevel(world, xplayers);
+
+                    ObjectFactory::destroy();
+                    HeartFactory::destroy();
+
+                    if (forceQuit){
+                        Global::debug(1, __FILE__) << "Force quit" << endl;
+                        sendQuit(socket);
+                        /* After quit is sent the socket will be closed
+                         * by someone later on. The input handler in the client
+                         * world will throw a network exception and then
+                         * the thread will die.
+                         */
+                        done = true;
+                    } else {
+                        Global::debug(1) << "Stop running client world" << endl;
+                        /* this dummy lets the server message handler
+                         * stop running. its currently blocked waiting for
+                         * a message to come through.
+                         */
+                        sendDummy(socket);
+                        world.stopRunning();
+                        Global::debug(1) << "Wait for server " << endl;
+                        /* then wait for a barrier */
+                        waitForServer(socket);
+                    }
+                } catch ( const Exception::Return & e ){
+                    /* do we need to close the socket here?
+                     * when this function returns the socket will be
+                     * close anyway.
+                     */
+                    Network::close(socket);
                 }
             }
         }
@@ -237,8 +300,6 @@ static void playGame(Socket socket){
     } catch ( const LoadException & le ){
         Global::debug(0, "client") << "Load exception: " + le.getTrace() << endl;
     }
-
-    // Loader::stopLoading(loadingThread);
 }
 
 static void drawBox( const Bitmap & area, const Bitmap & copy, const string & str, const Font & font, bool hasFocus ){
@@ -320,33 +381,33 @@ static bool handlePortInput( string & str, const vector< int > & keys ){
 */
 
 static void popup( Bitmap & work, const Font & font, const string & message ){
-	int length = font.textLength( message.c_str() ) + 20; 
-	// Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
-	Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	area.drawingMode( Bitmap::MODE_TRANS );
-	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
-	area.drawingMode( Bitmap::MODE_SOLID );
-	int color = Bitmap::makeColor( 255, 255, 255 );
-	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
-	font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
-        work.BlitToScreen();
+    int length = font.textLength( message.c_str() ) + 20; 
+    // Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+    Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+    Bitmap::transBlender( 0, 0, 0, 128 );
+    // area.drawingMode( Bitmap::MODE_TRANS );
+    area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
+    // area.drawingMode( Bitmap::MODE_SOLID );
+    int color = Bitmap::makeColor( 255, 255, 255 );
+    area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
+    font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
+    work.BlitToScreen();
 }
 
 static const char * getANumber(){
-	switch( Util::rnd( 10 ) ){
-		case 0 : return "0";
-		case 1 : return "1";
-		case 2 : return "2";
-		case 3 : return "3";
-		case 4 : return "4";
-		case 5 : return "5";
-		case 6 : return "6";
-		case 7 : return "7";
-		case 8 : return "8";
-		case 9 : return "9";
-		default : return "0";
-	}
+    switch (Util::rnd(10)){
+        case 0 : return "0";
+        case 1 : return "1";
+        case 2 : return "2";
+        case 3 : return "3";
+        case 4 : return "4";
+        case 5 : return "5";
+        case 6 : return "6";
+        case 7 : return "7";
+        case 8 : return "8";
+        case 9 : return "9";
+        default : return "0";
+    }
 }
 
 static const char * propertyLastClientName = "network:last-client-name";
@@ -590,177 +651,6 @@ void networkClient(){
         }
     }
 }
-
-#if 0
-void networkClient(){
-    Bitmap background(Global::titleScreen().path());
-    Global::speed_counter = 0;
-    Keyboard keyboard;
-    keyboard.setAllDelay( 200 );
-
-    const char * propertyLastClientName = "network:last-client-name";
-    const char * propertyLastClientHost = "network:last-client-host";
-    const char * propertyLastClientPort = "network:last-client-port";
-
-    string name = Configuration::getStringProperty(propertyLastClientName, string("player") + getANumber() + getANumber());
-    string host = Configuration::getStringProperty(propertyLastClientHost, "localhost");
-    string port = Configuration::getStringProperty(propertyLastClientPort, "7887");
-
-    enum Focus{
-        NAME, HOST, PORT, CONNECT, BACK
-    };
-
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-
-    Bitmap work(GFX_X, GFX_Y);
-
-    Focus focus = NAME;
-
-    bool done = false;
-    bool draw = true;
-    while ( ! done ){
-        int think = Global::speed_counter;
-        while ( think > 0 ){
-            think -= 1;
-            keyboard.poll();
-
-            if ( keyboard[ Keyboard::Key_TAB ] || keyboard[ Keyboard::Key_DOWN ] ){
-                draw = true;
-                switch ( focus ){
-                    case NAME : focus = HOST; break;
-                    case HOST : focus = PORT; break;
-                    case PORT : focus = CONNECT; break;
-                    case CONNECT : focus = BACK; break;
-                    case BACK : focus = NAME; break;
-                    default : focus = HOST;
-                }
-            }
-
-            if ( keyboard[ Keyboard::Key_UP ] ){
-                draw = true;
-                switch ( focus ){
-                    case NAME : focus = BACK; break;
-                    case HOST : focus = NAME; break;
-                    case PORT : focus = HOST; break;
-                    case CONNECT : focus = PORT; break;
-                    case BACK : focus = CONNECT; break;
-                }
-            }
-
-            if ( keyboard[ Keyboard::Key_ESC ] ){
-                throw Exception::Return(__FILE__, __LINE__);
-            }
-
-            if ( keyboard[ Keyboard::Key_ENTER ] ){
-                switch ( focus ){
-                    case NAME :
-                    case HOST :
-                    case PORT : break;
-                    case CONNECT : {
-                        done = true;
-                        try{
-                            Configuration::setStringProperty(propertyLastClientName, name);
-                            Configuration::setStringProperty(propertyLastClientHost, host);
-                            Configuration::getStringProperty(propertyLastClientPort, port);
-                            istringstream is( port );
-                            int porti;
-                            is >> porti;
-                            Network::Socket socket = Network::connect( host, porti );
-                            ChatClient chat( socket, name );
-                            keyboard.wait();
-                            chat.run();
-                            if ( chat.isFinished() ){
-                                playGame( socket );
-                            }
-                            Network::close( socket );
-                        } catch ( const NetworkException & e ){
-                            popup( work, font, e.getMessage() );
-                            keyboard.wait();
-                            keyboard.readKey();
-                            /*
-                               Global::showTitleScreen();
-                               font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
-                               font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
-                               font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
-                               font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
-                               */
-                            done = false;
-                            draw = true;
-                            think = 0;
-                        }
-                        break;
-                    }
-                    case BACK : done = true; break;
-                }
-            }
-
-            vector< int > keys;
-            keyboard.readKeys( keys );
-            switch ( focus ){
-                case HOST : {
-                    draw = draw || handleHostInput( host, keys );
-                    break;
-                }
-                case PORT : {
-                    draw = draw || handlePortInput( port, keys );
-                    break;
-                }
-                case NAME : {
-                    draw = draw || handleNameInput( name, keys );
-                    break;
-                }
-                default : {
-                    break;
-                }
-            }
-
-            Global::speed_counter = 0;
-        }
-
-        if ( draw ){
-            draw = false;
-
-            background.Blit( work );
-
-            const int inputBoxLength = font.textLength( "a" ) * 30;
-            const int min_y = 140;
-
-            font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Your name", 0 );
-            Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
-            Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
-            nameBox.Blit( copyNameBox );
-
-            font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
-            Bitmap hostBox( work, 20, min_y, inputBoxLength, font.getHeight() );
-            Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
-            hostBox.Blit( copyHostBox );
-
-            font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
-            Bitmap portBox( work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight() );
-            Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
-            portBox.Blit( copyPortBox );
-
-            font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
-
-            int focusColor = Bitmap::makeColor( 255, 255, 0 );
-            int unFocusColor = Bitmap::makeColor( 255, 255, 255 );
-
-            drawBox( nameBox, copyNameBox, name, font, focus == NAME );
-            drawBox( hostBox, copyHostBox, host, font, focus == HOST );
-            drawBox( portBox, copyPortBox, port, font, focus == PORT );
-            font.printf( 20, min_y + font.getHeight() * 5, focus == CONNECT ? focusColor : unFocusColor, work, "Connect", 0 );
-            font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == BACK ? focusColor : unFocusColor, work, "Back", 0 );
-
-            work.BlitToScreen();
-        }
-
-        while ( Global::speed_counter == 0 ){
-            Util::rest( 1 );
-            keyboard.poll();
-        }
-    }
-}
-#endif
 
 }
 
