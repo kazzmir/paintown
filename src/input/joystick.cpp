@@ -13,6 +13,7 @@
 #ifdef USE_SDL
 #ifdef WII
 #include "wii/joystick.h"
+#include "sdl/joystick.h"
 #elif MINPSPW
 #include "psp/joystick.h"
 #else
@@ -26,7 +27,8 @@ Joystick * Joystick::create(){
 #endif
 #ifdef USE_SDL
 #ifdef WII
-    return new WiiJoystick();
+    return new SDLJoystick();
+    // return new WiiJoystick();
 #elif MINPSPW
     return new PSPJoystick();
 #else
@@ -50,7 +52,8 @@ Joystick::~Joystick(){
 bool Joystick::pressed(){
     JoystickInput input = readAll();
     return input.up || input.down || input.left || input.right ||
-           input.button1 || input.button2 || input.button3 || input.button4; 
+           input.button1 || input.button2 || input.button3 || input.button4 ||
+           input.quit; 
 }
     
 const char * Joystick::keyToName(Key key){
@@ -64,6 +67,7 @@ const char * Joystick::keyToName(Key key){
         case Button2 : return "Button2";
         case Button3 : return "Button3";
         case Button4 : return "Button4";
+        case Quit: return "Quit";
     }
     return "Unknown";
 }

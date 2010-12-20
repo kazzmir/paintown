@@ -313,6 +313,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             input.set(Keyboard::Key_TAB, 10, false, Game::MiniMaps);
             input.set(Keyboard::Key_TILDE, 25, false, Game::Console);
             input.set(Keyboard::Key_ESC, 0, false, Game::Quit);
+            input.set(Joystick::Quit, 0, false, Game::Quit);
             input.set(Keyboard::Key_F1, 0, false, Game::ShowHelp);
             input.set(Keyboard::Key_F9, 20, false, Game::ShowFps);
             input.set(Keyboard::Key_F12, 10, false, Game::Screenshot);
@@ -328,9 +329,83 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         Console::Console & console;
 
         void doInput(GameState & state, bool & takeScreenshot, bool & draw){
-            InputMap<Game::Input>::Output inputState = InputManager::getMap(input);
+            vector<InputMap<Game::Input>::InputEvent> events = InputManager::getEvents(input);
 
-            if (InputManager::anyInput()){
+            bool pressed = false;
+            for (vector<InputMap<Game::Input>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                const InputMap<Game::Input>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+                if (event[Game::ShowHelp]){
+                    helped = true;
+                    state.helpTime = state.helpTime < 260 ? 260 : state.helpTime;
+                }
+
+                if (event[Game::ShowFps]){
+                    state.show_fps = ! state.show_fps;
+                }
+
+                if (event[Game::Console]){
+                    console.toggle();
+                }
+
+                takeScreenshot = event[Game::Screenshot];
+
+                if (event[Game::Pause]){
+                    /*
+                       paused = ! paused;
+                       world.addMessage(paused ? pausedMessage() : unpausedMessage());
+                       draw = true;
+                     */
+                    world.changePause();
+                }
+
+                if (event[Game::MiniMaps]){
+                    world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
+                }
+
+                /*
+                   if ( key[ Keyboard::Key_F8 ] ){
+                   world.killAllHumans( player );
+                   }
+                 */
+
+                if ( Global::getDebug() > 0 ){
+                    const double SPEED_INC = 0.02;
+                    if (event[Game::Speedup]){
+                        gameSpeed += SPEED_INC;
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                    }
+
+                    if (event[Game::Slowdown]){
+                        gameSpeed -= SPEED_INC;
+                        if ( gameSpeed < SPEED_INC ){
+                            gameSpeed = SPEED_INC;
+                        }
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                    }
+
+                    if (event[Game::NormalSpeed]){
+                        gameSpeed = 1;
+                        Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                    }
+
+                    if (event[Game::ReloadLevel]){
+                        try{
+                            world.reloadLevel();
+                            draw = true;
+                        } catch ( const LoadException & le ){
+                            Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
+                        }
+                    }
+                }
+
+                state.force_quit |= event[Game::Quit];
+            }
+
+            if (!pressed){
                 state.pressed = 0;
             } else {
                 state.pressed += 1;
@@ -340,71 +415,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 }
             }
 
-            if (inputState[Game::ShowHelp]){
-                helped = true;
-                state.helpTime = state.helpTime < 260 ? 260 : state.helpTime;
-            }
-
-            if (inputState[Game::ShowFps]){
-                state.show_fps = ! state.show_fps;
-            }
-
-            if (inputState[Game::Console]){
-                console.toggle();
-            }
-
-            takeScreenshot = inputState[Game::Screenshot];
-
-            if (inputState[Game::Pause]){
-                /*
-                   paused = ! paused;
-                   world.addMessage(paused ? pausedMessage() : unpausedMessage());
-                   draw = true;
-                   */
-                world.changePause();
-            }
-
-            if (inputState[Game::MiniMaps]){
-                world.drawMiniMaps( ! world.shouldDrawMiniMaps() );
-            }
-
-            /*
-               if ( key[ Keyboard::Key_F8 ] ){
-               world.killAllHumans( player );
-               }
-               */
-
-            if ( Global::getDebug() > 0 ){
-                const double SPEED_INC = 0.02;
-                if (inputState[Game::Speedup]){
-                    gameSpeed += SPEED_INC;
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
-
-                if (inputState[Game::Slowdown]){
-                    gameSpeed -= SPEED_INC;
-                    if ( gameSpeed < SPEED_INC ){
-                        gameSpeed = SPEED_INC;
-                    }
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
-
-                if (inputState[Game::NormalSpeed]){
-                    gameSpeed = 1;
-                    Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-                }
-
-                if (inputState[Game::ReloadLevel]){
-                    try{
-                        world.reloadLevel();
-                        draw = true;
-                    } catch ( const LoadException & le ){
-                        Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
-                    }
-                }
-            }
-
-            state.force_quit |= inputState[Game::Quit];
             try{
                 console.doInput();
             } catch (const Exception::Return & r){
