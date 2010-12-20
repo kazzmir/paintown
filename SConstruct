@@ -960,7 +960,10 @@ def getDataPath():
     try:
         return ARGUMENTS['data']
     except KeyError:
-        return 'data'
+        if useWii():
+            return 'sd:/data'
+        else:
+            return 'data'
 
 debug = getDebug()
 dataPath = getDataPath()
