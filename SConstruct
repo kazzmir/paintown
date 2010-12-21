@@ -225,7 +225,23 @@ def checkSDL(context):
             context.sconf.env = tmp
             return False
 
-    ok = int(tryNormal() or tryMoveLibs())
+    def tryFramework():
+        tmp = context.env.Clone()
+        env = context.env
+        env.Append(FRAMEWORKS = ['SDL', 'Cocoa'])
+        env.Append(CPPDEFINES = ['USE_SDL'])
+        env.Append(CPPPATH = ['/Library/Frameworks/SDL.framework/Headers',
+                              '/System/Library/Frameworks/Foundation.framework/Headers'])
+        main = env.StaticLibrary('src/util/sdl/SDLMain.m')
+        env.Append(LIBS = [main])
+        m = build('c')
+        if m:
+            return True
+        else:
+            context.sconf.env = tmp
+            return False
+
+    ok = int(tryNormal() or tryMoveLibs() or tryFramework())
     context.Result(colorResult(ok))
     return ok
 
@@ -252,8 +268,12 @@ def checkStaticSDL(context):
     context.Message("Checking for static SDL... ")
     env = context.env
 
-    env.ParseConfig('sdl-config --static-libs --cflags')
-    env.Append(CPPDEFINES = ['USE_SDL'])
+    try:
+        env.ParseConfig('sdl-config --static-libs --cflags')
+        env.Append(CPPDEFINES = ['USE_SDL'])
+    except Exception:
+        context.Result(colorResult(0))
+        return 0
 
     if False:
         sdl = env.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')

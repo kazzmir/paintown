@@ -14,11 +14,13 @@ fi
 
 cp paintown-static paintown-$version
 rm -rf paintown-$version.app
-fixbundle paintown-$version -v $version -V "Paintown $version"
-cp scripts.zip $resources
+echo "Create bundle"
+fixbundle paintown-$version -v $version -V "Paintown $version" misc/icon.bmp
+# cp scripts.zip $resources
 cp editor/editor.jar $resources
 cp editor/run.sh $resources
 (cd $resources; svn export https://paintown.svn.sf.net/svnroot/paintown/data; rm -rf $resources/graveyard)
+echo "Create .dmg file"
 buildDMG.pl -compressionLevel 9 -dmgName paintown-$version paintown-$version.app/
 echo "Created paintown-$version.dmg"
 ls -l paintown-$version.dmg

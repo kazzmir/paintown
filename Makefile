@@ -1,5 +1,7 @@
 .PHONY: all doc static quiet clean win nsis count test
 
+osx_version="3-4-0"
+
 all:
 	@scons -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
@@ -35,6 +37,10 @@ buildbot_cmake:
 	-rm -rf b
 	-mkdir b
 	cd b; cmake ..; $(MAKE)
+
+# Special target for setting up an OSX build
+osx:
+	@scons -j `python misc/cores.py` static data=paintown-${osx_version}.app/Contents/Resources/data
 
 static:
 	@scons -j `python misc/cores.py` static
