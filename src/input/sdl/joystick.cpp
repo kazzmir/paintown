@@ -50,68 +50,32 @@ JoystickInput SDLJoystick::readAll(){
     if (hats > 0){
         int hat = SDL_JoystickGetHat(joystick, 0);
         if ((hat & SDL_HAT_UP) == SDL_HAT_UP){
-#ifdef WII
-            input.right = true;
-#else
             input.up = true;
-#endif
         }
         if ((hat & SDL_HAT_DOWN) == SDL_HAT_DOWN){
-#ifdef WII
-            input.left = true;
-#else
             input.down = true;
-#endif
         }
         if ((hat & SDL_HAT_LEFT) == SDL_HAT_LEFT){
-#ifdef WII
-            input.up = true;
-#else
             input.left = true;
-#endif
         }
         if ((hat & SDL_HAT_RIGHT) == SDL_HAT_RIGHT){
-#ifdef WII
-            input.down = true;
-#else
             input.right = true;
-#endif
         }
         if ((hat & SDL_HAT_RIGHTUP) == SDL_HAT_RIGHTUP){
-#ifdef WII
-            input.down = true;
-            input.left = true;
-#else
             input.right = true;
             input.up = true;
-#endif
         }
         if ((hat & SDL_HAT_RIGHTDOWN) == SDL_HAT_RIGHTDOWN){
-#ifdef WII
-            input.down = true;
-            input.left = true;
-#else
             input.right = true;
             input.down = true;
-#endif
         }
         if ((hat & SDL_HAT_LEFTDOWN) == SDL_HAT_LEFTDOWN){
-#ifdef WII
-            input.up = true;
-            input.left = true;
-#else
             input.left = true;
             input.down = true;
-#endif
         }
         if ((hat & SDL_HAT_LEFTUP) == SDL_HAT_LEFTUP){
-#ifdef WII
-            input.up = true;
-            input.right = true;
-#else
             input.left = true;
             input.up = true;
-#endif
         }
     }
 
