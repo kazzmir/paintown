@@ -21,6 +21,7 @@ server_ip = '10.0.2.2'
 # network settings in jon's virtual box 
 # server_ip = '192.168.90.2'
 quit_message = '**quit**'
+clear_errors_message = '**clear-errors**'
 transfer_message = '**transfer**'
 paintown_version = '3.4.0'
 
@@ -67,7 +68,7 @@ def client_side():
                 out = stdout.readline()
             process.wait()
             if process.returncode != 0:
-                log_debug("'%s' failed!" % args.join(' '))
+                log_debug("'%s' failed!" % ' '.join([str(x) for x in args]))
                 connection.sendall("*FAILURE* '%s' did not succeed. returncode was %s" % process.returncode)
                 raise CommandFailure(args)
 
@@ -85,6 +86,7 @@ def client_side():
         try:
             line = re.compile('(.*)\n\n')
             data = ""
+            ignore = False
             while True:
                 more = connection.recv(4096)
                 if not more:
@@ -94,6 +96,11 @@ def client_side():
                 get = line.match(data)
                 while get != None:
                     command = get.group(1)
+                    if ignore:
+                        if command == clear_errors_message:
+                            ignore = False
+                        else:
+                            continue
                     if command == quit_message:
                         connection.close()
                         return
@@ -193,6 +200,10 @@ def server_side(make_commands):
         receive.start()
         send_command(connection, '%s %d misc/%s' % (transfer_message, transfer_port, file))
 
+        # If an error occurs in the guest then he will skip all commands until
+        # he sees the **clear-errors** message and then will continue to process
+        # commands
+        send_command(connection, clear_errors_message)
         # Wait 5 seconds to give time for the quit message to reach the
         # client script.
         send_command(connection, 'shutdown -s -f -t 5')
