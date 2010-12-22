@@ -2306,6 +2306,7 @@ void OptionLanguage::run(const Menu::Context & context){
 
         virtual void run(const ::Menu::Context & context){
             Configuration::setLanguage(getText());
+            Configuration::saveConfiguration();
             throw ::Menu::MenuException(__FILE__, __LINE__);
         }
     };
