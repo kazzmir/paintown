@@ -678,19 +678,22 @@ std::string OptionFullscreen::getText(){
 void OptionFullscreen::logic(){;
 }
 
+static void changeScreenMode(){
+    Configuration::setFullscreen(!Configuration::getFullscreen());
+    int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
+    Bitmap::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
+}
+
 void OptionFullscreen::run(const Menu::Context & context){
+    changeScreenMode();
 }
 
 bool OptionFullscreen::leftKey(){
-    Configuration::setFullscreen( !Configuration::getFullscreen() );
-    int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-    Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
+    changeScreenMode();
     return true;
 }
 bool OptionFullscreen::rightKey(){
-    Configuration::setFullscreen( !Configuration::getFullscreen() );
-    int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-    Bitmap::setGraphicsMode( gfx, Global::getScreenWidth(), Global::getScreenHeight() );
+    changeScreenMode();
     return true;
 }
 
