@@ -104,6 +104,8 @@ def client_side():
                             ignore = False
                         else:
                             log_debug("Ignoring '%s'" % command)
+                    elif command == clear_errors_message:
+                        ignore = False
                     elif command == quit_message:
                         connection.close()
                         return
