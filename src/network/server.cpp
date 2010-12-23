@@ -273,6 +273,7 @@ static void createClients(const vector<Client*> & clients, vector<Network::Socke
     for (vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++){
         Client * client = *it;
         debug(1) << "Setting up client " << client->getName() << endl;
+        Global::info("Setting up client " + client->getName());
         Socket socket = client->getSocket();
         sockets.push_back(socket);
         debug(1) << "Read character path from " << id << endl;
@@ -281,6 +282,7 @@ static void createClients(const vector<Client*> & clients, vector<Network::Socke
         message >> type;
         if (type == World::CREATE_CHARACTER){
             int alliance = playerAlliance();
+            Global::info(" creating " + message.path);
             Paintown::Character * client_character = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
             characterToSocket[client_character] = socket;
             /* FIXME: Don't need this line now that NetworkPlayer exists.
@@ -312,6 +314,7 @@ static void createClients(const vector<Client*> & clients, vector<Network::Socke
         }
     }
 
+    Global::info("Notify all clients");
     for (vector<Message>::iterator it = clientInfos.begin(); it != clientInfos.end(); it++){
         sendToAll(sockets, *it);
     }
@@ -349,22 +352,47 @@ static void playGame(vector<Client*> & clients){
 
         map<Paintown::Object::networkid_t, string> clientNames;
 
-        createClients(clients, sockets, clientNames, characterToSocket, players);
+        class ClientContext: public Loader::LoadingContext {
+        public:
+            ClientContext(const vector<Client*> & clients,
+                          vector<Network::Socket> & sockets,
+                          map<Paintown::Object::networkid_t, string> & clientNames,
+                          map<Paintown::Object*, Socket> & characterToSocket,
+                          vector<Paintown::Object *> & players):
+            clients(clients),
+            sockets(sockets),
+            clientNames(clientNames),
+            characterToSocket(characterToSocket),
+            players(players){
+            }
 
-        /* send all created characters to all clients */
-        for (vector<Paintown::Object *>::iterator it = players.begin(); it != players.end(); it++){
-            Paintown::Character * c = (Paintown::Character *) *it;
-            Filesystem::RelativePath path = Filesystem::cleanse(c->getPath());
-            // path.erase( 0, Util::getDataPath().length() );
-            Message add;
-            add << World::CREATE_CHARACTER;
-            add << c->getId();
-            add << c->getAlliance();
-            add.path = path.path();
-            sendToAll(sockets, add);
-        }
+            const vector<Client*> & clients;
+            vector<Network::Socket> & sockets;
+            map<Paintown::Object::networkid_t, string> & clientNames;
+            map<Paintown::Object*, Socket> & characterToSocket;
+            vector<Paintown::Object *> & players;
 
-        int showHelp = 800;
+            virtual void load(){
+                createClients(clients, sockets, clientNames, characterToSocket, players);
+
+                /* send all created characters to all clients */
+                for (vector<Paintown::Object *>::iterator it = players.begin(); it != players.end(); it++){
+                    Paintown::Character * c = (Paintown::Character *) *it;
+                    Filesystem::RelativePath path = Filesystem::cleanse(c->getPath());
+                    // path.erase( 0, Util::getDataPath().length() );
+                    Message add;
+                    add << World::CREATE_CHARACTER;
+                    add << c->getId();
+                    add << c->getAlliance();
+                    add.path = path.path();
+                    sendToAll(sockets, add);
+                }
+            }
+        };
+
+        ClientContext context(clients, sockets, clientNames, characterToSocket, players);
+        Loader::loadScreen(context, levelInfo);
+
         for (vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
             string level = *it;
             debug(1) << "Sending level '" << level << "'" << endl;
@@ -400,7 +428,6 @@ static void playGame(vector<Client*> & clients){
             world.startMessageHandlers();
 
             bool played = Game::playLevel(world, players);
-            showHelp = 0;
 
             ObjectFactory::destroy();
             HeartFactory::destroy();
@@ -437,7 +464,6 @@ static void playGame(vector<Client*> & clients){
         gameOver.id = 0;
         gameOver << World::GAME_OVER;
         sendToAll(sockets, gameOver);
-
     } catch ( const LoadException & le ){
         debug(0) << "Load exception: " + le.getTrace() << endl;
     } catch ( const Exception::Return & re ){
