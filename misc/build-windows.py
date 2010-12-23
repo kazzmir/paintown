@@ -114,7 +114,11 @@ def client_side():
                         send_file(connection, port, file)
                     else:
                         log_debug("Got command '%s'" % command)
-                        out = do_command(command, connection)
+                        try:
+                            out = do_command(command, connection)
+                        except Exception, e:
+                            log_error("Got an error.. closing the connection: " + str(e))
+                            ignore = True
 
                     # chop of the command from the buffer
                     data = data[(len(command) + 2):]
