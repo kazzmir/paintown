@@ -69,7 +69,7 @@ def client_side():
             process.wait()
             if process.returncode != 0:
                 log_debug("'%s' failed!" % ' '.join([str(x) for x in args]))
-                connection.sendall("*FAILURE* '%s' did not succeed. returncode was %s" % process.returncode)
+                connection.sendall("*FAILURE* '%s' did not succeed. returncode was %s" % (args, process.returncode))
                 raise CommandFailure(args)
 
     def send_file(connection, port, path):
