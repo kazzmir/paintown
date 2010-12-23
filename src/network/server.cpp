@@ -266,6 +266,8 @@ static void playGame(vector<Client*> & clients){
          * a font set and a background.
          */
         context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, 20, 20)));
+        Bitmap normalBackground(Global::titleScreen().path());
+        context.addBackground(normalBackground);
         Level::LevelInfo levelInfo = doLevelMenu("/levels", context);
 
         /* show the loading screen */

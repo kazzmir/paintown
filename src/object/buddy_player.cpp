@@ -33,35 +33,35 @@ leader( leader ){
 }
 	
 void BuddyPlayer::draw( Bitmap * work, int rel_x, int rel_y ){
-	Character::draw(work, rel_x, rel_y);
+    Character::draw(work, rel_x, rel_y);
 
-	int x1, y1;
-	NamePlacer::getPlacement( x1, y1, name_id );
-	
-	if ( icon )
-		icon->draw( x1, y1, *work );
+    int x1, y1;
+    NamePlacer::getPlacement( x1, y1, name_id );
 
-	int hasIcon = icon ? icon->getWidth() : 0;
-	
+    if ( icon )
+        icon->draw( x1, y1, *work );
 
-	if ( show_life < 0 ){
-		show_life = 0;
-	}
+    int hasIcon = icon ? icon->getWidth() : 0;
 
-	const Font & player_font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-	const string & name = getName();
-	int nameHeight = player_font.getHeight( name ) / 2;
-	nameHeight = 20 / 2;
-	FontRender * render = FontRender::getInstance();
-	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
-	drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
-	// int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
-	// render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+
+    if ( show_life < 0 ){
+        show_life = 0;
+    }
+
+    const Font & player_font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const string & name = getName();
+    int nameHeight = player_font.getHeight( name ) / 2;
+    nameHeight = 20 / 2;
+    FontRender * render = FontRender::getInstance();
+    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
+    drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
+    // int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
+    // render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
 
 }
 	
 void BuddyPlayer::drawLifeBar( int x, int y, Bitmap * work ){
-	drawLifeBar( x, y, show_life, work );
+    drawLifeBar( x, y, show_life, work );
 }
 	
 Object * BuddyPlayer::copy(){

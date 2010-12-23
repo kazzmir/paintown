@@ -306,7 +306,7 @@ const PackReader::File & PackReader::getFile(const std::string & path){
         return files.find(lowercase(path))->second;
     }
     ostringstream out;
-    out << "No suck pak file '" << path << "'";
+    out << "No such pak file '" << path << "'";
     throw PackError(__FILE__, __LINE__, out.str());
 }
     

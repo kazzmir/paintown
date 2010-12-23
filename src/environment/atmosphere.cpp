@@ -405,13 +405,16 @@ void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * 
         }
     }
 
-    for (int i = objectPuddles.size(); i < 5; i++){
-        Paintown::Object * who = (*objects)[Util::rnd(objects->size())];
-        int x = who->getRX() + Util::rnd(-who->getWidth(), who->getWidth());
-        int y = who->getRY() - Util::rnd(who->getHeight());
-        if (who->touchPoint(x, y)){
-            int size = Util::rnd(4) + 2;
-            objectPuddles.push_back(new Puddle(x, y, size));
+    /* create droplets on characters */
+    if (objects != NULL && objects->size() > 0){
+        for (int i = objectPuddles.size(); i < 5; i++){
+            Paintown::Object * who = (*objects)[Util::rnd(objects->size())];
+            int x = who->getRX() + Util::rnd(-who->getWidth(), who->getWidth());
+            int y = who->getRY() - Util::rnd(who->getHeight());
+            if (who->touchPoint(x, y)){
+                int size = Util::rnd(4) + 2;
+                objectPuddles.push_back(new Puddle(x, y, size));
+            }
         }
     }
 

@@ -1457,11 +1457,11 @@ bool Character::collision( ObjectAttack * obj ){
 }
 	
 void Character::drawLifeBar( int x, int y, Bitmap * work ){
-	drawLifeBar( x, y, getHealth(), work );
+    drawLifeBar( x, y, getHealth(), work );
 }
 	
 /* draw a nifty translucent life bar */
-void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
+void Character::drawLifeBar(int x, int y, int health, Bitmap * work){
     TranslucentBitmap translucent(*work);
     // Bitmap::drawingMode( Bitmap::MODE_TRANS );
     Bitmap::transBlender( 0, 0, 0, 128 );
