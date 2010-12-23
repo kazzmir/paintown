@@ -208,6 +208,7 @@ static void playGame(Socket socket){
 
                 void loadLevel(Message & next){
                     Filesystem::AbsolutePath level = Filesystem::find(Filesystem::RelativePath(next.path));
+                    /* TODO: handle LoadException here */
                     this->world = new NetworkWorldClient(socket, players, level, player->getId(), clientNames);
                     Music::changeSong();
 

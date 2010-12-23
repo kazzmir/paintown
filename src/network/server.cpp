@@ -401,7 +401,50 @@ static void playGame(vector<Client*> & clients){
             loadLevel.path = level;
             sendToAll(sockets, loadLevel);
 
-            for (vector< Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
+            class GameContext: public Loader::LoadingContext {
+            public:
+                GameContext(const string & level, 
+                            vector<Network::Socket> & sockets,
+                            map<Paintown::Object*, Socket> & characterToSocket,
+                            map<Paintown::Object::networkid_t, string> & clientNames,
+                            vector<Paintown::Object *> & players):
+                world(NULL),
+                level(level),
+                sockets(sockets),
+                characterToSocket(characterToSocket),
+                clientNames(clientNames),
+                players(players){
+                }
+                
+                NetworkWorld * world;
+                string level;
+                vector<Network::Socket> & sockets;
+                map<Paintown::Object*, Socket> & characterToSocket;
+                map<Paintown::Object::networkid_t, string> & clientNames;
+                vector<Paintown::Object *> & players;
+
+                virtual ~GameContext(){
+                    delete world;
+                }
+
+                virtual void load(){
+                    debug(1) << "Create network world" << endl;
+                    /* TODO: handle LoadException here */
+                    world = new NetworkWorld(sockets, players, characterToSocket, Filesystem::find(Filesystem::RelativePath(level)), clientNames);
+
+                    debug(1) << "Load music" << endl;
+
+                    Music::changeSong();
+
+                    /* wait for an ok from all the clients, then send another
+                     * ok to continue
+                     */
+                    waitAllOk(sockets);
+                    sendAllOk(sockets);
+                }
+            };
+
+            for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++){
                 Paintown::Character * playerX = (Paintown::Character *) *it;
                 playerX->setY(200);
                 /* setMoving(false) sets all velocities to 0 */
@@ -412,19 +455,10 @@ static void playGame(vector<Client*> & clients){
                 playerX->setStatus(Paintown::Status_Falling);
             }
 
-            debug(1) << "Create network world" << endl;
-            NetworkWorld world(sockets, players, characterToSocket, Filesystem::find(Filesystem::RelativePath(level)), clientNames);
+            GameContext gameContext(level, sockets, characterToSocket, clientNames, players);
+            Loader::loadScreen(gameContext, levelInfo);
 
-            debug(1) << "Load music" << endl;
-
-            Music::changeSong();
-
-            /* wait for an ok from all the clients, then send another
-             * ok to continue
-             */
-            waitAllOk(sockets);
-            sendAllOk(sockets);
-
+            NetworkWorld & world = *gameContext.world;
             world.startMessageHandlers();
 
             bool played = Game::playLevel(world, players);
