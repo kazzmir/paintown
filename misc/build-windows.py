@@ -25,6 +25,10 @@ clear_errors_message = '**clear-errors**'
 transfer_message = '**transfer**'
 paintown_version = '3.4.0'
 
+class CommandFailure(Exception):
+    def __init__(self, what):
+        Exception.__init__(what)
+
 # higher numbers of verbose output more stuff
 verbose = 1
 
