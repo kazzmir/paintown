@@ -24,7 +24,7 @@ public:
 	virtual void drawForeground(Bitmap * work, int x);
 	virtual void drawFront(Bitmap * work, int x);
 	virtual void drawScreen(Bitmap * work, int x);
-	virtual void act(const Scene & level);
+	virtual void act(const Scene & level, const std::vector<Paintown::Object*>*);
     virtual void interpret(const Token * message);
 
 protected:

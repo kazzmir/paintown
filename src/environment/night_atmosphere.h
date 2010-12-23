@@ -31,7 +31,7 @@ public:
     virtual void drawForeground(Bitmap * work, int x);
     virtual void drawFront(Bitmap * work, int x);
     virtual void drawScreen(Bitmap * work, int x);
-    virtual void act(const Scene & level);
+    virtual void act(const Scene & level, const std::vector<Paintown::Object*>*);
     virtual void addLight(const int x, const int y, const int lower_width, const int upper_width, const int color, const int alpha);
     virtual void interpret(const Token * message);
 

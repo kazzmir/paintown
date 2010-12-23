@@ -4,6 +4,11 @@
 class Bitmap;
 
 #include <string>
+#include <vector>
+
+namespace Paintown{
+    class Object;
+}
 
 class Scene;
 class Token;
@@ -29,7 +34,7 @@ public:
     /* drawn on the entire screen */
     virtual void drawScreen(Bitmap * work, int x) = 0;
 
-    virtual void act(const Scene & level) = 0;
+    virtual void act(const Scene & level, const std::vector<Paintown::Object*>*) = 0;
 
     /* interpret a trigger's message */
     virtual void interpret(const Token * message) = 0;

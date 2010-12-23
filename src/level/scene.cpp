@@ -305,7 +305,7 @@ void Scene::act( int min_x, int max_x, vector< Paintown::Object * > * objects ){
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
-        atmosphere->act(*this);
+        atmosphere->act(*this, objects);
     }
 }
 

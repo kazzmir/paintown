@@ -96,7 +96,7 @@ void Object::stimulate( const Stimulation & stim ){
 void Object::moveRight( const int x ){
     moveRight((double) x);
 }
-
+        
 void Object::moveRight( const double x ){
     moveX( FACING_RIGHT, x );
 }
@@ -289,7 +289,11 @@ void Object::touch( Object * obj ){
 }
 
 ECollide * Object::getCollide() const {
-	return 0;
+    return 0;
+}
+        
+bool Object::touchPoint(int x, int y){
+    return false;
 }
 
 Object::~Object(){

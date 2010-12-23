@@ -98,6 +98,11 @@ public:
 	 */
 	virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
 
+        /* true if the point touches the character.
+         * x,y should be absolute coordinates.
+         */
+        virtual bool touchPoint(int x, int y);
+
 	/* send an arbitrary stimulation to an object */
 	virtual void stimulate( const Stimulation & stim );
 

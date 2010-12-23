@@ -1495,6 +1495,23 @@ void Character::drawLifeBar( int x, int y, int health, Bitmap * work ){
     // Bitmap::drawingMode( Bitmap::MODE_SOLID );
 }
 
+bool Character::touchPoint(int x, int y){
+    if (animation_current){
+        int relativeX = x - getRX() + getWidth() / 2;
+        int relativeY = getHeight() - (getRY() - y); 
+        // Global::debug(0) << "Test " << relativeX << ", " << relativeY << endl;
+        const Bitmap * frame = animation_current->getCurrentFrame();
+        if (frame != NULL){
+            if (frame->inRange(relativeX, relativeY) && 
+                frame->getPixel(relativeX, relativeY) != Bitmap::MaskColor()){
+                // Global::debug(0) << " good " << endl;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 int Character::getShadowX(){
 	if ( animation_current ){
 		if ( getFacing() == FACING_LEFT ){

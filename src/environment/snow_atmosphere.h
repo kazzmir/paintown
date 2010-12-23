@@ -29,16 +29,16 @@ struct Flake{
 class SnowAtmosphere: public Atmosphere {
 public:
 
-	SnowAtmosphere();	
-	virtual ~SnowAtmosphere();
+    SnowAtmosphere();	
+    virtual ~SnowAtmosphere();
 
     virtual void drawBackground(Bitmap * work, int x);
-	virtual void drawForeground(Bitmap * work, int x);
-	virtual void drawFront(Bitmap * work, int x);
+    virtual void drawForeground(Bitmap * work, int x);
+    virtual void drawFront(Bitmap * work, int x);
     virtual void drawScreen(Bitmap * work, int x);
-	virtual void act(const Scene & level);
+    virtual void act(const Scene & level, const std::vector<Paintown::Object*> *);
     virtual void interpret(const Token * message);
-	
+
 protected:
     std::vector< Flake * > flakes;
 };

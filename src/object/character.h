@@ -121,6 +121,8 @@ public:
          * calls stimulate on stimulation with the proper type
          */
 	virtual void stimulate( const Stimulation & stim );
+        
+        virtual bool touchPoint(int x, int y);
 
 	/* inherited from object */
 	virtual void thrown();

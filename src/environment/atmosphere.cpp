@@ -8,10 +8,12 @@
 #include "resource.h"
 #include "snow_atmosphere.h"
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "util/file-system.h"
 #include "util/funcs.h"
 #include "util/sound.h"
 #include "util/token.h"
+#include "object/object.h"
 #include <vector>
 
 using namespace std;
@@ -101,7 +103,7 @@ void FogAtmosphere::drawScreen(Bitmap * work, int x){
        */
 }
 
-void FogAtmosphere::act(const Scene & level){
+void FogAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * objects){
     for ( vector< Fog * >::iterator it = fogs.begin(); it != fogs.end(); it++ ){
         Fog * f = *it;
         f->ang += 1;
@@ -268,7 +270,7 @@ void NightAtmosphere::drawForeground(Bitmap * work, int x){
     */
 }
 
-void NightAtmosphere::act(const Scene & level){
+void NightAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * objects){
     if (lightning){
         if (lightningFade > 0){
             lightningFade *= 0.7;
@@ -313,18 +315,18 @@ void NightAtmosphere::interpret(const Token * message){
 
 RainAtmosphere::RainAtmosphere():
 Atmosphere(),
-    playing( false ){
+playing( false ){
 
-        rain_sound = Sound(Filesystem::find(Filesystem::RelativePath("sounds/rain.wav")).path());
+    rain_sound = Sound(Filesystem::find(Filesystem::RelativePath("sounds/rain.wav")).path());
 
-        int colors[ 2 ];
-        colors[ 0 ] = Bitmap::makeColor( 0x22, 0x66, 0x66 );
-        colors[ 1 ] = Bitmap::makeColor( 0x11, 0x44, 0x77 );
-        for ( int i = 0; i < 100; i++ ){
-            Drop * d = new Drop( Util::rnd( screenX() * 2 ) - screenX() / 2, Util::rnd( screenY() ), Util::rnd( 4 ) + 3, colors[ Util::rnd( 2 ) ] );
-            rain_drops.push_back( d );
-        }
+    int colors[ 2 ];
+    colors[0] = Bitmap::makeColor( 0x22, 0x66, 0x66 );
+    colors[1] = Bitmap::makeColor( 0x11, 0x44, 0x77 );
+    for (int i = 0; i < 100; i++){
+        Drop * d = new Drop(Util::rnd(screenX() * 2) - screenX() / 2, Util::rnd( screenY() ), Util::rnd(4) + 3, colors[Util::rnd(2)]);
+        rain_drops.push_back(d);
     }
+}
 
 RainAtmosphere::~RainAtmosphere(){
     for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
@@ -338,7 +340,6 @@ RainAtmosphere::~RainAtmosphere(){
 void RainAtmosphere::drawBackground(Bitmap * work, int x){
     const int bluish = Bitmap::makeColor(106, 184, 225);
     Bitmap::transBlender(0, 0, 0, 64);
-    Bitmap::drawingMode(Bitmap::MODE_TRANS);
     for (vector<Puddle*>::iterator it = puddles.begin(); it != puddles.end(); it++){
         Puddle * puddle = *it;
         if (puddle->x == -1000){
@@ -347,12 +348,19 @@ void RainAtmosphere::drawBackground(Bitmap * work, int x){
         // work->circle(puddle->x, puddle->y, (int)puddle->current, bluish);
         int rx = (int) puddle->current;
         int ry = (int)(puddle->current * 0.8);
-        work->ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
+        work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
     }
-    Bitmap::drawingMode(Bitmap::MODE_SOLID);
 }
 
 void RainAtmosphere::drawForeground(Bitmap * work, int x){
+    const int bluish = Bitmap::makeColor(106, 184, 225);
+    Bitmap::transBlender(0, 0, 0, 64);
+    for (vector<Puddle*>::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
+        Puddle * puddle = *it;
+        int rx = (int) puddle->current;
+        int ry = (int)(puddle->current * 0.8);
+        work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
+    }
 }
 
 void RainAtmosphere::drawFront(Bitmap * work, int x){
@@ -368,7 +376,7 @@ void RainAtmosphere::drawScreen(Bitmap * work, int x){
     }
 }
 
-void RainAtmosphere::act(const Scene & level){
+void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * objects){
 
     if ( ! playing ){
         rain_sound.playLoop();
@@ -386,7 +394,28 @@ void RainAtmosphere::act(const Scene & level){
         }
     }
 
-    while (puddles.size() < 20){
+    for (vector<Puddle*>::iterator it = objectPuddles.begin(); it != objectPuddles.end(); ){
+        Puddle * puddle = *it;
+        puddle->current += 0.3;
+        if (puddle->current >= puddle->size){
+            delete puddle;
+            it = objectPuddles.erase(it);
+        } else {
+            it++;
+        }
+    }
+
+    for (int i = objectPuddles.size(); i < 5; i++){
+        Paintown::Object * who = (*objects)[Util::rnd(objects->size())];
+        int x = who->getRX() + Util::rnd(-who->getWidth(), who->getWidth());
+        int y = who->getRY() - Util::rnd(who->getHeight());
+        if (who->touchPoint(x, y)){
+            int size = Util::rnd(4) + 2;
+            objectPuddles.push_back(new Puddle(x, y, size));
+        }
+    }
+
+    for (int i = puddles.size(); i < 20; i++){
         // int x = Util::rnd(screenX());
         int y = Util::rnd(level.getMinimumZ(), level.getMaximumZ());
         int size = Util::rnd(4) + 2;
@@ -396,18 +425,17 @@ void RainAtmosphere::act(const Scene & level){
         puddles.push_back(new Puddle(-1000, y, size));
     }
 
-    for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
+    for (vector<Drop *>::iterator it = rain_drops.begin(); it != rain_drops.end(); it++){
         Drop * d = *it;
         d->y += 7;
         d->x += 3;
-        if ( d->y > screenY() ){
-            d->y = -Util::rnd( 100 ) - 20;
+        if (d->y > screenY()){
+            d->y = -Util::rnd(100) - 20;
         }
-        if ( d->x > screenX() ){
+        if (d->x > screenX()){
             d->x -= screenX();
         }
     }
-
 }
 
 SnowAtmosphere::SnowAtmosphere():
@@ -475,7 +503,7 @@ void SnowAtmosphere::drawScreen(Bitmap * work, int x){
     }
 }
 
-void SnowAtmosphere::act(const Scene & level){
+void SnowAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * objects){
     for ( vector< Flake * >::iterator it = flakes.begin(); it != flakes.end(); it++ ){
         Flake * f = *it;
         f->dy += 0.40;
