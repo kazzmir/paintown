@@ -40,9 +40,8 @@ using namespace std;
 
 namespace Network{
 
-static std::ostream & debug( int level ){
-	Global::debug( level ) << "[server] ";
-	return Global::debug( level );
+static std::ostream & debug(int level){
+    return Global::debug(level, "[server]");
 }
 
 static void set_to_true(void * what){
@@ -92,7 +91,7 @@ static int getServerPort(){
             work.clear();
             const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
             font.printf(0, 0, Bitmap::makeColor( 255, 255, 255 ), work, input.getText(), 0);
-            work.Blit( 100, drawY, background );
+            work.Blit(100, drawY, background);
             background.BlitToScreen();
         }
         
@@ -246,6 +245,19 @@ static void sendAllOk(const vector<Socket> & sockets){
     sendToAll(sockets, ok);
 }
 
+static Level::LevelInfo selectLevels(){
+    /* then the user selects a set of levels to play */
+    Menu::Context context;
+
+    /* FIXME: get a better Menu::Context object, one that already has
+     * a font set and a background.
+     */
+    context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, 20, 20)));
+    Bitmap normalBackground(Global::titleScreen().path());
+    context.addBackground(normalBackground);
+    return doLevelMenu("/levels", context);
+}
+
 /* TODO: simplify this code */
 static void playGame(vector<Client*> & clients){
     vector< Paintown::Object * > players;
@@ -258,20 +270,9 @@ static void playGame(vector<Client*> & clients){
         Paintown::Player * player = new Paintown::Player(playerPath);
         player->setMap(remap);
         player->ignoreLives();
-        players.push_back( player );
-        /* then the user selects a set of levels to play */
-        Menu::Context context;
+        players.push_back(player);
 
-        /* FIXME: get a better Menu::Context object, one that already has
-         * a font set and a background.
-         */
-        context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, 20, 20)));
-        Bitmap normalBackground(Global::titleScreen().path());
-        context.addBackground(normalBackground);
-        Level::LevelInfo levelInfo = doLevelMenu("/levels", context);
-
-        /* show the loading screen */
-        // Loader::startLoading( &loading_screen_thread );
+        Level::LevelInfo levelInfo = selectLevels();
 
         /* reset the alliance settings */
         allAlliance = ALLIANCE_FREE_FOR_ALL;
@@ -345,7 +346,7 @@ static void playGame(vector<Client*> & clients){
         }
 
         /* send all created characters to all clients */
-        for ( vector<Paintown::Object *>::iterator it = players.begin(); it != players.end(); it++ ){
+        for (vector<Paintown::Object *>::iterator it = players.begin(); it != players.end(); it++){
             Paintown::Character * c = (Paintown::Character *) *it;
             Filesystem::RelativePath path = Filesystem::cleanse(c->getPath());
             // path.erase( 0, Util::getDataPath().length() );
@@ -356,15 +357,6 @@ static void playGame(vector<Client*> & clients){
             add.path = path.path();
             sendToAll(sockets, add);
         }
-
-        /*
-           Message addServer;
-           addServer << World::CREATE_CHARACTER;
-           addServer << player->getId();
-           addServer << player->getAlliance();
-           addServer << ((Character *)player)->getPath().substr( Util::getDataPath().length() );
-           sendToAll( sockets, addServer );
-           */
 
         int showHelp = 800;
         for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
@@ -401,7 +393,6 @@ static void playGame(vector<Client*> & clients){
 
             world.startMessageHandlers();
 
-            // Loader::stopLoading(loading_screen_thread);
             bool played = Game::playLevel(world, players);
             showHelp = 0;
 
@@ -409,7 +400,6 @@ static void playGame(vector<Client*> & clients){
             HeartFactory::destroy();
 
             world.stopRunning();
-            // Loader::startLoading(&loading_screen_thread);
             Message finish;
             finish << World::FINISH;
             finish.id = 0;
@@ -436,37 +426,17 @@ static void playGame(vector<Client*> & clients){
                 Global::debug(1) << "Server exiting early.." << endl;
                 break;
             }
-
-            /*
-               for ( vector< Socket >::const_iterator it = sockets.begin(); it != sockets.end(); it++ ){
-               Socket s = *it;
-               bool done = false;
-               while ( ! done ){
-               Message ok( s );
-               int type;
-               ok >> type;
-               if ( type == World::OK ){
-               Global::debug(1) << "Received ok from client " << s << endl;
-               done = true;
-               }
-               }
-
-               Message ok;
-               ok << World::OK;
-               ok.send( s );
-               }
-               */
         }
         Network::Message gameOver;
         gameOver.id = 0;
         gameOver << World::GAME_OVER;
-        sendToAll( sockets, gameOver );
+        sendToAll(sockets, gameOver);
 
     } catch ( const LoadException & le ){
-        debug( 0 ) << "Load exception: " + le.getTrace() << endl;
+        debug(0) << "Load exception: " + le.getTrace() << endl;
     } catch ( const Exception::Return & re ){
     } catch ( const NetworkException & ne ){
-        debug( 0 ) << "Network excetion: " + ne.getMessage() << endl;
+        debug(0) << "Network excetion: " + ne.getMessage() << endl;
     }
 
     for ( vector< Paintown::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
@@ -476,8 +446,6 @@ static void playGame(vector<Client*> & clients){
     for ( vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++ ){
         Network::close((*it)->getSocket());
     }
-
-    // Loader::stopLoading(loading_screen_thread);
 }
 
 static void popup( const Font & font, const string & message ){

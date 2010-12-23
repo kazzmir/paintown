@@ -90,6 +90,7 @@ usePrx = makeUseEnvironment('prx', False)
 isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
 useMinpspw = makeUseEnvironment('minpspw', False)
+useNDS = makeUseEnvironment('nds', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
 nativeCompile = makeUseEnvironment('native', False)
@@ -644,6 +645,16 @@ def getEnvironment(debug):
                                '-wd383', '-wd869',
                                '-wd1599'])
         return env
+
+    def nds(env):
+        print "Environment is nds"
+        path = '/opt/devkitARM'
+        bin_path = path + '/arm-eabi/bin'
+        libexec_path = path + '/libexec/gcc/arm-eabi/4.5.1'
+        env.PrependENVPath('PATH', bin_path)
+        env.PrependENVPath('PATH', libexec_path)
+        return env
+
     # minpspw for psp dev environment on windows (and linux?)
     def minpspw(env):
         print "Environment is minpspw (psp development)"
@@ -807,6 +818,8 @@ pspnet_inet
             if useIntel():
                 print "Using the intel compiler"
                 return intel(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
+            elif useNDS():
+                return nds(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useWii():
                 if isWindows():
                     return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
