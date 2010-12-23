@@ -258,10 +258,68 @@ static Level::LevelInfo selectLevels(){
     return doLevelMenu("/levels", context);
 }
 
+/* for each client get the player they want and send back an id */
+static void createClients(const vector<Client*> & clients, vector<Network::Socket> & sockets, map<Paintown::Object::networkid_t, string> & clientNames, map<Paintown::Object*, Socket> & characterToSocket, vector<Paintown::Object *> & players){
+    /* clients start at id 2 because the server is 1 */
+    Paintown::Object::networkid_t id = 2;
+    /* all other players will send their chosen character as a
+     * CREATE_CHARACTER message. after receiving it, send back the
+     * network id for that character.
+     */
+
+    /* bundle up all the client infos and send them after setting up the clients */
+    vector<Message> clientInfos;
+
+    for (vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++){
+        Client * client = *it;
+        debug(1) << "Setting up client " << client->getName() << endl;
+        Socket socket = client->getSocket();
+        sockets.push_back(socket);
+        debug(1) << "Read character path from " << id << endl;
+        Message message(socket);
+        int type;
+        message >> type;
+        if (type == World::CREATE_CHARACTER){
+            int alliance = playerAlliance();
+            Paintown::Character * client_character = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
+            characterToSocket[client_character] = socket;
+            /* FIXME: Don't need this line now that NetworkPlayer exists.
+             * take it out at some point.
+             */
+            ((Paintown::NetworkCharacter *)client_character)->alwaysShowName();
+
+            players.push_back(client_character);
+            client_character->setLives(1);
+            client_character->setId(id);
+            Message clientId;
+            clientId << World::SET_ID;
+            clientId << id;
+            clientId << alliance;
+            clientId.send(socket);
+
+            clientNames[id] = client->getName();
+
+            Message info;
+            info.id = 0;
+            info << World::CLIENT_INFO;
+            info << id;
+            info << client->getName();
+            clientInfos.push_back(info);
+
+            id += 1;
+        } else {
+            debug(0) << "Got a bogus message: " << type << endl;
+        }
+    }
+
+    for (vector<Message>::iterator it = clientInfos.begin(); it != clientInfos.end(); it++){
+        sendToAll(sockets, *it);
+    }
+}
+
 /* TODO: simplify this code */
 static void playGame(vector<Client*> & clients){
-    vector< Paintown::Object * > players;
-    Util::Thread::Id loading_screen_thread;
+    vector<Paintown::Object *> players;
     try{
         /* first the user selects his own player */
         Level::LevelInfo info;
@@ -278,72 +336,20 @@ static void playGame(vector<Client*> & clients){
         allAlliance = ALLIANCE_FREE_FOR_ALL;
 
         /* the server player is network id 1 */
-        Paintown::Object::networkid_t id = 1;
-        player->setId(id);
+        player->setId(1);
         /* the server's player alliance can just be ALLIANCE_PLAYER, so no
          * need to change it
          */
 
+        /* sockets for clients. why cant we get this from the Client class? */
         vector<Network::Socket> sockets;
 
         /* keep track of characters and their related sockets (clients) */
         map<Paintown::Object*, Socket> characterToSocket;
 
-        /* bundle up all the client infos and send them after setting up the clients */
-        vector<Message> clientInfos;
-
         map<Paintown::Object::networkid_t, string> clientNames;
 
-        id += 1;
-        /* all other players will send their chosen character as a
-         * CREATE_CHARACTER message. after receiving it, send back the
-         * network id for that character.
-         */
-        for ( vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++ ){
-            Client * client = *it;
-            debug(1) << "Setting up client " << client->getName() << endl;
-            Socket socket = client->getSocket();
-            sockets.push_back(socket);
-            debug(1) << "Read character path from " << id << endl;
-            Message message(socket);
-            int type;
-            message >> type;
-            if ( type == World::CREATE_CHARACTER ){
-                int alliance = playerAlliance();
-                Paintown::Character * client_character = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
-                characterToSocket[client_character] = socket;
-                /* FIXME: Don't need this line now that NetworkPlayer exists.
-                 * take it out at some point.
-                 */
-                ((Paintown::NetworkCharacter *)client_character)->alwaysShowName();
-
-                players.push_back(client_character);
-                client_character->setLives(1);
-                client_character->setId(id);
-                Message clientId;
-                clientId << World::SET_ID;
-                clientId << id;
-                clientId << alliance;
-                clientId.send(socket);
-
-                clientNames[id] = client->getName();
-
-                Message info;
-                info.id = 0;
-                info << World::CLIENT_INFO;
-                info << id;
-                info << client->getName();
-                clientInfos.push_back(info);
-
-                id += 1;
-            } else {
-                debug(0) << "Got a bogus message: " << type << endl;
-            }
-        }
-        
-        for (vector<Message>::iterator it = clientInfos.begin(); it != clientInfos.end(); it++){
-            sendToAll(sockets, *it);
-        }
+        createClients(clients, sockets, clientNames, characterToSocket, players);
 
         /* send all created characters to all clients */
         for (vector<Paintown::Object *>::iterator it = players.begin(); it != players.end(); it++){
@@ -359,7 +365,7 @@ static void playGame(vector<Client*> & clients){
         }
 
         int showHelp = 800;
-        for ( vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++ ){
+        for (vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
             string level = *it;
             debug(1) << "Sending level '" << level << "'" << endl;
             Message loadLevel;
