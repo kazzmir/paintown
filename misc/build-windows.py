@@ -103,8 +103,8 @@ def client_side():
                         if command == clear_errors_message:
                             ignore = False
                         else:
-                            continue
-                    if command == quit_message:
+                            log_debug("Ignoring '%s'" % command)
+                    elif command == quit_message:
                         connection.close()
                         return
                     elif command.split(' ')[0] == transfer_message:
