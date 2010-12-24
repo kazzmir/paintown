@@ -29,7 +29,7 @@ protected:
 };
 
 extern volatile bool done_loading;
-extern Util::Thread::Lock loading_screen_mutex;
+// extern Util::Thread::Lock loading_screen_mutex;
 
 /* deprecated, remove */
 void startLoadingX(Util::Thread::Id * thread, void * arg = 0, Kind kind = Default);

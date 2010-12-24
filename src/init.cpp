@@ -374,7 +374,7 @@ bool Global::init(int gfx){
     }
     
     /* music */
-    atexit( &dumb_exit );
+    atexit(&dumb_exit);
 
     out << "Initialize random number generator" << endl;
     /* initialize random number generator */
@@ -385,13 +385,13 @@ bool Global::init(int gfx){
 #ifdef HAVE_NETWORKING
     out << "Initialize network" << endl;
     Network::init();
-    atexit( Network::closeAll );
+    atexit(Network::closeAll);
 #endif
 
     /* this mutex is used to show the loading screen while the game loads */
-    Util::Thread::initializeLock(&Loader::loading_screen_mutex);
+    // Util::Thread::initializeLock(&Loader::loading_screen_mutex);
 
-    out<<"-- END init --"<<endl;
+    out << "-- END init --" << endl;
 
     /*
     const Font & font = Font::getDefaultFont();

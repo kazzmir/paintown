@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Loader{
 
-Util::Thread::Lock loading_screen_mutex;
+// Util::Thread::Lock loading_screen_mutex;
 volatile bool done_loading = true;
 
 typedef struct pair{
@@ -54,6 +54,7 @@ private:
 
 void * loadingScreenSimple1(void * arg);
 
+#if 0
 void startLoading(Util::Thread::Id * thread, void * arg, Kind kind){
     bool create = false;
     Util::Thread::acquireLock(&loading_screen_mutex);
@@ -80,6 +81,7 @@ void stopLoading(Util::Thread::Id thread){
         Util::Thread::joinThread(thread);
     }
 }
+#endif
 
 static void setupBackground(const Bitmap & background, int load_x, int load_y, int load_width, int load_height, int infobox_x, int infobox_y, int infoWidth, int infoHeight, const Bitmap & infoBackground, const Bitmap & work){
     background.Blit(load_x, load_y, load_width, load_height, 0, 0, work);
@@ -136,6 +138,7 @@ public:
 };
 
 /* FIXME: get rid of this method */
+#if 0
 void * loadingScreen(void * arg){
     int load_x = 80;
     int load_y = 220;
@@ -247,6 +250,7 @@ void * loadingScreen(void * arg){
 
     return NULL;
 }
+#endif
 
 static void loadingScreen1(LoadingContext & context, const Level::LevelInfo & levelInfo){
     int load_x = 80;
@@ -354,6 +358,7 @@ static void loadingScreen1(LoadingContext & context, const Level::LevelInfo & le
 
 /* shows some circles rotating around a center point */
 /* FIXME: get rid of this method */
+#if 0
 void * loadingScreenSimple1(void * arg){
     Bitmap work(40, 40);
     Bitmap original(40, 40);
@@ -407,6 +412,7 @@ void * loadingScreenSimple1(void * arg){
 
     return NULL;
 }
+#endif
 
 static void loadingScreenSimpleX1(LoadingContext & context, const Level::LevelInfo & levelInfo){
     Bitmap work(40, 40);
