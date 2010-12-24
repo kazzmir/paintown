@@ -206,7 +206,6 @@ enum PlayerType{
 };
 
 /*! Player1 keys for menus including keyboard shortcuts */
-/* FIXME: use the same keys as in paintown, get them from Configuration */
 inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     InputMap<Mugen::Keys> input;
     input.set(Configuration::config(0).getUp(), delay, false, Mugen::Up);
@@ -247,8 +246,8 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Configuration::config(0).getRight(), delay, false, Mugen::Left);
 
     input.set(Configuration::config(0).getJoystickUp(), delay, false, Mugen::Up);
-    input.set(Configuration::config(0).getJoystickLeft(), delay, false, Mugen::Left);
-    input.set(Configuration::config(0).getJoystickRight(), delay, false, Mugen::Right);
+    input.set(Configuration::config(0).getJoystickRight(), delay, false, Mugen::Left);
+    input.set(Configuration::config(0).getJoystickLeft(), delay, false, Mugen::Right);
     input.set(Configuration::config(0).getJoystickDown(), delay, false, Mugen::Down);
 
     input.set(Configuration::config(0).getAttack1(), delay, false, Mugen::A);
