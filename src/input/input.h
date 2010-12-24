@@ -20,6 +20,9 @@ public:
         Attack3 = 6,
         Jump = 7,
         Grab = 8,
+        Attack4 = 9,
+        Attack5 = 10,
+        Attack6 = 11,
     };
 
     /* TODO: remove this method.. useless now. */

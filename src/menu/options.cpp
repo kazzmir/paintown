@@ -1004,8 +1004,11 @@ static int getKey(int player, OptionKey::keyType k){
             return Configuration::config( player ).getAttack3();
             break;
         case OptionKey::attack4:
+            return Configuration::config(player).getAttack4();
         case OptionKey::attack5:
+            return Configuration::config(player).getAttack5();
         case OptionKey::attack6:
+            return Configuration::config(player).getAttack6();
         default:
             break;
     }
@@ -1013,40 +1016,44 @@ static int getKey(int player, OptionKey::keyType k){
     return 0;
 }
 
-static void setKey(int player, OptionKey::keyType k, int key)
-{
-	switch(k)
-	{
-		case OptionKey::up:
-			Configuration::config( player ).setUp( key );
-			break;
-		case OptionKey::down:
-			Configuration::config( player ).setDown( key );
-			break;
-		case OptionKey::left:
-			Configuration::config( player ).setLeft( key );
-			break;
-		case OptionKey::right:
-			Configuration::config( player ).setRight( key );
-			break;
-		case OptionKey::jump:
-			Configuration::config( player ).setJump( key );
-			break;
-		case OptionKey::attack1:
-			Configuration::config( player ).setAttack1( key );
-			break;
-		case OptionKey::attack2:
-			Configuration::config( player ).setAttack2( key );
-			break;
-		case OptionKey::attack3:
-			Configuration::config( player ).setAttack3( key );
-			break;
-		case OptionKey::attack4:
-		case OptionKey::attack5:
-		case OptionKey::attack6:
-		default:
-			break;
-	}
+static void setKey(int player, OptionKey::keyType k, int key){
+    switch(k){
+        case OptionKey::up:
+            Configuration::config(player).setUp(key);
+            break;
+        case OptionKey::down:
+            Configuration::config(player).setDown(key);
+            break;
+        case OptionKey::left:
+            Configuration::config(player).setLeft(key);
+            break;
+        case OptionKey::right:
+            Configuration::config(player).setRight(key);
+            break;
+        case OptionKey::jump:
+            Configuration::config(player).setJump(key);
+            break;
+        case OptionKey::attack1:
+            Configuration::config(player).setAttack1(key);
+            break;
+        case OptionKey::attack2:
+            Configuration::config(player).setAttack2(key);
+            break;
+        case OptionKey::attack3:
+            Configuration::config(player).setAttack3(key);
+            break;
+        case OptionKey::attack4:
+            Configuration::config(player).setAttack4(key);
+            break;
+        case OptionKey::attack5:
+            Configuration::config(player).setAttack5(key);
+            break;
+        case OptionKey::attack6:
+            Configuration::config(player).setAttack6(key);
+            break;
+        default:
+            break;
+    }
 }
 
 /*

@@ -32,14 +32,17 @@ public:
     int getKey( Input::PaintownInput which, int facing ) const;
     JoystickInput getJoystickKey(Input::PaintownInput which, int facing) const; 
 
-    void setRight( int i );
-    void setLeft( int i );
-    void setUp( int i );
-    void setDown( int i );
-    void setAttack1( int i );
-    void setAttack2( int i );
-    void setAttack3( int i );
-    void setJump( int i );
+    void setRight(int i);
+    void setLeft(int i);
+    void setUp(int i);
+    void setDown(int i);
+    void setAttack1(int i);
+    void setAttack2(int i);
+    void setAttack3(int i);
+    void setAttack4(int i);
+    void setAttack5(int i);
+    void setAttack6(int i);
+    void setJump(int i);
 
     int getRight() const;
     int getLeft() const;
@@ -48,16 +51,19 @@ public:
     int getAttack1() const;
     int getAttack2() const;
     int getAttack3() const;
+    int getAttack4() const;
+    int getAttack5() const;
+    int getAttack6() const;
     int getJump() const;
 
-    void setJoystickRight(JoystickInput i );
-    void setJoystickLeft(JoystickInput i );
-    void setJoystickUp(JoystickInput i );
-    void setJoystickDown(JoystickInput i );
-    void setJoystickAttack1(JoystickInput i );
-    void setJoystickAttack2(JoystickInput i );
-    void setJoystickAttack3(JoystickInput i );
-    void setJoystickJump(JoystickInput i );
+    void setJoystickRight(JoystickInput i);
+    void setJoystickLeft(JoystickInput i);
+    void setJoystickUp(JoystickInput i);
+    void setJoystickDown(JoystickInput i);
+    void setJoystickAttack1(JoystickInput i);
+    void setJoystickAttack2(JoystickInput i);
+    void setJoystickAttack3(JoystickInput i);
+    void setJoystickJump(JoystickInput i);
 
     JoystickInput getJoystickRight() const;
     JoystickInput getJoystickLeft() const;
@@ -82,7 +88,7 @@ public:
     static int getMusicVolume();
     static void setMusicVolume(int volume);
     static int getNpcBuddies();
-    static void setNpcBuddies( int i );
+    static void setNpcBuddies(int i);
     static PlayMode getPlayMode();
     static void setPlayMode(PlayMode mode);
     static void setScreenWidth(int i);
@@ -122,6 +128,7 @@ protected:
     static Token * saveJoystick( int num, Configuration * configuration );
 
     static void setProperty(std::string name, std::string value);
+    void setKey(int * key, int value);
 
 private:
     /* keyboard */
@@ -132,6 +139,9 @@ private:
     int attack1;
     int attack2;
     int attack3;
+    int attack4;
+    int attack5;
+    int attack6;
     int jump;
 
     /* joystick */

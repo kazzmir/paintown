@@ -356,6 +356,9 @@ const char * Player::keyToName(Input::PaintownInput key){
         case Input::Attack1 : return "attack1";
         case Input::Attack2 : return "attack2";
         case Input::Attack3 : return "attack3";
+        case Input::Attack4 : return "attack4";
+        case Input::Attack5 : return "attack5";
+        case Input::Attack6 : return "attack6";
         case Input::Jump : return "jump";
         case Input::Grab : return "grab";
         case Input::Unknown : return "unknown";
