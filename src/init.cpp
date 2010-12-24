@@ -333,7 +333,7 @@ static void initSystem(ostream & out){
 }
 #endif
 
-bool Global::init( int gfx ){
+bool Global::init(int gfx){
 
     ostream & out = Global::debug( 0 );
     out << "-- BEGIN init --" << endl;
@@ -358,6 +358,11 @@ bool Global::init( int gfx ){
     Configuration::loadConfigurations();
     const int sx = Configuration::getScreenWidth();
     const int sy = Configuration::getScreenHeight();
+    if (gfx == -1){
+        gfx = Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED;
+    } else {
+        Configuration::setFullscreen(gfx == Global::FULLSCREEN);
+    }
     
     /* set up the screen */
     int gfxCode = Bitmap::setGraphicsMode(gfx, sx, sy);

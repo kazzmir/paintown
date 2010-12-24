@@ -751,7 +751,7 @@ void Configuration::saveConfiguration(){
 
     Token * fullscreen = new Token();
     *fullscreen << config_fullscreen << Configuration::getFullscreen();
-    head.addToken( fullscreen );
+    head.addToken(fullscreen);
 
     Token * screen = new Token();
     *screen << config_screen_size << Configuration::getScreenWidth() << Configuration::getScreenHeight();

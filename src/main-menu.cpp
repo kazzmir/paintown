@@ -31,8 +31,6 @@
 
 using namespace std;
 
-static int gfx = Global::WINDOWED;
-
 #define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
 static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-path", "path"};
@@ -175,6 +173,9 @@ static void runMugenTraining(const string & player1, const string & player2, con
 
 int paintown_main( int argc, char ** argv ){
     
+    /* -1 means use whatever is in the configuration */
+    int gfx = -1;
+
     bool music_on = true;
     bool joystick_on = true;
     bool mugen = false;
@@ -208,7 +209,7 @@ int paintown_main( int argc, char ** argv ){
 #undef ADD_ARGS
 
     for ( int q = 1; q < argc; q++ ){
-        if ( isArg( argv[ q ], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG) ) ){
+        if (isArg(argv[q], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG))){
             gfx = Global::FULLSCREEN;
         } else if ( isArg( argv[ q ], DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG) ) ){
             q += 1;
@@ -273,10 +274,10 @@ int paintown_main( int argc, char ** argv ){
      *  ...
      */
     if (! Global::init(gfx)){
-        Global::debug( 0 ) << "Could not initialize system" << endl;
+        Global::debug(0) << "Could not initialize system" << endl;
         return -1;
     } else {
-        Configuration::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
+        // Configuration::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
     }
     diff.endTime();
     Global::debug(0) << diff.printTime("Init took") << endl;
