@@ -4,6 +4,7 @@
 #include "globals.h"
 // #include "defs.h"
 
+#include "configuration.h"
 #include "util/thread.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -37,17 +38,19 @@ static void * bogus_thread( void * x){
 	return NULL;
 }
 
-Music::Music( bool on ):
+Music::Music(bool on):
 playing(false),
 enabled(on),
 fading(0),
 musicPlayer(NULL),
 currentSong(""){
 
-    if ( instance != NULL ){
+    if (instance != NULL){
         cerr << "Trying to instantiate music object twice!" << endl;
         return;
     }
+
+    volume = (double) Configuration::getMusicVolume() / 100.0;
 
     instance = this;
 
@@ -244,7 +247,7 @@ bool Music::loadSong( const string & song ){
 }
 
 void Music::_play(){
-    if ( playing == false && musicPlayer != NULL ){
+    if (playing == false && musicPlayer != NULL){
         musicPlayer->play();
         playing = true;
     }
@@ -285,7 +288,7 @@ void Music::_soften(){
         volume = 0.0;
     }
 
-    _setVolume( volume );
+    _setVolume(volume);
 }
 
 void Music::louden(){
@@ -306,7 +309,7 @@ void Music::_louden(){
 }
 
 void Music::mute(){
-    setVolume( 0 );
+    setVolume(0);
 }
 
 void Music::setVolume( double vol ){
@@ -324,7 +327,7 @@ void Music::setVolume( double vol ){
     UNLOCK;
 }
 
-void Music::_setVolume( double vol ){
+void Music::_setVolume(double vol){
     if (musicPlayer){
         musicPlayer->setVolume(vol);
     }
@@ -412,6 +415,9 @@ bool Music::internal_loadSong( const char * path ){
 #endif
         } else {
             return false;
+        }
+        if (musicPlayer != NULL){
+            musicPlayer->setVolume(volume);
         }
     } catch (const Exception::Base & ex){
         //! FIXME Change from Base exception in the futer

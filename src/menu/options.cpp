@@ -2265,6 +2265,7 @@ void OptionMusic::changeMusic(int much){
     }
 
     Configuration::setMusicVolume(volume);
+    Music::setVolume((double) volume / 100.0);
 }
 
 bool OptionMusic::leftKey(){
