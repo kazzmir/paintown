@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Converts all png files with an alpha channel to magic pink
+
+doit(){
+        in=$1
+        out=$2
+        convert $in -alpha opaque -fill "#ff00ff" $out
+}
+
+for i in $(find . -name "*.png")
+do
+        echo $i
+        doit $i $i
+done
