@@ -160,9 +160,9 @@ music_file( NULL ){
 }
 */
 
-void Music::fadeIn( double vol ){
+void Music::fadeIn(double vol){
     LOCK;{
-        volume = vol;
+        // volume = vol;
         instance->_fadeIn();
     }
     UNLOCK;
@@ -170,24 +170,25 @@ void Music::fadeIn( double vol ){
 
 void Music::fadeOut( double vol ){
     LOCK;{
-        volume = vol;
+        // volume = vol;
         instance->_fadeOut();
     }
     UNLOCK;
 }
 
+/* FIXME */
 void Music::_fadeIn(){
-    fading = 1;
+    // fading = 1;
 }
 
 void Music::_fadeOut(){
-    fading = -1;
+    // fading = -1;
 }
 
 bool Music::loadSong( const char * song ){
     bool loaded = false;
     LOCK;{
-        loaded = instance->internal_loadSong( song );
+        loaded = instance->internal_loadSong(song);
     }
     UNLOCK;
     return loaded;
@@ -282,7 +283,7 @@ void Music::soften(){
 }
 
 void Music::_soften(){
-    if ( volume > 0.1 ){
+    if (volume > 0.1){
         volume -= 0.1;
     } else {
         volume = 0.0;
@@ -305,7 +306,7 @@ void Music::_louden(){
         volume = 1.0;
     }
 
-    _setVolume( volume );
+    _setVolume(volume);
 }
 
 void Music::mute(){
