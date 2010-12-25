@@ -963,6 +963,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     };
 
     PlayerLoader playerLoader(player1, player2);
+    playerLoader.start();
     
     while (!done || fader.getState() != Gui::FadeTool::EndFade){
 
