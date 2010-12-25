@@ -649,10 +649,26 @@ def getEnvironment(debug):
     def nds(env):
         print "Environment is nds"
         path = '/opt/devkitARM'
-        bin_path = path + '/arm-eabi/bin'
-        libexec_path = path + '/libexec/gcc/arm-eabi/4.5.1'
+        bin_path = path + '/bin'
+        # libexec_path = path + '/libexec/gcc/arm-eabi/4.5.1'
+        prefix = 'arm-eabi-'
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        env['CC'] = setup(prefix, 'gcc')
+        env['LD'] = setup(prefix, 'ld')
+        env['CXX'] = setup(prefix, 'g++')
+        env['AS'] = setup(prefix, 'as')
+        env['AR'] = setup(prefix, 'ar')
+        env['OBJCOPY'] = setup(prefix, 'objcopy')
+
+        env.Append(CPPPATH = [setup(path, "/libnds/include"),
+                              setup(path, "/libnds/include/SDL"),
+                              setup(path, "/libnds/include/freetype2")])
+
+        env.Append(LIBPATH = [setup(path, '/libnds/lib')])
+        env.Append(CPPDEFINES = ['NDS'])
         env.PrependENVPath('PATH', bin_path)
-        env.PrependENVPath('PATH', libexec_path)
+        # env.PrependENVPath('PATH', libexec_path)
         return env
 
     # minpspw for psp dev environment on windows (and linux?)
@@ -983,7 +999,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = usePrx()
-if not useWii() and not useMinpspw():
+if not useWii() and not useMinpspw() and not useNDS():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1061,6 +1077,8 @@ def buildType(dir):
             properties.append('sdl')
         if useMinpspw():
             properties.append('psp')
+    if useNDS():
+        properties.append('NDS')
     if useWii():
         properties.append('wii')
     if useAllegro5():
@@ -1102,6 +1120,8 @@ def display_build_properties():
         properties.append(colorize("Profiling", color))
     if useWii():
         properties.append(colorize("Wii", color))
+    if useNDS():
+        properties.append(colorize("NDS", color))
     if useMinpspw():
         properties.append(colorize("PSP", color))
     if useLLVM():
@@ -1182,7 +1202,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw():
+    elif isLinux() and not useWii() and not useMinpspw() and not useNDS():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
@@ -1198,10 +1218,10 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw():
+        if useSDL() and not useMinpspw() and not useNDS():
             config.CheckSDL()
             config.CheckSDLMain()
-        elif useMinpspw():
+        elif useMinpspw() or useNDS():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             config.CheckSDLMain()
