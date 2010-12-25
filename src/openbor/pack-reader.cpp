@@ -76,7 +76,7 @@ filename(filename){
             /* will read upto 80 bytes, but potentially fewer if a null byte
              * is reached.
              */
-            string name = reader.readString(80);
+            string name = reader.readStringX(80);
             if (name.size() != 0){
                 files[sanitizePath(name)] = File(start, size);
             }
