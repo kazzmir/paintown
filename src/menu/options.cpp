@@ -117,6 +117,7 @@ void OptionAdventure::run(const Menu::Context & context){
         Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
         
         Paintown::PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap);
+        future.start();
         vector<Util::Future<Paintown::Object *> *> players;
         players.push_back(&future);
         Game::realGame(players, info);
@@ -182,6 +183,7 @@ void OptionAdventureCpu::run(const Menu::Context & context){
 	int remap;
         Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
         Util::Future<Paintown::Object*> * player = new Paintown::PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap);
+        player->start();
         futures.push_back(player);
 
         for ( int i = 0; i < max_buddies; i++ ){
@@ -189,7 +191,9 @@ void OptionAdventureCpu::run(const Menu::Context & context){
             out << "Pick buddy " << nthWord(i+1);
             int remap;
             Filesystem::AbsolutePath path = Paintown::Mod::getCurrentMod()->selectPlayer(out.str(), info, remap);
-            futures.push_back(new Paintown::BuddyFuture(path, player, remap, -(i+2)));
+            Util::Future<Paintown::Object*> * buddy = new Paintown::BuddyFuture(path, player, remap, -(i+2));
+            buddy->start();
+            futures.push_back(buddy);
         }
 
         Game::realGame(futures, info);
