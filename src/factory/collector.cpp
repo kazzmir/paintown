@@ -8,12 +8,13 @@
 #include "resource.h"
 #include "shadow.h"
 #include "mugen/config.h"
+#include "util/sound.h"
 #include <iostream>
 
 using namespace std;
 
-#ifndef debug
-#define debug cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
+#ifndef debugx
+#define debugx cout<<"File: "<<__FILE__<<" Line: "<<__LINE__<<endl;
 #endif
 
 Collector::Collector(){
@@ -21,6 +22,7 @@ Collector::Collector(){
     resource = new Resource();
 }
 
+/* cleans up global state */
 Collector::~Collector(){
 	Shadow::destroy();
 	ObjectFactory::destroy();
@@ -28,8 +30,9 @@ Collector::~Collector(){
 	HeartFactory::destroy();
 	FontFactory::destroy();
 	FontRender::destroy();
-        Bitmap::cleanupTemporaryBitmaps();
-        Bitmap::shutdown();
-        Mugen::Data::destroy();
-        delete resource;
+    Bitmap::cleanupTemporaryBitmaps();
+    Bitmap::shutdown();
+    Mugen::Data::destroy();
+    Sound::uninitialize();
+    delete resource;
 }
