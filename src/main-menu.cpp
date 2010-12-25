@@ -4,6 +4,7 @@
 #include "factory/collector.h"
 #include "network/network.h"
 #include "util/token_exception.h"
+#include "util/system.h"
 #include "mugen/exception.h"
 #include "mugen/menu.h"
 #include "mugen/game.h"
@@ -192,6 +193,8 @@ int paintown_main( int argc, char ** argv ){
         string player2;
         string stage;
     } mugenInstant;
+
+    System::startMemoryUsage();
 
     Global::setDebug(0);
     vector<const char *> all_args;
