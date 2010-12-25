@@ -475,8 +475,18 @@ public:
         }
         
         if (identifier == "numhelper"){
-            /* FIXME */
-            return compile(0);
+            class NumHelper: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getStage().countMyHelpers(&environment.getCharacter()));
+                }
+
+                Value * copy() const {
+                    return new NumHelper();
+                }
+            };
+
+            return new NumHelper();
         }
 
         if (identifier == "numenemy"){
@@ -3487,8 +3497,13 @@ public:
             class ParentDistX: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    const Character & helper = environment.getCharacter();
+                    if (helper.isHelper()){
+                        const Helper & realHelper = *(const Helper*) &helper;
+                        const Character & parent = realHelper.getParent();
+                        return parent.getX() - realHelper.getX();
+                    }
+                    throw MugenException("Cannot use 'parentdist x' on a non-helper");
                 }
 
                 Value * copy() const {
@@ -3497,6 +3512,27 @@ public:
             };
 
             return new ParentDistX();
+        }
+
+        if (keyword == "parentdist y"){
+            class ParentDistY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character & helper = environment.getCharacter();
+                    if (helper.isHelper()){
+                        const Helper & realHelper = *(const Helper*) &helper;
+                        const Character & parent = realHelper.getParent();
+                        return realHelper.getY() - parent.getY();
+                    }
+                    throw MugenException("Cannot use 'parentdist x' on a non-helper");
+                }
+
+                Value * copy() const {
+                    return new ParentDistY();
+                }
+            };
+
+            return new ParentDistY();
         }
 
         if (keyword == "p2dist x"){
@@ -3541,13 +3577,35 @@ public:
              * For comparing the Y-distance, RootDist gives the difference in the heights of the players' Y-axes. A negative value means that the root is above its descendant.
              *
              * For comparing the X-distance, ParentDist gives the X-distance of the root's axis from the descendant's axis. A positive value indicates the root is in front of its descendant.*/
-            /* FIXME! */
-            return compile(0);
+            class RootDistX: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character & root = environment.getStage().findRoot(environment.getCharacter());
+                    return RuntimeValue(root.getX() - environment.getCharacter().getX());
+                }
+
+                Value * copy() const {
+                    return new RootDistX();
+                }
+            };
+
+            return new RootDistX();
         }
         
         if (keyword == "rootdist y"){
-            /* FIXME! */
-            return compile(0);
+            class RootDistY: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const Character & root = environment.getStage().findRoot(environment.getCharacter());
+                    return RuntimeValue(environment.getCharacter().getX() - root.getY());
+                }
+
+                Value * copy() const {
+                    return new RootDistY();
+                }
+            };
+
+            return new RootDistY();
         }
 
         std::ostringstream out;

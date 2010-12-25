@@ -221,6 +221,8 @@ public:
     virtual void addEffect(Mugen::Effect * effect);
     virtual void removeEffects(const Mugen::Character * owner, int id);
     virtual int countMyEffects(const Mugen::Character * owner) const;
+    virtual int countMyHelpers(const Mugen::Character * owner) const;
+    virtual const Mugen::Character & findRoot(const Mugen::Character & who) const;
     virtual std::vector<Mugen::Helper*> findHelpers(const Mugen::Character * owner, int id) const;
     virtual Mugen::Effect * findEffect(const Mugen::Character * owner, int id);
     virtual std::vector<Mugen::Effect *> findEffects(const Mugen::Character * owner, int id);

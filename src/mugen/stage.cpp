@@ -1873,6 +1873,29 @@ int MugenStage::countMyEffects(const Mugen::Character * owner) const {
     return total;
 }
     
+int MugenStage::countMyHelpers(const Mugen::Character * owner) const {
+    int count = 0;
+    for (vector<Paintown::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        /* FIXME! dont assume its a character */
+        Mugen::Character * who = (Mugen::Character*) *it;
+        if (who->isHelper()){
+            Mugen::Helper * helper = (Mugen::Helper*) who;
+            if (&helper->getParent() == owner){
+                count += 1;
+            }
+        }
+    }
+    return count;
+}
+
+const Mugen::Character & MugenStage::findRoot(const Mugen::Character & who) const {
+    if (who.isHelper()){
+        const Mugen::Helper & helper = *(const Mugen::Helper *) &who;
+        return findRoot(helper.getParent());
+    }
+    return who;
+}
+
 vector<Mugen::Character *> MugenStage::getTargets(int id, const Mugen::Character * from) const {
     vector<Mugen::Character *> targets;
     /* TODO */
