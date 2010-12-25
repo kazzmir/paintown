@@ -360,12 +360,14 @@ public:
         uint32_t subhead = 0;
         uint32_t sharedPal = 0;
 
-        /* this probably isn't endian safe.. */
-        sffStream.read((char *)&totalGroups, sizeof(totalGroups));
-        sffStream.read((char *)&totalImages, sizeof(totalImages));
-        sffStream.read((char *)&suboffset, sizeof(suboffset));
-        sffStream.read((char *)&subhead, sizeof(subhead));
-        sffStream.read((char *)&sharedPal, sizeof(bool));
+        Filesystem::LittleEndianReader reader(sffStream);
+
+        totalGroups = reader.readByte4();
+        totalImages = reader.readByte4();
+        suboffset = reader.readByte4();
+        subhead = reader.readByte4();
+        sharedPal = reader.readByte1();
+
         if (sharedPal && sharedPal != 1){
             sharedPal = 0;
         }
@@ -533,41 +535,42 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
     ifstream ifile;
     ifile.open(filename.path().c_str(), ios::binary);
     if (!ifile){
-	throw MugenException("Could not open SND file: " + filename.path());
+        throw MugenException("Could not open SND file: " + filename.path());
     }
     
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
     ifile.seekg(location, ios::beg);
     int totalSounds;
     
-    ifile.read( (char *)&totalSounds, 4 );
-    ifile.read( (char *)&location, 4 );
+    Filesystem::LittleEndianReader reader(ifile);
+    totalSounds = reader.readByte4();
+    location = reader.readByte4();
     
      Global::debug(2) << "Got Total Sounds: " << totalSounds << ", Next Location in file: " << location << endl;
     
     // We got some stuff
-    if( totalSounds > 0){
-	for( int i = 0; i < totalSounds; ++i ){
-	   // Go to next sound
-	    ifile.seekg(location, ios::beg);
-	    // next sprite
-	    MugenSound *temp = new MugenSound();
-	    
-            /* FIXME: change 4 to sizeof(...) */
-	    ifile.read( (char *)&temp->next, 4 );
-	    ifile.read( (char *)&temp->length, 4 );
-	    ifile.read( (char *)&temp->groupNumber, 4 );
-	    ifile.read( (char *)&temp->sampleNumber, 4 );
-	    temp->sample = new char[temp->length];
-	    ifile.read( (char *)temp->sample, temp->length );
-	    
-	    // Set the next file location
-	    location = temp->next;
-            temp->load();
-	    
-	    sounds[temp->groupNumber][temp->sampleNumber] = temp;
-	}
-    }
+     if( totalSounds > 0){
+         for( int i = 0; i < totalSounds; ++i ){
+             // Go to next sound
+             ifile.seekg(location, ios::beg);
+             // next sprite
+             MugenSound *temp = new MugenSound();
+
+             /* FIXME: change 4 to sizeof(...) */
+             temp->next = reader.readByte4();
+             temp->length = reader.readByte4();
+             temp->groupNumber = reader.readByte4();
+             temp->sampleNumber = reader.readByte4();
+             temp->sample = new char[temp->length];
+             ifile.read((char *)temp->sample, temp->length);
+
+             // Set the next file location
+             location = temp->next;
+             temp->load();
+
+             sounds[temp->groupNumber][temp->sampleNumber] = temp;
+         }
+     }
     
     ifile.close();
 }

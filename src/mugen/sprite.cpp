@@ -143,15 +143,17 @@ void MugenSprite::read(std::ifstream & ifile, const int loc){
     
     // set the sprite location
     this->location = loc;
+
+    Filesystem::LittleEndianReader reader(ifile);
     
-    ifile.read((char *)&next, sizeof(next));
-    ifile.read((char *)&length, sizeof(length));
-    ifile.read((char *)&x, sizeof(x));
-    ifile.read((char *)&y, sizeof(y));
-    ifile.read((char *)&groupNumber, sizeof(groupNumber));
-    ifile.read((char *)&imageNumber, sizeof(imageNumber));
-    ifile.read((char *)&prev, sizeof(prev));
-    ifile.read((char *)&samePalette, sizeof(samePalette));
+    next = reader.readByte4();
+    length = reader.readByte4();
+    x = reader.readByte2();
+    y = reader.readByte2();
+    groupNumber = reader.readByte2();
+    imageNumber = reader.readByte2();
+    prev = reader.readByte2();
+    samePalette = reader.readByte1();
     ifile.read((char *)comments, sizeof(comments));
     newlength = reallength = next - loc - 32;
      
@@ -291,13 +293,16 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
     ifile.seekg(location + 32, ios::beg);
     ifile.clear();
     if (samePalette){
-	// Lets give it space for the palette
-	Global::debug(2) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
-	newlength += 768;
-	pcx = new char[newlength];
+        // Lets give it space for the palette
+        Global::debug(2) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
+        newlength += 768;
+        pcx = new char[newlength];
         memset(pcx, 0, newlength);
     } else {
-	pcx = new char[reallength];
+        pcx = new char[reallength];
+        if (!pcx){
+            printf("out of memory!!\n");
+        }
         memset(pcx, 0, reallength);
     }
     ifile.read((char *)pcx, reallength); 

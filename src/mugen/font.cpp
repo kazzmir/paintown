@@ -272,10 +272,11 @@ void MugenFont::load(){
     uint32_t txtlocation;
     uint32_t txtsize;
 
-    ifile.read( (char *)&pcxlocation, sizeof(pcxlocation) );
-    ifile.read( (char *)&pcxsize, sizeof(pcxsize) );
-    ifile.read( (char *)&txtlocation, sizeof(txtlocation) );
-    ifile.read( (char *)&txtsize, sizeof(txtsize) );
+    Filesystem::LittleEndianReader byteReader(ifile);
+    pcxlocation = byteReader.readByte4();
+    pcxsize = byteReader.readByte4();
+    txtlocation = byteReader.readByte4();
+    txtsize = byteReader.readByte4();
     Global::debug(1) << "PCX Location: " << pcxlocation << " | PCX Size: " << pcxsize << endl;
     Global::debug(1) << "TXT Location: " << txtlocation << " | TXT Actual location: " << pcxlocation + pcxsize << " | TXT Size: " << txtsize << endl;
 
@@ -283,7 +284,7 @@ void MugenFont::load(){
     ifile.seekg(pcxlocation,ios::beg);
     pcx = new unsigned char[pcxsize];
     ifile.read((char *)pcx, pcxsize);
-    memcpy( palette, pcx+(pcxsize)-768, 768);
+    memcpy(palette, pcx+(pcxsize)-768, 768);
 
     bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
     bmp->replaceColor(bmp->get8BitMaskColor(), Bitmap::MaskColor());

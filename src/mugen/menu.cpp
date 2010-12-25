@@ -607,6 +607,7 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
 void MugenMenu::run(){
     bool done = false;
     bool endGame = false;
+
     
     if (options.empty()){
         return;
@@ -625,6 +626,7 @@ void MugenMenu::run(){
     
     // Selecting player
     Mugen::PlayerType selectingPlayer;
+    
   
     // Do we have logos or intros?
     // Logo run it no repeat
