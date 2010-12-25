@@ -54,6 +54,17 @@ uint64_t getModificationTime(const std::string & path){
     return 0;
 }
 
+unsigned long memoryUsage(){
+    /* FIXME */
+    return 0;
+}
+
+/* call startMemoryUsage once at the very beginning of the program */
+void startMemoryUsage(){
+    /* FIXME */
+}
+
+
 }
 
 #endif

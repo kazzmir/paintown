@@ -22,6 +22,7 @@
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 #include "util/file-system.h"
+#include "util/system.h"
 #include "util/events.h"
 #include "loading.h"
 #include "network/network.h"
@@ -245,6 +246,18 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
         };
 
+        class CommandMemory: public Console::Command {
+        public:
+            CommandMemory(){
+            }
+
+            string act(){
+                ostringstream out;
+                out << "Memory usage: " << Util::niceSize(System::memoryUsage()) << "\n";
+                return out.str();
+            }
+        };
+
         class CommandHelp: public Console::Command{
         public:
             CommandHelp(){
@@ -253,6 +266,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             string act(){
                 ostringstream out;
                 out << "quit - quit the game entirely" << "\n";
+                out << "memory - current memory usage" << "\n";
                 out << "help - this help menu";
                 return out.str();
             }
@@ -260,6 +274,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
         console.addCommand("quit", new CommandQuit());
         console.addCommand("help", new CommandHelp());
+        console.addCommand("memory", new CommandMemory());
     }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;
