@@ -937,7 +937,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                 /* compute is a virtual function, is the virtual table set up
                  * by the time start() tries to call it? or is that a race condition?
                  */
-                start();
+                // start();
         }
 
         CharacterInfo & player1;
@@ -965,116 +965,116 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     PlayerLoader playerLoader(player1, player2);
     
     while (!done || fader.getState() != Gui::FadeTool::EndFade){
-    
-	bool draw = false;
-	
-	if ( Global::speed_counter > 0 ){
-	    draw = true;
-	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-	    while ( runCounter >= 1.0 ){
-		// tick tock
-		ticker++;
-		
-		runCounter -= 1;
-		// Key handler
-		InputManager::poll();
+
+        bool draw = false;
+
+        if ( Global::speed_counter > 0 ){
+            draw = true;
+            runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+            while ( runCounter >= 1.0 ){
+                // tick tock
+                ticker++;
+
+                runCounter -= 1;
+                // Key handler
+                InputManager::poll();
 
                 if (Global::shutdown()){
                     throw ShutdownException();
                 }
-		
-		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
-		if (out[Mugen::Esc]){
-		    done = escaped = true;
-		    fader.setState(Gui::FadeTool::FadeOut);
-		    InputManager::waitForRelease(gameInput, Mugen::Esc);
-		}
-		
-		// Logic
+
+                InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
+                if (out[Mugen::Esc]){
+                    done = escaped = true;
+                    fader.setState(Gui::FadeTool::FadeOut);
+                    InputManager::waitForRelease(gameInput, Mugen::Esc);
+                }
+
+                // Logic
                 /* if done, dont run the loader again, just wait for the fadeout */
-		if (ticker >= time && !done){
+                if (ticker >= time && !done){
                     // PaintownUtil::Thread::Id loader;
-		    try{
-			Level::LevelInfo info;
-			info.setBackground(&bmp);
-			info.setLoadingMessage("Loading...");
+                    try{
+                        Level::LevelInfo info;
+                        info.setBackground(&bmp);
+                        info.setLoadingMessage("Loading...");
                         info.setPosition(-1, 400);
 
                         class Context: public Loader::LoadingContext {
-                        public:
-                            Context(PlayerLoader & playerLoader, MugenStage *& stage):
-                            playerLoader(playerLoader),
-                            stage(stage){
-                            }
+                            public:
+                                Context(PlayerLoader & playerLoader, MugenStage *& stage):
+                                    playerLoader(playerLoader),
+                                    stage(stage){
+                                    }
 
-                            virtual void load(){
-                                /* future */
-                                int ok = playerLoader.get();
+                                virtual void load(){
+                                    /* future */
+                                    int ok = playerLoader.get();
 
-                                // Load stage
-                                stage->addPlayer1(playerLoader.player1.getPlayer1());
-                                stage->addPlayer2(playerLoader.player2.getPlayer2());
-                                stage->load();
-                            }
+                                    // Load stage
+                                    stage->addPlayer1(playerLoader.player1.getPlayer1());
+                                    stage->addPlayer2(playerLoader.player2.getPlayer2());
+                                    stage->load();
+                                }
 
-                            PlayerLoader & playerLoader;
-                            MugenStage *& stage;
+                                PlayerLoader & playerLoader;
+                                MugenStage *& stage;
 
                         };
 
                         Context context(playerLoader, stage);
-			// Loader::startLoading(&loader, (void*) &info);
+                        // Loader::startLoading(&loader, (void*) &info);
                         Loader::loadScreen(context, info);
 
                         // Loader::stopLoading(loader);
                         done = true;
                         fader.setState(Gui::FadeTool::FadeOut);
-		    } catch (const MugenException & e){
-			// Loader::stopLoading(loader);
-			throw e;
-		    }
-		}
-		
-		// Fader
-		fader.act();
-		
-		// Backgrounds
-		background->act();
-		
-		// Player fonts
-		player1Font.act();
-		player2Font.act();
-	    }
-	    
-	    Global::speed_counter = 0;
-	}
-	
-	if (draw){
-	    // render backgrounds
-	    background->renderBackground(0,0,workArea);
-	    
-	    // render portraits
-	    player1.getPortrait()->render(player1Position.x,player1Position.y,workArea,player1Effects);
-	    player2.getPortrait()->render(player2Position.x,player2Position.y,workArea,player2Effects);
-	    
-	    // render fonts
-	    player1Font.render(player1.getDisplayName(), workArea);
-	    player2Font.render(player2.getDisplayName(), workArea);
-	    
-	    // render Foregrounds
-	    background->renderForeground(0,0,workArea);
-	    
-	    // render fades
-	    fader.draw(workArea);
-	    
-	    // Finally render to screen
-	    workArea.Stretch(bmp);
-	    bmp.BlitToScreen();
-	}
+                    } catch (const MugenException & e){
+                        // Loader::stopLoading(loader);
+                        throw e;
+                    }
+                }
 
-	while (Global::speed_counter < 1){
+                // Fader
+                fader.act();
+
+                // Backgrounds
+                background->act();
+
+                // Player fonts
+                player1Font.act();
+                player2Font.act();
+            }
+
+            Global::speed_counter = 0;
+        }
+
+        if (draw){
+            // render backgrounds
+            background->renderBackground(0,0,workArea);
+
+            // render portraits
+            player1.getPortrait()->render(player1Position.x,player1Position.y,workArea,player1Effects);
+            player2.getPortrait()->render(player2Position.x,player2Position.y,workArea,player2Effects);
+
+            // render fonts
+            player1Font.render(player1.getDisplayName(), workArea);
+            player2Font.render(player2.getDisplayName(), workArea);
+
+            // render Foregrounds
+            background->renderForeground(0,0,workArea);
+
+            // render fades
+            fader.draw(workArea);
+
+            // Finally render to screen
+            workArea.Stretch(bmp);
+            bmp.BlitToScreen();
+        }
+
+        while (Global::speed_counter < 1){
             PaintownUtil::rest(1);
-	}
+        }
     }
     
     // **FIXME Hack figure something out

@@ -158,7 +158,7 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Bitm
                         realEffects.dimension.x2 = width;
                     }
                 }
-	        sprite->render(realX, realY, bmp, realEffects);
+                sprite->render(realX, realY, bmp, realEffects);
             }
 	    break;
 	case IS_FONT:
@@ -489,7 +489,7 @@ void Name::render(const Element::Layer & layer, const Bitmap & bmp){
 static void getElementProperties(const Ast::AttributeSimple & simple, const std::string & component, const std::string & elementName, FightElement & element, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts){
     std::string compCopy = component;
     if (!compCopy.empty()){
-	compCopy+=".";
+        compCopy+=".";
     }
     if (simple == compCopy + elementName + ".spr"){
         int g=0, s=0;
@@ -504,13 +504,13 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
         simple >> anim;
         element.setAction(animations[anim]);
     } else if ( simple == compCopy + elementName + ".font"){
-	int index=0, bank=0, position=0;
-	try {
-	    simple >> index >> bank >> position;
-	} catch (const Ast::Exception & e){
-	    //ignore for now
-	}
-	element.setFont(fonts[index-1],bank,position);
+        int index=0, bank=0, position=0;
+        try {
+            simple >> index >> bank >> position;
+        } catch (const Ast::Exception & e){
+            //ignore for now
+        }
+        element.setFont(fonts[index-1],bank,position);
     } else if (simple == compCopy + elementName + ".facing"){
         int face;
         simple >> face;
@@ -1330,59 +1330,61 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
-        if (head == "Files"){
-            class FileWalk: public Ast::Walker{
+    if (head == "Files"){
+        class FileWalk: public Ast::Walker{
             public:
                 FileWalk(const Filesystem::AbsolutePath & baseDir, GameInfo & self):
-                baseDir(baseDir),
-		self(self){
-                }
+                    baseDir(baseDir),
+                    self(self){
+                    }
                 const Filesystem::AbsolutePath & baseDir;
-		GameInfo & self;
+                GameInfo & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "sff"){
-			std::string sff;
-			simple >> sff;
+                        std::string sff;
+                        simple >> sff;
                         Global::debug(1) << "Got Sprite File: '" << sff << "'" << endl;
-			Util::readSprites(Util::getCorrectFileLocation(baseDir, sff), Filesystem::AbsolutePath(), self.sprites, true);
-			for( Mugen::SpriteMap::iterator i = self.sprites.begin() ; i != self.sprites.end() ; ++i ){
-			    // Load these sprites so they are ready to use
-			    for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-				if( j->second )j->second->load();
-			    }
-			}
+                        Util::readSprites(Util::getCorrectFileLocation(baseDir, sff), Filesystem::AbsolutePath(), self.sprites, true);
+                        for( Mugen::SpriteMap::iterator i = self.sprites.begin() ; i != self.sprites.end() ; ++i ){
+                            // Load these sprites so they are ready to use
+                            for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+                                if (j->second){
+                                    j->second->load();
+                                }
+                            }
+                        }
                     } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                         string temp;
                         simple >> temp;
                         self.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
                         Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                     } else if (simple == "snd"){
-			string temp;
+                        string temp;
                         simple >> temp;
                         Util::readSounds(Util::getCorrectFileLocation(baseDir, temp), self.sounds);
                         Global::debug(1) << "Got Sound File: '" << temp << "'" << endl;
-		    } 
+                    } 
                 }
-            };
+        };
 
-            FileWalk walk(baseDir, *this);
-            section->walk(walk);
-            
-            // Get animations so we can set up the lifebars
-            parseAnimations(parsed);
+        FileWalk walk(baseDir, *this);
+        section->walk(walk);
 
-        } else if (head == "Lifebar"){
-            class BarWalk: public Ast::Walker{
+        // Get animations so we can set up the lifebars
+        parseAnimations(parsed);
+
+    } else if (head == "Lifebar"){
+        class BarWalk: public Ast::Walker{
             public:
                 BarWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
-                self(self),
-		sprites(sprites),
-                animations(animations),
-                fonts(fonts){
-                }
+                    self(self),
+                    sprites(sprites),
+                    animations(animations),
+                    fonts(fonts){
+                    }
 
                 GameInfo & self;
-		Mugen::SpriteMap & sprites;
+                Mugen::SpriteMap & sprites;
                 std::map<int,MugenAnimation *> & animations;
                 std::vector<MugenFont *> & fonts;
 
@@ -1397,12 +1399,12 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                 void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
                     bar.setType(Bar::Health);
                     if (simple == component + ".pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			bar.setPosition(x,y);
+                        int x=0, y=0;
+                        try{
+                            simple >> x >> y;
+                        } catch (const Ast::Exception & e){
+                        }
+                        bar.setPosition(x,y);
                     } else if (simple == component + ".range.x"){
                         int x = 0, y = 0;
                         try{
@@ -1410,244 +1412,244 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } catch (const Ast::Exception & e){
                         }
                         bar.setRange(x, y);
-		    }
+                    }
 
                     getElementProperties(simple, component, "bg0", bar.getBack0(),sprites, animations, fonts);
                     getElementProperties(simple, component, "bg1", bar.getBack1(),sprites, animations, fonts);
                     getElementProperties(simple, component, "mid", bar.getMiddle(),sprites, animations, fonts);
                     getElementProperties(simple, component, "front", bar.getFront(),sprites, animations, fonts);
                 }
-            };
+        };
 
-            BarWalk walk(*this,sprites,animations,fonts);
-            section->walk(walk);
-        } else if (head == "Powerbar"){
+        BarWalk walk(*this,sprites,animations,fonts);
+        section->walk(walk);
+    } else if (head == "Powerbar"){
             class BarWalk: public Ast::Walker{
-            public:
-                BarWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts, Mugen::SoundMap & sounds):
-                self(self),
-		sprites(sprites),
-                animations(animations),
-                fonts(fonts),
-		sounds(sounds){
-                }
-
-                GameInfo & self;
-		Mugen::SpriteMap & sprites;
-                std::map<int,MugenAnimation *> & animations;
-                std::vector<MugenFont *> & fonts;
-		Mugen::SoundMap & sounds;
-
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
-                        getBar(simple,"p1",self.player1PowerBar);
-                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
-                        getBar(simple,"p2",self.player2PowerBar);
-                    } else if (simple == "level1.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.player1PowerBar.getLevel1Sound().setSound(sounds[g][s]);
-			self.player2PowerBar.getLevel1Sound().setSound(sounds[g][s]);
-		    } else if (simple == "level2.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.player1PowerBar.getLevel2Sound().setSound(sounds[g][s]);
-			self.player2PowerBar.getLevel2Sound().setSound(sounds[g][s]);
-		    } else if (simple == "level3.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.player1PowerBar.getLevel3Sound().setSound(sounds[g][s]);
-			self.player2PowerBar.getLevel3Sound().setSound(sounds[g][s]);
-		    }
-                }
-
-                void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
-                    bar.setType(Bar::Power);
-                    if (simple == component + ".pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			bar.setPosition(x,y);
-                    } else if (simple == component + ".range.x"){
-                        int x=0,y=0;
-                        try{
-                            simple >> x >> y;
-                        } catch (const Ast::Exception & e){
+                public:
+                    BarWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts, Mugen::SoundMap & sounds):
+                        self(self),
+                        sprites(sprites),
+                        animations(animations),
+                        fonts(fonts),
+                        sounds(sounds){
                         }
-                        bar.setRange(x,y);
-		    }
-                    getElementProperties(simple,component,"bg0", bar.getBack0(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"bg1", bar.getBack1(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"mid", bar.getMiddle(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"front", bar.getFront(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"counter", bar.getCounter(),sprites,animations,fonts);
-                }
+
+                    GameInfo & self;
+                    Mugen::SpriteMap & sprites;
+                    std::map<int,MugenAnimation *> & animations;
+                    std::vector<MugenFont *> & fonts;
+                    Mugen::SoundMap & sounds;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                            getBar(simple,"p1",self.player1PowerBar);
+                        } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                            getBar(simple,"p2",self.player2PowerBar);
+                        } else if (simple == "level1.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.player1PowerBar.getLevel1Sound().setSound(sounds[g][s]);
+                            self.player2PowerBar.getLevel1Sound().setSound(sounds[g][s]);
+                        } else if (simple == "level2.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.player1PowerBar.getLevel2Sound().setSound(sounds[g][s]);
+                            self.player2PowerBar.getLevel2Sound().setSound(sounds[g][s]);
+                        } else if (simple == "level3.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.player1PowerBar.getLevel3Sound().setSound(sounds[g][s]);
+                            self.player2PowerBar.getLevel3Sound().setSound(sounds[g][s]);
+                        }
+                    }
+
+                    void getBar(const Ast::AttributeSimple & simple, const std::string & component, Bar & bar){
+                        bar.setType(Bar::Power);
+                        if (simple == component + ".pos"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            bar.setPosition(x,y);
+                        } else if (simple == component + ".range.x"){
+                            int x=0,y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            bar.setRange(x,y);
+                        }
+                        getElementProperties(simple,component,"bg0", bar.getBack0(),sprites,animations,fonts);
+                        getElementProperties(simple,component,"bg1", bar.getBack1(),sprites,animations,fonts);
+                        getElementProperties(simple,component,"mid", bar.getMiddle(),sprites,animations,fonts);
+                        getElementProperties(simple,component,"front", bar.getFront(),sprites,animations,fonts);
+                        getElementProperties(simple,component,"counter", bar.getCounter(),sprites,animations,fonts);
+                    }
             };
 
             BarWalk walk(*this,sprites,animations,fonts,sounds);
             section->walk(walk);
         } else if (head == "Face"){
             class FaceWalk: public Ast::Walker{
-            public:
-                FaceWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
-                self(self),
-		sprites(sprites),
-                animations(animations),
-                fonts(fonts){
-                }
-                GameInfo & self;
-		Mugen::SpriteMap & sprites;
-                std::map<int,MugenAnimation *> & animations;
-                std::vector<MugenFont *> & fonts;
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
-                        getFace(simple,"p1",self.player1Face);
-                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
-                        getFace(simple,"p2",self.player2Face);
+                public:
+                    FaceWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                        self(self),
+                        sprites(sprites),
+                        animations(animations),
+                        fonts(fonts){
+                        }
+                    GameInfo & self;
+                    Mugen::SpriteMap & sprites;
+                    std::map<int,MugenAnimation *> & animations;
+                    std::vector<MugenFont *> & fonts;
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                            getFace(simple,"p1",self.player1Face);
+                        } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                            getFace(simple,"p2",self.player2Face);
+                        }
                     }
-                }
-                void getFace(const Ast::AttributeSimple & simple, const std::string & component, Face & face){
-                    if (simple == component + ".pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			face.setPosition(x,y);
+                    void getFace(const Ast::AttributeSimple & simple, const std::string & component, Face & face){
+                        if (simple == component + ".pos"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            face.setPosition(x,y);
+                        }
+                        getElementProperties(simple,component,"bg", face.getBackground(),sprites,animations,fonts);
+                        getElementProperties(simple,component,"face", face.getFace(),sprites,animations,fonts);
                     }
-                    getElementProperties(simple,component,"bg", face.getBackground(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"face", face.getFace(),sprites,animations,fonts);
-                }
             };
 
             FaceWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
         } else if (head == "Name"){
             class NameWalk: public Ast::Walker{
-            public:
-                NameWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
-                self(self),
-		sprites(sprites),
-		animations(animations),
-		fonts(fonts){
-                }
-                GameInfo & self;
-		Mugen::SpriteMap & sprites;
-		std::map<int,MugenAnimation *> & animations;
-		std::vector<MugenFont *> & fonts;
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
-                        getName(simple,"p1", self.player1Name);
-                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
-                        getName(simple,"p2", self.player2Name);
+                public:
+                    NameWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                        self(self),
+                        sprites(sprites),
+                        animations(animations),
+                        fonts(fonts){
+                        }
+                    GameInfo & self;
+                    Mugen::SpriteMap & sprites;
+                    std::map<int,MugenAnimation *> & animations;
+                    std::vector<MugenFont *> & fonts;
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                            getName(simple,"p1", self.player1Name);
+                        } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                            getName(simple,"p2", self.player2Name);
+                        }
                     }
-                }
-                void getName(const Ast::AttributeSimple & simple, const std::string & component, Name & name){
-                    if (simple == component + ".pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			name.setPosition(x,y);
+                    void getName(const Ast::AttributeSimple & simple, const std::string & component, Name & name){
+                        if (simple == component + ".pos"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            name.setPosition(x,y);
+                        }
+                        getElementProperties(simple,component,"bg", name.getBackground(),sprites,animations,fonts);
+                        getElementProperties(simple,component,"name", name.getFont(),sprites,animations,fonts); 
                     }
-                    getElementProperties(simple,component,"bg", name.getBackground(),sprites,animations,fonts);
-                    getElementProperties(simple,component,"name", name.getFont(),sprites,animations,fonts); 
-                }
             };
 
             NameWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
         } else if (head == "Time"){
             class TimeWalk: public Ast::Walker{
-            public:
-                TimeWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
-                self(self),
-		sprites(sprites),
-		animations(animations),
-		fonts(fonts){
-                }
+                public:
+                    TimeWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                        self(self),
+                        sprites(sprites),
+                        animations(animations),
+                        fonts(fonts){
+                        }
 
-                GameInfo & self;
-		Mugen::SpriteMap & sprites;
-		std::map<int,MugenAnimation *> & animations;
-		std::vector<MugenFont *> & fonts;
+                    GameInfo & self;
+                    Mugen::SpriteMap & sprites;
+                    std::map<int,MugenAnimation *> & animations;
+                    std::vector<MugenFont *> & fonts;
 
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "pos"){
-			int x = 0, y = 0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.timer.setPosition(x,y);
-		    } else if (simple == "framespercount"){
-                        /* its very strange for this not to be 60, maybe print
-                         * a warning if its anything other than 60?
-                         */
-			int x = 0;
-			simple >> x;
-			self.timer.setFrameCount(x);
-		    } 
-		    getElementProperties(simple,"","bg", self.timer.getBackground(),sprites,animations,fonts);
-		    getElementProperties(simple,"","counter", self.timer.getTimer(),sprites,animations,fonts);
-		}
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "pos"){
+                            int x = 0, y = 0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.timer.setPosition(x,y);
+                        } else if (simple == "framespercount"){
+                            /* its very strange for this not to be 60, maybe print
+                             * a warning if its anything other than 60?
+                             */
+                            int x = 0;
+                            simple >> x;
+                            self.timer.setFrameCount(x);
+                        } 
+                        getElementProperties(simple,"","bg", self.timer.getBackground(),sprites,animations,fonts);
+                        getElementProperties(simple,"","counter", self.timer.getTimer(),sprites,animations,fonts);
+                    }
             };
 
             TimeWalk walk(*this,sprites,animations,fonts);
             section->walk(walk);
         } else if (head == "Combo"){
             class ComboWalk: public Ast::Walker{
-            public:
-                ComboWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
-                self(self),
-		sprites(sprites),
-		animations(animations),
-		fonts(fonts){
-                }
-                GameInfo & self;
-		Mugen::SpriteMap & sprites;
-		std::map<int,MugenAnimation *> & animations;
-		std::vector<MugenFont *> & fonts;
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.combo.setPosition(x,y);
-		    } else if (simple == "start.x"){
-			int x=0;
-			simple >> x;
-			self.combo.setStartOffset(x);
-		    } else if (simple == "counter.shake"){
-			bool shake;
-			simple >> shake;
-			self.combo.setShake(shake);
-		    } else if (simple == "text.text"){
-			std::string text;
-			simple >> text;
-			self.combo.setMessage(text);
-		    } else if (simple == "displaytime"){
-			int time;
-			simple >> time;
-			self.combo.setDisplayTime(time);
-		    } 
-		    getElementProperties(simple,"","counter", self.combo.getCombo(),sprites,animations,fonts);
-		    getElementProperties(simple,"","text", self.combo.getText(),sprites,animations,fonts);
-		}
+                public:
+                    ComboWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                        self(self),
+                        sprites(sprites),
+                        animations(animations),
+                        fonts(fonts){
+                        }
+                    GameInfo & self;
+                    Mugen::SpriteMap & sprites;
+                    std::map<int,MugenAnimation *> & animations;
+                    std::vector<MugenFont *> & fonts;
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "pos"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.combo.setPosition(x,y);
+                        } else if (simple == "start.x"){
+                            int x=0;
+                            simple >> x;
+                            self.combo.setStartOffset(x);
+                        } else if (simple == "counter.shake"){
+                            bool shake;
+                            simple >> shake;
+                            self.combo.setShake(shake);
+                        } else if (simple == "text.text"){
+                            std::string text;
+                            simple >> text;
+                            self.combo.setMessage(text);
+                        } else if (simple == "displaytime"){
+                            int time;
+                            simple >> time;
+                            self.combo.setDisplayTime(time);
+                        } 
+                        getElementProperties(simple,"","counter", self.combo.getCombo(),sprites,animations,fonts);
+                        getElementProperties(simple,"","text", self.combo.getText(),sprites,animations,fonts);
+                    }
             };
 
             ComboWalk walk(*this,sprites,animations,fonts);
@@ -1656,183 +1658,183 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
             // Sound time to apply to round sounds
             int soundTime = 0;
             class RoundWalk: public Ast::Walker{
-            public:
-                RoundWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts, int & soundTime):
-                self(self),
-		sprites(sprites),
-		animations(animations),
-		fonts(fonts),
-                soundTime(soundTime){
-                }
-                GameInfo & self;
-		Mugen::SpriteMap & sprites;
-		std::map<int,MugenAnimation *> & animations;
-		std::vector<MugenFont *> & fonts;
-                int & soundTime;
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "match.wins"){
-                        int wins;
-                        simple >> wins;
-                        self.roundControl.setMatchWins(wins);
-		    } else if (simple == "match.maxdrawgames"){
-                        int draws;
-                        simple >> draws;
-                        self.roundControl.setMatchMaxDrawGames(draws);
-		    } else if (simple == "start.waittime"){
-			int time = 0;
-			simple >> time;
-			self.roundControl.setStartWaitTime(time);
-		    } else if (simple == "pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.setPosition(x,y);
-		    } else if (simple == "round.time"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setRoundDisplayTime(time);
-		    } else if (simple == "round.default.text"){
-			std::string text;
-			simple >> text;
-			self.roundControl.setDefaultText(text);
-		    } else if (simple == "fight.time"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setFightDisplayTime(time);
-		    } else if (simple == "KO.time"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setKODisplayTime(time);
-		    } else if (simple == "win.time"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setWinDisplayTime(time);
-		    } else if (simple == "slow.time"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setSlowTime(time);
-		    } else if (simple == "over.waittime"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setOverWaitTime(time);
-		    } else if (simple == "over.hittime"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setOverHitTime(time);
-		    } else if (simple == "over.time"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setOverTime(time);
-		    } else if (simple == "ctrl.time"){
-			int time=0;
-			simple >> time;
-			self.roundControl.setControlTime(time);
-		    } else if (simple == "round.sndtime"){
-			int time = 0;
-			simple >> soundTime;
-		    } else if (simple == "fight.sndtime"){
-			int time = 0;
-			simple >> time;
-			self.roundControl.getFightSound().setSoundTime(time);
-		    } else if (simple == "KO.sndtime"){
-			int time = 0;
-			simple >> time;
-			self.roundControl.getKOSound().setSoundTime(time);
-			self.roundControl.getDKOSound().setSoundTime(time);
-			self.roundControl.getTOSound().setSoundTime(time);
-		    } else if (simple == "fight.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.getFightSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^fight.")){
-			getElementProperties(simple,"","fight", self.roundControl.getFight(),sprites,animations,fonts);
-		    } else if (simple == "ko.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.getKOSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^KO.")){
-			getElementProperties(simple,"","ko", self.roundControl.getKO(),sprites,animations,fonts);
-		    } else if (simple == "dko.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.getDKOSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^DKO.")){
-			getElementProperties(simple,"","dko", self.roundControl.getDKO(),sprites,animations,fonts);
-		    } else if (simple == "to.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.getTOSound().setSound(self.sounds[g][s]);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^TO.")){
-			getElementProperties(simple,"","to", self.roundControl.getTO(),sprites,animations,fonts);
-		    } else if (simple == "win.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.getWinSound().setSound(self.sounds[g][s]);
-		    } else if (simple == "win.text"){
-			std::string text;
-			simple >> text;
-			self.roundControl.setWinText(text);
-		    } else if (simple == "win2.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.getWin2Sound().setSound(self.sounds[g][s]);
-		    } else if (simple == "win2.text"){
-			std::string text;
-			simple >> text;
-			self.roundControl.setWin2Text(text);
-		    } else if (simple == "draw.snd"){
-			int g=0,s=0;
-			try{
-			    simple >> g >> s;
-			} catch (const Ast::Exception & e){
-			}
-			self.roundControl.getDrawSound().setSound(self.sounds[g][s]);
-		    }
-		    if (PaintownUtil::matchRegex(simple.toString(),"^win.")){
-			getElementProperties(simple,"","win", self.roundControl.getWin(),sprites,animations,fonts);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^win2.")){
-			getElementProperties(simple,"","win2", self.roundControl.getWin2(),sprites,animations,fonts);
-		    } else if (PaintownUtil::matchRegex(simple.toString(),"^draw.")){
-			getElementProperties(simple,"","draw", self.roundControl.getDraw(),sprites,animations,fonts);
-		    }
-		    getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);
-		    if (PaintownUtil::matchRegex(simple.toString(), "round[0-9]+")){
-                        std::string temp = PaintownUtil::captureRegex(simple.toString(), "round([0-9]+)",0);
-                        int num = atoi(temp.c_str());
-                        ostringstream str;
-			str << "round" << num;
-                        if (simple == str.str() + ".snd"){
-			    int g=0,s=0;
-			    try{
-				simple >> g >> s;
-			    } catch (const Ast::Exception & e){
-			    }
-			    self.roundControl.getRoundSound(num).setSound(self.sounds[g][s]);
-			} else if (PaintownUtil::matchRegex(simple.toString(),"^"+str.str())){
-			    getElementProperties(simple,"",str.str(), self.roundControl.getRound(num),sprites,animations,fonts);
-			}
+                public:
+                    RoundWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts, int & soundTime):
+                        self(self),
+                        sprites(sprites),
+                        animations(animations),
+                        fonts(fonts),
+                        soundTime(soundTime){
+                        }
+                    GameInfo & self;
+                    Mugen::SpriteMap & sprites;
+                    std::map<int,MugenAnimation *> & animations;
+                    std::vector<MugenFont *> & fonts;
+                    int & soundTime;
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "match.wins"){
+                            int wins;
+                            simple >> wins;
+                            self.roundControl.setMatchWins(wins);
+                        } else if (simple == "match.maxdrawgames"){
+                            int draws;
+                            simple >> draws;
+                            self.roundControl.setMatchMaxDrawGames(draws);
+                        } else if (simple == "start.waittime"){
+                            int time = 0;
+                            simple >> time;
+                            self.roundControl.setStartWaitTime(time);
+                        } else if (simple == "pos"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.setPosition(x,y);
+                        } else if (simple == "round.time"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setRoundDisplayTime(time);
+                        } else if (simple == "round.default.text"){
+                            std::string text;
+                            simple >> text;
+                            self.roundControl.setDefaultText(text);
+                        } else if (simple == "fight.time"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setFightDisplayTime(time);
+                        } else if (simple == "KO.time"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setKODisplayTime(time);
+                        } else if (simple == "win.time"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setWinDisplayTime(time);
+                        } else if (simple == "slow.time"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setSlowTime(time);
+                        } else if (simple == "over.waittime"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setOverWaitTime(time);
+                        } else if (simple == "over.hittime"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setOverHitTime(time);
+                        } else if (simple == "over.time"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setOverTime(time);
+                        } else if (simple == "ctrl.time"){
+                            int time=0;
+                            simple >> time;
+                            self.roundControl.setControlTime(time);
+                        } else if (simple == "round.sndtime"){
+                            int time = 0;
+                            simple >> soundTime;
+                        } else if (simple == "fight.sndtime"){
+                            int time = 0;
+                            simple >> time;
+                            self.roundControl.getFightSound().setSoundTime(time);
+                        } else if (simple == "KO.sndtime"){
+                            int time = 0;
+                            simple >> time;
+                            self.roundControl.getKOSound().setSoundTime(time);
+                            self.roundControl.getDKOSound().setSoundTime(time);
+                            self.roundControl.getTOSound().setSoundTime(time);
+                        } else if (simple == "fight.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.getFightSound().setSound(self.sounds[g][s]);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^fight.")){
+                            getElementProperties(simple,"","fight", self.roundControl.getFight(),sprites,animations,fonts);
+                        } else if (simple == "ko.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.getKOSound().setSound(self.sounds[g][s]);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^KO.")){
+                            getElementProperties(simple,"","ko", self.roundControl.getKO(),sprites,animations,fonts);
+                        } else if (simple == "dko.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.getDKOSound().setSound(self.sounds[g][s]);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^DKO.")){
+                            getElementProperties(simple,"","dko", self.roundControl.getDKO(),sprites,animations,fonts);
+                        } else if (simple == "to.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.getTOSound().setSound(self.sounds[g][s]);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^TO.")){
+                            getElementProperties(simple,"","to", self.roundControl.getTO(),sprites,animations,fonts);
+                        } else if (simple == "win.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.getWinSound().setSound(self.sounds[g][s]);
+                        } else if (simple == "win.text"){
+                            std::string text;
+                            simple >> text;
+                            self.roundControl.setWinText(text);
+                        } else if (simple == "win2.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.getWin2Sound().setSound(self.sounds[g][s]);
+                        } else if (simple == "win2.text"){
+                            std::string text;
+                            simple >> text;
+                            self.roundControl.setWin2Text(text);
+                        } else if (simple == "draw.snd"){
+                            int g=0,s=0;
+                            try{
+                                simple >> g >> s;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.roundControl.getDrawSound().setSound(self.sounds[g][s]);
+                        }
+                        if (PaintownUtil::matchRegex(simple.toString(),"^win.")){
+                            getElementProperties(simple,"","win", self.roundControl.getWin(),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^win2.")){
+                            getElementProperties(simple,"","win2", self.roundControl.getWin2(),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^draw.")){
+                            getElementProperties(simple,"","draw", self.roundControl.getDraw(),sprites,animations,fonts);
+                        }
+                        getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);
+                        if (PaintownUtil::matchRegex(simple.toString(), "round[0-9]+")){
+                            std::string temp = PaintownUtil::captureRegex(simple.toString(), "round([0-9]+)",0);
+                            int num = atoi(temp.c_str());
+                            ostringstream str;
+                            str << "round" << num;
+                            if (simple == str.str() + ".snd"){
+                                int g=0,s=0;
+                                try{
+                                    simple >> g >> s;
+                                } catch (const Ast::Exception & e){
+                                }
+                                self.roundControl.getRoundSound(num).setSound(self.sounds[g][s]);
+                            } else if (PaintownUtil::matchRegex(simple.toString(),"^"+str.str())){
+                                getElementProperties(simple,"",str.str(), self.roundControl.getRound(num),sprites,animations,fonts);
+                            }
+                        }
                     }
-		}
             };
 
             RoundWalk walk(*this, sprites, animations, fonts, soundTime);
@@ -1842,92 +1844,92 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
             roundControl.setRoundSoundTime(soundTime);
         } else if (head == "WinIcon"){
             class WinIconWalk: public Ast::Walker{
-            public:
-                WinIconWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
-                self(self),
-		sprites(sprites),
-                animations(animations),
-                fonts(fonts){
-                }
-                GameInfo & self;
-		Mugen::SpriteMap & sprites;
-                std::map<int,MugenAnimation *> & animations;
-                std::vector<MugenFont *> & fonts;
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "p1.pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.winIconDisplay.setPlayer1Position(x,y);
-                    } else if (simple == "p2.pos"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.winIconDisplay.setPlayer2Position(x,y);
-                    } else if (simple == "p1.iconoffset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.winIconDisplay.setPlayer1Offset(x,y);
-                    } else if (simple == "p2.iconoffset"){
-			int x=0, y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.winIconDisplay.setPlayer2Offset(x,y);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.counter.")){
-			getElementProperties(simple,"p1","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.counter.")){
-			getElementProperties(simple,"p2","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.n.")){
-			getElementProperties(simple,"p1","n", self.winIconDisplay.getPlayer1Win(WinGame::Normal),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.n.")){
-			getElementProperties(simple,"p2","n", self.winIconDisplay.getPlayer2Win(WinGame::Normal),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.s.")){
-			getElementProperties(simple,"p1","s", self.winIconDisplay.getPlayer1Win(WinGame::Special),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.s.")){
-			getElementProperties(simple,"p2","s", self.winIconDisplay.getPlayer2Win(WinGame::Special),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.h.")){
-			getElementProperties(simple,"p1","h", self.winIconDisplay.getPlayer1Win(WinGame::Hyper),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.h.")){
-			getElementProperties(simple,"p2","h", self.winIconDisplay.getPlayer2Win(WinGame::Hyper),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.throw.")){
-			getElementProperties(simple,"p1","throw", self.winIconDisplay.getPlayer1Win(WinGame::NormalThrow),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.throw.")){
-			getElementProperties(simple,"p2","throw", self.winIconDisplay.getPlayer2Win(WinGame::NormalThrow),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.c.")){
-			getElementProperties(simple,"p1","c", self.winIconDisplay.getPlayer1Win(WinGame::Cheese),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.c.")){
-			getElementProperties(simple,"p2","c", self.winIconDisplay.getPlayer2Win(WinGame::Cheese),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.t.")){
-			getElementProperties(simple,"p1","t", self.winIconDisplay.getPlayer1Win(WinGame::TimeOver),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.t.")){
-			getElementProperties(simple,"p2","t", self.winIconDisplay.getPlayer2Win(WinGame::TimeOver),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.suicide.")){
-			getElementProperties(simple,"p1","suicide", self.winIconDisplay.getPlayer1Win(WinGame::Suicide),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.suicide.")){
-			getElementProperties(simple,"p2","suicide", self.winIconDisplay.getPlayer2Win(WinGame::Suicide),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.teammate.")){
-			getElementProperties(simple,"p1","teammate", self.winIconDisplay.getPlayer1Win(WinGame::Teammate),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.teammate.")){
-			getElementProperties(simple,"p2","teammate", self.winIconDisplay.getPlayer2Win(WinGame::Teammate),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.perfect.")){
-			getElementProperties(simple,"p1","perfect", self.winIconDisplay.getPlayer1Win(WinGame::Perfect),sprites,animations,fonts);
-                    } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.perfect.")){
-			getElementProperties(simple,"p2","perfect", self.winIconDisplay.getPlayer2Win(WinGame::Perfect),sprites,animations,fonts);
-                    } else if (simple == "useiconupto"){
-			int num;
-			simple >> num;
-			self.winIconDisplay.setUseIconUpTo(num);
-		    }
-                }
+                public:
+                    WinIconWalk(GameInfo & self, Mugen::SpriteMap & sprites, std::map<int,MugenAnimation *> & animations, std::vector<MugenFont *> & fonts):
+                        self(self),
+                        sprites(sprites),
+                        animations(animations),
+                        fonts(fonts){
+                        }
+                    GameInfo & self;
+                    Mugen::SpriteMap & sprites;
+                    std::map<int,MugenAnimation *> & animations;
+                    std::vector<MugenFont *> & fonts;
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "p1.pos"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.winIconDisplay.setPlayer1Position(x,y);
+                        } else if (simple == "p2.pos"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.winIconDisplay.setPlayer2Position(x,y);
+                        } else if (simple == "p1.iconoffset"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.winIconDisplay.setPlayer1Offset(x,y);
+                        } else if (simple == "p2.iconoffset"){
+                            int x=0, y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.winIconDisplay.setPlayer2Offset(x,y);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.counter.")){
+                            getElementProperties(simple,"p1","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.counter.")){
+                            getElementProperties(simple,"p2","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.n.")){
+                            getElementProperties(simple,"p1","n", self.winIconDisplay.getPlayer1Win(WinGame::Normal),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.n.")){
+                            getElementProperties(simple,"p2","n", self.winIconDisplay.getPlayer2Win(WinGame::Normal),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.s.")){
+                            getElementProperties(simple,"p1","s", self.winIconDisplay.getPlayer1Win(WinGame::Special),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.s.")){
+                            getElementProperties(simple,"p2","s", self.winIconDisplay.getPlayer2Win(WinGame::Special),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.h.")){
+                            getElementProperties(simple,"p1","h", self.winIconDisplay.getPlayer1Win(WinGame::Hyper),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.h.")){
+                            getElementProperties(simple,"p2","h", self.winIconDisplay.getPlayer2Win(WinGame::Hyper),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.throw.")){
+                            getElementProperties(simple,"p1","throw", self.winIconDisplay.getPlayer1Win(WinGame::NormalThrow),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.throw.")){
+                            getElementProperties(simple,"p2","throw", self.winIconDisplay.getPlayer2Win(WinGame::NormalThrow),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.c.")){
+                            getElementProperties(simple,"p1","c", self.winIconDisplay.getPlayer1Win(WinGame::Cheese),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.c.")){
+                            getElementProperties(simple,"p2","c", self.winIconDisplay.getPlayer2Win(WinGame::Cheese),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.t.")){
+                            getElementProperties(simple,"p1","t", self.winIconDisplay.getPlayer1Win(WinGame::TimeOver),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.t.")){
+                            getElementProperties(simple,"p2","t", self.winIconDisplay.getPlayer2Win(WinGame::TimeOver),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.suicide.")){
+                            getElementProperties(simple,"p1","suicide", self.winIconDisplay.getPlayer1Win(WinGame::Suicide),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.suicide.")){
+                            getElementProperties(simple,"p2","suicide", self.winIconDisplay.getPlayer2Win(WinGame::Suicide),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.teammate.")){
+                            getElementProperties(simple,"p1","teammate", self.winIconDisplay.getPlayer1Win(WinGame::Teammate),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.teammate.")){
+                            getElementProperties(simple,"p2","teammate", self.winIconDisplay.getPlayer2Win(WinGame::Teammate),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.perfect.")){
+                            getElementProperties(simple,"p1","perfect", self.winIconDisplay.getPlayer1Win(WinGame::Perfect),sprites,animations,fonts);
+                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.perfect.")){
+                            getElementProperties(simple,"p2","perfect", self.winIconDisplay.getPlayer2Win(WinGame::Perfect),sprites,animations,fonts);
+                        } else if (simple == "useiconupto"){
+                            int num;
+                            simple >> num;
+                            self.winIconDisplay.setUseIconUpTo(num);
+                        }
+                    }
             };
 
             WinIconWalk walk(*this,sprites,animations,fonts);
@@ -1982,18 +1984,18 @@ void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Charac
     roundControl.act(stage, player1, player2);
     winIconDisplay.act(player1, player2);
     if (roundControl.getState() == Round::PlayingGame){
-	if (!timer.isStarted()){
-	    timer.reset();
-	    timer.start();
-	}
-	if (timer.isStarted() && timer.hasExpired()){
-	    roundControl.setState(Round::DoTimeOver, stage, player1, player2);
+        if (!timer.isStarted()){
+            timer.reset();
+            timer.start();
+        }
+        if (timer.isStarted() && timer.hasExpired()){
+            roundControl.setState(Round::DoTimeOver, stage, player1, player2);
             timer.stop();
-	}
+        }
     }
     if ((player1.getHealth() <=0 || player2.getHealth() <=0) && !roundControl.isRoundOver()){
-	roundControl.setState(Round::RoundOver, stage, player1, player2);
-	timer.stop();
+        roundControl.setState(Round::RoundOver, stage, player1, player2);
+        timer.stop();
     }
 }
 
@@ -2002,16 +2004,17 @@ void GameInfo::render(const Element::Layer & layer, const Bitmap &bmp){
 
     // Program received signal SIGFPE, Arithmetic exception.
     player2LifeBar.render(layer,bmp);
-    player1PowerBar.render(layer,bmp);
-    player2PowerBar.render(layer,bmp);
-    player1Face.render(layer,bmp);
-    player2Face.render(layer,bmp);
-    player1Name.render(layer,bmp);
-    player2Name.render(layer,bmp);
-    timer.render(layer,bmp);
-    combo.render(layer,bmp);
-    roundControl.render(layer,bmp);
-    winIconDisplay.render(layer,bmp);
+
+    player1PowerBar.render(layer, bmp);
+    player2PowerBar.render(layer, bmp);
+    player1Face.render(layer, bmp);
+    player2Face.render(layer, bmp);
+    player1Name.render(layer, bmp);
+    player2Name.render(layer, bmp);
+    timer.render(layer, bmp);
+    combo.render(layer, bmp);
+    roundControl.render(layer, bmp);
+    winIconDisplay.render(layer, bmp);
 }
 
 void GameInfo::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
@@ -2022,17 +2025,17 @@ void GameInfo::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Char
 void GameInfo::parseAnimations(Ast::AstParse & parsed){
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
-	std::string head = section->getName();
+        std::string head = section->getName();
         head = Util::fixCase(head);
         if (PaintownUtil::matchRegex(head, "begin *action")){
             /* This creates the animations. It differs from character animation since
              * these are included in the stage.def file with the other defaults
              */
-	    head.replace(0,13,"");
-	    int h;
+            head.replace(0,13,"");
+            int h;
             istringstream out(head);
-	    out >> h;
-	    animations[h] = Mugen::Util::getAnimation(section, sprites, true);
-	} 
+            out >> h;
+            animations[h] = Mugen::Util::getAnimation(section, sprites, true);
+        } 
     }
 }

@@ -47,7 +47,7 @@
 #include "util.h"
 #include "characterhud.h"
 
-#include "mugen/font.h"
+#include "font.h"
 
 using namespace std;
 

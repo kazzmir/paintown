@@ -447,6 +447,7 @@ void Character::initialize(){
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
+    juggleRemaining = 0;
     defenseMultiplier = 1;
     attackMultiplier = 1;
     lieDownTime = 0;

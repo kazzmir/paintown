@@ -56,11 +56,11 @@ maskedBitmap(NULL){
     }
 
     if (copy.unmaskedBitmap){
-	this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
+        this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
     }
 
     if (copy.maskedBitmap){
-	this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
+        this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
     }
 }
 
@@ -88,11 +88,11 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     }
 
     if (copy.unmaskedBitmap){
-	this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
+        this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
     }
 
     if (copy.maskedBitmap){
-	this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
+        this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
     }
     
     return *this;
@@ -102,11 +102,11 @@ void MugenSprite::copyImage(const MugenSprite * copy){
     cleanup();
 
     if (copy->unmaskedBitmap){
-	this->unmaskedBitmap = new Bitmap(*copy->unmaskedBitmap);
+        this->unmaskedBitmap = new Bitmap(*copy->unmaskedBitmap);
     }
 
     if (copy->maskedBitmap){
-	this->maskedBitmap = new Bitmap(*copy->maskedBitmap);
+        this->maskedBitmap = new Bitmap(*copy->maskedBitmap);
     }
 }
 
@@ -122,12 +122,12 @@ void MugenSprite::cleanup(){
     }
 
     if (unmaskedBitmap){
-	delete unmaskedBitmap;
+        delete unmaskedBitmap;
         unmaskedBitmap = NULL;
     }
 
     if (maskedBitmap){
-	delete maskedBitmap;
+        delete maskedBitmap;
         maskedBitmap = NULL;
     }
 }
@@ -396,35 +396,35 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
     }
 
     if ( (effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
-	if (effects.trans != None){
-	    bmp.drawTransHFlip(flippedX, normalY, where);
-	} else {
-	    // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
-	    bmp.drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, where);
-	}
-	
+        if (effects.trans != None){
+            bmp.drawTransHFlip(flippedX, normalY, where);
+        } else {
+            // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
+            bmp.drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, where);
+        }
+
     } else if ( (effects.vfacing == FLIPPED) && (effects.facing == NOT_FLIPPED)){
-	if (effects.trans != None){
-	    bmp.drawTransVFlip(normalX, flippedY, where);
-	} else {
-	    bmp.drawVFlip(normalX, flippedY, where);
-	}
+        if (effects.trans != None){
+            bmp.drawTransVFlip(normalX, flippedY, where);
+        } else {
+            bmp.drawVFlip(normalX, flippedY, where);
+        }
     } else if ((effects.vfacing == FLIPPED) && (effects.facing == FLIPPED)){
-	if (effects.trans != None){
-	    bmp.drawTransHVFlip(flippedX, flippedY, where);
-	} else {
-	    bmp.drawHVFlip(flippedX, flippedY, where);
-	}
+        if (effects.trans != None){
+            bmp.drawTransHVFlip(flippedX, flippedY, where);
+        } else {
+            bmp.drawHVFlip(flippedX, flippedY, where);
+        }
     } else {
-	//if( effects.mask ){
-	if (effects.trans != None){
-	    bmp.drawTrans(normalX, normalY, where);
-	} else {
-	    bmp.draw(normalX, normalY, startWidth, startHeight, width, height, where);
-	}
-	//} else {
-	//    bmp.Blit( placex, placey, where );
-//	}
+        //if( effects.mask ){
+        if (effects.trans != None){
+            bmp.drawTrans(normalX, normalY, where);
+        } else {
+            bmp.draw(normalX, normalY, startWidth, startHeight, width, height, where);
+        }
+        //} else {
+        //    bmp.Blit( placex, placey, where );
+        //	}
     }
 }
 

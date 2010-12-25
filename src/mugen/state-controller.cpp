@@ -761,14 +761,14 @@ public:
     virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
-            if (result.getBoolValue()){
+            if (toBool(result)){
                 guy.setXVelocity(guy.getHitState().xVelocity);
             }
         }
 
         if (y != NULL){
             RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
-            if (result.getBoolValue()){
+            if (toBool(result)){
                 guy.setYVelocity(guy.getHitState().yVelocity);
             }
         }
