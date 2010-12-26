@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <windows.h>
+#include <psapi.h>
 #include <fstream>
 #include "util/system.h"
 #include <dirent.h>
@@ -55,7 +56,12 @@ uint64_t getModificationTime(const std::string & path){
 }
 
 unsigned long memoryUsage(){
-    /* FIXME */
+    HANDLE id = GetCurrentProcess();
+    PROCESS_MEMORY_COUNTERS info;
+    BOOL okay = GetProcessMemoryInfo(id, &info, sizeof(info));
+    if (okay){
+        return info.WorkingSetSize;
+    }
     return 0;
 }
 

@@ -1165,7 +1165,7 @@ if isWindows():
             # TODO: move this to a configure check
             env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-            env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+            env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll', 'psapi'] )
         elif useMinpspw() or useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
