@@ -171,7 +171,7 @@ def checkAllegro5(context):
     tmp = context.env.Clone()
     env = context.env
     try:
-        env.ParseConfig('pkg-config allegro-4.9 --cflags --libs')
+        env.ParseConfig('pkg-config allegro-5.0 --cflags --libs')
         env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
         context.Result(colorResult(1))
         return 1
@@ -1338,8 +1338,11 @@ def psp_eboot(target, source, env):
         env.Execute("pack-pbp EBOOT.PBP PARAM.SFO data/psp/icon0.png NULL NULL data/psp/pic1.png NULL %s NULL" % file)
     return 0
 
-def wii_info(target, source, env):
-    print "Run elf2dol on %s to get a dol file" % source[0].name
+def wii_elf2dol(target, source, env):
+    file = source[0].name
+    print "Running elf2dol to create %s.dol for you" % file
+    env.Execute('elf2dol %s %s.dol' % (file, file))
+    print "Rename %s to %s.elf if you want to run in dolphin with debugging" % (file, file)
     return 0
 
 for i in shared:
@@ -1347,7 +1350,7 @@ for i in shared:
     if useMinpspw():
         env.AddPostAction(safe, psp_eboot)
     if useWii():
-        env.AddPostAction(safe, wii_info)
+        env.AddPostAction(safe, wii_elf2dol)
     Default(safe)
 
 for i in static:
