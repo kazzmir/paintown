@@ -494,19 +494,36 @@ void * LoadingContext::load_it(void * arg){
     return NULL;
 }
 
+static void showLoadMessage(){
+    int screenX = 80;
+    int screenY = 50;
+    Bitmap work(110, 50);
+    work.BlitFromScreen(screenX, screenY);
+    Bitmap top(110, 50);
+    top.fill(Bitmap::makeColor(0, 0, 0));
+    Font::getDefaultFont(25, 25).printf(10, 5, Bitmap::makeColor(192, 192, 192), top, "Loading", 0);
+    Bitmap::transBlender(0, 0, 0, 200);
+    top.drawTrans(0, 0, work);
+    work.BlitAreaToScreen(screenX, screenY);
+}
+
 void loadScreen(LoadingContext & context, const Level::LevelInfo & info, Kind kind){
     Util::Thread::Id loadingThread;
     bool created = Util::Thread::createThread(&loadingThread, NULL, (Util::Thread::ThreadFunction) LoadingContext::load_it, &context);
     if (!created){
-        throw LoadException(__FILE__, __LINE__, "Could not create loader thread");
-    }
-    switch (kind){
-        case Default: loadingScreen1(context, info); break;
-        case SimpleCircle: loadingScreenSimpleX1(context, info); break;
-        default: loadingScreen1(context, info); break;
-    }
+        Global::debug(0) << "Could not create loading thread. Loading will occur in the main thread" << endl;
+        showLoadMessage();
+        LoadingContext::load_it(&context);
+        // throw LoadException(__FILE__, __LINE__, "Could not create loader thread");
+    } else {
+        switch (kind){
+            case Default: loadingScreen1(context, info); break;
+            case SimpleCircle: loadingScreenSimpleX1(context, info); break;
+            default: loadingScreen1(context, info); break;
+        }
 
-    Util::Thread::joinThread(loadingThread);
+        Util::Thread::joinThread(loadingThread);
+    }
 }
 
 }
