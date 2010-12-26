@@ -5,6 +5,11 @@
 void PSPJoystick::poll(){
     sceCtrlPeekBufferPositive(&joystick, 1); 
 }
+    
+int PSPJoystick::getDeviceId() const {
+    /* FIXME */
+    return 0;
+}
 
 JoystickInput PSPJoystick::readAll(){
     JoystickInput input;
