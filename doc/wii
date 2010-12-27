@@ -6,6 +6,8 @@ Issues with porting paintown to the Wii:
 
   * Reading data files is incredibly slow. WiiOs doesn't cache files and reading from FAT partition is slow in itself which yields load times upto 10x slower than Paintown on the PC.
 
+  * Default stack size in new threads created by libogc is 8kb. The peg parsers require a bit more space than this so I changed SDL to call LWP_CreateThread with 32*1024 bytes of space. This allows mugen mode to work properly.
+
 * How to install on homebrew:
   1. Get the wii build environment:
     svn co https://paintown.svn.sourceforge.net/svnroot/paintown/build-environments/devkitpro
