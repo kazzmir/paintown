@@ -698,103 +698,113 @@ Cursor::~Cursor(){
 }
 
 void Cursor::act(Grid &grid){
-    InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
-    switch (state){
-	case NotActive:
-	    return;
-	    break;
-	case TeamSelect:
-	    if (out[Up]){
-	    }
-	    if (out[Down]){
-	    }
-	    if (out[Left]){
-	    }
-	    if (out[Right]){
-	    }
-	    if (out[A]){
-	    }
-	    if (out[B]){
-	    }
-	    if (out[C]){
-	    }
-	    if (out[X]){
-	    }
-	    if (out[Y]){
-	    }
-	    if (out[Z]){
-	    }
-	    if (out[Start]){
-	    }
-	    break;
-	case CharacterSelect:
-	    if (out[Up]){
-		grid.moveCursorUp(*this);
-	    }
-	    if (out[Down]){
-		grid.moveCursorDown(*this);
-	    }
-	    if (out[Left]){
-		grid.moveCursorLeft(*this);
-	    }
-	    if (out[Right]){
-		grid.moveCursorRight(*this);
-	    }
+    // InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
+    vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input);
+    for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+        const InputMap<Mugen::Keys>::InputEvent & event = *it;
+        if (!event.enabled){
+            continue;
+        }
 
-            if (!getCurrentCell()->isEmpty()){
+        switch (state){
+            case NotActive:
+                return;
+                break;
+            case TeamSelect:
+                /* whats supposed to be here? */
+                if (event[Up]){
+                }
+                if (event[Down]){
+                }
+                if (event[Left]){
+                }
+                if (event[Right]){
+                }
+                if (event[A]){
+                }
+                if (event[B]){
+                }
+                if (event[C]){
+                }
+                if (event[X]){
+                }
+                if (event[Y]){
+                }
+                if (event[Z]){
+                }
+                if (event[Start]){
+                }
+                break;
+            case CharacterSelect:
+                if (event[Up]){
+                    grid.moveCursorUp(*this);
+                }
+                if (event[Down]){
+                    grid.moveCursorDown(*this);
+                }
+                if (event[Left]){
+                    grid.moveCursorLeft(*this);
+                }
+                if (event[Right]){
+                    grid.moveCursorRight(*this);
+                }
+
+                if (!getCurrentCell()->isEmpty()){
                     Mugen::Keys selectable[] = {A, B, C, X, Y, Z};
-                for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
-                    if (out[selectable[key]]){
-                        grid.selectCell(*this, selectable[key], out[Start]);
+                    for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
+                        if (event[selectable[key]]){
+                            grid.selectCell(*this, selectable[key], event[Start]);
+                        }
                     }
                 }
-            }
 
-	    if (blink && (currentCell->getCursorState() == Cell::Two)){
-		blinkCounter++;
-		if (blinkCounter > blinkRate){
-		    blinkCounter = 0;
-		    hideForBlink = !hideForBlink;
-		}
-	    } else {
-		hideForBlink = false;
-	    }
-	    break;
-	case StageSelect:
-	    /* Check if selecting is still possible else set done state */
-	    if (!grid.getStageHandler().isSelecting()){
-		state = Done;
-	    }
-	    if (out[Left]){
-		grid.getStageHandler().prev();
-	    }
-	    if (out[Right]){
-		grid.getStageHandler().next();
-	    }
-	    if (out[A]){
-		grid.selectStage();
-	    }
-	    if (out[B]){
-		grid.selectStage();
-	    }
-	    if (out[C]){
-		grid.selectStage();
-	    }
-	    if (out[X]){
-		grid.selectStage();
-	    }
-	    if (out[Y]){
-		grid.selectStage();
-	    }
-	    if (out[Z]){
-		grid.selectStage();
-	    }
-	    if (out[Start]){
-	    }
-	    break;
-	case Done:
-	default:
-	    break;
+                if (blink && (currentCell->getCursorState() == Cell::Two)){
+                    blinkCounter++;
+                    if (blinkCounter > blinkRate){
+                        blinkCounter = 0;
+                        hideForBlink = !hideForBlink;
+                    }
+                } else {
+                    hideForBlink = false;
+                }
+                break;
+            case StageSelect:
+                /* Check if selecting is still possible else set done state */
+                if (!grid.getStageHandler().isSelecting()){
+                    state = Done;
+                }
+                if (event[Left]){
+                    grid.getStageHandler().prev();
+                }
+                if (event[Right]){
+                    grid.getStageHandler().next();
+                }
+                /* code re-use *cough* */
+                if (event[A]){
+                    grid.selectStage();
+                }
+                if (event[B]){
+                    grid.selectStage();
+                }
+                if (event[C]){
+                    grid.selectStage();
+                }
+                if (event[X]){
+                    grid.selectStage();
+                }
+                if (event[Y]){
+                    grid.selectStage();
+                }
+                if (event[Z]){
+                    grid.selectStage();
+                }
+                if (event[Start]){
+                }
+                break;
+            case Done:
+            default:
+                break;
+        }
     }
 }
 
@@ -1996,58 +2006,65 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     
 	bool draw = false;
 	
-	if ( Global::speed_counter > 0 ){
-	    draw = true;
-	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-	    while ( runCounter >= 1.0 ){
-		runCounter -= 1;
-		// Key handler
-		InputManager::poll();
-		
-		InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
-		if (out[Mugen::Esc]){
-		    done = escaped = true;
-		    fader.setState(Gui::FadeTool::FadeOut);
-                    // play cancel sound
-                    if (cancelSound){
-                        cancelSound->play();
+        if ( Global::speed_counter > 0 ){
+            draw = true;
+            runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+            Global::speed_counter = 0;
+            while ( runCounter >= 1.0 ){
+                runCounter -= 1;
+                // Key handler
+                InputManager::poll();
+
+                vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput);
+                for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                    const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                    if (!event.enabled){
+                        continue;
                     }
-		    InputManager::waitForRelease(gameInput, Mugen::Esc);
-		}
+
+                    if (event[Mugen::Esc]){
+                        done = escaped = true;
+                        fader.setState(Gui::FadeTool::FadeOut);
+                        // play cancel sound
+                        if (cancelSound){
+                            cancelSound->play();
+                        }
+                        InputManager::waitForRelease(gameInput, Mugen::Esc);
+                    }
+                }
+
+                /* *FIXME remove later when solution is found */
+                if (checkPlayerData()){
+                    done = true;
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+
+                // Logic
+
+                // Fader
+                fader.act();
+
+                // Backgrounds
+                background->act();
+
+                // Grid
+                grid.act(player1Cursor,player2Cursor);
+
+                // Cursors
+                player1Cursor.act(grid);
+                player2Cursor.act(grid);
+
+                // Title
+                titleFont.act();
+            }
+        }
 		
-		/* *FIXME remove later when solution is found */
-		if (checkPlayerData()){
-		    done = true;
-		    fader.setState(Gui::FadeTool::FadeOut);
-		}
-		
-		// Logic
-		
-		// Fader
-		fader.act();
-		
-		// Backgrounds
-		background->act();
-		
-		// Grid
-		grid.act(player1Cursor,player2Cursor);
-		
-		// Cursors
-		player1Cursor.act(grid);
-		player2Cursor.act(grid);
-		
-		// Title
-		titleFont.act();
-	    }
-	    
-	    Global::speed_counter = 0;
-	}
-		
+        /* is this needed here? */
 	while ( Global::second_counter > 0 ){
 	    game_time--;
 	    Global::second_counter--;
-	    if ( game_time < 0 ){
-		    game_time = 0;
+	    if (game_time < 0){
+                game_time = 0;
 	    }
 	}
 
@@ -2075,7 +2092,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	}
 
 	while ( Global::speed_counter < 1 ){
-		PaintownUtil::rest( 1 );
+            PaintownUtil::rest( 1 );
 	}
     }
     
