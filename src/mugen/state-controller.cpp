@@ -2125,6 +2125,11 @@ public:
         his.pause.player2 = evaluateNumberLocal(hit.pause.player2, 0);
         his.groundType = hit.groundType;
         his.airType = hit.airType;
+
+        his.attribute.state = hit.attribute.state;
+        his.attribute.attackType = hit.attribute.attackType;
+        his.attribute.physics = hit.attribute.physics;
+
         his.yAcceleration = evaluateNumberLocal(hit.yAcceleration, 0.35);
         his.animationTypeFall = hit.animationTypeFall;
         his.airHitTime = evaluateNumberLocal(hit.airHitTime, 20);
