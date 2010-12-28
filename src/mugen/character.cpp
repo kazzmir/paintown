@@ -2053,7 +2053,8 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
         int x = getRX();
         int y = getRY();
 
-        while (afterImage.currentTime >= afterImage.timegap){
+        /* not sure if checking for the timegap > 0 is the right thing.. */
+        while (afterImage.timegap > 0 && afterImage.currentTime >= afterImage.timegap){
             int life = 200;
             MugenAnimation * animation = getCurrentAnimation();
             afterImage.currentTime -= afterImage.timegap;
