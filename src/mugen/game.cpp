@@ -105,11 +105,13 @@ public:
 static void runMatch(MugenStage * stage, const Bitmap & buffer){
     Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     InputMap<int> gameInput;
+    /* FIXME: use an enum here */
     gameInput.set(Keyboard::Key_F1, 10, false, 0);
     gameInput.set(Keyboard::Key_F2, 10, false, 1);
     gameInput.set(Keyboard::Key_F3, 10, false, 2);
     gameInput.set(Keyboard::Key_F4, 10, true, 3);
     gameInput.set(Keyboard::Key_ESC, 0, true, 4);
+    gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, 4);
     gameInput.set(Keyboard::Key_F5, 10, true, 5);
 
     Music::changeSong();
@@ -147,29 +149,37 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
                     throw ShutdownException();
                 }
 
-                InputMap<int>::Output out = InputManager::getMap(gameInput);
-                if (out[0]){
-                    gameSpeed -= 0.1;
+                std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput);
+                for (std::vector<InputMap<int>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                    const InputMap<int>::InputEvent & event = *it;
+                    if (!event.enabled){
+                        continue;
+                    }
+
+                    if (event[0]){
+                        gameSpeed -= 0.1;
+                    }
+                    if (event[1]){
+                        gameSpeed += 0.1;
+                    }
+                    if (event[2]){
+                        gameSpeed = 1;
+                    }
+                    if (event[3]){
+                        stage->toggleDebug();
+                    }
+                    if (event[4]){
+                        throw QuitGameException();
+                        /*
+                           quit = true;
+                           endMatch = true;
+                           */
+                    }
+                    if (event[5]){
+                        stage->setPlayerHealth(1);
+                    }
                 }
-                if (out[1]){
-                    gameSpeed += 0.1;
-                }
-                if (out[2]){
-                    gameSpeed = 1;
-                }
-                if (out[3]){
-                    stage->toggleDebug();
-                }
-                if (out[4]){
-                    throw QuitGameException();
-                    /*
-                    quit = true;
-                    endMatch = true;
-                    */
-                }
-                if (out[5]){
-                    stage->setPlayerHealth(1);
-                }
+
                 if (gameSpeed < 0.1){
                     gameSpeed = 0.1;
                 }
