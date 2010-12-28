@@ -928,6 +928,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     // Set game keys temporary
     InputMap<Mugen::Keys> gameInput;
     gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
+    gameInput.set(Configuration::config(0).getJoystickQuit(), 10, true, Mugen::Esc);
 
     class PlayerLoader: public PaintownUtil::Future<int> {
     public:
@@ -984,11 +985,18 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                     throw ShutdownException();
                 }
 
-                InputMap<Mugen::Keys>::Output out = InputManager::getMap(gameInput);
-                if (out[Mugen::Esc]){
-                    done = escaped = true;
-                    fader.setState(Gui::FadeTool::FadeOut);
-                    InputManager::waitForRelease(gameInput, Mugen::Esc);
+                vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput);
+                for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                    const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                    if (!event.enabled){
+                        continue;
+                    }
+
+                    if (event[Mugen::Esc]){
+                        done = escaped = true;
+                        fader.setState(Gui::FadeTool::FadeOut);
+                        InputManager::waitForRelease(gameInput, Mugen::Esc);
+                    }
                 }
 
                 // Logic
