@@ -233,6 +233,7 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Joystick::Button2, delay, false, Mugen::B);
     input.set(Joystick::Button3, delay, false, Mugen::X);
     input.set(Joystick::Button4, delay, false, Mugen::Y);
+    input.set(Joystick::Quit, delay, false, Mugen::Esc);
     return input;
 }
 
@@ -264,6 +265,7 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Joystick::Button2, 0, false, Mugen::B);
     input.set(Joystick::Button3, 0, false, Mugen::X);
     input.set(Joystick::Button4, 0, false, Mugen::Y);
+    input.set(Joystick::Quit, delay, false, Mugen::Esc);
 
     return input;
 }

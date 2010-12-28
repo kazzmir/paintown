@@ -467,7 +467,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	if ( Global::speed_counter > 0 ){
 	    draw = true;
 	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-	    while ( runCounter >= 1.0 ){
+	    Global::speed_counter = 0;
+	    while (runCounter >= 1.0){
 		// tick tock
 		ticker++;
 		
@@ -475,54 +476,64 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 		// Key handler
 		InputManager::poll();
 		
-		InputMap<Keys>::Output out1 = InputManager::getMap(player1Input);
-		InputMap<Keys>::Output out2 = InputManager::getMap(player2Input);
-		if (out1[Esc] || out2[Esc]){
-		    done = escaped = true;
-		    if (sounds[cancelSound.x][cancelSound.y]){
-			sounds[cancelSound.x][cancelSound.y]->play();
-		    }
-		    InputManager::waitForRelease(player1Input, Esc);
-		    InputManager::waitForRelease(player2Input, Esc);
-		}
-		if (out1[Up] || out2[Up]){
-		    (*selectedOption)->toggleSelected();
-		    if (selectedOption > options.begin()){
-			selectedOption--;
-		    } else {
-			selectedOption = options.begin() + options.size()-1;
-		    }
-		    (*selectedOption)->toggleSelected();
-		    if (sounds[moveSound.x][moveSound.y]){
-			sounds[moveSound.x][moveSound.y]->play();
-		    }
-		}
-		if (out1[Down] || out2[Down]){
-		    (*selectedOption)->toggleSelected();
-		    selectedOption++;
-		    if (selectedOption == options.end()){
-			selectedOption = options.begin();
-		    }
-		    (*selectedOption)->toggleSelected();
-		    if (sounds[moveSound.x][moveSound.y]){
-			sounds[moveSound.x][moveSound.y]->play();
-		    }
-		}
-		if (out1[Left] || out2[Left]){
-		    (*selectedOption)->prev();
-		}
-		if (out1[Right] || out2[Right]){
-		    (*selectedOption)->next();
-		}
-		if (out1[Start] || out2[Start]){
-		    (*selectedOption)->enter();
-		}
-		// Backgrounds
-		background->act();
-		
-	    }
-	    
-	    Global::speed_counter = 0;
+		// InputMap<Keys>::Output out1 = InputManager::getMap(player1Input);
+		// InputMap<Keys>::Output out2 = InputManager::getMap(player2Input);
+
+                vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input);
+                vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input);
+                out1.insert(out1.end(), out2.begin(), out2.end());
+                for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+                    const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                    if (!event.enabled){
+                        continue;
+                    }
+
+
+                    if (event[Esc]){
+                        done = escaped = true;
+                        if (sounds[cancelSound.x][cancelSound.y]){
+                            sounds[cancelSound.x][cancelSound.y]->play();
+                        }
+                        InputManager::waitForRelease(player1Input, Esc);
+                        InputManager::waitForRelease(player2Input, Esc);
+                    }
+
+                    if (event[Up]){
+                        (*selectedOption)->toggleSelected();
+                        if (selectedOption > options.begin()){
+                            selectedOption--;
+                        } else {
+                            selectedOption = options.begin() + options.size()-1;
+                        }
+                        (*selectedOption)->toggleSelected();
+                        if (sounds[moveSound.x][moveSound.y]){
+                            sounds[moveSound.x][moveSound.y]->play();
+                        }
+                    }
+                    if (event[Down]){
+                        (*selectedOption)->toggleSelected();
+                        selectedOption++;
+                        if (selectedOption == options.end()){
+                            selectedOption = options.begin();
+                        }
+                        (*selectedOption)->toggleSelected();
+                        if (sounds[moveSound.x][moveSound.y]){
+                            sounds[moveSound.x][moveSound.y]->play();
+                        }
+                    }
+                    if (event[Left]){
+                        (*selectedOption)->prev();
+                    }
+                    if (event[Right]){
+                        (*selectedOption)->next();
+                    }
+                    if (event[Start]){
+                        (*selectedOption)->enter();
+                    }
+                    // Backgrounds
+                    background->act();
+                }
+            }
 	}
 		
 	while ( Global::second_counter > 0 ){

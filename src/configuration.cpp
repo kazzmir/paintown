@@ -38,6 +38,7 @@ define_config(fullscreen, "fullscreen");
 define_config(game_speed, "game-speed");
 define_config(invincible, "invincible");
 define_config(jump, "jump");
+define_config(quit, "quit");
 define_config(keyboard_configuration, "keyboard-configuration");
 define_config(input, "input");
 define_config(joystick_configuration, "joystick-configuration");
@@ -89,6 +90,7 @@ Configuration Configuration::defaultPlayer1Keys(){
     config.setJoystickAttack2(Joystick::Button2);
     config.setJoystickAttack3(Joystick::Button3);
     config.setJoystickJump(Joystick::Button4);
+    config.setJoystickQuit(Joystick::Quit);
 
     return config;
 }
@@ -150,7 +152,8 @@ joystick_down(Joystick::Invalid),
 joystick_attack1(Joystick::Invalid),
 joystick_attack2(Joystick::Invalid),
 joystick_attack3(Joystick::Invalid),
-joystick_jump(Joystick::Invalid){
+joystick_jump(Joystick::Invalid),
+joystick_quit(Joystick::Invalid){
 }
 
 Configuration::Configuration(const Configuration & config):
@@ -172,7 +175,8 @@ joystick_down(config.getJoystickDown()),
 joystick_attack1(config.getJoystickAttack1()),
 joystick_attack2(config.getJoystickAttack2()),
 joystick_attack3(config.getJoystickAttack3()),
-joystick_jump(config.getJoystickJump())
+joystick_jump(config.getJoystickJump()),
+joystick_quit(config.getJoystickQuit())
 {
     menuFont = config.menuFont;
 }
@@ -211,6 +215,7 @@ Configuration & Configuration::operator=(const Configuration & config){
     setJoystickAttack2(config.getJoystickAttack2());
     setJoystickAttack3(config.getJoystickAttack3());
     setJoystickJump(config.getJoystickJump());
+    setJoystickQuit(config.getJoystickQuit());
 
     setMenuFont(config.getMenuFont());
     setMenuFontWidth(config.getMenuFontWidth());
@@ -435,6 +440,12 @@ void Configuration::setJoystickJump(Configuration::JoystickInput i ){
     }
 }
 
+void Configuration::setJoystickQuit(Configuration::JoystickInput i ){
+    if (i != Joystick::Invalid){
+        joystick_quit = i;
+    }
+}
+
 Configuration::JoystickInput Configuration::getJoystickRight() const {
     return joystick_right;
 }
@@ -467,6 +478,10 @@ Configuration::JoystickInput Configuration::getJoystickJump() const {
     return joystick_jump;
 }
 
+Configuration::JoystickInput Configuration::getJoystickQuit() const {
+    return joystick_quit;
+}
+
 string Configuration::getCurrentGame(){
     return currentGameDir;
 }
@@ -487,6 +502,7 @@ static Configuration::JoystickInput intToJoystick(int a){
         case Joystick::Button2 : return Joystick::Button2;
         case Joystick::Button3 : return Joystick::Button3;
         case Joystick::Button4 : return Joystick::Button4;
+        case Joystick::Quit : return Joystick::Quit;
     }
     return Joystick::Invalid;
 }
@@ -574,9 +590,9 @@ void Configuration::loadConfigurations(){
             } else if ( *n == config_joystick_configuration ){
                 int number = -1;
                 JoystickInput right, left, down, up, attack1,
-                    attack2, attack3, jump;
+                    attack2, attack3, jump, quit;
                 right = left = down = up = attack1 = attack2
-                      = attack3 = jump = InvalidJoystick;
+                      = attack3 = jump = quit = InvalidJoystick;
                 /* see above */
                 std::string input = "Allegro";
 
@@ -613,6 +629,9 @@ void Configuration::loadConfigurations(){
                     } else if ( *thing == config_jump){
                         thing->view() >> temp;
                         jump = intToJoystick(temp);
+                    } else if ( *thing == config_quit){
+                        thing->view() >> temp;
+                        quit = intToJoystick(temp);
                     }
                 }
                 if ( number == -1 ){
@@ -630,6 +649,7 @@ void Configuration::loadConfigurations(){
                     myconfig.setJoystickAttack2(attack2);
                     myconfig.setJoystickAttack3(attack3);
                     myconfig.setJoystickJump(jump);
+                    myconfig.setJoystickQuit(quit);
                 }
             } else if ( *n == config_game_speed){
                 n->view() >> gamespeed;
@@ -746,12 +766,14 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
     const char * func_names[] = {config_left, config_right,
                                  config_up, config_down,
                                  config_attack1, config_attack2,
-                                 config_attack3, config_jump};
+                                 config_attack3,
+                                 config_jump, config_quit};
 
     get_func funcs[] = {&Configuration::getJoystickLeft, &Configuration::getJoystickRight,
                         &Configuration::getJoystickUp, &Configuration::getJoystickDown,
                         &Configuration::getJoystickAttack1, &Configuration::getJoystickAttack2,
                         &Configuration::getJoystickAttack3, &Configuration::getJoystickJump,
+                        &Configuration::getJoystickQuit
     };
 
     for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){

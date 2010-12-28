@@ -64,6 +64,7 @@ public:
     void setJoystickAttack2(JoystickInput i);
     void setJoystickAttack3(JoystickInput i);
     void setJoystickJump(JoystickInput i);
+    void setJoystickQuit(JoystickInput i);
 
     JoystickInput getJoystickRight() const;
     JoystickInput getJoystickLeft() const;
@@ -73,6 +74,7 @@ public:
     JoystickInput getJoystickAttack2() const;
     JoystickInput getJoystickAttack3() const;
     JoystickInput getJoystickJump() const;
+    JoystickInput getJoystickQuit() const;
 
 public:
     static double getGameSpeed();
@@ -153,6 +155,7 @@ private:
     JoystickInput joystick_attack2;
     JoystickInput joystick_attack3;
     JoystickInput joystick_jump;
+    JoystickInput joystick_quit;
 
 private:
     //! Game speed
