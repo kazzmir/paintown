@@ -465,9 +465,16 @@ public:
     void createMemo(){
         memo_size = 1024 * 2;
         memo = new Column*[memo_size];
+        /* dont create column objects before they are needed because transient
+         * productions will never call for them so we can save some space by
+         * not allocating columns at all.
+         */
+        memset(memo, 0, sizeof(Column*) * memo_size);
+        /*
         for (int i = 0; i < memo_size; i++){
             memo[i] = new Column();
         }
+        */
     }
 
     int length(){
@@ -526,9 +533,12 @@ public:
         int newSize = memo_size * 2;
         Column ** newMemo = new Column*[newSize];
         memcpy(newMemo, memo, sizeof(Column*) * memo_size);
+        memset(&newMemo[memo_size], 0, sizeof(Column*) * (newSize - memo_size));
+        /*
         for (int i = memo_size; i < newSize; i++){
             newMemo[i] = new Column();
         }
+        */
         delete[] memo;
         memo = newMemo;
         memo_size = newSize;
@@ -646,6 +656,10 @@ public:
     inline Column & getColumn(const int position){
         while (position >= memo_size){
             growMemo();
+        }
+        /* create columns lazily because not every position will have a column. */
+        if (memo[position] == NULL){
+            memo[position] = new Column();
         }
         return *(memo[position]);
     }
