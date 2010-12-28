@@ -1360,26 +1360,28 @@ void Menu::Menu::run(const Context & parentContext){
     /* do any lazy loading options want to do */
     openOptions();
 
-    /* Set keys */
+    /* vi keys -- make these optional? */
     input.set(Keyboard::Key_J, 0, true, Down);
     input.set(Keyboard::Key_K, 0, true, Up);
     input.set(Keyboard::Key_H, 0, true, Left);
     input.set(Keyboard::Key_L, 0, true, Right);
     input.set(Keyboard::Key_UP, 0, true, Up);
     /* regular keys */
-    input.set(Keyboard::Key_DOWN, 0, true, Down);
-    input.set(Keyboard::Key_LEFT, 0, true, Left);
-    input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Configuration::config(0).getDown(), 0, true, Down);
+    input.set(Configuration::config(0).getLeft(), 0, true, Left);
+    input.set(Configuration::config(0).getRight(), 0, true, Right);
+    /* FIXME: use configuration keys */
     input.set(Keyboard::Key_ENTER, 0, true, Select);
     input.set(Keyboard::Key_ESC, 0, true, Cancel);
     /* joystick */
-    input.set(Joystick::Up, 0, true, Up);
-    input.set(Joystick::Down, 0, true, Down);
-    input.set(Joystick::Left, 0, true, Left);
-    input.set(Joystick::Right, 0, true, Right);
+    input.set(Configuration::config(0).getJoystickUp(), 0, true, Up);
+    input.set(Configuration::config(0).getJoystickDown(), 0, true, Down);
+    input.set(Configuration::config(0).getJoystickLeft(), 0, true, Left);
+    input.set(Configuration::config(0).getJoystickRight(), 0, true, Right);
     /*! FIXME this should be changed to Select/Cancel buttons, all other buttons should be Select */
-    input.set(Joystick::Button1, 0, true, Select);
-    input.set(Joystick::Button2, 0, true, Cancel);
+    input.set(Configuration::config(0).getJoystickAttack1(), 0, true, Select);
+    input.set(Configuration::config(0).getJoystickAttack2(), 0, true, Cancel);
+    input.set(Configuration::config(0).getJoystickQuit(), 0, true, Cancel);
    
     /*
     Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
