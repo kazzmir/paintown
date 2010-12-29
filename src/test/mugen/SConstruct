@@ -187,7 +187,48 @@ test/mugen/command.cpp
 test/mugen/section.cpp
 """)
 
+full_source = most_game_source + Split("""
+load-full.cpp
+init.cpp
+test/factory/collector.cpp
+test/factory/shadow.cpp
+test/factory/object_factory.cpp
+test/factory/heart_factory.cpp
+test/object/item.cpp
+test/object/attack.cpp
+test/object/projectile.cpp
+test/object/animation_event.cpp
+test/object/animation_trail.cpp
+test/object/animation.cpp
+test/object/gib.cpp
+test/object/cat.cpp
+test/object/actor.cpp
+test/object/object_nonattack.cpp
+test/object/enemy.cpp
+test/network/messages.cpp
+test/util/gradient.cpp
+test/loading.cpp
+test/game/select_player.cpp
+test/openbor/util.cpp
+test/openbor/pack-reader.cpp
+test/resource.cpp
+test/openbor/mod.cpp
+test/util/ebox.cpp
+test/level/utils.cpp
+test/object/draw-effect.cpp
+test/object/character.cpp
+test/object/display_character.cpp
+test/object/heart.cpp
+test/game/mod.cpp
+test/object/stimulation.cpp
+test/object/health_stimulation.cpp
+test/object/network_player.cpp
+test/nameplacer.cpp
+test/object/network_character.cpp
+""")
+
 stage_source.append(testEnv.Peg('test/openbor/data.peg'))
+full_source.append(testEnv.Peg('test/openbor/data.peg'))
 
 ast_source = Split("""
 test-parser/air.cpp
@@ -209,6 +250,7 @@ def makeTest(name, files):
     x.append(testEnv.Program(name, files))
 
 # x.append(testEnv.Program('load', load_source + most_game_source))
+makeTest('load-full', full_source)
 makeTest('load', load_source + most_game_source)
 makeTest('serialize', ['serialize.cpp'] + ast_source)
 x.append(testEnv.Program('load-stage', stage_source))

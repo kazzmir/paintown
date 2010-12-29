@@ -1345,6 +1345,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         simple >> sff;
                         Global::debug(1) << "Got Sprite File: '" << sff << "'" << endl;
                         Util::readSprites(Util::getCorrectFileLocation(baseDir, sff), Filesystem::AbsolutePath(), self.sprites, true);
+                        /*
                         for( Mugen::SpriteMap::iterator i = self.sprites.begin() ; i != self.sprites.end() ; ++i ){
                             // Load these sprites so they are ready to use
                             for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -1353,6 +1354,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                                 }
                             }
                         }
+                        */
                     } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                         string temp;
                         simple >> temp;
