@@ -322,9 +322,13 @@ static void initSystem(ostream & out){
     start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
     start_timer(inc_second_counter, 1);
 
-    SDL_Surface * icon = SDL_LoadBMP(Filesystem::find(Filesystem::RelativePath("menu/icon.bmp")).path().c_str());
-    if (icon != NULL){
-        SDL_WM_SetIcon(icon, NULL);
+    try{
+        SDL_Surface * icon = SDL_LoadBMP(Filesystem::find(Filesystem::RelativePath("menu/icon.bmp")).path().c_str());
+        if (icon != NULL){
+            SDL_WM_SetIcon(icon, NULL);
+        }
+    } catch (const Filesystem::NotFound & failed){
+        Global::debug(0) << "Could not find window icon: " << failed.getTrace() << endl;
     }
 
     SDL_WM_SetCaption("Paintown", NULL);
