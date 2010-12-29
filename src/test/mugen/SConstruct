@@ -65,6 +65,7 @@ test/exceptions/exception.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
 test/windows/system.cpp
+test/input/text-input.cpp
 test/game/console.cpp
 test/game/world.cpp
 test/mugen/config.cpp
@@ -171,6 +172,7 @@ test/util/tokenreader.cpp
 test/util/token_exception.cpp
 test/game/world.cpp
 test/game/console.cpp
+test/input/text-input.cpp
 test/exceptions/exception.cpp
 test/util/thread.cpp
 test/util/events.cpp
