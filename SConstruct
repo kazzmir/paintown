@@ -1011,6 +1011,8 @@ def getDataPath():
     except KeyError:
         if useWii():
             return 'sd:/data'
+        if useMinpspw():
+	    return 'ms0:/psp/game150/paintown/data'
         else:
             return 'data'
 
