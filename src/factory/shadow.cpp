@@ -8,8 +8,9 @@ using namespace std;
 
 Shadow * Shadow::my_shadow = NULL;
 Bitmap const * Shadow::getShadow( unsigned int y ){
-	if ( my_shadow == NULL ){
-		my_shadow = new Shadow();
+	if (my_shadow == NULL){
+            my_shadow = new Shadow();
+            atexit(destroy);
 	}
 
 	/*
@@ -28,14 +29,14 @@ Bitmap const * Shadow::getShadow( unsigned int y ){
 }
 
 void Shadow::destroy(){
-	if ( my_shadow != NULL ){
-		delete my_shadow;
-		my_shadow = NULL;
-	}
+    if ( my_shadow != NULL ){
+        delete my_shadow;
+        my_shadow = NULL;
+    }
 }
 
 Shadow::Shadow(){
-    for ( int x = 1; x <= 6; x++ ){
+    for (int x = 1; x <= 6; x++ ){
         string s = "sprites/shadow/shadow";
         s += (char)(x+'0');
         s += ".png";
@@ -44,7 +45,7 @@ Shadow::Shadow(){
 }
 
 Shadow::~Shadow(){
-	for ( vector< Bitmap * >::iterator it = shadows.begin(); it != shadows.end(); it++ ){
-		delete *it;
-	}
+    for ( vector< Bitmap * >::iterator it = shadows.begin(); it != shadows.end(); it++ ){
+        delete *it;
+    }
 }

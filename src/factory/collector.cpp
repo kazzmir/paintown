@@ -6,7 +6,6 @@
 #include "font_render.h"
 #include "object_factory.h"
 #include "resource.h"
-#include "shadow.h"
 #include "mugen/config.h"
 #include "util/sound.h"
 #include <iostream>
@@ -24,7 +23,6 @@ Collector::Collector(){
 
 /* cleans up global state */
 Collector::~Collector(){
-	Shadow::destroy();
 	ObjectFactory::destroy();
 	NamePlacer::destroy();
 	HeartFactory::destroy();
