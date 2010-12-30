@@ -1,7 +1,8 @@
 Import('use')
 
 testEnv = use.Clone()
-testEnv.VariantDir('test', '../../', duplicate = False)
+# testEnv.VariantDir('test', '../../', duplicate = False)
+testEnv.VariantDir('test', '../../')
 
 more_files = []
 def addObjects(files):
