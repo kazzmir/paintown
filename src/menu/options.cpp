@@ -10,7 +10,7 @@
 #include "mugen/config.h"
 #include "init.h"
 
-#include "music.h"
+#include "util/music.h"
 
 #include "object/versus_player.h"
 #include "object/versus_enemy.h"

@@ -27,7 +27,7 @@
 #include "storyboard.h"
 #include "behavior.h"
 #include "parse-cache.h"
-#include "music.h"
+#include "util/music.h"
 #include "config.h"
 
 namespace PaintownUtil = ::Util;

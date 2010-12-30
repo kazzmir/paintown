@@ -23,11 +23,11 @@ Collector::Collector(){
 
 /* cleans up global state */
 Collector::~Collector(){
-	ObjectFactory::destroy();
-	NamePlacer::destroy();
-	HeartFactory::destroy();
-	FontFactory::destroy();
-	FontRender::destroy();
+    ObjectFactory::destroy();
+    NamePlacer::destroy();
+    HeartFactory::destroy();
+    FontFactory::destroy();
+    FontRender::destroy();
     Bitmap::cleanupTemporaryBitmaps();
     Bitmap::shutdown();
     Mugen::Data::destroy();

@@ -37,7 +37,7 @@
 #include "util/sound.h"
 #include "configuration.h"
 #include "script/script.h"
-#include "music.h"
+#include "util/music.h"
 #include "loading.h"
 
 #ifdef WII

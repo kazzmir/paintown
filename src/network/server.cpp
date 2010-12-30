@@ -11,7 +11,7 @@
 #include "init.h"
 #include "level/utils.h"
 #include "loading.h"
-#include "music.h"
+#include "util/music.h"
 #include "network_world.h"
 #include "object/character.h"
 #include "object/network_character.h"

@@ -2,7 +2,7 @@
 #include "util/trans-bitmap.h"
 
 #include "game.h"
-#include "music.h"
+#include "util/music.h"
 #include "util/funcs.h"
 #include "util/font.h"
 #include "menu/menu.h"
