@@ -8,6 +8,7 @@ def addObjects(files):
     more_source.extend(files)
 
 use = testEnv
+SConscript('../../mugen/parser/SConstruct', exports = ['use', 'addObjects'], variant_dir = 'test-parser')
 
 most_game_source = Split("""
 test/mugen/character.cpp
@@ -270,6 +271,28 @@ test/util/gradient.cpp
 test/game/select_player.cpp
 test/network/messages.cpp
 test/object/object_nonattack.cpp
+test/mugen/parse-cache.cpp
+test/mugen/ast/ast.cpp
+test/mugen/sound.cpp
+test/mugen/item-content.cpp
+test/mugen/item.cpp
+test/mugen/animation.cpp
+test/mugen/sprite.cpp
+test/mugen/util.cpp
+test/mugen/config.cpp
+test/object/stimulation.cpp
+test/object/health_stimulation.cpp
+test/object/item.cpp
+test/object/network_player.cpp
+test/object/network_character.cpp
+test/object/actor.cpp
+test/object/enemy.cpp
+test/object/cat.cpp
+test/object/heart.cpp
+test/resource.cpp
+test/factory/object_factory.cpp
+test/factory/heart_factory.cpp
+test/factory/collector.cpp
 test/object/display_character.cpp
 test/menu/font-info.cpp
 test/mugen/exception.cpp
@@ -299,6 +322,9 @@ test/util/timedifference.cpp
 test/util/regex.cpp
 test/util/sound.cpp
 test/util/system.cpp
+test-parser/air.cpp
+test-parser/def.cpp
+test-parser/cmd.cpp
 test/util/ftalleg.cpp
 test/util/font.cpp
 test/util/thread.cpp

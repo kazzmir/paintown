@@ -12,6 +12,7 @@
 #include "util/sound.h"
 #include "game/mod.h"
 #include "object/player.h"
+#include "factory/collector.h"
 
 /*
 #include <sstream>
@@ -55,7 +56,7 @@ static int load(const char * path){
     // showMemory();
 }
 
-int main(int argc, char ** argv){
+int paintown_main(int argc, char ** argv){
 #ifdef USE_ALLEGRO
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
@@ -64,6 +65,7 @@ int main(int argc, char ** argv){
     SDL_Init(SDL_INIT_VIDEO);
     Bitmap::setFakeGraphicsMode(640, 480);
 #endif
+    Collector janitor;
     Sound::initialize();
 
     Paintown::Mod::loadDefaultMod();
@@ -85,6 +87,11 @@ int main(int argc, char ** argv){
       // }
     return die;
 }
+
+int main(int argc, char ** argv){
+    return paintown_main(argc, argv);
+}
+
 #ifdef USE_ALLEGRO
 END_OF_MAIN()
 #endif
