@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "level/utils.h"
-#include "network/messages.h"
+#include "util/messages.h"
 #include "loading.h"
 #include "util/file-system.h"
 #include "util/font.h"

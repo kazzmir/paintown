@@ -2,7 +2,7 @@
 #define _paintown_chat_server_h
 
 #include "network.h"
-#include "messages.h"
+#include "util/messages.h"
 #include "util/thread.h"
 #include <string>
 #include <vector>

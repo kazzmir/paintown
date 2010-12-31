@@ -2,7 +2,7 @@
 #define _paintown_chat_client_h
 
 #include "network.h"
-#include "messages.h"
+#include "util/messages.h"
 #include "gui/sigslot.h"
 #include <string>
 #include "util/thread.h"

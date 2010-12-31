@@ -41,7 +41,6 @@ src/network/client.cpp
 src/network/chat_client.cpp
 src/network/chat_server.cpp
 src/network/chat-widget.cpp
-src/network/messages.cpp
 src/network/network.cpp
 src/network/network_world.cpp
 src/network/network_world_client.cpp
@@ -96,6 +95,7 @@ src/util/sound.cpp
 src/util/timer.cpp
 src/util/music.cpp
 src/input/keyboard.cpp
+src/util/messages.cpp
 src/util/bitmap.cpp
 src/util/events.cpp
 src/util/font.cpp
