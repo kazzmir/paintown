@@ -1,5 +1,5 @@
 #include "util/bitmap.h"
-#include "mugen/background.h"
+#include "background.h"
 #include <math.h>
 #include <ostream>
 #include <cstring>
@@ -7,7 +7,8 @@
 #include <list>
 #include <algorithm>
 #include "globals.h"
-#include "mugen/sprite.h"
+#include "util/debug.h"
+#include "sprite.h"
 #include "util/regex.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"

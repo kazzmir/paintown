@@ -16,6 +16,7 @@
 #include "object/object.h"
 #include "object_factory.h"
 #include "script/script.h"
+#include "util/debug.h"
 
 using namespace std;
 

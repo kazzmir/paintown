@@ -7,7 +7,7 @@
 #include "script/script.h"
 #include "python.h"
 #include <string>
-#include "globals.h"
+#include "util/debug.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "game/world.h"

@@ -16,6 +16,7 @@
 
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/debug.h"
 #include "util/timedifference.h"
 
 #include "util.h"

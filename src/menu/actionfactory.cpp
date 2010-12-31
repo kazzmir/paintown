@@ -1,6 +1,6 @@
 #include "actionfactory.h"
 #include "util/token.h"
-#include "globals.h"
+#include "util/debug.h"
 #include "action_speed.h"
 
 using namespace std;

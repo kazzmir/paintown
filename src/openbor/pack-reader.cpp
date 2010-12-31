@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "../debug.h"
+#include "util/debug.h"
 #include "util/regex.h"
 #include "util/file-system.h"
 

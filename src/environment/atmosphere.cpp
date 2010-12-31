@@ -1,6 +1,7 @@
 #include "atmosphere.h"
 #include "fog_atmosphere.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "level/scene.h"
 #include <math.h>
 #include "night_atmosphere.h"

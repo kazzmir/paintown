@@ -5,6 +5,7 @@
 #include "util/file-system.h"
 #include "input/input.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "object/animation.h"
 #include "object/object.h"
 #include <sstream>

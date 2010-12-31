@@ -19,6 +19,7 @@
 #include "util/funcs.h"
 #include "util/font.h"
 #include "util/file-system.h"
+#include "util/debug.h"
 #include "factory/font_render.h"
 
 #include "animation.h"

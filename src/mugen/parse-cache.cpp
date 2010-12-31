@@ -8,6 +8,7 @@
 #include "globals.h"
 #include "util/file-system.h"
 #include "util/system.h"
+#include "util/debug.h"
 
 using namespace std;
 

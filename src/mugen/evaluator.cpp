@@ -15,6 +15,7 @@
 #include "stage.h"
 #include "animation.h"
 #include "ast/all.h"
+#include "util/debug.h"
 #include "util/funcs.h"
 #include <math.h>
 

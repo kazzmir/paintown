@@ -5,6 +5,7 @@
 #include "helper.h"
 #include "stage.h"
 #include "sound.h"
+#include "util/debug.h"
 #include <sstream>
 #include "exception.h"
 

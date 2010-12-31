@@ -40,6 +40,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 #include "keyinput_manager.h"
 #include <iostream>
 #include "globals.h"
+#include "util/debug.h"
 
 static std::ostream & debug( int level ){
 	Global::debug( level ) << "[key input manager] ";

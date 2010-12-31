@@ -3,6 +3,7 @@
 #endif
 #include "network.h"
 #include "globals.h"
+#include "util/debug.h"
 #include <string>
 #include <sstream>
 #include <string.h>

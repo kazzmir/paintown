@@ -4,6 +4,7 @@
 #include <math.h>
 #include "input/input-map.h"
 #include "command.h"
+#include "util/debug.h"
 #include "character.h"
 #include "stage.h"
 #include "util/funcs.h"

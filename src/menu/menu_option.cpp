@@ -3,7 +3,7 @@
 #include "util/token.h"
 #include "util/funcs.h"
 #include "util/language-string.h"
-#include "globals.h"
+#include "util/debug.h"
 #include "gui/animation.h"
 
 using namespace std;

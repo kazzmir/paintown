@@ -13,6 +13,7 @@
 #include "animation_trail.h"
 #include "character.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "object.h"
 #include "object_messages.h"
 #include "object_attack.h"

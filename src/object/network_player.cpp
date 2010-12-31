@@ -2,6 +2,7 @@
 #include "animation.h"
 #include "factory/font_render.h"
 #include "globals.h"
+#include "util/debug.h"
 #include <math.h>
 #include "nameplacer.h"
 #include "network_character.h"

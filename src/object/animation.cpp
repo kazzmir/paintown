@@ -12,6 +12,7 @@
 #include "util/funcs.h"
 #include "util/ebox.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "projectile.h"
 #include "util/load_exception.h"
 #include "object.h"

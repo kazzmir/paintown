@@ -10,6 +10,7 @@
 #include "factory/font_render.h"
 #include "nameplacer.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "heart.h"
 #include "factory/heart_factory.h"
 #include "util/load_exception.h"

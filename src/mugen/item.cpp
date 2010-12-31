@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "globals.h"
+#include "util/debug.h"
 
 using namespace std;
 

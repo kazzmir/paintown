@@ -13,6 +13,7 @@
 #include "character.h"
 #include "state.h"
 
+#include "util/debug.h"
 #include "util/timedifference.h"
 #include "ast/all.h"
 #include "parser/all.h"

@@ -3,6 +3,7 @@
 #include "lineedit.h"
 #include "keys.h"
 #include "globals.h"
+#include "util/debug.h"
 #include <iostream>
 
 using namespace Gui;

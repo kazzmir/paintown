@@ -14,6 +14,7 @@
 #include "reader.h"
 #include "util.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "util/funcs.h"
 
 using namespace std;

@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/debug.h"
 #include "configuration.h"
 #include "options.h"
 #include "game.h"

@@ -10,6 +10,7 @@
 #include "util/file-system.h"
 #include "resource.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "util/init.h"
 #include "configuration.h"
 #include "util/music.h"

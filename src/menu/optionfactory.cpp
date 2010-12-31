@@ -3,7 +3,7 @@
 #include "util/load_exception.h"
 #include "menu_option.h"
 #include "options.h"
-#include "globals.h"
+#include "util/debug.h"
 
 using namespace std;
 

@@ -4,10 +4,10 @@
 #include <cstring>
 #include <vector>
 
-#include "mugen/item-content.h"
-#include "mugen/section.h"
-#include "mugen/reader.h"
-#include "globals.h"
+#include "item-content.h"
+#include "section.h"
+#include "reader.h"
+#include "util/debug.h"
 
 using namespace std;
 

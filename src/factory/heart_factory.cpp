@@ -3,6 +3,7 @@
 #include "heart_factory.h"
 #include "object/heart.h"
 #include "globals.h"
+#include "util/debug.h"
 
 using namespace std;
 

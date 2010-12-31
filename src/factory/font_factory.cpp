@@ -8,6 +8,7 @@
 #include "util/file-system.h"
 #include "font_factory.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "exceptions/exception.h"
 
 // #include "fonts.h"

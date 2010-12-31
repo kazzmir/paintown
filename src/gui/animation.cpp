@@ -6,6 +6,7 @@
 #include "util/token.h"
 #include "util/bitmap.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 

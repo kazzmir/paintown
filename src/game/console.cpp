@@ -8,6 +8,7 @@
 #include "input/input-manager.h"
 #include "input/input-map.h"
 #include "globals.h"
+#include "util/debug.h"
 #include <string>
 #include <sstream>
 #include <string.h>

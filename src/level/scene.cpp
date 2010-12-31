@@ -11,6 +11,7 @@
 #include "scene.h"
 #include "object/enemy.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "util/file-system.h"

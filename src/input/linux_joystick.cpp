@@ -26,7 +26,7 @@
 #include <linux/joystick.h>
 
 #include "linux_joystick.h"
-#include "globals.h"
+#include "util/debug.h"
 
 using namespace std;
 

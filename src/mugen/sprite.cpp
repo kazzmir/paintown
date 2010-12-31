@@ -1,8 +1,8 @@
 #include "util/bitmap.h"
 #include <string.h>
-#include "mugen/sprite.h"
+#include "sprite.h"
 #include "util/funcs.h"
-#include "globals.h"
+#include "util/debug.h"
 #include <math.h>
 
 using namespace std;

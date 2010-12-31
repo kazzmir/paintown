@@ -19,7 +19,7 @@ extern const int MIN_RELATIVE_DISTANCE;
 
 // extern const char * NAME_FONT;
 
-#include "debug.h"
+// #include "debug.h"
 
 namespace Global{
 	

@@ -2,7 +2,6 @@ set(BASE_SRC
 src/configuration.cpp
 src/game/game.cpp
 src/globals.cpp
-src/debug.cpp
 src/main-menu.cpp
 src/nameplacer.cpp
 src/game/select_player.cpp
@@ -13,7 +12,7 @@ set(GAME_SRC
 src/game/console.cpp
 src/game/adventure_world.cpp
 src/game/mod.cpp
-src/game/versus_world.cpp)
+src/game/versus_world.cpp
 src/input/input.cpp
 src/input/text-input.cpp
 src/input/input-manager.cpp)
@@ -89,6 +88,7 @@ src/util/token.cpp
 src/util/token_exception.cpp
 src/util/tokenreader.cpp
 src/util/timedifference.cpp
+src/util/debug.cpp
 src/util/sound.cpp
 src/util/timer.cpp
 src/util/music.cpp

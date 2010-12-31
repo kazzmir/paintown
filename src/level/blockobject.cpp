@@ -7,7 +7,7 @@
 #include "util/token.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-#include "globals.h"
+#include "util/debug.h"
 
 using namespace std;
 

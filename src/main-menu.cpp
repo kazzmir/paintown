@@ -22,6 +22,7 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "globals.h"
+#include "util/debug.h"
 #include "network/server.h"
 #include "configuration.h"
 #include "util/init.h"

@@ -3,7 +3,7 @@
 #include "level/utils.h"
 #include "util/funcs.h"
 #include "util.h"
-#include "debug.h"
+#include "util/debug.h"
 #include "pack-reader.h"
 #include "util/tokenreader.h"
 #include "util/token.h"

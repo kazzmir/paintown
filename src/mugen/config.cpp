@@ -7,6 +7,7 @@
 #include "parse-cache.h"
 
 #include "globals.h"
+#include "util/debug.h"
 #include "util/file-system.h"
 #include "util/funcs.h"
 #include "util/timedifference.h"

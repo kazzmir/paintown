@@ -1,5 +1,6 @@
 #include "ast/all.h"
 #include "command.h"
+#include "util/debug.h"
 
 using namespace std;
 
