@@ -6,8 +6,8 @@
 #include "input/input.h"
 #include "globals.h"
 #include "util/debug.h"
-#include "object/animation.h"
-#include "object/object.h"
+#include "paintown-engine/object/animation.h"
+#include "paintown-engine/object/object.h"
 #include <sstream>
 #include <fstream>
 #include <stdlib.h>

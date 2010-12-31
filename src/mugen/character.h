@@ -9,7 +9,7 @@
 #include "exception.h"
 
 // Implement object_attack
-#include "object/object_attack.h"
+#include "paintown-engine/object/object_attack.h"
 #include "network/network.h"
 #include "util/pointer.h"
 #include "input/input-map.h"

@@ -1,7 +1,7 @@
 #ifndef _paintown_openbor_animation_h
 #define _paintown_openbor_animation_h
 
-#include "object/animation.h"
+#include "paintown-engine/object/animation.h"
 
 class Token;
 

@@ -3,7 +3,7 @@
 
 #include "util/load_exception.h"
 #include "util/file-system.h"
-#include "object/object_nonattack.h"
+#include "object_nonattack.h"
 #include "util/sound.h"
 #include "util/bitmap.h"
 #include "network/network.h"

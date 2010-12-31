@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include "mod.h"
-#include "level/utils.h"
+#include "paintown-engine/level/utils.h"
 #include "util/file-system.h"
 #include "util/tokenreader.h"
 #include "util/token.h"

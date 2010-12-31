@@ -3,8 +3,8 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util.h"
-#include "object/animation.h"
-#include "object/draw-effect.h"
+#include "paintown-engine/object/animation.h"
+#include "paintown-engine/object/draw-effect.h"
 #include "animation.h"
 #include <vector>
 

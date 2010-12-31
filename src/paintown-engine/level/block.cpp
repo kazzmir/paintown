@@ -2,7 +2,7 @@
 
 #include "block.h"
 #include "blockobject.h"
-#include "object/enemy.h"
+#include "../object/enemy.h"
 #include "globals.h"
 #include "util/load_exception.h"
 #include "util/token.h"

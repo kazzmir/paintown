@@ -4,18 +4,18 @@
 #include "game/adventure_world.h"
 #include "network_world_client.h"
 #include "network.h"
-#include "level/scene.h"
+#include "paintown-engine/level/scene.h"
 #include "globals.h"
 #include "script/script.h"
 #include "util/init.h"
 #include "util/font.h"
 #include "factory/font_render.h"
-#include "level/blockobject.h"
+#include "paintown-engine/level/blockobject.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-#include "level/cacher.h"
-#include "object/object.h"
-#include "object/player.h"
+#include "paintown-engine/level/cacher.h"
+#include "paintown-engine/object/object.h"
+#include "paintown-engine/object/player.h"
 #include "factory/object_factory.h"
 #include <string.h>
 #include "util/gradient.h"
@@ -24,9 +24,9 @@
 #include "input/input-manager.h"
 #include <sstream>
 
-#include "object/character.h"
-#include "object/cat.h"
-#include "object/item.h"
+#include "paintown-engine/object/character.h"
+#include "paintown-engine/object/cat.h"
+#include "paintown-engine/object/item.h"
 
 using namespace std;
 

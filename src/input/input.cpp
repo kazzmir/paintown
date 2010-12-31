@@ -1,6 +1,6 @@
 #include "input.h"
 #include "configuration.h"
-#include "object/object.h"
+#include "paintown-engine/object/object.h"
 #include <vector>
 
 using namespace std;

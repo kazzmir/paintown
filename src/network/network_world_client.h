@@ -5,7 +5,7 @@
 
 #include "game/adventure_world.h"
 #include "network.h"
-#include "object/object.h"
+#include "paintown-engine/object/object.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "input/input-map.h"

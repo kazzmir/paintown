@@ -1,6 +1,6 @@
 #include "input-manager.h"
 #include "configuration.h"
-#include "object/object.h"
+#include "paintown-engine/object/object.h"
 #include "input/joystick.h"
 #include "util/events.h"
 #include "globals.h"

@@ -2,8 +2,8 @@
 
 #include <Python.h>
 
-#include "object/character.h"
-#include "object/player-common.h"
+#include "paintown-engine/object/character.h"
+#include "paintown-engine/object/player-common.h"
 #include "script/script.h"
 #include "python.h"
 #include <string>
@@ -11,9 +11,9 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "game/world.h"
-#include "level/blockobject.h"
+#include "paintown-engine/level/blockobject.h"
 #include "factory/object_factory.h"
-#include "object/enemy.h"
+#include "paintown-engine/object/enemy.h"
 #include <sstream>
 
 /* the public api */

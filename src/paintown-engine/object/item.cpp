@@ -1,6 +1,6 @@
 #include "util/bitmap.h"
-#include "object/item.h"
-#include "object/object_attack.h"
+#include "item.h"
+#include "object_attack.h"
 #include "stimulation.h"
 #include "util/tokenreader.h"
 #include "util/token.h"

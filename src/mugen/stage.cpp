@@ -20,11 +20,13 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
 #include "game/console.h"
+/*
 #include "object/animation.h"
 #include "object/object.h"
 // #include "object/character.h"
 #include "object/object_attack.h"
 // #include "object/player.h"
+*/
 #include "globals.h"
 #include "util/debug.h"
 #include "factory/font_render.h"

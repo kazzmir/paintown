@@ -2,7 +2,7 @@
 #define _paintown_openbor_display_character_h
 
 #include <string>
-#include "object/display_character.h"
+#include "paintown-engine/object/display_character.h"
 
 namespace Bor{
 

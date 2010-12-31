@@ -1,10 +1,10 @@
 #include "game/adventure_world.h"
 #include "versus_world.h"
-#include "object/character.h"
+#include "paintown-engine/object/character.h"
 #include "util/bitmap.h"
 #include "util/file-system.h"
 #include "util/funcs.h"
-#include "object/effect.h"
+#include "paintown-engine/object/effect.h"
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 #include "trigger.h"
 #include "util/token.h"
-#include "level/scene.h"
+#include "paintown-engine/level/scene.h"
 #include "environment/atmosphere.h"
 #include <vector>
 

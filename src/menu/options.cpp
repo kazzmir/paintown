@@ -12,12 +12,12 @@
 
 #include "util/music.h"
 
-#include "object/versus_player.h"
-#include "object/versus_enemy.h"
+#include "paintown-engine/object/versus_player.h"
+#include "paintown-engine/object/versus_enemy.h"
 
-#include "object/object.h"
-#include "object/player.h"
-#include "object/buddy_player.h"
+#include "paintown-engine/object/object.h"
+#include "paintown-engine/object/player.h"
+#include "paintown-engine/object/buddy_player.h"
 
 #include "input/keyboard.h"
 #include "game/game.h"

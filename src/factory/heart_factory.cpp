@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "heart_factory.h"
-#include "object/heart.h"
+#include "paintown-engine/object/heart.h"
 #include "globals.h"
 #include "util/debug.h"
 

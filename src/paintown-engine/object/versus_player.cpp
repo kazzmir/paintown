@@ -1,7 +1,7 @@
 #include "player.h"
 #include "versus_player.h"
 #include "util/load_exception.h"
-#include "object/animation.h"
+#include "animation.h"
 #include "configuration.h"
 #include "util/funcs.h"
 #include "globals.h"
