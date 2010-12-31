@@ -12,6 +12,19 @@
 class Configuration;
 class Joystick;
 
+template <class Output>
+class InputHandler{
+public:
+    InputHandler(){
+    }
+
+    virtual ~InputHandler(){
+    }
+
+    virtual void press(const Output & out, Keyboard::unicode_t unicode) = 0;
+    virtual void release(const Output & out, Keyboard::unicode_t unicode) = 0;
+};
+
 /* handles keyboard/joystick/whatever input during the game */
 class InputManager{
 public:
@@ -70,6 +83,19 @@ public:
     template <typename X>
     static typename std::vector<typename InputMap<X>::InputEvent> getEvents(InputMap<X> & input){
         return manager->_getEvents(input);
+    }
+
+    template <typename X>
+    static void handleEvents(InputMap<X> & input, InputHandler<X> & handler){
+        typename std::vector<typename InputMap<X>::InputEvent> events = getEvents(input);
+        for (typename std::vector<typename InputMap<X>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+            const typename InputMap<X>::InputEvent & event = *it;
+            if (event.enabled){
+                handler.press(event.out, event.unicode);
+            } else {
+                handler.release(event.out, event.unicode);
+            }
+        }
     }
 
     template <typename X>

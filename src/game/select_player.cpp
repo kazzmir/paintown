@@ -219,6 +219,85 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         }
                     }
                     
+                    bool choose = false;
+                    class Handler: public InputHandler<Select::Input> {
+                    public:
+                        Handler(bool & choose,
+                                Paintown::DisplayCharacter * character,
+                                Paintown::DisplayCharacterLoader & loader,
+                                Sound & beep,
+                                int & current,
+                                const int boxesPerLine,
+                                Util::Thread::Id & loadingThread,
+                                InputMap<Select::Input> & input):
+                        choose(choose),
+                        character(character),
+                        loader(loader),
+                        beep(beep),
+                        current(current),
+                        boxesPerLine(boxesPerLine),
+                        loadingThread(loadingThread),
+                        input(input){
+                        }
+
+                        bool & choose;
+                        Paintown::DisplayCharacter * character;
+                        Paintown::DisplayCharacterLoader & loader;
+                        Sound & beep;
+                        int & current;
+                        const int boxesPerLine;
+                        Util::Thread::Id & loadingThread;
+                        InputMap<Select::Input> & input;
+                        
+                        virtual void release(const Select::Input & what, Keyboard::unicode_t unicode){
+                        }
+
+                        virtual void press(const Select::Input & what, Keyboard::unicode_t unicode){
+                            switch (what){
+                                case Select::Left: {
+                                    current = current - 1;
+                                    beep.play();
+                                    break;
+                                }
+                                case Select::Right: {
+                                    current = current + 1;
+                                    beep.play();
+                                    break;
+                                }
+                                case Select::Up: {
+                                    current = current - boxesPerLine;
+                                    beep.play();
+                                    break;
+                                }
+                                case Select::Down: {
+                                    current = current + boxesPerLine;
+                                    beep.play();
+                                    break;
+                                }
+                                case Select::Quit: {
+                                    loader.stop();
+                                    Util::Thread::joinThread(loadingThread);
+                                    InputManager::waitForRelease(input, Select::Quit);
+                                    throw Exception::Return(__FILE__, __LINE__);
+                                }
+                                case Select::Choose: {
+                                    choose = true;
+                                    break;
+                                }
+                                case Select::Remap: {
+                                    if (character->isLoaded()){
+                                        character->nextMap();
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    };
+
+                    Handler handler(choose, ch, loader, beep, current, boxesPerLine, loadingThread, input);
+                    InputManager::handleEvents(input, handler);
+
+                    /*
                     vector<InputMap<Select::Input>::InputEvent> events = InputManager::getEvents(input);
 
                     bool choose = false;
@@ -266,6 +345,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                             }
                         }
                     }
+                    */
 
                     if (current < 0){
                         current = 0;
