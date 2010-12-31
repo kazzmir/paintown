@@ -7,7 +7,7 @@
 #include "level/scene.h"
 #include "globals.h"
 #include "script/script.h"
-#include "init.h"
+#include "util/init.h"
 #include "util/font.h"
 #include "factory/font_render.h"
 #include "level/blockobject.h"

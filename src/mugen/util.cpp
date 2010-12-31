@@ -28,7 +28,7 @@
 #include "reader.h"
 #include "sprite.h"
 #include "globals.h"
-#include "init.h"
+#include "util/init.h"
 #include "state.h"
 #include "parse-cache.h"
 

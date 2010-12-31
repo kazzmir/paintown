@@ -7,7 +7,7 @@
 #include "input/input-map.h"
 #include "input/input-manager.h"
 #include "input/text-input.h"
-#include "init.h"
+#include "util/init.h"
 #include "globals.h"
 #include "util/funcs.h"
 #include "util/font.h"

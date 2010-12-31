@@ -5,7 +5,7 @@
 #include "chat_client.h"
 #include "chat.h"
 #include "util/bitmap.h"
-#include "init.h"
+#include "util/init.h"
 #include "globals.h"
 #include "input/keyboard.h"
 #include "util/font.h"

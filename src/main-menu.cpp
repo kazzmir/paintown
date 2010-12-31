@@ -24,7 +24,7 @@
 #include "globals.h"
 #include "network/server.h"
 #include "configuration.h"
-#include "init.h"
+#include "util/init.h"
 #include "mugen/config.h"
 
 #include <string.h>

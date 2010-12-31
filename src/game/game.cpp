@@ -32,7 +32,7 @@
 #include "input/input-manager.h"
 #include "input/input-map.h"
 #include "versus_world.h"
-#include "init.h"
+#include "util/init.h"
 #include "util/thread.h"
 #include <iostream>
 #include <math.h>

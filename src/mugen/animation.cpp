@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "init.h"
 #include "sprite.h"
 #include "util.h"
 #include "exception.h"

@@ -8,7 +8,7 @@
 #include "factory/object_factory.h"
 #include "game/game.h"
 #include "globals.h"
-#include "init.h"
+#include "util/init.h"
 #include "level/utils.h"
 #include "util/loading.h"
 #include "util/music.h"

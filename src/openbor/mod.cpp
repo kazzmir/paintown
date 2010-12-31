@@ -10,7 +10,7 @@
 #include "util/load_exception.h"
 #include "exceptions/exception.h"
 #include <vector>
-#include "init.h"
+#include "util/init.h"
 #include "input/input-manager.h"
 #include "input/input-map.h"
 

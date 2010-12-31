@@ -12,7 +12,7 @@
 
 #include "stage.h"
 
-#include "init.h"
+#include "util/init.h"
 #include "state.h"
 
 #include "util/funcs.h"

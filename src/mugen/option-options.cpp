@@ -15,7 +15,7 @@
 
 #include "ast/all.h"
 #include "parser/all.h"
-#include "init.h"
+#include "util/init.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"

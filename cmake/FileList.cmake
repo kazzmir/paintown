@@ -4,7 +4,6 @@ src/game/game.cpp
 src/globals.cpp
 src/debug.cpp
 src/main-menu.cpp
-src/init.cpp
 src/nameplacer.cpp
 src/game/select_player.cpp
 src/resource.cpp
@@ -93,6 +92,7 @@ src/util/timedifference.cpp
 src/util/sound.cpp
 src/util/timer.cpp
 src/util/music.cpp
+src/util/init.cpp
 src/input/keyboard.cpp
 src/util/loading.cpp
 src/util/messages.cpp

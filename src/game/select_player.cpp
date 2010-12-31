@@ -8,7 +8,7 @@
 #include "object/display_character.h"
 #include "exceptions/shutdown_exception.h"
 #include "util/thread.h"
-#include "init.h"
+#include "util/init.h"
 // #include "select_player.h"
 #include "game.h"
 #include "mod.h"

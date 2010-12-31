@@ -7,7 +7,7 @@
 #include "configuration.h"
 #include "menu/menu.h"
 #include "globals.h"
-#include "init.h"
+#include "util/init.h"
 #include "input/keyboard.h"
 #include "input/input-manager.h"
 #include "input/input-map.h"

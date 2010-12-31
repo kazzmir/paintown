@@ -4,7 +4,7 @@
 #include "resource.h"
 #include "util/funcs.h"
 #include "globals.h"
-#include "init.h"
+#include "util/init.h"
 #include "factory/font_render.h"
 #include "parse-cache.h"
 

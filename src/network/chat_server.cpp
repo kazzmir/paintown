@@ -12,7 +12,7 @@
 #include "util/load_exception.h"
 #include "exceptions/exception.h"
 #include "globals.h"
-#include "init.h"
+#include "util/init.h"
 #include "gui/lineedit.h"
 #include "input/input-manager.h"
 #include "menu/menu.h"

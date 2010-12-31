@@ -8,7 +8,7 @@
 #include "menu/menu-exception.h"
 #include "mugen/menu.h"
 #include "mugen/config.h"
-#include "init.h"
+#include "util/init.h"
 
 #include "util/music.h"
 
