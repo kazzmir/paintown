@@ -44,7 +44,7 @@ src/network/network_world_client.cpp
 src/network/server.cpp)
 
 set(ENV_SRC
-src/environment/atmosphere.cpp)
+src/paintown-engine/environment/atmosphere.cpp)
 
 set(FACTORY_SRC
 src/factory/font_factory.cpp
@@ -211,5 +211,5 @@ src/platformer/world.cpp
 )
 
 set(TRIGGER_SRC
-src/trigger/trigger.cpp
+src/paintown-engine/trigger/trigger.cpp
 )

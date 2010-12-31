@@ -15,9 +15,9 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "util/file-system.h"
-#include "environment/atmosphere.h"
+#include "../environment/atmosphere.h"
 #include "script/script.h"
-#include "trigger/trigger.h"
+#include "../trigger/trigger.h"
 #include "cacher.h"
 #include "exceptions/shutdown_exception.h"
 
