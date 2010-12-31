@@ -26,7 +26,7 @@
 #include "game/game.h"
 #include "game/mod.h"
 #include "exceptions/exception.h"
-#include "loading.h"
+#include "util/loading.h"
 #include "chat_client.h"
 #include "network.h"
 #include "configuration.h"

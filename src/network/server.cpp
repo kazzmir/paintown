@@ -10,7 +10,7 @@
 #include "globals.h"
 #include "init.h"
 #include "level/utils.h"
-#include "loading.h"
+#include "util/loading.h"
 #include "util/music.h"
 #include "network_world.h"
 #include "object/character.h"

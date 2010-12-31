@@ -56,7 +56,7 @@
 #include "game.h"
 #include "ast/all.h"
 #include "parser/all.h"
-#include "loading.h"
+#include "util/loading.h"
 
 #include "parse-cache.h"
 

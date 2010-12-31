@@ -24,7 +24,7 @@
 #include "util/file-system.h"
 #include "util/system.h"
 #include "util/events.h"
-#include "loading.h"
+#include "util/loading.h"
 #include "network/network.h"
 #include "world.h"
 #include "adventure_world.h"

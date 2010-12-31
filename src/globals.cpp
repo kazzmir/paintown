@@ -4,7 +4,6 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/message-queue.h"
-#include "loading.h"
 #include <iostream>
 #include <sstream>
 

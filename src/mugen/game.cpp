@@ -16,7 +16,7 @@
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
-#include "loading.h"
+#include "util/loading.h"
 
 #include "character.h"
 #include "util.h"

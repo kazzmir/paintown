@@ -20,7 +20,7 @@
 #include "util/file-system.h"
 #include "world.h"
 #include "exceptions/exception.h"
-#include "loading.h"
+#include "util/loading.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include <iostream>

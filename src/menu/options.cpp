@@ -33,7 +33,7 @@
 #include "gui/box.h"
 #include "util/thread.h"
 
-#include "loading.h"
+#include "util/loading.h"
 #include "util/fire.h"
 #include "input/input-map.h"
 #include "input/input-manager.h"
