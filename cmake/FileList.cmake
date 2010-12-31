@@ -202,6 +202,14 @@ src/mugen/parser/cmd.cpp
 src/mugen/parser/air.cpp
 )
 
+set(PLATFORMER_SRC
+src/platformer/animation.cpp
+src/platformer/background.cpp
+src/platformer/camera.cpp
+src/platformer/tile.cpp
+src/platformer/world.cpp
+)
+
 set(TRIGGER_SRC
 src/trigger/trigger.cpp
 )
