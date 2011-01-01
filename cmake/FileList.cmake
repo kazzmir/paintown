@@ -119,8 +119,8 @@ src/util/compress.cpp
 src/util/message-queue.cpp
 src/input/linux_joystick.cpp
 src/util/load_exception.cpp
-src/windows/funcs.cpp
-src/windows/system.cpp
+src/util/windows/funcs.cpp
+src/util/windows/system.cpp
 src/exceptions/exception.cpp
 src/openbor/pack-reader.cpp
 src/openbor/animation.cpp
