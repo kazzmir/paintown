@@ -1245,77 +1245,131 @@ void CharacterSelect::load(){
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		if (simple == "fadein.time" ){
-		    int time;
-                    simple >> time;
-		    self.fader.setFadeInTime(time);
+                    try{
+                        int time;
+                        simple >> time;
+                        self.fader.setFadeInTime(time);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "fadein.color" ){
-		    int r,g,b;
-                    simple >> r >> g >> b;
-		    self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                    try{
+                        int r,g,b;
+                        simple >> r >> g >> b;
+                        self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "fadeout.time"){
-		    int time;
-                    simple >> time;
-		    self.fader.setFadeOutTime(time);
+                    try{
+                        int time;
+                        simple >> time;
+                        self.fader.setFadeOutTime(time);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "fadeout.color"){
-		    int r,g,b;
-                    simple >> r >> g >> b;
-		    self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                    try{
+                        int r,g,b;
+                        simple >> r >> g >> b;
+                        self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "rows"){
-                    int rows;
-		    simple >> rows;
-		    self.grid.setRows(rows);
+                    try{
+                        int rows;
+                        simple >> rows;
+                        self.grid.setRows(rows);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "columns"){
-                    int columns;
-		    simple >> columns;
-		    self.grid.setColumns(columns);
+                    try{
+                        int columns;
+                        simple >> columns;
+                        self.grid.setColumns(columns);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "wrapping"){
-		    bool wrap;
-                    simple >> wrap;
-		    self.grid.setWrapping(wrap);
+                    try{
+                        bool wrap;
+                        simple >> wrap;
+                        self.grid.setWrapping(wrap);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "pos"){
-		    int x,y;
-                    simple >> x >> y;
-		    self.grid.setPosition(x,y);
+                    try{
+                        int x,y;
+                        simple >> x >> y;
+                        self.grid.setPosition(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "showemptyboxes"){
-                    bool boxes;
-		    simple >> boxes;
-		    self.grid.setShowEmptyBoxes(boxes);
+                    try{
+                        bool boxes;
+                        simple >> boxes;
+                        self.grid.setShowEmptyBoxes(boxes);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "moveoveremptyboxes"){
-		    bool boxes;
-                    simple >> boxes;
-		    self.grid.setMoveOverEmptyBoxes(boxes);
+                    try{
+                        bool boxes;
+                        simple >> boxes;
+                        self.grid.setMoveOverEmptyBoxes(boxes);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "cell.size"){
-                    int x, y;
-		    simple >> x >> y;
-		    self.grid.setCellSize(x,y);
+                    try{
+                        int x, y;
+                        simple >> x >> y;
+                        self.grid.setCellSize(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "cell.spacing"){
-		    int spacing;
-                    simple >> spacing;
-		    self.grid.setCellSpacing(spacing);
+                    try{
+                        int spacing;
+                        simple >> spacing;
+                        self.grid.setCellSpacing(spacing);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "cell.bg.spr"){
-		    int group, sprite;
-                    simple >> group >> sprite;
-		    self.grid.setCellBackgroundSprite(sprites[group][sprite]);
+                    try{
+                        int group, sprite;
+                        simple >> group >> sprite;
+                        self.grid.setCellBackgroundSprite(sprites[group][sprite]);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "cell.random.spr"){
-		    int group, sprite;
-                    simple >> group >> sprite;
-		    self.grid.setCellRandomSprite(sprites[group][sprite]);
+                    try{
+                        int group, sprite;
+                        simple >> group >> sprite;
+                        self.grid.setCellRandomSprite(sprites[group][sprite]);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "cell.random.switchtime"){
-		    int time;
-		    simple >> time;
-		    self.grid.setCellRandomSwitchTime(time);
+                    try{
+                        int time;
+                        simple >> time;
+                        self.grid.setCellRandomSwitchTime(time);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "p1.cursor.startcell"){
-		    int x,y;
-                    simple >> x >> y;
-		    self.grid.setPlayer1Start(x,y);
+                    try{
+                        int x,y;
+                        simple >> x >> y;
+                        self.grid.setPlayer1Start(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "p1.cursor.active.spr"){
-		    int group, sprite;
-		    simple >> group >> sprite;
-		    self.player1Cursor.setActiveSprite(sprites[group][sprite]);
+                    try{
+                        int group, sprite;
+                        simple >> group >> sprite;
+                        self.player1Cursor.setActiveSprite(sprites[group][sprite]);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "p1.cursor.done.spr"){
-		    int group, sprite;
-                    simple >> group >> sprite;
-		    self.player1Cursor.setDoneSprite(sprites[group][sprite]);
+                    try{
+                        int group, sprite;
+                        simple >> group >> sprite;
+                        self.player1Cursor.setDoneSprite(sprites[group][sprite]);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "p1.cursor.move.snd"){
                    try{
                         int group, sound;
@@ -1338,21 +1392,33 @@ void CharacterSelect::load(){
                    } catch (const Ast::Exception & e){
                    }
                 } else if (simple == "p2.cursor.startcell"){
-                    int x,y;
-                    simple >> x >> y;
-		    self.grid.setPlayer2Start(x,y);
+                    try{
+                        int x,y;
+                        simple >> x >> y;
+                        self.grid.setPlayer2Start(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "p2.cursor.active.spr"){
-		    int group, sprite;
-                    simple >> group >> sprite;
-		    self.player2Cursor.setActiveSprite(sprites[group][sprite]);
+                    try{
+                        int group, sprite;
+                        simple >> group >> sprite;
+                        self.player2Cursor.setActiveSprite(sprites[group][sprite]);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "p2.cursor.done.spr"){
-		    int group, sprite;
-                    simple >> group >> sprite;
-		    self.player2Cursor.setDoneSprite(sprites[group][sprite]);
+                    try{
+                        int group, sprite;
+                        simple >> group >> sprite;
+                        self.player2Cursor.setDoneSprite(sprites[group][sprite]);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "p2.cursor.blink"){
-		    bool blink;
-		    simple >> blink;
-		    self.player2Cursor.setBlink(blink);
+                    try{
+                        bool blink;
+                        simple >> blink;
+                        self.player2Cursor.setBlink(blink);
+                    } catch (const Ast::Exception & e){
+                    }
 		} 
 		else if ( simple == "p2.cursor.move.snd"){ 
                     try{
@@ -1376,10 +1442,13 @@ void CharacterSelect::load(){
                    } catch (const Ast::Exception & e){
                    }
                 } else if (simple == "random.move.snd.cancel"){
-                   bool cancel;
-                   simple >> cancel;
-                   self.player1Cursor.setRandomCancel(cancel);
-                   self.player2Cursor.setRandomCancel(cancel);
+                   try{
+                       bool cancel;
+                       simple >> cancel;
+                       self.player1Cursor.setRandomCancel(cancel);
+                       self.player2Cursor.setRandomCancel(cancel);
+                   } catch (const Ast::Exception & e){
+                   }
                 } else if ( simple == "stage.move.snd"){
                    try{
                         int group, sound;
@@ -1402,17 +1471,26 @@ void CharacterSelect::load(){
                    } catch (const Ast::Exception & e){
                    }
                 } else if (simple == "portrait.offset"){
-		    int x,y;
-		    simple >> x >> y;
-		    self.grid.setPortraitOffset(x,y);
+                    try{
+                        int x,y;
+                        simple >> x >> y;
+                        self.grid.setPortraitOffset(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if (simple == "portrait.scale"){
-		    double x,y;
-		    simple >> x >> y;
-		    self.grid.setPortraitScale(x,y);
+                    try{
+                        double x,y;
+                        simple >> x >> y;
+                        self.grid.setPortraitScale(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "title.offset"){
-		    int x, y;
-		    simple >> x >> y;
-		    self.titleFont.setLocation(x,y);
+                    try{
+                        int x, y;
+                        simple >> x >> y;
+                        self.titleFont.setLocation(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "title.font"){
 		    int index=0, bank=0, position=0;
 		    try {
@@ -1421,55 +1499,90 @@ void CharacterSelect::load(){
 			//ignore for now
 		    }
                     if (index != -1){
-                        self.titleFont.setPrimary(self.fonts[index-1],bank,position);
+                        /* should this be set even if the parse fails? */
+                        self.titleFont.setPrimary(self.fonts[index-1], bank, position);
                     }
 		} else if ( simple == "p1.face.offset"){
-		    int x, y;
-		    simple >> x >> y;
-		    self.player1Cursor.setFaceOffset(x,y);
+                    try{
+                        int x, y;
+                        simple >> x >> y;
+                        self.player1Cursor.setFaceOffset(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "p1.face.scale"){
-		    double x, y;
-		    simple >> x >> y;
-		    self.player1Cursor.setFaceScale(x,y);
+                    try{
+                        double x, y;
+                        simple >> x >> y;
+                        self.player1Cursor.setFaceScale(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "p1.face.facing"){
-		    int f;
-		    simple >> f;
-		    self.player1Cursor.setFacing(f);
+                    try{
+                        int f;
+                        simple >> f;
+                        self.player1Cursor.setFacing(f);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "p2.face.offset"){
-		    int x, y;
-		    simple >> x >> y;
-		    self.player2Cursor.setFaceOffset(x,y);
+                    try{
+                        int x, y;
+                        simple >> x >> y;
+                        self.player2Cursor.setFaceOffset(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "p2.face.scale"){
-		    double x, y;
-		    simple >> x >> y;
-		    self.player2Cursor.setFaceScale(x,y);
+                    try{
+                        double x, y;
+                        simple >> x >> y;
+                        self.player2Cursor.setFaceScale(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "p2.face.facing"){
-		    int f;
-		    simple >> f;
-		    self.player2Cursor.setFacing(f);
+                    try{
+                        int f;
+                        simple >> f;
+                        self.player2Cursor.setFacing(f);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "p1.name.offset"){
-		    int x, y;
-		    simple >> x >> y;
-		    self.player1Cursor.getFontHandler().setLocation(x,y);
+                    try{
+                        int x, y;
+                        simple >> x >> y;
+                        self.player1Cursor.getFontHandler().setLocation(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		}  else if ( simple == "p1.name.font"){
 		    int index=0, bank=0, position=0;
 		    try {
 			simple >> index >> bank >> position;
 		    } catch (const Ast::Exception & e){
 			//ignore for now
-		    } self.player1Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+		    }
+                   
+                    if (index > 0){
+                        self.player1Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+                    }
 		} else if ( simple == "p2.name.offset"){
-		    int x, y;
-		    simple >> x >> y;
-		    self.player2Cursor.getFontHandler().setLocation(x,y);
+                    try{
+                        int x, y;
+                        simple >> x >> y;
+                        self.player2Cursor.getFontHandler().setLocation(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "p2.name.font"){
-		    int index, bank, position;
-		    simple >> index >> bank >> position;
-		    self.player2Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+                    try{
+                        int index, bank, position;
+                        simple >> index >> bank >> position;
+                        self.player2Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "stage.pos"){
-		    int x, y;
-		    simple >> x >> y;
-		    self.grid.getStageHandler().getFontHandler().setLocation(x,y);
+                    try{
+                        int x, y;
+                        simple >> x >> y;
+                        self.grid.getStageHandler().getFontHandler().setLocation(x,y);
+                    } catch (const Ast::Exception & e){
+                    }
 		} else if ( simple == "stage.active.font"){
 		    int index=0, bank=0, position=0;
 		    try {
@@ -1477,7 +1590,10 @@ void CharacterSelect::load(){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.grid.getStageHandler().getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+
+                    if (index > 0){
+                        self.grid.getStageHandler().getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+                    }
 		} else if ( simple == "stage.active2.font"){
                     int index=0, bank=0, position=0;
 		    try {
@@ -1485,7 +1601,10 @@ void CharacterSelect::load(){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.grid.getStageHandler().getFontHandler().setBlink(self.fonts[index-1],bank,position);
+
+                    if (index > 0){
+                        self.grid.getStageHandler().getFontHandler().setBlink(self.fonts[index-1],bank,position);
+                    }
 		} else if ( simple == "stage.done.font"){
                     int index=0, bank=0, position=0;
 		    try {
@@ -1493,7 +1612,9 @@ void CharacterSelect::load(){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.grid.getStageHandler().getFontHandler().setDone(self.fonts[index-1],bank,position);
+                    if (index > 0){
+                        self.grid.getStageHandler().getFontHandler().setDone(self.fonts[index-1],bank,position);
+                    }
 		}
 #if 0
                 else if ( simple.find("teammenu")!=std::string::npos ){
@@ -1524,17 +1645,26 @@ void CharacterSelect::load(){
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "time" ){
-			int time;
-			simple >> time;
-			self.setTime(time);
+                        try{
+                            int time;
+                            simple >> time;
+                            self.setTime(time);
+                        } catch (const Ast::Exception & e){
+                        }
 		    } else if (simple == "fadein.time"){
-			int time;
-			simple >> time;
-			self.getFadeTool().setFadeInTime(time);
+                        try{
+                            int time;
+                            simple >> time;
+                            self.getFadeTool().setFadeInTime(time);
+                        } catch (const Ast::Exception & e){
+                        }
 		    } else if (simple == "fadeout.time"){
-			int time;
-			simple >> time;
-			self.getFadeTool().setFadeOutTime(time);
+                        try{
+                            int time;
+                            simple >> time;
+                            self.getFadeTool().setFadeOutTime(time);
+                        } catch (const Ast::Exception & e){
+                        }
 		    } else if (simple == "p1.pos"){
 			int x=0,y=0;
 			try{
@@ -1543,39 +1673,45 @@ void CharacterSelect::load(){
 			}
 			self.setPlayer1Position(Mugen::Point(x,y));
 		    } else if (simple == "p1.facing"){
-			int face;
-			simple >> face;
-			self.setPlayer1Facing(face);
+                        try{
+                            int face;
+                            simple >> face;
+                            self.setPlayer1Facing(face);
+                        } catch (const Ast::Exception & e){
+                        }
 		    } else if (simple == "p1.scale"){
 			double x,y;
 			try{
 			    simple >> x >> y;
-			} catch (Ast::Exception & e){
+			} catch (const Ast::Exception & e){
 			}
 			self.setPlayer1Scale(x,y);
 		    } else if (simple == "p2.pos"){
 			int x=0,y=0;
 			try{
 			    simple >> x >> y;
-			} catch (Ast::Exception & e){
+			} catch (const Ast::Exception & e){
 			}
 			self.setPlayer2Position(Mugen::Point(x,y));
 		    } else if (simple == "p2.facing"){
-			int face;
-			simple >> face;
-			self.setPlayer2Facing(face);
+                        try{
+                            int face;
+                            simple >> face;
+                            self.setPlayer2Facing(face);
+                        } catch (const Ast::Exception & e){
+                        }
 		    } else if (simple == "p2.scale"){
 			double x,y;
 			try{
 			    simple >> x >> y;
-			} catch (Ast::Exception & e){
+			} catch (const Ast::Exception & e){
 			}
 			self.setPlayer2Scale(x,y);
 		    } else if (simple == "p1.name.pos"){
 			int x, y;
 			try {
 			    simple >> x >> y;
-			} catch (Ast::Exception & e){
+			} catch (const Ast::Exception & e){
 			}
 			self.getPlayer1Font().setLocation(x,y);
 		    } else if (simple == "p1.name.font"){
@@ -1590,7 +1726,7 @@ void CharacterSelect::load(){
 			int x, y;
 			try {
 			    simple >> x >> y;
-			} catch (Ast::Exception & e){
+			} catch (const Ast::Exception & e){
 			}
 			self.getPlayer2Font().setLocation(x,y);
 		    } else if (simple == "p2.name.font"){
@@ -1600,7 +1736,9 @@ void CharacterSelect::load(){
 			} catch (const Ast::Exception & e){
 			    //ignore for now
 			}
-			self.getPlayer2Font().setPrimary(fonts[index-1],bank,position);
+                        if (index > 0){
+                            self.getPlayer2Font().setPrimary(fonts[index-1],bank,position);
+                        }
 		    }
 		}
 	    };

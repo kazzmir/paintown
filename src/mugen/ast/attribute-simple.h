@@ -115,6 +115,13 @@ public:
                 }
                 throw Exception(out.str());
             }
+        } else {
+            std::ostringstream out;
+            out << "no values available for attribute '" << this->toString() << "'";
+            if (line != -1 && column != -1){
+                out << " at line " << line << " column " << column;
+            }
+            throw Exception(out.str());
         }
         return *this;
     }

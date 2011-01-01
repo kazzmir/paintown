@@ -269,12 +269,18 @@ void MugenMenu::loadData(){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "name"){
-                            menu.setName(simple.valueAsString());
-                            Global::debug(1) << "Read name '" << menu.getName() << "'" << endl;
+                            try{
+                                menu.setName(simple.valueAsString());
+                                Global::debug(1) << "Read name '" << menu.getName() << "'" << endl;
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if (simple == "author"){
-                            string temp;
-                            simple >> temp;
-                            Global::debug(1) << "Made by: '" << temp << "'" << endl;
+                            try{
+                                string temp;
+                                simple >> temp;
+                                Global::debug(1) << "Made by: '" << temp << "'" << endl;
+                            } catch (const Ast::Exception & e){
+                            }
                         } else {
                             //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
                             Global::debug(0) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
@@ -367,17 +373,26 @@ void MugenMenu::loadData(){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "fadein.time"){
-                            int time;
-                            simple >> time;
-                            menu.fader.setFadeInTime(time);
+                            try{
+                                int time;
+                                simple >> time;
+                                menu.fader.setFadeInTime(time);
+                            } catch (const Ast::Exception & fail){
+                            }
                         } else if (simple == "fadein.color"){
-                            int r,g,b;
-                            simple >> r >> g >> b;
-                            menu.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                            try{
+                                int r,g,b;
+                                simple >> r >> g >> b;
+                                menu.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                            } catch (const Ast::Exception & fail){
+                            }
                         } else if (simple == "fadeout.time"){
-                            int time;
-                            simple >> time;
-                            menu.fader.setFadeOutTime(time);
+                            try{
+                                int time;
+                                simple >> time;
+                                menu.fader.setFadeOutTime(time);
+                            } catch (const Ast::Exception & fail){
+                            }
                         } else if (simple == "fadeout.color"){
                             int r,g,b;
                             simple >> r >> g >> b;
@@ -400,8 +415,11 @@ void MugenMenu::loadData(){
                             }
                             menu.fontCursor.setActiveFont(index,bank,position);
                         } else if (simple == "menu.item.spacing"){
-                            simple >> menu.fontSpacing.x;
-                            simple >> menu.fontSpacing.y;
+                            try{
+                                simple >> menu.fontSpacing.x;
+                                simple >> menu.fontSpacing.y;
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if (simple == "menu.itemname.arcade"){
                             try{
                                 menu.addMenuOption(new Mugen::OptionArcade(simple.valueAsString()));
