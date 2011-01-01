@@ -2,10 +2,10 @@
 #define _paintown_network_world_h
 
 #include "network.h"
-#include "game/adventure_world.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "paintown-engine/object/object.h"
+#include "paintown-engine/game/adventure_world.h"
 #include "input/text-input.h"
 #include "chat-widget.h"
 #include "util/thread.h"

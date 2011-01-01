@@ -8,7 +8,7 @@
 #include "exception.h"
 #include "util.h"
 
-#include "game/world.h"
+#include "paintown-engine/game/world.h"
 
 class Bitmap;
 namespace Console{

@@ -10,7 +10,7 @@
 #include "util/debug.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-#include "game/world.h"
+#include "paintown-engine/game/world.h"
 #include "paintown-engine/level/blockobject.h"
 #include "factory/object_factory.h"
 #include "paintown-engine/object/enemy.h"

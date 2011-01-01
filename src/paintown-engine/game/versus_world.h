@@ -1,7 +1,7 @@
 #ifndef _paintown_versus_world_h
 #define _paintown_versus_world_h
 
-#include "game/adventure_world.h"
+#include "adventure_world.h"
 
 class Bitmap;
 

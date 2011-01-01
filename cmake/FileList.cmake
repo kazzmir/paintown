@@ -1,18 +1,18 @@
 set(BASE_SRC 
 src/configuration.cpp
-src/game/game.cpp
 src/globals.cpp
 src/main-menu.cpp
 src/nameplacer.cpp
-src/game/select_player.cpp
-src/resource.cpp
-src/game/world.cpp)
+src/resource.cpp)
 
 set(GAME_SRC
-src/game/console.cpp
-src/game/adventure_world.cpp
-src/game/mod.cpp
-src/game/versus_world.cpp
+src/paintown-engine/game/world.cpp
+src/paintown-engine/game/game.cpp
+src/paintown-engine/game/select_player.cpp
+src/paintown-engine/game/console.cpp
+src/paintown-engine/game/adventure_world.cpp
+src/paintown-engine/game/mod.cpp
+src/paintown-engine/game/versus_world.cpp
 src/input/input.cpp
 src/input/text-input.cpp
 src/input/input-manager.cpp)

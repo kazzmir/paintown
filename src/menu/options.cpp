@@ -20,7 +20,7 @@
 #include "paintown-engine/object/buddy_player.h"
 
 #include "input/keyboard.h"
-#include "game/game.h"
+#include "paintown-engine/game/game.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "factory/font_factory.h"
@@ -40,7 +40,7 @@
 
 #include "openbor/pack-reader.h"
 
-#include "game/mod.h"
+#include "paintown-engine/game/mod.h"
 
 #include <sstream>
 #include <algorithm>

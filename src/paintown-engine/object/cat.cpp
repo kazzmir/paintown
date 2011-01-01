@@ -4,7 +4,7 @@
 #include "util/funcs.h"
 #include "globals.h"
 #include "animation.h"
-#include "game/world.h"
+#include "../game/world.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/file-system.h"

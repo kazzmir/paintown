@@ -10,7 +10,7 @@
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "util/tokenreader.h"
-#include "game/world.h"
+#include "../game/world.h"
 
 using namespace std;
 

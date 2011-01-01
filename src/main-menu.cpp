@@ -12,7 +12,7 @@
 #include "menu/menu.h"
 #include "menu/menu-exception.h"
 #include "input/input-manager.h"
-#include "game/mod.h"
+#include "paintown-engine/game/mod.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 #include "util/timedifference.h"

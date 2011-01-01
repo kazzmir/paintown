@@ -3,7 +3,7 @@
 #include "util/bitmap.h"
 #include "paintown-engine/object/object.h"
 #include "paintown-engine/object/character.h"
-#include "game/adventure_world.h"
+#include "paintown-engine/game/adventure_world.h"
 #include "network_world.h"
 #include "network.h"
 #include "util/funcs.h"

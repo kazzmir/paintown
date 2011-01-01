@@ -16,7 +16,7 @@
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "object.h"
-#include "game/world.h"
+#include "../game/world.h"
 #include <math.h>
 
 using namespace std;

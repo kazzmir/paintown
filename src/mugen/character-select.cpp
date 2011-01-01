@@ -21,7 +21,6 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/thread.h"
-#include "game/console.h"
 /*
 #include "object/animation.h"
 #include "object/object.h"

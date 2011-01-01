@@ -5,7 +5,7 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/debug.h"
-#include "game/world.h"
+#include "../game/world.h"
 #include "util/ebox.h"
 #include "util/funcs.h"
 #include "util/file-system.h"

@@ -4,7 +4,7 @@
 #include "nameplacer.h"
 #include "animation.h"
 #include "util/font.h"
-#include "game/world.h"
+#include "../game/world.h"
 #include "globals.h"
 #include "util/funcs.h"
 #include "buddy_player.h"

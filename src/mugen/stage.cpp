@@ -19,7 +19,7 @@
 #include "util/file-system.h"
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
-#include "game/console.h"
+#include "paintown-engine/game/console.h"
 /*
 #include "object/animation.h"
 #include "object/object.h"

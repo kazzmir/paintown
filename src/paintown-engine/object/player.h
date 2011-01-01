@@ -7,7 +7,7 @@
 #include "util/load_exception.h"
 #include "network/network.h"
 #include "input/input.h"
-#include "game/adventure_world.h"
+#include "../game/adventure_world.h"
 #include "util/thread.h"
 
 class World;

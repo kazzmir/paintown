@@ -1,7 +1,7 @@
 #ifndef _paintown_openbor_mod_h
 #define _paintown_openbor_mod_h
 
-#include "game/mod.h"
+#include "paintown-engine/game/mod.h"
 #include "util/file-system.h"
 #include "pack-reader.h"
 

@@ -1,7 +1,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/bitmap.h"
-#include "game/adventure_world.h"
+#include "paintown-engine/game/adventure_world.h"
 #include "network_world_client.h"
 #include "network.h"
 #include "paintown-engine/level/scene.h"

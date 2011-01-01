@@ -14,7 +14,7 @@
 #include "util/file-system.h"
 #include "util/funcs.h"
 #include <vector>
-#include "game/world.h"
+#include "../game/world.h"
 
 using namespace std;
 
