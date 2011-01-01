@@ -21,13 +21,6 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/thread.h"
-/*
-#include "object/animation.h"
-#include "object/object.h"
-#include "object/character.h"
-#include "object/object_attack.h"
-#include "object/player.h"
-*/
 #include "globals.h"
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
@@ -168,6 +161,11 @@ character2(0){
             // Ran its course got what we needed
         }
     }
+
+    if (actCollection.size() == 0){
+        throw MugenException("No pal files specified");
+    }
+
     // just a precaution
     // spriteFile = Util::removeSpaces(spriteFile);
     icon = Util::probeSff(baseDirectory.join(spriteFile), 9000, 0, true, baseDirectory.join(actCollection[0]));
