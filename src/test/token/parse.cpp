@@ -2,7 +2,7 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "util/token_exception.h"
-#include "debug.h"
+#include "util/debug.h"
 
 void read(const char * path){
     TokenReader reader;

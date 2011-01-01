@@ -1,6 +1,6 @@
 #include <fstream>
 #include <stdio.h>
-#include "debug.h"
+#include "util/debug.h"
 #include <iostream>
 #include <string.h>
 

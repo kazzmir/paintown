@@ -7,12 +7,12 @@
 
 #include <iostream>
 #include "util/file-system.h"
+#include "mugen/character-select.h"
+#include "mugen/exception.h"
+#include "mugen/parse-cache.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
-#include "util/sound.h"
-#include "paintown-engine/game/mod.h"
-#include "paintown-engine/object/player.h"
-#include "factory/collector.h"
+#include "util/debug.h"
 
 /*
 #include <sstream>
@@ -44,9 +44,17 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Paintown::Player player(Filesystem::find(Filesystem::RelativePath(path)));
+            Mugen::CharacterSelect select(Filesystem::find(Filesystem::RelativePath(path)), Mugen::Player1, Mugen::Arcade);
+            select.load();
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
+            /*
+               int * x = new int[1 << 21];
+               delete[] x;
+               */
+        } catch (const MugenException & e){
+            Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
+            return 1;
         } catch (const Filesystem::NotFound & e){
             Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
             return 1;
@@ -56,7 +64,7 @@ static int load(const char * path){
     // showMemory();
 }
 
-int paintown_main(int argc, char ** argv){
+int main(int argc, char ** argv){
 #ifdef USE_ALLEGRO
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
@@ -65,15 +73,13 @@ int paintown_main(int argc, char ** argv){
     SDL_Init(SDL_INIT_VIDEO);
     Bitmap::setFakeGraphicsMode(640, 480);
 #endif
-    Collector janitor;
-    Sound::initialize();
 
-    Paintown::Mod::loadDefaultMod();
     Global::setDebug(1);
+    Mugen::ParseCache cache;
 
     int die = 0;
     if (argc < 2){
-        die = load("players/akuma/akuma.txt");
+        die = load("mugen/data/system.def");
     } else {
         die = load(argv[1]);
     }
@@ -81,17 +87,11 @@ int paintown_main(int argc, char ** argv){
 #ifdef USE_SDL
     SDL_Quit();
 #endif
-    Sound::uninitialize();
 
     // for (int i = 0; i < 3; i++){
       // }
     return die;
 }
-
-int main(int argc, char ** argv){
-    return paintown_main(argc, argv);
-}
-
 #ifdef USE_ALLEGRO
 END_OF_MAIN()
 #endif

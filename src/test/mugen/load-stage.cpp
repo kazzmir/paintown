@@ -9,7 +9,8 @@
 #include "mugen/stage.h"
 #include "mugen/exception.h"
 #include "globals.h"
-#include "input/input-manager.h"
+#include "util/debug.h"
+#include "util/input/input-manager.h"
 #include "factory/collector.h"
 
 #include <iostream>

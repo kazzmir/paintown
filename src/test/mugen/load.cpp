@@ -12,6 +12,7 @@
 #include "mugen/parse-cache.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
+#include "util/debug.h"
 
 /*
 #include <sstream>

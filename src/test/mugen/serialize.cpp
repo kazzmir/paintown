@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include "debug.h"
+#include "util/debug.h"
 #include <stdlib.h>
 #include "util/file-system.h"
 #include "util/timedifference.h"

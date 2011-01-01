@@ -14,7 +14,7 @@ parse.cpp
 ../../util/tokenreader.cpp
 ../../util/token_exception.cpp
 ../../exceptions/exception.cpp
-../../debug.cpp
+../../util/debug.cpp
 """)
 
 x = []
