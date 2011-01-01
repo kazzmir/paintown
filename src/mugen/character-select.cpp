@@ -514,7 +514,47 @@ void Grid::setCursorStageSelect(Cursor & cursor){
     cursor.setState(Cursor::StageSelect);
 }
 
+void Grid::moveCursor(Cursor & cursor, int Point::* field, int wrap, int direction){
+    Mugen::Point current = cursor.getCurrentCell()->getLocation();
+
+    Cell *cell = NULL;
+    do{
+        current.*field += direction;
+        if (current.*field < 0){
+            if (wrapping){
+                current.*field = wrap - 1;
+            } else {
+                return;
+            }
+        } else if (current.*field >= wrap){
+            current.*field = 0;
+        }
+
+        try {
+            cell = getCell(current.x, current.y);
+        } catch (const MugenException &me){
+            Global::debug(0) << "Could not get a cell at " << current.x << ", " << current.y << endl;
+            // Shouldn't happen but you never know lets not continue
+            return;
+        }
+        /* skip through blanks */
+    } while (cell && cell->isBlank());
+    
+    if (cell->isEmpty()){
+	if (!moveOverEmptyBoxes){
+	    return;
+	}
+    }
+    cursor.getCurrentCell()->popCursor();
+    cell->pushCursor();
+    cursor.setCurrentCell(cell);
+    cursor.playMoveSound();
+}
+
 void Grid::moveCursorLeft(Cursor &cursor){
+    moveCursor(cursor, &Point::y, columns, -1);
+
+    /*
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.y--;
     if (current.y < 0){
@@ -542,9 +582,13 @@ void Grid::moveCursorLeft(Cursor &cursor){
     cell->pushCursor();
     cursor.setCurrentCell(cell);
     cursor.playMoveSound();
+    */
 }
 
 void Grid::moveCursorRight(Cursor &cursor){
+    moveCursor(cursor, &Point::y, columns, 1);
+
+    /*
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.y++;
     if (current.y >= columns){
@@ -571,9 +615,13 @@ void Grid::moveCursorRight(Cursor &cursor){
     cell->pushCursor();
     cursor.setCurrentCell(cell);
     cursor.playMoveSound();
+    */
 }
 
 void Grid::moveCursorUp(Cursor &cursor){
+    moveCursor(cursor, &Point::x, rows, -1);
+
+    /*
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.x--;
     if (current.x < 0){
@@ -600,9 +648,13 @@ void Grid::moveCursorUp(Cursor &cursor){
     cell->pushCursor();
     cursor.setCurrentCell(cell);
     cursor.playMoveSound();
+    */
 }
 
 void Grid::moveCursorDown(Cursor &cursor){
+    moveCursor(cursor, &Point::x, rows, 1);
+
+    /*
     Mugen::Point current = cursor.getCurrentCell()->getLocation();
     current.x++;
     if (current.x >= rows){
@@ -629,6 +681,7 @@ void Grid::moveCursorDown(Cursor &cursor){
     cell->pushCursor();
     cursor.setCurrentCell(cell);
     cursor.playMoveSound();
+    */
 }
 
 void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key, bool modifier){

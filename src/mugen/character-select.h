@@ -516,6 +516,7 @@ class Grid{
 	
 	virtual void setCursorStageSelect(Cursor &cursor);
 	
+        virtual void moveCursor(Cursor & cursor, int Point::* field, int wrap, int direction);
 	virtual void moveCursorLeft(Cursor & cursor);
 	virtual void moveCursorRight(Cursor & cursor);
 	virtual void moveCursorUp(Cursor & cursor);
