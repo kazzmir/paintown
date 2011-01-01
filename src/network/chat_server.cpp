@@ -6,7 +6,7 @@
 #include "chat.h"
 #include "util/bitmap.h"
 #include "util/funcs.h"
-#include "input/keyboard.h"
+#include "util/input/keyboard.h"
 #include "util/font.h"
 #include "util/file-system.h"
 #include "util/load_exception.h"
@@ -14,7 +14,7 @@
 #include "globals.h"
 #include "util/init.h"
 #include "gui/lineedit.h"
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 #include "menu/menu.h"
 #include "util/timer.h"
 #include <iostream>

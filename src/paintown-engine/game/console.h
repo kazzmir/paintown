@@ -5,8 +5,8 @@
 #include <vector>
 #include <sstream>
 #include <map>
-#include "input/input-map.h"
-#include "input/text-input.h"
+#include "util/input/input-map.h"
+#include "util/input/text-input.h"
 #include "util/file-system.h"
 
 class Bitmap;

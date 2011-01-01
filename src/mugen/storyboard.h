@@ -9,7 +9,7 @@
 #include "gui/fadetool.h"
 #include "mugen/util.h"
 
-#include "input/input-map.h"
+#include "util/input/input-map.h"
 
 class Bitmap;
 class MugenSprite;

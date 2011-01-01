@@ -11,8 +11,8 @@
 #include "exceptions/exception.h"
 #include <vector>
 #include "util/init.h"
-#include "input/input-manager.h"
-#include "input/input-map.h"
+#include "util/input/input-manager.h"
+#include "util/input/input-map.h"
 
 using namespace std;
 

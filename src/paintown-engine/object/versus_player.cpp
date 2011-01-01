@@ -5,7 +5,7 @@
 #include "configuration.h"
 #include "util/funcs.h"
 #include "globals.h"
-#include "input/input.h"
+#include "util/input/input.h"
 #include <string>
 #include <iostream>
 

@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "util.h"
-#include "input/input-map.h"
+#include "util/input/input-map.h"
 
 class MugenStage;
 

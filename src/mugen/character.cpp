@@ -40,8 +40,8 @@
 #include "behavior.h"
 #include "state-controller.h"
 
-#include "input/input-map.h"
-#include "input/input-manager.h"
+#include "util/input/input-map.h"
+#include "util/input/input-manager.h"
 
 #include "parse-cache.h"
 #include "parser/all.h"

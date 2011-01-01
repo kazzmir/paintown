@@ -20,8 +20,8 @@
 #include "optionfactory.h"
 #include "actionfactory.h"
 
-#include "input/input-manager.h"
-#include "input/input-map.h"
+#include "util/input/input-manager.h"
+#include "util/input/input-map.h"
 
 #include <queue>
 #include <map>

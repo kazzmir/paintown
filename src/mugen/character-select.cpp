@@ -50,7 +50,7 @@
 
 #include "util/loading.h"
 
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 
 #include "exceptions/exception.h"
 

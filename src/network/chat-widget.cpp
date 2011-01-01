@@ -1,9 +1,9 @@
 #include "util/bitmap.h"
 #include <deque>
-#include "input/text-input.h"
+#include "util/input/text-input.h"
 #include "chat-widget.h"
 #include "paintown-engine/game/world.h"
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 #include "util/font.h"
 #include "factory/font_render.h"
 #include "resource.h"

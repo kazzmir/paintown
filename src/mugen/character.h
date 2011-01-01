@@ -12,7 +12,7 @@
 #include "paintown-engine/object/object_attack.h"
 #include "network/network.h"
 #include "util/pointer.h"
-#include "input/input-map.h"
+#include "util/input/input-map.h"
 #include "animation.h"
 #include "util.h"
 #include "compiler.h"

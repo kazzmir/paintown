@@ -2,7 +2,7 @@
 #define _paintown_options_h
 
 #include "menu_option.h"
-#include "input/input-map.h"
+#include "util/input/input-map.h"
 #include "util/file-system.h"
 #include "paintown-engine/level/utils.h"
 #include "util/pointer.h"

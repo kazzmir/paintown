@@ -16,8 +16,8 @@
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
-#include "input/input.h"
-#include "input/input-manager.h"
+#include "util/input/input.h"
+#include "util/input/input-manager.h"
 #include "draw-effect.h"
 #include <math.h>
 

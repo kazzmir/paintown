@@ -13,9 +13,9 @@ src/paintown-engine/game/console.cpp
 src/paintown-engine/game/adventure_world.cpp
 src/paintown-engine/game/mod.cpp
 src/paintown-engine/game/versus_world.cpp
-src/input/input.cpp
-src/input/text-input.cpp
-src/input/input-manager.cpp)
+src/util/input/input.cpp
+src/util/input/text-input.cpp
+src/util/input/input-manager.cpp)
 
 set(SCRIPT_SRC
 src/script/script.cpp
@@ -93,7 +93,7 @@ src/util/sound.cpp
 src/util/timer.cpp
 src/util/music.cpp
 src/util/init.cpp
-src/input/keyboard.cpp
+src/util/input/keyboard.cpp
 src/util/loading.cpp
 src/util/messages.cpp
 src/util/bitmap.cpp
@@ -109,15 +109,15 @@ src/util/ebox.cpp
 src/util/regex.cpp
 src/util/language-string.cpp
 src/util/thread.cpp
-src/input/joystick.cpp
-src/input/allegro/allegro-joystick.cpp
-src/input/sdl/joystick.cpp
-src/input/psp/joystick.cpp
-src/input/wii/joystick.cpp
+src/util/input/joystick.cpp
+src/util/input/allegro/allegro-joystick.cpp
+src/util/input/sdl/joystick.cpp
+src/util/input/psp/joystick.cpp
+src/util/input/wii/joystick.cpp
 src/util/system.cpp
 src/util/compress.cpp
 src/util/message-queue.cpp
-src/input/linux_joystick.cpp
+src/util/input/linux_joystick.cpp
 src/util/load_exception.cpp
 src/util/windows/funcs.cpp
 src/util/windows/system.cpp

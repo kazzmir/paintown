@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <math.h>
-#include "input/input-map.h"
+#include "util/input/input-map.h"
 #include "command.h"
 #include "util/debug.h"
 #include "character.h"

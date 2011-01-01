@@ -8,7 +8,7 @@
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "util/pointer.h"
-#include "input/input-map.h"
+#include "util/input/input-map.h"
 #include "font-info.h"
 
 #include "gui/animation.h"

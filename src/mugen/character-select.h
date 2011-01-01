@@ -10,7 +10,7 @@
 
 #include "menu/menu.h"
 
-#include "input/input-map.h"
+#include "util/input/input-map.h"
 
 #include "util.h"
 

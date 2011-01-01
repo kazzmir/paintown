@@ -21,7 +21,7 @@
 #include "util/gradient.h"
 #include "util/system.h"
 #include "cacher.h"
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 #include <sstream>
 
 #include "paintown-engine/object/character.h"

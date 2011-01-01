@@ -7,7 +7,7 @@
 #include "widget.h"
 #include "timer.h"
 #include "sigslot.h"
-#include "input/text-input.h"
+#include "util/input/text-input.h"
 
 class Font;
 

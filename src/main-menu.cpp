@@ -11,7 +11,7 @@
 #include "util/music.h"
 #include "menu/menu.h"
 #include "menu/menu-exception.h"
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 #include "paintown-engine/game/mod.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"

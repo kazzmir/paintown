@@ -5,8 +5,8 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "exceptions/exception.h"
-#include "input/input-manager.h"
-#include "input/input-map.h"
+#include "util/input/input-manager.h"
+#include "util/input/input-map.h"
 #include "globals.h"
 #include "util/debug.h"
 #include <string>

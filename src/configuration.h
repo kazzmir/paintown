@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include "input/input.h"
+#include "util/input/input.h"
 #include "util/pointer.h"
 #include "menu/font-info.h"
 

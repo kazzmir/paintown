@@ -20,8 +20,8 @@
 #include "util/timedifference.h"
 #include "ast/all.h"
 #include "parser/all.h"
-#include "input/input-map.h"
-#include "input/input-manager.h"
+#include "util/input/input-map.h"
+#include "util/input/input-manager.h"
 
 namespace PaintownUtil = ::Util;
 

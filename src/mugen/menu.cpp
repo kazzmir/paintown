@@ -37,7 +37,7 @@
 #include "menu/menu_option.h"
 #include "menu/options.h"
 
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 
 #include "animation.h"
 #include "background.h"

@@ -19,7 +19,7 @@
 #include "paintown-engine/object/player.h"
 #include "paintown-engine/object/buddy_player.h"
 
-#include "input/keyboard.h"
+#include "util/input/keyboard.h"
 #include "paintown-engine/game/game.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -35,8 +35,8 @@
 
 #include "util/loading.h"
 #include "util/fire.h"
-#include "input/input-map.h"
-#include "input/input-manager.h"
+#include "util/input/input-map.h"
+#include "util/input/input-manager.h"
 
 #include "openbor/pack-reader.h"
 

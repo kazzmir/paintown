@@ -20,7 +20,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 #include "exceptions/exception.h"
 
 #include "gui/box.h"

@@ -8,8 +8,8 @@
 #include "paintown-engine/object/object.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
-#include "input/input-map.h"
-#include "input/text-input.h"
+#include "util/input/input-map.h"
+#include "util/input/text-input.h"
 #include "chat-widget.h"
 #include "util/thread.h"
 #include <vector>

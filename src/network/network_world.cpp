@@ -12,7 +12,7 @@
 #include "paintown-engine/level/cacher.h"
 #include "script/script.h"
 #include "util/file-system.h"
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 #include "util/font.h"
 #include "factory/font_render.h"
 #include "globals.h"

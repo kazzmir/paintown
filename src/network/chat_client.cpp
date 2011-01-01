@@ -7,15 +7,15 @@
 #include "util/bitmap.h"
 #include "util/init.h"
 #include "globals.h"
-#include "input/keyboard.h"
+#include "util/input/keyboard.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "gui/lineedit.h"
 #include "gui/keys.h"
 #include "resource.h"
-#include "input/input-manager.h"
-#include "input/input-map.h"
+#include "util/input/input-manager.h"
+#include "util/input/input-map.h"
 #include "util/sound.h"
 
 using namespace std;

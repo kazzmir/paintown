@@ -27,9 +27,9 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/system.h"
-#include "input/keyboard.h"
-#include "input/input-manager.h"
-#include "input/text-input.h"
+#include "util/input/keyboard.h"
+#include "util/input/input-manager.h"
+#include "util/input/text-input.h"
 
 #include "menu/options.h"
 #include "menu/font-info.h"

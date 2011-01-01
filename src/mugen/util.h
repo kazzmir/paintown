@@ -8,7 +8,7 @@
 #include "exception.h"
 #include "configuration.h"
 
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 
 class MugenAnimation;
 class MugenBackground;
