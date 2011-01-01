@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <sstream>
 #include <vector>
 #include <stdint.h>
 
@@ -16,6 +17,7 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "util/funcs.h"
+#include "util/load_exception.h"
 
 using namespace std;
 
@@ -61,9 +63,11 @@ currentBank(0){
     std::string temp = file.path();
     temp = Mugen::Util::invertSlashes(temp);
     Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
-    ifile.open( temp.c_str() );
+    ifile.open(temp.c_str());
     if (!ifile){
-        perror("cant open file");
+        std::ostringstream out;
+        out << "Can't find font file " << temp;
+        throw LoadException(__FILE__, __LINE__, out.str());
     }
     myfile = temp;
     
