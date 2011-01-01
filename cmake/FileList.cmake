@@ -85,7 +85,7 @@ src/paintown-engine/object/heart.cpp)
 set(UTIL_SRC
 src/util/token.cpp
 src/util/token_exception.cpp
-src/util/resource.cpp)
+src/util/resource.cpp
 src/util/tokenreader.cpp
 src/util/timedifference.cpp
 src/util/debug.cpp
