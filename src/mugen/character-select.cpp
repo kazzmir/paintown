@@ -114,18 +114,27 @@ void FontHandler::render(const std::string &text, const Bitmap &bmp){
     switch(state){
 	default:
 	case Normal:
-	    font->render(location.x, location.y, position, bank, bmp, text);
+            if (font){
+                font->render(location.x, location.y, position, bank, bmp, text);
+            }
 	    break;
 	case Blink:
 	    if (blinkState == Normal){
-		font->render(location.x, location.y, position, bank, bmp, text);
+                if (font){
+                    font->render(location.x, location.y, position, bank, bmp, text);
+                }
 	    } else if (blinkState == Blink){
-		blinkFont->render(location.x, location.y, blinkPosition, blinkBank, bmp, text);
+                if (blinkFont){
+                    blinkFont->render(location.x, location.y, blinkPosition, blinkBank, bmp, text);
+                }
 	    }
 	    break;
-	case Done:
-	    doneFont->render(location.x, location.y, donePosition, doneBank, bmp, text);
+	case Done: {
+            if (doneFont){
+                doneFont->render(location.x, location.y, donePosition, doneBank, bmp, text);
+            }
 	    break;
+        }
     }
 }
 
@@ -342,7 +351,9 @@ void Cell::randomize(std::vector<CharacterInfo *> &characters){
 
 void Cell::render(const Bitmap & bmp){
     if (!blank){
-        background->render(position.x,position.y,bmp);
+        if (background != 0){
+            background->render(position.x,position.y,bmp);
+        }
         if (!empty){
             Mugen::Effects effects;
             effects.scalex = characterScaleX;
@@ -557,135 +568,18 @@ void Grid::moveCursor(Cursor & cursor, int Point::* field, int wrap, int directi
 
 void Grid::moveCursorLeft(Cursor &cursor){
     moveCursor(cursor, &Point::y, columns, -1);
-
-    /*
-    Mugen::Point current = cursor.getCurrentCell()->getLocation();
-    current.y--;
-    if (current.y < 0){
-	if (wrapping){
-	    current.y = columns-1;
-	} else {
-	    return;
-	}
-    }
-    Cell *cell;
-    try {
-	cell = getCell(current.x,current.y);
-    } catch (const MugenException &me){
-        Global::debug(0) << "Could not get a cell at " << current.x << ", " << current.y << endl;
-	// Shouldn't happen but you never know lets not continue
-	return;
-    }
-    
-    if (cell->isEmpty()){
-	if (!moveOverEmptyBoxes){
-	    return;
-	}
-    }
-    cursor.getCurrentCell()->popCursor();
-    cell->pushCursor();
-    cursor.setCurrentCell(cell);
-    cursor.playMoveSound();
-    */
 }
 
 void Grid::moveCursorRight(Cursor &cursor){
     moveCursor(cursor, &Point::y, columns, 1);
-
-    /*
-    Mugen::Point current = cursor.getCurrentCell()->getLocation();
-    current.y++;
-    if (current.y >= columns){
-	if (wrapping){
-	    current.y = 0;
-	} else {
-	    return;
-	}
-    }
-    Cell *cell;
-    try {
-	cell = getCell(current.x,current.y);
-    } catch (const MugenException &me){
-	// Shouldn't happen but you never know lets not continue
-	return;
-    }
-    
-    if (cell->isEmpty()){
-	if (!moveOverEmptyBoxes){
-	    return;
-	}
-    }
-    cursor.getCurrentCell()->popCursor();
-    cell->pushCursor();
-    cursor.setCurrentCell(cell);
-    cursor.playMoveSound();
-    */
 }
 
 void Grid::moveCursorUp(Cursor &cursor){
     moveCursor(cursor, &Point::x, rows, -1);
-
-    /*
-    Mugen::Point current = cursor.getCurrentCell()->getLocation();
-    current.x--;
-    if (current.x < 0){
-	if (wrapping){
-	    current.x = rows-1;
-	} else {
-	    return;
-	}
-    }
-    Cell *cell;
-    try {
-	cell = getCell(current.x,current.y);
-    } catch (const MugenException &me){
-	// Shouldn't happen but you never know lets not continue
-	return;
-    }
-    
-    if (cell->isEmpty()){
-	if (!moveOverEmptyBoxes){
-	    return;
-	}
-    }
-    cursor.getCurrentCell()->popCursor();
-    cell->pushCursor();
-    cursor.setCurrentCell(cell);
-    cursor.playMoveSound();
-    */
 }
 
 void Grid::moveCursorDown(Cursor &cursor){
     moveCursor(cursor, &Point::x, rows, 1);
-
-    /*
-    Mugen::Point current = cursor.getCurrentCell()->getLocation();
-    current.x++;
-    if (current.x >= rows){
-	if (wrapping){
-	    current.x = 0;
-	} else {
-	    return;
-	}
-    }
-    Cell *cell;
-    try {
-	cell = getCell(current.x,current.y);
-    } catch (const MugenException &me){
-	// Shouldn't happen but you never know lets not continue
-	return;
-    }
-    
-    if (cell->isEmpty()){
-	if (!moveOverEmptyBoxes){
-	    return;
-	}
-    }
-    cursor.getCurrentCell()->popCursor();
-    cell->pushCursor();
-    cursor.setCurrentCell(cell);
-    cursor.playMoveSound();
-    */
 }
 
 void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key, bool modifier){
@@ -889,14 +783,18 @@ void Cursor::render(Grid &grid, const Bitmap & bmp){
 	    break;
 	case CharacterSelect:
 	    if (!hideForBlink){
-		activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+                if (activeSprite){
+                    activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+                }
 	    }
 	    renderPortrait(bmp);
 	    break;
 	case Done:
 	default:
 	    if (!hideForBlink){
-		doneSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+                if (doneSprite){
+                    doneSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
+                }
 	    }
 	    renderPortrait(bmp);
     }
@@ -1522,7 +1420,9 @@ void CharacterSelect::load(){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
-		    self.titleFont.setPrimary(self.fonts[index-1],bank,position);
+                    if (index != -1){
+                        self.titleFont.setPrimary(self.fonts[index-1],bank,position);
+                    }
 		} else if ( simple == "p1.face.offset"){
 		    int x, y;
 		    simple >> x >> y;
@@ -1963,37 +1863,47 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     int stageOffset = 0;
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
 	CharacterCollect & character = *i;
-	if (!character.random && !character.blank){
-	    // Get character
-	    // *FIXME Not an elegant solution for character location
-	    const Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/chars/" + character.name + "/"));
-            Filesystem::RelativePath str = Filesystem::RelativePath(character.name).getFilename();
-	    const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
-	    // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
-	    Global::debug(1) << "Got character def: " << charDefFile.path() << endl;
-	    CharacterInfo *charInfo = new CharacterInfo(charDefFile);
-	    charInfo->setRandomStage(character.randomStage);
-	    // Set stage
-	    if (character.stage.empty()){
-		// lets assume random then
-		charInfo->setRandomStage(true);
-	    } else {
-		// Fix the stage name before handing it the character
-		charInfo->setStage(fixStageName(character.stage));
-		// also add the stage
-		if (character.includeStage){
-		    // Pass base stage name, StageHandler will fix the stage name
-		    stageNames.insert(stageNames.begin()+stageOffset,character.stage);
-		    stageOffset++;
-		}
-	    }
-	    charInfo->setOrder(character.order);
-	    charInfo->setMusic(character.song);
-	    characters.push_back(charInfo);
-	}
+        try{
+            if (!character.random && !character.blank){
+                // Get character
+                // *FIXME Not an elegant solution for character location
+                const Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/chars/" + character.name + "/"));
+                Filesystem::RelativePath str = Filesystem::RelativePath(character.name).getFilename();
+                const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
+                // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
+                Global::debug(1) << "Got character def: " << charDefFile.path() << endl;
+                CharacterInfo *charInfo = new CharacterInfo(charDefFile);
+                charInfo->setRandomStage(character.randomStage);
+                // Set stage
+                if (character.stage.empty()){
+                    // lets assume random then
+                    charInfo->setRandomStage(true);
+                } else {
+                    // Fix the stage name before handing it the character
+                    charInfo->setStage(fixStageName(character.stage));
+                    // also add the stage
+                    if (character.includeStage){
+                        // Pass base stage name, StageHandler will fix the stage name
+                        stageNames.insert(stageNames.begin()+stageOffset,character.stage);
+                        stageOffset++;
+                    }
+                }
+                charInfo->setOrder(character.order);
+                charInfo->setMusic(character.song);
+                characters.push_back(charInfo);
+            }
+        } catch (const Filesystem::NotFound & error){
+            Global::debug(0) << "Could not load a tile: " << error.getTrace() << endl;
+        }
     }
     
     // Now setup Grid
+    if (characters.size() == 0){
+        ostringstream out;
+        out << "No characters available to select. Please add some to " << selectFile.path();
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+
     std::vector<CharacterInfo *>::iterator nextChar = characters.begin();
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end(); ++i){
 	CharacterCollect & character = *i;
@@ -2004,8 +1914,10 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
                 grid.addCharacter(characters.front(), true);
             }
 	} else {
-	    grid.addCharacter(*nextChar);
-	    nextChar++;
+            if (nextChar != characters.end()){
+                grid.addCharacter(*nextChar);
+                nextChar++;
+            }
 	}
     }
     
