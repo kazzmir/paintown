@@ -987,8 +987,15 @@ void run(){
     // Load er up and throw up a load box to inform the user
     class Context: public Loader::LoadingContext {
     public:
+        enum Fail{
+            None,
+            Mugen,
+            Load
+        };
+
         Context():
         menu(Mugen::Data::getInstance().getMotif()),
+        fail(None),
         exception(NULL){
         }
 
@@ -997,12 +1004,20 @@ void run(){
                 menu.loadData();
             } catch (const MugenException & e){
                 exception = (MugenException*) e.copy();
+                fail = Mugen;
+            } catch (const LoadException & e){
+                exception = new LoadException(e);
+                fail = Load;
             }
         }
 
         virtual void failure(){
             if (exception != NULL){
-                throw *exception;
+                switch (fail){
+                    case Mugen: throw *(MugenException*) exception;
+                    case Load: throw *(LoadException*) exception;
+                    default: throw *exception;
+                }
             }
         }
 
@@ -1015,7 +1030,8 @@ void run(){
         }
 
         MugenMenu menu;
-        MugenException * exception;
+        Fail fail;
+        Exception::Base * exception;
     };
     /*
     PaintownUtil::Thread::Id loading;
