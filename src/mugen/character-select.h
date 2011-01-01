@@ -355,6 +355,15 @@ class Cell{
 	virtual inline void setRandomSprite(MugenSprite *random){
 	    randomSprite = random;
 	}
+
+        virtual bool isBlank() const {
+            return blank;
+        }
+
+        virtual void setBlank(bool what){
+            empty = false;
+            blank = what;
+        }
         
         virtual inline void setPosition(int x, int y){
             position.x = x;
@@ -459,6 +468,8 @@ class Cell{
 	
 	//! Is this a random select cell
         bool random;
+
+        bool blank;
 	
 	//! Is this cell empty
         bool empty;
@@ -496,6 +507,7 @@ class Grid{
 	
 	virtual void render(const Bitmap &);
 	
+        virtual void addBlank();
 	virtual void addCharacter(CharacterInfo *character, bool isRandom = false);
 	
 	virtual void setCursorPlayer1Start(Cursor &cursor);

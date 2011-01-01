@@ -316,6 +316,7 @@ location(x,y),
 background(0),
 randomSprite(0),
 random(false),
+blank(false),
 empty(true),
 characterScaleX(1),
 characterScaleY(1),
@@ -340,22 +341,24 @@ void Cell::randomize(std::vector<CharacterInfo *> &characters){
 }
 
 void Cell::render(const Bitmap & bmp){
-    background->render(position.x,position.y,bmp);
-    if (!empty){
-	Mugen::Effects effects;
-	effects.scalex = characterScaleX;
-	effects.scaley = characterScaleY;
-	if (random){
-	    randomSprite->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
-	} else {
-	    character->getIcon()->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
-	}
-    }
-    if (flash){
-	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
-	bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Bitmap::makeColor(255,255,255));
-	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
+    if (!blank){
+        background->render(position.x,position.y,bmp);
+        if (!empty){
+            Mugen::Effects effects;
+            effects.scalex = characterScaleX;
+            effects.scaley = characterScaleY;
+            if (random){
+                randomSprite->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
+            } else {
+                character->getIcon()->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
+            }
+        }
+        if (flash){
+            // Bitmap::drawingMode(Bitmap::MODE_TRANS);
+            Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
+            bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Bitmap::makeColor(255,255,255));
+            // Bitmap::drawingMode(Bitmap::MODE_SOLID);
+        }
     }
 }
 
@@ -451,13 +454,26 @@ void Grid::render(const Bitmap & bmp){
 	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
 	    Cell *cell = (*column);
 	    if (cell->isEmpty()){
-		if (showEmptyBoxes){
+		if (showEmptyBoxes && !cell->isBlank()){
 		    cell->render(bmp);
 		}
 	    } else {
 		cell->render(bmp);
 	    }
 	}
+    }
+}
+
+void Grid::addBlank(){
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	std::vector< Cell *> &row = (*i);
+	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+	    if (cell->isEmpty()){
+                cell->setBlank(true);
+                return;
+            }
+        }
     }
 }
 
@@ -855,7 +871,7 @@ void Cursor::playRandomSound(){
 
 void Cursor::renderPortrait(const Bitmap &bmp){
     // Lets do the portrait and name
-    if (!currentCell->isEmpty()){
+    if (!currentCell->isEmpty() && !currentCell->isBlank()){
 	const CharacterInfo *character = currentCell->getCharacter();
 	Mugen::Effects effects;
 	effects.facing = facing;
@@ -1711,6 +1727,7 @@ public:
         name(""),
         stage(""),
         includeStage(true),
+        blank(false),
         order(1),
         song(""){
         }
@@ -1723,6 +1740,7 @@ public:
     std::string name;
     std::string stage;
     bool includeStage;
+    bool blank;
     int order;
     std::string song;
 };
@@ -1767,11 +1785,8 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 		    list >> temp;
 
                     if (temp == "blank"){
-                        /* ignore blank */
-                        return;
-                    }
-
-		    if (temp == "randomselect"){
+                        character.blank = true;
+                    } else if (temp == "randomselect"){
 			character.random = true;
 		    } else {
 			character.name = temp;
@@ -1891,7 +1906,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     int stageOffset = 0;
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
 	CharacterCollect & character = *i;
-	if (!character.random){
+	if (!character.random && !character.blank){
 	    // Get character
 	    // *FIXME Not an elegant solution for character location
 	    const Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/chars/" + character.name + "/"));
@@ -1923,9 +1938,11 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     
     // Now setup Grid
     std::vector<CharacterInfo *>::iterator nextChar = characters.begin();
-    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
+    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end(); ++i){
 	CharacterCollect & character = *i;
-	if (character.random){
+        if (character.blank){
+            grid.addBlank();
+        } else if (character.random){
             if (characters.size() > 0){
                 grid.addCharacter(characters.front(), true);
             }
