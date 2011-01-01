@@ -13,7 +13,7 @@
 #include "util/file-system.h"
 #include "gui/lineedit.h"
 #include "gui/keys.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
 #include "util/sound.h"

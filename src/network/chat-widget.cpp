@@ -6,7 +6,7 @@
 #include "util/input/input-manager.h"
 #include "util/font.h"
 #include "factory/font_render.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "util/file-system.h"
 #include <string>
 

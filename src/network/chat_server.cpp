@@ -19,7 +19,7 @@
 #include "util/timer.h"
 #include <iostream>
 #include <sstream>
-#include "resource.h"
+#include "util/resource.h"
 #include "util/sound.h"
 
 #include <signal.h>

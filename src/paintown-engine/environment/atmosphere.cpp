@@ -6,7 +6,7 @@
 #include <math.h>
 #include "night_atmosphere.h"
 #include "rain_atmosphere.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "snow_atmosphere.h"
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"

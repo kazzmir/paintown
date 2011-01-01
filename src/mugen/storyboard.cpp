@@ -1,7 +1,7 @@
 #include "mugen/storyboard.h"
 
 #include "util/bitmap.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "util/funcs.h"
 #include "globals.h"
 #include "util/init.h"

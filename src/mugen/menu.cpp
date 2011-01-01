@@ -17,7 +17,7 @@
 
 #include "exceptions/exception.h"
 #include "util/init.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "util/funcs.h"
 #include "util/thread.h"
 #include "util/file-system.h"

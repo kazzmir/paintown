@@ -8,7 +8,7 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "util/file-system.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "globals.h"
 #include "util/debug.h"
 #include "util/init.h"

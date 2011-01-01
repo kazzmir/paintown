@@ -5,7 +5,7 @@
 #include "font_factory.h"
 #include "font_render.h"
 #include "object_factory.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "mugen/config.h"
 #include "util/sound.h"
 #include <iostream>

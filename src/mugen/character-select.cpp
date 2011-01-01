@@ -16,7 +16,7 @@
 #include "stage.h"
 
 #include "util/init.h"
-#include "resource.h"
+#include "util/resource.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"

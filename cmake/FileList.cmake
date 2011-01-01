@@ -2,8 +2,7 @@ set(BASE_SRC
 src/configuration.cpp
 src/globals.cpp
 src/main-menu.cpp
-src/nameplacer.cpp
-src/resource.cpp)
+src/nameplacer.cpp)
 
 set(GAME_SRC
 src/paintown-engine/game/world.cpp
@@ -86,6 +85,7 @@ src/paintown-engine/object/heart.cpp)
 set(UTIL_SRC
 src/util/token.cpp
 src/util/token_exception.cpp
+src/util/resource.cpp)
 src/util/tokenreader.cpp
 src/util/timedifference.cpp
 src/util/debug.cpp
