@@ -527,7 +527,11 @@ void Grid::moveCursor(Cursor & cursor, int Point::* field, int wrap, int directi
                 return;
             }
         } else if (current.*field >= wrap){
-            current.*field = 0;
+            if (wrapping){
+                current.*field = 0;
+            } else {
+                return;
+            }
         }
 
         try {
