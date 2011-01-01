@@ -236,26 +236,27 @@ rules:
 	name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
 	inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
 	inline alpha_digit = letter
-	            | digit
+                       | digit
     line_end_or_comment = line_end
                         | comment
 	# characters = name s "," s filename
 	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); GC::save(as<Ast::Filename*>(value)); }}
-	filename_char = !"," !"\n" !"[" !<ascii 13> !";" .
+	filename_char = !"," !"\n" !"[" !<ascii 13> !"=" !";" .
 	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); }}
               | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
 	          | id:identifier s "=" s data:filename {{ value = makeAttribute(id, data); }}
 		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
-		      | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
+		      # | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
     attribute_simple = id:identifier s "=" s data:value {{ value = makeAttribute(id, data); }}
 	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
+	# identifier_list = identifier (s "," s filename)+ !(s "=" s value)
 	identifier_list = identifier (s "," s filename)+
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
 	value = string
 	      | date
 	      | number !letter !"-" {{ value = $1; }}
           | attribute_simple
-          | keyword {{ value = makeKeyword($1); }}
+          | keyword !alpha_digit {{ value = makeKeyword($1); }}
 	      | "s"{case} !filename_char !"." {{ value = makeKeyword($1); }}
 	      | "h"{case} !filename_char !"." {{ value = makeKeyword($1); }}
 	      | "a"{case} number? !filename_char {{ value = makeKeyword($1); }}
