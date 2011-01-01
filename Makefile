@@ -1,6 +1,6 @@
 .PHONY: all doc static quiet clean win nsis count test
 
-osx_version="3-4-0"
+osx_version="3-5-0"
 
 all:
 	@scons -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"

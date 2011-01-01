@@ -21,7 +21,6 @@ Files to update version
  install.sh
  misc/make-osx-bundle
  misc/installer.nsi
- misc/send-to-sourceforge
  misc/build-windows
  README
  website
