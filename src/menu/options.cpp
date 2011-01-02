@@ -30,7 +30,7 @@
 #include "network/server.h"
 #include "network/client.h"
 #include "util/font.h"
-#include "gui/box.h"
+#include "util/gui/box.h"
 #include "util/thread.h"
 
 #include "util/loading.h"

@@ -2572,17 +2572,6 @@ MugenSound * Character::getCommonSound(int group, int item) const {
         
 MugenSound * Character::getSound(int group, int item) const {
     return findSound(getSounds(), group, item);
-    /*
-    map<unsigned int, map<unsigned int, MugenSound*> >::const_iterator findGroup = sounds.find(group);
-    if (findGroup != sounds.end()){
-        const map<unsigned int, MugenSound*> & found = (*findGroup).second;
-        map<unsigned int, MugenSound*>::const_iterator sound = found.find(item);
-        if (sound != found.end()){
-            return (*sound).second;
-        }
-    }
-    return 0;
-    */
 }
 
 void Character::doTurn(MugenStage & stage){

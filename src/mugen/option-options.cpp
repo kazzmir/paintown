@@ -23,7 +23,7 @@
 #include "util/input/input-manager.h"
 #include "exceptions/exception.h"
 
-#include "gui/box.h"
+#include "util/gui/box.h"
 
 #include "globals.h"
 

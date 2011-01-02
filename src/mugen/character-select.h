@@ -6,10 +6,10 @@
 #include <queue>
 
 #include "exception.h"
-#include "gui/fadetool.h"
 
 #include "menu/menu.h"
 
+#include "util/gui/fadetool.h"
 #include "util/input/input-map.h"
 
 #include "util.h"

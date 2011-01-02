@@ -5,9 +5,9 @@
 #include <vector>
 #include <map>
 #include <math.h>
-#include "mugen/animation.h"
-#include "mugen/util.h"
-#include "gui/rectarea.h"
+#include "animation.h"
+#include "util.h"
+#include "util/gui/rectarea.h"
 #include "ast/all.h"
 
 class Bitmap;

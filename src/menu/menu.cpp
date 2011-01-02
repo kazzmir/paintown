@@ -28,7 +28,7 @@
 #include <ostream>
 #include <sstream>
 
-#include "gui/context-box.h"
+#include "util/gui/context-box.h"
 
 using namespace std;
 using namespace Gui;

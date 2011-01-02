@@ -3,7 +3,7 @@
 
 #include "network.h"
 #include "util/messages.h"
-#include "gui/sigslot.h"
+#include "util/gui/sigslot.h"
 #include <string>
 #include "util/thread.h"
 #include <queue>

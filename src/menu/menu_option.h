@@ -3,10 +3,10 @@
 
 #include <string>
 #include <vector>
-#include "gui/box.h"
+#include "util/gui/box.h"
 #include "util/load_exception.h"
 #include "util/language-string.h"
-#include "gui/context-box.h"
+#include "util/gui/context-box.h"
 
 class Bitmap;
 class Token;

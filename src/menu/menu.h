@@ -11,13 +11,13 @@
 #include "util/input/input-map.h"
 #include "font-info.h"
 
-#include "gui/animation.h"
-#include "gui/box.h"
-#include "gui/context-box.h"
-#include "gui/fadetool.h"
-#include "gui/popup-box.h"
-#include "gui/tabbed-box.h"
-#include "gui/widget.h"
+#include "util/gui/animation.h"
+#include "util/gui/box.h"
+#include "util/gui/context-box.h"
+#include "util/gui/fadetool.h"
+#include "util/gui/popup-box.h"
+#include "util/gui/tabbed-box.h"
+#include "util/gui/widget.h"
 
 #ifdef _MSC_VER
 #ifndef uint32_t

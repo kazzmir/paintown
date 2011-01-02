@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "mugen/exception.h"
-#include "gui/fadetool.h"
-#include "mugen/util.h"
+#include "exception.h"
+#include "util/gui/fadetool.h"
+#include "util.h"
 
 #include "util/input/input-map.h"
 

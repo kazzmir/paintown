@@ -13,7 +13,7 @@
 #include "exceptions/exception.h"
 #include "globals.h"
 #include "util/init.h"
-#include "gui/lineedit.h"
+#include "util/gui/lineedit.h"
 #include "util/input/input-manager.h"
 #include "menu/menu.h"
 #include "util/timer.h"

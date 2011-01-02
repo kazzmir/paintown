@@ -5,7 +5,7 @@
 #include <map>
 
 #include "exception.h"
-#include "gui/fadetool.h"
+#include "util/gui/fadetool.h"
 
 #include "menu/menu.h"
 #include "menu/menu_option.h"

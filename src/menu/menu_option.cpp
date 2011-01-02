@@ -1,10 +1,10 @@
 #include "util/bitmap.h"
-#include "menu/menu_option.h"
 #include "util/token.h"
 #include "util/funcs.h"
 #include "util/language-string.h"
 #include "util/debug.h"
-#include "gui/animation.h"
+#include "util/gui/animation.h"
+#include "menu_option.h"
 
 using namespace std;
 
