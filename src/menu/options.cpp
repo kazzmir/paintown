@@ -42,6 +42,8 @@
 
 #include "paintown-engine/game/mod.h"
 
+#include "platformer/world.h"
+
 #include <sstream>
 #include <algorithm>
 #include <time.h>
@@ -2342,4 +2344,65 @@ void OptionLanguage::run(const Menu::Context & context){
 }
     
 void OptionLanguage::logic(){
+}
+
+OptionPlatformer::OptionPlatformer(const Token * token):
+MenuOption(token){
+    
+    /* NOTE this is temporary to run tests on the engine
+     * Eventually it will be replaced with a class that handles the entire game (worlds, etc...)
+     */
+    std::string platformerFile;
+    if (!token->match("_/game", platformerFile)){
+	throw LoadException(__FILE__, __LINE__, "Missing game location for Platformer");
+    }
+    readName(token);
+    try {
+	Global::debug(1,"menu") << "Loading Platformer: " << platformerFile << endl;
+	TokenReader tr(Filesystem::AbsolutePath(platformerFile).path());
+    
+        Token * platformToken = tr.readToken();
+    
+    
+	if ( *platformToken != "platformer" ){
+	    throw LoadException(__FILE__, __LINE__, "Not a Platformer");
+	}
+
+	TokenView view = platformToken->view();
+	while (view.hasMore()){
+	    try{
+		const Token * tok;
+		view >> tok;
+		if ( *tok == "world" ){
+		    worlds.push_back(new Platformer::World(tok));
+		} else {
+		    Global::debug(3) << "Unhandled Platformer attribute: " << endl;
+		    if (Global::getDebug() >= 3){
+			tok->print(" ");
+		    }
+		}
+	    } catch ( const TokenException & ex ) {
+		throw LoadException(__FILE__, __LINE__, ex, "Platformer parse error");
+	    } catch ( const LoadException & ex ) {
+		// delete current;
+		throw ex;
+	    }
+	}
+    } catch (const TokenException & e){
+        throw LoadException(__FILE__, __LINE__, e, "Error loading platformer file.");
+    }
+}
+
+OptionPlatformer::~OptionPlatformer(){
+    for (std::vector< Platformer::World *>::iterator i = worlds.begin(); i != worlds.end(); ++i){
+	if (*i){
+	    delete *i;
+	}
+    }
+}
+
+void OptionPlatformer::logic(){
+}
+
+void OptionPlatformer::run(const Menu::Context & context){
 }

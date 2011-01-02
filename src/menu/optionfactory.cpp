@@ -69,22 +69,25 @@ MenuOption * OptionFactory::getOption(const Token *token){
         // Invincible
         return new OptionInvincible(tok);
     } else if ( *tok == "fullscreen" ){
-        // Invincible
+        // Full screen Selector
         return new OptionFullscreen(tok);
     } else if ( *tok == "quit" ){
         return new OptionQuit(tok);
     } else if ( *tok == "lives" ){
-        // Invincible
+        // Live selector
         return new OptionLives(tok);
     } else if ( *tok == "font-select" ){
-        // Invincible
+        // Font Selector
         return new OptionSelectFont(tok);
     } else if ( *tok == "mugen" ){
-        // Invincible
+        // Mugen Option
         return new OptionMugenMenu(tok);
     } else if ( *tok == "dummy" ){
-        // Invincible
+        // Dummy Option
         return new OptionDummy(tok);
+    } else if ( *tok == "platformer" ){
+	// Platformer
+	return new OptionPlatformer(tok);
     } else {
         Global::debug(0) <<"Unhandled menu attribute: "<<endl;
         tok->print(" ");

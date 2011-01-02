@@ -610,4 +610,18 @@ protected:
     std::vector<std::string> languages;
 };
 
+namespace Platformer{
+    class World;
+}
+
+class OptionPlatformer: public MenuOption {
+public:
+    OptionPlatformer(const Token *);
+    virtual ~OptionPlatformer();
+    virtual void logic();
+    virtual void run(const Menu::Context &);
+protected:
+    std::vector < Platformer::World *> worlds;
+};
+
 #endif
