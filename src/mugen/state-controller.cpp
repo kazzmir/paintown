@@ -1760,9 +1760,12 @@ public:
                     simple >> flags;
                     hit.hitFlag = flags;
                 } else if (simple == "guardflag"){
-                    string flags;
-                    simple >> flags;
-                    hit.guardFlag = flags;
+                    try{
+                        string flags;
+                        simple >> flags;
+                        hit.guardFlag = flags;
+                    } catch (const Ast::Exception & fail){
+                    }
                 } else if (simple == "animtype"){
                     string anim;
                     simple >> anim;

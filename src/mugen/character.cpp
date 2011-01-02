@@ -778,7 +778,7 @@ void Character::changeOwnState(MugenStage & stage, int state, const std::vector<
 }
 
 void Character::loadCnsFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = baseDir.join(path);
+    Filesystem::AbsolutePath full = Filesystem::findInsensitive(Filesystem::cleanse(baseDir).join(path));
     try{
         /* cns can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
@@ -1261,11 +1261,18 @@ StateController * Character::parseState(Ast::Section * section){
 }
 
 static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & base, const string & path){
+    try{
+        return Filesystem::findInsensitive(Filesystem::cleanse(base).join(Filesystem::RelativePath(path)));
+    } catch (const Filesystem::NotFound & fail){
+        return Filesystem::findInsensitive(Filesystem::RelativePath("mugen/data/" + path));
+    }
+        /*
     if (PaintownUtil::exists(base.join(Filesystem::RelativePath(path)).path())){
         return base.join(Filesystem::RelativePath(path));
     } else {
-        return Filesystem::find(Filesystem::RelativePath("mugen/data/" + path));
+        return Filesystem::findInsensitive(Filesystem::RelativePath("mugen/data/" + path));
     }
+    */
 
 #if 0
     try{
@@ -1353,15 +1360,30 @@ void Character::load(int useAct){
 
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "name"){
-                                simple >> self.name;
+                                try{
+                                    simple >> self.name;
+                                } catch (const Ast::Exception & fail){
+                                }
                             } else if (simple == "displayname"){
-                                simple >> self.displayName;
+                                try{
+                                    simple >> self.displayName;
+                                } catch (const Ast::Exception & fail){
+                                }
                             } else if (simple == "versiondate"){
-                                simple >> self.versionDate;
+                                try{
+                                    simple >> self.versionDate;
+                                } catch (const Ast::Exception & fail){
+                                }
                             } else if (simple == "mugenversion"){
-                                simple >> self.mugenVersion;
+                                try{
+                                    simple >> self.mugenVersion;
+                                } catch (const Ast::Exception & fail){
+                                }
                             } else if (simple == "author"){
-                                simple >> self.author;
+                                try{
+                                    simple >> self.author;
+                                } catch (const Ast::Exception & fail){
+                                }
                             } else if (simple == "pal.defaults"){
                                 vector<int> numbers;
                                 simple >> numbers;
@@ -1530,9 +1552,15 @@ void Character::load(int useAct){
 
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "intro.storyboard"){
-                                simple >> self.introFile;
+                                try{
+                                    simple >> self.introFile;
+                                } catch (const Ast::Exception & fail){
+                                }
                             } else if (simple == "ending.storyboard"){
-                                simple >> self.endingFile;
+                                try{
+                                    simple >> self.endingFile;
+                                } catch (const Ast::Exception & fail){
+                                }
                             } else {
                                 throw MugenException("Unhandled option in Arcade Section: " + simple.toString());
                             }
