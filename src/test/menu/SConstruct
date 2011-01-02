@@ -54,6 +54,9 @@ test/paintown-engine/level/utils.cpp
 test/util/sound.cpp
 test/factory/object_factory.cpp
 test/paintown-engine/environment/atmosphere.cpp
+test/platformer/world.cpp
+test/platformer/animation.cpp
+test/platformer/background.cpp
 test/util/resource.cpp
 test/paintown-engine/object/actor.cpp
 test/paintown-engine/object/animation.cpp

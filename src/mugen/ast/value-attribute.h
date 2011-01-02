@@ -34,6 +34,15 @@ public:
     /* resets the internals so that operator>> starts over */
     virtual void reset() const {
     }
+    
+    using Element::operator==;
+    virtual bool operator==(const Value & him) const {
+        return him == *this;
+    }
+
+    virtual bool operator==(const ValueAttribute & him) const {
+        return *attribute == *him.attribute;
+    }
 
     static ValueAttribute * deserialize(const Token * token){
         TokenView view = token->view();
