@@ -520,8 +520,8 @@ void Character::loadSelectData(){
 	this->sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
         /* FIXME: replace 9000 with some readable constant */
-	this->sprites[9000][0] = Mugen::Util::probeSff(Util::fixFileName(baseDir, this->sffFile), 9000, 0, true);
-	this->sprites[9000][1] = Mugen::Util::probeSff(Util::fixFileName(baseDir, this->sffFile), 9000, 1, true);
+	this->sprites[9000][0] = Mugen::Util::probeSff(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 0, true);
+	this->sprites[9000][1] = Mugen::Util::probeSff(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 1, true);
 	
     } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't grab details for character!" << endl;
@@ -541,7 +541,7 @@ void Character::setAnimation(int animation){
 }
 
 void Character::loadCmdFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = baseDir.join(path);
+    Filesystem::AbsolutePath full = Filesystem::lookupInsensitive(baseDir, path);
     try{
         int defaultTime = 15;
         int defaultBufferTime = 1;
@@ -1629,12 +1629,14 @@ void Character::load(int useAct){
     Global::debug(2) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
-    Util::readSprites(baseDir.join(Filesystem::RelativePath(sffFile)), baseDir.join(Filesystem::RelativePath(paletteFile)), sprites, true);
+    Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(sffFile)),
+                      Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(paletteFile)),
+                      sprites, true);
     destroyRaw(sprites);
     Global::debug(2) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
-    animations = Util::loadAnimations(baseDir.join(Filesystem::RelativePath(airFile)), sprites, true);
+    animations = Util::loadAnimations(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(airFile)), sprites, true);
 
     fixAssumptions();
 

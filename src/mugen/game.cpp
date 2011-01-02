@@ -232,7 +232,7 @@ static Filesystem::AbsolutePath maybeFindRandom(const std::string & name, std::v
         }
         throw MugenException("No def files found", __FILE__, __LINE__);
     } else {
-        return Filesystem::find(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
+        return Filesystem::findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
     }
 }
 
