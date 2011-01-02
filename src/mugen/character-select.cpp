@@ -1921,7 +1921,10 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
                     try{
                         // Grab stage
                         list >> temp;
-                        if (temp == "random"){
+                        if (PaintownUtil::matchRegex(temp, "order = ")){
+                            temp.replace(0,std::string("order = ").size(),"");
+                            character.order = (bool)atoi(temp.c_str());
+                        } else if (temp == "random"){
                             character.randomStage = true;
                         } else {
                             character.stage = temp;
@@ -1932,14 +1935,14 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
                          */
                         while(true){
                             list >> temp;
-                            if (PaintownUtil::matchRegex(temp,"includestage=")){
-                                temp.replace(0,std::string("includestage=").size(),"");
+                            if (PaintownUtil::matchRegex(temp,"includestage = ")){
+                                temp.replace(0,std::string("includestage = ").size(),"");
                                 character.includeStage = (bool)atoi(temp.c_str());
-                            } else if (PaintownUtil::matchRegex(temp,"music=")){
-                                temp.replace(0,std::string("music=").size(),"");
+                            } else if (PaintownUtil::matchRegex(temp,"music = ")){
+                                temp.replace(0,std::string("music = ").size(),"");
                                 character.song = temp;
-                            } else if (PaintownUtil::matchRegex(temp,"order=")){
-                                temp.replace(0,std::string("order=").size(),"");
+                            } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                temp.replace(0,std::string("order = ").size(),"");
                                 character.order = (bool)atoi(temp.c_str());
                             }
                         }
