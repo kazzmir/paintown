@@ -188,8 +188,9 @@ character2(0){
 
     // just a precaution
     // spriteFile = Util::removeSpaces(spriteFile);
-    icon = Util::probeSff(baseDirectory.join(spriteFile), 9000, 0, true, baseDirectory.join(actCollection[0]));
-    portrait = Util::probeSff(baseDirectory.join(spriteFile), 9000, 1, true, baseDirectory.join(actCollection[0]));
+    Filesystem::AbsolutePath realSpriteFile = Filesystem::findInsensitive(Filesystem::cleanse(baseDirectory).join(spriteFile));
+    icon = Util::probeSff(realSpriteFile, 9000, 0, true, baseDirectory.join(actCollection[0]));
+    portrait = Util::probeSff(realSpriteFile, 9000, 1, true, baseDirectory.join(actCollection[0]));
 }
 
 CharacterInfo::~CharacterInfo(){
@@ -327,6 +328,8 @@ void StageHandler::addStage(const std::string &stage){
         }
     } catch (const MugenException &ex){
 	Global::debug(0) << "Problem adding stage. Reason: " << ex.getReason() << endl;
+    } catch (const Filesystem::NotFound & ex){
+	Global::debug(0) << "Problem adding stage. Reason: " << ex.getTrace() << endl;
     }
 }
 
