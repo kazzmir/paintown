@@ -76,7 +76,7 @@ std:string getHeadDir( const std::string & dir ){
     return dir.substr( ( dir.find_lastof( '/' ) != std::string::npos ? dir.find_lastof( '/' ) : 0 ), lastslash,dir.size() );
 }*/
 
-const Filesystem::AbsolutePath Mugen::Util::fixFileName( const Filesystem::AbsolutePath &dir, std::string str ){
+const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::AbsolutePath &dir, std::string str){
     Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
     str = Mugen::Util::removeSpaces(str);
@@ -84,7 +84,7 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName( const Filesystem::Absol
     str = Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
     Global::debug(2) << "Checking for file in " << (dir.path()+str) << endl;
-    if (::Util::exists( dir.path() + str ) == false){
+    if (::Util::exists(dir.path() + str) == false){
 	Global::debug(2) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
 	std::vector<Filesystem::AbsolutePath> files = Filesystem::getFiles(dir, "*");
@@ -92,7 +92,7 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName( const Filesystem::Absol
         for (vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++){
             Filesystem::AbsolutePath & path = *it;
 	    // temp = Mugen::Util::fixCase( temp );
-	    if (dir.join(Filesystem::RelativePath(str)) == path){
+	    if (Filesystem::InsensitivePath(dir.join(Filesystem::RelativePath(str))) == path){
 		// We got number one chinese retaurant
                 return path;
 	    }

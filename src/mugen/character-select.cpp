@@ -993,27 +993,44 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                             public:
                                 Context(PlayerLoader & playerLoader, MugenStage *& stage):
                                     playerLoader(playerLoader),
-                                    stage(stage){
+                                    stage(stage),
+                                    fail(NULL){
                                     }
 
-                                virtual void load(){
-                                    /* future */
-                                    int ok = playerLoader.get();
+                                virtual void maybeFail(){
+                                    if (fail != NULL){
+                                        throw *fail;
+                                    }
+                                }
 
-                                    // Load stage
-                                    stage->addPlayer1(playerLoader.player1.getPlayer1());
-                                    stage->addPlayer2(playerLoader.player2.getPlayer2());
-                                    stage->load();
+                                virtual ~Context(){
+                                    delete fail;
+                                }
+
+                                virtual void load(){
+                                    try{
+                                        /* future */
+                                        int ok = playerLoader.get();
+
+                                        // Load stage
+                                        stage->addPlayer1(playerLoader.player1.getPlayer1());
+                                        stage->addPlayer2(playerLoader.player2.getPlayer2());
+                                        stage->load();
+                                    } catch (const MugenException & fail){
+                                        this->fail = new MugenException(fail);
+                                    }
                                 }
 
                                 PlayerLoader & playerLoader;
                                 MugenStage *& stage;
+                                MugenException * fail;
 
                         };
 
                         Context context(playerLoader, stage);
                         // Loader::startLoading(&loader, (void*) &info);
                         Loader::loadScreen(context, info);
+                        context.maybeFail();
 
                         // Loader::stopLoading(loader);
                         done = true;
@@ -2005,7 +2022,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
             if (!character.random && !character.blank){
                 // Get character
                 // *FIXME Not an elegant solution for character location
-                const Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/chars/" + character.name + "/"));
+                const Filesystem::AbsolutePath baseDir = Filesystem::findInsensitive(Filesystem::RelativePath("mugen/chars/" + character.name));
                 Filesystem::RelativePath str = Filesystem::RelativePath(character.name).getFilename();
                 const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
                 // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
