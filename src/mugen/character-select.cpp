@@ -61,14 +61,25 @@ static const Filesystem::AbsolutePath fixStageName(const std::string &stage){
     /* FIXME not a good solution to get file
      * jon: why isn't it good?
      */
-    std::string ourDefFile = stage;
-    Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
-    if (ourDefFile.find(".def")==std::string::npos){
-	ourDefFile += ".def";
+    std::string defFile = stage;
+    /* strip 'stage' from the def file if its already there */
+    if (defFile.find("stages/") == 0){
+        defFile = string("./") + defFile.substr(strlen("stages/"));
     }
+
+    // Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
+
+    if (defFile.find(".def") == std::string::npos){
+	defFile += ".def";
+    }
+
+    return Filesystem::findInsensitive(Filesystem::RelativePath("mugen/stages/").join(Filesystem::RelativePath(defFile)));
+
+    /*
     // Get correct directory
     baseDir = Filesystem::AbsolutePath(Mugen::Util::getFileDir(baseDir.path() + ourDefFile));
     return Mugen::Util::getCorrectFileLocation(baseDir, Filesystem::RelativePath(ourDefFile).getFilename().path());
+    */
 }
 
 FontHandler::FontHandler():
@@ -1944,14 +1955,18 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 		StageWalker(std::vector< std::string > &names):
 		names(names){
 		}
-		virtual ~StageWalker(){}
+
+		virtual ~StageWalker(){
+                }
+
 		std::vector< std::string > &names;
+
                 virtual void onValueList(const Ast::ValueList & list){
 		    // Get Stage info and save it
 		    try {
 			std::string temp;
 			list >> temp;
-			Global::debug(0) << "stage: " << temp << endl;
+			Global::debug(1) << "stage: " << temp << endl;
 			names.push_back(temp);
 		    } catch (const Ast::Exception & e){
 		    }
