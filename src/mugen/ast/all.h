@@ -13,6 +13,7 @@
 #include "Value.h"
 #include "variable.h"
 #include "value-list.h"
+#include "value-attribute.h"
 #include "number.h"
 #include "string.h"
 #include "keyword.h"

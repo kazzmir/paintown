@@ -76,6 +76,12 @@ std::string * toString(char front, const Value & input){
   return str;
 }
 
+Ast::ValueAttribute * makeValueAttribute(const Value & attribute){
+    Ast::ValueAttribute * value = new Ast::ValueAttribute(as<Ast::Attribute*>(attribute));
+    GC::save(value);
+    return value;
+}
+
 Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
     GC::save(object);
@@ -255,7 +261,7 @@ rules:
 	value = string
 	      | date
 	      | number !letter !"-" {{ value = $1; }}
-          | attribute_simple
+          | attribute_simple {{ value = makeValueAttribute($1); }}
           | keyword !alpha_digit {{ value = makeKeyword($1); }}
 	      | "s"{case} !filename_char !"." {{ value = makeKeyword($1); }}
 	      | "h"{case} !filename_char !"." {{ value = makeKeyword($1); }}

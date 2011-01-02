@@ -22,6 +22,7 @@ class ExpressionUnary;
 class Function;
 class Filename;
 class ValueList;
+class ValueAttribute;
 class HitDefAttribute;
 class HitDefAttackAttribute;
 class String;
@@ -50,6 +51,7 @@ public:
     static std::string SERIAL_EXPRESSION_UNARY;
     static std::string SERIAL_EXPRESSION_INFIX;
     static std::string SERIAL_VALUE_LIST;
+    static std::string SERIAL_VALUE_ATTRIBUTE;
     static std::string SERIAL_ATTRIBUTE_SIMPLE;
     static std::string SERIAL_ATTRIBUTE_ARRAY;
     static std::string SERIAL_ATTRIBUTE_KEYWORD;
@@ -66,7 +68,7 @@ public:
      * between the code and any existing serialized files then you *must*
      * increment this variable.
      */
-    static const int SERIAL_VERSION = 1;
+    static const int SERIAL_VERSION = 2;
 
     virtual void mark(std::map<const void*, bool> & marks) const = 0;
 
@@ -97,6 +99,7 @@ public:
     define_equals(KeyCombined);
     define_equals(KeyList);
     define_equals(Filename);
+    define_equals(ValueAttribute);
 
 #undef define_equals
 

@@ -8,6 +8,7 @@
 #include "function.h"
 #include "hitdef.h"
 #include "value-list.h"
+#include "value-attribute.h"
 #include "range.h"
 #include "string.h"
 #include "Section.h"
@@ -41,6 +42,7 @@ string Element::SERIAL_KEY_SINGLE = "r";
 string Element::SERIAL_KEY_MODIFIER = "s";
 string Element::SERIAL_KEY_COMBINED = "t";
 string Element::SERIAL_KEY_LIST = "u";
+string Element::SERIAL_VALUE_ATTRIBUTE = "w";
     
 string Section::SERIAL_SECTION_ATTRIBUTE = "s1";
 string Section::SERIAL_SECTION_VALUE = "s2";
@@ -87,7 +89,7 @@ AttributeArray * AttributeArray::deserialize(const Token * token){
     }
     throw Exception("Deserialization error: no name given for an attribute array");
 }
-    
+
 Identifier * Identifier::deserialize(const Token * token){
     int line, column;
     string name;
@@ -133,6 +135,9 @@ Value * Value::deserialize(const Token * token){
     }
     if (*token == SERIAL_STRING){
         return String::deserialize(token);
+    }
+    if (*token == SERIAL_VALUE_ATTRIBUTE){
+        return ValueAttribute::deserialize(token);
     }
     if (*token == SERIAL_VALUE_LIST){
         return ValueList::deserialize(token);

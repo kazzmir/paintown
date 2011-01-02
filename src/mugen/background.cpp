@@ -934,7 +934,7 @@ static BackgroundElement *getElement( Ast::Section *section, Mugen::SpriteMap &s
     std::string head = section->getName();
     head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
     std::string name = head;
-    Global::debug(1) << "Found background element: " << name << endl;
+    Global::debug(2) << "Found background element: " << name << endl;
 
     string type;
     *section->findAttribute("type") >> type;
@@ -1548,7 +1548,7 @@ clearColor(-1){
 	std::string head = section->getName();
 	head = Mugen::Util::fixCase(head);
 	std::string tempHeader = Mugen::Util::fixCase(header);
-	Global::debug(1) << "Checking head: " << head << " for Header: " << tempHeader << endl;
+	Global::debug(2) << "Checking head: " << head << " for Header: " << tempHeader << endl;
         // Lets check if this is a normal def so we can get our sprite file, otherwise treat it as a normal background */
         if ( head == "files") {
             class SceneDefWalker: public Ast::Walker{
