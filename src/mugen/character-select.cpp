@@ -2032,6 +2032,8 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
             }
         } catch (const Filesystem::NotFound & error){
             Global::debug(0) << "Could not load a tile: " << error.getTrace() << endl;
+        } catch (const MugenException & error){
+            Global::debug(0) << "Could not load a tile: " << error.getReason() << endl;
         }
     }
     
