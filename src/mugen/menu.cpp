@@ -257,7 +257,6 @@ void MugenMenu::loadData(){
         for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
-            /* this should really be head = Mugen::Util::fixCase(head) */
             head = Mugen::Util::fixCase(head);
             if (head == "info"){
                 class InfoWalker: public Ast::Walker{
@@ -602,9 +601,7 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
                 }
                 // Set the fade state
                 fader.setState(Gui::FadeTool::FadeOut);
-                if (sounds[doneSound.x][doneSound.y] != 0){
-                    sounds[doneSound.x][doneSound.y]->play();
-                }
+                playSound(doneSound.x, doneSound.y);
                 chosenPlayer = type;
                 break;
             }
@@ -614,9 +611,7 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
                 fader.setState(Gui::FadeTool::FadeOut);
                 (*currentOption)->setState(MenuOption::Deselected);
                 InputManager::waitForRelease(input, Mugen::Esc);
-                if (sounds[cancelSound.x][cancelSound.y] != 0){
-                    sounds[cancelSound.x][cancelSound.y]->play();
-                }
+                playSound(cancelSound.x, cancelSound.y);
                 break;
             }
         }
@@ -887,11 +882,14 @@ void MugenMenu::moveMenuUp(){
         menuRange.y = options.size() - 1;
     }
     (*currentOption)->setState(MenuOption::Selected);
-    if (sounds[moveSound.x][moveSound.y] != 0){
-        sounds[moveSound.x][moveSound.y]->play();
-    }
+    playSound(moveSound.x, moveSound.y);
 }
 
+void MugenMenu::playSound(int group, int item){
+    if (sounds[group][item] != 0){
+        sounds[group][item]->play();
+    }
+}
 
 // Move menu down
 void MugenMenu::moveMenuDown(){
@@ -910,9 +908,7 @@ void MugenMenu::moveMenuDown(){
         menuRange.y = windowVisibleItems-1;
     }
     (*currentOption)->setState(MenuOption::Selected);
-    if (sounds[moveSound.x][moveSound.y] != 0){
-        sounds[moveSound.x][moveSound.y]->play();
-    }
+    playSound(moveSound.x, moveSound.y);
 }
 
 void MugenMenu::doMenuMovement(){

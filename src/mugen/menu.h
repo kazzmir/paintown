@@ -129,6 +129,7 @@ class MugenMenu {
         }
 	
     private:
+        void playSound(int group, int item);
         
         std::string name;
         
