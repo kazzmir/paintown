@@ -42,6 +42,7 @@
 
 #include "paintown-engine/game/mod.h"
 
+#include "platformer/camera.h"
 #include "platformer/world.h"
 
 #include <sstream>
@@ -2409,6 +2410,76 @@ void OptionPlatformer::logic(){
 }
 
 void OptionPlatformer::run(const Menu::Context & context){
+    
+    // NOTE Testing purposes only
+    
+    input.set(Keyboard::Key_ESC, 0, true, Esc);
+    input.set(Keyboard::Key_UP, 0, true, Up);
+    input.set(Keyboard::Key_DOWN, 0, true, Down);
+    input.set(Keyboard::Key_LEFT, 0, true, Left);
+    input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    
+    Global::speed_counter = 0;
+    double min_y = GFX_Y;
+
+    Bitmap tmp(Menu::Menu::Width, Menu::Menu::Height);
+    
+    const Font & vFont = Configuration::getMenuFont()->get(context.getFont()->get());
+    
+    bool quit = false;
+    double think = 0;
+    while (!quit){
+
+        InputManager::poll();
+        vector<InputMap<Keys>::InputEvent> out = InputManager::getEvents(input);
+        for (vector<InputMap<Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc){
+                    quit = true;
+                }
+                if (event.out == Up){
+		    worlds[0]->moveCamera(0,-1);
+		}
+                if (event.out == Down){
+		    worlds[0]->moveCamera(0,1);
+		}
+                if (event.out == Left){
+		    worlds[0]->moveCamera(-1,0);
+		}
+                if (event.out == Right){
+		    worlds[0]->moveCamera(1,0);
+		}
+            }
+        }
+
+        bool draw = false;
+        if (Global::speed_counter > 0){
+            think += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+            draw = true;
+
+            while (think >= 1.0){
+                think -= 1;
+                worlds[0]->act();
+            }
+
+            Global::speed_counter = 0;
+        }
+
+        if (draw){
+            // Draw world to tmp
+            worlds[0]->draw(tmp);
+	    ostringstream info;
+	    info << "Camera Info - X: " << worlds[0]->getCamera(0).getX() << " Y: " << worlds[0]->getCamera(0).getY();
+	    vFont.printf( 10, 10, Bitmap::makeColor(255,255,255), tmp, info.str(), 0);
+            tmp.BlitToScreen();
+        } else {
+            Util::rest(1);
+        }
+    }
+
+    InputManager::waitForRelease(input, Esc);
+    throw Menu::Reload(__FILE__, __LINE__);
 }
 
 OptionMugenMotif::OptionMugenMotif(const Token * token):

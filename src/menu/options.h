@@ -622,6 +622,16 @@ public:
     virtual void run(const Menu::Context &);
 protected:
     std::vector < Platformer::World *> worlds;
+    //! keys
+    enum Keys{
+	Up=0,
+	Down,
+	Left,
+	Right,
+	Esc,
+    };
+    
+    InputMap<Keys> input;
 };
 
 class OptionMugenMotif: public MenuOption {
