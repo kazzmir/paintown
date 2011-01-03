@@ -57,6 +57,7 @@ define_config(sound, "sound");
 define_config(music, "music");
 define_config(up, "up");
 define_config(language, "language");
+define_config(mugen_motif, "mugen-motif");
 /* version of the game: 3.3, 3.4, 4.24 */
 define_config(version, "version");
 #undef def_config
@@ -677,6 +678,10 @@ void Configuration::loadConfigurations(){
                 int x;
                 n->view() >> x;
                 setMusicVolume(x);
+            } else if (*n == config_mugen_motif){
+                string motif;
+                n->view() >> motif;
+                setMugenMotif(motif);
             } else if (*n == config_menu_font_width){
                 int x;
                 n->view() >> x;
@@ -719,6 +724,15 @@ void Configuration::loadConfigurations(){
     } catch ( const TokenException & t ){
         Global::debug( 0 ) << "Notice: could not open configuration file '" << Filesystem::configFile().path() << "': " << t.getTrace() << endl;
     }
+}
+
+
+std::string Configuration::getMugenMotif(){
+    return mugenMotif;
+}
+
+void Configuration::setMugenMotif(const std::string & motif){
+    mugenMotif = motif;
 }
 
 /* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
@@ -859,6 +873,10 @@ void Configuration::saveConfiguration(){
     *mode << config_play_mode << smode;
     head.addToken(mode);
 
+    Token * mugenMotifToken = new Token();
+    *mugenMotifToken << config_mugen_motif << Configuration::getMugenMotif();
+    head.addToken(mugenMotifToken);
+
     Token * lives = new Token();
     *lives << config_lives << Configuration::getLives();
     head.addToken(lives);
@@ -911,6 +929,7 @@ bool Configuration::joystickEnabled = true;
 std::string Configuration::currentGameDir = "paintown";
 std::map<std::string, std::string> Configuration::properties;
 std::string Configuration::language = "";
+std::string Configuration::mugenMotif = "default";
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 

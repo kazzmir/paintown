@@ -1295,7 +1295,11 @@ MenuOption(token){
                 tok->view() >> temp;
                 // Set the default motif
                 try{
-                    Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
+                    if (Configuration::getMugenMotif() == "default"){
+                        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
+                    } else {
+                        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(Configuration::getMugenMotif()));
+                    }
                 } catch (const Filesystem::NotFound & fail){
                     throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
                 }
@@ -2482,6 +2486,7 @@ void OptionMugenMotif::run(const Menu::Context & context){
     if (state.index != -1){
         Filesystem::RelativePath motif = Filesystem::cleanse(state.paths[state.index]).removeFirstDirectory();
         Global::debug(1) << "Set muge motif to " << motif.path() << endl;
+        Configuration::setMugenMotif(motif.path());
         Mugen::Data::getInstance().setMotif(motif);
     }
 }

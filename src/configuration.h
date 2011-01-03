@@ -97,6 +97,10 @@ public:
     static int getScreenWidth();
     static void setScreenHeight(int i);
     static int getScreenHeight();
+
+    static std::string getMugenMotif();
+    static void setMugenMotif(const std::string & motif);
+
     static Util::ReferenceCount<Menu::FontInfo> getMenuFont();
     static void setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & str);
     static int getMenuFontWidth();
@@ -190,6 +194,7 @@ private:
     static std::map<std::string, std::string> properties;
 
     static std::string language;
+    static std::string mugenMotif;
 };
 
 #endif
