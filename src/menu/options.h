@@ -624,4 +624,12 @@ protected:
     std::vector < Platformer::World *> worlds;
 };
 
+class OptionMugenMotif: public MenuOption {
+public:
+    OptionMugenMotif(const Token *);
+    virtual ~OptionMugenMotif();
+    virtual void logic();
+    virtual void run(const Menu::Context &);
+};
+
 #endif

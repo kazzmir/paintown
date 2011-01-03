@@ -34,6 +34,8 @@ MenuOption * OptionFactory::getOption(const Token *token){
         return new OptionLanguage(tok);
     } else if (*tok == "return"){
         return new OptionReturn(tok);
+    } else if (*tok == "mugen-motif"){
+        return new OptionMugenMotif(tok);
     } else if (*tok == "continue"){
         return new OptionContinue(tok);
     } else if (*tok == "sound"){

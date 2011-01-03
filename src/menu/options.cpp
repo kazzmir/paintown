@@ -2406,3 +2406,17 @@ void OptionPlatformer::logic(){
 
 void OptionPlatformer::run(const Menu::Context & context){
 }
+
+OptionMugenMotif::OptionMugenMotif(const Token * token):
+MenuOption(token){
+    readName(token);
+}
+
+OptionMugenMotif::~OptionMugenMotif(){
+}
+
+void OptionMugenMotif::logic(){
+}
+
+void OptionMugenMotif::run(const Menu::Context & context){
+}
