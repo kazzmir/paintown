@@ -2418,5 +2418,44 @@ OptionMugenMotif::~OptionMugenMotif(){
 void OptionMugenMotif::logic(){
 }
 
+static bool isMugenMotif(const Filesystem::AbsolutePath & path){
+    try{
+        string name = Mugen::Util::probeDef(path, "info", "name");
+        return true;
+    } catch (...){
+        return false;
+    }
+}
+
+static vector<Filesystem::AbsolutePath> listMotifs(){
+    Filesystem::AbsolutePath data = Filesystem::find(Filesystem::RelativePath("mugen/data"));
+    vector<Filesystem::AbsolutePath> defs = Filesystem::getFilesRecursive(data, "system.def");
+    vector<Filesystem::AbsolutePath> good;
+    for (vector<Filesystem::AbsolutePath>::iterator it = defs.begin(); it != defs.end(); it++){
+        const Filesystem::AbsolutePath & file = *it;
+        if (isMugenMotif(file)){
+            Global::debug(1) << "Motif: " << file.path() << endl;
+            good.push_back(file);
+        }
+    }
+    return good;
+}
+
 void OptionMugenMotif::run(const Menu::Context & context){
+    vector<Filesystem::AbsolutePath> paths = listMotifs();
+    int index = 0;
+    Menu::Menu temp;
+    for (unsigned int i = 0; i < paths.size(); i++){
+        OptionLevel *option = new OptionLevel(0, &index, i);
+        option->setText(Mugen::Util::probeDef(paths[i], "info", "name"));
+        option->setInfoText(Filesystem::cleanse(paths[i]).path());
+        temp.addOption(option);
+    }
+    // Run it
+    try {
+        temp.run(context);
+    } catch (const Menu::MenuException & ex){
+    }
+
+    Mugen::Data::getInstance().setMotif(Filesystem::cleanse(paths[index]).removeFirstDirectory());
 }

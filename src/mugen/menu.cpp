@@ -1008,7 +1008,8 @@ void run(){
         enum Fail{
             None,
             Mugen,
-            Load
+            Load,
+            NotFound
         };
 
         Context():
@@ -1026,6 +1027,9 @@ void run(){
             } catch (const LoadException & e){
                 exception = new LoadException(e);
                 fail = Load;
+            } catch (const Filesystem::NotFound & e){
+                exception = new Filesystem::NotFound(e);
+                fail = NotFound;
             }
         }
 
@@ -1034,6 +1038,7 @@ void run(){
                 switch (fail){
                     case Mugen: throw *(MugenException*) exception;
                     case Load: throw *(LoadException*) exception;
+                    case NotFound: throw *(Filesystem::NotFound*) exception;
                     default: throw *exception;
                 }
             }
