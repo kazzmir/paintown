@@ -2442,20 +2442,46 @@ static vector<Filesystem::AbsolutePath> listMotifs(){
 }
 
 void OptionMugenMotif::run(const Menu::Context & context){
-    vector<Filesystem::AbsolutePath> paths = listMotifs();
-    int index = 0;
-    Menu::Menu temp;
-    for (unsigned int i = 0; i < paths.size(); i++){
-        OptionLevel *option = new OptionLevel(0, &index, i);
-        option->setText(Mugen::Util::probeDef(paths[i], "info", "name"));
-        option->setInfoText(Filesystem::cleanse(paths[i]).path());
-        temp.addOption(option);
-    }
-    // Run it
-    try {
-        temp.run(context);
-    } catch (const Menu::MenuException & ex){
+    class Context: public Loader::LoadingContext {
+    public:
+        Context():
+            index(-1){
+            }
+
+        virtual void load(){
+            paths = listMotifs();
+            vector<Filesystem::AbsolutePath> paths = listMotifs();
+            for (unsigned int i = 0; i < paths.size(); i++){
+                OptionLevel *option = new OptionLevel(0, &index, i);
+                option->setText(Mugen::Util::probeDef(paths[i], "info", "name"));
+                option->setInfoText(Filesystem::cleanse(paths[i]).path());
+                menu.addOption(option);
+            }
+        }
+
+        vector<Filesystem::AbsolutePath> paths;
+        int index;
+        Menu::Menu menu;
+    };
+
+    Context state;
+    /* an empty LevelInfo object, we don't really care about it */
+    Level::LevelInfo level;
+    Loader::loadScreen(state, level, Loader::SimpleCircle);
+    
+    if (state.paths.size() <= 1){
+        return;
     }
 
-    Mugen::Data::getInstance().setMotif(Filesystem::cleanse(paths[index]).removeFirstDirectory());
+    try {
+        state.menu.run(context);
+    } catch (const Menu::MenuException & ex){
+    } catch (const Exception::Return & ok){
+    }
+        
+    if (state.index != -1){
+        Filesystem::RelativePath motif = Filesystem::cleanse(state.paths[state.index]).removeFirstDirectory();
+        Global::debug(1) << "Set muge motif to " << motif.path() << endl;
+        Mugen::Data::getInstance().setMotif(motif);
+    }
 }
