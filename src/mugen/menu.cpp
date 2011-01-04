@@ -1002,16 +1002,8 @@ void run(){
     // Load er up and throw up a load box to inform the user
     class Context: public Loader::LoadingContext {
     public:
-        enum Fail{
-            None,
-            Mugen,
-            Load,
-            NotFound
-        };
-
         Context():
         menu(Mugen::Data::getInstance().getMotif()),
-        fail(None),
         exception(NULL){
         }
 
@@ -1020,24 +1012,16 @@ void run(){
                 menu.loadData();
             } catch (const MugenException & e){
                 exception = (MugenException*) e.copy();
-                fail = Mugen;
             } catch (const LoadException & e){
                 exception = new LoadException(e);
-                fail = Load;
             } catch (const Filesystem::NotFound & e){
                 exception = new Filesystem::NotFound(e);
-                fail = NotFound;
             }
         }
 
         virtual void failure(){
             if (exception != NULL){
-                switch (fail){
-                    case Mugen: throw *(MugenException*) exception;
-                    case Load: throw *(LoadException*) exception;
-                    case NotFound: throw *(Filesystem::NotFound*) exception;
-                    default: throw *exception;
-                }
+                exception->throwSelf();
             }
         }
 
@@ -1050,7 +1034,6 @@ void run(){
         }
 
         MugenMenu menu;
-        Fail fail;
         Exception::Base * exception;
     };
     /*
