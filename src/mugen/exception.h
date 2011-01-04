@@ -15,6 +15,10 @@ public:
 
         const std::string getFullReason() const;
 
+        virtual void throwSelf() const {
+            throw *this;
+        }
+
 	inline const std::string getReason() const{
             return reason;
 	}

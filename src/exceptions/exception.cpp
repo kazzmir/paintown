@@ -57,12 +57,16 @@ Base * Base::copy() const {
 Return::Return(const std::string & file, int line):
 Base(file, line){
 }
-
+    
 Return::Return(const std::string & file, int line, const Base & nested):
 Base(file, line, nested){
 }
 
 Return::~Return() throw(){
+}
+
+void Return::throwSelf() const {
+    throw *this;
 }
 
 Base * Return::copy() const {
@@ -78,6 +82,10 @@ Base(file, line, nested){
 }
 
 Quit::~Quit() throw(){
+}
+
+void Quit::throwSelf() const {
+    throw *this;
 }
 
 Base * Quit::copy() const {

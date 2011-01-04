@@ -16,6 +16,10 @@ public:
     /* if we use operator= then we get a bunch of warnings from gcc */
     virtual void set(const Base & nested);
 
+    virtual void throwSelf() const {
+        throw *this;
+    }
+
     const std::string getTrace() const;
 
     virtual ~Base() throw ();
@@ -41,6 +45,7 @@ public:
     Return(const std::string & file, int line);
     Return(const std::string & file, int line, const Base & nested);
     virtual ~Return() throw();
+    virtual void throwSelf() const;
 protected:
     virtual Base * copy() const;
 };
@@ -53,6 +58,7 @@ public:
     Quit(const std::string & file, int line);
     Quit(const std::string & file, int line, const Base & nested);
     virtual ~Quit() throw();
+    virtual void throwSelf() const;
 protected:
     virtual Base * copy() const;
 };
