@@ -2439,16 +2439,16 @@ void OptionPlatformer::run(const Menu::Context & context){
                     quit = true;
                 }
                 if (event.out == Up){
-		    worlds[0]->moveCamera(0,-1);
+		    worlds[0]->moveCamera(0,-5);
 		}
                 if (event.out == Down){
-		    worlds[0]->moveCamera(0,1);
+		    worlds[0]->moveCamera(0,5);
 		}
                 if (event.out == Left){
-		    worlds[0]->moveCamera(-1,0);
+		    worlds[0]->moveCamera(-5,0);
 		}
                 if (event.out == Right){
-		    worlds[0]->moveCamera(1,0);
+		    worlds[0]->moveCamera(5,0);
 		}
             }
         }
