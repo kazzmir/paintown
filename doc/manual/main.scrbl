@@ -5,3 +5,22 @@
 @(table-of-contents)
 
 @;@include-section["design.scrbl"]
+@section{Menu}
+Adventure mode
+Adventure mode with cpu
+Mugen Mode
+Change Mod
+Network mode - Host
+Network mode - Join
+@subsection{Options}
+
+@section{Libraries}
+@subsection{Internal}
+DUMB
+SDL Image
+SDL Mixer
+Sprig
+@subsection{External}
+libpng
+libz
+libfreetype
