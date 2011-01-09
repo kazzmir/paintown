@@ -2043,12 +2043,19 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
             if (!character.random && !character.blank){
                 // Get character
                 // *FIXME Not an elegant solution for character location
+
+                // look up the character's directory first in the <motif>/chars/...
+                // and then in mugen/chars/...
+                /* Mugen::Util::findDirectory(character.name) */
+                /*
                 const Filesystem::AbsolutePath baseDir = Filesystem::findInsensitive(Filesystem::RelativePath("mugen/chars/" + character.name));
                 Filesystem::RelativePath str = Filesystem::RelativePath(character.name).getFilename();
                 const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
+                */
+                const Filesystem::AbsolutePath defFile = Util::findCharacterDef(character.name);
                 // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
-                Global::debug(1) << "Got character def: " << charDefFile.path() << endl;
-                CharacterInfo *charInfo = new CharacterInfo(charDefFile);
+                Global::debug(1) << "Got character def: " << defFile.path() << endl;
+                CharacterInfo *charInfo = new CharacterInfo(defFile);
                 charInfo->setRandomStage(character.randomStage);
                 // Set stage
                 if (character.stage.empty()){
@@ -2060,7 +2067,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
                     // also add the stage
                     if (character.includeStage){
                         // Pass base stage name, StageHandler will fix the stage name
-                        stageNames.insert(stageNames.begin()+stageOffset,character.stage);
+                        stageNames.insert(stageNames.begin()+stageOffset, character.stage);
                         stageOffset++;
                     }
                 }

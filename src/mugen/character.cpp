@@ -340,7 +340,7 @@ void HitState::update(MugenStage & stage, const Character & guy, bool inAir, con
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
 
-Character::Character(const Filesystem::AbsolutePath & s ):
+Character::Character(const Filesystem::AbsolutePath & s):
 Object(0),
 commonSounds(NULL){
     this->location = s;

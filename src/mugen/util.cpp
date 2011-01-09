@@ -27,6 +27,7 @@
 #include "menu.h"
 #include "sound.h"
 #include "reader.h"
+#include "config.h"
 #include "sprite.h"
 #include "globals.h"
 #include "util/init.h"
@@ -75,6 +76,28 @@ const std::string Mugen::Util::invertSlashes(const std::string &str){
 std:string getHeadDir( const std::string & dir ){
     return dir.substr( ( dir.find_lastof( '/' ) != std::string::npos ? dir.find_lastof( '/' ) : 0 ), lastslash,dir.size() );
 }*/
+
+static const Filesystem::AbsolutePath findCharacterDefMotif(const string & name){
+    /* maybe pass in the motif directory instead of just magically getting it here? */
+    Filesystem::AbsolutePath chars = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("chars")));
+    Filesystem::AbsolutePath base = Filesystem::lookupInsensitive(chars, Filesystem::RelativePath(name));
+    return Filesystem::lookupInsensitive(base, Filesystem::RelativePath(name + ".def"));
+}
+
+static const Filesystem::AbsolutePath findCharacterDefNormal(const string & name){
+    Filesystem::AbsolutePath chars = Filesystem::findInsensitive(Mugen::Data::getInstance().getCharDirectory());
+    Filesystem::AbsolutePath base = Filesystem::lookupInsensitive(chars, Filesystem::RelativePath(name));
+    return Filesystem::lookupInsensitive(base, Filesystem::RelativePath(name + ".def"));
+}
+
+const Filesystem::AbsolutePath Mugen::Util::findCharacterDef(const string & name){
+    try{
+        return findCharacterDefMotif(name);
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(1) << "Failed to find character " << name << " in motif " << Data::getInstance().getMotifDirectory().path() << " because " << fail.getTrace() << endl;
+        return findCharacterDefNormal(name);
+    }
+}
 
 const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::AbsolutePath &dir, std::string str){
     Global::debug(2) << "Current File: " << str << endl;
@@ -1047,8 +1070,8 @@ const Filesystem::AbsolutePath Mugen::Util::getCorrectFileLocation(const Filesys
 }
 
 const std::string Mugen::Util::probeDef(const Ast::AstParse & parsed, const std::string & section, const std::string & search){
-    std::string ourSection = fixCase(section);;
-    std::string ourSearch = fixCase(search);;
+    std::string ourSection = fixCase(section);
+    std::string ourSearch = fixCase(search);
    
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
 	Ast::Section * astSection = *section_it;

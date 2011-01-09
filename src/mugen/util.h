@@ -41,6 +41,13 @@ namespace Util{
     const std::string invertSlashes (const std::string &str);
     const std::string stripDir( const std::string &str );
     const Filesystem::AbsolutePath fixFileName( const Filesystem::AbsolutePath &dir, std::string str );
+
+    /* find a character's .def file given just his name. first this function
+     * will look in the <motif>/chars directory and then look in the standard
+     * mugen/chars directory.
+     */
+    const Filesystem::AbsolutePath findCharacterDef(const std::string & name);
+
     const std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok
     MugenItemContent *parseOpt( const std::string &opt );
