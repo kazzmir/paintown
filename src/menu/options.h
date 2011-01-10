@@ -610,10 +610,6 @@ protected:
     std::vector<std::string> languages;
 };
 
-namespace Platformer{
-    class World;
-}
-
 class OptionPlatformer: public MenuOption {
 public:
     OptionPlatformer(const Token *);
@@ -621,17 +617,7 @@ public:
     virtual void logic();
     virtual void run(const Menu::Context &);
 protected:
-    std::vector < Platformer::World *> worlds;
-    //! keys
-    enum Keys{
-	Up=0,
-	Down,
-	Left,
-	Right,
-	Esc,
-    };
-    
-    InputMap<Keys> input;
+    std::string gameLocation;
 };
 
 class OptionMugenMotif: public MenuOption {
