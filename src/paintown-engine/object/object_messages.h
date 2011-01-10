@@ -19,6 +19,7 @@ namespace CharacterMessages{
         Fall = 24,
         Ungrab = 25,
         ShowName = 26,
+        SetName = 29
     };
 }
 

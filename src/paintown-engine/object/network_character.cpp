@@ -19,27 +19,31 @@ using namespace std;
 namespace Paintown{
 
 NetworkCharacter::NetworkCharacter( int alliance ):
-Character( alliance ),
+Character(alliance),
 name_id(-1),
-show_name_time(0){
+show_name_time(0),
+requestedName(false){
 }
 
 NetworkCharacter::NetworkCharacter( const char * filename, int alliance ) throw( LoadException ):
 Character( filename, alliance ),
 name_id(-1),
-show_name_time(0){
+show_name_time(0),
+requestedName(false){
 }
 
 NetworkCharacter::NetworkCharacter( const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException ):
 Character( filename, alliance ),
 name_id(-1),
-show_name_time(0){
+show_name_time(0),
+requestedName(false){
 }
 
 NetworkCharacter::NetworkCharacter( const Character & chr ) throw( LoadException ):
-Character( chr ),
+Character(chr),
 name_id(-1),
-show_name_time(0){
+show_name_time(0),
+requestedName(false){
 }
 	
 NetworkCharacter::~NetworkCharacter(){
@@ -60,16 +64,16 @@ Network::Message NetworkCharacter::grabMessage( unsigned int from, unsigned int 
 void NetworkCharacter::interpretMessage(World * world, Network::Message & message ){
     int type;
     message >> type;
-    switch ( type ){
-        case CharacterMessages::ShowName : {
+    switch (type){
+        case CharacterMessages::ShowName: {
             int amount;
             message >> amount;
-            setNameTime( amount );
+            setNameTime(amount);
             break;
         }
         default : {
             message.reset();
-            Character::interpretMessage(world, message );
+            Character::interpretMessage(world, message);
             break;
         }
     }
@@ -115,16 +119,34 @@ void NetworkCharacter::draw( Bitmap * work, int rel_x ){
 }
 */
 
+Network::Message NetworkCharacter::requestNameMessage() const {
+    Network::Message message;
+    message.id = 0;
+    message << World::RequestName;
+    message << getId();
+    return message;
+}
+
 /* just performs the current animation */
 void NetworkCharacter::act( vector< Object * > * others, World * world, vector< Object * > * add ){
-    Global::debug(3, __FILE__) << getId() << " status is " << getStatus() << endl;
-    Character::act( others, world, add );
-    if ( (getStatus() == Status_Ground ||
-                getStatus() == Status_Jumping) && animation_current->Act() ){
+    /* by default the name will come from the definition file as opposed to from
+     * the level itself. the name currently doesn't come in the create message
+     * (although maybe it should), so instead for now we explicitly ask the server
+     * to send us the name of this character.
+     */
+    if (!requestedName){
+        world->addMessage(requestNameMessage());
+        requestedName = true;
+    }
+
+    // Global::debug(3, __FILE__) << getId() << " status is " << getStatus() << endl;
+    Character::act(others, world, add);
+    if ((getStatus() == Status_Ground ||
+         getStatus() == Status_Jumping) && animation_current->Act() ){
         // Global::debug( 0 ) << "Reset animation" << endl;
-        if ( animation_current->getName() != "idle" &&
-                animation_current->getName() != "walk" ){
-            animation_current = getMovement( "idle" );
+        if (animation_current->getName() != "idle" &&
+            animation_current->getName() != "walk"){
+            animation_current = getMovement("idle");
         }
         animation_current->reset();
     }
@@ -132,31 +154,31 @@ void NetworkCharacter::act( vector< Object * > * others, World * world, vector< 
 	
 void NetworkCharacter::landed( World * world ){
     setThrown( false );
-    switch( getStatus() ){
+    switch (getStatus()){
         case Status_Falling : {
-            if ( landed_sound ){
+            if (landed_sound){
                 landed_sound->play();
             }
 
-            world->Quake( (int)fabs(getYVelocity()) );
+            world->Quake((int)fabs(getYVelocity()));
 
             break;
         }
         case Status_Fell : {
-            world->Quake( (int)fabs(getYVelocity()) );
+            world->Quake((int)fabs(getYVelocity()));
             break;
         }
     }
 }
 	
 void NetworkCharacter::deathReset(){
-    setY( 200 );
-    setMoving( true );
-    setStatus( Status_Falling );
-    setHealth( getMaxHealth() );
-    setInvincibility( 400 );
-    setDeath( 0 );
-    animation_current = getMovement( "idle" );
+    setY(200);
+    setMoving(true);
+    setStatus(Status_Falling);
+    setHealth(getMaxHealth());
+    setInvincibility(400);
+    setDeath(0);
+    animation_current = getMovement("idle");
 }
 
 }

@@ -1532,69 +1532,78 @@ int Character::getShadowY(){
 }
 	
 Network::Message Character::movedMessage(){
-	Network::Message message = Object::movedMessage();
-	message << getStatus();
-	message << isMoving();
-	return message;
+    Network::Message message = Object::movedMessage();
+    message << getStatus();
+    message << isMoving();
+    return message;
 }
 	
 Network::Message Character::explodeMessage(){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = getId();
-	message << CharacterMessages::Explode;
+    message.id = getId();
+    message << CharacterMessages::Explode;
 
-	return message;
+    return message;
 }
-	
+
 Network::Message Character::fallMessage( double x, double y ){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = getId();
-	message << CharacterMessages::Fall;
-	message << (int)(x * 100);
-	message << (int)(y * 100);
+    message.id = getId();
+    message << CharacterMessages::Fall;
+    message << (int)(x * 100);
+    message << (int)(y * 100);
 
-	return message;
+    return message;
 }
 	
 Network::Message Character::ungrabMessage(){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = getId();
-	message << CharacterMessages::Ungrab;
+    message.id = getId();
+    message << CharacterMessages::Ungrab;
 
-	return message;
+    return message;
 }
 	
 Network::Message Character::showNameMessage( int amount ){
-	Network::Message message;
-	message.id = getId();
-	message << CharacterMessages::ShowName;
-	message << amount;
+    Network::Message message;
+    message.id = getId();
+    message << CharacterMessages::ShowName;
+    message << amount;
 
-	return message;
+    return message;
 }
 	
 Network::Message Character::healthMessage(){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = getId();
-	message << CharacterMessages::Health;
-	message << getHealth();
+    message.id = getId();
+    message << CharacterMessages::Health;
+    message << getHealth();
 
-	return message;
+    return message;
 }
 
 Network::Message Character::jumpMessage( double x, double z ){
-	Network::Message message;
-	message.id = getId();
+    Network::Message message;
+    message.id = getId();
 
-	message << CharacterMessages::Jump;
-	message << (int)(x * 100);
-	message << (int)(z * 100);
+    message << CharacterMessages::Jump;
+    message << (int)(x * 100);
+    message << (int)(z * 100);
 
-	return message;
+    return message;
+}
+
+Network::Message Character::nameMessage() const {
+    Network::Message message;
+    message.id = getId();
+    message << CharacterMessages::SetName;
+    message << getName();
+
+    return message;
 }
 	
 void Character::interpretMessage(World * world, Network::Message & message ){
@@ -1606,8 +1615,8 @@ void Character::interpretMessage(World * world, Network::Message & message ){
      * the type as well
      */
     message.reset();
-    Object::interpretMessage(world, message );
-    switch ( type ){
+    Object::interpretMessage(world, message);
+    switch (type){
         case ObjectMessages::Moved : {
             int status;
             int moving;
@@ -1620,22 +1629,28 @@ void Character::interpretMessage(World * world, Network::Message & message ){
         case CM::Jump : {
             int x, z;
             message >> x >> z;
-            doJump( x / 100.0, z / 100.0 );
-            animation_current = getMovement( "jump" );
+            doJump(x / 100.0, z / 100.0);
+            animation_current = getMovement("jump");
             break;
         }
         case CM::Health : {
             int health;
             message >> health;
-            setHealth( health );
-            Global::debug( 1 ) << "Health for " << getId() << " is " << getHealth() << endl;
+            setHealth(health);
+            Global::debug(1) << "Health for " << getId() << " is " << getHealth() << endl;
             break;
         }
-        case CM::Explode : {
-            setExplode( true );
+        case CM::Explode: {
+            setExplode(true);
             break;
         }
-        case CM::Fall : {
+        case CM::SetName: {
+            string name;
+            message >> name;
+            setName(name);
+            break;
+        }
+        case CM::Fall: {
             int x, y;
             message >> x >> y;
             fall( x / 100.0, y / 100.0 );

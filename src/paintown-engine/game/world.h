@@ -154,6 +154,8 @@ public:
             CHAT,
             /* client name and stuff */
             CLIENT_INFO,
+            /* get a name for a character */
+            RequestName,
         };
 };
 

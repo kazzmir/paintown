@@ -242,6 +242,11 @@ Message & Message::operator>>(unsigned int & x){
     position += sizeof(int32_t);
     return *this;
 }
+        
+Message & Message::operator>>(std::string & out){
+    out = path;
+    return *this;
+}
 
 Message & Message::operator<<( string p ){
     path = p;

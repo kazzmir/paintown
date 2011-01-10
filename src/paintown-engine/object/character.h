@@ -387,6 +387,7 @@ public:
 	virtual Network::Message showNameMessage( int amount );
 	virtual Network::Message fallMessage( double x, double y );
         virtual Network::Message grabMessage(Object::networkid_t from, Object::networkid_t who);
+        virtual Network::Message nameMessage() const;
 	
 	virtual void interpretMessage(World * world, Network::Message & m );
 	

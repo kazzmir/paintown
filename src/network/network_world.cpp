@@ -38,7 +38,7 @@ static void * handleMessages( void * arg ){
 
     unsigned int id = 1;
     try{
-        while ( world->isRunning() ){
+        while (world->isRunning()){
             Network::Message m(socket);
             ostringstream context;
             context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
@@ -50,7 +50,7 @@ static void * handleMessages( void * arg ){
     } catch (const Network::MessageEnd & end){
         debug(1) << "Closed connection with socket " << socket << endl;
     } catch ( const Network::NetworkException & ne ){
-        debug( 0 ) << "Network exception: " << ne.getMessage() << endl;
+        debug(0) << "Network exception: " << ne.getMessage() << endl;
     }
 
     delete s;
@@ -209,19 +209,19 @@ void NetworkWorld::changePause(){
 void NetworkWorld::doScene( int min_x, int max_x ){
     vector< Paintown::Object * > obj;
     int block = scene->getBlock();
-    scene->act( min_x, max_x, &obj );
-    if ( scene->getBlock() != block ){
-        addMessage( nextBlockMessage( scene->getBlock() ) );
+    scene->act(min_x, max_x, &obj);
+    if (scene->getBlock() != block){
+        addMessage(nextBlockMessage(scene->getBlock()));
     }
 
-    for ( vector< Paintown::Object * >::iterator it = obj.begin(); it != obj.end(); it++ ){
+    for (vector<Paintown::Object *>::iterator it = obj.begin(); it != obj.end(); it++){
         Paintown::Object * m = *it;
-        m->setId( nextId() );
-        addMessage( m->getCreateMessage() );
-        addMessage( m->movedMessage() );
+        m->setId(nextId());
+        addMessage(m->getCreateMessage());
+        addMessage(m->movedMessage());
     }
 
-    objects.insert( objects.end(), obj.begin(), obj.end() );
+    objects.insert(objects.end(), obj.begin(), obj.end());
 }
 
 Paintown::Object * NetworkWorld::findNetworkObject( Paintown::Object::networkid_t id ){
@@ -297,7 +297,7 @@ void NetworkWorld::handleMessage( Network::Message & message ){
     if ( message.id == 0 ){
         int type;
         message >> type;
-        switch ( type ){
+        switch (type){
             case GRAB : {
                 Paintown::Object::networkid_t grabbing;
                 Paintown::Object::networkid_t grabbed;
@@ -375,31 +375,41 @@ void NetworkWorld::handleMessage( Network::Message & message ){
                 addMessage(unpausedMessage());
                 break;
             }
+            case RequestName: {
+                Paintown::Object::networkid_t id;
+                message >> id;
+                Paintown::Character * who = (Paintown::Character *) findNetworkObject(id);
+                if (who != NULL){
+                    addMessage(who->nameMessage(), 0, message.readFrom);
+                }
+                break;
+            }
         }
     } else {
-        Paintown::Object * o = findNetworkObject( message.id );
-        if ( o != NULL ){
-            o->interpretMessage(this, message );
+        Paintown::Object * o = findNetworkObject(message.id);
+        if (o != NULL){
+            o->interpretMessage(this, message);
+        } else {
+            Global::debug(0) << "Ignoring message sent to id " << message.id << endl;
         }
-
     }
 }
 
 vector< Network::Message > NetworkWorld::getIncomingMessages(){
     vector< Network::Message > m;
-    Util::Thread::acquireLock( &message_mutex );
+    Util::Thread::acquireLock(&message_mutex);
     m = incoming;
     incoming.clear();
-    Util::Thread::releaseLock( &message_mutex );
+    Util::Thread::releaseLock(&message_mutex);
     return m;
 }
 
 void NetworkWorld::flushOutgoing(){
     vector< Packet > packets;
-    Util::Thread::acquireLock( &message_mutex );
+    Util::Thread::acquireLock(&message_mutex);
     packets = outgoing;
     outgoing.clear();
-    Util::Thread::releaseLock( &message_mutex );
+    Util::Thread::releaseLock(&message_mutex);
 
     for (vector<Network::Socket>::iterator socket = sockets.begin(); socket != sockets.end(); socket++){
         vector<Network::Message*> messages;
@@ -431,9 +441,9 @@ void NetworkWorld::act(){
     AdventureWorld::act();
     ChatWidget::act();
 
-    vector< Network::Message > messages = getIncomingMessages();
-    for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
-        handleMessage( *it );
+    vector<Network::Message> messages = getIncomingMessages();
+    for (vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++){
+        handleMessage(*it);
     }
 
     flushOutgoing();
