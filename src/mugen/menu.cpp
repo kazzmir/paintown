@@ -348,7 +348,7 @@ void MugenMenu::loadData(){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
                             string temp;
                             simple >> temp;
-                            menu.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
+                            menu.fonts.push_back(new MugenFont(Mugen::Util::findFont(Filesystem::RelativePath(temp))));
                             Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
 
                         } else {
@@ -556,7 +556,11 @@ void MugenMenu::loadData(){
 
     } catch (const Mugen::Def::ParseException & e){
         ostringstream out;
-        out << "Error loading data: " << e.getReason();
+        out << "Error loading data " << ourDefFile.path() << ": " << e.getReason();
+        throw MugenException(out.str());
+    } catch (const Exception::Base & fail){
+        ostringstream out;
+        out << "Error loading data " << ourDefFile.path() << ": " << fail.getTrace();
         throw MugenException(out.str());
     }
 }
@@ -1055,7 +1059,7 @@ void run(){
         // Do not quit game
         // Make waffles?
     } catch (const MugenException & ex){
-        string m("Problem with loading MUGEN menu: ");
+        string m("Problem with loading MUGEN: ");
         m += ex.getFullReason();
         throw LoadException(__FILE__, __LINE__, m);
     }

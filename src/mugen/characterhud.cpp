@@ -1357,10 +1357,10 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         }
                         */
                     } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
-                        string temp;
-                        simple >> temp;
-                        self.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
-                        Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+                        string path;
+                        simple >> path;
+                        self.fonts.push_back(new MugenFont(Util::findFont(Filesystem::RelativePath(path))));
+                        Global::debug(1) << "Got Font File: '" << path << "'" << endl;
                     } else if (simple == "snd"){
                         string temp;
                         simple >> temp;

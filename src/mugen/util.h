@@ -47,6 +47,8 @@ namespace Util{
      * mugen/chars directory.
      */
     const Filesystem::AbsolutePath findCharacterDef(const std::string & name);
+    const Filesystem::AbsolutePath findStageDef(const Filesystem::RelativePath & name);
+    const Filesystem::AbsolutePath findFont(const Filesystem::RelativePath & name);
 
     const std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok

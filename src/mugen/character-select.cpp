@@ -239,7 +239,7 @@ display(false),
 selecting(true),
 moveSound(0),
 selectSound(0){
-    stages.push_back(Filesystem::AbsolutePath()); // "Random"
+    stages.push_back(Filesystem::RelativePath()); // "Random"
     stageNames.push_back("Stage: Random");
 }
 
@@ -257,7 +257,7 @@ void StageHandler::render(const Bitmap &bmp){
 }
 	
 //! Get current selected stage
-const Filesystem::AbsolutePath & StageHandler::getStage(){
+const Filesystem::RelativePath & StageHandler::getStage(){
     // check if random first;
     if (currentStage == 0){
 	return getRandomStage();
@@ -266,7 +266,7 @@ const Filesystem::AbsolutePath & StageHandler::getStage(){
 }
 
 //! Get random stage
-const Filesystem::AbsolutePath & StageHandler::getRandomStage(){
+const Filesystem::RelativePath & StageHandler::getRandomStage(){
     return stages[PaintownUtil::rnd(1,stages.size())];
 }
 
@@ -315,14 +315,14 @@ void StageHandler::toggleSelecting(){
 }
 
 //! Add stage to list
-void StageHandler::addStage(const std::string &stage){
+void StageHandler::addStage(const std::string & stage){
     try {
 	// *FIXME not a good solution to get file
-        Filesystem::AbsolutePath ourDefFile = fixStageName(stage);
+        Filesystem::RelativePath ourDefFile = Filesystem::RelativePath(stage);
         // If stage is already stored, ignore it
         if (std::find(stages.begin(), stages.end(), ourDefFile) == stages.end()){
             stringstream temp;
-            temp << "Stage " << stages.size() << ": " << Util::probeDef(ourDefFile, "info", "name");
+            temp << "Stage " << stages.size() << ": " << Util::probeDef(Util::findStageDef(ourDefFile), "info", "name");
 	    stageNames.push_back(temp.str());
 	    stages.push_back(ourDefFile);
         }
@@ -1013,7 +1013,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 
                                 virtual void maybeFail(){
                                     if (fail != NULL){
-                                        throw *fail;
+                                        fail->throwSelf();
                                     }
                                 }
 
@@ -1032,13 +1032,14 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                                         stage->load();
                                     } catch (const MugenException & fail){
                                         this->fail = new MugenException(fail);
+                                    } catch (const LoadException & fail){
+                                        this->fail = new LoadException(fail);
                                     }
                                 }
 
                                 PlayerLoader & playerLoader;
                                 MugenStage *& stage;
-                                MugenException * fail;
-
+                                Exception::Base * fail;
                         };
 
                         Context context(playerLoader, stage);
@@ -1188,7 +1189,6 @@ CharacterSelect::~CharacterSelect(){
 }
 
 void CharacterSelect::load(){
-    // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
     
     Global::debug(1) << baseDir.path() << endl;
@@ -1246,10 +1246,10 @@ void CharacterSelect::load(){
                         } else if (simple == "fight"){
                             // Ignore
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
-                            string temp;
-                            simple >> temp;
-                            select.fonts.push_back(new MugenFont(Mugen::Util::getCorrectFileLocation(baseDir, temp)));
-                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+                            string path;
+                            simple >> path;
+                            select.fonts.push_back(new MugenFont(Util::findFont(Filesystem::RelativePath(path))));
+                            Global::debug(1) << "Got Font File: '" << path << "'" << endl;
 
                         } else {
                             throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
@@ -2053,6 +2053,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
                 const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
                 */
                 const Filesystem::AbsolutePath defFile = Util::findCharacterDef(character.name);
+
                 // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
                 Global::debug(1) << "Got character def: " << defFile.path() << endl;
                 CharacterInfo *charInfo = new CharacterInfo(defFile);
@@ -2063,11 +2064,11 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
                     charInfo->setRandomStage(true);
                 } else {
                     // Fix the stage name before handing it the character
-                    charInfo->setStage(fixStageName(character.stage));
+                    charInfo->setStage(Filesystem::RelativePath(character.stage));
                     // also add the stage
                     if (character.includeStage){
                         // Pass base stage name, StageHandler will fix the stage name
-                        stageNames.insert(stageNames.begin()+stageOffset, character.stage);
+                        stageNames.insert(stageNames.begin() + stageOffset, character.stage);
                         stageOffset++;
                     }
                 }
@@ -2282,9 +2283,9 @@ void CharacterSelect::reset(){
                 if (currentStage){
                     delete currentStage;
                     if (currentPlayer2->hasRandomStage()){
-                        currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
+                        currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getRandomStage()));
                     } else {
-                        currentStage = new MugenStage(currentPlayer2->getStage());
+                        currentStage = new MugenStage(Util::findStageDef(currentPlayer2->getStage()));
                     }
                 }
 	    } else if (playerType == Player2){
@@ -2293,9 +2294,9 @@ void CharacterSelect::reset(){
                 if (currentStage){
                     delete currentStage;
                     if (currentPlayer1->hasRandomStage()){
-                        currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
+                        currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getRandomStage()));
                     } else {
-                        currentStage = new MugenStage(currentPlayer1->getStage());
+                        currentStage = new MugenStage(Util::findStageDef(currentPlayer1->getStage()));
                     }
                 }
 	    }
@@ -2372,11 +2373,12 @@ bool CharacterSelect::setNextArcadeMatch(){
     characters.pop();
     if (currentStage){
         delete currentStage;
+        currentStage = NULL;
     }
     if (tempPlayer->hasRandomStage()){
-        currentStage = new MugenStage(grid.getStageHandler().getRandomStage());
+        currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getRandomStage()));
     } else {
-        currentStage = new MugenStage(currentPlayer2->getStage());
+        currentStage = new MugenStage(Util::findStageDef(currentPlayer2->getStage()));
     }
     return true;
 }
@@ -2386,6 +2388,7 @@ bool CharacterSelect::setNextTeamMatch(){
 }
 
 bool CharacterSelect::checkPlayerData(){
+    /* FIXME: theres a bunch of copy/pasted code in here, clean it up */
     switch (gameType){
 	case Arcade:
 	    if (playerType == Player1){
@@ -2411,7 +2414,7 @@ bool CharacterSelect::checkPlayerData(){
 		if (currentStage){
 		    delete currentStage;
 		}
-		currentStage = new MugenStage(grid.getStageHandler().getStage());
+		currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getStage()));
 		return true;
 	    }
 	    break;
@@ -2448,7 +2451,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    } else if (playerType == Player2){
@@ -2467,7 +2470,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    }
@@ -2489,7 +2492,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    } else if (playerType == Player2){
@@ -2508,7 +2511,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(grid.getStageHandler().getStage());
+		    currentStage = new MugenStage(Util::findStageDef(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    }

@@ -166,11 +166,11 @@ class CharacterInfo {
             return randomStage;
         }
 
-        virtual inline void setStage(const Filesystem::AbsolutePath &str){
+        virtual inline void setStage(const Filesystem::RelativePath &str){
             stageFile = str;
         }
 
-        virtual inline const Filesystem::AbsolutePath &getStage() const{
+        virtual inline const Filesystem::RelativePath &getStage() const{
             return stageFile;
         }
 
@@ -229,7 +229,7 @@ class CharacterInfo {
         /* Random Stage */
         bool randomStage;
         /* Stage File */
-        Filesystem::AbsolutePath stageFile;
+        Filesystem::RelativePath stageFile;
         /* Music for stage */
         std::string music;
         /* Order in which to be set during Arcade mode */
@@ -254,10 +254,10 @@ class StageHandler{
 	virtual void render(const Bitmap &);
 	
 	//! Get current selected stage
-	virtual const Filesystem::AbsolutePath &getStage();
+	virtual const Filesystem::RelativePath &getStage();
 	
 	//! Get random stage
-	virtual const Filesystem::AbsolutePath &getRandomStage();
+	virtual const Filesystem::RelativePath &getRandomStage();
 	
 	//! Set Next Stage
 	virtual void next();
@@ -303,7 +303,7 @@ class StageHandler{
 	unsigned int currentStage;
 	
 	//! Stage list First stage is reserved for random
-	std::vector<Filesystem::AbsolutePath> stages;
+	std::vector<Filesystem::RelativePath> stages;
 	
 	//! Actual Stage names first is reserved for random
 	std::vector< std::string > stageNames;
@@ -996,7 +996,7 @@ class CharacterSelect {
 	
 	/*! **FIXME These are temporary until a method is 
 	    figured to handling teams and multiple players elegantly */
-	virtual inline const Filesystem::AbsolutePath &getStageOld(){
+	virtual inline const Filesystem::RelativePath &getStageOld(){
 	    return grid.getStageHandler().getStage();
 	}
 	

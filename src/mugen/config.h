@@ -16,6 +16,7 @@ class Data{
 
         Filesystem::RelativePath getDirectory();
         Filesystem::RelativePath getDataDirectory();
+        /* gets the directory that stores the system.def motif file */
         Filesystem::RelativePath getMotifDirectory();
         Filesystem::RelativePath getCharDirectory();
         Filesystem::RelativePath getFontDirectory();
@@ -29,6 +30,7 @@ class Data{
         
         void setMotif(const Filesystem::RelativePath & motif);
 
+        /* path to the system.def file */
         const Filesystem::RelativePath & getMotif();
 
         void setDifficulty(int difficulty);

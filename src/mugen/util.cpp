@@ -99,6 +99,40 @@ const Filesystem::AbsolutePath Mugen::Util::findCharacterDef(const string & name
     }
 }
 
+const Filesystem::AbsolutePath findStageMotif(const Filesystem::RelativePath & path){
+    Filesystem::AbsolutePath top = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
+    return Filesystem::lookupInsensitive(top, path);
+}
+
+const Filesystem::AbsolutePath findStageNormal(const Filesystem::RelativePath & path){
+    return Filesystem::findInsensitive(Mugen::Data::getInstance().getDirectory().join(path));
+}
+
+const Filesystem::AbsolutePath Mugen::Util::findStageDef(const Filesystem::RelativePath & path){
+    try{
+        return findStageMotif(path);
+    } catch (const Filesystem::NotFound & fail){
+        return findStageNormal(path);
+    }
+}
+
+static const Filesystem::AbsolutePath findFontMotif(const Filesystem::RelativePath & path){
+    Filesystem::AbsolutePath top = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
+    return Filesystem::lookupInsensitive(top, path);
+}
+
+static const Filesystem::AbsolutePath findFontNormal(const Filesystem::RelativePath & path){
+    return Filesystem::findInsensitive(Mugen::Data::getInstance().getDirectory().join(path));
+}
+
+const Filesystem::AbsolutePath Mugen::Util::findFont(const Filesystem::RelativePath & path){
+    try{
+        return findFontMotif(path);
+    } catch (const Filesystem::NotFound & fail){
+        return findFontNormal(path);
+    }
+}
+
 const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::AbsolutePath &dir, std::string str){
     Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap

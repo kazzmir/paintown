@@ -82,6 +82,12 @@ Ast::ValueAttribute * makeValueAttribute(const Value & attribute){
     return value;
 }
 
+Ast::Attribute * makeAttribute(const Value & line, const Value & id, const Value & data){
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(getCurrentLine(line), getCurrentColumn(line), as<Ast::Identifier*>(id), as<Ast::Value*>(data));
+    GC::save(object);
+    return object;
+}
+
 Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id), as<Ast::Value*>(data));
     GC::save(object);
@@ -249,8 +255,8 @@ rules:
 	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); GC::save(as<Ast::Filename*>(value)); }}
 	filename_char = !"," !"\n" !"[" !<ascii 13> !"=" !";" .
 	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); }}
-              | id:identifier s "=" s data:valuelist {{ value = makeAttribute(id, data); }}
-	          | id:identifier s "=" s data:filename {{ value = makeAttribute(id, data); }}
+              | line:<line> id:identifier s "=" s data:valuelist {{ value = makeAttribute(line, id, data); }}
+	          | line:<line> id:identifier s "=" s data:filename {{ value = makeAttribute(line, id, data); }}
 		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
 		      # | id:identifier_list s "=" s data:valuelist {{ value = makeAttributes(id, data); }}
     attribute_simple = id:identifier s "=" s data:value {{ value = makeAttribute(id, data); }}
