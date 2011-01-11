@@ -2079,22 +2079,30 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
 
     if (afterImage.lifetime > 0){
         afterImage.lifetime -= 1;
-        afterImage.currentTime += 1;
+        afterImage.currentTime -= 1;
 
         int x = getRX();
         int y = getRY();
 
         /* not sure if checking for the timegap > 0 is the right thing.. */
-        while (afterImage.timegap > 0 && afterImage.currentTime >= afterImage.timegap){
+        // while (afterImage.timegap > 0 && afterImage.currentTime >= afterImage.timegap){
+        if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
             int life = 200;
+            afterImage.currentTime += afterImage.timegap;
             MugenAnimation * animation = getCurrentAnimation();
-            afterImage.currentTime -= afterImage.timegap;
+            // afterImage.currentTime -= afterImage.timegap;
             MugenFrame * currentSprite = animation->getCurrentFrame();
             afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == Object::FACING_LEFT, false, xscale, yscale), life, x, y));
-            if (afterImage.frames.size() > afterImage.length){
-                afterImage.frames.resize(afterImage.length);
+            /*
+            while (afterImage.frames.size() > afterImage.length){
+                afterImage.frames.pop_front();
             }
+            */
         }
+        if (afterImage.frames.size() > afterImage.length){
+            afterImage.frames.resize(afterImage.length);
+        }
+        Global::debug(0) << "After images " << afterImage.frames.size() << endl;
     }
 
     for (deque<AfterImage::Frame>::iterator it = afterImage.frames.begin(); it != afterImage.frames.end(); /**/ ){
@@ -2416,9 +2424,33 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
                 mutable map<unsigned, unsigned int> cache;
 
                 unsigned int doFilter(int red, int green, int blue) const {
-                    int red_out = red;
-                    int green_out = green;
-                    int blue_out = blue;
+                    double red_out = red;
+                    double green_out = green;
+                    double blue_out = blue;
+
+                    red_out = (red_out + bright.red) * contrast.red / 256 + post.red;
+                    green_out = (green_out + bright.green) * contrast.green / 256 + post.green;
+                    blue_out = (blue_out + bright.blue) * contrast.blue / 256 + post.blue;
+
+                    /* the mugen docs lied:
+                     * "In one application of these palette effects, first the paladd components are added to the afterimage palette, then the components are multiplied by the palmul multipliers. These effects are applied zero times to the most recent afterimage frame, once to the  second-newest afterimage frame, twice in succession to the third-newest afterimage frame, etc."
+                     * This would lead you to believe that you should do an add and
+                     * multiply operation for some number of times but in fact what
+                     * you are supposed to do is do all the add operations first
+                     * and then do all the multiply operations second.
+                     */
+
+                    red_out += extraAdd.red * extra;
+                    red_out *= pow(extraMultiplier.red, extra);
+                    green_out += extraAdd.green * extra;
+                    green_out *= pow(extraMultiplier.green, extra);
+                    blue_out += extraAdd.blue * extra;
+                    blue_out *= pow(extraMultiplier.blue, extra);
+
+                    /* This is what the code would look like if the mugen docs
+                     * were telling the truth.
+                     */
+                    /*
                     for (int i = 0; i < extra; i++){
                         red_out += extraAdd.red;
                         red_out *= extraMultiplier.red;
@@ -2427,10 +2459,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
                         blue_out += extraAdd.blue;
                         blue_out *= extraMultiplier.blue;
                     }
-
-                    red_out = (red_out + bright.red) * contrast.red / 256 + post.red;
-                    green_out = (green_out + bright.green) * contrast.green / 256 + post.green;
-                    blue_out = (blue_out + bright.blue) * contrast.blue / 256 + post.blue;
+                    */
                     
                     if (red_out < 0){
                         red_out = 0;
@@ -2451,7 +2480,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
                         blue_out = 255;
                     }
 
-                    int out = Bitmap::makeColor(red_out, green_out, blue_out);
+                    int out = Bitmap::makeColor((int) red_out, (int) green_out, (int) blue_out);
                     return (unsigned int) out;
                 }
 
@@ -2487,7 +2516,10 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             } else {
                 fixed = frame.cache;
             }
-            MugenSprite::draw(fixed, frame.x - cameraX + drawOffset.x + frame.sprite->xoffset, frame.y - cameraY + drawOffset.y + frame.sprite->yoffset, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
+
+            int x = frame.x - cameraX + drawOffset.x + frame.sprite->xoffset;
+            int y = frame.y - cameraY + drawOffset.y + frame.sprite->yoffset;
+            MugenSprite::draw(fixed, x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
         }
 
         animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
