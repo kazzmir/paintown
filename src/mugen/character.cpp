@@ -2061,22 +2061,7 @@ static bool holdingBlock(const vector<string> & commands){
     return false;
 }
 
-/* Inherited members */
-void Character::act(vector<Paintown::Object*>* others, World* world, vector<Paintown::Object*>* add){
-    
-    reversalActive = false;
-
-    special.reset();
-
-    if (frozen){
-        frozen = false;
-    }
-
-    /* reset some stuff */
-    blocking = false;
-    widthOverride.enabled = false;
-    transOverride.enabled = false;
-
+void Character::processAfterImages(){
     if (afterImage.lifetime > 0){
         afterImage.lifetime -= 1;
         afterImage.currentTime -= 1;
@@ -2115,6 +2100,25 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
             it++;
         }
     }
+}
+
+/* Inherited members */
+void Character::act(vector<Paintown::Object*>* others, World* world, vector<Paintown::Object*>* add){
+    
+    reversalActive = false;
+
+    special.reset();
+
+    if (frozen){
+        frozen = false;
+    }
+
+    /* reset some stuff */
+    blocking = false;
+    widthOverride.enabled = false;
+    transOverride.enabled = false;
+
+    processAfterImages();
 
     for (int slot = 0; slot < 2; slot++){
         if (hitByOverride[slot].time > 0){
@@ -2381,6 +2385,139 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
     return false;
 }
 
+Bitmap Character::createAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index){
+    class AfterImageFilter: public Bitmap::Filter {
+    public:
+        AfterImageFilter(const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & post, const AfterImage::RGB & extraAdd, const AfterImage::RGB & extraMultiplier, int extra):
+            bright(bright),
+            contrast(contrast),
+            post(post),
+            extraAdd(extraAdd),
+            extraMultiplier(extraMultiplier),
+            extra(extra){
+
+                redExtraAdd = extraAdd.red * extra;
+                redExtraMultiply = pow(extraMultiplier.red, extra);
+                greenExtraAdd = extraAdd.green * extra;
+                greenExtraMultiply = pow(extraMultiplier.green, extra);
+                blueExtraAdd = extraAdd.blue * extra;
+                blueExtraMultiply = pow(extraMultiplier.blue, extra);
+            }
+
+        const AfterImage::RGB & bright;
+        const AfterImage::RGB & contrast;
+        const AfterImage::RGB & post;
+        const AfterImage::RGB & extraAdd;
+        const AfterImage::RGB & extraMultiplier;
+        const int extra;
+        mutable map<unsigned, unsigned int> cache;
+
+        double redExtraAdd;
+        double redExtraMultiply;
+        double greenExtraAdd;
+        double greenExtraMultiply;
+        double blueExtraAdd;
+        double blueExtraMultiply;
+
+        unsigned int doFilter(int red, int green, int blue) const {
+            double red_out = red;
+            double green_out = green;
+            double blue_out = blue;
+
+            red_out = (red_out + bright.red) * contrast.red / 256 + post.red;
+            green_out = (green_out + bright.green) * contrast.green / 256 + post.green;
+            blue_out = (blue_out + bright.blue) * contrast.blue / 256 + post.blue;
+
+            /* the mugen docs lied:
+             * "In one application of these palette effects, first the paladd components are added to the afterimage palette, then the components are multiplied by the palmul multipliers. These effects are applied zero times to the most recent afterimage frame, once to the  second-newest afterimage frame, twice in succession to the third-newest afterimage frame, etc."
+             * This would lead you to believe that you should do an add and
+             * multiply operation for some number of times but in fact what
+             * you are supposed to do is do all the add operations first
+             * and then do all the multiply operations second.
+             */
+
+            red_out += redExtraAdd;
+            red_out *= redExtraMultiply;
+            green_out += greenExtraAdd;
+            green_out *= greenExtraMultiply;
+            blue_out += blueExtraAdd;
+            blue_out *= blueExtraMultiply;
+
+            /*
+            red_out += extraAdd.red * extra;
+            red_out *= pow(extraMultiplier.red, extra);
+            green_out += extraAdd.green * extra;
+            green_out *= pow(extraMultiplier.green, extra);
+            blue_out += extraAdd.blue * extra;
+            blue_out *= pow(extraMultiplier.blue, extra);
+            */
+
+            /* This is what the code would look like if the mugen docs
+             * were telling the truth.
+             */
+            /*
+               for (int i = 0; i < extra; i++){
+               red_out += extraAdd.red;
+               red_out *= extraMultiplier.red;
+               green_out += extraAdd.green;
+               green_out *= extraMultiplier.green;
+               blue_out += extraAdd.blue;
+               blue_out *= extraMultiplier.blue;
+               }
+               */
+
+            if (red_out < 0){
+                red_out = 0;
+            }
+            if (red_out > 255){
+                red_out = 255;
+            }
+            if (green_out < 0){
+                green_out = 0;
+            }
+            if (green_out > 255){
+                green_out = 255;
+            }
+            if (blue_out < 0){
+                blue_out = 0;
+            }
+            if (blue_out > 255){
+                blue_out = 255;
+            }
+
+            int out = Bitmap::makeColor((int) red_out, (int) green_out, (int) blue_out);
+            return (unsigned int) out;
+        }
+
+        unsigned int filter(unsigned int pixel) const {
+            if (cache.find(pixel) != cache.end()){
+                return cache[pixel];
+            }
+
+            int red = Bitmap::getRed(pixel);
+            int green = Bitmap::getGreen(pixel);
+            int blue = Bitmap::getBlue(pixel);
+            unsigned int out = doFilter(red, green, blue);
+            cache[pixel] = out;
+            return out;
+        }
+    };
+
+    /* TODO: handle afterImage.color and afterImage.invert */
+    AfterImageFilter filter(afterImage.bright, afterImage.contrast, afterImage.postBright, afterImage.add, afterImage.multiply, index);
+
+    // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
+    Bitmap original = frame.sprite->getSprite()->getFinalBitmap(frame.effects);
+    Bitmap fixed = Bitmap::temporaryBitmap2(original.getWidth(), original.getHeight());
+    original.draw(0, 0, filter, fixed);
+
+    /* trade time for space -- but allocating a bitmap is sort
+     * of expensive..
+     */
+    return Bitmap(fixed, true);
+    // frame.cache = Bitmap(fixed, true);
+}
+
 void Character::draw(Bitmap * work, int cameraX, int cameraY){
     /*
     int color = Bitmap::makeColor(255,255,255);
@@ -2404,118 +2541,14 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         }
 
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
-            class AfterImageFilter: public Bitmap::Filter {
-            public:
-                AfterImageFilter(const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & post, const AfterImage::RGB & extraAdd, const AfterImage::RGB & extraMultiplier, int extra):
-                    bright(bright),
-                    contrast(contrast),
-                    post(post),
-                    extraAdd(extraAdd),
-                    extraMultiplier(extraMultiplier),
-                    extra(extra){
-                    }
-
-                const AfterImage::RGB & bright;
-                const AfterImage::RGB & contrast;
-                const AfterImage::RGB & post;
-                const AfterImage::RGB & extraAdd;
-                const AfterImage::RGB & extraMultiplier;
-                const int extra;
-                mutable map<unsigned, unsigned int> cache;
-
-                unsigned int doFilter(int red, int green, int blue) const {
-                    double red_out = red;
-                    double green_out = green;
-                    double blue_out = blue;
-
-                    red_out = (red_out + bright.red) * contrast.red / 256 + post.red;
-                    green_out = (green_out + bright.green) * contrast.green / 256 + post.green;
-                    blue_out = (blue_out + bright.blue) * contrast.blue / 256 + post.blue;
-
-                    /* the mugen docs lied:
-                     * "In one application of these palette effects, first the paladd components are added to the afterimage palette, then the components are multiplied by the palmul multipliers. These effects are applied zero times to the most recent afterimage frame, once to the  second-newest afterimage frame, twice in succession to the third-newest afterimage frame, etc."
-                     * This would lead you to believe that you should do an add and
-                     * multiply operation for some number of times but in fact what
-                     * you are supposed to do is do all the add operations first
-                     * and then do all the multiply operations second.
-                     */
-
-                    red_out += extraAdd.red * extra;
-                    red_out *= pow(extraMultiplier.red, extra);
-                    green_out += extraAdd.green * extra;
-                    green_out *= pow(extraMultiplier.green, extra);
-                    blue_out += extraAdd.blue * extra;
-                    blue_out *= pow(extraMultiplier.blue, extra);
-
-                    /* This is what the code would look like if the mugen docs
-                     * were telling the truth.
-                     */
-                    /*
-                    for (int i = 0; i < extra; i++){
-                        red_out += extraAdd.red;
-                        red_out *= extraMultiplier.red;
-                        green_out += extraAdd.green;
-                        green_out *= extraMultiplier.green;
-                        blue_out += extraAdd.blue;
-                        blue_out *= extraMultiplier.blue;
-                    }
-                    */
-                    
-                    if (red_out < 0){
-                        red_out = 0;
-                    }
-                    if (red_out > 255){
-                        red_out = 255;
-                    }
-                    if (green_out < 0){
-                        green_out = 0;
-                    }
-                    if (green_out > 255){
-                        green_out = 255;
-                    }
-                    if (blue_out < 0){
-                        blue_out = 0;
-                    }
-                    if (blue_out > 255){
-                        blue_out = 255;
-                    }
-
-                    int out = Bitmap::makeColor((int) red_out, (int) green_out, (int) blue_out);
-                    return (unsigned int) out;
-                }
-
-                unsigned int filter(unsigned int pixel) const {
-                    if (cache.find(pixel) != cache.end()){
-                        return cache[pixel];
-                    }
-
-                    int red = Bitmap::getRed(pixel);
-                    int green = Bitmap::getGreen(pixel);
-                    int blue = Bitmap::getBlue(pixel);
-                    unsigned int out = doFilter(red, green, blue);
-                    cache[pixel] = out;
-                    return out;
-                }
-            };
-
             AfterImage::Frame & frame = afterImage.frames[index];
             Bitmap fixed;
             if (frame.extra != index){
-                /* TODO: handle afterImage.color and afterImage.invert */
-                AfterImageFilter filter(afterImage.bright, afterImage.contrast, afterImage.postBright, afterImage.add, afterImage.multiply, index);
-
-                // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
-                Bitmap original = frame.sprite->getSprite()->getFinalBitmap(frame.effects);
-                fixed = Bitmap::temporaryBitmap2(original.getWidth(), original.getHeight());
-                original.draw(0, 0, filter, fixed);
                 frame.extra = index;
-                /* trade time for space -- but allocating a bitmap is sort
-                 * of expensive..
-                 */
-                frame.cache = Bitmap(fixed, true);
-            } else {
-                fixed = frame.cache;
+                frame.cache = createAfterImage(afterImage, frame, index);
             }
+                
+            fixed = frame.cache;
 
             int x = frame.x - cameraX + drawOffset.x + frame.sprite->xoffset;
             int y = frame.y - cameraY + drawOffset.y + frame.sprite->yoffset;

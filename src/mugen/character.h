@@ -1575,6 +1575,9 @@ public:
          * struct definition
          */
         virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply);
+    
+        Bitmap createAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index);
+        void processAfterImages();
 
         struct SpecialStuff{
             SpecialStuff():
