@@ -2064,32 +2064,32 @@ static bool holdingBlock(const vector<string> & commands){
 void Character::processAfterImages(){
     if (afterImage.lifetime > 0){
         afterImage.lifetime -= 1;
-        afterImage.currentTime -= 1;
-
-        int x = getRX();
-        int y = getRY();
-
-        /* not sure if checking for the timegap > 0 is the right thing.. */
-        // while (afterImage.timegap > 0 && afterImage.currentTime >= afterImage.timegap){
-        if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
-            int life = 200;
-            afterImage.currentTime += afterImage.timegap;
-            MugenAnimation * animation = getCurrentAnimation();
-            // afterImage.currentTime -= afterImage.timegap;
-            MugenFrame * currentSprite = animation->getCurrentFrame();
-            afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == Object::FACING_LEFT, false, xscale, yscale), life, x, y));
-            /*
-            while (afterImage.frames.size() > afterImage.length){
-                afterImage.frames.pop_front();
-            }
-            */
-        }
-        if (afterImage.frames.size() > afterImage.length){
-            afterImage.frames.resize(afterImage.length);
-        }
-        Global::debug(0) << "After images " << afterImage.frames.size() << endl;
     }
 
+    afterImage.currentTime -= 1;
+
+    int x = getRX();
+    int y = getRY();
+
+    /* not sure if checking for the timegap > 0 is the right thing.. */
+    if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
+        // int life = 200;
+        afterImage.currentTime += afterImage.timegap;
+        MugenAnimation * animation = getCurrentAnimation();
+        // afterImage.currentTime -= afterImage.timegap;
+        MugenFrame * currentSprite = animation->getCurrentFrame();
+        afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == Object::FACING_LEFT, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
+        /*
+           while (afterImage.frames.size() > afterImage.length){
+           afterImage.frames.pop_front();
+           }
+           */
+    }
+    if (afterImage.length > 0 && afterImage.frames.size() >= afterImage.length){
+        afterImage.frames.resize(afterImage.length - 1);
+    }
+
+#if 0
     for (deque<AfterImage::Frame>::iterator it = afterImage.frames.begin(); it != afterImage.frames.end(); /**/ ){
         AfterImage::Frame & frame = *it;
         frame.life -= 1;
@@ -2100,6 +2100,7 @@ void Character::processAfterImages(){
             it++;
         }
     }
+#endif
 }
 
 /* Inherited members */
@@ -2542,17 +2543,19 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
 
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
             AfterImage::Frame & frame = afterImage.frames[index];
-            Bitmap fixed;
-            if (frame.extra != index){
-                frame.extra = index;
-                frame.cache = createAfterImage(afterImage, frame, index);
-            }
-                
-            fixed = frame.cache;
+            if (frame.show){
+                Bitmap fixed;
+                if (frame.extra != index){
+                    frame.extra = index;
+                    frame.cache = createAfterImage(afterImage, frame, index);
+                }
 
-            int x = frame.x - cameraX + drawOffset.x + frame.sprite->xoffset;
-            int y = frame.y - cameraY + drawOffset.y + frame.sprite->yoffset;
-            MugenSprite::draw(fixed, x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
+                fixed = frame.cache;
+
+                int x = frame.x - cameraX + drawOffset.x + frame.sprite->xoffset;
+                int y = frame.y - cameraY + drawOffset.y + frame.sprite->yoffset;
+                MugenSprite::draw(fixed, x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
+            }
         }
 
         animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
