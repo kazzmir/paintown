@@ -185,7 +185,7 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
         return result.toBool();
     } catch (const MugenException & e){
         ostringstream out;
-        out << "Expression `" << expression << "' " << e.getReason();
+        out << "Expression `" << expression->toString() << "' " << e.getReason();
         throw MugenException(out.str());
     }
 }

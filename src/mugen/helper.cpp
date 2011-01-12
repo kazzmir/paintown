@@ -50,6 +50,10 @@ State * Helper::getState(int id) const {
     return NULL;
 
 }
+    
+const std::string Helper::getName() const {
+    return owner.getName() + " (helper)";
+}
 
 /*
 bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, int stateNumber){

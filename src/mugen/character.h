@@ -610,7 +610,7 @@ public:
 	virtual void nextPalette();
 	virtual void priorPalette();
 	
-	virtual inline const std::string & getName() const {
+	virtual inline const std::string getName() const {
             return name;
         }
 

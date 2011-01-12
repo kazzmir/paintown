@@ -14,6 +14,7 @@ public:
     }
         
     virtual bool isHelper() const;
+    virtual const std::string getName() const;
     using Character::getAnimation;
     virtual MugenAnimation * getAnimation(int id) const;
     using Character::getState;

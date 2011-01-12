@@ -2379,7 +2379,7 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
                     }
                 }
             } catch (const MugenException & me){
-                Global::debug(0) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
+                Global::debug(0, getName()) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
             }
         }
     }
