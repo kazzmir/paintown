@@ -2481,6 +2481,15 @@ public:
     Value invertColor;
 
     struct RGBColors{
+        RGBColors(){
+        }
+
+        RGBColors(const RGBColors & him):
+        red(copy(him.red)),
+        green(copy(him.green)),
+        blue(copy(him.blue)){
+        }
+
         Value red, green, blue;
     };
 
