@@ -36,6 +36,9 @@ static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::Abso
 static list<Ast::Section*> * loadCached(const string & path){
     string converted = path;
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
+    if (!Filesystem::exists(Filesystem::AbsolutePath(path))){
+        throw MugenException("Original file does not exist");
+    }
     Filesystem::AbsolutePath fullPath = Filesystem::userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE)).join(Filesystem::RelativePath(converted));
     if (!newer(fullPath, Filesystem::AbsolutePath(path))){
         throw MugenException("File is old");
