@@ -223,6 +223,7 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
     }
 }
 
+/*
 static Filesystem::AbsolutePath maybeFindRandom(const std::string & name, std::vector<Filesystem::AbsolutePath> & all){
     if (name == "_"){
         if (all.size() > 0){
@@ -235,6 +236,40 @@ static Filesystem::AbsolutePath maybeFindRandom(const std::string & name, std::v
         return Filesystem::findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
     }
 }
+*/
+
+static Character * doLoad(const Filesystem::AbsolutePath & path){
+    TimeDifference timer;
+
+    Character * guy = new Character(path);
+    std::ostream & out = Global::debug(0);
+    out << "Loading player " << path.path();
+    out.flush();
+    timer.startTime();
+    guy->load();
+    timer.endTime();
+    out << timer.printTime(" took") << std::endl;
+
+    return guy;
+}
+
+static Character * makeCharacter(const std::string & name, bool random, std::vector<Filesystem::AbsolutePath> & all){
+    if (random){
+        while (all.size() > 0){
+            int choice = PaintownUtil::rnd(all.size());
+            try{
+                return doLoad(all[choice]);
+            } catch (const MugenException & failed){
+                Global::debug(0) << "Failed to load because " << failed.getReason() << std::endl;
+                all.erase(all.begin() + choice);
+            }
+        }
+        throw MugenException("No characters left to choose from!");
+    } else {
+        Filesystem::AbsolutePath path = Filesystem::findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
+        return doLoad(path);
+    }
+}
 
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
     /* This has its own parse cache because its started by the main menu and not
@@ -245,58 +280,38 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
     bool random2 = player2Name == "_";
-here1:
-    if (allCharacters.size() == 0){
-        throw MugenException("No def files left", __FILE__, __LINE__);
-    }
-    Character player1(maybeFindRandom(player1Name, allCharacters));
-    TimeDifference timer;
-    try{
-        std::ostream & out = Global::debug(0);
-        out << "Loading player 1 " << player1.getLocation().path();
-        out.flush();
-        timer.startTime();
-        player1.load();
-        timer.endTime();
-        out << timer.printTime(" took") << std::endl;
-    } catch (const MugenException & failed){
-        if (random1){
-            Global::debug(0) << "Failed to load: " << failed.getReason() << std::endl;
-            goto here1;
+    Character * player1 = NULL;
+    Character * player2 = NULL;
+    class Cleanup{
+    public:
+        Cleanup(Character *& player1, Character *& player2):
+        player1(player1),
+        player2(player2){
         }
-        throw failed;
-    }
 
-here2:
-    if (allCharacters.size() == 0){
-        throw MugenException("No def files left", __FILE__, __LINE__);
-    }
-    Character player2(maybeFindRandom(player2Name, allCharacters));
-    try {
-        std::ostream & out = Global::debug(0);
-        out << "Loading player 2 " << player2.getLocation().path();
-        out.flush();
-        timer.startTime();
-        player2.load();
-        timer.endTime();
-        out << timer.printTime(" took") << std::endl;
-    } catch (const MugenException & failed){
-        if (random2){
-            Global::debug(0) << "Failed to load: " << failed.getReason() << std::endl;
-            goto here2;
+        Character *& player1;
+        Character *& player2;
+
+        ~Cleanup(){
+            delete player1;
+            delete player2;
         }
-    }
+    };
+
+    player1 = makeCharacter(player1Name, random1, allCharacters);
+    player2 = makeCharacter(player2Name, random2, allCharacters);
 
     HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
     DummyBehavior dummyBehavior;
     // Set regenerative health
-    player1.setRegeneration(true);
-    player2.setRegeneration(true);
-    player1.setBehavior(&player1Behavior);
-    player2.setBehavior(&dummyBehavior);
+    player1->setRegeneration(true);
+    player2->setRegeneration(true);
+    player1->setBehavior(&player1Behavior);
+    player2->setBehavior(&dummyBehavior);
 
     MugenStage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
+        TimeDifference timer;
         std::ostream & out = Global::debug(0);
         out << "Loading stage " << stageName;
         out.flush();
@@ -305,8 +320,63 @@ here2:
         timer.endTime();
         out << timer.printTime(" took") << std::endl;
     }
-    stage.addPlayer1(&player1);
-    stage.addPlayer2(&player2);
+    stage.addPlayer1(player1);
+    stage.addPlayer2(player2);
+    stage.reset();
+    Bitmap screen(GFX_X, GFX_Y);
+    runMatch(&stage, screen);
+}
+
+void Game::startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+    /* This has its own parse cache because its started by the main menu and not
+     * by Game::run()
+     */
+    ParseCache cache;
+    std::vector<Filesystem::AbsolutePath> allCharacters = Filesystem::getFilesRecursive(Filesystem::find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+    std::random_shuffle(allCharacters.begin(), allCharacters.end());
+    bool random1 = player1Name == "_";
+    bool random2 = player2Name == "_";
+    Character * player1 = NULL;
+    Character * player2 = NULL;
+    class Cleanup{
+    public:
+        Cleanup(Character *& player1, Character *& player2):
+        player1(player1),
+        player2(player2){
+        }
+
+        Character *& player1;
+        Character *& player2;
+
+        ~Cleanup(){
+            delete player1;
+            delete player2;
+        }
+    };
+
+    player1 = makeCharacter(player1Name, random1, allCharacters);
+    player2 = makeCharacter(player2Name, random2, allCharacters);
+
+    LearningAIBehavior player1Behavior(30);
+    LearningAIBehavior player2Behavior(30);
+
+    // Set regenerative health
+    player1->setBehavior(&player1Behavior);
+    player2->setBehavior(&player2Behavior);
+
+    MugenStage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    {
+        TimeDifference timer;
+        std::ostream & out = Global::debug(0);
+        out << "Loading stage " << stageName;
+        out.flush();
+        timer.startTime();
+        stage.load();
+        timer.endTime();
+        out << timer.printTime(" took") << std::endl;
+    }
+    stage.addPlayer1(player1);
+    stage.addPlayer2(player2);
     stage.reset();
     Bitmap screen(GFX_X, GFX_Y);
     runMatch(&stage, screen);

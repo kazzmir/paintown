@@ -23,6 +23,8 @@ class Game {
 
         /* just start a training match */
         static void startTraining(const std::string & player1, const std::string & player2, const std::string & stage);
+        /* start a watch match */
+        static void startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName);
     private:
         void doArcade(const Bitmap &);
         void doTraining(const Bitmap & bmp);

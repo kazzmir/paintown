@@ -41,6 +41,7 @@ static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
 static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
 static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
+static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
 static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 
 static const char * closestMatch(const char * s1, vector<const char *> args){
@@ -95,6 +96,7 @@ static void showOptions(){
 	Global::debug(0) << " " << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
         Global::debug(0) << " " << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
         Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
+        Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
         Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
 #ifdef HAVE_NETWORKING
 	Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
@@ -173,8 +175,13 @@ static bool parseMugenInstant(string input, string * player1, string * player2, 
 }
 
 static void runMugenTraining(const string & player1, const string & player2, const string & stage){
-    Global::debug(0) << "Mugen training mode player 1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
+    Global::debug(0) << "Mugen training mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
     Mugen::Game::startTraining(player1, player2, stage);
+}
+
+static void runMugenWatch(const string & player1, const string & player2, const string & stage){
+    Global::debug(0) << "Mugen watch mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
+    Mugen::Game::startWatch(player1, player2, stage);
 }
 
 int paintown_main( int argc, char ** argv ){
@@ -189,14 +196,22 @@ int paintown_main( int argc, char ** argv ){
     Collector janitor;
 
     struct MugenInstant{
+        enum Kind{
+            None,
+            Training,
+            Watch
+        };
+
         MugenInstant():
-            enabled(false){
+            enabled(false),
+            kind(None){
             }
 
         bool enabled;
         string player1;
         string player2;
         string stage;
+        Kind kind;
     } mugenInstant;
 
     System::startMemoryUsage();
@@ -234,10 +249,20 @@ int paintown_main( int argc, char ** argv ){
             q += 1;
             if (q < argc){
                 mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
+                mugenInstant.kind = MugenInstant::Training;
             } else {
                 Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
             }
-        } else if ( isArg( argv[ q ], DEBUG_ARG, NUM_ARGS(DEBUG_ARG) ) ){
+        } else if (isArg(argv[q], MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG))){ 
+            q += 1;
+            if (q < argc){
+                mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
+                mugenInstant.kind = MugenInstant::Watch;
+            } else {
+                Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
+            }
+
+        } else if (isArg(argv[q], DEBUG_ARG, NUM_ARGS(DEBUG_ARG))){
             q += 1;
             if ( q < argc ){
                 istringstream i( argv[ q ] );
@@ -314,9 +339,12 @@ int paintown_main( int argc, char ** argv ){
             } else if (mugen){
                 setMugenMotif(mainMenuPath());
                 Mugen::run();
-            } else if (mugenInstant.enabled){
+            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Training){
                 setMugenMotif(mainMenuPath());
                 runMugenTraining(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
+            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Watch){
+                setMugenMotif(mainMenuPath());
+                runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
             } else {
                 Menu::Menu game(mainMenuPath());
                 game.run(Menu::Context());
