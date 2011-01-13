@@ -194,20 +194,7 @@ for i in filelist:
 
 # FIXME: somehow get this information from the scons env
 def useSDL():
-    import os
-    def byEnv():
-        try:
-            return os.environ['SDL'] == '1'
-        except KeyError:
-            return False
-
-    def byArgument():
-        try:
-            return int(ARGUMENTS['sdl']) == 1
-        except KeyError:
-            return False
-
-    return byEnv() or byArgument()
+    return use['PAINTOWN_BACKEND'] == 'sdl'
 
 def useMinpspw():
     import os

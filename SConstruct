@@ -562,19 +562,7 @@ int main(int argc, char ** argv){
     return 1
 
 def useSDL():
-    def byEnv():
-        try:
-            return os.environ['SDL'] == '1'
-        except KeyError:
-            return False
-
-    def byArgument():
-        try:
-            return int(ARGUMENTS['sdl']) == 1
-        except KeyError:
-            return False
-
-    return byEnv() or byArgument()
+    return not useAllegro() and not useAllegro5()
 
 def useAllegro5():
     def byEnv():
@@ -592,7 +580,19 @@ def useAllegro5():
     return byEnv() or byArgument()
 
 def useAllegro():
-    return not useSDL() and not useAllegro5()
+    def byEnv():
+        try:
+            return os.environ['ALLEGRO'] == '1'
+        except KeyError:
+            return False
+
+    def byArgument():
+        try:
+            return int(ARGUMENTS['allegro']) == 1
+        except KeyError:
+            return False
+        
+    return byEnv() or byArgument()
 
 def isCygwin():
     try:
@@ -975,6 +975,14 @@ sys.path.append('src/mugen/parser')
 import peg
 
 env = getEnvironment(getDebug())
+if useSDL():
+    env['PAINTOWN_BACKEND'] = 'sdl'
+elif useAllegro():
+    env['PAINTOWN_BACKEND'] = 'allegro'
+elif useAllegro5():
+    env['PAINTOWN_BACKEND'] = 'allegror5'
+else:
+    env['PAINTOWN_BACKEND'] = 'unknown'
 
 # Generates a single .cpp file from a .peg description
 peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']),
