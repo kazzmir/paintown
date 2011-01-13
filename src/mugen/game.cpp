@@ -262,6 +262,9 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
             } catch (const MugenException & failed){
                 Global::debug(0) << "Failed to load because " << failed.getReason() << std::endl;
                 all.erase(all.begin() + choice);
+            } catch (const Filesystem::NotFound & failed){
+                Global::debug(0) << "Failed to load because " << failed.getTrace() << std::endl;
+                all.erase(all.begin() + choice);
             }
         }
         throw MugenException("No characters left to choose from!");
