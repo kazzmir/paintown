@@ -101,7 +101,7 @@ endif(DEBUG)
 # FIXME: not sure if this is in the right place
 add_definitions(-DHAVE_NETWORKING)
 
-option(USE_SDL "Compile paintown with SDL instead of Allegro?" OFF)
+option(USE_SDL "Compile paintown with SDL instead of Allegro?" ON)
 
 if($ENV{SDL})
     set(USE_SDL ON)
