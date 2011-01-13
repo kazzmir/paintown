@@ -28,7 +28,7 @@ install:
 buildbot: buildbot_normal buildbot_static buildbot_editor buildbot_cmake
 buildbot_normal:
 	@scons -j `python misc/cores.py` gch=0 colors=0
-	@scons -j `python misc/cores.py` gch=0 colors=0 sdl=1
+	@scons -j `python misc/cores.py` gch=0 colors=0 allegro=1
 buildbot_static:
 	@scons static -j `python misc/cores.py` gch=0 colors=0
 buildbot_editor:
@@ -58,12 +58,12 @@ win_clean:
 
 # use to build on windows with mingw
 win:
-	@echo Building windows (Allegro)..
+	@echo Building windows (SDL)..
 	@scons env=mingw
 
-winsdl:
-	@echo Building windows (SDL)..
-	@scons env=mingw sdl=1
+winallegro:
+	@echo Building windows (Allegro)..
+	@scons env=mingw allegro=1
 
 nsis:
 	makensis /V2 misc/installer.nsi

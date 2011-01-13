@@ -561,9 +561,6 @@ int main(int argc, char ** argv){
     context.Result(colorResult(1))
     return 1
 
-def useSDL():
-    return not useAllegro() and not useAllegro5()
-
 def useAllegro5():
     def byEnv():
         try:
@@ -593,6 +590,9 @@ def useAllegro():
             return False
         
     return byEnv() or byArgument()
+
+def useSDL():
+    return not useAllegro() and not useAllegro5()
 
 def isCygwin():
     try:
