@@ -749,10 +749,6 @@ void Cursor::act(Grid &grid){
                 }
                 break;
             case StageSelect:
-                /* Check if selecting is still possible else set done state */
-                if (!grid.getStageHandler().isSelecting()){
-                    state = Done;
-                }
                 if (event[Left]){
                     grid.getStageHandler().prev();
                 }
@@ -779,6 +775,11 @@ void Cursor::act(Grid &grid){
                     grid.selectStage();
                 }
                 if (event[Start]){
+                }
+
+                /* Check if selecting is still possible else set done state */
+                if (!grid.getStageHandler().isSelecting()){
+                    state = Done;
                 }
                 break;
             case Done:
