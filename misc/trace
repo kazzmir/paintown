@@ -1,0 +1,8 @@
+#!/usr/bin/python
+
+def trace(addresses):
+    import subprocess
+    subprocess.call(['addr2line', '-e', 'paintown'] + addresses)
+
+import sys
+trace(sys.argv[1].split(' '))
