@@ -1,6 +1,7 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
 #include "animation_trail.h"
+#include "character.h"
 #include "object.h"
 
 namespace Paintown{
@@ -19,15 +20,15 @@ bool AnimationTrail::act(){
     return life <= 0;
 }
 
-void AnimationTrail::draw(int rel_x, Bitmap * work) const {
+void AnimationTrail::draw(int rel_x, Remap * remap, Bitmap * work) const {
     int w = sprite.getWidth() / 2;
     int h = sprite.getHeight();
 
     Bitmap::transBlender(0, 0, 0, life * 255 / max_life);
     if (facing == Object::FACING_RIGHT){
-        sprite.translucent().draw(x-w - rel_x, y-h, *work);
+        sprite.translucent().draw(x-w - rel_x, y-h, remap, *work);
     } else {
-        sprite.translucent().draw(x-w - rel_x, y-h, *work);
+        sprite.translucent().draw(x-w - rel_x, y-h, remap, *work);
     }
 
     /*

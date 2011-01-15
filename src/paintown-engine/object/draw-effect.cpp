@@ -31,8 +31,8 @@ effect(effect),
 countdown(countdown){
 }
 
-void DrawCountdownEffect::draw(int x, Bitmap * work){
-    effect->draw(x, work);
+void DrawCountdownEffect::draw(int x, Remap * remap, Bitmap * work){
+    effect->draw(x, remap, work);
 }
 
 bool DrawCountdownEffect::act(){
@@ -64,7 +64,7 @@ startColor(startColor),
 endColor(endColor){
 }
 
-void DrawGlowEffect::draw(int x, Bitmap * work){
+void DrawGlowEffect::draw(int x, Remap * remap,Bitmap * work){
     double f = fabs(sin(Util::radians(180) * angle / period));
     int alpha = 50;
 
@@ -78,9 +78,9 @@ void DrawGlowEffect::draw(int x, Bitmap * work){
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
     if (owner->getFacing() == Object::FACING_RIGHT ){
-        animation->DrawLit(rx, ry, work );
+        animation->DrawLit(rx, ry, remap, work);
     } else {
-        animation->DrawLitFlipped(rx, ry, work); 
+        animation->DrawLitFlipped(rx, ry, remap, work); 
     }
 }
 
@@ -101,14 +101,14 @@ DrawNormalEffect::DrawNormalEffect(const Character * owner):
 DrawEffect(owner, 0){
 }
     
-void DrawNormalEffect::draw(int x, Bitmap * work){
+void DrawNormalEffect::draw(int x, Remap * remap, Bitmap * work){
     Animation * animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
     if (owner->getFacing() == Object::FACING_RIGHT ){
-        animation->Draw(rx, ry, work);
+        animation->Draw(rx, ry, remap, work);
     } else {
-        animation->DrawFlipped(rx, ry, work);
+        animation->DrawFlipped(rx, ry, remap, work);
     }
 }
     
@@ -129,8 +129,8 @@ effect(effect),
 end(end){
 }
 
-void DrawUntilEffect::draw(int x, Bitmap * work){
-    effect->draw(x, work);
+void DrawUntilEffect::draw(int x, Remap * remap, Bitmap * work){
+    effect->draw(x, remap,work);
 }
 
 bool DrawUntilEffect::act(){

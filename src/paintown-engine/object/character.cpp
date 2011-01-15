@@ -39,73 +39,49 @@
 using namespace std;
 
 namespace Paintown{
-
-Remap::Remap():
-needRemap(false),
-original(NULL){
-}
-
-Remap::Remap(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to, Remap * original):
-needRemap(true),
-original(original),
+    
+Remap::Remap(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to):
 remapFrom(from),
 remapTo(to){
+    colors = computeRemapColors(from, to);
 }
 
-Remap::Remap(const Remap & copy, Character * parent):
-needRemap(copy.needRemap),
-original(copy.original),
+Remap::Remap(const Remap & copy):
 remapFrom(copy.remapFrom),
-remapTo(copy.remapTo){
-    for (map<string, Animation*>::const_iterator it = copy.mapper.begin(); it != copy.mapper.end(); it++){
-        string name = (*it).first;
-        Animation * animation = (*it).second;
-        mapper[name] = animation->copy(parent);
-    }
-}
-
-void Remap::setAnimation(const std::string & name, Animation * animation){
-    if (mapper[name] != NULL){
-        delete mapper[name];
-    }
-
-    mapper[name] = animation;
-}
-
-Animation * Remap::getAnimation(const std::string & name){
-    return mapper[name];
+remapTo(copy.remapTo),
+colors(copy.colors){
 }
 
 Remap::~Remap(){
-    for ( map<string,Animation*>::iterator it = mapper.begin(); it != mapper.end(); it++ ){
-        Animation * animation = (*it).second;
-        delete animation;
+}
+    
+unsigned int Remap::filter(unsigned int pixel) const {
+    map<unsigned int, unsigned int>::const_iterator replace = colors.find(pixel);
+    if (replace != colors.end()){
+        return replace->second;
     }
+    return pixel;
 }
 
-void Remap::use(Character * from){
-    if (needRemap && original != NULL){
-        doRemap(from);
-        needRemap = false;
-    }
-}
+map<unsigned int, unsigned int> Remap::computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to){
+    Bitmap b_from(Paintown::Mod::getCurrentMod()->makeBitmap(from));
+    Bitmap b_to(Paintown::Mod::getCurrentMod()->makeBitmap(to));
 
-void Remap::doRemap(Character * from){
-    Bitmap b_from(Paintown::Mod::getCurrentMod()->makeBitmap(remapFrom));
-    Bitmap b_to(Paintown::Mod::getCurrentMod()->makeBitmap(remapTo));
+    map<unsigned int, unsigned int> remap_colors;
 
-    map< int, int > remap_colors;
-
-    for ( int x1 = 0; x1 < b_from.getWidth(); x1++ ){
-        for ( int y1 = 0; y1 < b_from.getHeight(); y1++ ){
+    for (int x1 = 0; x1 < b_from.getWidth(); x1++){
+        for (int y1 = 0; y1 < b_from.getHeight(); y1++){
             int from_col = b_from.getPixel( x1, y1 );
             int to_col = b_to.getPixel( x1, y1 );
             if (to_col != -1 && from_col != to_col){
-                remap_colors[ from_col ] = to_col;
+                remap_colors[from_col] = to_col;
             }
         }
     }
 
+    return remap_colors;
+
+    /*
     const map<string, Animation *> & old_map = original->getAnimations();
     for ( map<string,Animation*>::const_iterator it = old_map.begin(); it != old_map.end(); it++ ){
         const string & name = (*it).first;
@@ -115,6 +91,7 @@ void Remap::doRemap(Character * from){
         newAnimation->reMap(remap_colors);
         setAnimation(name, newAnimation);
     }
+    */
 }
 
 Character::Character( int alliance ):
@@ -144,7 +121,7 @@ draw_shadow( true ),
 trail_generator(0),
 trail_counter(0),
 trail_life(0){
-    mapper[current_map] = new Remap();
+    mapper[current_map] = NULL;
 }
 
 Character::Character(const Filesystem::AbsolutePath & filename, int alliance) throw( LoadException ):
@@ -275,12 +252,14 @@ trail_life(chr.trail_life){
         squish_sound = new Sound( *(chr.squish_sound) );
     }
 
-    /*
-       for ( map<string,Animation*>::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
-       const Animation * const & ani_copy = (*it).second;
-       movements[ ani_copy->getName() ] = new Animation( *ani_copy, this );
-       }
+    for ( map<string,Animation*>::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
+        const Animation * const & ani_copy = (*it).second;
+        Animation * copy = new Animation(*ani_copy, this);
+        setMovement(copy, copy->getName());
+        // movements[ani_copy->getName()] = new Animation( *ani_copy, this );
+    }
 
+       /*
        animation_current = movements[ "idle" ];
        */
 
@@ -289,7 +268,11 @@ trail_life(chr.trail_life){
     for (map<int, Remap*>::const_iterator it = his_mapper.begin(); it != his_mapper.end(); it++ ){
         int id = (*it).first;
         Remap * remap = (*it).second;
-        mapper[id] = new Remap(*remap, this);
+        if (remap != NULL){
+            mapper[id] = new Remap(*remap);
+        } else {
+            mapper[id] = NULL;
+        }
 
         /*
            const map<string,Animation*> & his = (*it).second;
@@ -306,29 +289,29 @@ trail_life(chr.trail_life){
         */
     }
 
-    animation_current = getMovement( "idle" );
+    animation_current = getMovement("idle");
 
     setMap(chr.getCurrentMap());
 }
 	
 Network::Message Character::getCreateMessage(){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = 0;
-	message << World::CREATE_CHARACTER;
-	message << getAlliance();
-	message << getId();
-	message << getCurrentMap();
-	Global::debug( 1 ) << "Character create id " << getId() << endl;
-	Global::debug( 1 ) << "Character create path: '" << getPath().path() << "'" << endl;
-        Filesystem::RelativePath path = Filesystem::cleanse(getPath());
-        /*
-	path.erase( 0, Util::getDataPath().length() );
-        */
-	Global::debug( 1 ) << "Character create sending: '" << path.path() << "'" << endl;
-	message << path.path();
+    message.id = 0;
+    message << World::CREATE_CHARACTER;
+    message << getAlliance();
+    message << getId();
+    message << getCurrentMap();
+    Global::debug( 1 ) << "Character create id " << getId() << endl;
+    Global::debug( 1 ) << "Character create path: '" << getPath().path() << "'" << endl;
+    Filesystem::RelativePath path = Filesystem::cleanse(getPath());
+    /*
+       path.erase( 0, Util::getDataPath().length() );
+       */
+    Global::debug( 1 ) << "Character create sending: '" << path.path() << "'" << endl;
+    message << path.path();
 
-	return message;
+    return message;
 }
 
 void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException ){
@@ -350,7 +333,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     }
 
     current_map = 0;
-    mapper[current_map] = new Remap();
+    mapper[current_map] = NULL;
 
     // map<string, Filesystem::AbsolutePath> remaps;
 
@@ -367,16 +350,17 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
             } else if ( *n == "anim" ){
 
                 Animation * ani = new Animation(n, this);
+                setMovement(ani, ani->getName());
 
                 /*
-                   if ( movements[ ani->getName() ] != 0 ){
-                   delete movements[ ani->getName() ];
-                   }
-                   movements[ ani->getName() ] = ani;
-                   */
+                if (movements[ani->getName()] != 0){
+                    delete movements[ani->getName()];
+                }
+                movements[ani->getName()] = ani;
+                */
 
-                Remap* remap = mapper[current_map];
-                remap->setAnimation(ani->getName(), ani);
+                // Remap* remap = mapper[current_map];
+                // remap->setAnimation(ani->getName(), ani);
                 /*
                 if ( cur[ ani->getName() ] != 0 ){
                     delete cur[ ani->getName() ];
@@ -422,7 +406,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                 string second;
                 n->view() >> first >> second;
                 if (newRemap(first, second)){
-                    addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+                    addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second)));
                 }
                 // remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             } else {
@@ -492,9 +476,9 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
     }
 
     // animation_current = movements[ "idle" ];
-    animation_current = getMovement( "idle" );
+    animation_current = getMovement("idle");
 
-    body_parts = getBodyParts( getMovement( "idle" ) );
+    body_parts = getBodyParts(getMovement("idle"));
     own_stuff = true;
 
     addEffect(new DrawNormalEffect(this));
@@ -505,13 +489,23 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
 void Character::addRemap(Remap * remap){
     mapper[mapper.size()] = remap;
 }
+    
+Remap * Character::getCurrentRemap() const {
+    map<int, Remap*>::const_iterator find = getMapper().find(getCurrentMap());
+    if (find != getMapper().end()){
+        return find->second;
+    }
+    return NULL;
+}
         
 bool Character::newRemap(const std::string & from, const std::string & to){
     for (map<int, Remap*>::iterator it = mapper.begin(); it != mapper.end(); it++){
         Remap * remap = it->second;
-        if (remap->getFrom().path() == from &&
-            remap->getTo().path() == to){
-            return false;
+        if (remap != NULL){
+            if (remap->getFrom().path() == from &&
+                remap->getTo().path() == to){
+                return false;
+            }
         }
     }
     return true;
@@ -523,15 +517,15 @@ void Character::addEffect(DrawEffect * effect){
 }
 
 static int nonMaskingPixels( Bitmap * bitmap ){
-	int total = 0;
-	for ( int x = 0; x < bitmap->getWidth(); x++ ){
-		for ( int y = 0; y < bitmap->getHeight(); y++ ){
-			if ( bitmap->getPixel( x, y ) != Bitmap::MaskColor() ){
-				total += 1;
-			}
-		}
-	}
-	return total;
+    int total = 0;
+    for (int x = 0; x < bitmap->getWidth(); x++){
+        for (int y = 0; y < bitmap->getHeight(); y++){
+            if (bitmap->getPixel( x, y ) != Bitmap::MaskColor()){
+                total += 1;
+            }
+        }
+    }
+    return total;
 }
 
 static void replacePart( vector< BodyPart > & parts, Bitmap * bitmap ){
@@ -621,7 +615,7 @@ void Character::setMap(const unsigned int x){
     }
     */
 
-    mapper[current_map]->use(this);
+    // mapper[current_map]->use(this);
 
     /*
        if ( current_map < 0 ){
@@ -629,9 +623,11 @@ void Character::setMap(const unsigned int x){
        }
        */
 
+    /*
     if (animation_current != NULL){
         animation_current = getMovement(animation_current->getName());
     }
+    */
 }
 
 /* swap some colors around */
@@ -682,14 +678,19 @@ Animation * Character::getCurrentMovement() const {
     return this->animation_current;
 }
 	
-void Character::setMovement( Animation * animation, const string & name ){
-    Remap * remap = mapper[current_map];
-    remap->setAnimation(name, animation);
+void Character::setMovement(Animation * animation, const string & name){
+    if (movements[name] != NULL){
+        delete movements[name];
+    }
+    movements[name] = animation;
 }
 	
 Animation * Character::getMovement(const string & name){
-    Remap * remap = mapper[current_map];
-    return remap->getAnimation(name);
+    map<std::string, Animation *>::const_iterator find = getMovements().find(name);
+    if (find != getMovements().end()){
+        return find->second;
+    }
+    return NULL;
 }
 
 /*
@@ -883,33 +884,34 @@ void Character::died( vector< Object * > & objects ){
         setLink(NULL);
     }
 
-	if ( getExplode() ){
-		for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
-			const BodyPart & part = *it;
-			
-			int x = (int) getX() + part.x;
-			int y = (int) getY() + part.y;
-			double dx = (double)(Util::rnd(11) - 5) / 4.2;
-			double dy = (double)(Util::rnd(10) + 4) / 3.5;
-                        double dz = (double)(Util::rnd(11) - 5) / 5.0;
-			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy, dz, part.image ) );
-		}
-		if ( squish_sound != NULL ){
-			squish_sound->play();
-		}
-		/*
-		for ( int i = 0; i < 20 + Util::rnd( 10 ); i++ ){
-		// for ( int i = 0; i < 1; i++ ){
-			int x = (int) getX();
-			int y = (int) (getY() + Util::rnd( getHeight() ));
-			// int y = (int) (getY() - 50);
+    if (getExplode()){
+        for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
+            const BodyPart & part = *it;
 
-			double dx = (Util::rnd( 11 ) - 5) / 3.5;
-			double dy = (Util::rnd( 10 ) + 4) / 3.0;
-			objects.push_back( new Gib( x, y, (int) getZ(), dx, dy ) );
-		}
-		*/
-	}
+            int x = (int) getX() + part.x;
+            int y = (int) getY() + part.y;
+            double dx = (double)(Util::rnd(11) - 5) / 4.2;
+            double dy = (double)(Util::rnd(10) + 4) / 3.5;
+            double dz = (double)(Util::rnd(11) - 5) / 5.0;
+            objects.push_back(new Gib(x, y, (int) getZ(), dx, dy, dz, part.image));
+        }
+
+        if ( squish_sound != NULL ){
+            squish_sound->play();
+        }
+        /*
+           for ( int i = 0; i < 20 + Util::rnd( 10 ); i++ ){
+        // for ( int i = 0; i < 1; i++ ){
+        int x = (int) getX();
+        int y = (int) (getY() + Util::rnd( getHeight() ));
+        // int y = (int) (getY() - 50);
+
+        double dx = (Util::rnd( 11 ) - 5) / 3.5;
+        double dy = (Util::rnd( 10 ) + 4) / 3.0;
+        objects.push_back( new Gib( x, y, (int) getZ(), dx, dy ) );
+        }
+        */
+    }
 }
 
 /* use Utils::upcase instead */
@@ -940,72 +942,72 @@ void Character::decreaseZVelocity(){
 }
 
 void Character::landed( World * world ){
-	if ( death >= 2 ) return;
+    if ( death >= 2 ) return;
 
-	setThrown( false );
+    setThrown( false );
 
-	switch( getStatus() ){
-		case Status_Falling : {
-			if ( landed_sound ){
-				landed_sound->play();
-			}
+    switch (getStatus()){
+        case Status_Falling : {
+            if ( landed_sound ){
+                landed_sound->play();
+            }
 
-			world->Quake( (int)fabs(getYVelocity()) );
+            world->Quake( (int)fabs(getYVelocity()) );
 
-			setStatus( Status_Ground );
-			animation_current = getMovement( "idle" );
-			animation_current->reset();
-			world->addMessage( movedMessage() );
-			world->addMessage( animationMessage() );
-			break;
-		}
-		case Status_Fell : {
-	
-			if ( landed_sound ){
-				landed_sound->play();
-			}
-		
-			double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
-			// cout<<getName()<<" taking "<<cur<<" from falling. Health = "<<getHealth()<<endl;
-			Object::takeDamage(*world, NULL, (int)cur );
+            setStatus( Status_Ground );
+            animation_current = getMovement( "idle" );
+            animation_current->reset();
+            world->addMessage( movedMessage() );
+            world->addMessage( animationMessage() );
+            break;
+        }
+        case Status_Fell : {
 
-			world->Quake( (int)fabs(getYVelocity()) );
+            if ( landed_sound ){
+                landed_sound->play();
+            }
 
-			// setStatus( Status_Hurt );
-			
-			if ( (getHealth() <= 0 && death == 0) || death == 1 ){
-				Global::debug( 2 ) << this << " died from fall" << endl;
-				death = 2;
-				setHealth( 1 );
-			} else {
-				// setStatus( Status_Hurt );
-				setStatus( Status_Rise );
-				// animation_current = movements[ "rise" ];
-				animation_current = getMovement( "rise" );
-				animation_current->reset();
-			}
+            double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
+            // cout<<getName()<<" taking "<<cur<<" from falling. Health = "<<getHealth()<<endl;
+            Object::takeDamage(*world, NULL, (int)cur );
 
-			world->addMessage( healthMessage() );
-			world->addMessage( movedMessage() );
-			world->addMessage( animationMessage() );
+            world->Quake( (int)fabs(getYVelocity()) );
 
-			// cout<<getName()<<" landed: death = "<<death<<endl;
+            // setStatus( Status_Hurt );
 
-			break;
-		}
-		case Status_Jumping : {
-		
-			setStatus( Status_Ground );
-			// animation_current = movements["idle"];
-			animation_current = getMovement( "idle" );
-			animation_current->reset();
-			
-			world->addMessage( movedMessage() );
-			world->addMessage( animationMessage() );
+            if ( (getHealth() <= 0 && death == 0) || death == 1 ){
+                Global::debug( 2 ) << this << " died from fall" << endl;
+                death = 2;
+                setHealth( 1 );
+            } else {
+                // setStatus( Status_Hurt );
+                setStatus( Status_Rise );
+                // animation_current = movements[ "rise" ];
+                animation_current = getMovement( "rise" );
+                animation_current->reset();
+            }
 
-			break;
-		}
-	}
+            world->addMessage( healthMessage() );
+            world->addMessage( movedMessage() );
+            world->addMessage( animationMessage() );
+
+            // cout<<getName()<<" landed: death = "<<death<<endl;
+
+            break;
+        }
+        case Status_Jumping : {
+
+            setStatus( Status_Ground );
+            // animation_current = movements["idle"];
+            animation_current = getMovement( "idle" );
+            animation_current->reset();
+
+            world->addMessage( movedMessage() );
+            world->addMessage( animationMessage() );
+
+            break;
+        }
+    }
 }
 
 void Character::setTrails(const int produce, const int life){
@@ -1295,8 +1297,8 @@ void Character::getAttackCoords( int & x, int & y){
 	}
 }
 	
-const map<string, Animation*> & Character::getMovements() {
-    return mapper[current_map]->getAnimations();
+const map<string, Animation*> & Character::getMovements(){
+    return movements;
 }
 	
 void Character::attacked( World * world, Object * something, vector< Object * > & objects ){
@@ -1340,8 +1342,8 @@ void Character::collided(World * world, ObjectAttack * obj, vector< Object * > &
 }
 
 int Character::getRX() const {
-    if ( animation_current ){
-        if ( getFacing() == FACING_LEFT ){
+    if (animation_current){
+        if (getFacing() == FACING_LEFT){
             return Object::getRX() - animation_current->getOffsetX();
         } else {
             return Object::getRX() + animation_current->getOffsetX();
@@ -1683,42 +1685,42 @@ void Character::interpretMessage(World * world, Network::Message & message ){
 }
 	
 Network::Message Character::animationMessage(){
-	Network::Message m;
+    Network::Message m;
 
-	m.id = getId();
-	m << CharacterMessages::Animation;
-	m << getCurrentMap();
-	m.path = getCurrentMovement()->getName();
+    m.id = getId();
+    m << CharacterMessages::Animation;
+    m << getCurrentMap();
+    m.path = getCurrentMovement()->getName();
 
-	return m;
+    return m;
 }
 	
 int Character::getInvincibility() const {
     return invincibility;
 }
 
-void Character::draw( Bitmap * work, int rel_x, int rel_y ){
+void Character::draw(Bitmap * work, int rel_x, int rel_y){
 
     /* this makes a character blink when they die. death increases
      * so after 15 game ticks the character will start blinking.
      */
-    if ( death >= 15 ){
-        if ( (death/8) % 2 == 0 ){
+    if (death >= 15){
+        if ((death/8) % 2 == 0){
             return;
         }
     }
 
-    if ( animation_current ){
+    if (animation_current){
         /* trails and shadows can be effects too at some point */
 
         /* draw trails */
         for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); it++){
             AnimationTrail * trail = *it;
-            trail->draw(rel_x, work);
+            trail->draw(rel_x, getCurrentRemap(), work);
         }
 
-        if ( drawShadow() ){
-            Bitmap const * shadow = Shadow::getShadow( getShadow() );
+        if (drawShadow()){
+            Bitmap const * shadow = Shadow::getShadow(getShadow());
             // set_multiply_blender( 0, 0, 0, 164 );
             Bitmap::multiplyBlender( 0, 0, 0, 164 );
             shadow->translucent().draw( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
@@ -1726,14 +1728,14 @@ void Character::draw( Bitmap * work, int rel_x, int rel_y ){
 
         for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
             DrawEffect * effect = *it;
-            effect->draw(rel_x, work);
+            effect->draw(rel_x, getCurrentRemap(), work);
         }
 
-        if ( Global::getDebug() > 5 ){
+        if (Global::getDebug() > 5){
             int x = (int)(getX() - rel_x);
             int y = (int) getRY();
             int x2 = x + animation_current->getRange();
-            if ( getFacing() == Object::FACING_LEFT ){
+            if (getFacing() == Object::FACING_LEFT){
                 x2 = x - animation_current->getRange();
             }
             work->rectangle( x, y, x2, y + 1, Bitmap::makeColor(255,255,255) );
@@ -1755,9 +1757,9 @@ void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensit
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            frame->translucent().drawVFlip(x , y, *work);
+            frame->translucent().drawVFlip(x , y, getCurrentRemap(), *work);
         } else { 
-            frame->translucent().drawHVFlip(x, y, *work );
+            frame->translucent().drawHVFlip(x, y, getCurrentRemap(), *work );
         }
     }
 }

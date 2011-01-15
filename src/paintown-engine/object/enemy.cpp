@@ -57,12 +57,12 @@ aggression( NORMAL_AGRESSION ){
 }
 
 void Enemy::constructSelf(){
-	// heart = new Heart();
-	heart = HeartFactory::createHeart();
-	want_path = false;
-	show_name_time = 0;
-	show_life = getHealth();
-	id = -1;
+    // heart = new Heart();
+    heart = HeartFactory::createHeart();
+    want_path = false;
+    show_name_time = 0;
+    show_life = getHealth();
+    id = -1;
 }
 
 Enemy::~Enemy(){
@@ -182,7 +182,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 
 	filterEnemies( enemies, others );
 		
-	if ( animation_current->Act() ){
+	if (animation_current && animation_current->Act()){
 		animation_current->reset();
 		// nextTicket();
 		// animation_current = movements[ "idle" ];

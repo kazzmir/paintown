@@ -222,9 +222,9 @@ void Cat::act( vector< Object * > * others, World * world, vector< Object * > * 
 
 void Cat::draw( Bitmap * work, int rel_x, int rel_y ){
     if ( getFacing() == Object::FACING_RIGHT ){
-        current_animation->Draw( getRX() - rel_x, getRY(), work );
+        current_animation->Draw(getRX() - rel_x, getRY(), NULL, work);
     } else {
-        current_animation->DrawFlipped( getRX() - rel_x, getRY(), work ); 
+        current_animation->DrawFlipped(getRX() - rel_x, getRY(), NULL, work); 
     }
 
     if (Util::rnd(2000) == 0){

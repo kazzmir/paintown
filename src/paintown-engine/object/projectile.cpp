@@ -120,26 +120,24 @@ void Projectile::act( vector< Object * > * others, World * world, vector< Object
 }
 
 void Projectile::draw( Bitmap * work, int rel_x, int rel_y ){
-	if ( getFacing() == Object::FACING_RIGHT ){
-		currentAnimation->Draw( getRX() - rel_x, getRY(), work );
-	} else {
-		currentAnimation->DrawFlipped( getRX() - rel_x, getRY(), work ); 
-	}
+    if (getFacing() == Object::FACING_RIGHT){
+        currentAnimation->Draw(getRX() - rel_x, getRY(), NULL, work);
+    } else {
+        currentAnimation->DrawFlipped(getRX() - rel_x, getRY(), NULL, work); 
+    }
 }
 
 void Projectile::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
     if (currentAnimation){
         Bitmap::transBlender( 0, 0, 0, intensity );
-        Bitmap::drawingMode( Bitmap::MODE_TRANS );
 
         int x = (int)((getRX() - rel_x) - currentAnimation->getCurrentFrame()->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            currentAnimation->getCurrentFrame()->translucent().drawVFlip(x, y, *work);
+            currentAnimation->getCurrentFrame()->translucent().drawVFlip(x, y, NULL, *work);
         } else { 
-            currentAnimation->getCurrentFrame()->translucent().drawHVFlip(x, y, *work);
+            currentAnimation->getCurrentFrame()->translucent().drawHVFlip(x, y, NULL, *work);
         }
-        Bitmap::drawingMode( Bitmap::MODE_SOLID );
     }
 }
 

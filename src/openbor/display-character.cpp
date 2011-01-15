@@ -73,7 +73,7 @@ void DisplayCharacter::load(){
             string second;
             remap->view() >> first >> second;
             if (newRemap(first, second)){
-                addRemap(new Paintown::Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+                addRemap(new Paintown::Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second)));
             }
         }
 

@@ -5,12 +5,13 @@ class Bitmap;
 
 namespace Paintown{
 
+class Remap;
 class Character;
 
 class DrawEffect{
 public:
     DrawEffect(const Character * owner, const int level);
-    virtual void draw(int x, Bitmap * work) = 0;
+    virtual void draw(int x, Remap * remap, Bitmap * work) = 0;
     virtual DrawEffect * copy(const Character * owner) const = 0;
     virtual bool act() = 0;
     
@@ -35,7 +36,7 @@ protected:
 class DrawCountdownEffect: public DrawEffect {
 public:
     DrawCountdownEffect(DrawEffect * const effect, int countdown);
-    virtual void draw(int x, Bitmap * work);
+    virtual void draw(int x, Remap * remap, Bitmap * work);
     virtual bool act();
     virtual DrawEffect * copy(const Character * owner) const;
     virtual int getLevel() const;
@@ -48,7 +49,7 @@ protected:
 class DrawGlowEffect: public DrawEffect {
 public:
     DrawGlowEffect(const Character * owner, int startColor, int endColor, double period);
-    virtual void draw(int x, Bitmap * work);
+    virtual void draw(int x, Remap * remap, Bitmap * work);
     virtual bool act();
     virtual DrawEffect * copy(const Character * owner) const;
     virtual ~DrawGlowEffect();
@@ -61,7 +62,7 @@ protected:
 class DrawNormalEffect: public DrawEffect {
 public:
     DrawNormalEffect(const Character * owner);
-    virtual void draw(int x, Bitmap * work);
+    virtual void draw(int x, Remap * remap, Bitmap * work);
     virtual bool act();
     virtual DrawEffect * copy(const Character * owner) const;
     virtual ~DrawNormalEffect();
@@ -71,7 +72,7 @@ class DrawUntilEffect: public DrawEffect {
 public:
     typedef bool (*until)(const Character * const character);
     DrawUntilEffect(DrawEffect * const effect, until end);
-    virtual void draw(int x, Bitmap * work);
+    virtual void draw(int x, Remap * remap, Bitmap * work);
     virtual bool act();
     virtual DrawEffect * copy(const Character * owner) const;
     virtual int getLevel() const;

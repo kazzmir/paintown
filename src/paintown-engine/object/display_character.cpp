@@ -69,12 +69,12 @@ void DisplayCharacter::load(){
 
                     setMovement( ani, "idle" );
                 }
-            } else if ( *current == "remap" ){
+            } else if (*current == "remap"){
                 string first;
                 string second;
                 current->view() >> first >> second;
                 if (newRemap(first, second)){
-                    addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second), mapper[0]));
+                    addRemap(new Remap(Filesystem::RelativePath(first), Filesystem::RelativePath(second)));
                 }
                 // remaps[Filesystem::find(Filesystem::RelativePath(second)).path()] = Filesystem::find(Filesystem::RelativePath(first));
             }
@@ -98,7 +98,7 @@ void DisplayCharacter::load(){
         throw LoadException(__FILE__, __LINE__, "No 'idle' animation given for " + path );
     }
 
-    animation_current = getMovement( "idle" );
+    animation_current = getMovement("idle");
     animation_current->Act();
 
     effects.push_back(new DrawNormalEffect(this));

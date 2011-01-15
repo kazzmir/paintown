@@ -18,6 +18,7 @@ class Sound;
 
 namespace Paintown{
 
+class Remap;
 class Character;
 class Projectile;
 class AnimationEvent;
@@ -36,15 +37,14 @@ struct KeyPress{
 
 /* stores a bitmap and a collision object to go with it */
 struct Frame{
-	Bitmap * pic;
-	ECollide * collide;
+    Bitmap * pic;
+    ECollide * collide;
 
-	Frame( Bitmap * pic, ECollide * e);
-	Frame( const Frame & f );
-	~Frame();
+    Frame( Bitmap * pic, ECollide * e);
+    Frame( const Frame & f );
+    ~Frame();
 
-	bool mine;
-	
+    bool mine;
 };
 
 /* stores a sequence of bitmaps along with their collision
@@ -248,10 +248,10 @@ public:
 
 	ECollide * getCollide( int facing );
 	ECollide * getNormalCollide();
-	void Draw( int x, int y, Bitmap * work );
-	void DrawFlipped( int x, int y, Bitmap * work );
-	void DrawLit( int x, int y, Bitmap * work );
-	void DrawLitFlipped( int x, int y, Bitmap * work );
+	void Draw(int x, int y, Remap * remap, Bitmap * work );
+	void DrawFlipped( int x, int y, Remap * remap, Bitmap * work );
+	void DrawLit( int x, int y, Remap * remap, Bitmap * work );
+	void DrawLitFlipped( int x, int y, Remap * remap, Bitmap * work );
 	void setDelay( int _delay );
 	void setStatus( const int status );
 	void setFrame( const std::string & path );
@@ -277,8 +277,8 @@ protected:
 	// void parseObject( string str ) throw( exception );
 	void upperCase( std::string & who );
 
-	void doDraw( int x, int y, const Bitmap & frame, Bitmap * work );
-	void doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work );
+	void doDraw(int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work);
+	void doDrawFlipped(int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work);
 
 protected:
         std::string name;

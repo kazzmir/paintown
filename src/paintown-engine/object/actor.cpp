@@ -63,7 +63,7 @@ void Actor::act( vector< Object * > * others, World * world, vector< Object * > 
 }
 
 void Actor::draw( Bitmap * work, int rel_x, int rel_y ){
-	current_animation->Draw( getRX() - rel_x, getRY(), work );
+    current_animation->Draw( getRX() - rel_x, getRY(), NULL, work );
 }
 
 bool Actor::isCollidable( Object * obj ){

@@ -670,56 +670,56 @@ ECollide * Animation::getNormalCollide(){
 }
 
 ECollide * Animation::getCollide( int facing ){
-	if ( isAttack() ){
-		if ( attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2() ){
-			if ( attack_collide ){
-				delete attack_collide;
-			}
+    if ( isAttack() ){
+        if ( attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2() ){
+            if ( attack_collide ){
+                delete attack_collide;
+            }
 
-			// attack_collide = new ECollide( attack_x2-attack_x1, attack_y2-attack_y1 );
+            // attack_collide = new ECollide( attack_x2-attack_x1, attack_y2-attack_y1 );
 
-			/* Have to create our own ECollide structure */
-			attack_collide = new ECollide( getWidth(), getHeight() );
-			EQuad * ac = attack_collide->getHead();
-			EQuad * adder = new EQuad( attack.getXLen(), attack.getYLen(), NULL );
-			if ( facing == Object::FACING_LEFT ){
-				adder->setMinX( getWidth() - attack.getX2() );
-				adder->setMinY( attack.getY1() );
-			} else {
-				adder->setMinX( attack.getX1() );
-				adder->setMinY( attack.getY1() );
-			}
+            /* Have to create our own ECollide structure */
+            attack_collide = new ECollide( getWidth(), getHeight() );
+            EQuad * ac = attack_collide->getHead();
+            EQuad * adder = new EQuad( attack.getXLen(), attack.getYLen(), NULL );
+            if ( facing == Object::FACING_LEFT ){
+                adder->setMinX( getWidth() - attack.getX2() );
+                adder->setMinY( attack.getY1() );
+            } else {
+                adder->setMinX( attack.getX1() );
+                adder->setMinY( attack.getY1() );
+            }
 
-			adder->setFull( true );
-			ac->addQuad( adder );
+            adder->setFull( true );
+            ac->addQuad( adder );
 
-			return attack_collide;
-		}
-		return NULL;
-	}
-	return current_collide;
+            return attack_collide;
+        }
+        return NULL;
+    }
+    return current_collide;
 }
 
 // int Animation::convertKeyPress( const string & key_name ) throw( LoadException ){
 Input::PaintownInput Animation::convertKeyPress( const string & key_name ) {
-	// if (key_name == key_names[Keys::Idle]) return Unknown;
-	if (key_name == key_names[Keys::Jump]) return Input::Jump;
-	if (key_name == key_names[Keys::Forward]) return Input::Forward;
-	if (key_name == key_names[Keys::Back]) return Input::Back;
-	/* im not sure we need a grab key */
-	if (key_name == key_names[Keys::Grab]) return Input::Grab;
-	// if ( key_name == "key_right" ) return KEY_RIGHT;
-	if (key_name == key_names[Keys::Down]) return Input::Down;
-	if (key_name == key_names[Keys::Up]) return Input::Up;
-	if (key_name == key_names[Keys::Attack1]) return Input::Attack1;
-	if (key_name == key_names[Keys::Attack2]) return Input::Attack2;
-	if (key_name == key_names[Keys::Attack3]) return Input::Attack3;
+    // if (key_name == key_names[Keys::Idle]) return Unknown;
+    if (key_name == key_names[Keys::Jump]) return Input::Jump;
+    if (key_name == key_names[Keys::Forward]) return Input::Forward;
+    if (key_name == key_names[Keys::Back]) return Input::Back;
+    /* im not sure we need a grab key */
+    if (key_name == key_names[Keys::Grab]) return Input::Grab;
+    // if ( key_name == "key_right" ) return KEY_RIGHT;
+    if (key_name == key_names[Keys::Down]) return Input::Down;
+    if (key_name == key_names[Keys::Up]) return Input::Up;
+    if (key_name == key_names[Keys::Attack1]) return Input::Attack1;
+    if (key_name == key_names[Keys::Attack2]) return Input::Attack2;
+    if (key_name == key_names[Keys::Attack3]) return Input::Attack3;
 
     Global::debug(1) << "Unknown key name '" << key_name << "'" << endl;
 
-	return Input::Unknown;
+    return Input::Unknown;
 
-	// return KEY_ENTER;
+    // return KEY_ENTER;
 }
 	
 bool Animation::properSequence( const string & seq ){
@@ -741,165 +741,165 @@ bool Animation::properSequence( const string & seq ){
 }
 
 bool Animation::hasSequence( const string & seq ){
-	for ( vector< string >::iterator it = sequences.begin(); it != sequences.end(); it++ ){
-		////  cout<<"Testing has sequence "<<seq<<" against my "<<*it<<endl;
-		if ( *it == seq )
-			return true;
-	}
-	/*
-	for ( map<string,string>::iterator it = sequences.begin(); it != sequences.end(); it++ ){
-		const string & prev = (*it).first;
-		if ( prev == seq )
-			return true;
-	}
-	*/
-	return false;
+    for ( vector< string >::iterator it = sequences.begin(); it != sequences.end(); it++ ){
+        ////  cout<<"Testing has sequence "<<seq<<" against my "<<*it<<endl;
+        if ( *it == seq )
+            return true;
+    }
+    /*
+       for ( map<string,string>::iterator it = sequences.begin(); it != sequences.end(); it++ ){
+       const string & prev = (*it).first;
+       if ( prev == seq )
+       return true;
+       }
+       */
+    return false;
 }
 
 Bitmap * Animation::getFrame( int x ){
-	int i = 0;
-	map< string, Frame * >::iterator it;
-	for ( it = frames.begin(); it != frames.end() && i < x; it++, i++ );
+    int i = 0;
+    map< string, Frame * >::iterator it;
+    for ( it = frames.begin(); it != frames.end() && i < x; it++, i++ );
 
-	if ( it == frames.end() ){
-		return NULL;
-	}
+    if ( it == frames.end() ){
+        return NULL;
+    }
 
-	Frame * frame = (*it).second;
-	return frame->pic;
+    Frame * frame = (*it).second;
+    return frame->pic;
 }
 	
 int Animation::getWidth() const{
-	if ( current_frame )
-		return current_frame->getWidth();
+    if ( current_frame )
+        return current_frame->getWidth();
 
-	return 0;
+    return 0;
 }
 
 int Animation::getHeight() const{
-	if ( current_frame )
-		return current_frame->getHeight();
-	return 0;
+    if ( current_frame )
+        return current_frame->getHeight();
+    return 0;
 }
-	
+
 const Bitmap * Animation::getCurrentFrame() const {
-	return current_frame;
+    return current_frame;
 }
 
 const string Animation::getCurrentFramePath() const {
-	return current_frame->getPath();
+    return current_frame->getPath();
 }
 
-void Animation::DrawLit( int x, int y, Bitmap * work ){
-	doDraw( x, y, LitBitmap( *current_frame ), work );
+void Animation::DrawLit( int x, int y, Remap * remap, Bitmap * work ){
+    doDraw(x, y, LitBitmap(*current_frame), remap, work);
 }
 
-void Animation::DrawLitFlipped( int x, int y, Bitmap * work ){
-	doDrawFlipped( x, y, LitBitmap( *current_frame ), work );
+void Animation::DrawLitFlipped( int x, int y, Remap * remap, Bitmap * work ){
+    doDrawFlipped(x, y, LitBitmap(*current_frame), remap, work);
 }
 
-void Animation::doDraw( int x, int y, const Bitmap & frame, Bitmap * work ){
-	int w = frame.getWidth() / 2;
-	int h = frame.getHeight();
+void Animation::doDraw( int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work ){
+    int w = frame.getWidth() / 2;
+    int h = frame.getHeight();
 
-	/*
-	if ( Global::globalDebug() ){
-		work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
-	}
-	*/
+    /*
+       if ( Global::globalDebug() ){
+       work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
+       }
+       */
 
-	/*
-	x += offset_x;
-	y += offset_y;
-	*/
+    /*
+       x += offset_x;
+       y += offset_y;
+       */
 
-	frame.draw( x - w, y - h, *work );
+    frame.draw(x - w, y - h, remap, *work);
 
-	// cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
+    // cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
 
-	// work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
-	if ( Global::getDebug() > 5 ){
-		work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
-		work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
-		// current_collide->draw( *work, x-w, y-h );
-		ECollide * c = getCollide( Object::FACING_RIGHT );
-		if ( c != NULL ){
-			c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ) );
-		}
-	}
+    // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
+    if ( Global::getDebug() > 5 ){
+        work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
+        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
+        // current_collide->draw( *work, x-w, y-h );
+        ECollide * c = getCollide( Object::FACING_RIGHT );
+        if ( c != NULL ){
+            c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ) );
+        }
+    }
 
-	// work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
-	// cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
+    // work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
+    // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
 
-void Animation::Draw( int x, int y, Bitmap * work ){
+void Animation::Draw( int x, int y, Remap * remap, Bitmap * work ){
 
-	doDraw( x, y, *current_frame, work );
+    doDraw( x, y, *current_frame, remap, work);
 
 #if 0
-	int w = current_frame->getWidth() / 2;
-	int h = current_frame->getHeight();
+    int w = current_frame->getWidth() / 2;
+    int h = current_frame->getHeight();
 
-	if ( global_debug ){
-		work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
-	}
+    if ( global_debug ){
+        work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
+    }
 
-	x += offset_x;
-	y += offset_y;
+    x += offset_x;
+    y += offset_y;
 
-	current_frame->draw( x-w, y-h, *work );
+    current_frame->draw( x-w, y-h, *work );
 
-	// cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
+    // cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
 
-	// work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
-	if ( global_debug ){
-		work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
-	}
+    // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
+    if ( global_debug ){
+        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
+    }
 
-	// current_collide->draw( work, x-w, y-h );
-	// work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
-	// cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
+    // current_collide->draw( work, x-w, y-h );
+    // work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
+    // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 #endif
 
 }
 
-void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Bitmap * work ){
+void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work ){
 
-	int w = frame.getWidth() / 2;
-	int h = frame.getHeight();
+    int w = frame.getWidth() / 2;
+    int h = frame.getHeight();
 
-	/*
-	if ( Global::globalDebug() ){
-		work->rectangle( x, y, x-range, y+1, Bitmap::makeColor(255,255,255) );
-		// work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
-	}
-	*/
+    /*
+       if ( Global::globalDebug() ){
+       work->rectangle( x, y, x-range, y+1, Bitmap::makeColor(255,255,255) );
+    // work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
+    }
+    */
 
-	/*
-	x -= offset_x;
-	y += offset_y;
-	*/
+    /*
+       x -= offset_x;
+       y += offset_y;
+       */
 
-	frame.drawHFlip( x-w, y-h, *work );
+    frame.drawHFlip( x-w, y-h, remap, *work);
 
-	// work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
-	// work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
-	if ( Global::getDebug() > 5 ){
-		work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
-		work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
-		// current_collide->draw( *work, x-w, y-h, true );
-		ECollide * c = getCollide( Object::FACING_LEFT );
-		if ( c != NULL ){
-			c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ), true );
-		}
-	}
+    // work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
+    // work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
+    if ( Global::getDebug() > 5 ){
+        work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
+        work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
+        // current_collide->draw( *work, x-w, y-h, true );
+        ECollide * c = getCollide( Object::FACING_LEFT );
+        if ( c != NULL ){
+            c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ), true );
+        }
+    }
 
-	// cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
+    // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
 
-void Animation::DrawFlipped( int x, int y, Bitmap * work ){
+void Animation::DrawFlipped( int x, int y, Remap * remap, Bitmap * work ){
 
-	doDrawFlipped( x, y, *current_frame, work );
+	doDrawFlipped( x, y, *current_frame, remap, work);
 	
 #if 0
 	int w = current_frame->getWidth() / 2;

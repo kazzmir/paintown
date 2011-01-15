@@ -5,11 +5,13 @@ class Bitmap;
 
 namespace Paintown{
 
+class Remap;
+
 class AnimationTrail{
 public:
     AnimationTrail(const int x, const int y, const int facing, const int life, const Bitmap & sprite);
 
-    virtual void draw(const int rel_x, Bitmap * work) const;
+    virtual void draw(const int rel_x, Remap * remap, Bitmap * work) const;
     virtual bool act();
 
     virtual ~AnimationTrail();

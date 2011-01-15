@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "util/bitmap.h"
 #include "object_attack.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
@@ -35,6 +36,7 @@ struct BodyPart{
 };
 
 /* these should be self explanatory.. */
+/* TODO: make these an enum probably */
 const int Status_Ground = 0; /* normal status, on the ground */
 const int Status_Jumping = 1; /* jumping */
 const int Status_Grab = 2; /* grabbing another character */
@@ -49,19 +51,14 @@ const int Status_Falling = 9; /* falling due to lack of ground beneath them */
 class Character;
 
 /* Handles palette swaps */
-class Remap{
+class Remap: public Bitmap::Filter {
 public:
-    Remap();
-    Remap(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to, Remap * original);
-    Remap(const Remap & copy, Character * parent);
+    Remap(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to);
+    Remap(const Remap & copy);
 
     virtual ~Remap();
-
-    virtual void setAnimation(const std::string & name, Animation * animation);
-    virtual Animation * getAnimation(const std::string & name);
-    virtual const inline std::map<std::string, Animation*> & getAnimations() const {
-        return mapper;
-    }
+            
+    virtual unsigned int filter(unsigned int pixel) const;
 
     virtual inline const Filesystem::RelativePath & getFrom() const {
         return remapFrom;
@@ -71,6 +68,16 @@ public:
         return remapTo;
     }
 
+protected:
+    std::map<unsigned int, unsigned int> computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to);
+
+
+    /*
+    virtual void setAnimation(const std::string & name, Animation * animation);
+    virtual Animation * getAnimation(const std::string & name);
+    virtual const inline std::map<std::string, Animation*> & getAnimations() const {
+        return mapper;
+    }
     virtual void use(Character * from);
 protected:
     virtual void doRemap(Character * from);
@@ -78,457 +85,460 @@ protected:
     std::map<std::string, Animation*> mapper;
     bool needRemap;
     Remap * original;
+    */
     Filesystem::RelativePath remapFrom;
     Filesystem::RelativePath remapTo;
+    std::map<unsigned int, unsigned int> colors;
 };
 
 class Character: public ObjectAttack {
 public:
+    /* constructors and destructor */
+    Character( int alliance ); 
+    Character( const char * filename, int alliance ) throw( LoadException );
+    Character(const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException );
+    Character( const Character & chr ) throw( LoadException );
 
-	/* constructors and destructor */
-	Character( int alliance ); 
-	Character( const char * filename, int alliance ) throw( LoadException );
-	Character(const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException );
-	Character( const Character & chr ) throw( LoadException );
-	
-	virtual ~Character();
-
-public:
-
-	virtual void createProjectile( Projectile * projectile );
-
-	/* logic */
-	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-
-	/* drawing */
-	virtual void draw( Bitmap * work, int rel_x, int rel_y );
-	
-	virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
-	virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
-
-        virtual const Bitmap * getCurrentFrame() const;
-	
-	// virtual bool collision( Object * obj );
-
-	/* get a mirror image of this character */
-	virtual Object * copy();
-
-	/* make the character jump with an x velocity of x_ */
-	virtual void doJump( double x_, double z_ );
-	
-        /* implements the visitor OOP pattern:
-         * stimulation calls stimulate on character, then character
-         * calls stimulate on stimulation with the proper type
-         */
-	virtual void stimulate( const Stimulation & stim );
-        
-        virtual bool touchPoint(int x, int y);
-
-	/* inherited from object */
-	virtual void thrown();
-
-	/* you have collided with obj */
-	virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
-	
-	inline virtual void setFacing( const int f ){
-		if ( getStatus() == Status_Ground || getStatus() == Status_Grabbed ){
-			Object::setFacing( f );
-		}
-	}
-	
-	virtual bool isGrabbed();
-
-	virtual void grabbed( Object * obj );
-	virtual void unGrab();
-	
-	virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
-
-	/* obj hurt you, take some damage */
-	virtual void takeDamage( World & world, ObjectAttack * obj, int x );
-
-	/* make the character jump! */
-	virtual void jump();
-
-	virtual void died( std::vector< Object * > & objects );
+    virtual ~Character();
 
 public:
-	/* debug methods */
 
-	void print() const;
+    virtual void createProjectile( Projectile * projectile );
+
+    /* logic */
+    virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
+
+    /* drawing */
+    virtual void draw( Bitmap * work, int rel_x, int rel_y );
+
+    virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
+    virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
+
+    virtual const Bitmap * getCurrentFrame() const;
+
+    // virtual bool collision( Object * obj );
+
+    /* get a mirror image of this character */
+    virtual Object * copy();
+
+    /* make the character jump with an x velocity of x_ */
+    virtual void doJump( double x_, double z_ );
+
+    /* implements the visitor OOP pattern:
+     * stimulation calls stimulate on character, then character
+     * calls stimulate on stimulation with the proper type
+     */
+    virtual void stimulate( const Stimulation & stim );
+
+    virtual bool touchPoint(int x, int y);
+
+    /* inherited from object */
+    virtual void thrown();
+
+    /* you have collided with obj */
+    virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
+
+    inline virtual void setFacing( const int f ){
+        if ( getStatus() == Status_Ground || getStatus() == Status_Grabbed ){
+            Object::setFacing( f );
+        }
+    }
+
+    virtual bool isGrabbed();
+
+    virtual void grabbed( Object * obj );
+    virtual void unGrab();
+
+    virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
+
+    /* obj hurt you, take some damage */
+    virtual void takeDamage( World & world, ObjectAttack * obj, int x );
+
+    /* make the character jump! */
+    virtual void jump();
+
+    virtual void died( std::vector< Object * > & objects );
 
 public:
-	/* probers */
+    /* debug methods */
 
-	/* am I doing an attacking move? */
-	virtual bool isAttacking();
+    void print() const;
 
-	inline bool isMoving() const{
-		return moving;
-	}
-	
-	virtual double minZDistance() const;
+public:
+    /* probers */
 
-	/* can I be hit? */
-	virtual bool isCollidable( Object * obj );
+    /* am I doing an attacking move? */
+    virtual bool isAttacking();
 
-	/* have I hit something? */
-	virtual bool collision( ObjectAttack * obj );
-        
+    inline bool isMoving() const{
+        return moving;
+    }
+
+    virtual double minZDistance() const;
+
+    /* can I be hit? */
+    virtual bool isCollidable( Object * obj );
+
+    /* have I hit something? */
+    virtual bool collision( ObjectAttack * obj );
+
     virtual bool isGrabbable(Object * obj);
 
-	virtual bool isJumping();
-	
-	virtual int getAlliance() const;
+    virtual bool isJumping();
+
+    virtual int getAlliance() const;
 
 public:
-	/* setters */
-	
-	virtual inline void setStatus( const int _status ){
-		status = _status;
-	}
+    /* setters */
 
-	virtual int getToughness() const {
-		return toughness;
-	}
+    virtual inline void setStatus( const int _status ){
+        status = _status;
+    }
 
-	virtual int getRX() const;
-	virtual int getRZ() const;
-	virtual int getRY() const;
+    virtual int getToughness() const {
+        return toughness;
+    }
 
-	virtual inline void setShadow( int i ){
-		shadow = i;
-	}
+    virtual int getRX() const;
+    virtual int getRZ() const;
+    virtual int getRY() const;
 
-	virtual void setMap( const unsigned int x );
-	virtual void nextMap();
-	virtual void nextMap( int x );
-	virtual int getNextMap() const;
-	virtual int getNextMap( unsigned int x ) const;
+    virtual inline void setShadow( int i ){
+        shadow = i;
+    }
 
-	inline void setLink( Object * o ){
-		linked = o;
-	}
+    virtual void setMap( const unsigned int x );
+    virtual void nextMap();
+    virtual void nextMap( int x );
+    virtual int getNextMap() const;
+    virtual int getNextMap( unsigned int x ) const;
 
-	inline void setThrown( const bool b ){
-		thrown_status = b;
-	}
+    inline void setLink( Object * o ){
+        linked = o;
+    }
 
-	/* should these two methods be private? probably.. */
-        /*
-	inline void setMaxJumpHeight( const int j ){
-		max_jump_height = j;
-	}
-        */
-	
-	inline void setXVelocity( const double j ){
-		moving = true;
-		x_velocity = j;
-	}
+    inline void setThrown( const bool b ){
+        thrown_status = b;
+    }
 
-	inline void setZVelocity( const double j ){
-		moving = true;
-		z_velocity = j;
-	}
-	
-	inline void setYVelocity( const double j ){
-		moving = true;
-		y_velocity = j;
-	}
+    /* should these two methods be private? probably.. */
+    /*
+       inline void setMaxJumpHeight( const int j ){
+       max_jump_height = j;
+       }
+       */
 
-	inline void setMoving( const bool x ){
-		if ( x == false ){
-			setXVelocity( 0 );
-			setYVelocity( 0 );
-			setZVelocity( 0 );
-		}
-		moving = x;
-	}
+    inline void setXVelocity( const double j ){
+        moving = true;
+        x_velocity = j;
+    }
 
-	inline void setJumpingYVelocity( const double j ){
-		jumping_starting_velocity = j;
-	}
+    inline void setZVelocity( const double j ){
+        moving = true;
+        z_velocity = j;
+    }
 
-	inline void initJumpingYVelocity(){
-		setYVelocity( jumping_starting_velocity );
-	}
-		
-	void decreaseYVelocity();
-	void decreaseXVelocity();
-	void decreaseZVelocity();
+    inline void setYVelocity( const double j ){
+        moving = true;
+        y_velocity = j;
+    }
 
-        virtual void setTrails(const int produce, const int life);
+    inline void setMoving( const bool x ){
+        if ( x == false ){
+            setXVelocity( 0 );
+            setYVelocity( 0 );
+            setZVelocity( 0 );
+        }
+        moving = x;
+    }
 
-public:
-	/* for testing purposes only */
-	virtual bool testAnimation();
-	virtual void testAnimation( unsigned int x );
-	virtual void testAnimation( std::string name );
-	void testReset();
+    inline void setJumpingYVelocity( const double j ){
+        jumping_starting_velocity = j;
+    }
 
+    inline void initJumpingYVelocity(){
+        setYVelocity( jumping_starting_velocity );
+    }
+
+    void decreaseYVelocity();
+    void decreaseXVelocity();
+    void decreaseZVelocity();
+
+    virtual void setTrails(const int produce, const int life);
 
 public:
-	/* getters */
+    /* for testing purposes only */
+    virtual bool testAnimation();
+    virtual void testAnimation( unsigned int x );
+    virtual void testAnimation( std::string name );
+    void testReset();
 
-	/* how much damage I do */
-	virtual int getDamage() const;
 
-	/* collision detection object */
-	virtual ECollide * getCollide() const;
+public:
+    /* getters */
 
-	inline Object * getLink(){
-		return linked;
-	}
+    /* how much damage I do */
+    virtual int getDamage() const;
 
-	inline bool getThrown() const{
-		return thrown_status;
-	}
+    /* collision detection object */
+    virtual ECollide * getCollide() const;
 
-	inline const std::map< int, Remap*> getMapper() const {
-		return mapper;
-	}
+    inline Object * getLink(){
+        return linked;
+    }
 
-	virtual bool isGettable();
-	virtual Animation * getCurrentMovement() const;
-	virtual void setMovement( Animation * animation, const std::string & name );
-	virtual Animation * getMovement( const std::string & str );
-	// virtual Animation * getMovement( const unsigned int x );
-	virtual const std::map<std::string,Animation*> & getMovements();
+    inline bool getThrown() const{
+        return thrown_status;
+    }
 
-	virtual inline int getShadow() const {
-		return shadow;
-	}
-	virtual void getAttackCoords( int & x, int & y);
-	const std::string getName() const;
-	void setName( const std::string & str );
+    virtual Remap * getCurrentRemap() const;
 
-	inline void setSpeed( const double s ){
-		speed = s;
-	}
+    inline const std::map< int, Remap*> & getMapper() const {
+        return mapper;
+    }
 
-	inline void setDeath( int i ){
-		death = i;
-	}
+    virtual bool isGettable();
+    virtual Animation * getCurrentMovement() const;
+    virtual void setMovement( Animation * animation, const std::string & name );
+    virtual Animation * getMovement( const std::string & str );
+    // virtual Animation * getMovement( const unsigned int x );
+    virtual const std::map<std::string, Animation*> & getMovements();
 
-	inline virtual int getDeath() const {
-		return death;
-	}
+    virtual inline int getShadow() const {
+        return shadow;
+    }
+    virtual void getAttackCoords( int & x, int & y);
+    const std::string getName() const;
+    void setName( const std::string & str );
 
-	inline virtual double getSpeed() const {
-		return speed;
-	}
+    inline void setSpeed( const double s ){
+        speed = s;
+    }
 
-	inline virtual unsigned int getCurrentMap() const {
-		return current_map;
-	}
+    inline void setDeath( int i ){
+        death = i;
+    }
 
-	virtual int getWidth() const;
-	virtual int getHeight() const;
-	virtual const std::string & getAttackName();
-	virtual inline int getStatus() const {
-		return status;
-	}
+    inline virtual int getDeath() const {
+        return death;
+    }
 
-        /*
-	inline const double getMaxJumpHeight() const{
-		return max_jump_height;
-	}
-        */
+    inline virtual double getSpeed() const {
+        return speed;
+    }
 
-	inline double getMaxJumpingVelocity() const {
-		return jumping_starting_velocity;
-	}
+    inline virtual unsigned int getCurrentMap() const {
+        return current_map;
+    }
 
-	inline double getYVelocity() const {
-		return y_velocity;
-	}
-	
-	inline double getXVelocity() const {
-		return x_velocity;
-	}
+    virtual int getWidth() const;
+    virtual int getHeight() const;
+    virtual const std::string & getAttackName();
+    virtual inline int getStatus() const {
+        return status;
+    }
 
-	inline double getZVelocity() const {
-		return z_velocity;
-	}
-	
-	virtual void drawLifeBar( int x, int y, Bitmap * work );
-	
-	virtual inline const Filesystem::AbsolutePath & getPath() const {
-            return path;
-	}
+    /*
+       inline const double getMaxJumpHeight() const{
+       return max_jump_height;
+       }
+       */
 
-	virtual int spawnTime(){
-		return 0;
-	}
-	
-	virtual void deathReset();
+    inline double getMaxJumpingVelocity() const {
+        return jumping_starting_velocity;
+    }
 
-	virtual inline int getLives(){
-		return lives;
-	}
+    inline double getYVelocity() const {
+        return y_velocity;
+    }
 
-	inline void setLives( const int x ){
-		lives = x;
-	}
+    inline double getXVelocity() const {
+        return x_velocity;
+    }
 
-	virtual inline bool drawShadow() const {
-		return draw_shadow;
-	}
+    inline double getZVelocity() const {
+        return z_velocity;
+    }
 
-	virtual inline void setDrawShadow( bool b ){
-		draw_shadow = b;
-	}
+    virtual void drawLifeBar( int x, int y, Bitmap * work );
 
-	virtual Network::Message getCreateMessage();
-	virtual Network::Message movedMessage();
-	virtual Network::Message explodeMessage();
-	virtual Network::Message healthMessage();
-	virtual Network::Message ungrabMessage();
-	virtual Network::Message animationMessage();
-	virtual Network::Message showNameMessage( int amount );
-	virtual Network::Message fallMessage( double x, double y );
-        virtual Network::Message grabMessage(Object::networkid_t from, Object::networkid_t who);
-        virtual Network::Message nameMessage() const;
-	
-	virtual void interpretMessage(World * world, Network::Message & m );
-	
-	virtual void fall( double x_vel, double y_vel );
-	
+    virtual inline const Filesystem::AbsolutePath & getPath() const {
+        return path;
+    }
+
+    virtual int spawnTime(){
+        return 0;
+    }
+
+    virtual void deathReset();
+
+    virtual inline int getLives(){
+        return lives;
+    }
+
+    inline void setLives( const int x ){
+        lives = x;
+    }
+
+    virtual inline bool drawShadow() const {
+        return draw_shadow;
+    }
+
+    virtual inline void setDrawShadow( bool b ){
+        draw_shadow = b;
+    }
+
+    virtual Network::Message getCreateMessage();
+    virtual Network::Message movedMessage();
+    virtual Network::Message explodeMessage();
+    virtual Network::Message healthMessage();
+    virtual Network::Message ungrabMessage();
+    virtual Network::Message animationMessage();
+    virtual Network::Message showNameMessage( int amount );
+    virtual Network::Message fallMessage( double x, double y );
+    virtual Network::Message grabMessage(Object::networkid_t from, Object::networkid_t who);
+    virtual Network::Message nameMessage() const;
+
+    virtual void interpretMessage(World * world, Network::Message & m );
+
+    virtual void fall( double x_vel, double y_vel );
+
     virtual int getInvincibility() const;
 
     virtual void addEffect(DrawEffect * effect);
 
 protected:
 
-	virtual Network::Message jumpMessage( double x, double y );
-	
-	int getShadowX();
-	int getShadowY();
+    virtual Network::Message jumpMessage( double x, double y );
 
-	virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
-	// virtual void reMap( const std::string & from, const std::string & to, int id );
-        virtual void addRemap(Remap * remap);
-        /* true if a mapping between `from' and `to' doesn't already exist */
-        virtual bool newRemap(const std::string & from, const std::string & to);
-	void loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException );
-	bool realCollision( ObjectAttack * obj );
-	
-        std::vector< BodyPart > getBodyParts( Animation * animation );
+    int getShadowX();
+    int getShadowY();
 
-	virtual void landed( World * world );
+    virtual void filterEnemies( std::vector< Object * > & mine, std::vector< Object * > * all );
+    // virtual void reMap( const std::string & from, const std::string & to, int id );
+    virtual void addRemap(Remap * remap);
+    /* true if a mapping between `from' and `to' doesn't already exist */
+    virtual bool newRemap(const std::string & from, const std::string & to);
+    void loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException );
+    bool realCollision( ObjectAttack * obj );
 
-	virtual void drawLifeBar( int x, int y, int he, Bitmap * work );
-	
-	virtual ECollide * getNormalCollide() const;
+    std::vector< BodyPart > getBodyParts( Animation * animation );
 
-	/* helper functions */
+    virtual void landed( World * world );
 
-	// void parseObject( string object_string ) throw( exception );
-	void upperCase( std::string & who );
+    virtual void drawLifeBar( int x, int y, int he, Bitmap * work );
+
+    virtual ECollide * getNormalCollide() const;
+
+    /* helper functions */
+
+    // void parseObject( string object_string ) throw( exception );
+    void upperCase( std::string & who );
 
 
-	virtual void setInvincibility(const int x);
+    virtual void setInvincibility(const int x);
 
-	virtual inline void setExplode( bool b ){
-		explode = b;
-	}
+    virtual inline void setExplode( bool b ){
+        explode = b;
+    }
 
-	virtual bool getExplode(){
-		return explode;
-	}
+    virtual bool getExplode(){
+        return explode;
+    }
 
 
 protected:
-        std::string name;
-	// int speed;
-	int type;
-	int shadow;
-	Bitmap * icon;
+    std::string name;
+    // int speed;
+    int type;
+    int shadow;
+    Bitmap * icon;
 
-	// int actualx, actualy;
+    // int actualx, actualy;
 
-	/* last_obj: last object to attack us */
-	// Object * last_obj;
+    /* last_obj: last object to attack us */
+    // Object * last_obj;
 
-	/* last_collide: keep track of last animation ticket that hurt us */
-	// unsigned long last_collide;
-        std::map< Object *, unsigned long > collision_objects;
+    /* last_collide: keep track of last animation ticket that hurt us */
+    // unsigned long last_collide;
+    std::map< Object *, unsigned long > collision_objects;
 
-	/* map from name of animation to animation */
-	// map<string,Animation *> movements;
+    /* map from name of animation to animation */
+    std::map<std::string, Animation *> movements;
 
-	/* current animation */
-	Animation * animation_current;
+    /* current animation */
+    Animation * animation_current;
 
-	bool own_stuff;
+    bool own_stuff;
 
-/* specific to character */
+    /* specific to character */
 protected:
-	
-	// int max_jump_height;
-	double x_velocity;
-	double y_velocity;
-	double z_velocity;
 
-	/*
-	double jumping_x; // velocity in the X direction
-	double jumping_velocity; // velocity in the Y direction
-	*/
-	double jumping_starting_velocity;
+    // int max_jump_height;
+    double x_velocity;
+    double y_velocity;
+    double z_velocity;
 
-	/* status: jumping or on the ground or anything else */
-	int status;
+    /*
+       double jumping_x; // velocity in the X direction
+       double jumping_velocity; // velocity in the Y direction
+       */
+    double jumping_starting_velocity;
 
-	/* when health reaches 0, death is set to a number such that the character blinks
-	 * for a little while before going away
-	 */
-	int death;
+    /* status: jumping or on the ground or anything else */
+    int status;
 
-	/* can be linked to another object, in some way */
-	/* Total time this object has been grabbed */
-	int grab_time;
+    /* when health reaches 0, death is set to a number such that the character blinks
+     * for a little while before going away
+     */
+    int death;
 
-	/* being thrown or not */
-	bool thrown_status;
+    /* can be linked to another object, in some way */
+    /* Total time this object has been grabbed */
+    int grab_time;
 
-	double speed;
-	
-	/* object this is linked to */
-	Object * linked;
+    /* being thrown or not */
+    bool thrown_status;
 
-	/* object that threw this */
-	Object * thrown_from;
+    double speed;
 
-	bool moving;
+    /* object this is linked to */
+    Object * linked;
 
-	unsigned int current_map;
-	/* map from id to map of animations */
-        // std::map< int, std::map<std::string, Animation*> > mapper;
-        std::map<int, Remap*> mapper;
-        std::vector< Object * > projectiles;
-        std::vector< BodyPart > body_parts;
+    /* object that threw this */
+    Object * thrown_from;
 
-	Sound * die_sound;
-	Sound * landed_sound;
-	Sound * squish_sound;
-	int invincibility;
-	int toughness;
-	bool explode;
-	int lives;
+    bool moving;
 
-	bool draw_shadow;
+    unsigned int current_map;
+    /* map from id to map of animations */
+    // std::map< int, std::map<std::string, Animation*> > mapper;
+    std::map<int, Remap*> mapper;
+    std::vector< Object * > projectiles;
+    std::vector< BodyPart > body_parts;
 
-        Filesystem::AbsolutePath path;
+    Sound * die_sound;
+    Sound * landed_sound;
+    Sound * squish_sound;
+    int invincibility;
+    int toughness;
+    bool explode;
+    int lives;
 
-        /* list of faded animations that act as a trail */
-        std::vector<AnimationTrail*> trails;
-        /* starting time before a trail is produced, 0 means don't produce any */
-        int trail_generator;
-        /* countdown before a trail is produced */
-        int trail_counter;
-        /* lifetime for trails */
-        int trail_life;
+    bool draw_shadow;
 
-        std::vector<DrawEffect*> effects;
+    Filesystem::AbsolutePath path;
+
+    /* list of faded animations that act as a trail */
+    std::vector<AnimationTrail*> trails;
+    /* starting time before a trail is produced, 0 means don't produce any */
+    int trail_generator;
+    /* countdown before a trail is produced */
+    int trail_counter;
+    /* lifetime for trails */
+    int trail_life;
+
+    std::vector<DrawEffect*> effects;
 };
 
 }
