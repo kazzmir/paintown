@@ -94,7 +94,7 @@ void FogAtmosphere::drawScreen(Bitmap * work, int x){
     for ( vector< Fog * >::iterator it = fogs.begin(); it != fogs.end(); it++ ){
         Fog * f = *it;
         int y = (int)(f->y + sin( f->ang * 3.14159 / 180.0 ) * 2);
-        fog->drawTrans( f->x, y, *work );
+        fog->translucent().draw( f->x, y, *work );
     }
     /*
        screenX();

@@ -1,6 +1,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 
 #include "chat_server.h"
 #include "factory/font_render.h"
@@ -63,7 +64,7 @@ static int getServerPort(){
         black.clear();
         black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
         Bitmap::transBlender( 0, 0, 0, 92 );
-        black.drawTrans( 20, drawY - font.getHeight() - 20, background );
+        black.translucent().draw( 20, drawY - font.getHeight() - 20, background );
         font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
         font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
         background.BlitToScreen();

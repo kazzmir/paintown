@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/lit_bitmap.h"
+#include "util/trans-bitmap.h"
 #include "paintown-engine/object/object.h"
 #include "util/load_exception.h"
 #include "util/funcs.h"
@@ -417,7 +418,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                      * pixels.
                      * alpha(y) = y < height/2 : 128 * y/height/2 * 100 ? alpha(64) * log(y)
                      */
-                    reflection.drawTrans( 0, preview.getHeight() - stand - stand, preview );
+                    reflection.translucent().draw( 0, preview.getHeight() - stand - stand, preview );
                     copy.draw( &preview, 0, 0 );
 
                     // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );

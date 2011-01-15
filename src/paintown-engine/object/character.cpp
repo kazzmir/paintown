@@ -1721,7 +1721,7 @@ void Character::draw( Bitmap * work, int rel_x, int rel_y ){
             Bitmap const * shadow = Shadow::getShadow( getShadow() );
             // set_multiply_blender( 0, 0, 0, 164 );
             Bitmap::multiplyBlender( 0, 0, 0, 164 );
-            shadow->drawTrans( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
+            shadow->translucent().draw( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
         }
 
         for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
@@ -1755,9 +1755,9 @@ void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensit
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            frame->drawTransVFlip(x , y, *work);
+            frame->translucent().drawVFlip(x , y, *work);
         } else { 
-            frame->drawTransHVFlip(x, y, *work );
+            frame->translucent().drawHVFlip(x, y, *work );
         }
     }
 }
@@ -1781,27 +1781,27 @@ void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, do
 
         int i = ((Bitmap::getRed(color) * 77 + intensity) + (Bitmap::getGreen(color) * 154 + intensity) + (Bitmap::getBlue(color) * 25 + intensity))/256;
         i = 255 - i;
-        Bitmap::drawingMode( Bitmap::MODE_TRANS );
+        // Bitmap::drawingMode( Bitmap::MODE_TRANS );
         // Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
         Bitmap::multiplyBlender((Bitmap::getRed(color) * 77 + intensity), (Bitmap::getGreen(color) * 154 + intensity), (Bitmap::getBlue(color) * 25 + intensity), i);
         if (scale > 0){
             int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
             int y = (int)(getRZ() + getY() * scale);
             if (getFacing() == FACING_RIGHT){ 
-                shade.drawTransVFlip( x, y, *work );
+                shade.translucent().drawVFlip( x, y, *work );
             } else { 
-                shade.drawTransHVFlip(x, y, *work );
+                shade.translucent().drawHVFlip(x, y, *work );
             }
         } else if (scale < 0){
             int x = (int)((getRX() - rel_x) - bmp->getWidth()/2);
             int y = (int)((getRZ() - fabs(newheight)) + (getY() * scale));
             if (getFacing() == FACING_RIGHT){ 
-                shade.drawTrans(x + 3, y, *work );
+                shade.translucent().draw(x + 3, y, *work );
             } else { 
-                shade.drawTransHFlip(x - 3, y, *work );
+                shade.translucent().drawHFlip(x - 3, y, *work );
             }
         }
-        Bitmap::drawingMode( Bitmap::MODE_SOLID );
+        // Bitmap::drawingMode( Bitmap::MODE_SOLID );
     }
 }
 

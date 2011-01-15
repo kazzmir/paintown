@@ -1,4 +1,5 @@
 #include "util/ebox.h"
+#include "util/trans-bitmap.h"
 #include "projectile.h"
 #include "object_attack.h"
 #include "util/token.h"
@@ -134,9 +135,9 @@ void Projectile::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensi
         int x = (int)((getRX() - rel_x) - currentAnimation->getCurrentFrame()->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            currentAnimation->getCurrentFrame()->drawTransVFlip(x, y, *work);
+            currentAnimation->getCurrentFrame()->translucent().drawVFlip(x, y, *work);
         } else { 
-            currentAnimation->getCurrentFrame()->drawTransHVFlip(x, y, *work);
+            currentAnimation->getCurrentFrame()->translucent().drawHVFlip(x, y, *work);
         }
         Bitmap::drawingMode( Bitmap::MODE_SOLID );
     }

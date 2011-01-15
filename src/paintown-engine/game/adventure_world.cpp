@@ -662,7 +662,7 @@ void AdventureWorld::draw( Bitmap * work ){
             on->Stretch( mini );
             Bitmap::transBlender( 0, 0, 0, 128 );
             mini.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
-            mini.drawTrans( mini_position_x, mini_position_y, *work );
+            mini.translucent().draw( mini_position_x, mini_position_y, *work );
             mini_position_x -= mini.getWidth() - 2;
             if ( mini_position_x <= 0 ){
                 mini_position_y -= mini.getHeight() - 2;

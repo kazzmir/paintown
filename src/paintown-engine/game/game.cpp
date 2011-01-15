@@ -968,7 +968,7 @@ void fadeOut( Bitmap & work, const string & message ){
     dark.clear();
     Bitmap::transBlender( 0, 0, 0, 128 );
 
-    dark.drawTrans( 0, 0, work );
+    dark.translucent().draw( 0, 0, work );
 
     const Font & f = Font::getFont(Global::DEFAULT_FONT, 50, 50 );
     f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );

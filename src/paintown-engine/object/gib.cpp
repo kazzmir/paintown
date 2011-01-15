@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include <iostream>
 #include "object_nonattack.h"
 #include "gib.h"
@@ -29,7 +30,7 @@ void Gib::draw( Bitmap * work, int rel_x, int rel_y ){
 	if ( fade > 0 ){
 		// Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
 		Bitmap::transBlender( 0, 0, 0, 255 - fade );
-		image->drawTrans( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
+		image->translucent().draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
 	} else {
 		for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
 			const Point & p = *it;

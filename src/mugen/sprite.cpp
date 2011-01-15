@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include <string.h>
 #include "sprite.h"
 #include "util/funcs.h"
@@ -397,27 +398,27 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 
     if ((effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
         if (effects.trans != None){
-            bmp.drawTransHFlip(flippedX, normalY, effects.filter, where);
+            bmp.translucent().drawHFlip(flippedX, normalY, effects.filter, where);
         } else {
             // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
             bmp.drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
         }
     } else if ( (effects.vfacing == FLIPPED) && (effects.facing == NOT_FLIPPED)){
         if (effects.trans != None){
-            bmp.drawTransVFlip(normalX, flippedY, effects.filter, where);
+            bmp.translucent().drawVFlip(normalX, flippedY, effects.filter, where);
         } else {
             bmp.drawVFlip(normalX, flippedY, effects.filter, where);
         }
     } else if ((effects.vfacing == FLIPPED) && (effects.facing == FLIPPED)){
         if (effects.trans != None){
-            bmp.drawTransHVFlip(flippedX, flippedY, effects.filter, where);
+            bmp.translucent().drawHVFlip(flippedX, flippedY, effects.filter, where);
         } else {
             bmp.drawHVFlip(flippedX, flippedY, effects.filter, where);
         }
     } else {
         //if( effects.mask ){
         if (effects.trans != None){
-            bmp.drawTrans(normalX, normalY, effects.filter, where);
+            bmp.translucent().draw(normalX, normalY, effects.filter, where);
         } else {
             bmp.draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
         }

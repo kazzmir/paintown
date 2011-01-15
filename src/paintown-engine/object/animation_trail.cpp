@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "animation_trail.h"
 #include "object.h"
 
@@ -24,9 +25,9 @@ void AnimationTrail::draw(int rel_x, Bitmap * work) const {
 
     Bitmap::transBlender(0, 0, 0, life * 255 / max_life);
     if (facing == Object::FACING_RIGHT){
-        sprite.drawTrans(x-w - rel_x, y-h, *work);
+        sprite.translucent().draw(x-w - rel_x, y-h, *work);
     } else {
-        sprite.drawTransHFlip(x-w - rel_x, y-h, *work);
+        sprite.translucent().draw(x-w - rel_x, y-h, *work);
     }
 
     /*
