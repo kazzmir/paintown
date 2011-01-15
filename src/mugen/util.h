@@ -7,6 +7,7 @@
 #include <list>
 #include "exception.h"
 #include "configuration.h"
+#include "util/bitmap.h"
 
 #include "util/input/input-manager.h"
 
@@ -161,6 +162,8 @@ class Effects{
             int x1, x2;
             int y1, y2;
         } dimension;
+
+        Bitmap::Filter * filter;
 };
 
 /* Use with fonts */

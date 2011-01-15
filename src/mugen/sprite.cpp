@@ -395,32 +395,31 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	}
     }
 
-    if ( (effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
+    if ((effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
         if (effects.trans != None){
-            bmp.drawTransHFlip(flippedX, normalY, where);
+            bmp.drawTransHFlip(flippedX, normalY, effects.filter, where);
         } else {
             // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
-            bmp.drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, where);
+            bmp.drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
         }
-
     } else if ( (effects.vfacing == FLIPPED) && (effects.facing == NOT_FLIPPED)){
         if (effects.trans != None){
-            bmp.drawTransVFlip(normalX, flippedY, where);
+            bmp.drawTransVFlip(normalX, flippedY, effects.filter, where);
         } else {
-            bmp.drawVFlip(normalX, flippedY, where);
+            bmp.drawVFlip(normalX, flippedY, effects.filter, where);
         }
     } else if ((effects.vfacing == FLIPPED) && (effects.facing == FLIPPED)){
         if (effects.trans != None){
-            bmp.drawTransHVFlip(flippedX, flippedY, where);
+            bmp.drawTransHVFlip(flippedX, flippedY, effects.filter, where);
         } else {
-            bmp.drawHVFlip(flippedX, flippedY, where);
+            bmp.drawHVFlip(flippedX, flippedY, effects.filter, where);
         }
     } else {
         //if( effects.mask ){
         if (effects.trans != None){
-            bmp.drawTrans(normalX, normalY, where);
+            bmp.drawTrans(normalX, normalY, effects.filter, where);
         } else {
-            bmp.draw(normalX, normalY, startWidth, startHeight, width, height, where);
+            bmp.draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
         }
         //} else {
         //    bmp.Blit( placex, placey, where );

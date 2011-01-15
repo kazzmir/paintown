@@ -2386,7 +2386,7 @@ bool Character::doStates(MugenStage & stage, const vector<string> & active, int 
     return false;
 }
 
-Bitmap Character::createAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index){
+void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Bitmap & work){
     class AfterImageFilter: public Bitmap::Filter {
     public:
         AfterImageFilter(const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & post, const AfterImage::RGB & extraAdd, const AfterImage::RGB & extraMultiplier, int extra):
@@ -2507,15 +2507,22 @@ Bitmap Character::createAfterImage(const AfterImage & afterImage, const AfterIma
     /* TODO: handle afterImage.color and afterImage.invert */
     AfterImageFilter filter(afterImage.bright, afterImage.contrast, afterImage.postBright, afterImage.add, afterImage.multiply, index);
 
+    Effects total = frame.effects + afterImage.translucent;
+    total.filter = &filter;
+
+    MugenSprite::draw(frame.sprite->getSprite()->getFinalBitmap(frame.effects), x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), work, total);
+
     // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
+    /*
     Bitmap original = frame.sprite->getSprite()->getFinalBitmap(frame.effects);
     Bitmap fixed = Bitmap::temporaryBitmap2(original.getWidth(), original.getHeight());
     original.draw(0, 0, filter, fixed);
+    */
 
     /* trade time for space -- but allocating a bitmap is sort
      * of expensive..
      */
-    return Bitmap(fixed, true);
+    // return Bitmap(fixed, true);
     // frame.cache = Bitmap(fixed, true);
 }
 
@@ -2544,6 +2551,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
             AfterImage::Frame & frame = afterImage.frames[index];
             if (frame.show){
+                /*
                 Bitmap fixed;
                 if (frame.extra != index){
                     frame.extra = index;
@@ -2551,10 +2559,12 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
                 }
 
                 fixed = frame.cache;
-
+                */
                 int x = frame.x - cameraX + drawOffset.x + frame.sprite->xoffset;
                 int y = frame.y - cameraY + drawOffset.y + frame.sprite->yoffset;
-                MugenSprite::draw(fixed, x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
+                drawAfterImage(afterImage, frame, index, x, y, *work);
+
+                // MugenSprite::draw(fixed, x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
             }
         }
 

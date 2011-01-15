@@ -1202,7 +1202,8 @@ mask(false),
 facing(1),
 vfacing(1),
 scalex(1),
-scaley(1){
+scaley(1),
+filter(NULL){
 }
 
 Mugen::Effects::Effects(const Mugen::Effects & copy){
@@ -1215,6 +1216,7 @@ Mugen::Effects::Effects(const Mugen::Effects & copy){
     this->scalex = copy.scalex;
     this->scaley = copy.scaley;
     this->dimension = copy.dimension;
+    this->filter = copy.filter;
 }
 
 const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
@@ -1227,6 +1229,7 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->scalex = e.scalex;
     this->scaley = e.scaley;
     this->dimension = e.dimension;
+    this->filter = e.filter;
     return *this;
 }
         
