@@ -327,7 +327,7 @@ startscene(0){
                     if (simple == "spr"){
 			std::string temp;
                         simple >> temp;
-                        Util::readSprites(Util::findFile(Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
+                        Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
                     } else if (simple == "startscene"){
                         simple >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;

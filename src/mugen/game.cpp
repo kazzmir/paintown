@@ -477,13 +477,17 @@ void Game::doArcade(const Bitmap & bmp){
     try{
         intro = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "intro.storyboard")));
     } catch (const MugenException & fail){
-        Global::debug(0) << "Failed to get intro " << fail.getReason() << std::endl;
+        Global::debug(0) << "Failed to get intro from " << file.path() << " " << fail.getReason() << std::endl;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Failed to get intro from " << file.path() << " " << fail.getTrace() << std::endl;
     }
 
     try{
         ending = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "ending.storyboard")));
     } catch (const MugenException & fail){
-        Global::debug(0) << "Failed to get ending" << fail.getReason() << std::endl;
+        Global::debug(0) << "Failed to get ending from " << file.path() << " " << fail.getReason() << std::endl;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Failed to get ending from " << file.path() << " " << fail.getTrace() << std::endl;
     }
 
     try{
@@ -492,7 +496,9 @@ void Game::doArcade(const Bitmap & bmp){
             displayWinScreen = true;
         }
     } catch (const MugenException & fail){
-        Global::debug(0) << "Failed to get win screen" << fail.getReason() << std::endl;
+        Global::debug(0) << "Failed to get win screen from " << systemFile.path() << " " << fail.getReason() << std::endl;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Failed to get win screen from " << systemFile.path() << " " << fail.getTrace() << std::endl;
     }
 
     try{
@@ -502,7 +508,9 @@ void Game::doArcade(const Bitmap & bmp){
             defaultEnding = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "default ending", "storyboard")));
         }
     } catch (const MugenException & fail){
-        Global::debug(0) << "Failed to get ending screen" << fail.getReason() << std::endl;
+        Global::debug(0) << "Failed to get ending screen from " << systemFile.path() << " " << fail.getReason() << std::endl;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Failed to get ending screen from " << systemFile.path() << " " << fail.getTrace() << std::endl;
     }
 
     try{
@@ -512,7 +520,9 @@ void Game::doArcade(const Bitmap & bmp){
             gameOver = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "game over screen", "storyboard")));
         }
     } catch (const MugenException & fail){
-        Global::debug(0) << "Failed to get game over screen" << fail.getReason() << std::endl;
+        Global::debug(0) << "Failed to get game over screen from " << systemFile.path() << fail.getReason() << std::endl;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Failed to get game over screen from " << systemFile.path() << fail.getTrace() << std::endl;
     }
 
     try{
@@ -522,7 +532,9 @@ void Game::doArcade(const Bitmap & bmp){
             credits = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "end credits", "storyboard")));
         }
     } catch (const MugenException & fail){
-        Global::debug(0) << "Failed to get end credits" << fail.getReason() << std::endl;
+        Global::debug(0) << "Failed to get end credits from " << systemFile.path() << " " << fail.getReason() << std::endl;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Failed to get end credits from " << systemFile.path() << " " << fail.getTrace() << std::endl;
     }
 
     InputMap<Mugen::Keys> input;

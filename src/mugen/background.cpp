@@ -116,13 +116,16 @@ linkedElement(0){
                 simple >> id;
 		self.setID(id);
             } else if (simple == "layerno"){
-		int layerno;
-                simple >> layerno;
-		if (layerno == 0){
-		    self.setLayer(Element::Background);
-		} else if (layerno == 1){
-		    self.setLayer(Element::Foreground);
-		}
+                try{
+                    int layerno;
+                    simple >> layerno;
+                    if (layerno == 0){
+                        self.setLayer(Element::Background);
+                    } else if (layerno == 1){
+                        self.setLayer(Element::Foreground);
+                    }
+                } catch (const Ast::Exception & fail){
+                }
             } else if (simple == "start"){
 		Mugen::Point point;
 		try {
