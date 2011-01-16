@@ -667,7 +667,7 @@ public:
     virtual void unGrab();
     virtual bool isGrabbed();
     virtual Paintown::Object* copy();
-    virtual const std::string& getAttackName();
+    virtual const std::string getAttackName();
     virtual bool collision(Paintown::ObjectAttack*);
     virtual int getDamage() const;
     virtual bool isCollidable(Paintown::Object*);

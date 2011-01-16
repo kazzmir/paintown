@@ -99,6 +99,7 @@ const Filesystem::AbsolutePath Mugen::Util::findCharacterDef(const string & name
     }
 }
 
+/*
 const Filesystem::AbsolutePath findStageMotif(const Filesystem::RelativePath & path){
     Filesystem::AbsolutePath top = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
     return Filesystem::lookupInsensitive(top, path);
@@ -115,21 +116,32 @@ const Filesystem::AbsolutePath Mugen::Util::findStageDef(const Filesystem::Relat
         return findStageNormal(path);
     }
 }
+*/
 
-static const Filesystem::AbsolutePath findFontMotif(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath top = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
-    return Filesystem::lookupInsensitive(top, path);
-}
-
-static const Filesystem::AbsolutePath findFontNormal(const Filesystem::RelativePath & path){
-    return Filesystem::findInsensitive(Mugen::Data::getInstance().getDirectory().join(path));
-}
-
-const Filesystem::AbsolutePath Mugen::Util::findFont(const Filesystem::RelativePath & path){
+/* search in <motif> and then <motif>/.. */
+static const Filesystem::AbsolutePath findFileMotif(const Filesystem::RelativePath & path){
     try{
-        return findFontMotif(path);
+        return Filesystem::lookupInsensitive(Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory()), path);
     } catch (const Filesystem::NotFound & fail){
-        return findFontNormal(path);
+        Filesystem::AbsolutePath top = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
+        return Filesystem::lookupInsensitive(top, path);
+    }
+}
+
+/* search in mugen/data and mugen/ */
+static const Filesystem::AbsolutePath findFileNormal(const Filesystem::RelativePath & path){
+    try{
+        return Filesystem::findInsensitive(Mugen::Data::getInstance().getDataDirectory().join(path));
+    } catch (const Filesystem::NotFound & fail){
+        return Filesystem::findInsensitive(Mugen::Data::getInstance().getDirectory().join(path));
+    }
+}
+
+const Filesystem::AbsolutePath Mugen::Util::findFile(const Filesystem::RelativePath & path){
+    try{
+        return findFileMotif(path);
+    } catch (const Filesystem::NotFound & fail){
+        return findFileNormal(path);
     }
 }
 
@@ -1077,6 +1089,7 @@ static std::string removeLastDir( const std::string &dir ){
     return dir;
 }
 
+/*
 const Filesystem::AbsolutePath Mugen::Util::getCorrectFileLocation(const Filesystem::AbsolutePath &dir, const std::string &file ){
     // First check initial location else it should be in the base dir
     std::string ourFile = file;
@@ -1102,6 +1115,7 @@ const Filesystem::AbsolutePath Mugen::Util::getCorrectFileLocation(const Filesys
     Global::debug(1) << "No correction needed File: " << dir.path() + ourFile << endl;
     return dir.join(Filesystem::RelativePath(ourFile));
 }
+*/
 
 const std::string Mugen::Util::probeDef(const Ast::AstParse & parsed, const std::string & section, const std::string & search){
     std::string ourSection = fixCase(section);

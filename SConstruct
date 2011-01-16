@@ -1156,6 +1156,8 @@ def buildType(dir):
         properties.append('NDS')
     if useWii():
         properties.append('wii')
+    if useDingoo():
+        properties.append('dingoo')
     if useAllegro5():
         properties.append('allegro5')
     if getDebug():

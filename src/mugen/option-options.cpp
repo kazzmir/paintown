@@ -376,12 +376,12 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                         if (simple == "snd"){
 			    std::string file;
                             simple >> file;
-                            Util::readSounds(Util::getCorrectFileLocation(baseDir, file ), sounds);
+                            Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
                             Global::debug(1) << "Got Sound File: '" << file << "'" << endl;
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string temp;
                             simple >> temp;
-                            fonts.push_back(new MugenFont(Util::getCorrectFileLocation(baseDir, temp)));
+                            fonts.push_back(new MugenFont(Util::findFile(Filesystem::RelativePath(temp))));
                             Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                         }
                     }

@@ -17,7 +17,7 @@ public:
 
 	virtual bool isAttacking() = 0;
 	virtual void getAttackCoords( int & x, int & y) = 0;
-	virtual const std::string & getAttackName() = 0;
+	virtual const std::string getAttackName() = 0;
 
 	virtual double minZDistance() const = 0;
 

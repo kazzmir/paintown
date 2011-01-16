@@ -48,8 +48,11 @@ namespace Util{
      * mugen/chars directory.
      */
     const Filesystem::AbsolutePath findCharacterDef(const std::string & name);
+    /*
     const Filesystem::AbsolutePath findStageDef(const Filesystem::RelativePath & name);
     const Filesystem::AbsolutePath findFont(const Filesystem::RelativePath & name);
+    */
+    const Filesystem::AbsolutePath findFile(const Filesystem::RelativePath & name);
 
     const std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok
@@ -69,7 +72,8 @@ namespace Util{
     /* destroys raw pcx data in a MugenSprite */
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
 
-    const Filesystem::AbsolutePath getCorrectFileLocation(const Filesystem::AbsolutePath & dir, const std::string &file );
+    // const Filesystem::AbsolutePath getCorrectFileLocation(const Filesystem::AbsolutePath & dir, const std::string &file );
+    
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
     const std::string probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search);

@@ -921,7 +921,7 @@ void Character::upperCase( string & who ){
 			who[q] = (char)(who[q] - 'a' + 'A');
 }
 	
-const string & Character::getAttackName(){
+const string Character::getAttackName(){
 	return animation_current->getName(); 
 }
 

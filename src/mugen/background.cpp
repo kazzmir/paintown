@@ -1573,11 +1573,11 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, true);
+                            Util::readSprites(Util::findFile(Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
                         } 
                     }
                 };
-                SceneDefWalker walker(*this,sprites);
+                SceneDefWalker walker(*this, sprites);
                 section->walk(walker);
             } else if ( head == "scenedef") {
                 // Lets check if this is a storyboard so we can get our sprite file, otherwise treat it as a normal background */
@@ -1597,7 +1597,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, false);
+                            Util::readSprites(Util::findFile(Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } 
                     }
                 };
@@ -1621,7 +1621,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Util::getCorrectFileLocation(baseDir, self.spriteFile), Filesystem::AbsolutePath(), sprites, false);
+                            Util::readSprites(Util::findFile(Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } else if (simple == "debugbg"){
                             simple >> self.debug;
                         } else if (simple == "bgclearcolor"){

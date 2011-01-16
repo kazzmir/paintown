@@ -305,11 +305,11 @@ void MugenMenu::loadData(){
                         if (simple == "spr"){
                             simple >> menu.spriteFile;
                             Global::debug(1) << "Got Sprite File: '" << menu.spriteFile << "'" << endl;
-                            Mugen::Util::readSprites(Mugen::Util::getCorrectFileLocation(baseDir, menu.spriteFile), Filesystem::AbsolutePath(), menu.sprites, false);
+                            Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(menu.spriteFile)), Filesystem::AbsolutePath(), menu.sprites, false);
                             Mugen::Util::destroyRaw(menu.sprites);
                         } else if (simple == "snd"){
                             simple >> menu.soundFile;
-                            Mugen::Util::readSounds( Mugen::Util::getCorrectFileLocation(baseDir, menu.soundFile ), menu.sounds);
+                            Mugen::Util::readSounds(Mugen::Util::findFile(Filesystem::RelativePath(menu.soundFile)), menu.sounds);
                             Global::debug(1) << "Got Sound File: '" << menu.soundFile << "'" << endl;
                         } else if (simple == "logo.storyboard"){
                             try{
@@ -317,7 +317,7 @@ void MugenMenu::loadData(){
                                 if (!menu.logoFile.empty()){
                                     try{
                                         Global::debug(1) << "Logo file " << baseDir.path() << "/" << menu.logoFile << endl;
-                                        menu.logo = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.logoFile), false);
+                                        menu.logo = new Mugen::Storyboard(Mugen::Util::findFile(Filesystem::RelativePath(menu.logoFile)), false);
                                         Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
                                     } catch (const MugenException &ex){
                                         throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
@@ -331,7 +331,7 @@ void MugenMenu::loadData(){
                                 if (!menu.introFile.empty()){
                                     try{
                                         Global::debug(1) << "Intro file " << baseDir.path() << "/" << menu.introFile << endl;
-                                        menu.intro = new Mugen::Storyboard(Mugen::Util::getCorrectFileLocation(baseDir, menu.introFile), true);
+                                        menu.intro = new Mugen::Storyboard(Mugen::Util::findFile(Filesystem::RelativePath(menu.introFile)), true);
                                         Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
                                     } catch (const MugenException &ex){
                                         throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
@@ -348,7 +348,7 @@ void MugenMenu::loadData(){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
                             string temp;
                             simple >> temp;
-                            menu.fonts.push_back(new MugenFont(Mugen::Util::findFont(Filesystem::RelativePath(temp))));
+                            menu.fonts.push_back(new MugenFont(Mugen::Util::findFile(Filesystem::RelativePath(temp))));
                             Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
 
                         } else {

@@ -475,8 +475,8 @@ void Game::doArcade(const Bitmap & bmp){
 	    file = select.getPlayer2Def();
 	}
         Filesystem::AbsolutePath baseDir = file.getDirectory();
-	intro = Util::getCorrectFileLocation(baseDir,Util::probeDef(file, "arcade","intro.storyboard"));
-	ending = Util::getCorrectFileLocation(baseDir,Util::probeDef(file, "arcade","ending.storyboard"));
+	intro = Util::findFile(Filesystem::RelativePath(Util::probeDef(file, "arcade","intro.storyboard")));
+	ending = Util::findFile(Filesystem::RelativePath(Util::probeDef(file, "arcade","ending.storyboard")));
         
         // Win screen if player has ending it will not show this
         if (Util::probeDef(systemFile, "win screen", "enabled") == "1"){

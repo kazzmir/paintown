@@ -1696,7 +1696,7 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
     // Uses system font3 by default
     std::string fontFile = Mugen::Util::probeDef(systemFile, "Files", "font3");
 
-    MugenFont font(Mugen::Util::getCorrectFileLocation(baseDir, fontFile));
+    MugenFont font(Mugen::Util::findFile(Filesystem::RelativePath(fontFile)));
     
     Mugen::Character * character = NULL;
 

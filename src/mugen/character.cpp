@@ -2684,7 +2684,7 @@ const vector<MugenArea> Character::getDefenseBoxes() const {
     return getCurrentAnimation()->getDefenseBoxes(getFacing() == Object::FACING_LEFT);
 }
 
-const std::string& Character::getAttackName(){
+const std::string Character::getAttackName(){
     return getName();
 }
 

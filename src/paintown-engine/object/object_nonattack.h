@@ -27,7 +27,7 @@ public:
 	virtual int getDamage() const;
 	
 	virtual bool isAttacking();
-	virtual const std::string & getAttackName();
+	virtual const std::string getAttackName();
 
 protected:
 	std::string no_name;

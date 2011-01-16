@@ -25,7 +25,7 @@ public:
 	virtual bool isGrabbed();
     virtual bool isGrabbable(Object * obj);
 	virtual Object * copy();
-	virtual const std::string & getAttackName();
+	virtual const std::string getAttackName();
 	virtual bool isAttacking();
 	virtual bool collision( ObjectAttack * obj );
 	virtual int getDamage() const;

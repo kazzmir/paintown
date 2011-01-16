@@ -41,8 +41,8 @@ bool ObjectNonAttack::isAttacking(){
 	return false;
 }
 
-const std::string & ObjectNonAttack::getAttackName(){
-	return no_name;
+const std::string ObjectNonAttack::getAttackName(){
+    return no_name;
 }
 
 }

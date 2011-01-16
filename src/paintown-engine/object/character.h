@@ -333,7 +333,7 @@ public:
 
     virtual int getWidth() const;
     virtual int getHeight() const;
-    virtual const std::string & getAttackName();
+    virtual const std::string getAttackName();
     virtual inline int getStatus() const {
         return status;
     }

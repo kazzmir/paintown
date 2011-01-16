@@ -79,7 +79,7 @@ public:
 	 */
 	virtual void touch( Object * obj );
 	
-	virtual const std::string & getAttackName() = 0;
+	virtual const std::string getAttackName() = 0;
 
 	/* ZDistance:
 	 * Computes the distance in the Z coordinate between two

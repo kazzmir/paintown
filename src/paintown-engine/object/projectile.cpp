@@ -168,8 +168,8 @@ Network::Message Projectile::getCreateMessage(){
 	return message;
 }
 
-const std::string & Projectile::getAttackName(){
-	return currentAnimation->getName(); 
+const std::string Projectile::getAttackName(){
+    return currentAnimation->getName(); 
 }
 
 bool Projectile::isAttacking(){
