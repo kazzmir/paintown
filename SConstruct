@@ -91,6 +91,7 @@ isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
 useMinpspw = makeUseEnvironment('minpspw', False)
 useNDS = makeUseEnvironment('nds', False)
+useDingoo = makeUseEnvironment('dingoo', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
 nativeCompile = makeUseEnvironment('native', False)
@@ -646,6 +647,68 @@ def getEnvironment(debug):
                                '-wd1599'])
         return env
 
+    def dingux(env):
+        import os
+        print "Environment is Dingux"
+        mips = '/opt/mipsel-linux-uclibc'
+        bin_path = mips + '/usr/bin'
+        prefix = 'mipsel-linux-'
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        env['CC'] = setup(prefix, 'gcc')
+        env['LD'] = setup(prefix, 'ld')
+        env['CXX'] = setup(prefix, 'g++')
+        env['AS'] = setup(prefix, 'as')
+        env['AR'] = setup(prefix, 'ar')
+        env['OBJCOPY'] = setup(prefix, 'objcopy')
+        env.Append(CPPDEFINES = ['DINGOO'])
+        # env.Append(CPPDEFINES = ['DINGOO', 'LINUX', 'MPU_JZ4740'])
+        #env.Append(CPPPATH = [setup(dingoo_path, "/include"),
+        #                      setup(dingoo_path, "/include/SDL"),
+        #                      setup(dingoo_path, "/include/freetype2")])
+        #env.Append(LIBPATH = [setup(dingoo_path, '/lib')])
+        #flags = ['-G0', '-mips32', '-mno-abicalls', '-msoft-float', '-fno-builtin', '-fno-pic']
+        #env.Append(CCFLAGS = flags)
+        #env.Append(CXXFLAGS = flags)
+        #env.Append(LINKFLAGS = ['-nodefaultlibs', '%s/lib/dingoo.xn' % dingoo_path])
+        # env.Append(LIBS = ['c', 'm', 'fgl', 'sml', 'jz4740', 'gcc'])
+        #env.Append(LIBS = ['SDL', 'jz4740', 'sml', 'fgl', 'c', 'gcc'])
+        #env['LINKCOM'] = '$LD $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+        env.PrependENVPath('PATH', bin_path)
+        # env.PrependENVPath('PATH', '%s/bin' % dingoo_path)
+        return env
+
+    def dingoo(env):
+        import os
+        print "Environment is Dingoo"
+        dingoo_path = os.environ['DINGOO_SDK']
+        mips_path = os.environ['MIPSTOOLS']
+        bin_path = mips_path + '/bin'
+        prefix = 'mipsel-linux-'
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        env['CC'] = setup(prefix, 'gcc')
+        env['LD'] = setup(prefix, 'ld')
+        env['CXX'] = setup(prefix, 'g++')
+        env['AS'] = setup(prefix, 'as')
+        env['AR'] = setup(prefix, 'ar')
+        env['OBJCOPY'] = setup(prefix, 'objcopy')
+        env.Append(CPPDEFINES = ['DINGOO', 'LINUX', 'MPU_JZ4740'])
+        env.Append(CPPPATH = [setup(dingoo_path, "/include"),
+                              setup(dingoo_path, "/include/SDL"),
+                              setup(dingoo_path, "/include/freetype2")])
+        env.Append(LIBPATH = [setup(dingoo_path, '/lib')])
+        flags = ['-G0', '-mips32', '-mno-abicalls', '-msoft-float', '-fno-builtin', '-fno-pic']
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env.Append(LINKFLAGS = ['-nodefaultlibs', '%s/lib/dingoo.xn' % dingoo_path])
+        # env.Append(LIBS = ['c', 'm', 'fgl', 'sml', 'jz4740', 'gcc'])
+        env.Append(LIBS = ['SDL', 'jz4740', 'sml', 'fgl', 'c', 'gcc'])
+        env['LINKCOM'] = '$LD $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+        env.PrependENVPath('PATH', bin_path)
+        env.PrependENVPath('PATH', '%s/bin' % dingoo_path)
+        return env
+
     def nds(env):
         print "Environment is nds"
         path = '/opt/devkitARM'
@@ -836,6 +899,8 @@ pspnet_inet
                 return intel(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useNDS():
                 return nds(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
+            elif useDingoo():
+                return dingux(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useWii():
                 if isWindows():
                     return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
@@ -1007,7 +1072,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = usePrx()
-if not useWii() and not useMinpspw() and not useNDS():
+if not useWii() and not useMinpspw() and not useNDS() and not useDingoo():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1212,7 +1277,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw() and not useNDS():
+    elif isLinux() and not useWii() and not useMinpspw() and not useNDS() and not useDingoo():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
