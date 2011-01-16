@@ -1573,7 +1573,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Util::findFile(Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
+                            Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
                         } 
                     }
                 };
@@ -1597,7 +1597,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Util::findFile(Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } 
                     }
                 };
@@ -1621,7 +1621,7 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Util::findFile(Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } else if (simple == "debugbg"){
                             simple >> self.debug;
                         } else if (simple == "bgclearcolor"){

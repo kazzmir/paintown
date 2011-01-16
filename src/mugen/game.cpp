@@ -466,40 +466,63 @@ void Game::doArcade(const Bitmap & bmp){
     bool creditsEnabled = false;
     Filesystem::AbsolutePath credits;
 
+    // get intro and ending for player
+    Filesystem::AbsolutePath file;
+    if (playerType == Player1){
+        file = select.getPlayer1Def();
+    } else {
+        file = select.getPlayer2Def();
+    }
+    Filesystem::AbsolutePath baseDir = file.getDirectory();
     try{
-        // get intro and ending for player
-        Filesystem::AbsolutePath file;
-	if (playerType == Player1){
-	    file = select.getPlayer1Def();
-	} else {
-	    file = select.getPlayer2Def();
-	}
-        Filesystem::AbsolutePath baseDir = file.getDirectory();
-	intro = Util::findFile(Filesystem::RelativePath(Util::probeDef(file, "arcade","intro.storyboard")));
-	ending = Util::findFile(Filesystem::RelativePath(Util::probeDef(file, "arcade","ending.storyboard")));
-        
+        intro = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "intro.storyboard")));
+    } catch (const MugenException & fail){
+        Global::debug(0) << "Failed to get intro " << fail.getReason() << std::endl;
+    }
+
+    try{
+        ending = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "ending.storyboard")));
+    } catch (const MugenException & fail){
+        Global::debug(0) << "Failed to get ending" << fail.getReason() << std::endl;
+    }
+
+    try{
         // Win screen if player has ending it will not show this
         if (Util::probeDef(systemFile, "win screen", "enabled") == "1"){
             displayWinScreen = true;
         }
-        
+    } catch (const MugenException & fail){
+        Global::debug(0) << "Failed to get win screen" << fail.getReason() << std::endl;
+    }
+
+    try{
         // Get Default ending
         if (Util::probeDef(systemFile, "default ending", "enabled") == "1"){
             defaultEndingEnabled = true;
             defaultEnding = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "default ending", "storyboard")));
         }
+    } catch (const MugenException & fail){
+        Global::debug(0) << "Failed to get ending screen" << fail.getReason() << std::endl;
+    }
+
+    try{
         // Get Game Over
         if (Util::probeDef(systemFile, "game over screen", "enabled") == "1"){
             gameOverEnabled = true;
             gameOver = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "game over screen", "storyboard")));
         }
+    } catch (const MugenException & fail){
+        Global::debug(0) << "Failed to get game over screen" << fail.getReason() << std::endl;
+    }
+
+    try{
         // Get credits
         if (Util::probeDef(systemFile, "end credits", "enabled") == "1"){
             gameOverEnabled = true;
             credits = Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(systemFile, "end credits", "storyboard")));
         }
-
-    } catch (const MugenException & e){
+    } catch (const MugenException & fail){
+        Global::debug(0) << "Failed to get end credits" << fail.getReason() << std::endl;
     }
 
     InputMap<Mugen::Keys> input;
