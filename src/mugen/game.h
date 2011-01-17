@@ -26,10 +26,10 @@ class Game {
         /* start a watch match */
         static void startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName);
     private:
-        void doArcade(const Bitmap &);
-        void doTraining(const Bitmap & bmp);
-        void doVersus(const Bitmap &);
-        void doWatch(const Bitmap &);
+        void doArcade();
+        void doTraining();
+        void doVersus();
+        void doWatch();
 
         //! Player type
         PlayerType playerType;

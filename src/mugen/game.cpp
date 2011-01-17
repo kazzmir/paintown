@@ -49,44 +49,53 @@ Game::~Game(){
 
 void Game::run(){
     ParseCache cache;
-    Bitmap screen(GFX_X, GFX_Y);
 
     try{
         switch (gameType){
             default:
-            case Arcade:
-                doArcade(screen);
+            case Arcade: {
+                doArcade();
                 break;
-            case Versus:
-                doVersus(screen);
+            }
+            case Versus: {
+                doVersus();
                 break;
-            case TeamArcade:
+            }
+            case TeamArcade: {
                 //select.run("Team Arcade" , 1, true, &screen);
                 break;
-            case TeamVersus:
+            }
+            case TeamVersus: {
                 //gameInfo = select.run("Team Versus" , 2, true, &screen);
                 break;
-            case TeamCoop:
+            }
+            case TeamCoop: {
                 //gameInfo = select.run("Team Cooperative" , 1, true, &screen);
                 break;
-            case Survival:
+            }
+            case Survival: {
                 //gameInfo = select.run("Survival" , 1, true, &screen);
                 break;
-            case SurvivalCoop:
+            }
+            case SurvivalCoop: {
                 //gameInfo = select.run("Survival Cooperative" , 1, true, &screen);
                 break;
-            case Training:
-                doTraining(screen);
+            }
+            case Training: {
+                doTraining();
                 break;
-            case Watch:
-                doWatch(screen);
+            }
+            case Watch: {
+                doWatch();
                 break;
+            }
         }
     } catch (const MugenException e){
         std::ostringstream out;
         out << "Press ENTER to continue\n";
         out << "\n";
         out << "We are very sorry but an error has occured while trying to load MUGEN.";
+        Bitmap screen(GFX_X, GFX_Y);
         PaintownUtil::showError(screen, e, out.str());
         InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
     }
@@ -102,7 +111,7 @@ public:
     }
 };
 
-static void runMatch(MugenStage * stage, const Bitmap & buffer){
+static void runMatch(MugenStage * stage){
     Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     InputMap<int> gameInput;
     /* FIXME: use an enum here */
@@ -204,17 +213,23 @@ static void runMatch(MugenStage * stage, const Bitmap & buffer){
         if (draw){
             frames += 1;
             stage->render(&work);
+            /*
             work.Stretch(buffer);
 
             FontRender * render = FontRender::getInstance();
             render->render(&buffer);
 
-            if (show_fps){
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-                font.printf(buffer.getWidth() - 120, buffer.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), buffer, "FPS: %0.2f", 0, fps );
-            }
+            
 
             buffer.BlitToScreen();
+            */
+
+            if (show_fps){
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
+                font.printf(work.getWidth() - 60, work.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), work, "FPS: %0.2f", 0, fps);
+            }
+
+            work.BlitToScreen();
         }
 
         while (Global::speed_counter == 0){
@@ -326,8 +341,7 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     stage.addPlayer1(player1);
     stage.addPlayer2(player2);
     stage.reset();
-    Bitmap screen(GFX_X, GFX_Y);
-    runMatch(&stage, screen);
+    runMatch(&stage);
 }
 
 void Game::startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
@@ -381,11 +395,10 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
     stage.addPlayer1(player1);
     stage.addPlayer2(player2);
     stage.reset();
-    Bitmap screen(GFX_X, GFX_Y);
-    runMatch(&stage, screen);
+    runMatch(&stage);
 }
 
-void Game::doTraining(const Bitmap & bmp){
+void Game::doTraining(){
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);
     try{
@@ -395,8 +408,11 @@ void Game::doTraining(const Bitmap & bmp){
             select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
             select.load();
             try{
-                select.run("Training Mode", bmp);
-                select.renderVersusScreen(bmp);
+                {
+                    Bitmap screen(GFX_X, GFX_Y);
+                    select.run("Training Mode", screen);
+                    select.renderVersusScreen(screen);
+                }
                 HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
                 HumanBehavior player2Behavior(getPlayer2Keys(), getPlayer2InputLeft());
                 DummyBehavior dummyBehavior;
@@ -412,7 +428,7 @@ void Game::doTraining(const Bitmap & bmp){
                 }
                 MugenStage *stage = select.getStage();
                 stage->reset();
-                runMatch(stage, bmp);
+                runMatch(stage);
             } catch (const QuitGameException & e){
             }
         }
@@ -421,7 +437,7 @@ void Game::doTraining(const Bitmap & bmp){
     Mugen::Data::getInstance().setTime(time);
 }
 
-void Game::doWatch(const Bitmap & bmp){
+void Game::doWatch(){
     /* Do watch screen */
     bool quit = false;
     while (!quit){
@@ -430,15 +446,18 @@ void Game::doWatch(const Bitmap & bmp){
 	select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
 	select.load();
         try{
-            select.run("Watch Mode", bmp);
-            select.renderVersusScreen(bmp);
+            {
+                Bitmap screen(GFX_X, GFX_Y);
+                select.run("Watch Mode", screen);
+                select.renderVersusScreen(screen);
+            }
             LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
             LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
             select.getPlayer1()->setBehavior(&player1AIBehavior);
             select.getPlayer2()->setBehavior(&player2AIBehavior);
             MugenStage *stage = select.getStage();
             stage->reset();
-            runMatch(stage, bmp);
+            runMatch(stage);
         } catch (const Exception::Return & e){
 	    quit = true;
 	} catch (const QuitGameException & e){
@@ -449,12 +468,16 @@ void Game::doWatch(const Bitmap & bmp){
 /* is there a reason why doArcade and doVersus don't share the main loop?
  * answer: jon moved the main loop to runMatch(). versus should use this eventually
  */
-void Game::doArcade(const Bitmap & bmp){
+void Game::doArcade(){
+    /* FIXME: there isn't really a need to have this bitmap exist forever.
+     * a temporary bitmap can be created when its needed.
+     */
+    Bitmap screen(GFX_X, GFX_Y);
     Mugen::CharacterSelect select(systemFile, playerType, gameType);
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
     select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
     select.load();
-    select.run("Arcade", bmp);
+    select.run("Arcade", screen);
     Filesystem::AbsolutePath intro;
     Filesystem::AbsolutePath ending;
     bool displayWinScreen = false;
@@ -549,7 +572,7 @@ void Game::doArcade(const Bitmap & bmp){
     if (!intro.isEmpty()){
 	Storyboard story(intro, true);
 	story.setInput(input);
-	story.run(bmp);
+	story.run(screen);
     }
 
     HumanBehavior player1HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
@@ -573,7 +596,7 @@ void Game::doArcade(const Bitmap & bmp){
     
     try{
         while (!quit){
-            select.renderVersusScreen(bmp);
+            select.renderVersusScreen(screen);
 	    
 	    /* Reset characters. TODO: why? */
 	    select.getPlayer1()->resetPlayer();
@@ -599,7 +622,7 @@ void Game::doArcade(const Bitmap & bmp){
             // Lets reset the stage for good measure
             stage->reset();
 
-            runMatch(stage, bmp);
+            runMatch(stage);
 
             /*! *FIXME *TODO
              * Set next match and check if we have 
@@ -621,37 +644,37 @@ void Game::doArcade(const Bitmap & bmp){
                             if (!defaultEnding.isEmpty()){
                                 Storyboard story(defaultEnding, true);
                                 story.setInput(input);
-                                story.run(bmp);
+                                story.run(screen);
                             }
                         }
                     } else if (defaultEndingEnabled && ending.isEmpty()){
                         if (!defaultEnding.isEmpty()){
                             Storyboard story(defaultEnding, true);
                             story.setInput(input);
-                            story.run(bmp);
+                            story.run(screen);
                         }
                     } else if (!ending.isEmpty()){
                         Storyboard story(ending, true);
                         story.setInput(input);
-                        story.run(bmp);
+                        story.run(screen);
                     } 
                     if (creditsEnabled){                    
                         // credits
                         if (!credits.isEmpty()){
                             Storyboard story(defaultEnding, true);
                             story.setInput(input);
-                            story.run(bmp);
+                            story.run(screen);
                         }
                     }
                     quit = displayGameOver = true;
                 }
             } else {
                 // Player lost do continue screen if enabled for now just quit
-                if (stage->doContinue(playerType, input, bmp)){
+                if (stage->doContinue(playerType, input, screen)){
                     select.reset();
                     select.getPlayer1()->resetPlayer();
                     select.getPlayer2()->resetPlayer();
-                    select.run("Arcade", bmp);
+                    select.run("Arcade", screen);
                 } else {
                     quit = displayGameOver = true;
                 }
@@ -665,21 +688,23 @@ void Game::doArcade(const Bitmap & bmp){
         if (!gameOver.isEmpty()){
             Storyboard story(gameOver, true);
             story.setInput(input);
-            story.run(bmp);
+            story.run(screen);
         }
     }
 }
 
-/* FIXME: can this code use runMatch() ? */
-void Game::doVersus(const Bitmap & bmp){
+void Game::doVersus(){
     bool quit = false;
     while (!quit){
         Mugen::CharacterSelect select(systemFile, playerType, gameType);
         select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
         select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
         select.load();
-	select.run("Versus Mode", bmp);
-	select.renderVersusScreen(bmp);
+        {
+            Bitmap screen(GFX_X, GFX_Y);
+            select.run("Versus Mode", screen);
+            select.renderVersusScreen(screen);
+        }
 
         HumanBehavior player1Input(getPlayer1Keys(), getPlayer1InputLeft());
         HumanBehavior player2Input(getPlayer2Keys(), getPlayer2InputLeft());
@@ -693,84 +718,8 @@ void Game::doVersus(const Bitmap & bmp){
 
         select.getStage()->reset();
         try{
-            runMatch(select.getStage(), bmp);
+            runMatch(select.getStage());
         } catch (const QuitGameException & e){
         }
-#if 0
-
-	MugenStage *stage = select.getStage();
-	InputMap<int> gameInput;
-	gameInput.set(Keyboard::Key_F1, 10, false, 0);
-	gameInput.set(Keyboard::Key_F2, 10, false, 1);
-	gameInput.set(Keyboard::Key_F3, 10, false, 2);
-	gameInput.set(Keyboard::Key_F4, 10, true, 3);
-	gameInput.set(Keyboard::Key_ESC, 0, true, 4);
-	
-	Bitmap work(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-	double gameSpeed = 1.0;
-	double runCounter = 0;
-	double mugenSpeed = 60;
-
-	// Lets reset the stage for good measure
-	stage->reset();
-
-        bool endMatch = false;
-
-	while (!endMatch){
-	    bool draw = false;
-
-	    if ( Global::speed_counter > 0 ){
-		runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
-		while (runCounter > 1){
-		    InputManager::poll();
-		    stage->logic();
-                    if (stage->isMatchOver()){
-                        endMatch = true;
-                    }
-		    runCounter -= 1;
-		    draw = true;
-
-                    if (Global::shutdown()){
-                        throw ShutdownException();
-                    }
-
-		    InputMap<int>::Output out = InputManager::getMap(gameInput);
-		    if (out[0]){
-			gameSpeed -= 0.1;
-		    }
-		    if (out[1]){
-			gameSpeed += 0.1;
-		    }
-		    if (out[2]){
-			gameSpeed = 1;
-		    }
-		    if (out[3]){
-			stage->toggleDebug();
-		    }
-		    if (out[4]){
-			endMatch = true;
-		    }
-		    if (gameSpeed < 0.1){
-			gameSpeed = 0.1;
-		    }
-		}
-		Global::speed_counter = 0;
-	    }
-
-	    if (draw){
-		stage->render(&work);
-		work.Stretch(bmp);
-
-		FontRender * render = FontRender::getInstance();
-		render->render(&bmp);
-    
-		bmp.BlitToScreen();
-	    }
-
-	    while (Global::speed_counter == 0){
-		PaintownUtil::rest(1);
-	    }
-	}
-#endif
     }
 }
