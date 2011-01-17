@@ -370,6 +370,8 @@ int paintown_main( int argc, char ** argv ){
         } catch (const Exception::Base & base){
             // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
             Global::debug(0) << "Base exception: " << base.getTrace() << endl;
+        } catch (const std::bad_alloc & fail){
+            Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
         } catch (...){
             Global::debug(0) << "Uncaught exception!" << endl;
         }
