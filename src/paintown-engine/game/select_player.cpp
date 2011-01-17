@@ -161,8 +161,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
 
     Global::speed_counter = 0;
 
+    /* these should be computed based on the dimensions of GFX_X and GFX_Y */
     const int boxSize = 80;
-    const int startX = 300;
+    const int startX = GFX_X / 2 - 20;
     const int startY = 20;
     const int boxesPerLine = (work.getWidth() - startX) / (boxSize + 10);
     const int boxesPerColumn = (work.getHeight() - startY) / (boxSize + 10);
