@@ -164,6 +164,10 @@ public:
         return debug;
     }
 
+    virtual inline void setDebug(bool what){
+        debug = what;
+    }
+
     virtual void resetPersistent();
     virtual bool persistentOk();
 

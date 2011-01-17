@@ -270,6 +270,23 @@ public:
                 return new Result(value);
             }
 
+            virtual std::string toString() const {
+                std::ostringstream out;
+                if (value.standing){
+                    out << "S";
+                }
+                if (value.crouching){
+                    out << "C";
+                }
+                if (value.aerial){
+                    out << "A";
+                }
+                if (value.lying){
+                    out << "L";
+                }
+                return out.str();
+            }
+
             RuntimeValue evaluate(const Environment & environment) const {
                 return RuntimeValue(value);
             }
@@ -401,6 +418,10 @@ public:
                     return RuntimeValue(environment.getCommands());
                 }
 
+                virtual std::string toString() const {
+                    return "command";
+                }
+
                 Value * copy() const {
                     return new Command();
                 }
@@ -416,6 +437,10 @@ public:
                     return RuntimeValue(environment.getCharacter().getAnimation());
                 }
 
+                virtual std::string toString() const {
+                    return "anim";
+                }
+
                 Value * copy() const {
                     return new Animation();
                 }
@@ -429,6 +454,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHealth() > 0);
+                }
+
+                virtual std::string toString() const {
+                    return "alive";
                 }
 
                 Value * copy() const {
@@ -479,6 +508,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getStage().countMyHelpers(&environment.getCharacter()));
+                }
+
+                virtual std::string toString() const {
+                    return "numhelper";
                 }
 
                 Value * copy() const {
@@ -688,6 +721,10 @@ public:
                     return RuntimeValue(environment.getCharacter().getHealth());
                 }
 
+                virtual std::string toString() const {
+                    return "life";
+                }
+
                 Value * copy() const {
                     return new Life();
                 }
@@ -701,6 +738,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getMaxHealth());
+                }
+                
+                virtual std::string toString() const {
+                    return "lifemax";
                 }
 
                 Value * copy() const {
@@ -750,6 +791,10 @@ public:
                     return RuntimeValue(environment.getCharacter().getMoveType());
                 }
 
+                virtual std::string toString() const {
+                    return "movetype";
+                }
+
                 Value * copy() const {
                     return new MoveType();
                 }
@@ -796,6 +841,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getStage().getGameInfo()->getRound().getRound());
                 }
+                
+                virtual std::string toString() const {
+                    return "RoundNo";
+                }
 
                 Value * copy() const {
                     return new RoundNumber();
@@ -812,6 +861,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME */
                     return RuntimeValue(0);
+                }
+                
+                virtual std::string toString() const {
+                    return "RoundsExisted";
                 }
 
                 Value * copy() const {
@@ -842,6 +895,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue("H");
+                }
+
+                virtual std::string toString() const {
+                    return "H";
                 }
 
                 Value * copy() const {
@@ -1010,6 +1067,10 @@ public:
                     return RuntimeValue(3);
                 }
 
+                virtual std::string toString() const {
+                    return "RoundState";
+                }
+
                 Value * copy() const {
                     return new RoundState();
                 }
@@ -1095,6 +1156,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
+                }
+
+                virtual std::string toString() const {
+                    return "AnimTime";
                 }
 
                 Value * copy() const {
@@ -1253,6 +1318,10 @@ public:
                     return RuntimeValue(environment.getCharacter().getStateTime());
                 }
 
+                virtual std::string toString() const {
+                    return "Time";
+                }
+
                 Value * copy() const {
                     return new Time();
                 }
@@ -1275,6 +1344,10 @@ public:
                     return convertStateType(state);
                 }
 
+                virtual std::string toString() const {
+                    return "statetype";
+                }
+
                 Value * copy() const {
                     return new StateType();
                 }
@@ -1289,6 +1362,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().hasControl());
+                }
+
+                virtual std::string toString() const {
+                    return "ctrl";
                 }
 
                 Value * copy() const {
@@ -1404,6 +1481,10 @@ public:
                     return RuntimeValue(environment.getCharacter().getPower());
                 }
 
+                virtual std::string toString() const {
+                    return "power";
+                }
+
                 Value * copy() const {
                     return new Power();
                 }
@@ -1424,6 +1505,10 @@ public:
                     return RuntimeValue(environment.getCharacter().getExtraJumps());
                 }
 
+                virtual std::string toString() const {
+                    return "internal:extra-jumps";
+                }
+
                 Value * copy() const {
                     return new ExtraJumps();
                 }
@@ -1439,6 +1524,10 @@ public:
                     return RuntimeValue(environment.getCharacter().getAirJumpHeight());
                 }
 
+                virtual std::string toString() const {
+                    return "internal:airjump-height";
+                }
+
                 Value * copy() const {
                     return new AirJump();
                 }
@@ -1452,6 +1541,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getPreviousState());
+                }
+
+                virtual std::string toString() const {
+                    return "PrevStateNo";
                 }
 
                 Value * copy() const {
@@ -1497,6 +1590,12 @@ public:
 
                 virtual ~Parent(){
                     delete argument;
+                }
+
+                virtual std::string toString() const {
+                    std::ostringstream out;
+                    out << "parent, " << argument->toString();
+                    return out.str();
                 }
 
                 Value * copy() const {
@@ -1746,6 +1845,17 @@ public:
                     default : throw MugenException("Can't get here");
                 }
             }
+
+            virtual std::string toString() const {
+                std::ostringstream out;
+                switch (type){
+                    case Ast::Range::AllInclusive: out << "[" << low->toString() << ", " << high->toString() << "]"; break;
+                    case Ast::Range::AllExclusive: out << "(" << low->toString() << ", " << high->toString() << ")"; break;
+                    case Ast::Range::LeftInclusiveRightExclusive: out << "[" << low->toString() << ", " << high->toString() << ")"; break;
+                    case Ast::Range::LeftExclusiveRightInclusive: out << "(" << low->toString() << ", " << high->toString() << "]"; break;
+                }
+                return out.str();
+            }
         };
 
         switch (range.getRangeType()){
@@ -1781,6 +1891,10 @@ public:
 
             Value * copy() const {
                 return new JustString(*this);
+            }
+
+            virtual std::string toString() const {
+                return value.getStringValue();
             }
 
             RuntimeValue value;
@@ -1842,11 +1956,13 @@ public:
          */
         class MetaCircularArg1: public Value {
         public:
-            MetaCircularArg1(double (*c_level)(double), Value * argument):
+            MetaCircularArg1(const std::string & name, double (*c_level)(double), Value * argument):
+                name(name),
                 cFunction(c_level),
                 argument(argument){
                 }
 
+            std::string name;
             double (*cFunction)(double);
             Value * argument;
 
@@ -1854,8 +1970,14 @@ public:
                 delete argument;
             }
 
+            virtual std::string toString() const {
+                std::ostringstream out;
+                out << name << "(" << argument->toString() << ")";
+                return out.str();
+            }
+
             Value * copy() const {
-                return new MetaCircularArg1(cFunction, Compiler::copy(argument));
+                return new MetaCircularArg1(name, cFunction, Compiler::copy(argument));
             }
 
             RuntimeValue evaluate(const Environment & environment) const {
@@ -2312,27 +2434,27 @@ public:
         }
 
 	if (function == "asin"){
-            return new MetaCircularArg1(asin, compile(function.getArg1()));
+            return new MetaCircularArg1("asin", asin, compile(function.getArg1()));
         }
         
         if (function == "sin"){
-            return new MetaCircularArg1(sin, compile(function.getArg1()));
+            return new MetaCircularArg1("sin", sin, compile(function.getArg1()));
         }
         
         if (function == "atan"){
-            return new MetaCircularArg1(atan, compile(function.getArg1()));
+            return new MetaCircularArg1("atan", atan, compile(function.getArg1()));
         }
         
         if (function == "tan"){
-            return new MetaCircularArg1(tan, compile(function.getArg1()));
+            return new MetaCircularArg1("tan", tan, compile(function.getArg1()));
         }
 
         if (function == "abs"){
-            return new MetaCircularArg1(fabs, compile(function.getArg1()));
+            return new MetaCircularArg1("abs", fabs, compile(function.getArg1()));
         }
         
         if (function == "exp"){
-	    return new MetaCircularArg1(exp, compile(function.getArg1()));
+	    return new MetaCircularArg1("exp", exp, compile(function.getArg1()));
 	}
 
         if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(function.getName()), "projcontact\\d*")){
@@ -2457,6 +2579,12 @@ public:
 
                 virtual ~NumHelper(){
                     delete argument;
+                }
+
+                virtual std::string toString() const {
+                    std::ostringstream out;
+                    out << "numhelper(" << argument->toString() << ")";
+                    return out.str();
                 }
 
                 Value * copy() const {
@@ -2940,6 +3068,12 @@ public:
                     return new FunctionVar(index);
                 }
 
+                virtual std::string toString() const {
+                    std::ostringstream out;
+                    out << "var(" << index << ")";
+                    return out.str();
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     return environment.getCharacter().getVariable(index);
                 }
@@ -3018,6 +3152,12 @@ public:
                     return new FunctionSysVar(index);
                 }
 
+                virtual std::string toString() const {
+                    std::ostringstream out;
+                    out << "sysvar(" << index << ")";
+                    return out.str();
+                }
+
                 RuntimeValue evaluate(const Environment & environment) const {
                     return environment.getCharacter().getSystemVariable(index);
                 }
@@ -3044,6 +3184,12 @@ public:
 
                 Value * copy() const {
                     return new SelfAnimExist(Compiler::copy(animation));
+                }
+
+                virtual std::string toString() const {
+                    std::ostringstream out;
+                    out << "SelfAnimExist(" << animation->toString() << ")";
+                    return out.str();
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -3083,11 +3229,11 @@ public:
         }
         
         if (function == "acos"){
-            return new MetaCircularArg1(acos, compile(function.getArg1()));
+            return new MetaCircularArg1("acos", acos, compile(function.getArg1()));
 	}
         
         if (function == "cos"){
-            return new MetaCircularArg1(cos, compile(function.getArg1()));
+            return new MetaCircularArg1("cos", cos, compile(function.getArg1()));
 	}
 
         if (function == "animexist"){
@@ -3279,6 +3425,12 @@ public:
                 delete expression;
             }
 
+            virtual std::string toString() const {
+                std::ostringstream out;
+                out << "-" << expression->toString();
+                return out.str();
+            }
+
             Value * copy() const {
                 return new Unary(Compiler::copy(expression), type);
             }
@@ -3325,6 +3477,10 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getXVelocity());
+                }
+
+                virtual std::string toString() const {
+                    return "vel x";
                 }
 
                 Value * copy() const {
@@ -3467,6 +3623,10 @@ public:
                      */
                     return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
 
+                }
+
+                virtual std::string toString() const {
+                    return "p2bodydist x";
                 }
 
                 Value * copy() const {
@@ -3655,6 +3815,10 @@ public:
                     }
                     case ExpressionInfix::Or : {
                         out << " || ";
+                        break;
+                    }
+                    case ExpressionInfix::LessThan: {
+                        out << " < ";
                         break;
                     }
                     case ExpressionInfix::Equals : {

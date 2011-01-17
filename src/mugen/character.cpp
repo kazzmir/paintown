@@ -1692,18 +1692,10 @@ public:
 
 void Character::resetJump(MugenStage & stage, const vector<string> & inputs){
     setSystemVariable(JumpIndex, RuntimeValue(0));
-    /*
-    RuntimeValue number = getSystemVariable(JumpIndex);
-    number->set(0);
-    */
     changeState(stage, JumpStart, inputs);
 }
 
 void Character::doubleJump(MugenStage & stage, const vector<string> & inputs){
-    /*
-    MutableCompiledInteger * number = (MutableCompiledInteger*) getSystemVariable(JumpIndex);
-    number->set(number->get() + 1);
-    */
     setSystemVariable(JumpIndex, RuntimeValue(getSystemVariable(JumpIndex).toNumber() + 1));
     changeState(stage, AirJumpStart, inputs);
 }
@@ -1824,6 +1816,7 @@ void Character::fixAssumptions(){
             };
 
             InternalDoubleJumpController * controller = new InternalDoubleJumpController();
+            // controller->setDebug(true);
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
