@@ -1,0 +1,43 @@
+* How to build and install on psp (*NOTE you will need a CFW [custom firmware] or system that can boot unsigned applications with compatibility for version 1.50):
+  1. Get the minpspw build environment:
+    svn co https://paintown.svn.sourceforge.net/svnroot/paintown/build-environments/linux-pspsdk
+
+  2. Make symlinks to the minpspw directory you just checked out in /opt
+    ln -s /path/to/linux-pspsdk /opt/pspsdk
+
+  3. Set the build type environment variable to 'minpspw' and build paintown
+    export SDL=1
+    export minpspw=1
+    cd /path/to/paintown
+    make
+  
+  4. It will output an EBOOT which contains necessary headers to run the application on CFW.
+     If you want to build a prx (stripped binary) to debug with psplink view the instructions below in the next section.
+
+  5. Copy EBOOT and the data/ directory into a directory (i.e. paintown) on your pro duo memory stick inside the 'psp/game150/' directory. Load up the homebrew channel, navigate to paintown and play.
+
+
+
+* Building a prx (stripped binary) to do remote testing and debugging in conjuction with psplink (*Note you will require a CFW that allows you to load unsigned applications)
+
+  1. Follow the environment setup above do not 'make'
+  
+  2. Set the 'prx' environment variable and build which will create a prx along with an EBOOT (you just need the prx later on)
+    export prx=1
+    make
+  
+  3. Copy over the necessary psplink version over to your pro duo memory stick inside the 'psp' directory. So for instance if you are using 1.50 like above, you can copy over the folder '/path/to/linux-pspsdk/psplink/psp/v1.5/psplink/' to 'psp/game150/psplink/'.
+  
+  4. Now open a new terminal and run 'usbhostfs_pc' from the root directory of paintown
+    cd /path/to/paintown
+    /path/to/linux-pspsdk/bin/usbhostfs_pc
+  
+  5. Next open another terminal and run 'pspsh'
+    cd /path/to/linux-pspsdk/bin/
+    ./pspsh
+  
+  6. Connect your psp via usb to your computer that is running the above applications and run psplink (the usbhostfs_pc should output connection information if done correctly, the pspsh should also default to the pwd)
+  
+  7. From the pspsh terminal you may now run necessary commands and/or push the prx to the psp. For a list of commands you may type help or look at the manual in '/path/to/linux-pspsdk/psplink/psplink_manual.pdf'. To run the paintown.prx run it like you would any normal application in a terminal (you may also pass paramaters):
+    ./paintown.prx
+
