@@ -14,7 +14,7 @@
   4. It will output an EBOOT which contains necessary headers to run the application on CFW.
      If you want to build a prx (stripped binary) to debug with psplink view the instructions below in the next section.
 
-  5. Copy EBOOT and the data/ directory into a directory (i.e. paintown) on your pro duo memory stick inside the 'psp/game150/' directory. Load up the homebrew channel, navigate to paintown and play.
+  5. Copy EBOOT and the data/ directory into a directory (i.e. paintown) on your pro duo memory stick inside the 'psp/game150/' directory, navigate to paintown and play.
 
 
 
