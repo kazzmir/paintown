@@ -1,3 +1,9 @@
+paintown (3.5.0) karmic; urgency=low
+
+  * New version
+ 
+ -- Jon Rafkind <jon@rafkind.com>  Mon, 17 Jan 2011 18:05:11 -0700
+
 paintown (3.4.0.8) karmic; urgency=low
 
   * Use DESTDIR in install.sh

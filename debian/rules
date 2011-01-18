@@ -3,13 +3,23 @@
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
-export SDL=1
 
-%:
-		dh $@
+paintown_version=3.5.0
 
-override_dh_auto_test:
-		@echo "Skipping tests"
+clean:
+		echo "Not cleaning"
 
-override_dh_auto_configure:
-		@echo "Skipping configure"
+build:
+		@scons -j `python misc/cores.py` data=/usr/share/paintown
+
+binary-arch:
+		mkdir -p $(CURDIR)/debian/tmp/DEBIAN
+		mkdir -p $(CURDIR)/debian/tmp/DEBIAN/usr/games
+		mkdir -p $(CURDIR)/debian/tmp/DEBIAN/usr/share/paintown
+		cp paintown $(CURDIR)/debian/tmp/DEBIAN/usr/games
+		dpkg-gencontrol
+		dpkg-deb -b $(CURDIR)/debian/tmp ../paintown_$(paintown_version)_$(DEB_HOST_ARCH).deb
+
+binary-indp:
+
+binary: binary-arch binary-indp
