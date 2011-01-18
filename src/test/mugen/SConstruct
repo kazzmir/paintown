@@ -27,7 +27,7 @@ test/mugen/item.cpp
 test/mugen/command.cpp
 test/mugen/background.cpp
 test/mugen/parse-cache.cpp
-test/gui/rectarea.cpp
+test/util/gui/rectarea.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
@@ -71,7 +71,7 @@ test/paintown-engine/game/world.cpp
 test/mugen/config.cpp
 test/mugen/characterhud.cpp
 test/mugen/behavior.cpp
-test/gui/fadetool.cpp
+test/util/gui/fadetool.cpp
 test/mugen/font.cpp
 test/mugen/reader.cpp
 test/mugen/section.cpp
@@ -103,7 +103,7 @@ test/mugen/item-content.cpp
 test/mugen/item.cpp
 test/mugen/parse-cache.cpp
 test/mugen/characterhud.cpp
-test/gui/rectarea.cpp
+test/util/gui/rectarea.cpp
 test/menu/font-info.cpp
 test-parser/air.cpp
 test-parser/def.cpp
@@ -181,7 +181,7 @@ test/factory/font_factory.cpp
 test/util/windows/system.cpp
 test/mugen/config.cpp
 test/mugen/behavior.cpp
-test/gui/fadetool.cpp
+test/util/gui/fadetool.cpp
 test/mugen/reader.cpp
 test/mugen/command.cpp
 test/mugen/section.cpp
