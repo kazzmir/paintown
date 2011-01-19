@@ -531,9 +531,10 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                     if (event[Start]){
                         (*selectedOption)->enter();
                     }
-                    // Backgrounds
-                    background->act();
                 }
+
+                // Backgrounds
+                background->act();
             }
 	}
 		
