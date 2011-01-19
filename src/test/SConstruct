@@ -1,6 +1,10 @@
 Import('use')
 
 if use['PAINTOWN_BUILD_TESTS']:
+    def run_it(target, source, env):
+        print "Running %s" % target[0].path
+        env.Execute(target[0].path)
+    use['PAINTOWN_TEST'] = run_it
     all = []
     all.extend(SConscript('token/SConstruct', exports = ['use']))
     all.extend(SConscript('regex/SConstruct', exports = ['use']))

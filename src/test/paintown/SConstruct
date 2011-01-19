@@ -336,7 +336,9 @@ load_source.append(testEnv.Peg('test/openbor/data.peg'))
 
 x = []
 def makeTest(name, files):
-    x.append(testEnv.Program(name, files))
+    test = testEnv.Program(name, files)
+    x.append(test)
+    testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
 
 makeTest('load', load_source)
 

@@ -287,13 +287,16 @@ test/exceptions/exception.cpp
 
 x = []
 def makeTest(name, files):
-    x.append(testEnv.Program(name, files))
+    test = testEnv.Program(name, files)
+    x.append(test)
+    testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
 
 # x.append(testEnv.Program('load', load_source + most_game_source))
 makeTest('load-full', full_source)
 makeTest('load-select', select_source)
 makeTest('load', load_source + most_game_source)
 makeTest('serialize', ['serialize.cpp'] + ast_source)
-x.append(testEnv.Program('load-stage', stage_source))
+makeTest('load-stage', stage_source)
+# x.append(testEnv.Program('load-stage', stage_source))
 x.append(testEnv.Program('palette', ['palette.cpp', 'test/util/debug.cpp']))
 Return('x')

@@ -18,6 +18,8 @@ parse.cpp
 """)
 
 x = []
-x.append(use.Program('test', source))
+token_test = use.Program('test', source)
+x.append(token_test)
 x.append(use.Program('parse', parse_source))
+use.AddPostAction(token_test, use['PAINTOWN_TEST'])
 Return('x')

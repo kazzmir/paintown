@@ -184,6 +184,8 @@ test/factory/collector.cpp
 source.append(use.Peg('test/openbor/data.peg'))
 
 x = []
-x.append(testEnv.Program('menu', source))
+menu_test = testEnv.Program('menu', source)
+x.append(menu_test)
+use.AddPostAction(menu_test, use['PAINTOWN_TEST'])
 # x.append(testEnv.Program('load-stage', stage_source))
 Return('x')

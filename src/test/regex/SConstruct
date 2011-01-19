@@ -6,5 +6,7 @@ test.cpp
 """)
 
 x = []
-x.append(use.Program('test', source))
+test = use.Program('test', source)
+use.AddPostAction(test, use['PAINTOWN_TEST'])
+x.append(test)
 Return('x')

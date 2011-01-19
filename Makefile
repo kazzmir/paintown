@@ -14,10 +14,6 @@ time:
 test:
 	@scons -j `python misc/cores.py` test-all
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null
-	@echo
-	@echo Running tests
-	build/test/token/test
-	build/test/regex/test
 	@-rm /tmp/token*
 
 install:
