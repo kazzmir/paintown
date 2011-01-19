@@ -53,7 +53,7 @@ static int load(const char * path){
             kfm2.load();
             const char * file = "mugen/stages/kfm.def";
             Global::debug(0, "test") << "Loading " << file << endl;
-            MugenStage stage(Filesystem::find(Filesystem::RelativePath(file)));
+            Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath(file)));
             stage.load();
 
             diff.endTime();
