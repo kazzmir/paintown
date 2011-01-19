@@ -111,7 +111,7 @@ public:
     }
 };
 
-static void runMatch(MugenStage * stage){
+static void runMatch(Mugen::Stage * stage){
     Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     InputMap<int> gameInput;
     /* FIXME: use an enum here */
@@ -327,7 +327,7 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     player1->setBehavior(&player1Behavior);
     player2->setBehavior(&dummyBehavior);
 
-    MugenStage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
         TimeDifference timer;
         std::ostream & out = Global::debug(0);
@@ -381,7 +381,7 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
     player1->setBehavior(&player1Behavior);
     player2->setBehavior(&player2Behavior);
 
-    MugenStage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
         TimeDifference timer;
         std::ostream & out = Global::debug(0);
@@ -426,7 +426,7 @@ void Game::doTraining(){
                     select.getPlayer1()->setBehavior(&dummyBehavior);
                     select.getPlayer2()->setBehavior(&player2Behavior);
                 }
-                MugenStage *stage = select.getStage();
+                Mugen::Stage *stage = select.getStage();
                 stage->reset();
                 runMatch(stage);
             } catch (const QuitGameException & e){
@@ -455,7 +455,7 @@ void Game::doWatch(){
             LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
             select.getPlayer1()->setBehavior(&player1AIBehavior);
             select.getPlayer2()->setBehavior(&player2AIBehavior);
-            MugenStage *stage = select.getStage();
+            Mugen::Stage *stage = select.getStage();
             stage->reset();
             runMatch(stage);
         } catch (const Exception::Return & e){
@@ -617,7 +617,7 @@ void Game::doArcade(){
             }
 
 
-            MugenStage *stage = select.getStage();
+            Mugen::Stage *stage = select.getStage();
 
             // Lets reset the stage for good measure
             stage->reset();

@@ -788,7 +788,7 @@ Round::~Round(){
     }
 }
 
-void Round::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
+void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     switch (state){
 	case WaitForIntro:
 	    if (ticker >= startWaitTime){
@@ -1084,7 +1084,7 @@ void Round::render(const Element::Layer & layer, const Bitmap & bmp){
     }
 }
 
-void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
+void Round::reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     if (!player1Behavior){
         player1Behavior = player1.getBehavior();
     }
@@ -1116,7 +1116,7 @@ void Round::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Charact
     overByKO = false;
 }
 
-void Round::setState(const State & state, MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
+void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     this->state = state;
     std::vector<std::string> vec;
     switch (this->state){
@@ -1973,7 +1973,7 @@ GameInfo::~GameInfo(){
     }
 }
 
-void GameInfo::act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
+void GameInfo::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     player1LifeBar.act(player1);
     player2LifeBar.act(player2);
     player1PowerBar.act(player1);
@@ -2020,7 +2020,7 @@ void GameInfo::render(const Element::Layer & layer, const Bitmap &bmp){
     winIconDisplay.render(layer, bmp);
 }
 
-void GameInfo::reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2){
+void GameInfo::reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     timer.reset();
     roundControl.reset(stage, player1, player2);
 }

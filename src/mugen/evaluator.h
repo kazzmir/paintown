@@ -9,8 +9,6 @@ namespace Ast{
     class Value;
 }
 
-class MugenStage;
-
 namespace Mugen{
 
 namespace Compiler{
@@ -18,6 +16,7 @@ namespace Compiler{
 }
 
 class Character;
+class Stage;
 
 struct Range{
     Range():
@@ -174,7 +173,7 @@ public:
     }
 
     virtual const Character & getCharacter() const = 0;
-    virtual const MugenStage & getStage() const = 0;
+    virtual const Mugen::Stage & getStage() const = 0;
     virtual const std::vector<std::string> getCommands() const = 0;
 
     virtual ~Environment(){
@@ -190,19 +189,19 @@ public:
     }
 
     virtual const Character & getCharacter() const;
-    virtual const MugenStage & getStage() const;
+    virtual const Mugen::Stage & getStage() const;
     virtual const std::vector<std::string> getCommands() const;
 };
 
 class FullEnvironment: public Environment {
 public:
-    FullEnvironment(const MugenStage & stage, const Character & character, const std::vector<std::string> commands):
+    FullEnvironment(const Mugen::Stage & stage, const Character & character, const std::vector<std::string> commands):
     stage(stage),
     character(character),
     commands(commands){
     }
 
-    FullEnvironment(const MugenStage & stage, const Character & character):
+    FullEnvironment(const Mugen::Stage & stage, const Character & character):
     stage(stage),
     character(character){
     }
@@ -220,7 +219,7 @@ public:
         return character;
     }
     
-    virtual inline const MugenStage & getStage() const {
+    virtual inline const Mugen::Stage & getStage() const {
 	return stage;
     }
 
@@ -229,7 +228,7 @@ public:
     }
 
 protected:
-    const MugenStage & stage;
+    const Mugen::Stage & stage;
     const Character & character;
     std::vector<std::string> commands;
 };

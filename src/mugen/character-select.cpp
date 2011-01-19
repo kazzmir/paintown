@@ -905,7 +905,7 @@ VersusScreen::~VersusScreen(){
     delete background;
 }
 
-void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, MugenStage * stage, const Bitmap &bmp){
+void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Bitmap &bmp){
     Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     bool done = false;
     bool escaped = false;
@@ -1006,7 +1006,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 
                         class Context: public Loader::LoadingContext {
                             public:
-                                Context(PlayerLoader & playerLoader, MugenStage *& stage):
+                                Context(PlayerLoader & playerLoader, Mugen::Stage *& stage):
                                     playerLoader(playerLoader),
                                     stage(stage),
                                     fail(NULL){
@@ -1039,7 +1039,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                                 }
 
                                 PlayerLoader & playerLoader;
-                                MugenStage *& stage;
+                                Mugen::Stage *& stage;
                                 Exception::Base * fail;
                         };
 
@@ -2284,9 +2284,9 @@ void CharacterSelect::reset(){
                 if (currentStage){
                     delete currentStage;
                     if (currentPlayer2->hasRandomStage()){
-                        currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getRandomStage()));
+                        currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
                     } else {
-                        currentStage = new MugenStage(Util::findFile(currentPlayer2->getStage()));
+                        currentStage = new Mugen::Stage(Util::findFile(currentPlayer2->getStage()));
                     }
                 }
 	    } else if (playerType == Player2){
@@ -2295,9 +2295,9 @@ void CharacterSelect::reset(){
                 if (currentStage){
                     delete currentStage;
                     if (currentPlayer1->hasRandomStage()){
-                        currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getRandomStage()));
+                        currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
                     } else {
-                        currentStage = new MugenStage(Util::findFile(currentPlayer1->getStage()));
+                        currentStage = new Mugen::Stage(Util::findFile(currentPlayer1->getStage()));
                     }
                 }
 	    }
@@ -2377,9 +2377,9 @@ bool CharacterSelect::setNextArcadeMatch(){
         currentStage = NULL;
     }
     if (tempPlayer->hasRandomStage()){
-        currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getRandomStage()));
+        currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
     } else {
-        currentStage = new MugenStage(Util::findFile(currentPlayer2->getStage()));
+        currentStage = new Mugen::Stage(Util::findFile(currentPlayer2->getStage()));
     }
     return true;
 }
@@ -2415,7 +2415,7 @@ bool CharacterSelect::checkPlayerData(){
 		if (currentStage){
 		    delete currentStage;
 		}
-		currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getStage()));
+		currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
 		return true;
 	    }
 	    break;
@@ -2452,7 +2452,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    } else if (playerType == Player2){
@@ -2471,7 +2471,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    }
@@ -2493,7 +2493,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    } else if (playerType == Player2){
@@ -2512,7 +2512,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new MugenStage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
 		    return true;
 		}
 	    }

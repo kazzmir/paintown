@@ -172,7 +172,7 @@ void StateController::addTrigger(int number, Compiler::Value * trigger){
     triggers[number].push_back(trigger);
 }
 
-bool StateController::canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
+bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
     /* this makes it easy to break in gdb */
     try{
         /*
@@ -190,7 +190,7 @@ bool StateController::canTrigger(const MugenStage & stage, const Character & cha
     }
 }
 
-bool StateController::canTrigger(const MugenStage & stage, const Character & character, const vector<Compiler::Value*> & expressions, const vector<string> & commands) const {
+bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const vector<Compiler::Value*> & expressions, const vector<string> & commands) const {
     for (vector<Compiler::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
         const Compiler::Value * value = *it;
         if (!canTrigger(stage, character, value, commands)){
@@ -221,7 +221,7 @@ vector<int> StateController::sortTriggers() const {
     return out;
 }
 
-bool StateController::canTrigger(const MugenStage & stage, const Character & character, const vector<string> & commands) const {
+bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const vector<string> & commands) const {
     if (triggers.find(-1) != triggers.end()){
         vector<Compiler::Value*> values = triggers.find(-1)->second;
         /* if the triggerall fails then no triggers will work */
@@ -341,7 +341,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
         if (result.isDouble()){
             int value = (int) result.getDoubleValue();
@@ -402,7 +402,7 @@ public:
     virtual ~ControllerChangeState(){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (control != NULL){
             guy.setControl(control->evaluate(FullEnvironment(stage, guy)).toBool());
         }
@@ -442,7 +442,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
         guy.setControl(toBool(result));
     }
@@ -521,7 +521,7 @@ public:
 
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         MugenSound * sound = NULL;
         if (item != NULL){
             int itemNumber = (int) item->evaluate(FullEnvironment(stage, guy)).toNumber();
@@ -621,7 +621,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         for (map<int, Compiler::Value*>::const_iterator it = variables.begin(); it != variables.end(); it++){
             int index = (*it).first;
@@ -698,7 +698,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
@@ -759,7 +759,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (toBool(result)){
@@ -821,7 +821,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
@@ -884,7 +884,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
@@ -945,7 +945,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
@@ -1006,7 +1006,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
@@ -2118,7 +2118,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
 #define evaluateNumberLocal(value, default_) evaluateNumber(value, env, default_)
 #define evaluateBoolLocal(value, default_) evaluateBool(value, env, default_)
         guy.enableHit();
@@ -2258,7 +2258,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (changeMoveType){
             guy.setMoveType(moveType);
         }
@@ -2423,7 +2423,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment env(stage, guy);
         int x = computeX(guy, env);
         int y = computeY(guy, env);
@@ -2612,7 +2612,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int timegap = evaluateNumber(this->timeGap, environment, 1);
         int framegap = evaluateNumber(this->frameGap, environment, 1);
@@ -2693,7 +2693,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy);
         int time = this->time->evaluate(environment).toNumber();
         guy.setAfterImageTime(time);
@@ -2744,7 +2744,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.updateAngleEffect(value + guy.getAngleEffect());
     }
@@ -2794,7 +2794,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         double value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.updateAngleEffect(guy.getAngleEffect() * value);
     }
@@ -2844,7 +2844,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         double value = this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.updateAngleEffect(value);
     }
@@ -2905,7 +2905,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         double value = 0;
         bool setValue = false;
         if (this->value != NULL){
@@ -2991,7 +2991,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         for (vector<Character::Specials>::const_iterator it = asserts.begin(); it != asserts.end(); it++){
             Character::Specials special = *it;
             guy.assertSpecial(special);
@@ -3024,7 +3024,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int value = (int) this->value->evaluate(FullEnvironment(stage, guy)).toNumber();
         guy.getHit().guardDistance = value;
     }
@@ -3044,7 +3044,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* nothing */
     }
 
@@ -3063,7 +3063,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         guy.doTurn(stage);
     }
 
@@ -3147,7 +3147,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (integerIndex != NULL){
             int index = (int)integerIndex->evaluate(FullEnvironment(stage, guy)).toNumber();
             double old = guy.getVariable(index).toNumber();
@@ -3181,7 +3181,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO, if we care about this controller */
     }
 
@@ -3260,7 +3260,7 @@ public:
     virtual ~ControllerWidth(){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int edgeFront = 0;
         int edgeBack = 0;
         int playerFront = 0;
@@ -3355,7 +3355,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy);
         int x = 0;
         int y = 0;
@@ -3389,7 +3389,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         HitState & state = guy.getHitState();
         if (state.fall.envShake.time != 0){
             stage.Quake(state.fall.envShake.time);
@@ -3663,7 +3663,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int facingLeft = guy.getFacing() == Object::FACING_LEFT ? -1 : 1;
         FullEnvironment env(stage, guy);
 #define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
@@ -3756,7 +3756,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy);
         int animation_value = evaluateNumber(value, environment, 0);
         int x = evaluateNumber(posX, environment, 0) + guy.getRX();
@@ -3896,7 +3896,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (slot != -1){
             guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, attributes);
         }
@@ -4048,7 +4048,7 @@ public:
         return all;
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (slot != -1){
             vector<AttackType::Attribute> notAttributes = difference(allAttributes(), attributes);
             guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, notAttributes);
@@ -4106,7 +4106,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy);
         /* FIXME: EnvShake is supposed to only shake in the vertical direction.
          * Also handle frequency, amplitude, and phase here
@@ -4167,7 +4167,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* FIXME */
     }
 
@@ -4210,7 +4210,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         guy.setDefenseMultiplier(evaluateNumber(defense, FullEnvironment(stage, guy, commands), 1));
     }
 
@@ -4271,7 +4271,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int index = (int) evaluateNumber(this->index, environment, 0);
         int minimum = (int) evaluateNumber(this->minimum, environment, 0);
@@ -4299,7 +4299,7 @@ public:
         return true;
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (isFalling(guy)){
             guy.takeDamage(stage, (Paintown::ObjectAttack*) stage.getEnemy(&guy), guy.getHitState().fall.damage);
         }
@@ -4320,7 +4320,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         guy.doFreeze();
     }
 
@@ -4344,7 +4344,7 @@ public:
         return true;
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (isFalling(guy)){
             guy.setXVelocity(guy.getHitState().fall.xVelocity);
             guy.setYVelocity(guy.getHitState().fall.yVelocity);
@@ -4398,7 +4398,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int set = evaluateNumber(value, environment, -1);
         switch (set){
@@ -4433,7 +4433,7 @@ public:
     ControllerChangeState(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (control != NULL){
             guy.setControl(control->evaluate(FullEnvironment(stage, guy)).toBool());
         }
@@ -4480,7 +4480,7 @@ public:
          */
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
     }
 
@@ -4499,7 +4499,7 @@ public:
     ControllerPalFX(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
     }
 
@@ -4554,7 +4554,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         if (value != NULL){
             int minimum = (int) evaluateNumber(start, environment, 0);
@@ -4614,7 +4614,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int priority = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
         guy.setSpritePriority(priority);
     }
@@ -4665,7 +4665,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         bool same = (int) evaluateNumber(value, environment, 1) > 0;
         vector<Character*> targets = stage.getTargets((int) evaluateNumber(id, environment, -1), &guy);
@@ -4733,7 +4733,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         double amount = evaluateNumber(this->value, environment, 0);
         int id = evaluateNumber(this->id, environment, -1);
@@ -4789,7 +4789,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int state = (int) evaluateNumber(value, environment, 0);
         int id = (int) evaluateNumber(this->id, environment, -1);
@@ -4816,7 +4816,7 @@ public:
     ControllerChangeAnim(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int animation = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
         MugenAnimation * show = guy.getAnimation(animation);
         if (show != NULL){
@@ -4877,7 +4877,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         bool unbound = evaluateBool(value, environment, false);
         bool cameraX = evaluateBool(moveCameraX, environment, false);
@@ -4929,7 +4929,7 @@ public:
         }
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int power = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
         guy.addPower(power);
     }
@@ -4990,7 +4990,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int red = PaintownUtil::clamp((int) evaluateNumber(this->red, environment, 0), 0, 255);
         int green = PaintownUtil::clamp((int) evaluateNumber(this->green, environment, 0), 0, 255);
@@ -5015,7 +5015,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
             stage.removeHelper(&guy);
         }
@@ -5068,7 +5068,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int value = (int) evaluateNumber(this->value, environment, 0);
         bool kill = evaluateBool(this->kill, environment, true);
@@ -5099,7 +5099,7 @@ public:
 
     Value value;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int life = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
         guy.setHealth(life);
     }
@@ -5123,7 +5123,7 @@ public:
 
     Value id;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int id = evaluateNumber(this->id, FullEnvironment(stage, guy, commands), -1);
         stage.removeEffects(&guy, id);
     }
@@ -5143,7 +5143,7 @@ public:
     ControllerExplod(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int id = (int) evaluateNumber(this->id, environment, -1);
         /* this hopefully shouldn't be a dangerous cast because the only effects
@@ -5394,7 +5394,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         /* FIXME */
         Mugen::Helper * helper = new Mugen::Helper(guy, (int) evaluateNumber(id, environment, 0));
@@ -5423,7 +5423,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO: but im not sure we care about this one */
     }
 
@@ -5449,7 +5449,7 @@ public:
 
     Value value;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int combo = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
         guy.addCombo(combo);
     }
@@ -5469,7 +5469,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         guy.moveYNoCheck(-guy.getGravity());
     }
 
@@ -5495,7 +5495,7 @@ public:
 
     Value value;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (!evaluateBool(value, FullEnvironment(stage, guy, commands), false)){
             guy.disablePushCheck();
         }
@@ -5529,7 +5529,7 @@ public:
     Value move;
     Value background;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         stage.doPause((int) evaluateNumber(time, environment, 0),
                       (int) evaluateNumber(buffer, environment, 0),
@@ -5592,7 +5592,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
             Mugen::Helper & helper = *(Mugen::Helper*)&guy;
             Character & parent = helper.getParent();
@@ -5628,7 +5628,7 @@ public:
 
     mutable bool message;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (!message){
             Global::debug(0) << "Warning: DisplayToClipboard is unimplemented" << endl;
             message = true;
@@ -5657,7 +5657,7 @@ public:
 
     Value value;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         guy.setAttackMultiplier(evaluateNumber(value, FullEnvironment(stage, guy, commands), 1));
     }
 
@@ -5716,7 +5716,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int slot = (int) evaluateNumber(this->slot, environment, 0);
         int state = (int) evaluateNumber(this->state, environment, -1);
@@ -5776,7 +5776,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
             /* TODO */
         }
@@ -5960,7 +5960,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         guy.setReversalActive();
         ReversalData & data = guy.getReversal();
@@ -6068,7 +6068,7 @@ public:
         /* TODO */
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
     }
 
@@ -6087,7 +6087,7 @@ public:
     ControllerPalFX(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         /* TODO */
     }
 
@@ -6110,7 +6110,7 @@ public:
 
     Value value;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         guy.setPower(evaluateNumber(value, FullEnvironment(stage, guy, commands), 0));
     }
 
@@ -6136,7 +6136,7 @@ public:
 
     Value x, y;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         guy.setDrawOffset(evaluateNumber(x, environment, 0),
                           evaluateNumber(y, environment, 0));
@@ -6171,7 +6171,7 @@ public:
     Value id;
     Value time;
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         vector<Effect*> effects = stage.findEffects(&guy, (int) evaluateNumber(id, environment, -1));
         int bind = (int) evaluateNumber(time, environment, 1);
@@ -6233,7 +6233,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int alphaFrom = 256;
         int alphaTo = 128;
         if (trans == AddAlpha){
@@ -6262,7 +6262,7 @@ public:
     StateController(you){
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         Global::debug(0) << "AppendToClipboard is not implemented" << endl;
     }
 
@@ -6285,7 +6285,7 @@ public:
         return new ControllerClearClipboard(*this);
     }
 
-    virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         Global::debug(0) << "ClearClipboard is not implemented" << endl;
     }
 };
@@ -6483,7 +6483,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
                 StateController(you){
                 }
 
-                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
                     /* nothing */
                 }
 

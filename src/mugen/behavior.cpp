@@ -27,7 +27,7 @@ void Behavior::hit(Object * enemy){
 DummyBehavior::DummyBehavior(){
 }
 
-vector<string> DummyBehavior::currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+vector<string> DummyBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
     vector<string> out;
     return out;
 }
@@ -47,7 +47,7 @@ InputMap<Keys> & HumanBehavior::getInput(bool facingRight){
     return left;
 }
 
-vector<string> HumanBehavior::currentCommands(const MugenStage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
+vector<string> HumanBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
     vector<string> out;
     
     InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput(reversed));
@@ -79,7 +79,7 @@ static string randomCommand(const vector<Command*> & commands){
     return commands[choice]->getName();
 }
 
-vector<string> RandomAIBehavior::currentCommands(const MugenStage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
+vector<string> RandomAIBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
     vector<string> out;
     if (PaintownUtil::rnd(100) > 90){
         out.push_back(randomCommand(commands));
@@ -175,7 +175,7 @@ static LearningAIBehavior::Direction randomDirection(){
     }
 }
 
-vector<string> LearningAIBehavior::currentCommands(const MugenStage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
+vector<string> LearningAIBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
 
     vector<string> out;
 

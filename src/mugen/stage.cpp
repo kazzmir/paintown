@@ -54,6 +54,8 @@
 
 using namespace std;
 
+namespace PaintownUtil = ::Util;
+
 // Some static variables
 static const int CONTROLLER_VALUE_NOT_SET = -999999;
 static const int DEFAULT_BACKGROUND_ID = -9999;
@@ -128,7 +130,7 @@ static bool centerCollision( Mugen::Object *p1, Mugen::Object *p2 ){
     return true;
 }
 
-MugenStage::MugenStage(const Filesystem::AbsolutePath & location):
+Mugen::Stage::Stage(const Filesystem::AbsolutePath & location):
 World(),
 location(location),
 baseDir(""),
@@ -201,7 +203,7 @@ cycles(0){
 }
 
 #if 0
-MugenStage::MugenStage( const char * location ):
+Mugen::Stage::Mugen::Stage( const char * location ):
 World(),
 location( std::string(location) ),
 baseDir(""),
@@ -275,7 +277,7 @@ cycles(0){
 }
 #endif
 
-MugenStage::~MugenStage(){
+Mugen::Stage::~Stage(){
     cleanup();
     if (gameHUD){
         delete gameHUD;
@@ -283,7 +285,7 @@ MugenStage::~MugenStage(){
 }
 
 /* fix */
-void MugenStage::loadSectionCamera(Ast::Section * section){
+void Mugen::Stage::loadSectionCamera(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -319,7 +321,7 @@ void MugenStage::loadSectionCamera(Ast::Section * section){
     }
 }
 
-void MugenStage::loadSectionInfo(Ast::Section * section){
+void Mugen::Stage::loadSectionInfo(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -340,7 +342,7 @@ void MugenStage::loadSectionInfo(Ast::Section * section){
     }
 }
 
-void MugenStage::loadSectionPlayerInfo(Ast::Section * section){
+void Mugen::Stage::loadSectionPlayerInfo(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -376,7 +378,7 @@ void MugenStage::loadSectionPlayerInfo(Ast::Section * section){
     }
 }
 
-void MugenStage::loadSectionBound(Ast::Section * section){
+void Mugen::Stage::loadSectionBound(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -392,7 +394,7 @@ void MugenStage::loadSectionBound(Ast::Section * section){
     }
 }
 
-void MugenStage::loadSectionStageInfo(Ast::Section * section){
+void Mugen::Stage::loadSectionStageInfo(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -412,7 +414,7 @@ void MugenStage::loadSectionStageInfo(Ast::Section * section){
     }
 }
 
-void MugenStage::loadSectionShadow(Ast::Section * section, cymk_holder & shadow){
+void Mugen::Stage::loadSectionShadow(Ast::Section * section, cymk_holder & shadow){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -439,7 +441,7 @@ void MugenStage::loadSectionShadow(Ast::Section * section, cymk_holder & shadow)
     }
 }
 
-void MugenStage::loadSectionReflection(Ast::Section * section){
+void Mugen::Stage::loadSectionReflection(Ast::Section * section){
     for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
         Ast::Attribute * attribute = *attribute_it;
         if (attribute->getKind() == Ast::Attribute::Simple){
@@ -453,11 +455,11 @@ void MugenStage::loadSectionReflection(Ast::Section * section){
     }
 }
 
-int MugenStage::getFloor() const {
+int Mugen::Stage::getFloor() const {
     return currentZOffset();
 }
 
-int MugenStage::currentZOffset() const {
+int Mugen::Stage::currentZOffset() const {
     if (zoffsetlink != DEFAULT_BACKGROUND_ID){
 	// Link zoffset to id
         vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
@@ -482,7 +484,7 @@ static Filesystem::AbsolutePath getMotifFile(const string & path){
     return Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(path));
 }
 
-void MugenStage::load(){
+void Mugen::Stage::load(){
     if (loaded){
         return;
     }
@@ -606,7 +608,7 @@ void MugenStage::load(){
      * cymk components but I'm not sure what it is. This is relatively close
      * but its definately not 100% accurate.
      */
-    shadowIntensity = Util::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
+    shadowIntensity = PaintownUtil::min((shadow.c + shadow.y + shadow.m + shadow.k * 2) / 3, 255);
     Global::debug(1) << "Shadow intensity " << shadowIntensity << endl;
 
     // Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.sff")), Filesystem::AbsolutePath(), effects);
@@ -651,7 +653,7 @@ void MugenStage::load(){
     loaded = true;
 }
 
-void MugenStage::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
+void Mugen::Stage::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
     for (map< unsigned int, std::map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
         for(map< unsigned int, MugenSprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
             MugenSprite * sprite = j->second;
@@ -660,7 +662,7 @@ void MugenStage::destroyRaw(const map< unsigned int, std::map< unsigned int, Mug
     }
 }
 
-void MugenStage::setCamera( const double x, const double y ){ 
+void Mugen::Stage::setCamera( const double x, const double y ){ 
     camerax = x;
     cameray = y; 
     // Camera boundaries
@@ -669,7 +671,7 @@ void MugenStage::setCamera( const double x, const double y ){
     if( cameray < boundhigh ) cameray = boundhigh;
     else if( cameray > boundlow )cameray = boundlow;
 }
-void MugenStage::moveCamera( const double x, const double y ){ 
+void Mugen::Stage::moveCamera( const double x, const double y ){ 
     camerax += x; cameray += y; 
     // Camera boundaries
     if( camerax < boundleft ) camerax = boundleft;
@@ -710,15 +712,15 @@ static bool anyBlocking(const vector<MugenArea> & boxes1, int x1, int y1, int at
     return false;
 }
 
-bool MugenStage::doBlockingDetection(Mugen::Object * obj1, Mugen::Object * obj2){
+bool Mugen::Stage::doBlockingDetection(Mugen::Object * obj1, Mugen::Object * obj2){
     return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
-bool MugenStage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * obj2){
+bool Mugen::Stage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * obj2){
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
-MugenAnimation * MugenStage::getFightAnimation(int id){
+MugenAnimation * Mugen::Stage::getFightAnimation(int id){
     if (sparks[id] == 0){
         ostringstream out;
         out << "No fightfx animation for " << id;
@@ -728,7 +730,7 @@ MugenAnimation * MugenStage::getFightAnimation(int id){
     return sparks[id];
 }
 
-void MugenStage::addSpark(int x, int y, int sparkNumber){
+void Mugen::Stage::addSpark(int x, int y, int sparkNumber){
     if (sparks[sparkNumber] == 0){
         /*
         ostringstream out;
@@ -742,7 +744,7 @@ void MugenStage::addSpark(int x, int y, int sparkNumber){
     showSparks.push_back(spark);
 }
 
-void MugenStage::playSound(int group, int item, bool own){
+void Mugen::Stage::playSound(int group, int item, bool own){
     /* FIXME: handle own */
     MugenSound * sound = sounds[group][item];
     if (sound != 0){
@@ -751,7 +753,7 @@ void MugenStage::playSound(int group, int item, bool own){
 }
 
 /* for helpers and players */
-void MugenStage::physics(Paintown::Object * player){
+void Mugen::Stage::physics(Paintown::Object * player){
 
     Mugen::Object * mugen = (Mugen::Object *) player;
     /* ignore physics while the player is paused */
@@ -945,7 +947,7 @@ void MugenStage::physics(Paintown::Object * player){
     }
 }
 
-vector<Paintown::Object*> MugenStage::getOpponents(Paintown::Object * who){
+vector<Paintown::Object*> Mugen::Stage::getOpponents(Paintown::Object * who){
     vector<Paintown::Object*> out;
     for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
         Paintown::Object * player = *it;
@@ -957,7 +959,7 @@ vector<Paintown::Object*> MugenStage::getOpponents(Paintown::Object * who){
     return out;
 }
 
-void MugenStage::logic( ){
+void Mugen::Stage::logic( ){
     Console::ConsoleEnd & cend = Console::Console::endl;
 
     /* cycles slow the stage down, like after ko */
@@ -1093,7 +1095,7 @@ void MugenStage::logic( ){
 #endif
 }
 	
-void MugenStage::render(Bitmap *work){
+void Mugen::Stage::render(Bitmap *work){
     
     // Background
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
@@ -1162,7 +1164,7 @@ void MugenStage::render(Bitmap *work){
     }
     
     // board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
-    board->Blit((int)(quake_time > 0 ? Util::rnd( 9 ) - 4 : 0), (int)(quake_time > 0 ? Util::rnd( 9 ) - 4 : 0), *work);
+    board->Blit((int)(quake_time > 0 ? PaintownUtil::rnd( 9 ) - 4 : 0), (int)(quake_time > 0 ? PaintownUtil::rnd( 9 ) - 4 : 0), *work);
     
     // Debug crap for screen coordinates
     if (debugMode){
@@ -1192,7 +1194,7 @@ void MugenStage::render(Bitmap *work){
     console->draw(*work);
 }
 
-void MugenStage::reset(){
+void Mugen::Stage::reset(){
     camerax = startx;
     cameray = starty;
     gameOver = false;
@@ -1263,7 +1265,7 @@ void MugenStage::reset(){
 }
 
 // Add player1 people
-void MugenStage::addPlayer1( Paintown::Object * o ){
+void Mugen::Stage::addPlayer1( Paintown::Object * o ){
     o->setAlliance(Player1Side);
     o->setX(p1startx);
     o->setY(p1starty);
@@ -1284,7 +1286,7 @@ void MugenStage::addPlayer1( Paintown::Object * o ){
 }
 
 // Add player2 people
-void MugenStage::addPlayer2( Paintown::Object * o ){
+void Mugen::Stage::addPlayer2( Paintown::Object * o ){
     o->setAlliance(Player2Side);
     o->setX(p2startx);
     o->setY(p2starty);
@@ -1305,7 +1307,7 @@ void MugenStage::addPlayer2( Paintown::Object * o ){
     ((Mugen::Character *) o)->setCommonSounds(&sounds);
 }
 
-void MugenStage::setPlayerHealth(int health){
+void Mugen::Stage::setPlayerHealth(int health){
     for ( vector< Paintown::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
         Mugen::Character *player = (Mugen::Character *)(*it);
 	player->setHealth(health);
@@ -1313,11 +1315,11 @@ void MugenStage::setPlayerHealth(int health){
 }
 
 // Console
-void MugenStage::toggleConsole(){ 
+void Mugen::Stage::toggleConsole(){ 
     console->toggle(); 
 }
 
-void MugenStage::toggleDebug(){
+void Mugen::Stage::toggleDebug(){
     debugMode = !debugMode;
     for ( vector< Paintown::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
         Mugen::Character *player = (Mugen::Character *)(*it);
@@ -1325,45 +1327,45 @@ void MugenStage::toggleDebug(){
     }
 }
 
-void MugenStage::act(){
+void Mugen::Stage::act(){
     logic();
 }
 
-void MugenStage::draw( Bitmap * work ){
+void Mugen::Stage::draw( Bitmap * work ){
     render(work);
 }
 
-void MugenStage::addObject(Paintown::Object * o){
+void Mugen::Stage::addObject(Paintown::Object * o){
     addedObjects.push_back(o);
 }
 
-bool MugenStage::finished() const { return false; }
-void MugenStage::reloadLevel() throw( LoadException ){ 
+bool Mugen::Stage::finished() const { return false; }
+void Mugen::Stage::reloadLevel() throw( LoadException ){ 
     cleanup();
     loaded = false;
     load(); 
 }
-Script::Engine * MugenStage::getEngine() const { return NULL; }
+Script::Engine * Mugen::Stage::getEngine() const { return NULL; }
 /* upper left hand corner of the screen */
-int MugenStage::getX(){
+int Mugen::Stage::getX(){
     return (int)getCameraX();
 }
 
-int MugenStage::getY(){
+int Mugen::Stage::getY(){
     return (int)getCameraY();
 }
 /* this shouldn't be here */
 // I guess ignore this one
-const deque<Bitmap*> & MugenStage::getScreenshots(){
+const deque<Bitmap*> & Mugen::Stage::getScreenshots(){
     return garbage;
 }
 
-int MugenStage::levelLength() const { return 0; }
+int Mugen::Stage::levelLength() const { return 0; }
 // Since this isn't a paintown level, I guess block wouldn't apply
-const Block * MugenStage::currentBlock() const { return NULL; }
+const Block * Mugen::Stage::currentBlock() const { return NULL; }
 /* bleh.. */
-void MugenStage::addEnemy(Paintown::Enemy * obj){ /* does nothing */ }
-Paintown::Object * MugenStage::findObject(int id){ 
+void Mugen::Stage::addEnemy(Paintown::Enemy * obj){ /* does nothing */ }
+Paintown::Object * Mugen::Stage::findObject(int id){ 
     for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
         Paintown::Object * object = *it;
         if (object->getObjectId() == id){
@@ -1374,40 +1376,40 @@ Paintown::Object * MugenStage::findObject(int id){
 }
 
 // These should be the same, but we'll see, mugen has some funny parameters
-int MugenStage::getMaximumZ(){ return zoffset; }
-int MugenStage::getMinimumZ(){ return zoffset; }
+int Mugen::Stage::getMaximumZ(){ return zoffset; }
+int Mugen::Stage::getMinimumZ(){ return zoffset; }
 
-void MugenStage::drawMiniMaps( bool b ){ /* Not likely */ }
-bool MugenStage::shouldDrawMiniMaps(){ return false; }
-void MugenStage::killAllHumans( Paintown::Object * player ){ 
+void Mugen::Stage::drawMiniMaps( bool b ){ /* Not likely */ }
+bool Mugen::Stage::shouldDrawMiniMaps(){ return false; }
+void Mugen::Stage::killAllHumans( Paintown::Object * player ){ 
     for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
         Paintown::Object * o = *it;
         o->takeDamage(*this, NULL, 999999 );
     }
 }
 
-void MugenStage::addMessage(Network::Message m, Network::Socket from, Network::Socket to){
+void Mugen::Stage::addMessage(Network::Message m, Network::Socket from, Network::Socket to){
 }
 
-Network::Message MugenStage::createBangMessage( int x, int y, int z ){
+Network::Message Mugen::Stage::createBangMessage( int x, int y, int z ){
     Network::Message m;
     return m;
 }
         
-bool MugenStage::isPaused(){
+bool Mugen::Stage::isPaused(){
     return false;
 }
         
-void MugenStage::pause(){
+void Mugen::Stage::pause(){
 }
 
-void MugenStage::unpause(){
+void Mugen::Stage::unpause(){
 }
 
-void MugenStage::changePause(){
+void Mugen::Stage::changePause(){
 }
 
-const std::string MugenStage::getStageName(const std::string &filename) throw (MugenException){
+const std::string Mugen::Stage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath dir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
     Global::debug(1) << dir.path() << endl;
@@ -1438,7 +1440,7 @@ const std::string MugenStage::getStageName(const std::string &filename) throw (M
     return "";
 }
 
-void MugenStage::cleanup(){
+void Mugen::Stage::cleanup(){
     if (loaded){
 	if (background){
 	    delete background;
@@ -1484,7 +1486,7 @@ void MugenStage::cleanup(){
     }
 }
 
-bool MugenStage::isaPlayer( Paintown::Object * o ) const {
+bool Mugen::Stage::isaPlayer( Paintown::Object * o ) const {
     for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
         if ( (*it) == o ){
             return true;
@@ -1493,15 +1495,15 @@ bool MugenStage::isaPlayer( Paintown::Object * o ) const {
     return false;
 }
 
-int MugenStage::maximumRight() const {
+int Mugen::Stage::maximumRight() const {
     return (int)(camerax + DEFAULT_WIDTH / 2);
 }
 
-int MugenStage::maximumLeft() const {
+int Mugen::Stage::maximumLeft() const {
     return (int)(camerax - DEFAULT_WIDTH / 2);
 }
 
-void MugenStage::updatePlayer(Paintown::Object * player){
+void Mugen::Stage::updatePlayer(Paintown::Object * player){
     // Z/Y offset
     player->setZ(currentZOffset());
 
@@ -1645,7 +1647,7 @@ void MugenStage::updatePlayer(Paintown::Object * player){
     //Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }
 
-void MugenStage::initializeName(){
+void Mugen::Stage::initializeName(){
     try{
 #if 0
         Filesystem::AbsolutePath str = this->location;
@@ -1671,7 +1673,7 @@ void MugenStage::initializeName(){
     }
 }
         
-void MugenStage::setGameRate(double rate){
+void Mugen::Stage::setGameRate(double rate){
     gameRate = rate;
     if (rate <= 0){
         gameRate = 0.1;
@@ -1679,7 +1681,7 @@ void MugenStage::setGameRate(double rate){
 }
 
 //! Do continue screen return true to continue playing, false to end
-bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input, const Bitmap & buffer){
+bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input, const Bitmap & buffer){
 
     Filesystem::AbsolutePath systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
     
@@ -1818,7 +1820,7 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
         }
 
         while (Global::speed_counter == 0){
-            Util::rest(1);
+            PaintownUtil::rest(1);
         }
     }
 
@@ -1828,7 +1830,7 @@ bool MugenStage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys
     return false;
 }
     
-Mugen::Character * MugenStage::getEnemy(const Mugen::Character * who) const {
+Mugen::Character * Mugen::Stage::getEnemy(const Mugen::Character * who) const {
     for (vector<Paintown::Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
         Paintown::Object * enemy = *enem;
         if (who->getAlliance() != enemy->getAlliance() && isaPlayer(enemy)){
@@ -1839,33 +1841,33 @@ Mugen::Character * MugenStage::getEnemy(const Mugen::Character * who) const {
     return NULL;
 }
 
-int MugenStage::getGameTime() const {
+int Mugen::Stage::getGameTime() const {
     if (gameHUD){
         return gameHUD->getGameTime();
     }
     return 0;
 }
     
-void MugenStage::doSuperPause(int time, int animation, int positionX, int positionY){
+void Mugen::Stage::doSuperPause(int time, int animation, int positionX, int positionY){
     superPause.time = time;
     if (animation != -1){
         addSpark(positionX, positionY, animation);
     }
 }
    
-void MugenStage::doPause(int time, int buffer, int moveAllowed, bool pauseBackground){
+void Mugen::Stage::doPause(int time, int buffer, int moveAllowed, bool pauseBackground){
     /* TODO */
 }
     
-void MugenStage::createDust(int x, int y){
+void Mugen::Stage::createDust(int x, int y){
     addSpark(x, y, 120);
 }
         
-void MugenStage::addEffect(Mugen::Effect * effect){
+void Mugen::Stage::addEffect(Mugen::Effect * effect){
     showSparks.push_back(effect);
 }
                     
-int MugenStage::countMyEffects(const Mugen::Character * owner) const {
+int Mugen::Stage::countMyEffects(const Mugen::Character * owner) const {
     int total = 0;
     for (vector<Mugen::Effect*>::const_iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
         Mugen::Effect * effect = *it;
@@ -1876,7 +1878,7 @@ int MugenStage::countMyEffects(const Mugen::Character * owner) const {
     return total;
 }
     
-int MugenStage::countMyHelpers(const Mugen::Character * owner) const {
+int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
     int count = 0;
     for (vector<Paintown::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
         /* FIXME! dont assume its a character */
@@ -1891,7 +1893,7 @@ int MugenStage::countMyHelpers(const Mugen::Character * owner) const {
     return count;
 }
 
-const Mugen::Character & MugenStage::findRoot(const Mugen::Character & who) const {
+const Mugen::Character & Mugen::Stage::findRoot(const Mugen::Character & who) const {
     if (who.isHelper()){
         const Mugen::Helper & helper = *(const Mugen::Helper *) &who;
         return findRoot(helper.getParent());
@@ -1899,23 +1901,23 @@ const Mugen::Character & MugenStage::findRoot(const Mugen::Character & who) cons
     return who;
 }
 
-vector<Mugen::Character *> MugenStage::getTargets(int id, const Mugen::Character * from) const {
+vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Character * from) const {
     vector<Mugen::Character *> targets;
     /* TODO */
     return targets;
 }
     
 /* Set the background to a solid color for some length of time */
-void MugenStage::setEnvironmentColor(int color, int time, bool under){
+void Mugen::Stage::setEnvironmentColor(int color, int time, bool under){
     /* TODO */
 }
     
-void MugenStage::removeHelper(Mugen::Character * who){
+void Mugen::Stage::removeHelper(Mugen::Character * who){
     /* The character will ultimately be removed in the logic loop */
     who->setHealth(-1);
 }
     
-void MugenStage::removeEffects(const Mugen::Character * owner, int id){
+void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); /**/ ){ 
         Mugen::Effect * effect = *it;
         if (effect->getOwner() == owner && (id == -1 || id == effect->getId())){
@@ -1927,7 +1929,7 @@ void MugenStage::removeEffects(const Mugen::Character * owner, int id){
     }
 }
     
-vector<Mugen::Helper*> MugenStage::findHelpers(const Mugen::Character * owner, int id) const {
+vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner, int id) const {
     vector<Mugen::Helper*> out;
     for (vector<Paintown::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
         /* FIXME! dont assume its a character */
@@ -1942,7 +1944,7 @@ vector<Mugen::Helper*> MugenStage::findHelpers(const Mugen::Character * owner, i
     return out;
 }
     
-Mugen::Effect * MugenStage::findEffect(const Mugen::Character * owner, int id){
+Mugen::Effect * Mugen::Stage::findEffect(const Mugen::Character * owner, int id){
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
         Mugen::Effect * effect = *it;
         if (effect->getOwner() == owner && id == effect->getId()){
@@ -1953,7 +1955,7 @@ Mugen::Effect * MugenStage::findEffect(const Mugen::Character * owner, int id){
     return NULL;
 }
 
-vector<Mugen::Effect *> MugenStage::findEffects(const Mugen::Character * owner, int id){
+vector<Mugen::Effect *> Mugen::Stage::findEffects(const Mugen::Character * owner, int id){
     vector<Mugen::Effect*> effects;
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
         Mugen::Effect * effect = *it;

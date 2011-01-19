@@ -88,13 +88,16 @@ struct PlayerData {
     bool jumped;
 };
 
-class MugenStage: public World {
+namespace Mugen {
+
+/*! FIXME remove world object dependance which Mugen::Character relies on for Object::takeDamage. */
+class Stage : public World {
 public:
     // Location at dataPath() + "mugen/stages/"
-    MugenStage(const Filesystem::AbsolutePath & s);
+    Stage(const Filesystem::AbsolutePath & s);
     // MugenStage( const char * location );
 
-    virtual ~MugenStage();
+    virtual ~Stage();
 
     void load();
 
@@ -570,5 +573,7 @@ private:
         int soundGroup, soundItem;
     } superPause;
 };
+
+}
 
 #endif

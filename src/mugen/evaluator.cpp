@@ -891,7 +891,7 @@ const Character & EmptyEnvironment::getCharacter() const {
     throw MugenException("Cannot get a character from an empty environment");
 }
 
-const MugenStage & EmptyEnvironment::getStage() const {
+const Mugen::Stage & EmptyEnvironment::getStage() const {
     throw MugenException("Cannot get a stage from an empty environment");
 }
 

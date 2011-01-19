@@ -10,8 +10,6 @@ namespace Ast{
     class AttributeSimple;
 }
 
-class MugenStage;
-
 namespace Mugen{
 
 namespace Compiler{
@@ -19,6 +17,7 @@ namespace Compiler{
 }
 
 class Character;
+class Stage;
 
 /* comes from a State */
 class StateController{
@@ -28,7 +27,7 @@ protected:
     public:
         CompiledController();
         virtual ~CompiledController();
-        virtual void execute(MugenStage & stage, Character & guy, const std::vector<std::string> & commands) = 0;
+        virtual void execute(Mugen::Stage & stage, Character & guy, const std::vector<std::string> & commands) = 0;
     };
     */
 
@@ -134,8 +133,8 @@ public:
     
     static StateController * compile(Ast::Section * section, const std::string & name, int state, Type type);
 
-    bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<std::string> & commands) const;
-    virtual void activate(MugenStage & stage, Character & who, const std::vector<std::string> & commands) const = 0;
+    bool canTrigger(const Mugen::Stage & stage, const Character & character, const std::vector<std::string> & commands) const;
+    virtual void activate(Mugen::Stage & stage, Character & who, const std::vector<std::string> & commands) const = 0;
 
     static bool handled(const Ast::AttributeSimple & simple);
 
@@ -175,8 +174,8 @@ public:
 
 protected:
 
-    bool canTrigger(const MugenStage & stage, const Character & character, const std::vector<Compiler::Value*> & expressions, const std::vector<std::string> & commands) const;
-    bool canTrigger(const MugenStage & stage, const Character & character, const Compiler::Value * expression, const std::vector<std::string> & commands) const;
+    bool canTrigger(const Mugen::Stage & stage, const Character & character, const std::vector<Compiler::Value*> & expressions, const std::vector<std::string> & commands) const;
+    bool canTrigger(const Mugen::Stage & stage, const Character & character, const Compiler::Value * expression, const std::vector<std::string> & commands) const;
     std::vector<int> sortTriggers() const;
 
 protected:

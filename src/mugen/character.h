@@ -41,11 +41,11 @@ class MugenItemContent;
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
-class MugenStage;
 
 namespace Mugen{
 
 class Behavior;
+class Stage;
 
 struct Constant{
     enum ConstantType{
@@ -399,7 +399,7 @@ struct HitState{
         damage(0){
         }
 
-    void update(MugenStage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
+    void update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
     int shakeTime;
     int hitTime;
     
@@ -507,7 +507,7 @@ public:
     virtual void addController(StateController * controller);
     virtual void addControllerFront(StateController * controller);
 
-    virtual void transitionTo(const MugenStage & stage, Character & who);
+    virtual void transitionTo(const Mugen::Stage & stage, Character & who);
 
     virtual ~State();
 
@@ -545,11 +545,11 @@ public:
     virtual double getGravity() const = 0;
     virtual void setYVelocity(double y) = 0;
     virtual double getYVelocity() const = 0;
-    virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs) = 0;
+    virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs) = 0;
     virtual double getXVelocity() const = 0;
     virtual void setXVelocity(double x) = 0;
     virtual bool canTurn() const = 0;
-    virtual void doTurn(MugenStage & stage) = 0;
+    virtual void doTurn(Mugen::Stage & stage) = 0;
     virtual double getStandingFriction() const = 0;
     virtual const std::string & getMoveType() const = 0;
     virtual HitDefinition & getHit() = 0;
@@ -562,8 +562,8 @@ public:
     virtual int getAttackDistance() const = 0;
     virtual void guarded(Object * enemy, const HitDefinition & hit) = 0;
     virtual void addPower(double d) = 0;
-    virtual void wasHit(MugenStage & stage, Object * enemy, const HitDefinition & hit) = 0;
-    virtual void didHit(Object * enemy, MugenStage & stage) = 0;
+    virtual void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
+    virtual void didHit(Object * enemy, Mugen::Stage & stage) = 0;
 };
 
 class Character: public Object {
@@ -686,9 +686,9 @@ public:
     virtual double minZDistance() const;
     virtual void attacked(World*, Paintown::Object*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >&);
 
-    virtual void changeState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
+    virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
     /* change back to states in the players own cns file */
-    virtual void changeOwnState(MugenStage & stage, int state, const std::vector<std::string> & inputs);
+    virtual void changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
     
     virtual void setAnimation(int animation);
     
@@ -963,10 +963,10 @@ public:
         }
 
         /* `this' hit `enemy' */
-        void didHit(Object * enemy, MugenStage & stage);
+        void didHit(Object * enemy, Mugen::Stage & stage);
 
         /* `enemy' hit `this' with hitdef `hit' */
-        void wasHit(MugenStage & stage, Object * enemy, const HitDefinition & hit);
+        void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);
 
         /* `this' character guarded `enemy' */
         void guarded(Object * enemy, const HitDefinition & hit);
@@ -1008,7 +1008,7 @@ public:
         virtual void setHurtable();
 
         bool canTurn() const;
-        void doTurn(MugenStage & stage);
+        void doTurn(Mugen::Stage & stage);
 
         /* recover after falling */
         virtual bool canRecover() const;
@@ -1164,14 +1164,14 @@ protected:
     virtual void setConstant(std::string name, const std::vector<double> & values);
     virtual void setConstant(std::string name, double value);
 
-    virtual std::vector<std::string> doInput(const MugenStage & stage);
-    virtual bool doStates(MugenStage & stage, const std::vector<std::string> & active, int state);
+    virtual std::vector<std::string> doInput(const Mugen::Stage & stage);
+    virtual bool doStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
 
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
 
-    void resetJump(MugenStage & stage, const std::vector<std::string> & inputs);
-    void doubleJump(MugenStage & stage, const std::vector<std::string> & inputs);
-    void stopGuarding(MugenStage & stage, const std::vector<std::string> & inputs);
+    void resetJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
+    void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
+    void stopGuarding(Mugen::Stage & stage, const std::vector<std::string> & inputs);
 
     /*
     internalCommand_t resetJump;

@@ -25,7 +25,6 @@ class MugenFont;
 class MugenSprite;
 class MugenStoryboard;
 class MugenSection;
-class MugenStage;
 
 namespace Ast{
     class Section;
@@ -34,8 +33,9 @@ namespace Ast{
 /* Encapsulate in Mugen namespace */
 namespace Mugen{
     
-class Character;
 class Background;
+class Character;
+class Stage;
 
 /*! Font Handling */
 class FontHandler{
@@ -877,7 +877,7 @@ class VersusScreen {
 	virtual ~VersusScreen();
 	
 	//! Renders the versus screen as well as loads the characters and stage
-	virtual void render(CharacterInfo & player1, CharacterInfo & player2, MugenStage * stage, const Bitmap &);
+	virtual void render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Bitmap &);
 	
 	virtual inline void setBackground(Background * background){
 	    this->background = background;
@@ -982,7 +982,7 @@ class CharacterSelect {
 	    return this->currentPlayer2->getPlayer2();
 	}
 	
-	virtual inline MugenStage * getStage(){
+	virtual inline Mugen::Stage * getStage(){
 	    return this->currentStage;
 	}
 	
@@ -1073,7 +1073,7 @@ class CharacterSelect {
 	//! Current set Player 2
 	CharacterInfo *currentPlayer2;
 	//! Current set Stage
-	MugenStage *currentStage;
+	Mugen::Stage *currentStage;
 	
 	//! PlayerType
 	Mugen::PlayerType playerType;

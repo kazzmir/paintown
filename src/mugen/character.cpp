@@ -188,7 +188,7 @@ void State::setPhysics(Physics::Type p){
     physics = p;
 }
 
-void State::transitionTo(const MugenStage & stage, Character & who){
+void State::transitionTo(const Mugen::Stage & stage, Character & who){
     if (animation != NULL){
         who.setAnimation((int) animation->evaluate(FullEnvironment(stage, who)).toNumber());
     }
@@ -277,7 +277,7 @@ State::~State(){
 }
 
 /* Called when the player was hit */
-void HitState::update(MugenStage & stage, const Character & guy, bool inAir, const HitDefinition & hit){
+void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit){
     /* FIXME: choose the proper ground/air/guard types */
 
     guarded = false;
@@ -745,7 +745,7 @@ void Character::resetStateTime(){
     stateTime = 0;
 }
         
-void Character::changeState(MugenStage & stage, int stateNumber, const vector<string> & inputs){
+void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<string> & inputs){
     /* dont let after images carry over to the next state
      * UPDATE: mugen actually allows this
      */
@@ -772,7 +772,7 @@ void Character::changeState(MugenStage & stage, int stateNumber, const vector<st
     }
 }
 
-void Character::changeOwnState(MugenStage & stage, int state, const std::vector<std::string> & inputs){
+void Character::changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs){
     /* FIXME: change to states in the characters own cns file */
     changeState(stage, state, inputs);
 }
@@ -1690,17 +1690,17 @@ public:
     }
 };
 
-void Character::resetJump(MugenStage & stage, const vector<string> & inputs){
+void Character::resetJump(Mugen::Stage & stage, const vector<string> & inputs){
     setSystemVariable(JumpIndex, RuntimeValue(0));
     changeState(stage, JumpStart, inputs);
 }
 
-void Character::doubleJump(MugenStage & stage, const vector<string> & inputs){
+void Character::doubleJump(Mugen::Stage & stage, const vector<string> & inputs){
     setSystemVariable(JumpIndex, RuntimeValue(getSystemVariable(JumpIndex).toNumber() + 1));
     changeState(stage, AirJumpStart, inputs);
 }
 
-void Character::stopGuarding(MugenStage & stage, const vector<string> & inputs){
+void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs){
     guarding = false;
     if (stateType == StateType::Crouch){
         changeState(stage, Crouching, inputs);
@@ -1769,7 +1769,7 @@ void Character::fixAssumptions(){
                 StateController("jump", -1){
                 }
 
-                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
                     guy.resetJump(stage, commands);
                 }
 
@@ -1806,7 +1806,7 @@ void Character::fixAssumptions(){
                 StateController("double jump", -1){
                 }
 
-                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
                     guy.doubleJump(stage, commands);
                 }
 
@@ -1845,7 +1845,7 @@ void Character::fixAssumptions(){
                 StateController("stop guarding", StopGuardStand){
                 }
 
-                virtual void activate(MugenStage & stage, Character & guy, const vector<string> & commands) const {
+                virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
                     guy.stopGuarding(stage, commands);
                 }
 
@@ -2019,7 +2019,7 @@ MugenAnimation * Character::getCurrentAnimation() const {
 }
 
 /* returns all the commands that are currently active */
-vector<string> Character::doInput(const MugenStage & stage){
+vector<string> Character::doInput(const Mugen::Stage & stage){
     if (behavior == NULL){
         throw MugenException("Internal error: No behavior specified");
     }
@@ -2167,7 +2167,7 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
     stateTime += 1;
     
     /* hack! */
-    MugenStage & stage = *(MugenStage*) world;
+    Mugen::Stage & stage = *(Mugen::Stage*) world;
 
     /* active is the current set of commands */
     vector<string> active = doInput(stage);
@@ -2259,7 +2259,7 @@ void Character::addCombo(int combo){
     }
 }
         
-void Character::didHit(Object * enemy, MugenStage & stage){
+void Character::didHit(Object * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().pause.player1;
     addPower(getHit().getPower.hit);
 
@@ -2300,7 +2300,7 @@ void Character::takeDamage(World & world, ObjectAttack * obj, int amount){
     takeDamage(world, obj, amount, true, true);
 }
 
-void Character::wasHit(MugenStage & stage, Object * enemy, const HitDefinition & hisHit){
+void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hisHit){
     hitState.update(stage, *this, getY() > 0, hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
@@ -2330,7 +2330,7 @@ void Character::wasHit(MugenStage & stage, Object * enemy, const HitDefinition &
 }
 
 /* returns true if a state change occured */
-bool Character::doStates(MugenStage & stage, const vector<string> & active, int stateNumber){
+bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, int stateNumber){
     int oldState = getCurrentState();
     if (getState(stateNumber) != 0){
         State * state = getState(stateNumber);
@@ -2567,7 +2567,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
     if (debug){
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 18, 18);
         int x = 1;
-        if (getAlliance() == MugenStage::Player2Side){
+        if (getAlliance() == Mugen::Stage::Player2Side){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
         }
         int y = 1;
@@ -2599,7 +2599,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         int wy = 1;
         int width = work->getWidth();
         int height = 110;
-        if (getAlliance() == MugenStage::Player2Side){
+        if (getAlliance() == Mugen::Stage::Player2Side){
             wx = work->getWidth() - width - 1;
         }
         Bitmap::transBlender(0, 0, 0, 128);
@@ -2645,7 +2645,7 @@ MugenSound * Character::getSound(int group, int item) const {
     return findSound(getSounds(), group, item);
 }
 
-void Character::doTurn(MugenStage & stage){
+void Character::doTurn(Mugen::Stage & stage){
     vector<string> active;
     if (getCurrentState() != Mugen::Crouching){
         changeState(stage, Mugen::StandTurning, active);

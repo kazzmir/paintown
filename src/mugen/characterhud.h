@@ -15,7 +15,6 @@ class MugenSprite;
 class MugenAnimation;
 class MugenFont;
 class MugenSound;
-class MugenStage;
 
 namespace Ast{
     class AstParse;
@@ -24,6 +23,7 @@ namespace Ast{
 namespace Mugen{
 
 class Character;
+class Stage;
 
 /*! *TODO implement display time and ticker */
 class FightElement: public Element {
@@ -419,9 +419,9 @@ class Round{
 	Round();
 	virtual ~Round();
 	
-	virtual void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
+	virtual void act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	virtual void render(const Element::Layer &, const Bitmap &);
-        virtual void reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
+        virtual void reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
 	enum State{
 	    WaitForIntro,
@@ -445,7 +445,7 @@ class Round{
 	    return this->currentRound;
 	}
 	
-	virtual void setState(const State & state, MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
+	virtual void setState(const State & state, Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
 	virtual const State & getState() const {
 	    return this->state;
@@ -768,10 +768,10 @@ class GameInfo{
 	GameInfo(const Filesystem::AbsolutePath & fightFile);
 	virtual ~GameInfo();
 
-        virtual void act(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
+        virtual void act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
         virtual void render(const Element::Layer &, const Bitmap &);
 
-        virtual void reset(MugenStage & stage, Mugen::Character & player1, Mugen::Character & player2);
+        virtual void reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
 	virtual inline int getGameTime(){
 	    return this->timer.getElapsedTicks();

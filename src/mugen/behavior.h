@@ -6,20 +6,19 @@
 #include "util.h"
 #include "util/input/input-map.h"
 
-class MugenStage;
-
 namespace Mugen{
 
 class Object;
 class Character;
 class Command;
+class Stage;
 
 /* handles input and tells the character what commands to invoke */
 class Behavior{
 public:
     Behavior();
 
-    virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed) = 0;
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed) = 0;
 
     /* hit someone */
     virtual void hit(Object * enemy);
@@ -31,7 +30,7 @@ class HumanBehavior: public Behavior {
 public:
     HumanBehavior(InputMap<Keys> left, InputMap<Keys> right);
 
-    virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
 
     virtual ~HumanBehavior();
 
@@ -48,7 +47,7 @@ class DummyBehavior: public Behavior {
 public:
     DummyBehavior();
 
-    virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
 
     virtual ~DummyBehavior();
 };
@@ -57,7 +56,7 @@ class RandomAIBehavior: public Behavior {
 public:
     RandomAIBehavior();
 
-    virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
 
     virtual ~RandomAIBehavior();
 };
@@ -67,7 +66,7 @@ public:
     /* 1 is easy, 10 is high */
     LearningAIBehavior(int difficult);
 
-    virtual std::vector<std::string> currentCommands(const MugenStage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     
     virtual void hit(Object * enemy);
 
