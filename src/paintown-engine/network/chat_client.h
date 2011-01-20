@@ -1,7 +1,7 @@
 #ifndef _paintown_chat_client_h
 #define _paintown_chat_client_h
 
-#include "network/network.h"
+#include "util/network/network.h"
 #include "util/messages.h"
 #include "util/gui/sigslot.h"
 #include <string>

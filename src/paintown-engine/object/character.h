@@ -8,7 +8,7 @@
 #include "object_attack.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
-#include "network/network.h"
+#include "util/network/network.h"
 
 class Bitmap;
 class Stimulation;

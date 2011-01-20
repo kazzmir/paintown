@@ -20,9 +20,9 @@ class Gradient;
 #include <string>
 
 #include "util/file-system.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "world.h"
-#include "paintown-engine/level/cacher.h"
+#include "../level/cacher.h"
 
 namespace Script{
     class Engine;

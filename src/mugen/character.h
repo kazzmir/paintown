@@ -10,7 +10,7 @@
 
 // Implement object_attack
 #include "paintown-engine/object/object_attack.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "util/pointer.h"
 #include "util/input/input-map.h"
 #include "animation.h"

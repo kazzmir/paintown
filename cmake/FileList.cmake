@@ -32,7 +32,7 @@ src/paintown-engine/level/random-scene.cpp
 src/paintown-engine/level/utils.cpp)
 
 set(NETWORK_SRC
-src/network/network.cpp
+src/util/network/network.cpp
 src/paintown-engine/network/cacher.cpp
 src/paintown-engine/network/client.cpp
 src/paintown-engine/network/chat_client.cpp

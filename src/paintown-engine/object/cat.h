@@ -6,7 +6,7 @@
 #include <vector>
 #include "object_nonattack.h"
 #include "util/sound.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "util/file-system.h"
 
 class Bitmap;

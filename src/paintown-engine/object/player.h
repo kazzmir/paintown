@@ -5,7 +5,7 @@
 #include "player-common.h"
 #include <deque>
 #include "util/load_exception.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "util/input/input.h"
 #include "../game/adventure_world.h"
 #include "util/thread.h"

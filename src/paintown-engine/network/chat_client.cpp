@@ -1,7 +1,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/bitmap.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "chat_client.h"
 #include "chat.h"
 #include "util/bitmap.h"

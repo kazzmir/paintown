@@ -2,7 +2,7 @@
 #include "util/bitmap.h"
 
 #include "factory/collector.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "util/token_exception.h"
 #include "util/system.h"
 #include "mugen/exception.h"

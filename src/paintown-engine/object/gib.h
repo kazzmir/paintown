@@ -2,7 +2,7 @@
 #define _paintown_gib_h
 
 #include "object_nonattack.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include <vector>
 
 namespace Paintown{

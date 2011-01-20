@@ -1107,7 +1107,7 @@ env.Append(CCFLAGS = cflags,
            CPPDEFINES = cdefines)
 
 if env['PAINTOWN_NETWORKING']:
-    env.Append(CPPPATH = ['#src/network/hawknl'])
+    env.Append(CPPPATH = ['#src/util/network/hawknl'])
 
 # deprecated
 def configEnvironment(env):

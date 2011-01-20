@@ -231,7 +231,7 @@ def hawknlLibrary(env):
     env = hawkEnv
     # if isOSX():
     #    env.Append(CPPDEFINES = 'MACOSX')
-    return env.SConscript('network/hawknl/SConscript', exports = ['env'])
+    return env.SConscript('util/network/hawknl/SConscript', exports = ['env'])
 
 def main():
     return ['xmain.cpp']

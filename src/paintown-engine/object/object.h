@@ -2,7 +2,7 @@
 #define _game_object_h
 
 #include "util/sound.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include <string>
 #include <vector>
 

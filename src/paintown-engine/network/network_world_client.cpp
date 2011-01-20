@@ -3,7 +3,7 @@
 #include "util/bitmap.h"
 #include "paintown-engine/game/adventure_world.h"
 #include "network_world_client.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "paintown-engine/level/scene.h"
 #include "globals.h"
 #include "script/script.h"

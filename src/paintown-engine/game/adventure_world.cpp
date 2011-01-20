@@ -16,7 +16,7 @@
 #include "paintown-engine/level/random-scene.h"
 #include "world.h"
 #include "adventure_world.h"
-#include "network/network.h"
+#include "util/network/network.h"
 #include "paintown-engine/level/cacher.h"
 #include "util/thread.h"
 #include "util/events.h"
