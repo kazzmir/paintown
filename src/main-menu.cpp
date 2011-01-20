@@ -23,7 +23,7 @@
 #include "util/token.h"
 #include "globals.h"
 #include "util/debug.h"
-#include "network/server.h"
+#include "paintown-engine/network/server.h"
 #include "configuration.h"
 #include "util/init.h"
 #include "mugen/config.h"

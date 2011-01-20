@@ -4,7 +4,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "paintown-engine/game/adventure_world.h"
-#include "network.h"
+#include "network/network.h"
 #include "paintown-engine/object/object.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"

@@ -1,7 +1,7 @@
 #ifndef _paintown_network_world_h
 #define _paintown_network_world_h
 
-#include "network.h"
+#include "network/network.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "paintown-engine/object/object.h"

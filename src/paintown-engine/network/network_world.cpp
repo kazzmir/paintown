@@ -5,7 +5,7 @@
 #include "paintown-engine/object/character.h"
 #include "paintown-engine/game/adventure_world.h"
 #include "network_world.h"
-#include "network.h"
+#include "network/network.h"
 #include "util/funcs.h"
 #include "util/system.h"
 #include "paintown-engine/level/scene.h"

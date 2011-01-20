@@ -32,15 +32,15 @@ src/paintown-engine/level/random-scene.cpp
 src/paintown-engine/level/utils.cpp)
 
 set(NETWORK_SRC
-src/network/cacher.cpp
-src/network/client.cpp
-src/network/chat_client.cpp
-src/network/chat_server.cpp
-src/network/chat-widget.cpp
 src/network/network.cpp
-src/network/network_world.cpp
-src/network/network_world_client.cpp
-src/network/server.cpp)
+src/paintown-engine/network/cacher.cpp
+src/paintown-engine/network/client.cpp
+src/paintown-engine/network/chat_client.cpp
+src/paintown-engine/network/chat_server.cpp
+src/paintown-engine/network/chat-widget.cpp
+src/paintown-engine/network/network_world.cpp
+src/paintown-engine/network/network_world_client.cpp
+src/paintown-engine/network/server.cpp)
 
 set(ENV_SRC
 src/paintown-engine/environment/atmosphere.cpp)
