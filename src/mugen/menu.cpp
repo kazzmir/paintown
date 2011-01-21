@@ -71,6 +71,7 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+static const int CURSOR_ALPHA_MOVE = 3;
 CursorHandler::CursorHandler(){
     // It seems that mugen defaults to something
     cursor.x1 = -32;
@@ -79,7 +80,7 @@ CursorHandler::CursorHandler(){
     cursor.y2 = 2;
     cursor.visible = true;
     cursor.alpha = 128;
-    cursor.alphaMove = -6;
+    cursor.alphaMove = -CURSOR_ALPHA_MOVE;
 }
 
 CursorHandler::~CursorHandler(){
@@ -88,13 +89,13 @@ CursorHandler::~CursorHandler(){
 void CursorHandler::act(){
     if (cursor.visible){
 	cursor.alpha += cursor.alphaMove;
-	if (cursor.alpha <= 0){
-	    cursor.alpha = 0;
-	    cursor.alphaMove = 6;
+	if (cursor.alpha <= 20){
+	    cursor.alpha = 20;
+	    cursor.alphaMove = CURSOR_ALPHA_MOVE;
 	}
-	else if (cursor.alpha >= 128){
-	    cursor.alpha = 128;
-	    cursor.alphaMove = -6;
+	else if (cursor.alpha >= 64){
+	    cursor.alpha = 64;
+	    cursor.alphaMove = -CURSOR_ALPHA_MOVE;
 	}
     }
 }
@@ -669,6 +670,9 @@ void MugenMenu::run(){
     moveText = true;
     movePosition.x = 0;
     movePosition.y = DEFAULT_WIDTH;
+
+    /* TODO: put this in some header for all files to share */
+    double mugenSpeed = 60;
     
     while( ! endGame ){
 	Global::speed_counter = 0;
@@ -687,7 +691,7 @@ void MugenMenu::run(){
 
                 if ( Global::speed_counter > 0 ){
                     draw = true;
-                    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+                    runCounter += Global::speed_counter * mugenSpeed / Global::TICS_PER_SECOND;
                     Global::speed_counter = 0;
                     while (runCounter >= 1.0){
                         //input
@@ -700,60 +704,6 @@ void MugenMenu::run(){
                             quit = quit || doInput(player1Input, selectingPlayer, Mugen::Player1);
                             quit = quit || doInput(player2Input, selectingPlayer, Mugen::Player2);
                             endGame = done = quit;
-                            
-#if 0
-                            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out2.begin(); it != out2.end(); it++){
-                                const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                                if (!event.enabled){
-                                    continue;
-                                }
-
-                                switch (event.out){
-                                    case Mugen::Up: {
-                                        moveMenuUp();
-                                        break;
-                                    }
-                                    case Mugen::Down: {
-                                        moveMenuDown();
-                                        break;
-                                    }
-                                    case Mugen::Enter:
-                                    case Mugen::Right:
-                                    case Mugen::Left: {
-                                        break;
-                                    }
-                                    case Mugen::A:
-                                    case Mugen::B:
-                                    case Mugen::C:
-                                    case Mugen::X:
-                                    case Mugen::Y:
-                                    case Mugen::Z:
-                                    case Mugen::Start: {
-                                        if((*currentOption)->isRunnable()){
-                                            (*currentOption)->setState(MenuOption::Run);
-                                        }
-                                        // Set the fade state
-                                        fader.setState(Gui::FadeTool::FadeOut);
-                                        if (sounds[doneSound.x][doneSound.y] != 0){
-                                            sounds[doneSound.x][doneSound.y]->play();
-                                        }
-                                        selectingPlayer = Mugen::Player2;
-                                        break;
-                                    }
-                                    case Mugen::Esc: {
-                                        endGame = done = true;
-                                        // Set the fade state
-                                        fader.setState(Gui::FadeTool::FadeOut);
-                                        (*currentOption)->setState(MenuOption::Deselected);
-                                        InputManager::waitForRelease(player1Input, Mugen::Esc);
-                                        if (sounds[cancelSound.x][cancelSound.y] != 0){
-                                            sounds[cancelSound.x][cancelSound.y]->play();
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-#endif
                         }
                         
                         // Update menu position
@@ -920,11 +870,11 @@ void MugenMenu::doMenuMovement(){
     //const int endPosition = position.y - (offset * fontSpacing.y);
     const int endPosition = position.y - (menuRange.x * fontSpacing.y);
     if (currentMenuPosition == endPosition){
-	menuScrollWait = 4;
+	menuScrollWait = 2;
     } else {
 	if (menuScrollWait <= 0){
 	    currentMenuPosition = (currentMenuPosition + endPosition)/2;
-	    menuScrollWait = 4;
+	    menuScrollWait = 2;
 	} else {
 	    menuScrollWait--;
 	}
