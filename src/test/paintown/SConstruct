@@ -36,7 +36,7 @@ test/object/object_attack.cpp
 test/util/sound.cpp
 test/script/script.cpp
 test/util/load_exception.cpp
-test/network/network.cpp
+test/util/network/network.cpp
 test/mugen/ast/ast.cpp
 test/util/input/input-manager.cpp
 test/util/input/keyboard.cpp
@@ -149,7 +149,7 @@ test/util/sound.cpp
 test/mugen/ast/ast.cpp
 test/script/script.cpp
 test/util/load_exception.cpp
-test/network/network.cpp
+test/util/network/network.cpp
 test/util/input/input-manager.cpp
 test/util/input/keyboard.cpp
 test/util/input/joystick.cpp
@@ -303,7 +303,7 @@ test/paintown-engine/object/animation_trail.cpp
 test/configuration.cpp
 test/util/input/keyboard.cpp
 test/paintown-engine/level/utils.cpp
-test/network/network.cpp
+test/util/network/network.cpp
 test/openbor/mod.cpp
 test/openbor/pack-reader.cpp
 test/paintown-engine/game/mod.cpp
