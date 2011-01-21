@@ -671,10 +671,7 @@ void MugenMenu::run(){
     movePosition.x = 0;
     movePosition.y = DEFAULT_WIDTH;
 
-    /* TODO: put this in some header for all files to share */
-    double mugenSpeed = 60;
-    
-    while( ! endGame ){
+    while (! endGame){
 	Global::speed_counter = 0;
 	Global::second_counter = 0;
 	int game_time = 100;
@@ -691,7 +688,7 @@ void MugenMenu::run(){
 
                 if ( Global::speed_counter > 0 ){
                     draw = true;
-                    runCounter += Global::speed_counter * mugenSpeed / Global::TICS_PER_SECOND;
+                    runCounter += Mugen::Util::gameTicks();
                     Global::speed_counter = 0;
                     while (runCounter >= 1.0){
                         //input

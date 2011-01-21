@@ -467,7 +467,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	
 	if ( Global::speed_counter > 0 ){
 	    draw = true;
-	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+	    runCounter += Util::gameTicks();
 	    Global::speed_counter = 0;
 	    while (runCounter >= 1.0){
 		// tick tock

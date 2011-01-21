@@ -396,7 +396,7 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
 
     std::vector< Scene * >::iterator sceneIterator = scenes.begin() + startscene;
     
-    while( !quit ){
+    while (!quit){
         bool draw = false;
 
         Scene *scene = *sceneIterator;
@@ -404,6 +404,7 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
 
             // runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;//(double) 90 / (double) 60;
             runCounter += Util::gameTicks();
+            Global::speed_counter = 0;
             while (runCounter > 1){
                 runCounter -= 1;
                 draw = true;
@@ -472,7 +473,6 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
                     scene->reset();
                 }
             }
-            Global::speed_counter = 0;
         }
 
         if (draw){

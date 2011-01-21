@@ -57,9 +57,6 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
-/* TODO: put this in some header for all files to share */
-static double MUGEN_SPEED = 60;
-
 static const Filesystem::AbsolutePath fixStageName(const std::string &stage){
     /* FIXME not a good solution to get file
      * jon: why isn't it good?
@@ -970,7 +967,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 
         if ( Global::speed_counter > 0 ){
             draw = true;
-            runCounter += Global::speed_counter * MUGEN_SPEED / Global::TICS_PER_SECOND;
+            runCounter += Util::gameTicks();
+            Global::speed_counter = 0;
             while ( runCounter >= 1.0 ){
                 // tick tock
                 ticker++;
@@ -1070,8 +1068,6 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                 player1Font.act();
                 player2Font.act();
             }
-
-            Global::speed_counter = 0;
         }
 
         if (draw){
@@ -2183,7 +2179,7 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	
         if ( Global::speed_counter > 0 ){
             draw = true;
-            runCounter += Global::speed_counter * MUGEN_SPEED / Global::TICS_PER_SECOND;
+            runCounter += Util::gameTicks();
             Global::speed_counter = 0;
             while ( runCounter >= 1.0 ){
                 runCounter -= 1;
@@ -2266,8 +2262,8 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	    bmp.BlitToScreen();
 	}
 
-	while ( Global::speed_counter < 1 ){
-            PaintownUtil::rest( 1 );
+	while (Global::speed_counter < 1){
+            PaintownUtil::rest(1);
 	}
     }
     

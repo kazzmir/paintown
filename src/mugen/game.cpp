@@ -142,7 +142,7 @@ static void runMatch(Mugen::Stage * stage){
         bool draw = false;
 
         if (Global::speed_counter > 0){
-            runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+            runCounter += Mugen::Util::gameTicks(gameSpeed);
             Global::speed_counter = 0;
 
             while (runCounter > 1){

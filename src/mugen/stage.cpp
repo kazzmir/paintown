@@ -1734,7 +1734,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         bool draw = false;
 
         if (Global::speed_counter > 0){
-            runCounter += Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+            runCounter += Util::gameTicks(gameSpeed);
             if (runCounter > 10){
                 runCounter = 10;
             }
