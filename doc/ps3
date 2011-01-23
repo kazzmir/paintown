@@ -1,0 +1,53 @@
+* How to build and install on ps3 (*NOTE you will need a CFW [custom firmware] or system that can boot unsigned applications):
+*  You will need several dependencies to setup ps3toolchain which are:
+* autoconf
+* automake
+* bison
+* flex
+* makeinfo / texinfo
+* ncurses
+* gcc
+* make
+* wget
+* libelf / elfutils
+* zlib
+* libgmp
+* OpenSSL
+* Python 2.x
+* libtool
+* git
+* pkg-config
+* nvidia-cg-toolkit (optional: for vertex shaders)
+
+  1. Setup the ps3 toolchain and psl1ght
+    git clone https://github.com/ooPo/ps3toolchain.git
+    cd ps3toolchain
+  
+  2. Set up the build environment for ps3toolchain
+    export PS3DEV=/path/you/want/to/ps3dev
+    export PATH=$PATH:$PS3DEV/bin
+    export PATH=$PATH:$PS3DEV/host/ppu/bin
+    export PATH=$PATH:$PS3DEV/host/spu/bin
+    export PSL1GHT=$PS3DEV/psl1ght
+    export PATH=$PATH:$PSL1GHT/host/bin
+
+  3. Execute the toolchain script *note this takes a long while (this downloads all necessary requirements and builds them all if you are missing dependencies it will tell you)
+    ./toolchain.sh
+    
+  4. Grab SDL, build and install it
+    git clone https://github.com/cebash/SDL_PSL1GHT.git
+    cd SDL_PSL1GHT
+    ./script.sh
+    make
+    make install
+
+  5. Make symlinks to the ps3dev directory you just checked out in /opt
+    ln -s /path/to/ps3dev /opt/ps3dev
+
+  6. Set the build type environment variable to 'ps3' and build paintown
+    export SDL=1
+    export ps3=1
+    cd /path/to/paintown
+    make
+  
+  
