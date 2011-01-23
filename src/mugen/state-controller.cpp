@@ -4454,15 +4454,52 @@ public:
 class ControllerPalFX: public StateController {
 public:
     ControllerPalFX(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section){
+    StateController(name, state, section),
+    time(0){
         parse(section);
     }
 
     ControllerPalFX(const ControllerPalFX & you):
-    StateController(you){
+    StateController(you),
+    time(you.time){
     }
 
+    int time;
+
     void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerPalFX & controller):
+            controller(controller){
+            }
+
+            ControllerPalFX & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "time"){
+                    simple >> controller.time;
+                } else if (simple == "add"){
+                    int r = 0, g = 0, b = 0;
+                    simple >> r >> g >> b;
+                } else if (simple == "mul"){
+                    int r = 0, g = 0, b = 0;
+                    simple >> r >> g >> b;
+                } else if (simple == "sinadd"){
+                    int r = 0, g = 0, b = 0, period = 0;
+                    simple >> r >> g >> b >> period;
+                } else if (simple == "invertall"){
+                    bool invert;
+                    simple >> invert;
+                } else if (simple == "color"){
+                    int color = 0;
+                    simple >> color;
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+
         /* TODO */
         /*
          * time = duration (int)
