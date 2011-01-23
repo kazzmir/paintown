@@ -4455,16 +4455,55 @@ class ControllerPalFX: public StateController {
 public:
     ControllerPalFX(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
-    time(0){
+    time(0),
+    addRed(0),
+    addGreen(0),
+    addBlue(0),
+    multiplyRed(256),
+    multiplyGreen(256),
+    multiplyBlue(256),
+    sinRed(0),
+    sinGreen(0),
+    sinBlue(0),
+    period(0),
+    invert(false),
+    color(256){
         parse(section);
     }
 
     ControllerPalFX(const ControllerPalFX & you):
     StateController(you),
-    time(you.time){
+    time(you.time),
+    addRed(you.addRed),
+    addGreen(you.addGreen),
+    addBlue(you.addBlue),
+    multiplyRed(you.multiplyRed),
+    multiplyGreen(you.multiplyGreen),
+    multiplyBlue(you.multiplyBlue),
+    sinRed(you.sinRed),
+    sinGreen(you.sinGreen),
+    sinBlue(you.sinBlue),
+    period(you.period),
+    invert(you.invert),
+    color(you.color){
     }
 
     int time;
+    int addRed;
+    int addGreen;
+    int addBlue;
+
+    int multiplyRed;
+    int multiplyGreen;
+    int multiplyBlue;
+
+    int sinRed;
+    int sinGreen;
+    int sinBlue;
+    int period;
+
+    bool invert;
+    int color;
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
@@ -4479,20 +4518,15 @@ public:
                 if (simple == "time"){
                     simple >> controller.time;
                 } else if (simple == "add"){
-                    int r = 0, g = 0, b = 0;
-                    simple >> r >> g >> b;
+                    simple >> controller.addRed >> controller.addGreen >> controller.addBlue;
                 } else if (simple == "mul"){
-                    int r = 0, g = 0, b = 0;
-                    simple >> r >> g >> b;
+                    simple >> controller.multiplyRed >> controller.multiplyGreen >> controller.multiplyBlue;
                 } else if (simple == "sinadd"){
-                    int r = 0, g = 0, b = 0, period = 0;
-                    simple >> r >> g >> b >> period;
+                    simple >> controller.sinRed >> controller.sinGreen >> controller.sinBlue >> controller.period;
                 } else if (simple == "invertall"){
-                    bool invert;
-                    simple >> invert;
+                    simple >> controller.invert;
                 } else if (simple == "color"){
-                    int color = 0;
-                    simple >> color;
+                    simple >> controller.color;
                 }
             }
         };
@@ -4518,7 +4552,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        /* TODO */
+        guy.setPaletteEffects(time, addRed, addGreen, addBlue, multiplyRed, multiplyGreen, multiplyBlue, sinRed, sinGreen, sinBlue, period, invert, color);
     }
 
     StateController * deepCopy() const {

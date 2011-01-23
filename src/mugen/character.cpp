@@ -2944,4 +2944,20 @@ void Character::setState(int id, State * what){
     states[id] = what;
 }
         
+void Character::setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color){
+    paletteEffects.time = time;
+    paletteEffects.addRed = addRed;
+    paletteEffects.addGreen = addGreen;
+    paletteEffects.addBlue = addBlue;
+    paletteEffects.multiplyRed = multiplyRed;
+    paletteEffects.multiplyGreen = multiplyGreen;
+    paletteEffects.multiplyBlue = multiplyBlue;
+    paletteEffects.sinRed = sinRed;
+    paletteEffects.sinGreen = sinGreen;
+    paletteEffects.sinBlue = sinBlue;
+    paletteEffects.period = period;
+    paletteEffects.invert = invert;
+    paletteEffects.color = color;
+}
+        
 }
