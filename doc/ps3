@@ -1,5 +1,6 @@
 * How to build and install on ps3 (*NOTE you will need a CFW [custom firmware] or system that can boot unsigned applications):
-*  You will need several dependencies to setup ps3toolchain which are:
+*  
+* You will need several dependencies to setup ps3toolchain which are:
 * autoconf
 * automake
 * bison
@@ -18,6 +19,9 @@
 * git
 * pkg-config
 * nvidia-cg-toolkit (optional: for vertex shaders)
+* 
+* On debian/ubuntu you can just do this: 
+* 	sudo apt-get install autoconf automake bison flex texinfo libncurses5-dev gcc make wget libelf-dev python2.6-dev zlib1g-dev libtool git-core libgmp3-dev libssl-dev pkg-config
 
   1. Setup the ps3 toolchain and psl1ght
     git clone https://github.com/ooPo/ps3toolchain.git
