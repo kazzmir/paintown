@@ -858,9 +858,14 @@ pspnet_inet
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         # FIXME: try to use freetype-config and sdl-config to find these paths
         # instead of hard coding them
+	# env.ParseConfig(setup(bin_path, 'freetype-config --cflags --libs'))
+	# env.ParseConfig(setup(bin_path, 'sdl-config --cflags --libs'))
+	
         env.Append(CPPPATH = [setup(path, "/host/ppu/include"),
                               setup(path, "/psl1ght/target/include/SDL"),
                               setup(path, "/host/ppu/include/freetype2"),
+                              setup(path, "/host/ppu/include/vorbis"),
+                              setup(path, "/host/ppu/include/ogg"),
                               setup(path, "/psl1ght/target/include")])
         env.Append(CPPDEFINES = ['PS3'])
         env.Append(LIBPATH = [setup(path, '/host/ppu/lib'),
