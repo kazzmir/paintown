@@ -607,6 +607,12 @@ def useMingw():
     except KeyError:
         return False
 
+def usePandora():
+    try:
+        return "pandora" in ARGUMENTS[ 'env' ]
+    except KeyError:
+        return False
+
 def readExec( program ):
     try:
         return os.popen(program).readline().replace("\n",'')
@@ -707,6 +713,20 @@ def getEnvironment(debug):
         env['LINKCOM'] = '$LD $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', '%s/bin' % dingoo_path)
+        return env
+
+    def pandora(env):
+        import os
+        print "Environment is Pandora"
+        env['CC'] = os.environ['CC']
+        env['CXX'] = os.environ['CXX']
+        env['LD'] = os.environ['CC']
+        env['AS'] = os.environ['AS']
+        env['AR'] = os.environ['AR']
+        env.Append(CPPDEFINES = ['PANDORA'])
+        flags = ['-O3', '-pipe', '-march=armv7-a', '-mtune=cortex-a8', '-mfpu=neon', '-mfloat-abi=softfp', '-ftree-vectorize', '-ffast-math', '-fsingle-precision-constant']
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
         return env
 
     def nds(env):
@@ -897,6 +917,8 @@ pspnet_inet
             if useIntel():
                 print "Using the intel compiler"
                 return intel(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
+            elif usePandora():
+                return pandora(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useNDS():
                 return nds(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useDingoo():
