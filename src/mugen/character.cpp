@@ -2563,7 +2563,22 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
             int newRed = red;
             int newGreen = green;
             int newBlue = blue;
-            /* TODO: handle invert and color */
+
+            if (color < 255){
+                double greyRed = (1 - 0.299) * color / 255 + 0.299;
+                double greyGreen = (1 - 0.587) * color / 255 + 0.587;
+                double greyBlue = (1 - 0.114) * color / 255 + 0.114;
+                red = (int)(red * greyRed + 0.5 + 16);
+                green = (int)(green * greyGreen + 0.5 + 16);
+                blue = (int)(blue * greyBlue + 0.5 + 16);
+            }
+
+            if (invert){
+                red = 255 - red;
+                green = 255 - green;
+                blue = 255 - blue;
+            }
+
             if (period > 0){
                 newRed = (red + addRed + sinRed * sin(2 * PaintownUtil::pi * time / period)) * multiplyRed / 256;
                 newGreen = (green + addGreen + sinGreen * sin(2 * PaintownUtil::pi * time / period)) * multiplyGreen / 256;
