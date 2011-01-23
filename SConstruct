@@ -856,14 +856,15 @@ pspnet_inet
         env['AS'] = setup(prefix, 'as')
         env['AR'] = setup(prefix, 'ar')
         env['OBJCOPY'] = setup(prefix, 'objcopy')
-        # FIXME: try to use freetype-config and sdl-config to find these paths
+        # FIXME: try to use sdl-config to find these paths
         # instead of hard coding them
-	# env.ParseConfig(setup(bin_path, 'freetype-config --cflags --libs'))
-	# env.ParseConfig(setup(bin_path, 'sdl-config --cflags --libs'))
+	env.ParseConfig(bin_path + '/freetype-config --cflags --libs')
+	
+	# FIXME: it uses -lc-glue-ppu which I can't find maybe I missed something in the setup for now I'll put it down below
+	#env.ParseConfig(bin_path +'sdl-config --cflags --libs') 
 	
         env.Append(CPPPATH = [setup(path, "/host/ppu/include"),
                               setup(path, "/psl1ght/target/include/SDL"),
-                              setup(path, "/host/ppu/include/freetype2"),
                               setup(path, "/host/ppu/include/vorbis"),
                               setup(path, "/host/ppu/include/ogg"),
                               setup(path, "/psl1ght/target/include")])
@@ -883,7 +884,13 @@ vorbis
 vorbisfile
 stdc++
 m
-freetype
+reality
+gcm_sys
+sysutil
+lv2
+psl1ght
+io
+audio
 png
 z
 jpeg
