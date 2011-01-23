@@ -90,6 +90,7 @@ usePrx = makeUseEnvironment('prx', False)
 isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
 useMinpspw = makeUseEnvironment('minpspw', False)
+usePs3 = makeUseEnvironment('ps3', False)
 useNDS = makeUseEnvironment('nds', False)
 useDingoo = makeUseEnvironment('dingoo', False)
 useWii = makeUseEnvironment('wii', False)
@@ -828,6 +829,65 @@ pspnet_inet
         # os.environ['PATH'] = "%s:%s" % (bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
         return env
+    
+     # ps3toolchain with psl1ght dev environment on linux
+    def ps3(env):
+        print "Environment is ps3 (ps3 development)"
+        # symlink the ps3dev to /opt/ps3dev, or just put it there
+	# Needs these environment variables
+	# export PS3DEV=/opt/ps3dev
+        # export PATH=$PATH:$PS3DEV/bin
+        # export PATH=$PATH:$PS3DEV/host/ppu/bin
+        # export PATH=$PATH:$PS3DEV/host/spu/bin
+        # export PSL1GHT=$PS3DEV/psl1ght
+        # export PATH=$PATH:$PSL1GHT/host/bin
+        path = '/opt/ps3dev'
+        try:
+            path = os.environ['PS3DIR']
+        except KeyError:
+            pass
+        bin_path = path + '/host/ppu/bin/'
+        prefix = 'ppu-'
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        env['CC'] = setup(prefix, 'gcc')
+        env['LD'] = setup(prefix, 'ld')
+        env['CXX'] = setup(prefix, 'g++')
+        env['AS'] = setup(prefix, 'as')
+        env['AR'] = setup(prefix, 'ar')
+        env['OBJCOPY'] = setup(prefix, 'objcopy')
+        # FIXME: try to use freetype-config and sdl-config to find these paths
+        # instead of hard coding them
+        env.Append(CPPPATH = [setup(path, "/host/ppu/include"),
+                              setup(path, "/psl1ght/target/include/SDL"),
+                              setup(path, "/host/ppu/include/freetype2"),
+                              setup(path, "/psl1ght/target/include")])
+        env.Append(CPPDEFINES = ['PS3'])
+        env.Append(LIBPATH = [setup(path, '/host/ppu/lib'),
+                              setup(path, '/psl1ght/lib'),
+                              setup(path, '/psl1ght/target/lib')])
+        flags = ['-G0', '-fexceptions']
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env.Append(LINKFLAGS = flags)
+        all = Split("""
+SDL
+ogg
+vorbis
+vorbisfile
+stdc++
+m
+freetype
+png
+z
+jpeg
+c
+""")
+        env.Append(LIBS = all)
+        env.PrependENVPath('PATH', bin_path)
+        return env
+        
     # use the devkitpro stuff for wii/gamecube
     def wii(env):
         bin_path = "%s/bin" % os.environ['DEVKITPPC']
@@ -929,6 +989,8 @@ pspnet_inet
                 return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useMinpspw():
                 return minpspw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
+	    elif usePs3():
+		return ps3(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useLLVM():
                 return llvm(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             else:
@@ -1094,7 +1156,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = usePrx()
-if not useWii() and not useMinpspw() and not useNDS() and not useDingoo():
+if not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1174,6 +1236,8 @@ def buildType(dir):
             properties.append('sdl')
         if useMinpspw():
             properties.append('psp')
+    if usePs3():
+	properties.append('ps3')
     if useNDS():
         properties.append('NDS')
     if useWii():
@@ -1223,6 +1287,8 @@ def display_build_properties():
         properties.append(colorize("NDS", color))
     if useMinpspw():
         properties.append(colorize("PSP", color))
+    if usePs3():
+        properties.append(colorize("PS3", color))
     if useLLVM():
         properties.append(colorize("LLVM", color))
     if useIntel():
@@ -1259,17 +1325,17 @@ if isWindows():
         env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     
     elif useSDL():
-        if not useMinpspw() and not useWii():
+        if not useMinpspw() and not usePs3() and not useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             # TODO: move this to a configure check
             env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll', 'psapi'] )
-        elif useMinpspw() or useWii():
+        elif useMinpspw() or usePs3() or useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
     
-    if not useMinpspw() and not useWii():
+    if not useMinpspw() and not usePs3() and not useWii():
         env.Append( CPPDEFINES = 'WINDOWS' )
         env.Append(LINKFLAGS = ['-static-libstdc++', '-static-libgcc'])
         if getDebug():
@@ -1279,7 +1345,7 @@ if isWindows():
             env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
             env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
-    if useSDL() and not useMinpspw() or not useWii():
+    if useSDL() and not useMinpspw() or not usePs3() or not useWii():
         staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
     elif useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
@@ -1301,7 +1367,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw() and not useNDS() and not useDingoo():
+    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
@@ -1317,10 +1383,10 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw() and not useNDS():
+        if useSDL() and not useMinpspw() and not usePs3() and not useNDS():
             config.CheckSDL()
             config.CheckSDLMain()
-        elif useMinpspw() or useNDS():
+        elif useMinpspw() or usePs3() or useNDS():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             config.CheckSDLMain()
@@ -1391,7 +1457,7 @@ else:
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
     if useAllegro():
         static_config.CheckAllegro()
-    if useSDL() and not useMinpspw():
+    if useSDL() and not useMinpspw() or usePs3():
         static_config.CheckSDL()
         static_config.CheckSDLMain()
 
