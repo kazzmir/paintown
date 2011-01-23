@@ -131,7 +131,7 @@ class MugenAnimation{
         void render(int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects);
 	
 	// Render current frame overriding flipping
-	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex=1, const double scaley=1  );
+	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex = 1, const double scaley = 1, Bitmap::Filter * filter = NULL);
 
         /* automatically sets the effect trans type to ADDALPHA */
 	void renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Bitmap &work, const double scalex = 1, const double scaley = 1);

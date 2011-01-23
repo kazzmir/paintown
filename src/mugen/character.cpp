@@ -2114,6 +2114,11 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
 
     processAfterImages();
 
+    if (paletteEffects.time > 0){
+        paletteEffects.counter += 1;
+        paletteEffects.time -= 1;
+    }
+
     for (int slot = 0; slot < 2; slot++){
         if (hitByOverride[slot].time > 0){
             hitByOverride[slot].time -= 1;
@@ -2519,6 +2524,109 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     // frame.cache = Bitmap(fixed, true);
 }
 
+void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Bitmap & work){
+    class Effects: public Bitmap::Filter {
+    public:
+        Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
+        time(time),
+        addRed(addRed),
+        addGreen(addGreen),
+        addBlue(addBlue),
+        multiplyRed(multiplyRed),
+        multiplyGreen(multiplyGreen),
+        multiplyBlue(multiplyBlue),
+        sinRed(sinRed),
+        sinGreen(sinGreen),
+        sinBlue(sinBlue),
+        period(period),
+        invert(invert),
+        color(color){
+        }
+
+        int time;
+        int addRed;
+        int addGreen;
+        int addBlue;
+        int multiplyRed;
+        int multiplyGreen;
+        int multiplyBlue;
+        int sinRed;
+        int sinGreen;
+        int sinBlue;
+        int period;
+        int invert;
+        int color;
+        
+        mutable map<unsigned, unsigned int> cache;
+
+        unsigned int doFilter(int red, int green, int blue) const {
+            int newRed = red;
+            int newGreen = green;
+            int newBlue = blue;
+            /* TODO: handle invert and color */
+            if (period > 0){
+                newRed = (red + addRed + sinRed * sin(2 * PaintownUtil::pi * time / period)) * multiplyRed / 256;
+                newGreen = (green + addGreen + sinGreen * sin(2 * PaintownUtil::pi * time / period)) * multiplyGreen / 256;
+                newBlue = (blue + addBlue + sinBlue * sin(2 * PaintownUtil::pi * time / period)) * multiplyBlue / 256;
+            } else {
+                newRed = (red + addRed) * multiplyRed / 256;
+                newGreen = (green + addGreen) * multiplyGreen / 256;
+                newBlue = (blue + addBlue) * multiplyBlue / 256;
+            }
+
+            if (newRed > 255){
+                newRed = 255;
+            }
+
+            if (newRed < 0){
+                newRed = 0;
+            }
+
+            if (newGreen > 255){
+                newGreen = 255;
+            }
+
+            if (newGreen < 0){
+                newGreen = 0;
+            }
+
+            if (newBlue > 255){
+                newBlue = 255;
+            }
+
+            if (newBlue < 0){
+                newBlue = 0;
+            }
+
+            return Bitmap::makeColor(newRed, newGreen, newBlue);
+        }
+
+        unsigned int filter(unsigned int pixel) const {
+            
+            if (cache.find(pixel) != cache.end()){
+                return cache[pixel];
+            }
+
+            int red = Bitmap::getRed(pixel);
+            int green = Bitmap::getGreen(pixel);
+            int blue = Bitmap::getBlue(pixel);
+            unsigned int out = doFilter(red, green, blue);
+            cache[pixel] = out;
+            return out;
+        }
+    };
+
+    Effects effects(time, paletteEffects.addRed,
+                    paletteEffects.addGreen, paletteEffects.addBlue,
+                    paletteEffects.multiplyRed, paletteEffects.multiplyGreen,
+                    paletteEffects.multiplyBlue, paletteEffects.sinRed,
+                    paletteEffects.sinGreen, paletteEffects.sinBlue,
+                    paletteEffects.period, paletteEffects.invert,
+                    paletteEffects.color);
+
+    animation->render(getFacing() == Object::FACING_LEFT, false, x, y, work, xscale, yscale, &effects);
+}
+
 void Character::draw(Bitmap * work, int cameraX, int cameraY){
     /*
     int color = Bitmap::makeColor(255,255,255);
@@ -2544,24 +2652,17 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
             AfterImage::Frame & frame = afterImage.frames[index];
             if (frame.show){
-                /*
-                Bitmap fixed;
-                if (frame.extra != index){
-                    frame.extra = index;
-                    frame.cache = createAfterImage(afterImage, frame, index);
-                }
-
-                fixed = frame.cache;
-                */
                 int x = frame.x - cameraX + drawOffset.x + frame.sprite->xoffset;
                 int y = frame.y - cameraY + drawOffset.y + frame.sprite->yoffset;
                 drawAfterImage(afterImage, frame, index, x, y, *work);
-
-                // MugenSprite::draw(fixed, x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), *work, frame.effects + afterImage.translucent);
             }
         }
 
-        animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
+        if (paletteEffects.time > 0){
+            drawWithEffects(animation, x, y, paletteEffects.counter, *work);
+        } else {
+            animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
+        }
     }
 
     if (debug){
@@ -2958,6 +3059,7 @@ void Character::setPaletteEffects(int time, int addRed, int addGreen, int addBlu
     paletteEffects.period = period;
     paletteEffects.invert = invert;
     paletteEffects.color = color;
+    paletteEffects.counter = 0;
 }
         
 }

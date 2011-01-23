@@ -1607,7 +1607,8 @@ public:
             sinBlue(0),
             period(0),
             invert(0),
-            color(0){
+            color(0),
+            counter(0){
             }
 
             PaletteEffects(const PaletteEffects & copy):
@@ -1623,7 +1624,8 @@ public:
             sinBlue(copy.sinBlue),
             period(copy.period),
             invert(copy.invert),
-            color(copy.color){
+            color(copy.color),
+            counter(copy.counter){
             }
 
             int time;
@@ -1639,11 +1641,13 @@ public:
             int period;
             int invert;
             int color;
+            unsigned int counter;
         };
 
         PaletteEffects paletteEffects;
 
         virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
+        void drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Bitmap & work);
 };
 
 }
