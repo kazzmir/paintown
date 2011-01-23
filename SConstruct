@@ -1515,6 +1515,19 @@ def psp_eboot(target, source, env):
         env.Execute("pack-pbp EBOOT.PBP PARAM.SFO data/psp/icon0.png NULL NULL data/psp/pic1.png NULL %s NULL" % file)
     return 0
 
+def ps3_pkg(target, source, env):
+    file = source[0].name
+    print "Creating PKG for %s" % file
+    env.Execute('cp %s %s.elf' % (file, file))
+    env.Execute('mkdir -p pkg/USRDIR')
+    env.Execute('cp data/psp/icon0.png pkg/')
+    env.Execute('python fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
+    #FIXME get the path from the environment for the sfoxml
+    env.Execute('python sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/psl1ght/host/bin/sfo.xml pkg/PARAM.SFO')
+    env.Execute('python pkg.py --contentid UP0001-Paintown_00-0000000000000000 pkg/ %s.pkg' % file)
+    print "Sign pkg with tools from geohot or something (http://www.geohot.com)..."
+    return 0
+
 def wii_elf2dol(target, source, env):
     file = source[0].name
     print "Running elf2dol to create %s.dol for you" % file
@@ -1526,6 +1539,8 @@ for i in shared:
     safe = env.Install('.', i)
     if useMinpspw():
         env.AddPostAction(safe, psp_eboot)
+    if usePs3():
+	env.AddPostAction(safe, ps3_pkg)
     if useWii():
         env.AddPostAction(safe, wii_elf2dol)
     Default(safe)
