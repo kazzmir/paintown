@@ -1,0 +1,35 @@
+import os
+
+env = Environment(ENV = os.environ)
+env.VariantDir('build', 'src')
+env.VariantDir('build-peg', '../../src')
+env.Append(CPPPATH = ['../../src/mugen', '../../src'])
+def peg_to_cpp(target, source, env):
+    import sys
+    sys.path.append("../../src/mugen/parser")
+    sys.path.append(".")
+    import peg, re
+    name = source[0].name
+    parser = peg.make_peg_parser(re.sub('\..*', '', name))
+    fout = open(target[0].path, 'w')
+    fout.write(parser(source[0].path).generate_cpp())
+    fout.write('\n')
+    fout.close()
+
+peg_builder = Builder(action = Action(peg_to_cpp, 'Building a peg'),
+        suffix = '.cpp',
+        src_suffix = '.peg')
+env.Append(BUILDERS = {'Peg' : peg_builder})
+
+source = Split("""
+build/main.cpp
+build-peg/mugen/parser/cmd.cpp
+build-peg/mugen/parser/air.cpp
+build-peg/mugen/parser/def.cpp
+build-peg/mugen/ast/ast.cpp
+build-peg/mugen/exception.cpp
+build-peg/util/token.cpp
+build-peg/util/token_exception.cpp
+build-peg/exceptions/exception.cpp
+""")
+env.Program('converter', source)
