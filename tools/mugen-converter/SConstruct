@@ -1,8 +1,8 @@
 import os
 
 env = Environment(ENV = os.environ)
-env.VariantDir('build', 'src')
-env.VariantDir('build-peg', '../../src')
+env.VariantDir('build/converter', 'src')
+env.VariantDir('build/paintown', '../../src')
 env.Append(CPPPATH = ['../../src/mugen', '../../src'])
 def peg_to_cpp(target, source, env):
     import sys
@@ -22,14 +22,14 @@ peg_builder = Builder(action = Action(peg_to_cpp, 'Building a peg'),
 env.Append(BUILDERS = {'Peg' : peg_builder})
 
 source = Split("""
-build/main.cpp
-build-peg/mugen/parser/cmd.cpp
-build-peg/mugen/parser/air.cpp
-build-peg/mugen/parser/def.cpp
-build-peg/mugen/ast/ast.cpp
-build-peg/mugen/exception.cpp
-build-peg/util/token.cpp
-build-peg/util/token_exception.cpp
-build-peg/exceptions/exception.cpp
+build/converter/main.cpp
+build/paintown/mugen/parser/cmd.cpp
+build/paintown/mugen/parser/air.cpp
+build/paintown/mugen/parser/def.cpp
+build/paintown/mugen/ast/ast.cpp
+build/paintown/mugen/exception.cpp
+build/paintown/util/token.cpp
+build/paintown/util/token_exception.cpp
+build/paintown/exceptions/exception.cpp
 """)
 env.Program('converter', source)
