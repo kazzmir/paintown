@@ -890,7 +890,10 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitm
      * otherwise do width.
      */
 
-    Tiler tiler(getTile(), (int) getCurrentX(), (int) getCurrentY(), addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
+    Mugen::Point tile = getTile();
+    /* mugen doesn't actually tile in the y direction for parallax */
+    tile.y = 0;
+    Tiler tiler(tile, (int) getCurrentX(), (int) getCurrentY(), addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
 
     while (tiler.hasMore()){
         Point where = tiler.nextPoint();
@@ -898,7 +901,7 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitm
         if (xscaleX || xscaleY){
             doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
         } else {
-            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), width.x, width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), (double) sprite->getWidth() / width.x, (double) sprite->getWidth() / width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
         }
     }
 
