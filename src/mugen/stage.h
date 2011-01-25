@@ -242,11 +242,69 @@ public:
 
     int maximumRight() const;
     int maximumLeft() const;
+
+    virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
+
 protected:
     struct cymk_holder{
         cymk_holder():c(0),m(0),y(0),k(0){}
         int c, m, y, k;
     };
+
+    struct PaletteEffects{
+        PaletteEffects():
+            time(0),
+            addRed(0),
+            addGreen(0),
+            addBlue(0),
+            multiplyRed(0),
+            multiplyGreen(0),
+            multiplyBlue(0),
+            sinRed(0),
+            sinGreen(0),
+            sinBlue(0),
+            period(0),
+            invert(0),
+            color(0),
+            counter(0){
+            }
+
+        PaletteEffects(const PaletteEffects & copy):
+            time(copy.time),
+            addRed(copy.addRed),
+            addGreen(copy.addGreen),
+            addBlue(copy.addBlue),
+            multiplyRed(copy.multiplyRed),
+            multiplyGreen(copy.multiplyGreen),
+            multiplyBlue(copy.multiplyBlue),
+            sinRed(copy.sinRed),
+            sinGreen(copy.sinGreen),
+            sinBlue(copy.sinBlue),
+            period(copy.period),
+            invert(copy.invert),
+            color(copy.color),
+            counter(copy.counter){
+            }
+
+        int time;
+        int addRed;
+        int addGreen;
+        int addBlue;
+        int multiplyRed;
+        int multiplyGreen;
+        int multiplyBlue;
+        int sinRed;
+        int sinGreen;
+        int sinBlue;
+        int period;
+        int invert;
+        int color;
+        unsigned int counter;
+    };
+
+    PaletteEffects paletteEffects;
+
+    void drawBackgroundWithEffects(int x, int y, const Bitmap & board);
 
     /* section loaders */
     void loadSectionInfo(Ast::Section * section);

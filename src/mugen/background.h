@@ -9,8 +9,7 @@
 #include "util.h"
 #include "util/gui/rectarea.h"
 #include "ast/all.h"
-
-class Bitmap;
+#include "util/bitmap.h"
 
 namespace Mugen{
     
@@ -31,14 +30,14 @@ struct Sin {
 };
 
 /*! Base Element for backgrounds only uses a sprite as background */
-class BackgroundElement : public Element {
+class BackgroundElement: public Element {
     public:
 	BackgroundElement(const std::string & name, Ast::Section * data);
         BackgroundElement(const BackgroundElement &);
 	virtual ~BackgroundElement();
 	
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &)=0;
+	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL) = 0;
 
         //! Set the passed element to this elements values, this is called when the next element is linked to this one
         virtual void setLink(BackgroundElement *element);
@@ -257,7 +256,7 @@ class NormalElement : public BackgroundElement {
 	NormalElement(const std::string & name, Ast::Section * data, Mugen::SpriteMap & sprites);
 	virtual ~NormalElement();
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
 	virtual inline void setSprite(MugenSprite *sprite){
 	    this->sprite = sprite;
 	}
@@ -272,7 +271,7 @@ class AnimationElement : public BackgroundElement {
 	AnimationElement(std::map< int, MugenAnimation * > & animations, const std::string & name, Ast::Section * data);
 	virtual ~AnimationElement();
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
 	virtual inline void setAnimation(int animation){
 	    this->animation = animation;
 	}
@@ -290,7 +289,7 @@ class ParallaxElement : public BackgroundElement {
 	ParallaxElement(const std::string & name, Ast::Section * data, Mugen::SpriteMap & sprites);
 	virtual ~ParallaxElement();
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
 	virtual inline void setSprite(MugenSprite *sprite){
 	    this->sprite = sprite;
 	}
@@ -331,7 +330,7 @@ class DummyElement : public BackgroundElement {
 	DummyElement(const std::string & name, Ast::Section * data);
 	virtual ~DummyElement();
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &);
+	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
     private:
 };
 
@@ -417,8 +416,8 @@ class Background{
 	virtual ~Background();
 	
 	virtual void act();
-	virtual void renderBackground(int cameraX, int cameraY, const Bitmap &);
-	virtual void renderForeground(int cameraX, int cameraY, const Bitmap &);
+	virtual void renderBackground(int cameraX, int cameraY, const Bitmap &, Bitmap::Filter * filter = NULL);
+	virtual void renderForeground(int cameraX, int cameraY, const Bitmap &, Bitmap::Filter * filter = NULL);
 	
         //! Returns a vector of Elements by given ID
         std::vector< BackgroundElement * > getIDList(int ID);

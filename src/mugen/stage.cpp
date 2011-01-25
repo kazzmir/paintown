@@ -967,6 +967,11 @@ void Mugen::Stage::logic( ){
     if (cycles >= 1 / gameRate){
         cycles = 0;
 
+        if (paletteEffects.time > 0){
+            paletteEffects.time = 0;
+            paletteEffects.counter += 1;
+        }
+
         // camera crap
         if (quake_time > 0){
             quake_time--;
@@ -1094,21 +1099,142 @@ void Mugen::Stage::logic( ){
     }
 #endif
 }
-	
+        
+void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Bitmap & board){
+    /* FIXME: put this in util or something */
+    class Effects: public Bitmap::Filter {
+    public:
+        Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
+        time(time),
+        addRed(addRed),
+        addGreen(addGreen),
+        addBlue(addBlue),
+        multiplyRed(multiplyRed),
+        multiplyGreen(multiplyGreen),
+        multiplyBlue(multiplyBlue),
+        sinRed(sinRed),
+        sinGreen(sinGreen),
+        sinBlue(sinBlue),
+        period(period),
+        invert(invert),
+        color(color){
+        }
+
+        int time;
+        int addRed;
+        int addGreen;
+        int addBlue;
+        int multiplyRed;
+        int multiplyGreen;
+        int multiplyBlue;
+        int sinRed;
+        int sinGreen;
+        int sinBlue;
+        int period;
+        int invert;
+        int color;
+        
+        mutable map<unsigned, unsigned int> cache;
+
+        unsigned int doFilter(int red, int green, int blue) const {
+            int newRed = red;
+            int newGreen = green;
+            int newBlue = blue;
+
+            if (color < 255){
+                double greyRed = (1 - 0.299) * color / 255 + 0.299;
+                double greyGreen = (1 - 0.587) * color / 255 + 0.587;
+                double greyBlue = (1 - 0.114) * color / 255 + 0.114;
+                red = (int)(red * greyRed + 0.5 + 16);
+                green = (int)(green * greyGreen + 0.5 + 16);
+                blue = (int)(blue * greyBlue + 0.5 + 16);
+            }
+
+            if (invert){
+                red = 255 - red;
+                green = 255 - green;
+                blue = 255 - blue;
+            }
+
+            if (period > 0){
+                newRed = (red + addRed + sinRed * sin(2 * PaintownUtil::pi * time / period)) * multiplyRed / 256;
+                newGreen = (green + addGreen + sinGreen * sin(2 * PaintownUtil::pi * time / period)) * multiplyGreen / 256;
+                newBlue = (blue + addBlue + sinBlue * sin(2 * PaintownUtil::pi * time / period)) * multiplyBlue / 256;
+            } else {
+                newRed = (red + addRed) * multiplyRed / 256;
+                newGreen = (green + addGreen) * multiplyGreen / 256;
+                newBlue = (blue + addBlue) * multiplyBlue / 256;
+            }
+
+            if (newRed > 255){
+                newRed = 255;
+            }
+
+            if (newRed < 0){
+                newRed = 0;
+            }
+
+            if (newGreen > 255){
+                newGreen = 255;
+            }
+
+            if (newGreen < 0){
+                newGreen = 0;
+            }
+
+            if (newBlue > 255){
+                newBlue = 255;
+            }
+
+            if (newBlue < 0){
+                newBlue = 0;
+            }
+
+            return Bitmap::makeColor(newRed, newGreen, newBlue);
+        }
+
+        unsigned int filter(unsigned int pixel) const {
+            
+            if (cache.find(pixel) != cache.end()){
+                return cache[pixel];
+            }
+
+            int red = Bitmap::getRed(pixel);
+            int green = Bitmap::getGreen(pixel);
+            int blue = Bitmap::getBlue(pixel);
+            unsigned int out = doFilter(red, green, blue);
+            cache[pixel] = out;
+            return out;
+        }
+    };
+
+    Effects effects(paletteEffects.counter, paletteEffects.addRed,
+                    paletteEffects.addGreen, paletteEffects.addBlue,
+                    paletteEffects.multiplyRed, paletteEffects.multiplyGreen,
+                    paletteEffects.multiplyBlue, paletteEffects.sinRed,
+                    paletteEffects.sinGreen, paletteEffects.sinBlue,
+                    paletteEffects.period, paletteEffects.invert,
+                    paletteEffects.color);
+
+    background->renderBackground(x, y, board, &effects);
+}
+
 void Mugen::Stage::render(Bitmap *work){
     
     // Background
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     // background->renderBackground(camerax, cameray, xaxis, yaxis, board);
-    background->renderBackground((int) camerax, (int) cameray, *board);
+    if (paletteEffects.time > 0){
+        drawBackgroundWithEffects((int) camerax, (int) cameray, *board);
+    } else {
+        background->renderBackground((int) camerax, (int) cameray, *board);
+    }
     
     /* darken the background */
     if (superPause.time > 0){
         /* FIXME: this should be faded I think */
-        // Bitmap::drawingMode(Bitmap::MODE_TRANS);
         Bitmap::transBlender(0, 0, 0, 128);
         board->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor(0, 0, 0));
-        // Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 
     //! Render layer 0 HUD
@@ -1965,4 +2091,21 @@ vector<Mugen::Effect *> Mugen::Stage::findEffects(const Mugen::Character * owner
     }
 
     return effects;
+}
+
+void Mugen::Stage::setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color){
+    paletteEffects.time = time;
+    paletteEffects.addRed = addRed;
+    paletteEffects.addGreen = addGreen;
+    paletteEffects.addBlue = addBlue;
+    paletteEffects.multiplyRed = multiplyRed;
+    paletteEffects.multiplyGreen = multiplyGreen;
+    paletteEffects.multiplyBlue = multiplyBlue;
+    paletteEffects.sinRed = sinRed;
+    paletteEffects.sinGreen = sinGreen;
+    paletteEffects.sinBlue = sinBlue;
+    paletteEffects.period = period;
+    paletteEffects.invert = invert;
+    paletteEffects.color = color;
+    paletteEffects.counter = 0;
 }

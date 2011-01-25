@@ -373,7 +373,7 @@ class Element {
 	virtual ~Element();
 	
 	virtual void act()=0;
-	virtual void render(int x, int y, const Bitmap &)=0;
+	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter)=0;
 	
 	enum Layer {
 	    Background,

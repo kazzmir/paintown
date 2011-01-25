@@ -32,7 +32,7 @@ class FightElement: public Element {
 	virtual ~FightElement();
 	
 	virtual void act();
-        virtual void render(int x, int y, const Bitmap &);
+        virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
 	virtual void render(const Element::Layer & layer, int x, int y, const Bitmap &, int width);
 	virtual void play();
 	

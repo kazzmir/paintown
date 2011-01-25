@@ -503,7 +503,7 @@ public:
     vector<Point>::iterator current_point;
 };
 
-void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
+void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp, Bitmap::Filter * filter){
     if (!getVisible()){
         return;
     }
@@ -523,9 +523,11 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp){
 
     Tiler tiler(getTile(), currentX, currentY, addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), bmp.getWidth(), bmp.getHeight());
 
+    Effects effects = getEffects();
+    effects.filter = filter;
     while (tiler.hasMore()){
         Point where = tiler.nextPoint();
-        sprite->render(where.x, where.y, bmp, getEffects());
+        sprite->render(where.x, where.y, bmp, effects);
     }
 
 #if 0
@@ -667,7 +669,7 @@ void AnimationElement::act(){
     getSinY().act();
 }
 
-void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp){
+void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp, Bitmap::Filter * filter){
     if (!getVisible()){
         return;
     }
@@ -866,7 +868,7 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
 
 }
 
-void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work){
+void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitmap::Filter * filter){
     if (!getVisible()){
         return;
     }
@@ -926,7 +928,7 @@ void DummyElement::act(){
 
 }
 
-void DummyElement::render(int x, int y, const Bitmap &bmp){
+void DummyElement::render(int x, int y, const Bitmap &bmp, Bitmap::Filter * filter){
 }
 
 
@@ -1802,7 +1804,7 @@ void Background::act(){
     }
 }
 
-void Background::renderBackground(int x, int y, const Bitmap &bmp){
+void Background::renderBackground(int x, int y, const Bitmap &bmp, Bitmap::Filter * filter){
     if ( clearColor != -1){
 	bmp.fill(clearColor);
     }
@@ -1813,14 +1815,14 @@ void Background::renderBackground(int x, int y, const Bitmap &bmp){
 
     for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	BackgroundElement *element = *i;
-	element->render(x, y, bmp);
+	element->render(x, y, bmp, filter);
     }
 }
 
-void Background::renderForeground(int x, int y, const Bitmap &bmp){
+void Background::renderForeground(int x, int y, const Bitmap &bmp, Bitmap::Filter * filter){
     for( vector< BackgroundElement *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	BackgroundElement *element = *i;
-	element->render(x, y, bmp);
+	element->render(x, y, bmp, filter);
     }
 }
 

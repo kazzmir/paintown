@@ -4450,7 +4450,7 @@ public:
     }
 };
 
-/* 0% */
+/* 100% */
 class ControllerPalFX: public StateController {
 public:
     ControllerPalFX(Ast::Section * section, const string & name, int state):
@@ -4571,7 +4571,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        /* TODO */
+        stage.setPaletteEffects(time, addRed, addGreen, addBlue, multiplyRed, multiplyGreen, multiplyBlue, sinRed, sinGreen, sinBlue, period, invert, color);
     }
 
     StateController * deepCopy() const {

@@ -108,7 +108,7 @@ void FightElement::act(){
 	    
 }
 
-void FightElement::render(int x, int y, const Bitmap & bmp){
+void FightElement::render(int x, int y, const Bitmap & bmp, Bitmap::Filter * filter){
     if (isDone()){
 	return;
     }
