@@ -832,6 +832,9 @@ void ParallaxElement::act(){
     if (!getEnabled()){
         return;
     }
+    BackgroundElement::act();
+    getSinX().act();
+    getSinY().act();
 }
 
 static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
