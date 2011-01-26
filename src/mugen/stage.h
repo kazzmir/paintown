@@ -305,6 +305,7 @@ protected:
     PaletteEffects paletteEffects;
 
     void drawBackgroundWithEffects(int x, int y, const Bitmap & board);
+    void drawForegroundWithEffects(int x, int y, const Bitmap & board);
 
     /* section loaders */
     void loadSectionInfo(Ast::Section * section);
