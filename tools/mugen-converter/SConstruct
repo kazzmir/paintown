@@ -23,13 +23,13 @@ env.Append(BUILDERS = {'Peg' : peg_builder})
 
 source = Split("""
 build/converter/main.cpp
-build/paintown/mugen/parser/cmd.cpp
-build/paintown/mugen/parser/air.cpp
-build/paintown/mugen/parser/def.cpp
 build/paintown/mugen/ast/ast.cpp
 build/paintown/mugen/exception.cpp
 build/paintown/util/token.cpp
 build/paintown/util/token_exception.cpp
 build/paintown/exceptions/exception.cpp
 """)
+source.append(env.Peg('build/paintown/mugen/parser/cmd.peg'))
+source.append(env.Peg('build/paintown/mugen/parser/air.peg'))
+source.append(env.Peg('build/paintown/mugen/parser/def.peg'))
 env.Program('converter', source)
