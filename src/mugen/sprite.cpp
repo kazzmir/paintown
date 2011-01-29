@@ -387,7 +387,8 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
 	case Sub : {
 	    // Shadow effect
 	    // Bitmap::multiplyBlender( 0, 0, 0, 128 );
-	    Bitmap::differenceBlender(0, 0, 0, 128);
+	    Bitmap::differenceBlender(0, 0, 0, 255);
+	    // Bitmap::burnBlender(0, 0, 0, 0);
 	    break;
 	}
 	case None:
