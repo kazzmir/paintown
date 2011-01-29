@@ -202,7 +202,7 @@ linkedElement(0){
                 simple >> link;
 		self.setPositionLink(link);
             } else if (simple == "velocity"){
-                double x=0,y=0;
+                double x = 0, y = 0;
 		try{
 		    simple >> x >> y;
                 } catch (const Ast::Exception & e){
@@ -837,19 +837,154 @@ void ParallaxElement::act(){
     getSinY().act();
 }
 
-static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
+static void doParallaxXScale(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
     const int height = bmp.getHeight();
     const int width = bmp.getWidth();
 
     // bmp.draw(offsetX + cameraX - width / 2, offsetY + cameraY - height / 2, work);
     // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
-    
+
     // double x = centerX - width / 2 + offsetX - cameraX;
-    double x = centerX + offsetX - cameraX;
-    int y = centerY + offsetY - cameraY;
+    double x = centerX + offsetX - cameraX - extraX;
+    int y = centerY + offsetY - cameraY - extraY;
+
+    int x_middle = offsetX + width / 2;
+    // work.line(x, y, x + (x - centerX) * xscale_bottom, y + height, Bitmap::makeColor(255, 255, 255));
+
+    double increment = (double) (offsetX - cameraX) * (xscale_bottom - xscale_top) / height / xscale_top;
+    for (int liney = 0; liney < height; liney++){
+        int movex = 0;
+	//int width = bmp.getWidth()*z;
+        const double range = (double)liney / (double)height;
+	const double scale = interpolate(xscale_top, xscale_bottom, range);
+	// movex = (int)(x - cameraX * (scale - xscale_top) * 0.78);
+	movex = (int)(x - cameraX * (scale - xscale_top) + cameraX * (1 - deltaX) * scale);
+        movex = (int)(x + increment * liney + cameraX * (1 - deltaX) * scale);
+        int movey = (int)(y + liney + cameraY * (1 - deltaY));
+	// movex = (int)(x - cameraX * (scale * delta));
+
+	// bmp.Stretch(work, 0, liney, width, 1, movex, y + liney, width * scale, 1);
+        // bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
+        bmp.BlitMasked(0, liney, width, 1, movex, movey, work);
+
+        // bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
+	//z +=  z_add;
+	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
+    }
+
+
+}
+
+static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
+    const int height = bmp.getHeight();
+    const int width = bmp.getWidth();
+
+    // bmp.draw(offsetX + cameraX - width / 2, offsetY + cameraY - height / 2, work);
+    // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
+
+    // double x = centerX - width / 2 + offsetX - cameraX;
+    double x = centerX + offsetX - cameraX + extraX;
+    int y = centerY + offsetY - cameraY + extraY;
+
+    int x_middle = offsetX + width / 2;
+    
+    /*
+    bmp.Stretch(work, 0, 0, width, height, 0, 10, 50, 50);
+    work.rectangle(0, 10, 50, 10 + 50, Bitmap::makeColor(255, 255, 255));
+    
+    bmp.Stretch(work, 0, 0, width, height, 250, 10, 60, 60);
+    work.rectangle(250, 10, 250 + 60, 10 + 60, Bitmap::makeColor(255, 0, 0));
+
+    bmp.Stretch(work, 0, 0, width, height, 100, 10, 60, 60);
+    work.rectangle(100, 10, 100 + 60, 10 + 60, Bitmap::makeColor(0, 255, 0));
+    */
 
     // Global::debug(0) << "Camera x is " << cameraX << " x is " << x << " delta top " << delta_top << " bottom " << delta_bottom << endl;
 
+    // double increment = (double) (offsetX - cameraX - 160) / 100;
+    // double increment = width/2 * (xscale_bottom - xscale_top) / height;
+    // double increment = (double) (cameraX - offsetX) / height;
+    /*
+    double increment = (double) (offsetX - cameraX) / height * (xscale_bottom / xscale_top);
+    increment = 0;
+    increment = (double) (offsetX - cameraX) * (xscale_bottom / xscale_top) / centerX;
+    increment = (double) offsetX / height + (xscale_bottom - xscale_top) / xscale_top;
+    increment = (double) offsetX * (xscale_bottom - xscale_top) / xscale_bottom / height;
+
+    // increment = (double) offsetX * (xscale_top - xscale_bottom) / xscale_bottom / height * -2;
+    // increment = (double) -offsetX * (xscale_top - xscale_bottom) / xscale_top / height * (xscale_bottom / xscale_top);
+    increment = (double) offsetX * (xscale_bottom - xscale_top) / height / xscale_top;
+    */
+    double increment = (double) (offsetX - cameraX) * (xscale_bottom - xscale_top) / height / xscale_top;
+
+    /*
+    if (xscale_top > xscale_bottom){
+        // increment = (double) offsetX * (xscale_bottom - xscale_top) / xscale_top / height * 2;
+        increment = (double) -offsetX * (xscale_top - xscale_bottom) / xscale_top / height;
+    }
+    */
+
+    for (int liney = 0; liney < height; liney++){
+        const double range = (double)liney / (double)height;
+	const double scale = interpolate(xscale_top, xscale_bottom, range);
+        // double center = x + width / 2 * scale;
+        // double x1 = x + (x_middle - centerX - width/2) * scale;
+        // double x2 = x + width + (x_middle - centerX + width / 2) * scale;
+        
+        /*
+        double x1 = x + increment * liney;
+        double x2 = x1 + width * scale;
+        */
+
+        double x1 = x - width / 2 * scale;
+        double x2 = x + width / 2 * scale;
+
+        /*
+        double x1 = (xscale_top + (liney * (xscale_bottom - xscale_top) / height)) * xscale_top + offsetX + centerX / 2;
+        double x2 = x1 + width * scale;
+        */
+
+        // double x1 = (offsetX - cameraX) * scale + centerX + increment * liney;
+        // double x2 = (offsetX - cameraX) * scale + centerX + increment * liney + width * scale;
+
+        /*
+        // x1 += (x - centerX) * scale;
+        // x2 += (x - centerX) * scale;
+
+        // x1 += (x1 - centerX) * scale;
+        // x2 += (x2 - centerX) * scale;
+        
+        double x1 = (x + increment * liney);
+        double x2 = (x + increment * liney + width * scale);
+        */
+        x1 += increment * liney;
+        x2 += increment * liney;
+
+        // x1 *= (double) (centerX - x1) / centerX;
+        // x2 *= (double) (centerX - x2) / centerX;
+        // bmp.Stretch(work, 0, liney, width, 1, x1, y + liney, (x2 - x1), 1);
+        int sourceX = 0;
+        int sourceY = liney;
+        int sourceWidth = width;
+        int sourceHeight = 1;
+        int destX = x1;
+        int destY = y + liney;
+        int destWidth = x2 - x1;
+        int destHeight = 1;
+        Bitmap single(bmp, 0, liney, width, 1);
+        single.drawStretched(x1, y + liney, x2 - x1, 1, work);
+        // bmp.Stretch(work, 0, liney, width, 1, x1, y + liney, (x2 - x1), 1);
+        // bmp.drawStretched(destX, destY, destWidth, destHeight, work);
+        /*
+        bmp.Stretch(work, sourceX, sourceY, sourceWidth, sourceHeight,
+                          destX, destY, destWidth, destHeight);
+                          */
+        // work.circleFill(x1, y + liney, 2, Bitmap::makeColor(255, 255, 255));
+    }
+
+    // work.line(x, y, x + (x - centerX) * xscale_bottom, y + height, Bitmap::makeColor(255, 255, 255));
+
+    /*
     for (int liney = 0; liney < height; liney++){
         int movex = 0;
 	//int width = bmp.getWidth()*z;
@@ -868,6 +1003,7 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
 	//z +=  z_add;
 	//Global::debug(1) << "Height: " << height << " | yscalestart: " << yscalestart << " | yscaledelta: " << yscaledelta << " | yoffset: " << yoffset << " | New Height: " << newHeight << " | yscale: " << yscale << endl;	
     }
+    */
 
 }
 
@@ -876,8 +1012,17 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitm
         return;
     }
     const Bitmap & show = *sprite->getBitmap(getMask());
-    const int addw = show.getWidth() + getTileSpacing().x;
-    const int addh = show.getHeight() + getTileSpacing().y;
+    // const int addw = show.getWidth() + getTileSpacing().x;
+    // const int addh = show.getHeight() + getTileSpacing().y;
+    /* parallax ignores tile spacing */
+
+    // const int currentX = (show.getWidth()/2) + (int) (getCurrentX() - cameraX + cameraX * (1 - getDeltaX()));
+    // const int currentY = (int) (getCurrentY() - cameraY + cameraY * (1 - getDeltaY()));
+    const int currentX = getCurrentX();
+    const int currentY = getCurrentY();
+
+    const int addw = show.getWidth();
+    const int addh = show.getHeight();
     const int windowAddX = (int) (getWindowDeltaX() * cameraX);
     const int windowAddY = (int) (getWindowDeltaY() * cameraY);
 
@@ -893,16 +1038,24 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitm
     Mugen::Point tile = getTile();
     /* mugen doesn't actually tile in the y direction for parallax */
     tile.y = 0;
-    Tiler tiler(tile, (int) getCurrentX(), (int) getCurrentY(), addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
+    Tiler tiler(tile, currentX, currentY, addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
 
     while (tiler.hasMore()){
         Point where = tiler.nextPoint();
 
         if (xscaleX || xscaleY){
+            doParallaxXScale(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+        } else {
+            doParallax(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), (double) width.x / sprite->getWidth(), (double) width.y / sprite->getWidth(), work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+        }
+
+        /*
+        if (xscaleX || xscaleY){
             doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
         } else {
-            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), (double) sprite->getWidth() / width.x, (double) sprite->getWidth() / width.y, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), (double) width.x / sprite->getWidth(), (double) width.y / sprite->getWidth(), work.getWidth()/2, 0, getDeltaX(), getDeltaY());
         }
+        */
     }
 
     /*
@@ -928,10 +1081,10 @@ void DummyElement::act(){
     if (!getEnabled()){
         return;
     }
+
     BackgroundElement::act();
     getSinX().act();
     getSinY().act();
-
 }
 
 void DummyElement::render(int x, int y, const Bitmap &bmp, Bitmap::Filter * filter){
