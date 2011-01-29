@@ -389,7 +389,7 @@ public:
             int x1 = 0;
             int x2 = maxWidth;
 
-            while (xPosition - spriteOffsetX > x1){
+            while (xPosition - spriteOffsetX + spriteWidth > x1){
                 xPosition -= nextX;
             }
 
@@ -1038,6 +1038,22 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitm
     Mugen::Point tile = getTile();
     /* mugen doesn't actually tile in the y direction for parallax */
     tile.y = 0;
+
+    if (xscaleX || xscaleY){
+        Tiler tiler(tile, currentX, currentY, addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
+        while (tiler.hasMore()){
+            Point where = tiler.nextPoint();
+            doParallaxXScale(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+        }
+    } else {
+        Tiler tiler(tile, currentX, currentY, width.x, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
+        while (tiler.hasMore()){
+            Point where = tiler.nextPoint();
+            doParallax(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), (double) width.x / sprite->getWidth(), (double) width.y / sprite->getWidth(), work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+        }
+    }
+
+    /*
     Tiler tiler(tile, currentX, currentY, addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
 
     while (tiler.hasMore()){
@@ -1048,15 +1064,8 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitm
         } else {
             doParallax(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), (double) width.x / sprite->getWidth(), (double) width.y / sprite->getWidth(), work.getWidth()/2, 0, getDeltaX(), getDeltaY());
         }
-
-        /*
-        if (xscaleX || xscaleY){
-            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
-        } else {
-            doParallax(show, work, cameraX, cameraY, where.x - sprite->getX(), where.y - sprite->getY(), (double) width.x / sprite->getWidth(), (double) width.y / sprite->getWidth(), work.getWidth()/2, 0, getDeltaX(), getDeltaY());
-        }
-        */
     }
+    */
 
     /*
     if (xscaleX || xscaleY){
