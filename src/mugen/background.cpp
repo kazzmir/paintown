@@ -837,7 +837,7 @@ void ParallaxElement::act(){
     getSinY().act();
 }
 
-static void doParallaxXScale(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
+static void doParallaxXScale(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, double yscaleDelta){
     const int height = bmp.getHeight();
     const int width = bmp.getWidth();
 
@@ -858,14 +858,21 @@ static void doParallaxXScale(const Bitmap & bmp, const Bitmap & work, int camera
         const double range = (double)liney / (double)height;
 	const double scale = interpolate(xscale_top, xscale_bottom, range);
 	// movex = (int)(x - cameraX * (scale - xscale_top) * 0.78);
-	movex = (int)(x - cameraX * (scale - xscale_top) + cameraX * (1 - deltaX) * scale);
+	// movex = (int)(x - cameraX * (scale - xscale_top) + cameraX * (1 - deltaX) * scale);
         movex = (int)(x + increment * liney + cameraX * (1 - deltaX) * scale);
-        int movey = (int)(y + liney + cameraY * (1 - deltaY));
+        int movey = (int)(y + liney + cameraY * (1 - deltaY) - cameraY * liney * yscaleDelta / 100);
 	// movex = (int)(x - cameraX * (scale * delta));
 
 	// bmp.Stretch(work, 0, liney, width, 1, movex, y + liney, width * scale, 1);
         // bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
-        bmp.BlitMasked(0, liney, width, 1, movex, movey, work);
+        // bmp.BlitMasked(0, liney, width, 1, movex, movey, work);
+
+        /* FIXME: sprig has an off-by-1 error so the height can't be 2 here.
+         * try to fix this someday!
+         */
+        Bitmap single(bmp, 0, liney, width, 2);
+        // single.drawStretched(movex, movey, width, 1 - cameraY * (liney + 1) * yscaleDelta, work);
+        single.drawStretched(movex, movey, width, 2 - cameraY * liney * yscaleDelta / 100, work);
 
         // bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
 	//z +=  z_add;
@@ -1043,7 +1050,7 @@ void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitm
         Tiler tiler(tile, currentX, currentY, addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
         while (tiler.hasMore()){
             Point where = tiler.nextPoint();
-            doParallaxXScale(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+            doParallaxXScale(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY(), getYScaleDelta());
         }
     } else {
         Tiler tiler(tile, currentX, currentY, width.x, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());

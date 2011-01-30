@@ -310,6 +310,10 @@ class ParallaxElement : public BackgroundElement {
 	virtual inline void setYScaleDelta(double x){
 	    this->yscaleDelta = x;
 	}
+
+        virtual inline double getYScaleDelta() const {
+            return this->yscaleDelta;
+        }
     private:
 	//! Sprite Based
 	MugenSprite *sprite;
