@@ -7,6 +7,7 @@
 #include <map>
 #include "exception.h"
 #include "util.h"
+#include "util/bitmap.h"
 
 #include "paintown-engine/game/world.h"
 
@@ -306,6 +307,7 @@ protected:
 
     void drawBackgroundWithEffects(int x, int y, const Bitmap & board);
     void drawForegroundWithEffects(int x, int y, const Bitmap & board);
+    void drawBackgroundWithEffectsSide(int x, int y, const Bitmap & board, void (Mugen::Background::*render) (int, int, const Bitmap &, Bitmap::Filter *));
 
     /* section loaders */
     void loadSectionInfo(Ast::Section * section);

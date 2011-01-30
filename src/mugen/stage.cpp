@@ -1099,12 +1099,10 @@ void Mugen::Stage::logic( ){
     }
 #endif
 }
-        
-void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Bitmap & board){
-    /* FIXME: put this in util or something */
-    class Effects: public Bitmap::Filter {
-    public:
-        Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
+
+class PaletteShader: public Bitmap::Filter {
+public:
+    PaletteShader(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
         time(time),
         addRed(addRed),
         addGreen(addGreen),
@@ -1120,95 +1118,96 @@ void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Bitmap & board)
         color(color){
         }
 
-        int time;
-        int addRed;
-        int addGreen;
-        int addBlue;
-        int multiplyRed;
-        int multiplyGreen;
-        int multiplyBlue;
-        int sinRed;
-        int sinGreen;
-        int sinBlue;
-        int period;
-        int invert;
-        int color;
-        
-        mutable map<unsigned, unsigned int> cache;
+    int time;
+    int addRed;
+    int addGreen;
+    int addBlue;
+    int multiplyRed;
+    int multiplyGreen;
+    int multiplyBlue;
+    int sinRed;
+    int sinGreen;
+    int sinBlue;
+    int period;
+    int invert;
+    int color;
 
-        unsigned int doFilter(int red, int green, int blue) const {
-            int newRed = red;
-            int newGreen = green;
-            int newBlue = blue;
+    mutable map<unsigned, unsigned int> cache;
 
-            if (color < 255){
-                double greyRed = (1 - 0.299) * color / 255 + 0.299;
-                double greyGreen = (1 - 0.587) * color / 255 + 0.587;
-                double greyBlue = (1 - 0.114) * color / 255 + 0.114;
-                red = (int)(red * greyRed + 0.5 + 16);
-                green = (int)(green * greyGreen + 0.5 + 16);
-                blue = (int)(blue * greyBlue + 0.5 + 16);
-            }
+    unsigned int doFilter(int red, int green, int blue) const {
+        int newRed = red;
+        int newGreen = green;
+        int newBlue = blue;
 
-            if (invert){
-                red = 255 - red;
-                green = 255 - green;
-                blue = 255 - blue;
-            }
-
-            if (period > 0){
-                newRed = (red + addRed + sinRed * sin(2 * PaintownUtil::pi * time / period)) * multiplyRed / 256;
-                newGreen = (green + addGreen + sinGreen * sin(2 * PaintownUtil::pi * time / period)) * multiplyGreen / 256;
-                newBlue = (blue + addBlue + sinBlue * sin(2 * PaintownUtil::pi * time / period)) * multiplyBlue / 256;
-            } else {
-                newRed = (red + addRed) * multiplyRed / 256;
-                newGreen = (green + addGreen) * multiplyGreen / 256;
-                newBlue = (blue + addBlue) * multiplyBlue / 256;
-            }
-
-            if (newRed > 255){
-                newRed = 255;
-            }
-
-            if (newRed < 0){
-                newRed = 0;
-            }
-
-            if (newGreen > 255){
-                newGreen = 255;
-            }
-
-            if (newGreen < 0){
-                newGreen = 0;
-            }
-
-            if (newBlue > 255){
-                newBlue = 255;
-            }
-
-            if (newBlue < 0){
-                newBlue = 0;
-            }
-
-            return Bitmap::makeColor(newRed, newGreen, newBlue);
+        if (color < 255){
+            double greyRed = (1 - 0.299) * color / 255 + 0.299;
+            double greyGreen = (1 - 0.587) * color / 255 + 0.587;
+            double greyBlue = (1 - 0.114) * color / 255 + 0.114;
+            red = (int)(red * greyRed + 0.5 + 16);
+            green = (int)(green * greyGreen + 0.5 + 16);
+            blue = (int)(blue * greyBlue + 0.5 + 16);
         }
 
-        unsigned int filter(unsigned int pixel) const {
-            
-            if (cache.find(pixel) != cache.end()){
-                return cache[pixel];
-            }
-
-            int red = Bitmap::getRed(pixel);
-            int green = Bitmap::getGreen(pixel);
-            int blue = Bitmap::getBlue(pixel);
-            unsigned int out = doFilter(red, green, blue);
-            cache[pixel] = out;
-            return out;
+        if (invert){
+            red = 255 - red;
+            green = 255 - green;
+            blue = 255 - blue;
         }
-    };
 
-    Effects effects(paletteEffects.counter, paletteEffects.addRed,
+        if (period > 0){
+            newRed = (red + addRed + sinRed * sin(2 * PaintownUtil::pi * time / period)) * multiplyRed / 256;
+            newGreen = (green + addGreen + sinGreen * sin(2 * PaintownUtil::pi * time / period)) * multiplyGreen / 256;
+            newBlue = (blue + addBlue + sinBlue * sin(2 * PaintownUtil::pi * time / period)) * multiplyBlue / 256;
+        } else {
+            newRed = (red + addRed) * multiplyRed / 256;
+            newGreen = (green + addGreen) * multiplyGreen / 256;
+            newBlue = (blue + addBlue) * multiplyBlue / 256;
+        }
+
+        if (newRed > 255){
+            newRed = 255;
+        }
+
+        if (newRed < 0){
+            newRed = 0;
+        }
+
+        if (newGreen > 255){
+            newGreen = 255;
+        }
+
+        if (newGreen < 0){
+            newGreen = 0;
+        }
+
+        if (newBlue > 255){
+            newBlue = 255;
+        }
+
+        if (newBlue < 0){
+            newBlue = 0;
+        }
+
+        return Bitmap::makeColor(newRed, newGreen, newBlue);
+    }
+
+    unsigned int filter(unsigned int pixel) const {
+
+        if (cache.find(pixel) != cache.end()){
+            return cache[pixel];
+        }
+
+        int red = Bitmap::getRed(pixel);
+        int green = Bitmap::getGreen(pixel);
+        int blue = Bitmap::getBlue(pixel);
+        unsigned int out = doFilter(red, green, blue);
+        cache[pixel] = out;
+        return out;
+    }
+};
+
+void Mugen::Stage::drawBackgroundWithEffectsSide(int x, int y, const Bitmap & board, void (Mugen::Background::*render) (int, int, const Bitmap &, Bitmap::Filter *)){
+    PaletteShader effects(paletteEffects.counter, paletteEffects.addRed,
                     paletteEffects.addGreen, paletteEffects.addBlue,
                     paletteEffects.multiplyRed, paletteEffects.multiplyGreen,
                     paletteEffects.multiplyBlue, paletteEffects.sinRed,
@@ -1216,126 +1215,15 @@ void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Bitmap & board)
                     paletteEffects.period, paletteEffects.invert,
                     paletteEffects.color);
 
-    background->renderBackground(x, y, board, &effects);
+    (background->*render)(x, y, board, &effects);
+}
+        
+void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Bitmap & board){
+    drawBackgroundWithEffectsSide(x, y, board, &Background::renderBackground);
 }
 
 void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Bitmap & board){
-    /* FIXME: put this in util or something */
-    class Effects: public Bitmap::Filter {
-    public:
-        Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
-        time(time),
-        addRed(addRed),
-        addGreen(addGreen),
-        addBlue(addBlue),
-        multiplyRed(multiplyRed),
-        multiplyGreen(multiplyGreen),
-        multiplyBlue(multiplyBlue),
-        sinRed(sinRed),
-        sinGreen(sinGreen),
-        sinBlue(sinBlue),
-        period(period),
-        invert(invert),
-        color(color){
-        }
-
-        int time;
-        int addRed;
-        int addGreen;
-        int addBlue;
-        int multiplyRed;
-        int multiplyGreen;
-        int multiplyBlue;
-        int sinRed;
-        int sinGreen;
-        int sinBlue;
-        int period;
-        int invert;
-        int color;
-        
-        mutable map<unsigned, unsigned int> cache;
-
-        unsigned int doFilter(int red, int green, int blue) const {
-            int newRed = red;
-            int newGreen = green;
-            int newBlue = blue;
-
-            if (color < 255){
-                double greyRed = (1 - 0.299) * color / 255 + 0.299;
-                double greyGreen = (1 - 0.587) * color / 255 + 0.587;
-                double greyBlue = (1 - 0.114) * color / 255 + 0.114;
-                red = (int)(red * greyRed + 0.5 + 16);
-                green = (int)(green * greyGreen + 0.5 + 16);
-                blue = (int)(blue * greyBlue + 0.5 + 16);
-            }
-
-            if (invert){
-                red = 255 - red;
-                green = 255 - green;
-                blue = 255 - blue;
-            }
-
-            if (period > 0){
-                newRed = (red + addRed + sinRed * sin(2 * PaintownUtil::pi * time / period)) * multiplyRed / 256;
-                newGreen = (green + addGreen + sinGreen * sin(2 * PaintownUtil::pi * time / period)) * multiplyGreen / 256;
-                newBlue = (blue + addBlue + sinBlue * sin(2 * PaintownUtil::pi * time / period)) * multiplyBlue / 256;
-            } else {
-                newRed = (red + addRed) * multiplyRed / 256;
-                newGreen = (green + addGreen) * multiplyGreen / 256;
-                newBlue = (blue + addBlue) * multiplyBlue / 256;
-            }
-
-            if (newRed > 255){
-                newRed = 255;
-            }
-
-            if (newRed < 0){
-                newRed = 0;
-            }
-
-            if (newGreen > 255){
-                newGreen = 255;
-            }
-
-            if (newGreen < 0){
-                newGreen = 0;
-            }
-
-            if (newBlue > 255){
-                newBlue = 255;
-            }
-
-            if (newBlue < 0){
-                newBlue = 0;
-            }
-
-            return Bitmap::makeColor(newRed, newGreen, newBlue);
-        }
-
-        unsigned int filter(unsigned int pixel) const {
-            
-            if (cache.find(pixel) != cache.end()){
-                return cache[pixel];
-            }
-
-            int red = Bitmap::getRed(pixel);
-            int green = Bitmap::getGreen(pixel);
-            int blue = Bitmap::getBlue(pixel);
-            unsigned int out = doFilter(red, green, blue);
-            cache[pixel] = out;
-            return out;
-        }
-    };
-
-    Effects effects(paletteEffects.counter, paletteEffects.addRed,
-                    paletteEffects.addGreen, paletteEffects.addBlue,
-                    paletteEffects.multiplyRed, paletteEffects.multiplyGreen,
-                    paletteEffects.multiplyBlue, paletteEffects.sinRed,
-                    paletteEffects.sinGreen, paletteEffects.sinBlue,
-                    paletteEffects.period, paletteEffects.invert,
-                    paletteEffects.color);
-
-    background->renderForeground(x, y, board, &effects);
+    drawBackgroundWithEffectsSide(x, y, board, &Background::renderForeground);
 }
 
 void Mugen::Stage::render(Bitmap *work){
