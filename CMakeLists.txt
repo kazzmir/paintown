@@ -128,7 +128,7 @@ if(USE_SDL)
         message(FATAL_ERROR "Couldn't find SDL.")
     endif(NOT SDL_FOUND)
     
-    set(GRAPHICS_LIBRARIES sfl_module sprig_module image_module mixer_module ${SDL_LIBRARY})
+    set(GRAPHICS_LIBRARIES sfl_module sprig_module sdl_stretch_module image_module mixer_module ${SDL_LIBRARY})
     set(GRAPHICS_INCLUDES ${SDL_INCLUDE_DIR})
     if (OGG_FOUND)
         add_definitions(-DUSE_OGG)
@@ -247,6 +247,8 @@ if (USE_SDL)
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sdl/image)
     # SFL
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sfl)
+    # Stretch
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sdl/stretch)
     # SPRIG
     add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
     # Image
