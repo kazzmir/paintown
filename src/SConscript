@@ -36,6 +36,17 @@ util/sdl/sprig/SPG_surface.c
 
     return sprig.StaticLibrary('sprig', source)
 
+def stretchLibrary(env):
+    stretch = env.Clone()
+    # FIXME: asm has some bug in it, try to fix it later
+    stretch.Append(CPPDEFINES = ['SDL_STRETCH_DISABLE_ASM'])
+    source = Split("""
+util/sdl/stretch/sdlstretch.c
+util/sdl/stretch/sdlstretchcode.c
+""")
+
+    return stretch.StaticLibrary('stretch', source)
+
 def alGifLibrary(env):
     gif = env.Clone()
     source = Split("""
@@ -253,7 +264,7 @@ use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
 if not useSDL():
     use.Prepend(LIBS = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():
-    use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use)])
+    use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
 elif useMinpspw():
     use.Prepend(LIBS = [sprigLibrary(use)])
 
