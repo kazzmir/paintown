@@ -266,7 +266,7 @@ if not useSDL():
 if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
 elif useMinpspw():
-    use.Prepend(LIBS = [sprigLibrary(use)])
+    use.Prepend(LIBS = [sprigLibrary(use), stretchLibrary(use)])
 
 def addObjects(objects):
     obj_files.extend(objects)
