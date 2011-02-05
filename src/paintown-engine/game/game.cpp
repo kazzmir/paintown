@@ -443,8 +443,8 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
                 Global::speed_counter = 0;
 
-                InputManager::poll();
                 while (runCounter >= 1.0){
+                    InputManager::poll();
                     // eventManager.run();
                     draw = true;
                     world.act();
@@ -462,9 +462,8 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                             state.helpTime -= 0.5;
                         }
                     }
+                    doInput(state, takeScreenshot, draw);
                 }
-
-                doInput(state, takeScreenshot, draw);
                 
                 state.done |= world.finished();
             }

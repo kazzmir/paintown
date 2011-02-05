@@ -168,18 +168,18 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     vector<Input::PaintownInput> real_input = InputManager::getInput(Configuration::config(config), getFacing());
     if (real_input.size() > 0){
 
-        map<Input::PaintownInput, bool > new_last;
+        map<Input::PaintownInput, bool> new_last;
         for ( vector<Input::PaintownInput>::iterator it = real_input.begin(); it != real_input.end(); it++ ){
             Input::PaintownInput n = *it;
 
             Global::debug(3) << "Checking key " << n << endl;
 
             /* dont repeat keys */
-            if ( ! last_key[n] ){
+            if (! last_key[n]){
                 key_cache.push_back(n);
                 acts = 0;
             }
-            new_last[ n ] = true;
+            new_last[n] = true;
 
             /* as soon as back is hit the player will turn around
              * and then forward will be recognized resulting in
