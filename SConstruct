@@ -173,7 +173,7 @@ def checkAllegro5(context):
     tmp = context.env.Clone()
     env = context.env
     try:
-        env.ParseConfig('pkg-config allegro-5.0 allegro_memfile-5.0 --cflags --libs')
+        env.ParseConfig('pkg-config allegro-5.0 allegro_memfile-5.0 allegro_image-5.0 --cflags --libs')
         env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
         context.Result(colorResult(1))
         return 1
