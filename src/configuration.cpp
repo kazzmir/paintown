@@ -21,6 +21,9 @@ static const std::string INPUT_TYPE = "SDL";
 #ifdef USE_ALLEGRO
 static const std::string INPUT_TYPE = "Allegro";
 #endif
+#ifdef USE_ALLEGRO5
+static const std::string INPUT_TYPE = "Allegro5";
+#endif
 
 /* text that appears in the config file */
 #define define_config(n,str) static const char * config_##n = str

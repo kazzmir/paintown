@@ -1277,6 +1277,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckAllegro" : checkAllegro,
+                "CheckAllegro5" : checkAllegro5,
                 "CheckPthreads" : checkPthreads,
                 "CheckSDL" : checkSDL,
                 "CheckSDLMain" : checkSDLMain,
@@ -1287,6 +1288,8 @@ def display_build_properties():
     properties = []
     if useAllegro():
         properties.append(colorize("Allegro", color))
+    if useAllegro5():
+        properties.append(colorize('Allegro5', color))
     if useSDL():
         properties.append(colorize("SDL", color))
     if getDebug():
@@ -1388,6 +1391,9 @@ else:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
         if useAllegro() and not config.CheckAllegro():
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
+
+        if useAllegro5() and not config.CheckAllegro5():
+            print "Allegro5 not found"
 
         config.CheckPthreads()
 
