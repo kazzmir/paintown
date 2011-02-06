@@ -21,9 +21,10 @@
 #include "draw-effect.h"
 #include <math.h>
 
-// how many ticks to wait before the key cache is cleared.
-// this can probably be user defined in the future
-static const int GLOBAL_KEY_DELAY = 15;
+/* how many ticks to wait before keys are removed from the key cache.
+ * this can probably be user defined in the future.
+ */
+static const int GLOBAL_KEY_DELAY = 20;
 static const unsigned int KEY_CACHE_SIZE = 100;
 
 using namespace std;
@@ -141,6 +142,113 @@ void Player::debugDumpKeyCache(int level){
 }
 
 vector<Input::PaintownInput> Player::fillKeyCache(){
+    /*
+    acts += 1;
+    if (acts > GLOBAL_KEY_DELAY){
+        if (!key_cache.empty()){
+            key_cache.pop_front();
+        }
+
+        acts = 0;
+    }
+    */
+
+    InputMap<Input::PaintownInput> input;
+
+    Configuration & configuration = Configuration::config(config);
+    int facing = getFacing();
+    enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Jump, Input::Grab};
+    for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
+        input.set(configuration.getKey(all[i], facing), 0, false, all[i]);
+        input.set(configuration.getJoystickKey(all[i], facing), 0, false, all[i]);
+    }
+
+    acts += 1;
+
+    // keyHold.back = false;
+
+    vector<InputMap<Input::PaintownInput>::InputEvent> events = InputManager::getEvents(input);
+    for (vector<InputMap<Input::PaintownInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+        InputMap<Input::PaintownInput>::InputEvent event = *it;
+
+        /*
+        switch (event.out){
+            case Input::Forward: keyHold.forward = event.enabled; break;
+            case Input::Back: keyHold.back = event.enabled; break;
+            case Input::Up: keyHold.up = event.enabled; break;
+            case Input::Down: keyHold.down = event.enabled; break;
+            default: break;
+        }
+        */
+
+        if (!event.enabled){
+            continue;
+        }
+
+        key_cache.push_back(event.out);
+        
+        acts = 0;
+    }
+
+    while (key_cache.size() > KEY_CACHE_SIZE){
+        key_cache.pop_front();
+    }
+
+    if (acts > GLOBAL_KEY_DELAY){
+        key_cache.clear();
+    }
+        
+    InputMap<Input::PaintownInput> inputHold;
+
+    /* normalize such that forward is left */
+    int facingHold = FACING_LEFT;
+    enum Input::PaintownInput allHold[] = {Input::Forward, Input::Back, Input::Up, Input::Down};
+    for (unsigned int i = 0; i < sizeof(allHold) / sizeof(Input::PaintownInput); i++){
+        inputHold.set(configuration.getKey(allHold[i], facingHold), 0, false, allHold[i]);
+        inputHold.set(configuration.getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
+    }
+
+    vector<InputMap<Input::PaintownInput>::InputEvent> eventsHold = InputManager::getEvents(inputHold);
+    for (vector<InputMap<Input::PaintownInput>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
+        InputMap<Input::PaintownInput>::InputEvent event = *it;
+
+        switch (event.out){
+            case Input::Forward: keyHold.left = event.enabled; break;
+            case Input::Back: keyHold.right = event.enabled; break;
+            case Input::Up: keyHold.up = event.enabled; break;
+            case Input::Down: keyHold.down = event.enabled; break;
+            default: break;
+        }
+    }
+
+    vector<Input::PaintownInput> real_input;
+    if (keyHold.up){
+        real_input.push_back(Input::Up);
+    }
+    if (keyHold.down){
+        real_input.push_back(Input::Down);
+    }
+    if (keyHold.left){
+        if (getFacing() == FACING_LEFT){
+            real_input.push_back(Input::Forward);
+        } else {
+            real_input.push_back(Input::Back);
+        }
+    }
+    if (keyHold.right){
+        if (getFacing() == FACING_LEFT){
+            real_input.push_back(Input::Back);
+        } else {
+            real_input.push_back(Input::Forward);
+        }
+        // keyHold.forward = true;
+    }
+
+    return real_input;
+}
+
+#if 0
+vector<Input::PaintownInput> Player::fillKeyCache(){
 
     /* get the latest key presses */
 
@@ -212,6 +320,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
 
     return real_input;
 }
+#endif
         
 Network::Message Player::getCreateMessage(){
     Network::Message message = Character::getCreateMessage();
@@ -244,7 +353,34 @@ void Player::drawLifeBar( int x, int y, Bitmap * work ){
 	drawLifeBar( x, y, show_life, work );
 }
 
-void Player::drawFront( Bitmap * work, int rel_x ){
+/* present the current input to the user */
+void Player::drawButtons(Bitmap * work, int x, int y){
+    int color = Bitmap::makeColor(255, 255, 255);
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
+    y -= 10;
+    for (deque<Input::PaintownInput>::iterator it = key_cache.begin(); it != key_cache.end(); it++){
+        Input::PaintownInput key = *it;
+        /* FIXME: replace letters with nicer looking symbols / graphics */
+        switch (key){
+            case Input::Unknown: font.printf(x, y, color, *work, "?", 0); break;
+            case Input::Forward: font.printf(x, y, color, *work, "F", 0); break;
+            case Input::Back: font.printf(x, y, color, *work, "B", 0); break;
+            case Input::Up: font.printf(x, y, color, *work, "U", 0); break;
+            case Input::Down: font.printf(x, y, color, *work, "D", 0); break;
+            case Input::Attack1: font.printf(x, y, color, *work, "1", 0); break;
+            case Input::Attack2: font.printf(x, y, color, *work, "2", 0); break;
+            case Input::Attack3: font.printf(x, y, color, *work, "3", 0); break;
+            case Input::Attack4: font.printf(x, y, color, *work, "4", 0); break;
+            case Input::Attack5: font.printf(x, y, color, *work, "5", 0); break;
+            case Input::Attack6: font.printf(x, y, color, *work, "6", 0); break;
+            case Input::Jump: font.printf(x, y, color, *work, "J", 0); break;
+            case Input::Grab: font.printf(x, y, color, *work, "G", 0); break;
+        }
+        x += 10 + 5;
+    }
+}
+
+void Player::drawFront(Bitmap * work, int rel_x){
 
 	int x1, y1;
 	NamePlacer::getPlacement( x1, y1, name_id );
@@ -253,11 +389,16 @@ void Player::drawFront( Bitmap * work, int rel_x ){
 		icon->draw( x1, y1, *work );
 
 	int hasIcon = icon ? icon->getWidth() : 0;
-	
 
 	if ( show_life < 0 ){
 		show_life = 0;
 	}
+
+        /* TODO: make 'show_buttons' an option somewhere */
+        bool show_buttons = false;
+        if (show_buttons){
+            drawButtons(work, 5, work->getHeight() - 5);
+        }
 
 	// Font * player_font = FontFactory::getFont( NAME_FONT );
 	// const Font & player_font = Font::getFont( NAME_FONT );
@@ -871,6 +1012,13 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
                          * its not repeated forever
                          */
                         key_cache.clear();
+                        /*
+                        if (animation_current->getKeys().size() < key_cache.size()){
+                            key_cache.erase(key_cache.begin(), key_cache.begin() + animation_current->getKeys().size());
+                        } else {
+                            key_cache.clear();
+                        }
+                        */
 			
 			if ( animation_current == getMovement("jump") ) {
 				double x = 0;
@@ -896,52 +1044,55 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		world->addMessage( animationMessage() );
 	}
 	
-	if ( (getStatus() == Status_Ground) && (animation_current == getMovement( "walk" ) || animation_current == getMovement( "idle" )) ){
+        if ( (getStatus() == Status_Ground) &&
+             (animation_current == getMovement("walk") ||
+              animation_current == getMovement("idle")) ){
 
-		bool moved = false;
-		if (key_forward){
-			moveX( getSpeed() );
-			moved = true;
-		} else if (key_backward){
-			setFacing( getOppositeFacing() );
-			moved = true;
-		}
+            bool moved = false;
+            if (key_forward){
+                moveX( getSpeed() );
+                moved = true;
+            } else if (key_backward){
+                setFacing(getOppositeFacing());
+                // keyHold.forward = true;
+                moved = true;
+            }
 
-		if (key_up){
-			moveZ( -getSpeed() );
-			moved = true;
-		} else if (key_down){
-			moveZ( getSpeed() );
-			moved = true;
-		}
+            if (key_up){
+                moveZ( -getSpeed() );
+                moved = true;
+            } else if (key_down){
+                moveZ( getSpeed() );
+                moved = true;
+            }
 
-		if ( moved ){
-			world->addMessage( movedMessage() );
-		}
-	} else {
-	
-		if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){
-			if ( getLink() == NULL ){
-				Global::debug( 0 ) << "*BUG* Link is null. This can't happen." <<endl;
-				return;
-			}
-			Object * link = getLink();
-			link->setFacing( getOppositeFacing() );
-			link->thrown();
-            increaseScore((int)(20 * (1 + attack_bonus)));
-            attack_bonus += 1;
-            world->addMessage(scoreMessage());
-			world->addMessage(link->movedMessage());
-			/* TODO: the fall distance could be defined in the player
-			 * file instead of hard-coded.
-			 */
-			world->addMessage( ((Character *)link)->fallMessage( 3.2, 5.0 ) );
-			world->addMessage( thrownMessage( link->getId() ) );
-			link->fall( 3.2, 5.0 );
-			setStatus( Status_Ground );
-			world->addMessage( movedMessage() );
-		}
-	}
+            if ( moved ){
+                world->addMessage( movedMessage() );
+            }
+        } else {
+
+            if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){
+                if ( getLink() == NULL ){
+                    Global::debug( 0 ) << "*BUG* Link is null. This can't happen." <<endl;
+                    return;
+                }
+                Object * link = getLink();
+                link->setFacing( getOppositeFacing() );
+                link->thrown();
+                increaseScore((int)(20 * (1 + attack_bonus)));
+                attack_bonus += 1;
+                world->addMessage(scoreMessage());
+                world->addMessage(link->movedMessage());
+                /* TODO: the fall distance could be defined in the player
+                 * file instead of hard-coded.
+                 */
+                world->addMessage( ((Character *)link)->fallMessage( 3.2, 5.0 ) );
+                world->addMessage( thrownMessage( link->getId() ) );
+                link->fall( 3.2, 5.0 );
+                setStatus( Status_Ground );
+                world->addMessage( movedMessage() );
+            }
+        }
 }
 
 PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap):

@@ -100,13 +100,31 @@ protected:
     bool canGrab( Object * enemy );
     void grabEnemy( Object * enemy );
 
+    /* shows keys on the screen */
+    void drawButtons(Bitmap * work, int x, int y);
+
     Network::Message thrownMessage( unsigned int id );
 
 protected:
 
+    struct Held{
+        Held():
+        up(false),
+        down(false),
+        left(false),
+        right(false){
+        }
+
+        bool up;
+        bool down;
+        bool left;
+        bool right;
+    };
+
     /* store key presses in a stack with two ends*/
     std::deque<Input::PaintownInput> key_cache;
     std::map< Input::PaintownInput, bool > last_key;
+    Held keyHold;
     int acts;
     int show_life;
 
