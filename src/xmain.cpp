@@ -9,6 +9,12 @@ int main( int argc, char ** argv ){
 END_OF_MAIN()
 #endif
 
+#ifdef USE_ALLEGRO5
+int main( int argc, char ** argv ){
+    return paintown_main(argc, argv);
+}
+#endif
+
 #ifdef MINPSPW
 #include <pspkernel.h>
 // Define only on windows because main is redefined as SDL_main (from SDL_psp_main.c comments)
