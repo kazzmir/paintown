@@ -1413,7 +1413,6 @@ void Menu::Menu::run(const Context & parentContext){
             }
             */
 
-            Global::debug(0) << "Run counter " << runCounter << endl;
             while (runCounter >= 1.0){
                 runCounter -= 1;
                 try {
