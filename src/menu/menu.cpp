@@ -1371,6 +1371,7 @@ void Menu::Menu::run(const Context & parentContext){
     input.set(Configuration::config(0).getDown(), 0, true, Down);
     input.set(Configuration::config(0).getLeft(), 0, true, Left);
     input.set(Configuration::config(0).getRight(), 0, true, Right);
+    input.set(Keyboard::Key_F11, 0, true, Fullscreen);
     /* FIXME: use configuration keys */
     input.set(Keyboard::Key_ENTER, 0, true, Select);
     input.set(Keyboard::Key_ESC, 0, true, Cancel);
@@ -1443,6 +1444,12 @@ void Menu::Menu::run(const Context & parentContext){
     throw Exception::Return(__FILE__, __LINE__);
 }
 
+static void changeScreenMode(){
+    Configuration::setFullscreen(!Configuration::getFullscreen());
+    int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
+    Bitmap::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
+}
+
 void Menu::Menu::act(Context & ourContext){
     // Keys
     InputManager::poll();
@@ -1465,6 +1472,10 @@ void Menu::Menu::act(Context & ourContext){
                 InputManager::waitForRelease(input, Cancel);
                 throw Exception::Return(__FILE__, __LINE__);
             }
+        }
+
+        if (event.out == Fullscreen){
+            changeScreenMode();
         }
 
         if (renderer){

@@ -170,6 +170,7 @@ enum Actions{
     Cancel,
     Modify,
     Pause,
+    Fullscreen
 };
 
 class Context;
