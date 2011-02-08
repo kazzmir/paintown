@@ -66,6 +66,7 @@ find_package(Threads)
 #find_package(GNUREGEX)
 find_package(VORBIS)
 find_package(OGG)
+find_package(MPG123)
 
 # -------------------------------------------------------
 # Include Source
@@ -117,6 +118,15 @@ else(OGG_FOUND)
     set(OGG_LIBS "")
     set(OGG_INCLUDES "")
 endif(OGG_FOUND)
+
+if(MPG123_FOUND)
+    add_definitions(-DHAVE_MP3)
+    set(MP3_LIBS ${MPG123_LIBRARY})
+    set(MP3_INCLUDES ${MPG123_INCLUDE_DIR})
+else(MPG123_FOUND)
+    set(MP3_LIBS "")
+    set(MP3_INCLUDES "")
+endif(MPG123_FOUND)
 
 if(USE_SDL)
     # packages
@@ -197,12 +207,12 @@ endif(APPLE)
 # -------------------------------------------------------
 # Include directory
 # -------------------------------------------------------
-include_directories(src src/util/network/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${OGG_INCLUDES})
+include_directories(src src/util/network/hawknl ${GRAPHICS_INCLUDES} ${FREETYPE_INCLUDE_DIR} ${OGG_INCLUDES} ${MP3_INCLUDES})
 
 # -------------------------------------------------------
 # Put the linked libraries together
 # -------------------------------------------------------
-set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${OGG_LIBS} ${WIN_LIB} ${WINSOCK})
+set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LIBRARIES} ${PNG_LIBRARY} ${ZLIB_LIBRARY} ${OGG_LIBS} ${MP3_LIBS} ${WIN_LIB} ${WINSOCK})
 
 
 # -------------------------------------------------------

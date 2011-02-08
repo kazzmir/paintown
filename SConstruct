@@ -382,6 +382,38 @@ def checkNativeOgg(context):
 
     context.Result(colorResult(ret))
     return ret
+    
+def checkMpg123(context):
+    context.Message("Checking for libmpg123... ")
+    tmp = context.env.Clone()
+    env = context.env
+    env['HAVE_MP3'] = True
+    env.Append(CPPDEFINES = ['HAVE_MP3'])
+    (ok, stuff) = context.TryAction(Action("pkg-config --version"))
+    if ok:
+        try:
+            env.ParseConfig('pkg-config libmpg123 --libs --cflags')
+        except OSError:
+            context.sconf.env = tmp
+            context.Result(colorResult(0))
+            return 0
+            
+    ret = context.TryLink("""
+        #include <mpg123.h>
+        int main(int argc, char ** argv){
+          int err = mpg123_init();
+	  if (err == MPG123_OK){
+	    return 0;
+	  } 
+	  return 1;
+        }
+    """, ".c")
+
+    if not ret:
+        context.sconf.env = tmp
+
+    context.Result(colorResult(ret))
+    return ret
 
 def checkPython(context):
     import distutils.sysconfig
@@ -1281,7 +1313,8 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckPthreads" : checkPthreads,
                 "CheckSDL" : checkSDL,
                 "CheckSDLMain" : checkSDLMain,
-                "CheckOgg" : checkNativeOgg}
+                "CheckOgg" : checkNativeOgg,
+		"CheckMp3" : checkMpg123}
 
 def display_build_properties():
     color = 'light-green'
@@ -1459,6 +1492,7 @@ else:
     config.CheckRTTI()
     # config.CheckPython()
     config.CheckOgg()
+    config.CheckMp3()
     #if config.HasRuby():
     #    config.CheckRuby()
     
