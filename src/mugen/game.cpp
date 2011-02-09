@@ -111,7 +111,7 @@ public:
     }
 };
 
-static void runMatch(Mugen::Stage * stage){
+static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = ""){
     Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     InputMap<int> gameInput;
     /* FIXME: use an enum here */
@@ -123,7 +123,18 @@ static void runMatch(Mugen::Stage * stage){
     gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, 4);
     gameInput.set(Keyboard::Key_F5, 10, true, 5);
 
-    Music::changeSong();
+    //Music::changeSong();
+    // *NOTE according to bgs.txt they belong in sound directory
+    Filesystem::AbsolutePath file;
+    if (musicOverride.empty()){
+	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + stage->getMusic())).path());
+    } else {
+	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + musicOverride)).path());
+    }
+    /* Ignore volume for now */
+    //Music::setVolume(stage->getMusicVolume());
+    Music::pause();
+    Music::play();
 
     double gameSpeed = 1.0;
     double runCounter = 0;
@@ -604,16 +615,21 @@ void Game::doArcade(){
 
             /* this is the guy thats in control */
             Mugen::Character * player = 0;
+	    std::string musicOverride;
             if (playerType == Mugen::Player1){
                 player = select.getPlayer1();
                 player->setBehavior(&player1HumanBehavior);
                 select.getPlayer2()->setBehavior(&player2AIBehavior);
                 // player->setInput(getPlayer1Keys(), getPlayer1InputLeft());
+		// Get music from character
+		musicOverride = select.getPlayer2Music();
             } else if (playerType == Mugen::Player2){
                 player = select.getPlayer2();
                 // player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
                 player->setBehavior(&player2HumanBehavior);
                 select.getPlayer1()->setBehavior(&player1AIBehavior);
+		// Get music from character
+		musicOverride = select.getPlayer1Music();
             }
 
 
@@ -622,7 +638,7 @@ void Game::doArcade(){
             // Lets reset the stage for good measure
             stage->reset();
 
-            runMatch(stage);
+            runMatch(stage, musicOverride);
 
             /*! *FIXME *TODO
              * Set next match and check if we have 

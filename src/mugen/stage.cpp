@@ -173,6 +173,7 @@ shadowYscale(0.4),
 shadowFadeRangeHigh(0),
 shadowFadeRangeMid(0),
 reflectionIntensity(0),
+musicVolume(0),
 //sffFile(""),
 //debugbg(false),
 board(0),
@@ -246,6 +247,7 @@ shadowYscale(0.4),
 shadowFadeRangeHigh(0),
 shadowFadeRangeMid(0),
 reflectionIntensity(0),
+musicVolume(0),
 //sffFile(""),
 //debugbg(false),
 background(0),
@@ -455,6 +457,28 @@ void Mugen::Stage::loadSectionReflection(Ast::Section * section){
     }
 }
 
+void Mugen::Stage::loadSectionMusic(Ast::Section * section){
+    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
+        Ast::Attribute * attribute = *attribute_it;
+        if (attribute->getKind() == Ast::Attribute::Simple){
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
+            if (*simple == "bgmusic"){
+		try {
+		    *simple >> music;
+		} catch (const MugenException &ex){
+		}
+            } else if (*simple == "bgvolume"){
+		try {
+		    *simple >> musicVolume;
+		} catch (const MugenException &ex){
+		}
+	    } else {
+                throw MugenException("Unhandled option in Music Section: " + simple->toString());
+            }
+        }
+    }
+}
+
 int Mugen::Stage::getFloor() const {
     return currentZOffset();
 }
@@ -560,7 +584,7 @@ void Mugen::Stage::load(){
 	    Global::debug(1) << "Got background: '" << manager->getName() << "'" << endl;
 	}*/
         } else if (head == "music" ){
-            /* Ignore for now */
+           loadSectionMusic(section);
         } else {
             // throw MugenException( "Unhandled Section in '" + ourDefFile + "': " + head ); 
         }

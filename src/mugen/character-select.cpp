@@ -19,6 +19,7 @@
 #include "util/resource.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/music.h"
 #include "util/timedifference.h"
 #include "util/thread.h"
 #include "globals.h"
@@ -2173,6 +2174,15 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
     // Set game keys temporary
     InputMap<Mugen::Keys> gameInput = Mugen::getPlayer1Keys(20);
     
+    // Run select screen bgm
+    try {
+	std::string music = Util::probeDef(systemFile, "music", "select.bgm");
+	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
+	Music::pause();
+	Music::play();
+    } catch (const MugenException & ex){
+    }
+    
     while ( ! done && fader.getState() != Gui::FadeTool::EndFade ){
     
 	bool draw = false;
@@ -2347,6 +2357,16 @@ void CharacterSelect::reset(){
 }
 
 void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
+    
+    // start bgm
+    try {
+	std::string music = Util::probeDef(systemFile, "music", "vs.bgm");
+	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
+	Music::pause();
+	Music::play();
+    } catch (const MugenException & ex){
+    }
+    
     versus.render(*currentPlayer1, *currentPlayer2, currentStage, bmp);
 }
 

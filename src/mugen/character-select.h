@@ -978,8 +978,16 @@ class CharacterSelect {
 	    return this->currentPlayer1->getPlayer1();
 	}
 	
+	virtual inline const std::string & getPlayer1Music(){
+	    return this->currentPlayer1->getMusic();
+	}
+	
 	virtual inline Character * getPlayer2(){
 	    return this->currentPlayer2->getPlayer2();
+	}
+	
+	virtual inline const std::string & getPlayer2Music(){
+	    return this->currentPlayer1->getMusic();
 	}
 	
 	virtual inline Mugen::Stage * getStage(){

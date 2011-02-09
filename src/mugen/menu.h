@@ -157,6 +157,12 @@ class MugenMenu {
 	/*! Fonts */
 	std::vector<MugenFont *>fonts;
 	
+	/*! Music files */
+	std::string titleMusic;
+	// Loop?
+	std::string selectMusic;
+	std::string versusMusic;
+	
 	/*! Fade tool */
 	Gui::FadeTool fader;
 	

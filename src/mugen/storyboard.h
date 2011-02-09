@@ -72,6 +72,8 @@ class Scene {
 	
 	virtual void reset();
 	
+	virtual void startMusic();
+	
 	virtual inline const Gui::FadeTool & getFadeTool() const {
 	    return this->fader;
 	}
@@ -136,6 +138,15 @@ class Scene {
 	
 	//! Max Layers - capped at 10
 	const int maxLayers;
+	
+	//! Music
+	std::string music;
+	
+	//! Don't stop music (this is if it has been ommited)
+	bool musicStop;
+	
+	//! Music loop
+	bool musicLoop;
 };
 
 class Storyboard {

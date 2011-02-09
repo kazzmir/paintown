@@ -109,6 +109,14 @@ public:
        inline const std::map<int, MugenAnimation*> & getAnimations() const {
        return animations;
        }*/
+    
+    inline const std::string & getMusic() const {
+	return this->music;
+    }
+    
+    inline const int getMusicVolume() const {
+	return this->musicVolume;
+    }
 
     inline double getCameraX() const { return camerax; }
     inline double getCameraY() const { return cameray; }
@@ -317,6 +325,7 @@ protected:
     void loadSectionStageInfo(Ast::Section * section);
     void loadSectionShadow(Ast::Section * section, cymk_holder & shadow);
     void loadSectionReflection(Ast::Section * section);
+    void loadSectionMusic(Ast::Section * section);
 
     void updatePlayer(Paintown::Object *o);
     void physics(Paintown::Object * o);
@@ -499,12 +508,12 @@ protected:
       ;track 3 from a music CD, use:
       ;  bgmusic = 3.da 
       This option is ignored in paintown, no support for those formats*/
-    //int bgmusic;
+    std::string music;
 
     /*;Adjust the volume. 0 is normal, negative for softer, and
       ;positive for louder (only for mp3, mods and CDA)
       Probably won't be used unless support for those items above get added*/
-    //int bgvolume;
+    int musicVolume;
 
     /* Main background definitions.. ie [BGdef] */
 

@@ -18,6 +18,7 @@
 
 #include "util/debug.h"
 #include "util/timedifference.h"
+#include "util/music.h"
 #include "ast/all.h"
 #include "parser/all.h"
 #include "util/input/input-map.h"
@@ -75,7 +76,9 @@ ticker(0),
 endTime(0),
 defaultPositionSet(false),
 background(0),
-maxLayers(10){
+maxLayers(10),
+musicStop(false),
+musicLoop(true){
     for (int i = 0; i < maxLayers; ++i){
 	Layer *layer = new Layer();
 	layers.push_back(layer);
@@ -168,9 +171,20 @@ maxLayers(10){
                         // Global::debug(0) << "Setting layer " << scene.layers[num] << " [" << num << "] start time to " << time << endl;
 		    }
 		} else if (simple == "bgm"){
-		    // do nothing
+		    try{
+			std::string bgm;
+			simple >> bgm;
+			if (!bgm.empty()){
+			    scene.music = file.getDirectory().path() + "/" + bgm;
+			}
+		    } catch (const Ast::Exception & e){
+			scene.musicStop = true;
+		    }
 		} else if (simple == "bgm.loop"){
-		    // do nothing
+		    try{
+			simple >> scene.musicLoop;
+		    } catch (const Ast::Exception & e){
+		    }
 		} else {
 			Global::debug(0) << "Unhandled option in Scene Section: " << simple.toString();
 		}
@@ -248,6 +262,20 @@ void Scene::reset(){
     for (std::vector< Layer *>::iterator i = layers.begin(); i != layers.end(); ++i ){
 	Layer *layer = *i;
 	layer->reset();
+    }
+}
+
+void Scene::startMusic(){
+    // Run bgm
+    if (musicStop){
+	Music::pause();
+    } else if (!music.empty()){
+	try {
+	    Music::loadSong( Filesystem::find(Filesystem::RelativePath(music)).path());
+	    Music::pause();
+	    Music::play();
+	} catch (const MugenException & ex){
+	}
     }
 }
 
@@ -400,6 +428,7 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
         bool draw = false;
 
         Scene *scene = *sceneIterator;
+	scene->startMusic();
         if (Global::speed_counter > 0){
 
             // runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;//(double) 90 / (double) 60;

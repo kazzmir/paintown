@@ -22,6 +22,7 @@
 #include "util/thread.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"
+#include "util/music.h"
 // #include "game/console.h"
 /*
 #include "object/animation.h"
@@ -362,7 +363,40 @@ void MugenMenu::loadData(){
                 FileWalker walker(*this, baseDir);
                 section->walk(walker);
             } else if (head == "music"){
-                /* FIXME! parse music here */
+                class MusicInfoWalker: public Ast::Walker{
+		public:
+		    MusicInfoWalker(MugenMenu & menu):
+			menu(menu){
+			}
+		    MugenMenu & menu;
+		    
+		    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "title.bgm"){
+                            try{
+                                simple >> menu.titleMusic;
+                            } catch (const Ast::Exception & fail){
+                            }
+                        } else if (simple == "title.bgm.loop"){
+                        } else if (simple == "select.bgm"){
+                            try{
+                                simple >> menu.selectMusic;
+                            } catch (const Ast::Exception & fail){
+                            }
+                        } else if (simple == "select.bgm.loop"){
+                        } else if (simple == "vs.bgm"){
+                            try{
+                                simple >> menu.versusMusic;
+                            } catch (const Ast::Exception & fail){
+                            }
+                        } else if (simple == "vs.bgm.loop"){
+                        } else {
+                            //throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
+                            Global::debug(0) << "Unhandled option in Music Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
+                        }
+		    }
+		};
+		MusicInfoWalker walker(*this);
+		section->walk(walker);
             } else if (head == "title info"){
                 class TitleInfoWalker: public Ast::Walker{
                 public:
@@ -541,7 +575,6 @@ void MugenMenu::loadData(){
             else if (head == "option info" ){ /* Ignore for now */ }
             else if (head == "optionbgdef" ){ /* Ignore for now */ }
             else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
-            else if (head == "music" ){ /* Ignore for now */ }
             else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
             else {
                 //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ );
@@ -675,6 +708,11 @@ void MugenMenu::run(){
 	Global::speed_counter = 0;
 	Global::second_counter = 0;
 	int game_time = 100;
+	
+	/* Start music NOTE load select and versus screen bgm */
+	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + titleMusic)).path());
+	Music::pause();
+	Music::play();
     
         /* Extra scope to force temporary bitmaps to be destroyed */
         {
