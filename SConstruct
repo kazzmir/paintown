@@ -1199,7 +1199,7 @@ if showTiming():
     env.Replace(CXXCOM = 'misc/show-current-time %s' % cxxcom)
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
-env['PAINTOWN_USE_PRX'] = usePrx()
+env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
 if not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
@@ -1281,11 +1281,13 @@ def buildType(dir):
         if useMinpspw():
             properties.append('psp')
     if usePs3():
-	properties.append('ps3')
+        properties.append('ps3')
     if useNDS():
         properties.append('NDS')
     if useWii():
         properties.append('wii')
+    if useAllegro():
+        properties.append('allegro')
     if useDingoo():
         properties.append('dingoo')
     if useAllegro5():
@@ -1314,7 +1316,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckSDL" : checkSDL,
                 "CheckSDLMain" : checkSDLMain,
                 "CheckOgg" : checkNativeOgg,
-		"CheckMp3" : checkMpg123}
+                "CheckMp3" : checkMpg123}
 
 def display_build_properties():
     color = 'light-green'
