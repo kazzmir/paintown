@@ -2181,6 +2181,8 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	Music::pause();
 	Music::play();
     } catch (const MugenException & ex){
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
     }
     
     while ( ! done && fader.getState() != Gui::FadeTool::EndFade ){
@@ -2365,6 +2367,8 @@ void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
 	Music::pause();
 	Music::play();
     } catch (const MugenException & ex){
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
     }
     
     versus.render(*currentPlayer1, *currentPlayer2, currentStage, bmp);

@@ -275,7 +275,9 @@ void Scene::startMusic(){
 	    Music::pause();
 	    Music::play();
 	} catch (const MugenException & ex){
-	}
+	} catch (const Filesystem::NotFound & fail){
+            Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
+        }
     }
 }
 
