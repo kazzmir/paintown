@@ -710,9 +710,13 @@ void MugenMenu::run(){
 	int game_time = 100;
 	
 	/* Start music NOTE load select and versus screen bgm */
-	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + titleMusic)).path());
-	Music::pause();
-	Music::play();
+        try{
+            Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + titleMusic)).path());
+            Music::pause();
+            Music::play();
+        } catch (const Filesystem::NotFound & fail){
+            Global::debug(0) << "Warning: could not load music because " << fail.getTrace() << endl;
+        }
     
         /* Extra scope to force temporary bitmaps to be destroyed */
         {
