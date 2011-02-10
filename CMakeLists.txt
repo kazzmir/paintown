@@ -120,12 +120,20 @@ else(OGG_FOUND)
 endif(OGG_FOUND)
 
 if(MPG123_FOUND)
-    add_definitions(-DHAVE_MP3)
+    add_definitions(-DHAVE_MP3_MPG123)
     set(MP3_LIBS ${MPG123_LIBRARY})
     set(MP3_INCLUDES ${MPG123_INCLUDE_DIR})
 else(MPG123_FOUND)
-    set(MP3_LIBS "")
-    set(MP3_INCLUDES "")
+    # Try looking for libmad instead
+    find_package(MAD)
+    if (MAD_FOUND)
+	add_definitions(-DHAVE_MP3_MAD)
+	set(MP3_LIBS ${MAD_LIBRARY})
+	set(MP3_INCLUDES ${MAD_INCLUDE_DIR})
+    else(MAD_FOUND)
+	set(MP3_LIBS "")
+	set(MP3_INCLUDES "")
+    endif(MAD_FOUND)
 endif(MPG123_FOUND)
 
 if(USE_SDL)
@@ -138,11 +146,13 @@ if(USE_SDL)
         message(FATAL_ERROR "Couldn't find SDL.")
     endif(NOT SDL_FOUND)
     
+    # SET Mixer definition
+    if (MAD_FOUND)
+	add_definitions(-DMP3_MAD_MUSIC)
+    endif(MAD_FOUND)
+    
     set(GRAPHICS_LIBRARIES sfl_module sprig_module sdl_stretch_module image_module mixer_module ${SDL_LIBRARY})
     set(GRAPHICS_INCLUDES ${SDL_INCLUDE_DIR})
-    if (OGG_FOUND)
-        add_definitions(-DUSE_OGG)
-    endif (OGG_FOUND)
     if (APPLE)
 	add_definitions(-DUSE_SDL_MAIN)
     endif(APPLE)
@@ -261,8 +271,8 @@ if (USE_SDL)
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sdl/stretch)
     # SPRIG
     add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
-    # Image
-    add_library(mixer_module src/util/sdl/mixer/music.c src/util/sdl/mixer/mixer.c src/util/sdl/mixer/effect_position.c src/util/sdl/mixer/effects_internal.c src/util/sdl/mixer/effect_stereoreverse.c src/util/sdl/mixer/load_voc.c src/util/sdl/mixer/load_aiff.c src/util/sdl/mixer/wavestream.c)
+    # Mixer
+    add_library(mixer_module src/util/sdl/mixer/music.c src/util/sdl/mixer/mixer.c src/util/sdl/mixer/music_ogg.c src/util/sdl/mixer/music_flac.c src/util/sdl/mixer/music_mad.c src/util/sdl/mixer/dynamic_ogg.c src/util/sdl/mixer/effect_position.c src/util/sdl/mixer/effects_internal.c src/util/sdl/mixer/effect_stereoreverse.c src/util/sdl/mixer/load_voc.c src/util/sdl/mixer/load_aiff.c src/util/sdl/mixer/wavestream.c src/util/sdl/mixer/load_ogg.c)
 endif (USE_SDL)
 
 #paintown executable

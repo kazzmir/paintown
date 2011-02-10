@@ -88,6 +88,12 @@ def sdlMixerLibrary(env):
     except KeyError:
         pass
 
+    try:
+        if mixer['HAVE_MP3_MAD']:
+            mixer.Append(CPPDEFINES = ['MP3_MAD_MUSIC'])
+    except KeyError:
+        pass
+
     source = Split("""
 music.c
 mixer.c
