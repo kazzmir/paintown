@@ -402,10 +402,10 @@ def checkMpg123(context):
         #include <mpg123.h>
         int main(int argc, char ** argv){
           int err = mpg123_init();
-	  if (err == MPG123_OK){
-	    return 0;
-	  } 
-	  return 1;
+          if (err == MPG123_OK){
+            return 0;
+          } 
+          return 1;
         }
     """, ".c")
 
@@ -435,8 +435,8 @@ def checkMad(context):
         #include <mad.h>
         int main(int argc, char ** argv){
           struct mad_stream stream;
-	  mad_stream_init(&stream);
-	  return 0;
+          mad_stream_init(&stream);
+          return 0;
         }
     """, ".c")
 
@@ -897,8 +897,8 @@ pspnet_inet
     def ps3(env):
         print "Environment is ps3 (ps3 development)"
         # symlink the ps3dev to /opt/ps3dev, or just put it there
-	# Needs these environment variables
-	# export PS3DEV=/opt/ps3dev
+        # Needs these environment variables
+        # export PS3DEV=/opt/ps3dev
         # export PATH=$PATH:$PS3DEV/bin
         # export PATH=$PATH:$PS3DEV/host/ppu/bin
         # export PATH=$PATH:$PS3DEV/host/spu/bin
@@ -921,11 +921,11 @@ pspnet_inet
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         # FIXME: try to use sdl-config to find these paths
         # instead of hard coding them
-	env.ParseConfig(bin_path + '/freetype-config --cflags --libs')
-	
-	# FIXME: it uses -lc-glue-ppu which I can't find maybe I missed something in the setup for now I'll put it down below
-	#env.ParseConfig(bin_path +'sdl-config --cflags --libs') 
-	
+        env.ParseConfig(bin_path + '/freetype-config --cflags --libs')
+
+        # FIXME: it uses -lc-glue-ppu which I can't find maybe I missed something in the setup for now I'll put it down below
+        #env.ParseConfig(bin_path +'sdl-config --cflags --libs') 
+        
         env.Append(CPPPATH = [setup(path, "/host/ppu/include"),
                               setup(path, "/psl1ght/target/include/SDL"),
                               setup(path, "/host/ppu/include/vorbis"),
@@ -1064,8 +1064,8 @@ c
                 return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useMinpspw():
                 return minpspw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
-	    elif usePs3():
-		return ps3(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
+            elif usePs3():
+                return ps3(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useLLVM():
                 return llvm(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             else:
@@ -1527,7 +1527,7 @@ else:
     # config.CheckPython()
     config.CheckOgg()
     if not config.CheckMpg123():
-	config.CheckMad()
+        config.CheckMad()
     #if config.HasRuby():
     #    config.CheckRuby()
     
@@ -1615,7 +1615,7 @@ for i in shared:
     if useMinpspw():
         env.AddPostAction(safe, psp_eboot)
     if usePs3():
-	env.AddPostAction(safe, ps3_pkg)
+        env.AddPostAction(safe, ps3_pkg)
     if useWii():
         env.AddPostAction(safe, wii_elf2dol)
     Default(safe)
