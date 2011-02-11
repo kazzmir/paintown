@@ -1527,7 +1527,9 @@ else:
     # config.CheckPython()
     config.CheckOgg()
     if not config.CheckMpg123():
-        config.CheckMad()
+	if useSDL(): 
+	    config.CheckMad()
+	    
     #if config.HasRuby():
     #    config.CheckRuby()
     
