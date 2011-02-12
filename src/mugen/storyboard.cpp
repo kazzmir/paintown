@@ -150,7 +150,7 @@ musicLoop(true){
                     std::string action;
                     simple >> action;
                     Ast::Section * section = parsed.findSection("begin action " + action);
-                    scene.layers[num]->setAnimation(Util::getAnimation(section,sprites, false));
+                    scene.layers[num]->setAnimation(Util::getAnimation(section, sprites, false));
                 }
             } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
                 int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
