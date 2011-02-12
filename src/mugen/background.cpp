@@ -1751,7 +1751,7 @@ clearColor(-1){
                             Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
                             // Strip it of any directory it might have
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
-                            self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
+                            // self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
                             Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
                         } 
@@ -1799,7 +1799,7 @@ clearColor(-1){
                             Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
                             // Strip it of any directory it might have
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
-                            self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
+                            // self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
                             Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } else if (simple == "debugbg"){
