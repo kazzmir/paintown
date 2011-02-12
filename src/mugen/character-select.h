@@ -1007,6 +1007,8 @@ class CharacterSelect {
 	virtual inline const Filesystem::RelativePath &getStageOld(){
 	    return grid.getStageHandler().getStage();
 	}
+
+        virtual MugenFont * getFont(int index) const;
 	
     private:
 	

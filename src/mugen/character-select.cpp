@@ -1172,7 +1172,7 @@ CharacterSelect::~CharacterSelect(){
     }
     // Cleanup fonts
     for (std::vector< MugenFont *>::iterator f = fonts.begin(); f != fonts.end(); ++f){
-	    if (*f) delete (*f);
+        if (*f) delete (*f);
     }
 
     for (vector<CharacterInfo*>::iterator it = characters.begin(); it != characters.end(); it++){
@@ -1530,9 +1530,10 @@ void CharacterSelect::load(){
 		    } catch (const Ast::Exception & e){
 			//ignore for now
 		    }
+                    /* -1 indicates no font */
                     if (index != -1){
                         /* should this be set even if the parse fails? */
-                        self.titleFont.setPrimary(self.fonts[index-1], bank, position);
+                        self.titleFont.setPrimary(self.getFont(index), bank, position);
                     }
 		} else if ( simple == "p1.face.offset"){
                     try{
@@ -1592,7 +1593,7 @@ void CharacterSelect::load(){
 		    }
                    
                     if (index > 0){
-                        self.player1Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+                        self.player1Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
                     }
 		} else if ( simple == "p2.name.offset"){
                     try{
@@ -1605,7 +1606,9 @@ void CharacterSelect::load(){
                     try{
                         int index, bank, position;
                         simple >> index >> bank >> position;
-                        self.player2Cursor.getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+                        if (index > 0){
+                            self.player2Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
+                        }
                     } catch (const Ast::Exception & e){
                     }
 		} else if ( simple == "stage.pos"){
@@ -1624,7 +1627,7 @@ void CharacterSelect::load(){
 		    }
 
                     if (index > 0){
-                        self.grid.getStageHandler().getFontHandler().setPrimary(self.fonts[index-1],bank,position);
+                        self.grid.getStageHandler().getFontHandler().setPrimary(self.getFont(index),bank,position);
                     }
 		} else if ( simple == "stage.active2.font"){
                     int index=0, bank=0, position=0;
@@ -1635,7 +1638,7 @@ void CharacterSelect::load(){
 		    }
 
                     if (index > 0){
-                        self.grid.getStageHandler().getFontHandler().setBlink(self.fonts[index-1],bank,position);
+                        self.grid.getStageHandler().getFontHandler().setBlink(self.getFont(index),bank,position);
                     }
 		} else if ( simple == "stage.done.font"){
                     int index=0, bank=0, position=0;
@@ -1645,7 +1648,7 @@ void CharacterSelect::load(){
 			//ignore for now
 		    }
                     if (index > 0){
-                        self.grid.getStageHandler().getFontHandler().setDone(self.fonts[index-1],bank,position);
+                        self.grid.getStageHandler().getFontHandler().setDone(self.getFont(index),bank,position);
                     }
 		}
 #if 0
@@ -1667,13 +1670,13 @@ void CharacterSelect::load(){
 	else if (head == "vs screen" ){
 	    class VersusWalker: public Ast::Walker{
             public:
-                VersusWalker(VersusScreen & self, std::vector<MugenFont *> & fonts):
+                VersusWalker(VersusScreen & self, const CharacterSelect & select):
                     self(self),
-		    fonts(fonts){
+		    select(select){
                     }
 
                 VersusScreen & self;
-		std::vector<MugenFont *> & fonts;
+                const CharacterSelect & select;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "time" ){
@@ -1753,7 +1756,9 @@ void CharacterSelect::load(){
 			} catch (const Ast::Exception & e){
 			    //ignore for now
 			}
-			self.getPlayer1Font().setPrimary(fonts[index-1],bank,position);
+                        if (index > 0){
+                            self.getPlayer1Font().setPrimary(select.getFont(index),bank,position);
+                        }
 		    } else if (simple == "p2.name.pos"){
 			int x, y;
 			try {
@@ -1769,13 +1774,13 @@ void CharacterSelect::load(){
 			    //ignore for now
 			}
                         if (index > 0){
-                            self.getPlayer2Font().setPrimary(fonts[index-1],bank,position);
+                            self.getPlayer2Font().setPrimary(select.getFont(index),bank,position);
                         }
 		    }
 		}
 	    };
 	    
-            VersusWalker walker(versus,fonts);
+            VersusWalker walker(versus, *this);
             section->walk(walker);
 	}
 	else if (head == "versusbgdef" ){
@@ -2545,4 +2550,15 @@ bool CharacterSelect::checkPlayerData(){
 	    break;
     }
     return false;
+}
+
+/* indexes start at 1 */
+MugenFont * CharacterSelect::getFont(int index) const {
+    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
+        return fonts[index - 1];
+    } else {
+        ostringstream out;
+        out << "No font for index " << index;
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
 }
