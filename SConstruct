@@ -1526,10 +1526,9 @@ else:
     config.CheckRTTI()
     # config.CheckPython()
     config.CheckOgg()
-    if not config.CheckMpg123():
-	if useSDL(): 
-	    config.CheckMad()
-	    
+    if (useSDL() and not config.CheckMad()) or not useSDL():
+        config.CheckMpg123()
+
     #if config.HasRuby():
     #    config.CheckRuby()
     
