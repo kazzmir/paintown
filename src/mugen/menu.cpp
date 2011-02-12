@@ -336,7 +336,7 @@ void MugenMenu::loadData(){
                                         menu.intro = new Mugen::Storyboard(Mugen::Util::findFile(Filesystem::RelativePath(menu.introFile)), true);
                                         Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
                                     } catch (const MugenException &ex){
-                                        throw MugenException( "Error loading intro storyboard: " + ex.getReason(), __FILE__, __LINE__);
+                                        throw MugenException( "Error loading intro storyboard " + menu.introFile + ": " + ex.getReason(), __FILE__, __LINE__);
                                     }
                                 }
                             } catch (const Ast::Exception & e){

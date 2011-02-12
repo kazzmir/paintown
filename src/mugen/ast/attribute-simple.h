@@ -19,6 +19,14 @@ public:
     line(line),
     column(column){
     }
+
+    AttributeSimple(int line, int column, const Identifier * name):
+    Attribute(Simple),
+    name(name),
+    value(NULL),
+    line(line),
+    column(column){
+    }
     
     AttributeSimple(const Identifier * name, const Value * value):
     Attribute(Simple),

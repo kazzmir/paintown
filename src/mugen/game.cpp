@@ -126,10 +126,14 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
     Filesystem::AbsolutePath file;
-    if (musicOverride.empty()){
-	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + stage->getMusic())).path());
-    } else {
-	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + musicOverride)).path());
+    try{
+        if (musicOverride.empty()){
+            Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + stage->getMusic())).path());
+        } else {
+            Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + musicOverride)).path());
+        }
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Could not load music because " << fail.getTrace() << std::endl;
     }
     /* Ignore volume for now */
     //Music::setVolume(stage->getMusicVolume());

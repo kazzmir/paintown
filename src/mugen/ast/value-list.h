@@ -14,12 +14,23 @@ class Walker;
 
 class ValueList: public Value {
 public:
-    ValueList(const std::list<Value*> & values):
-    values(values){
+    ValueList(int line, int column, const std::list<Value*> & values):
+    values(values),
+    line(line),
+    column(column){
         current_value = this->values.begin();
     }
 
-    ValueList(Value * value){
+    ValueList(const std::list<Value*> & values):
+    values(values),
+    line(-1),
+    column(-1){
+        current_value = this->values.begin();
+    }
+
+    ValueList(Value * value):
+    line(-1),
+    column(-1){
         values.push_back(value);
         current_value = this->values.begin();
     }
@@ -38,7 +49,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_VALUE_LIST;
+        *token << SERIAL_VALUE_LIST << line << column;
         for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
             const Value * value = *it;
             *token << value->serialize();
@@ -48,8 +59,11 @@ public:
 
     static ValueList * deserialize(const Token * token){
         std::list<Value*> values;
+        int line = -1, column = -1;
         try{
             TokenView view = token->view();
+            view >> line;
+            view >> column;
             while (true){
                 const Token * next;
                 view >> next;
@@ -57,7 +71,7 @@ public:
             }
         } catch (const TokenException & e){
         }
-        return new ValueList(values);
+        return new ValueList(line, column, values);
     }
 
     virtual Value * get(unsigned int index) const {
@@ -77,7 +91,7 @@ public:
             const Value * value = *it;
             copied.push_back((Value*) value->copy());
         }
-        return new ValueList(copied);
+        return new ValueList(line, column, copied);
     }
 
     using Element::operator==;
@@ -105,10 +119,20 @@ public:
     }
 
     using Value::operator>>;
+
+    void listfail() const {
+        if (line != -1 && column != -1){
+            std::ostringstream out;
+            out << "No more values in this value list at line " << line << " column " << column << ": " << toString();
+            throw Exception(out.str());
+        } else {
+            throw Exception("No more values in this value list: " + toString());
+        }
+    }
     
     virtual const Value & operator>>(const Value *& value) const {
         if (current_value == this->values.end()){
-            throw Exception("No more values in this value list: " + toString());
+            listfail();
         }
         value = *current_value;
         current_value++;
@@ -117,7 +141,7 @@ public:
     
     virtual const Value & operator>>(std::string & item) const {
         if (current_value == this->values.end()){
-            throw Exception("No more values in this value list: " + toString());
+            listfail();
         }
         Value * value = *current_value;
         *value >> item;
@@ -127,7 +151,7 @@ public:
 
     virtual const Value & operator>>(int & item) const {
         if (current_value == this->values.end()){
-            throw Exception("No more values in this value list: " + toString());
+            listfail();
         }
         Value * value = *current_value;
         *value >> item;
@@ -159,7 +183,7 @@ public:
 
     virtual const Value & operator>>(double & item) const {
         if (current_value == this->values.end()){
-            throw Exception("No more values in this value list: " + toString());
+            listfail();
         }
         Value * value = *current_value;
         *value >> item;
@@ -169,7 +193,7 @@ public:
 
     virtual const Value & operator>>(bool & item) const {
         if (current_value == this->values.end()){
-            throw Exception("No more values in this value list: " + toString());
+            listfail();
         }
         Value * value = *current_value;
         *value >> item;
@@ -223,6 +247,8 @@ public:
 protected:
     std::list<Value*> values;
     mutable std::list<Value*>::const_iterator current_value;
+    int line;
+    int column;
 };
 
 }

@@ -94,6 +94,12 @@ Ast::Attribute * makeAttribute(const Value & id, const Value & data){
     return object;
 }
 
+Ast::Attribute * makeAttributeWithInfo(const Value & line, const Value & id){
+    Ast::AttributeSimple * object = new Ast::AttributeSimple(getCurrentLine(line), getCurrentColumn(line), as<Ast::Identifier*>(id));
+    GC::save(object);
+    return object;
+}
+
 Ast::Attribute * makeAttribute(const Value & id){
     Ast::AttributeSimple * object = new Ast::AttributeSimple(as<Ast::Identifier*>(id));
     GC::save(object);
@@ -139,7 +145,7 @@ Ast::Value * makeValue(){
     return object;
 }
 
-Ast::Value * makeValueList(const Value & front, const Value & rest){
+Ast::Value * makeValueList(const Value & line, const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
     for (Value::iterator it = rest.getValues().begin(); it != rest.getValues().end(); it++){
@@ -153,7 +159,7 @@ Ast::Value * makeValueList(const Value & front, const Value & rest){
         }
     }
 
-    Ast::ValueList * object = new Ast::ValueList(values);
+    Ast::ValueList * object = new Ast::ValueList(getCurrentLine(line), getCurrentColumn(line), values);
     GC::save(object);
     return object;
 }
@@ -254,7 +260,7 @@ rules:
 	# characters = name s "," s filename
 	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); GC::save(as<Ast::Filename*>(value)); }}
 	filename_char = !"," !"\n" !"[" !<ascii 13> !"=" !";" .
-	attribute = id:identifier s "=" s &line_end_or_comment {{ value = makeAttribute(id); }}
+	attribute = line:<line> id:identifier s "=" s &line_end_or_comment {{ value = makeAttributeWithInfo(line, id); }}
               | line:<line> id:identifier s "=" s data:valuelist {{ value = makeAttribute(line, id, data); }}
 	          | line:<line> id:identifier s "=" s data:filename {{ value = makeAttribute(line, id, data); }}
 		      | id:identifier s "(" s index:number s ")" s "=" s data:valuelist {{ value = makeIndexedAttribute(id, index, data); }}
@@ -263,7 +269,7 @@ rules:
 	identifier = name ("." name)* {{ value = makeIdentifier($1,$2); }}
 	# identifier_list = identifier (s "," s filename)+ !(s "=" s value)
 	identifier_list = identifier (s "," s filename)+
-	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
+	valuelist = line:<line> value (s "," s value?)* {{ value = makeValueList(line, $2,$3); }}
 	value = string
 	      | date
 	      | number !letter !"-" {{ value = $1; }}

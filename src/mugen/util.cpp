@@ -864,9 +864,15 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             frame->attackCollision = clsn1Holder;
             frame->loopstart = setloop;
             /* Get sprite details */
-            int group, spriteNumber;
+            int group = 0, spriteNumber = 0;
             // Need to get the parsed data and populate these above items
-            values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;
+            try{
+                values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;
+            } catch (const Ast::Exception & fail){
+                std::ostringstream out;
+                out << "Could not parse animation because " << fail.getReason();
+                throw MugenException(out.str());
+            }
             string flip;
             string blend;
             try{

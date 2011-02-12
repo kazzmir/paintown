@@ -80,115 +80,115 @@ maxLayers(10),
 musicStop(false),
 musicLoop(true){
     for (int i = 0; i < maxLayers; ++i){
-	Layer *layer = new Layer();
-	layers.push_back(layer);
+        Layer *layer = new Layer();
+        layers.push_back(layer);
     }
     class SceneWalker: public Ast::Walker {
-	public:
-	    SceneWalker(Scene & scene, const Filesystem::AbsolutePath & file, SpriteMap & sprites, Ast::AstParse & parse):
-	    scene(scene),
-	    file(file),
-	    sprites(sprites),
-	    parsed(parse){
-	    }
+    public:
+        SceneWalker(Scene & scene, const Filesystem::AbsolutePath & file, SpriteMap & sprites, Ast::AstParse & parse):
+            scene(scene),
+            file(file),
+            sprites(sprites),
+            parsed(parse){
+            }
 
-	    virtual ~SceneWalker(){
-	    }
-	    
-	    Scene & scene;
-	    const Filesystem::AbsolutePath & file;
-	    SpriteMap & sprites;
-	    Ast::AstParse & parsed;
-	    
-	    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		if (simple == "fadein.time"){
-		    int time;
-		    simple >> time;
-		    scene.fader.setFadeInTime(time);
-		} else if (simple == "fadein.col"){
-		    int r=0,g=0,b=0;
-		    try{
-			simple >> r >> g >> b;
-		    } catch (const Ast::Exception & e){
-		    }
-		    scene.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
-		} else if (simple == "fadeout.time"){
-		    int time;
-		    simple >> time;
-		    scene.fader.setFadeOutTime(time);
-		} else if (simple == "fadeout.col"){
-		    int r=0,g=0,b=0;
-		    try {
-			simple >> r >> g >> b;
-		    } catch (const Ast::Exception & e){
-		    }
-		    scene.fader.setFadeOutColor(Bitmap::makeColor(r, g, b));
-		} else if (simple == "bg.name"){
-		    std::string name;
-		    simple >> name;
-		    scene.background = new Background(file, name);
-		} else if (simple == "clearcolor"){
-		    int r=0,g=0,b=0;
-		    try {
-			simple >> r >> g >> b;
-		    } catch (const Ast::Exception & e){
-		    }
-		    scene.clearColor = (r == -1 ? r : Bitmap::makeColor(r, g, b));
-		    scene.clearColorSet = true;
-		} else if (simple == "end.time"){
-		    simple >> scene.endTime;
-		} else if (simple == "layerall.pos"){
-		    try{
-			simple >> scene.defaultPosition.x;
-			simple >> scene.defaultPosition.y;
-			scene.defaultPositionSet = true;
-		    } catch (const Ast::Exception & e){
-		    }
-		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
-		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
-		    if (num >= 0 && num < scene.maxLayers){
-			std::string action;
-			simple >> action;
-			Ast::Section * section = parsed.findSection("begin action " + action);
-			scene.layers[num]->setAnimation(Util::getAnimation(section,sprites, false));
-		    }
-		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
-		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
-		    if (num >= 0 && num < scene.maxLayers){
-			int x=0,y=0;
-			try{
-			    simple >> x >> y;
-			} catch (Ast::Exception & e){
-			}
-			scene.layers[num]->setOffset(x, y);
-		    }
-		} else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
-		    int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
-		    if (num >= 0 && num < scene.maxLayers){
-			int time;
-			simple >> time;
-			scene.layers[num]->setStartTime(time);
-                        // Global::debug(0) << "Setting layer " << scene.layers[num] << " [" << num << "] start time to " << time << endl;
-		    }
-		} else if (simple == "bgm"){
-		    try{
-			std::string bgm;
-			simple >> bgm;
-			if (!bgm.empty()){
-			    scene.music = file.getDirectory().path() + "/" + bgm;
-			}
-		    } catch (const Ast::Exception & e){
-			scene.musicStop = true;
-		    }
-		} else if (simple == "bgm.loop"){
-		    try{
-			simple >> scene.musicLoop;
-		    } catch (const Ast::Exception & e){
-		    }
-		} else {
-			Global::debug(0) << "Unhandled option in Scene Section: " << simple.toString();
-		}
-	    }
+        virtual ~SceneWalker(){
+        }
+
+        Scene & scene;
+        const Filesystem::AbsolutePath & file;
+        SpriteMap & sprites;
+        Ast::AstParse & parsed;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == "fadein.time"){
+                int time;
+                simple >> time;
+                scene.fader.setFadeInTime(time);
+            } else if (simple == "fadein.col"){
+                int r=0,g=0,b=0;
+                try{
+                    simple >> r >> g >> b;
+                } catch (const Ast::Exception & e){
+                }
+                scene.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+            } else if (simple == "fadeout.time"){
+                int time;
+                simple >> time;
+                scene.fader.setFadeOutTime(time);
+            } else if (simple == "fadeout.col"){
+                int r=0,g=0,b=0;
+                try {
+                    simple >> r >> g >> b;
+                } catch (const Ast::Exception & e){
+                }
+                scene.fader.setFadeOutColor(Bitmap::makeColor(r, g, b));
+            } else if (simple == "bg.name"){
+                std::string name;
+                simple >> name;
+                scene.background = new Background(file, name);
+            } else if (simple == "clearcolor"){
+                int r=0,g=0,b=0;
+                try {
+                    simple >> r >> g >> b;
+                } catch (const Ast::Exception & e){
+                }
+                scene.clearColor = (r == -1 ? r : Bitmap::makeColor(r, g, b));
+                scene.clearColorSet = true;
+            } else if (simple == "end.time"){
+                simple >> scene.endTime;
+            } else if (simple == "layerall.pos"){
+                try{
+                    simple >> scene.defaultPosition.x;
+                    simple >> scene.defaultPosition.y;
+                    scene.defaultPositionSet = true;
+                } catch (const Ast::Exception & e){
+                }
+            } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
+                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
+                if (num >= 0 && num < scene.maxLayers){
+                    std::string action;
+                    simple >> action;
+                    Ast::Section * section = parsed.findSection("begin action " + action);
+                    scene.layers[num]->setAnimation(Util::getAnimation(section,sprites, false));
+                }
+            } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
+                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
+                if (num >= 0 && num < scene.maxLayers){
+                    int x=0,y=0;
+                    try{
+                        simple >> x >> y;
+                    } catch (Ast::Exception & e){
+                    }
+                    scene.layers[num]->setOffset(x, y);
+                }
+            } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
+                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
+                if (num >= 0 && num < scene.maxLayers){
+                    int time;
+                    simple >> time;
+                    scene.layers[num]->setStartTime(time);
+                    // Global::debug(0) << "Setting layer " << scene.layers[num] << " [" << num << "] start time to " << time << endl;
+                }
+            } else if (simple == "bgm"){
+                try{
+                    std::string bgm;
+                    simple >> bgm;
+                    if (!bgm.empty()){
+                        scene.music = file.getDirectory().path() + "/" + bgm;
+                    }
+                } catch (const Ast::Exception & e){
+                    scene.musicStop = true;
+                }
+            } else if (simple == "bgm.loop"){
+                try{
+                    simple >> scene.musicLoop;
+                } catch (const Ast::Exception & e){
+                }
+            } else {
+                Global::debug(0) << "Unhandled option in Scene Section: " << simple.toString();
+            }
+        }
     };
 
     SceneWalker walker(*this, file, sprites, parsed);
