@@ -172,8 +172,6 @@ test/mugen/reader.cpp
 test/mugen/characterhud.cpp
 test/mugen/section.cpp
 test/mugen/menu.cpp
-test/mugen/option-arcade.cpp
-test/mugen/option-versus.cpp
 test/mugen/option-options.cpp
 test/util/loadpng/loadpng.c
 test/util/loadpng/regpng.c
