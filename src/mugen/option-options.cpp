@@ -303,7 +303,7 @@ public:
     }
 };
 
-OptionOptions::OptionOptions( const std::string &name ) throw( LoadException ){
+OptionOptions::OptionOptions( const std::string &name ){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to Options");
     }
@@ -600,6 +600,53 @@ void OptionOptions::doOptions(MugenFont & font, int x, int y, const Bitmap & bmp
 	option->render(font, x, y+mod, bmp);
 	mod+=20;
     }
+}
+
+OptionArcade::OptionArcade(const string & name){
+    if (name.empty()){
+	throw LoadException(__FILE__, __LINE__, "No name given to versus");
+    }
+
+    this->setText(name);
+}
+
+OptionArcade::~OptionArcade(){
+	// Nothing
+}
+
+static void runGame(const PlayerType & player, GameType kind){
+    Game versus(player, kind, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
+    versus.run();
+}
+
+void OptionArcade::executeOption(const Mugen::PlayerType & player, bool &endGame){
+    /* Get default motif system.def */
+    /*
+    Game versus(player, Arcade, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
+    versus.run();
+    */
+    runGame(player, Arcade);
+}
+
+OptionVersus::OptionVersus( const std::string &name ){
+    if (name.empty()){
+	throw LoadException(__FILE__, __LINE__, "No name given to versus");
+    }
+    this->setText(name);
+}
+
+OptionVersus::~OptionVersus(){
+	// Nothing
+}
+
+void OptionVersus::executeOption(const Mugen::PlayerType & player, bool &endGame){
+    /* Get motif system.def */
+    /*
+    Game versus(player, Versus, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));;
+    versus.run();
+    */
+
+    runGame(player, Versus);
 }
 
 }

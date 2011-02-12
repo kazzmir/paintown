@@ -1,8 +1,7 @@
 #ifndef _paintown_mugen_options_h
 #define _paintown_mugen_options_h
 
-#include "mugen/menu.h"
-#include "util/load_exception.h"
+#include "menu.h"
 
 #include <vector>
 #include <string>
@@ -22,20 +21,18 @@ public:
     void executeOption(const Mugen::PlayerType &, bool & endGame);
 
 private:
-	    
 };
 
 /*! Handles key reconfiguration */
 class OptionVersus: public Mugen::ItemOption {
 public:
-    OptionVersus(const std::string &name) throw (LoadException);
+    OptionVersus(const std::string &name);
     virtual ~OptionVersus();
     void executeOption(const Mugen::PlayerType &, bool & endGame);
     
 private:
-	    
 };
-   
+
 class Option{
 public:
     Option();
@@ -65,7 +62,7 @@ private:
 /*! Handles Mugen Options */
 class OptionOptions: public ItemOption {
 public:
-    OptionOptions(const std::string &name) throw (LoadException);
+    OptionOptions(const std::string &name);
     
     virtual ~OptionOptions();
     void executeOption(const Mugen::PlayerType &, bool & endGame);
