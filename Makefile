@@ -12,7 +12,7 @@ time:
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
 test:
-	@scons -j `python misc/cores.py` test-all
+	@scons --keep-going -j `python misc/cores.py` test-all
 	@python misc/gnome-notify "Finished compiling" 2>/dev/null
 	@-rm /tmp/token*
 
