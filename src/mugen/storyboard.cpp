@@ -426,12 +426,12 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
     }
 
     std::vector< Scene * >::iterator sceneIterator = scenes.begin() + startscene;
+    (*sceneIterator)->startMusic();
     
     while (!quit){
         bool draw = false;
 
         Scene *scene = *sceneIterator;
-	scene->startMusic();
         if (Global::speed_counter > 0){
 
             // runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;//(double) 90 / (double) 60;
@@ -503,6 +503,7 @@ void Storyboard::run(const Bitmap &bmp, bool repeat){
                     }
                     scene = *sceneIterator;
                     scene->reset();
+                    scene->startMusic();
                 }
             }
         }
