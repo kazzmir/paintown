@@ -127,19 +127,19 @@ public:
 
     static int lowerCase( int c ){ return tolower(c); }
 
-    std::string downcase(std::string str){
+    static std::string downcase(std::string str){
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);
         return str;
     }
 
-    Section * findSection(const std::string & find){
-        for (std::list<Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+    Section * findSection(const std::string & find) const {
+        for (std::list<Section*>::const_iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
             Section * section = *section_it;
             if (downcase(section->getName()) == downcase(find)){
                 return section;
             }
         }
-        throw Exception("Could not find section " + find);
+        throw Exception("Could not find section '" + find + "'");
     }
 
 protected:

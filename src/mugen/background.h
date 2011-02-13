@@ -10,6 +10,9 @@
 #include "util/gui/rectarea.h"
 #include "ast/all.h"
 #include "util/bitmap.h"
+#include "util/pointer.h"
+
+namespace PaintownUtil = ::Util;
 
 namespace Mugen{
     
@@ -253,7 +256,7 @@ class BackgroundElement: public Element {
 /*! Normal element */
 class NormalElement : public BackgroundElement {
     public:
-	NormalElement(const std::string & name, Ast::Section * data, Mugen::SpriteMap & sprites);
+	NormalElement(const std::string & name, Ast::Section * data, const Mugen::SpriteMap & sprites);
 	virtual ~NormalElement();
 	virtual void act();
 	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
@@ -267,26 +270,21 @@ class NormalElement : public BackgroundElement {
 
 /*! Animation Element */
 class AnimationElement : public BackgroundElement {
-    public:
-	AnimationElement(std::map< int, MugenAnimation * > & animations, const std::string & name, Ast::Section * data);
-	virtual ~AnimationElement();
-	virtual void act();
-	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
-	virtual inline void setAnimation(int animation){
-	    this->animation = animation;
-	}
-    private:
-	//! Animation Based
-	int animation;
-	
-	//! Animation list
-	std::map< int, MugenAnimation * > & animations;
+public:
+    AnimationElement(const Ast::AstParse & parse, const std::string & name, Ast::Section * data, const Mugen::SpriteMap & sprites);
+
+    virtual ~AnimationElement();
+    virtual void act();
+    virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
+    virtual void setAnimation(MugenAnimation * animation);
+private:
+    PaintownUtil::ClassPointer<MugenAnimation> animation;
 };
 
 /*! Parallax Element */
 class ParallaxElement : public BackgroundElement {
     public:
-	ParallaxElement(const std::string & name, Ast::Section * data, Mugen::SpriteMap & sprites);
+	ParallaxElement(const std::string & name, Ast::Section * data, const Mugen::SpriteMap & sprites);
 	virtual ~ParallaxElement();
 	virtual void act();
 	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
@@ -417,6 +415,8 @@ class Background{
     public:
 	//! Pass in the file that has the background and the base name ie 'BG'
 	Background(const Filesystem::AbsolutePath & file, const std::string &header);
+	Background(const Ast::AstParse & parse, const std::string & header, const SpriteMap & sprites);
+
 	virtual ~Background();
 	
 	virtual void act();
@@ -449,11 +449,16 @@ class Background{
 	//! Sprite file
 	std::string spriteFile;
 	
-	//! Sprite map
+        /* these are the sprites that come from a bgdef like
+         * [BGdef]
+         * spr = stages/venice.sff
+         *
+         * the background will own these sprites and should delete them.
+         */
 	Mugen::SpriteMap sprites;
 	
 	//! Animations
-	std::map< int, MugenAnimation * > animations;
+	// std::map< int, MugenAnimation * > animations;
 	
 	//! Debug State
 	bool debug;

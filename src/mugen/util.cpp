@@ -692,134 +692,19 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
     return stuff;
 }
 
-/* replaced by background.cpp */
-#if 0
-MugenBackground *Mugen::Util::getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites ){
-    MugenBackground *temp = new MugenBackground(ticker);
-    std::string head = section->getName();
-    head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
-    temp->name = head;
-    Global::debug(1) << "Found background: " << temp->name << endl;
-    for (list<Ast::Attribute*>::const_iterator attribute_it = section->getAttributes().begin(); attribute_it != section->getAttributes().end(); attribute_it++){
-        Ast::Attribute * attribute = *attribute_it;
-        if (attribute->getKind() == Ast::Attribute::Simple){
-            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
-            if (*simple == "type"){
-                std::string type;
-                *simple >> type;
-                type = Mugen::Util::removeSpaces(type);
-                if (type == "normal" )temp->type = Normal;
-                else if( type == "anim" )temp->type = Anim;
-                else if( type == "parallax" )temp->type = Parallax;
-                else if( type == "dummy" )temp->type = Dummy;
-            } else if (*simple == "spriteno"){
-                if (temp->type != Anim){
-                    *simple >> temp->groupNumber;
-                    *simple >> temp->imageNumber;
-                }
-            } else if (*simple == "actionno"){
-                *simple >> temp->actionno;
-            } else if (*simple == "id"){
-                *simple >> temp->id;
-            } else if (*simple == "layerno"){
-                *simple >> temp->layerno;
-            } else if (*simple == "start"){
-                *simple >> temp->startx;
-                *simple >> temp->starty;
-            } else if (*simple == "delta"){
-                *simple >> temp->deltax;
-                try{
-                    /* the y part is not always given */
-                    *simple >> temp->deltay;
-                } catch (const Ast::Exception & e){
-                }
-            } else if (*simple == "trans"){
-                std::string type;
-                *simple >> type;
-                type = Mugen::Util::removeSpaces(type);
-                if( type == "none" )temp->effects.trans = NONE;
-                else if( type == "add" )temp->effects.trans =  ADD;
-                else if( type == "add1" )temp->effects.trans = ADD1;
-                else if( type == "sub" )temp->effects.trans = SUB;
-                else if( type == "addalpha" )temp->effects.trans = ADDALPHA;
-            } else if (*simple == "alpha"){
-                *simple >> temp->effects.alphalow;
-                *simple >> temp->effects.alphahigh;
-            } else if (*simple == "mask"){
-                *simple >> temp->mask;
-            } else if (*simple == "tile"){
-                try{
-                    *simple >> temp->tilex;
-                    Global::debug(2) << "Tile x is " << temp->tilex << endl;
-                    *simple >> temp->tiley;
-                    Global::debug(2) << "Tile y is " << temp->tiley << endl;
-                } catch (const Ast::Exception & e){
-                }
-            } else if (*simple == "tilespacing"){
-                try{
-                    *simple >> temp->tilespacingx;
-                    *simple >> temp->tilespacingy;
-                } catch (const Ast::Exception & e){
-                }
-            } else if (*simple == "window"){
-                MugenArea area;
-                *simple >> area.x1;
-                *simple >> area.y1;
-                *simple >> area.x2;
-                *simple >> area.y2;
-                temp->window = area;
-            } else if (*simple == "windowdelta"){
-                *simple >> temp->windowdeltax;
-                *simple >> temp->windowdeltay;
-            } else if (*simple == "xscale"){
-                // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
-                *simple >> temp->xscaletop;
-                *simple >> temp->xscalebot;
-            } else if (*simple == "width"){
-                // You should only use either xscale or width but not both  (According to kfm.def not sure what to do with width)
-                /* 
-                   Not sure
-                 *content->getNext() >> temp->xscaletop;
-                 *content->getNext() >> temp->xscalebot;
-                 */
-            } else if (*simple == "yscalestart"){
-                *simple >> temp->yscalestart;
-            } else if (*simple == "yscaledelta"){
-                *simple >> temp->yscaledelta;
-            } else if (*simple == "positionlink"){
-                *simple >> temp->positionlink;
-            } else if (*simple == "velocity"){
-                try{
-                    *simple >> temp->velocityx;
-                    *simple >> temp->velocityy;
-                } catch (const Ast::Exception & e){
-                }
-            } else if (*simple == "sin.x"){
-                *simple >> temp->sinx_amp;
-                try{
-                    *simple >> temp->sinx_period;
-                    *simple >> temp->sinx_offset;
-                } catch (const Ast::Exception & e){
-                }
-            } else if (*simple == "sin.y"){
-                *simple >> temp->siny_amp;
-                try{
-                    *simple >> temp->siny_period;
-                    *simple >> temp->siny_offset;
-                } catch (const Ast::Exception & e){
-                }
-            } else throw MugenException( "Unhandled option in BG " + head + " Section: " + simple->toString());
-        }
+MugenSprite * Mugen::Util::getSprite(const Mugen::SpriteMap & sprites, int group, int item){
+    Mugen::SpriteMap::const_iterator map = sprites.find(group);
+    if (map == sprites.end()){
+        return NULL;
     }
-    Global::debug(2) << "Background " << temp->id << " has tilex " << temp->tilex << endl;
-    // Do some fixups and necessary things
-    if ( temp->groupNumber != -1 && temp->imageNumber != -1){
-	temp->sprite = sprites[(unsigned int)temp->groupNumber][(unsigned int)temp->imageNumber];
+
+    const Mugen::GroupMap & groupMap = (*map).second;
+    Mugen::GroupMap::const_iterator it = groupMap.find(item);
+    if (it != groupMap.end()){
+        return (*it).second;
     }
-    
-    return temp;
+    return NULL;
 }
-#endif
 
 MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites, bool mask){
     MugenAnimation *animation = new MugenAnimation();
@@ -852,20 +737,6 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
         };
 
         Expect expected;
-
-        MugenSprite * getSprite(int group, int item){
-            Mugen::SpriteMap::const_iterator map = sprites.find(group);
-            if (map == sprites.end()){
-                return 0;
-            }
-            
-            const Mugen::GroupMap & groupMap = (*map).second;
-            Mugen::GroupMap::const_iterator it = groupMap.find(item);
-            if (it != groupMap.end()){
-                return (*it).second;
-            }
-            return 0;
-        }
 
         /* callbacks */
         virtual void onValueList(const Ast::ValueList & values){
@@ -935,7 +806,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             }
 
             // Add sprite
-            frame->sprite = getSprite(group, spriteNumber);
+            frame->sprite = getSprite(sprites, group, spriteNumber);
             if (frame->sprite == 0){
                 Global::debug(1) << "No sprite for group " << group << " number " << spriteNumber << endl;
             }

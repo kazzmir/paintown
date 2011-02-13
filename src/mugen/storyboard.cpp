@@ -1,4 +1,4 @@
-#include "mugen/storyboard.h"
+#include "storyboard.h"
 
 #include "util/bitmap.h"
 #include "util/resource.h"
@@ -126,7 +126,8 @@ musicLoop(true){
             } else if (simple == "bg.name"){
                 std::string name;
                 simple >> name;
-                scene.background = new Background(file, name);
+                // scene.background = new Background(file, name);
+                scene.background = new Background(parsed, name, sprites);
             } else if (simple == "clearcolor"){
                 int r=0,g=0,b=0;
                 try {
@@ -357,7 +358,7 @@ startscene(0){
                     if (simple == "spr"){
 			std::string temp;
                         simple >> temp;
-                        Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
+                        Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
                     } else if (simple == "startscene"){
                         simple >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;

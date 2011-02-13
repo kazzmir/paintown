@@ -325,19 +325,19 @@ const BackgroundElement & BackgroundElement::operator=(const BackgroundElement &
 }
 
 
-NormalElement::NormalElement(const string & name, Ast::Section * data, Mugen::SpriteMap & sprites):
+NormalElement::NormalElement(const string & name, Ast::Section * data, const Mugen::SpriteMap & sprites):
 BackgroundElement(name, data),
-sprite(0){
+sprite(NULL){
 
     class Walker: public Ast::Walker{
     public:
-        Walker(NormalElement & self, Mugen::SpriteMap & sprites):
+        Walker(NormalElement & self, const Mugen::SpriteMap & sprites):
             self(self),
             sprites(sprites){
             }
 
         NormalElement & self;
-        Mugen::SpriteMap & sprites;
+        const Mugen::SpriteMap & sprites;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "spriteno"){
@@ -346,12 +346,13 @@ sprite(0){
                     simple >> group >> sprite;
                 } catch (const Ast::Exception & e){
                 }
-                if (sprites[group][sprite] == NULL){
+                MugenSprite * found = Util::getSprite(sprites, group, sprite);
+                if (found == NULL){
                     ostringstream out;
                     out << simple.getLine() << ":" << simple.getColumn() << " spriteno: No sprite for " << group << ", " << sprite;
                     throw MugenException(out.str(), __FILE__, __LINE__);
                 }
-                self.setSprite(sprites[group][sprite]);
+                self.setSprite(found);
             }
         }
     };
@@ -630,30 +631,42 @@ void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp, Bitmap::
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
-AnimationElement::AnimationElement(std::map< int, MugenAnimation * > & animations, const string & name, Ast::Section * data):
+AnimationElement::AnimationElement(const Ast::AstParse & parse, const string & name, Ast::Section * data, const Mugen::SpriteMap & sprites):
 BackgroundElement(name, data),
-animation(0),
-animations(animations){
-
+animation(0){
     class Walker: public Ast::Walker{
     public:
-        Walker(AnimationElement & self):
-            self(self){
+        Walker(AnimationElement & self, const Ast::AstParse & parse, const Mugen::SpriteMap & sprites):
+            self(self),
+            parse(parse),
+            sprites(sprites){
             }
 
         AnimationElement & self;
+        const Ast::AstParse & parse;
+        const Mugen::SpriteMap & sprites;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "actionno"){
-                int action;
+                int action = 0;
                 simple >> action;
-                self.setAnimation(action);
+                std::ostringstream all;
+                all << "begin action " << action;
+                Ast::Section * section = parse.findSection(all.str());
+                if (section == NULL){
+                    throw MugenException("No action for actionno " + action, __FILE__, __LINE__);
+                }
+                self.setAnimation(Util::getAnimation(section, sprites, false));
             }
         }
     };
 
-    Walker walker(*this);
+    Walker walker(*this, parse, sprites);
     data->walk(walker);
+}
+    
+void AnimationElement::setAnimation(MugenAnimation * animation){
+    this->animation = animation;
 }
 
 AnimationElement::~AnimationElement(){
@@ -663,7 +676,9 @@ void AnimationElement::act(){
     if (!getEnabled()){
         return;
     }
-    animations[animation]->logic();
+    if (animation != NULL){
+        animation->logic();
+    }
     BackgroundElement::act();
     getSinX().act();
     getSinY().act();
@@ -689,11 +704,11 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp, Bitma
 
     Tiler tiler(getTile(), currentX, currentY, addw, addh, 0, 0, 0, 0, bmp.getWidth(), bmp.getHeight());
 
-    MugenAnimation * ani = animations[animation];
-
-    while (tiler.hasMore()){
-        Point where = tiler.nextPoint();
-        ani->render(where.x, where.y, bmp, getEffects());
+    if (animation != NULL){
+        while (tiler.hasMore()){
+            Point where = tiler.nextPoint();
+            animation->render(where.x, where.y, bmp, getEffects());
+        }
     }
 
 #if 0
@@ -769,7 +784,7 @@ void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp, Bitma
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
-ParallaxElement::ParallaxElement(const string & name, Ast::Section * data, Mugen::SpriteMap & sprites):
+ParallaxElement::ParallaxElement(const string & name, Ast::Section * data, const Mugen::SpriteMap & sprites):
 BackgroundElement(name, data),
 sprite(0),
 xscaleX(0),
@@ -779,13 +794,13 @@ yscaleDelta(0){
 
     class Walker: public Ast::Walker{
     public:
-        Walker(ParallaxElement & self, Mugen::SpriteMap & sprites):
+        Walker(ParallaxElement & self, const Mugen::SpriteMap & sprites):
             self(self),
             sprites(sprites){
             }
 
         ParallaxElement & self;
-        Mugen::SpriteMap & sprites;
+        const Mugen::SpriteMap & sprites;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "spriteno"){
@@ -794,7 +809,13 @@ yscaleDelta(0){
                     simple >> group >> sprite;
                 } catch (const Ast::Exception & e){
                 }
-                self.setSprite(sprites[group][sprite]);
+                MugenSprite * found = Util::getSprite(sprites, group, sprite);
+                if (found == NULL){
+                    ostringstream out;
+                    out << simple.getLine() << ":" << simple.getColumn() << " spriteno: No sprite for " << group << ", " << sprite;
+                    throw MugenException(out.str(), __FILE__, __LINE__);
+                }
+                self.setSprite(found);
             } else if (simple == "xscale"){
                 double x=0, y=0;
                 try{
@@ -1115,7 +1136,7 @@ enum ElementType{
     Dummy,
 };
 
-static BackgroundElement *getElement(Ast::Section *section, Mugen::SpriteMap &sprites, std::map< int, MugenAnimation * > & animations){
+static BackgroundElement *getElement(Ast::Section * section, const Mugen::SpriteMap & sprites, const Ast::AstParse & parsed){
     std::string head = section->getName();
     head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
     std::string name = head;
@@ -1127,7 +1148,7 @@ static BackgroundElement *getElement(Ast::Section *section, Mugen::SpriteMap &sp
     if (type == "normal"){
         return new NormalElement(name, section, sprites);
     } else if (type == "anim"){
-        return new AnimationElement(animations, name, section);
+        return new AnimationElement(parsed, name, section, sprites);
     } else if (type == "parallax"){
         return new ParallaxElement(name, section, sprites);
     } else if (type == "dummy"){
@@ -1174,6 +1195,9 @@ dontReset(false){
                 }
                 self.timeStart = start;
                 self.endTime = end;
+                if (self.endTime < self.timeStart){
+                    self.endTime = self.timeStart;
+                }
                 if (loop != -2){
                     self.loopTime = loop;
                     self.dontReset = true;
@@ -1594,35 +1618,50 @@ class VisibleController : public Controller{
 };
 
 /*! Change current animation of Background to given value */
-class AnimationController : public Controller{
+class AnimationController: public Controller {
     public:
-        AnimationController(const std::string & name, Ast::Section * data, BackgroundController & control, Background & background):
+        AnimationController(const std::string & name, Ast::Section * data, const Ast::AstParse & parse, BackgroundController & control, Background & background, const SpriteMap & sprites):
 	Controller(name,data,control,background),
-	animation(0){
+	animation(NULL){
 	    class Walker: public Ast::Walker{
 	    public:
-		Walker(AnimationController & self):
-		    self(self){
-		    }
+		Walker(AnimationController & self, const Ast::AstParse & parse, const SpriteMap & sprites):
+                self(self),
+                parse(parse),
+                sprites(sprites){
+                }
+
 		AnimationController & self;
+                const Ast::AstParse & parse;
+                const SpriteMap & sprites;
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
-			simple >> self.animation;
+                        int action = 0;
+                        simple >> action;
+                        std::ostringstream all;
+                        all << "begin action " << action;
+                        self.animation = Util::getAnimation(parse.findSection(all.str()), sprites, false);
+
 		    } 
 		}
 	    };
-	    Walker walker(*this);
+
+	    Walker walker(*this, parse, sprites);
 	    data->walk(walker);
 	}
+
         virtual ~AnimationController(){
 	}
+
         virtual void act(){
 	    if ( ticker >= timeStart && ticker <= endTime){
-		for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
-		    BackgroundElement *element = *i;
-		    ((AnimationElement *)element)->setAnimation(animation);
-		}
+                if (animation != NULL){
+                    for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
+                        BackgroundElement *element = *i;
+                        ((AnimationElement *)element)->setAnimation(new MugenAnimation(*animation));
+                    }
+                }
 	    }
 	    if (loopTime != -1){
 		if (ticker == loopTime){
@@ -1631,8 +1670,9 @@ class AnimationController : public Controller{
 	    }
 	    ticker++;
 	}
+
     private:
-	int animation;
+        PaintownUtil::ClassPointer<MugenAnimation> animation;
 };
 
 /* Background controller which handles all individual controllers under it */
@@ -1736,7 +1776,7 @@ clearColor(-1){
             std::string tempHeader = Mugen::Util::fixCase(header);
             Global::debug(2) << "Checking head: " << head << " for Header: " << tempHeader << endl;
             // Lets check if this is a normal def so we can get our sprite file, otherwise treat it as a normal background */
-            if ( head == "files") {
+            if (head == "files"){
                 class SceneDefWalker: public Ast::Walker{
                 public:
                     SceneDefWalker(Background & self, Mugen::SpriteMap & sprites):
@@ -1760,7 +1800,7 @@ clearColor(-1){
                 };
                 SceneDefWalker walker(*this, sprites);
                 section->walk(walker);
-            } else if ( head == "scenedef") {
+            } else if (head == "scenedef") {
                 // Lets check if this is a storyboard so we can get our sprite file, otherwise treat it as a normal background */
                 class SceneDefWalker: public Ast::Walker{
                 public:
@@ -1768,8 +1808,10 @@ clearColor(-1){
                         self(self),
                         sprites(sprites){
                         }
+
                     Background & self;
                     Mugen::SpriteMap & sprites;
+
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
                             simple >> self.spriteFile;
@@ -1824,7 +1866,7 @@ clearColor(-1){
                 // This our background data definitions
                 /* probably need a better regex here */
             } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " .*")){
-                BackgroundElement * element = getElement(*section_it, sprites, animations);
+                BackgroundElement * element = getElement(*section_it, sprites, parsed);
 
                 if (element != NULL){
                     // Background or Forgeground?
@@ -1843,6 +1885,7 @@ clearColor(-1){
                     }
                     priorElement = element;
                 }
+#if 0
             } else if (PaintownUtil::matchRegex(head, "begin *action")){
                 /* This creates the animations. It differs from character animation since
                  * these are included in the stage.def file with the other defaults
@@ -1852,6 +1895,7 @@ clearColor(-1){
                 istringstream out(head);
                 out >> h;
                 animations[h] = Mugen::Util::getAnimation(section, sprites, false);
+#endif
             } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrldef")){
                 // Grabs the Background Controller Definition so that we can go through the child controllers
                 head.replace(0,10,"");
@@ -1880,7 +1924,164 @@ clearColor(-1){
                 // Our Controller
                 Controller *controller=0;
                 if (type == "anim"){
-                    controller = new AnimationController(head,section,*control,*this);
+                    controller = new AnimationController(head,section, parsed, *control,*this, sprites);
+                } else if (type == "enabled" || type == "enable"){
+                    controller = new EnabledController(head,section,*control,*this);
+                } else if (type == "null"){
+                    controller = new NullController(head,section,*control,*this);
+                } else if (type == "posadd"){
+                    controller = new PosAddController(head,section,*control,*this);
+                } else if (type == "posset"){
+                    controller = new PosSetController(head,section,*control,*this);
+                } else if (type == "sinx"){
+                    controller = new SinXController(head,section,*control,*this);
+                } else if (type == "siny"){
+                    controller = new SinYController(head,section,*control,*this);
+                } else if (type == "veladd"){
+                    controller = new VelAddController(head,section,*control,*this);
+                } else if (type == "velset"){
+                    controller = new VelSetController(head,section,*control,*this);
+                } else if (type == "visible"){
+                    controller = new VisibleController(head,section,*control,*this);
+                } else {
+                    ostringstream out;
+                    out << "Unknown background type '" << type << "' in " << head;
+                    //throw MugenException(out.str());
+                    Global::debug(0) << out.str() << __FILE__ << __LINE__ << endl;
+                }
+                // Finally add it to our background controller
+                control->addController(controller);
+            }
+        }
+    } catch (const MugenException & fail){
+        ostringstream out;
+        out << "Error while parsing " << file.path() << " " << fail.getFullReason();
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+
+    destroyRaw(sprites);
+}
+
+Background::Background(const Ast::AstParse & parsed, const string & header, const Mugen::SpriteMap & sprites):
+header(header),
+debug(false),
+clearColor(-1){
+    // for linked position in backgrounds
+    BackgroundElement * priorElement = NULL;
+    /* use the sprites that are passed in unless the background has a def
+     * section that specifies its own sprites
+     */
+    bool ownSprites = false;
+    
+    try{
+        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+            Ast::Section * section = *section_it;;
+            std::string head = section->getName();
+            head = Mugen::Util::fixCase(head);
+            std::string tempHeader = Mugen::Util::fixCase(header);
+            Global::debug(2) << "Checking head: " << head << " for Header: " << tempHeader << endl;
+            if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "def.*")){
+                class BackgroundDefWalker: public Ast::Walker {
+                public:
+                    BackgroundDefWalker(Background & self, Mugen::SpriteMap & sprites, bool & ownSprites):
+                    self(self),
+                    sprites(sprites),
+                    ownSprites(ownSprites){
+                    }
+
+                    Background & self;
+                    Mugen::SpriteMap & sprites;
+                    bool & ownSprites;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "spr"){
+                            simple >> self.spriteFile;
+                            Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
+                            // Strip it of any directory it might have
+                            Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
+                            // self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
+                            Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
+                            // Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            ownSprites = true;
+                        } else if (simple == "debugbg"){
+                            simple >> self.debug;
+                        } else if (simple == "bgclearcolor"){
+                            int r=0, g=0, b=0;
+                            try{
+                                simple >> r >> g >> b;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.clearColor = Bitmap::makeColor(r,g,b);
+                        } else {
+                            //throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
+                            Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
+                        }
+                    }
+                };
+                BackgroundDefWalker walker(*this, this->sprites, ownSprites);
+                section->walk(walker);
+                // This our background data definitions
+                /* probably need a better regex here */
+            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " .*")){
+                BackgroundElement * element = NULL;
+
+                if (ownSprites){
+                    element = getElement(*section_it, this->sprites, parsed);
+                } else {
+                    element = getElement(*section_it, sprites, parsed);
+                }
+
+                if (element != NULL){
+                    // Background or Forgeground?
+                    if (element->getLayer() == Element::Background){
+                        backgrounds.push_back(element);
+                    } else if (element->getLayer() == Element::Foreground){
+                        foregrounds.push_back(element);
+                    }
+                    // Lets check if this element is linked to the prior one
+                    if (element->getPositionLink()){
+                        // Ensure prior exists, usually won't happen though as you can't link to any objects if there are non preceeding this one
+                        if (priorElement){
+                            // use prior element to set the current elements properties
+                            priorElement->setLink(element);
+                        }
+                    }
+                    priorElement = element;
+                }
+            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrldef")){
+                // Grabs the Background Controller Definition so that we can go through the child controllers
+                head.replace(0,10,"");
+                BackgroundController *temp = new BackgroundController(head, section, *this);
+                controllers.push_back(temp);
+            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrl")){
+                if (controllers.empty()){
+                    /* This is a hack to get mugen to do some fancy controlling in a regular
+                     * game to accomplish stage fatalities and other tricks
+                     * Maybe we can support this later, for now just ignore
+                     */
+                    Global::debug(1) << "Found a BgCtrl without a parent Def definition... its not a bowl!" << endl;
+                    continue;
+                }
+                // else we got ourselves some controls... under the last controller added
+                BackgroundController *control = controllers.back();
+
+                // Get name
+                head.replace(0,7,"");
+
+                // Check type
+                string type;
+                *section->findAttribute("type") >> type;
+                type = Util::fixCase(type);
+
+                // Our Controller
+                Controller *controller=0;
+                if (type == "anim"){
+                    if (ownSprites){
+                        controller = new AnimationController(head, section, parsed, *control, *this, this->sprites);
+                    } else {
+                        controller = new AnimationController(head, section, parsed, *control, *this, sprites);
+                    }
                 } else if (type == "enabled" || type == "enable"){
                     controller = new EnabledController(head,section,*control,*this);
                 } else if (type == "null"){
@@ -1935,9 +2136,12 @@ Background::~Background(){
 	}
     }
      // Get rid of animation lists;
+    /*
     for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
 	if( i->second )delete i->second;
     }
+    */
+
     // Backgrounds
     for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	BackgroundElement *element = *i;
