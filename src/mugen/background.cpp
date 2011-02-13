@@ -1800,6 +1800,7 @@ clearColor(-1){
                 };
                 SceneDefWalker walker(*this, sprites);
                 section->walk(walker);
+#if 0
             } else if (head == "scenedef") {
                 // Lets check if this is a storyboard so we can get our sprite file, otherwise treat it as a normal background */
                 class SceneDefWalker: public Ast::Walker{
@@ -1826,6 +1827,7 @@ clearColor(-1){
                 };
                 SceneDefWalker walker(*this,sprites);
                 section->walk(walker);
+#endif
             } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "def.*")){
                 class BackgroundDefWalker: public Ast::Walker {
                 public:
