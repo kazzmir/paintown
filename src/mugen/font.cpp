@@ -22,14 +22,17 @@
 using namespace std;
 
 // If you use this, please delete the item after you use it, this isn't java ok
-static MugenItemContent *getOpts( const std::string &opt ){
+static MugenItemContent *getOpts(const std::string &opt){
     std::string contentHolder = "";
     MugenItemContent *temp = new MugenItemContent();
     const char * ignored = " \r\n";
     Global::debug(2) << "Parsing string to ItemContent: " << opt << endl;
-    for( unsigned int i = 0; i < opt.size(); ++i ){
-        if( opt[i] == ';' )break;
-        if( opt[i] == ' ' ){
+    for (unsigned int i = 0; i < opt.size(); ++i ){
+        if (opt[i] == ';'){
+            break;
+        }
+
+        if (opt[i] == ' '){
             if( !contentHolder.empty() ) *temp << contentHolder;
             Global::debug(2) << "Got content: " << contentHolder << endl;
             contentHolder = "";
@@ -47,7 +50,7 @@ static MugenItemContent *getOpts( const std::string &opt ){
 }
 
 
-MugenFont::MugenFont( const Filesystem::AbsolutePath & file ):
+MugenFont::MugenFont(const Filesystem::AbsolutePath & file):
 type(Fixed),
 width(0),
 height(0),
@@ -159,21 +162,21 @@ int MugenFont::textLength( const char * text ) const{
     for (unsigned int i = 0; i < str.size(); ++i){
         std::map<char, FontLocation>::const_iterator loc = positions.find(str[i]);
         if (loc!=positions.end()){
-            size+=loc->second.width + spacingx;
-        } else{
+            size += loc->second.width + spacingx;
+        } else {
             // Couldn't find a position for this character assume regular width and skip to the next character
-            size+=width + spacingx;
+            size += width + spacingx;
         }
     }
     return size;
 }
 
-int MugenFont::getHeight( const string & str ) const{
+int MugenFont::getHeight( const string & str ) const {
     // What? I guess this is for freetype?
     return getHeight();
 }
 
-int MugenFont::getHeight() const{
+int MugenFont::getHeight() const {
     return height;
 }
     
@@ -195,32 +198,36 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     int workoffsetx = 0;
     for (unsigned int i = 0; i < newstr.size(); ++i){
         std::map<char, FontLocation>::const_iterator loc = positions.find(newstr[i]);
-        if (loc!=positions.end()){
-            Bitmap character = Bitmap::temporaryBitmap( loc->second.width + spacingx, height + spacingy);
-            bmp->Blit( loc->second.startx, 0, loc->second.width + spacingx, height + spacingy,0,0, character );
-            character.draw( x + workoffsetx, y, work);
-            workoffsetx+=loc->second.width + spacingx;
+        if (loc != positions.end()){
+            /*
+            Bitmap character = Bitmap::temporaryBitmap(loc->second.width + spacingx, height + spacingy);
+            character.clearToMask();
+            bmp->Blit(loc->second.startx, 0, loc->second.width + spacingx, height + spacingy,0,0, character);
+            */
+            Bitmap character(*bmp, loc->second.startx, 0, loc->second.width, height);
+            character.draw(x + workoffsetx, y, work);
+            workoffsetx += loc->second.width + spacingx;
         } else{
             // Couldn't find a position for this character draw nothing, assume width, and skip to the next character
-            workoffsetx+=width + spacingx;
+            workoffsetx += width + spacingx;
         }
     }
 }
 
-void MugenFont::render( int x, int y, int position, int bank, const Bitmap & work, const string & str ){
+void MugenFont::render(int x, int y, int position, int bank, const Bitmap & work, const string & str){
     changeBank(bank);
     const int height = getHeight();
     const int length = textLength(str.c_str());
     switch (position){
 	case -1:
-	    printf(x - length, y - height, 0, work, str,0);
+	    printf(x - length, y - height, 0, work, str, 0);
 	    break;
 	case 1:
-	    printf(x, y - height, 0, work, str,0);
+	    printf(x, y - height, 0, work, str, 0);
 	    break;
 	case 0:
 	default:
-	    printf(x - (length/2), y - height, 0, work, str,0);
+	    printf(x - (length/2), y - height, 0, work, str, 0);
 	    break;
     }
 }
@@ -297,9 +304,9 @@ void MugenFont::load(){
     // Get the text
     ifile.seekg(pcxlocation+pcxsize, ios::beg);
     std::vector<std::string> ourText;
-    while( !ifile.eof() ){
+    while (!ifile.eof()){
         std::string line;
-        getline( ifile, line );
+        getline(ifile, line);
         ourText.push_back(line);
     }
 
@@ -308,9 +315,9 @@ void MugenFont::load(){
     
     std::vector< MugenSection * > collection = reader.getCollection();
 
-    for( unsigned int i = 0; i < collection.size(); ++i ){
+    for (unsigned int i = 0; i < collection.size(); ++i){
         const std::string &head = collection[i]->getHeader();
-        if( head == "Def" ){
+        if (head == "Def"){
             while( collection[i]->hasItems() ){
                 MugenItemContent *content = collection[i]->getNext();
                 const MugenItem *item = content->getNext();
@@ -340,8 +347,7 @@ void MugenFont::load(){
                 } //else throw MugenException( "Unhandled option in Info Section: " + itemhead );
             }
             Global::debug(2) << "Size X: " << width << ", Size Y: " << height << ", Spacing X: " << spacingx << ", Spacing Y: " << spacingy << ", Colors: " << colors << ", Offset X: " << offsetx << ", Offset Y: " << offsety << endl;
-        }
-        if( head == "Map" ){
+        } else if (head == "Map"){
             bool beginParse = false;
             int locationx = 0;
             for (std::vector<std::string>::iterator l = ourText.begin(); l != ourText.end(); ++l){
