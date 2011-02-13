@@ -145,6 +145,17 @@ const Filesystem::AbsolutePath Mugen::Util::findFile(const Filesystem::RelativeP
     }
 }
 
+/* search for a file starting in the absolute path and then search the rest of the
+ * mugen directories
+ */
+const Filesystem::AbsolutePath Mugen::Util::findFile(const Filesystem::AbsolutePath & base, const Filesystem::RelativePath & path){
+    try{
+        return Filesystem::lookupInsensitive(base, path);
+    } catch (const Filesystem::NotFound & fail){
+        return findFile(path);
+    }
+}
+
 const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::AbsolutePath &dir, std::string str){
     Global::debug(2) << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap

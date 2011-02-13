@@ -52,7 +52,10 @@ namespace Util{
     const Filesystem::AbsolutePath findStageDef(const Filesystem::RelativePath & name);
     const Filesystem::AbsolutePath findFont(const Filesystem::RelativePath & name);
     */
+    /* search in various mugen places */
     const Filesystem::AbsolutePath findFile(const Filesystem::RelativePath & name);
+    /* start searching in `base' and then resort to using various mugen places */
+    const Filesystem::AbsolutePath findFile(const Filesystem::AbsolutePath & base, const Filesystem::RelativePath & path);
 
     const std::string getFileDir( const std::string &dir );
     // If you use this, please delete the item after you use it, this isn't java ok

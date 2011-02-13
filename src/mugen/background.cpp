@@ -1753,7 +1753,8 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             // self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
+                            // Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
+                            Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
                         } 
                     }
                 };
@@ -1801,7 +1802,8 @@ clearColor(-1){
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
                             // self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
-                            Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            // Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } else if (simple == "debugbg"){
                             simple >> self.debug;
                         } else if (simple == "bgclearcolor"){
@@ -1850,12 +1852,12 @@ clearColor(-1){
                 istringstream out(head);
                 out >> h;
                 animations[h] = Mugen::Util::getAnimation(section, sprites, false);
-            } else if (PaintownUtil::matchRegex(head, ".*bgctrldef")){
+            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrldef")){
                 // Grabs the Background Controller Definition so that we can go through the child controllers
                 head.replace(0,10,"");
                 BackgroundController *temp = new BackgroundController(head, section, *this);
                 controllers.push_back(temp);
-            } else if (PaintownUtil::matchRegex(head, ".*bgctrl")){
+            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrl")){
                 if (controllers.empty()){
                     /* This is a hack to get mugen to do some fancy controlling in a regular
                      * game to accomplish stage fatalities and other tricks
