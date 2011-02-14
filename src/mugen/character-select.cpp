@@ -2368,7 +2368,7 @@ void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
     // start bgm
     try {
 	std::string music = Util::probeDef(systemFile, "music", "vs.bgm");
-	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
+	Music::loadSong(Util::findFile(Filesystem::RelativePath(music)).path());
 	Music::pause();
 	Music::play();
     } catch (const MugenException & ex){

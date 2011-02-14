@@ -711,9 +711,11 @@ void MugenMenu::run(){
 	
 	/* Start music NOTE load select and versus screen bgm */
         try{
-            Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + titleMusic)).path());
-            Music::pause();
-            Music::play();
+            if (titleMusic != ""){
+                Music::loadSong(Mugen::Util::findFile(Filesystem::RelativePath(titleMusic)).path());
+                Music::pause();
+                Music::play();
+            }
         } catch (const Filesystem::NotFound & fail){
             Global::debug(0) << "Warning: could not load music because " << fail.getTrace() << endl;
         }
