@@ -58,6 +58,7 @@ static const int DEFAULT_HEIGHT = 240;
 static const int DEFAULT_SCREEN_X_AXIS = 160;
 static const int DEFAULT_SCREEN_Y_AXIS = 0;
 
+#if 0
 static const Filesystem::AbsolutePath fixStageName(const std::string &stage){
     /* FIXME not a good solution to get file
      * jon: why isn't it good?
@@ -82,6 +83,7 @@ static const Filesystem::AbsolutePath fixStageName(const std::string &stage){
     return Mugen::Util::getCorrectFileLocation(baseDir, Filesystem::RelativePath(ourDefFile).getFilename().path());
     */
 }
+#endif
 
 FontHandler::FontHandler():
 state(Normal),
@@ -165,48 +167,62 @@ order(1),
 referenceCell(0),
 character1(0),
 character2(0){
-    Ast::AstParse parsed(Util::parseDef(definitionFile.path()));
+    try{
+        Ast::AstParse parsed(Util::parseDef(definitionFile.path()));
 
-    spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
-    name = Util::probeDef(parsed, "info", "name");
-    displayName = Util::probeDef(parsed, "info", "displayname");
+        spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
+        name = Util::probeDef(parsed, "info", "name");
+        displayName = Util::probeDef(parsed, "info", "displayname");
 
-    /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
-    for (int i = 0; i < 12; ++i){
-        stringstream act;
-        act << "pal" << i;
-        try {
-            std::string actFile = Util::probeDef(parsed, "files", act.str());
-            actCollection.push_back(Filesystem::RelativePath(actFile));
-        } catch (const MugenException &me){
-            // Ran its course got what we needed
+        /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
+        for (int i = 0; i < 12; ++i){
+            stringstream act;
+            act << "pal" << i;
+            try {
+                std::string actFile = Util::probeDef(parsed, "files", act.str());
+                actCollection.push_back(Filesystem::RelativePath(actFile));
+            } catch (const MugenException &me){
+                // Ran its course got what we needed
+            }
         }
-    }
 
-    if (actCollection.size() == 0){
-        throw MugenException("No pal files specified");
-    }
+        if (actCollection.size() == 0){
+            throw MugenException("No pal files specified");
+        }
 
-    // just a precaution
-    // spriteFile = Util::removeSpaces(spriteFile);
-    Filesystem::AbsolutePath realSpriteFile = Filesystem::findInsensitive(Filesystem::cleanse(baseDirectory).join(spriteFile));
-    icon = Util::probeSff(realSpriteFile, 9000, 0, true, baseDirectory.join(actCollection[0]));
-    portrait = Util::probeSff(realSpriteFile, 9000, 1, true, baseDirectory.join(actCollection[0]));
+        // just a precaution
+        // spriteFile = Util::removeSpaces(spriteFile);
+        Filesystem::AbsolutePath realSpriteFile = Filesystem::findInsensitive(Filesystem::cleanse(baseDirectory).join(spriteFile));
+        icon = Util::probeSff(realSpriteFile, 9000, 0, true, baseDirectory.join(actCollection[0]));
+        portrait = Util::probeSff(realSpriteFile, 9000, 1, true, baseDirectory.join(actCollection[0]));
+
+    } catch (...){
+        cleanup();
+        throw;
+    }
 }
 
-CharacterInfo::~CharacterInfo(){
+void CharacterInfo::cleanup(){
     if (icon){
         delete icon;
+        icon = NULL;
     }
     if (portrait){
         delete portrait;
+        portrait = NULL;
     }
     if (character1){
 	delete character1;
+        character1 = NULL;
     }
     if (character2){
 	delete character2;
+        character2 = NULL;
     }
+}
+
+CharacterInfo::~CharacterInfo(){
+    cleanup();
 }
 
 void CharacterInfo::loadPlayer1(){
@@ -1150,7 +1166,9 @@ background(NULL),
 currentPlayer1(0),
 currentPlayer2(0),
 currentStage(0),
-playerType(playerType){
+playerType(playerType),
+characterSearchThread(PaintownUtil::Thread::uninitializedValue),
+quitSearching(false){
 grid.setGameType(gameType);
     
     // Set defaults
@@ -1187,6 +1205,10 @@ CharacterSelect::~CharacterSelect(){
     if (currentStage){
 	delete currentStage;
     }
+
+    /* FIXME: use a lock here. this is mildly safe but not perfect */
+    quitSearching = true;
+    PaintownUtil::Thread::joinThread(characterSearchThread);
 }
 
 void CharacterSelect::load(){
@@ -1877,6 +1899,28 @@ public:
     std::string song;
 };
 
+void * CharacterSelect::searchForCharacters(void * arg){
+    try{
+        CharacterSelect * select = (CharacterSelect*) arg;
+        vector<Filesystem::AbsolutePath> candidates = Filesystem::getFilesRecursive(Filesystem::find(Data::getInstance().getDirectory()), "*.def");
+        for (vector<Filesystem::AbsolutePath>::iterator it = candidates.begin(); !select->quitSearching && it != candidates.end(); it++){
+            const Filesystem::AbsolutePath & path = *it;
+            Global::debug(1) << "Checking character " << path.path() << endl;
+            try{
+                CharacterInfo * info = new CharacterInfo(path);
+                Global::debug(0) << path.path() << " is good" << endl;
+                delete info;
+            } catch (const Filesystem::NotFound & fail){
+            } catch (...){
+            }
+        }
+        Global::debug(0) << "Done searching for characters" << endl;
+    } catch (...){
+        Global::debug(0) << "Search thread died for some reason" << endl;
+    }
+    return NULL;
+}
+
 void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
     
@@ -1885,6 +1929,11 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     Ast::AstParse parsed(Util::parseDef(file.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
+
+    characterSearchThread = PaintownUtil::Thread::uninitializedValue;
+    if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
+        Global::debug(0) << "Could not create character search thread" << endl;
+    }
     
     // Characters
     std::vector< CharacterCollect > characterCollection;
@@ -2283,6 +2332,8 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
             PaintownUtil::rest(1);
 	}
     }
+
+    quitSearching = true;
     
     // **FIXME Hack figure something out
     if (escaped){

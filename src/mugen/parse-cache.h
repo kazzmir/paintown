@@ -4,8 +4,11 @@
 #include <list>
 #include <string>
 #include <map>
+#include "util/thread.h"
 
 class OptionMugenMenu;
+
+namespace PaintownUtil = ::Util;
 
 namespace Ast{
     class Section;
@@ -30,6 +33,7 @@ protected:
     std::list<Ast::Section*> * loadFile(const std::string & path);
 
     std::map<const std::string, std::list<Ast::Section*>*> cache;
+    PaintownUtil::Thread::Lock lock;
 };
 
 class CmdCache: public Parser {

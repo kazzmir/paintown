@@ -11,10 +11,13 @@
 
 #include "util/gui/fadetool.h"
 #include "util/input/input-map.h"
+#include "util/thread.h"
 
 #include "util.h"
 
 #include "ast/all.h"
+
+namespace PaintownUtil = ::Util;
 
 /*
  * Character Select Screen
@@ -205,6 +208,9 @@ class CharacterInfo {
 	virtual inline Character *getPlayer2() {
 	    return this->character2;
 	}
+
+    private:
+        void cleanup();
 
     private:
         /* The characters definition File to pass on to stage or anything else */
@@ -1011,6 +1017,7 @@ class CharacterSelect {
         virtual MugenFont * getFont(int index) const;
 	
     private:
+        static void * searchForCharacters(void * arg);
 	
 	/*! Temporary to accomodate above above condition */
 	bool checkPlayerData();
@@ -1087,6 +1094,9 @@ class CharacterSelect {
 	
 	//! PlayerType
 	Mugen::PlayerType playerType;
+
+        PaintownUtil::Thread::Id characterSearchThread;
+        bool quitSearching;
 };
 
 }

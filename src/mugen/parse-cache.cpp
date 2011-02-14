@@ -109,9 +109,11 @@ void Parser::destroy(){
     }
 
     cache.clear();
+    PaintownUtil::Thread::destroyLock(&lock);
 }
 
 Parser::Parser(){
+    PaintownUtil::Thread::initializeLock(&lock);
 }
 
 Parser::~Parser(){
@@ -133,11 +135,19 @@ static list<Ast::Section*> * copy(list<Ast::Section*> * input){
  * returns a new copy of the AST so you must delete it later.
  */
 list<Ast::Section*> * Parser::parse(const std::string & path){
-    if (cache[path] == NULL){
-        cache[path] = loadFile(path);
-    }
+    PaintownUtil::Thread::acquireLock(&lock);
+    try{
+        if (cache[path] == NULL){
+            cache[path] = loadFile(path);
+        }
 
-    return copy(cache[path]);
+        list<Ast::Section*> * copied = copy(cache[path]);
+        PaintownUtil::Thread::releaseLock(&lock);
+        return copied;
+    } catch (...){
+        PaintownUtil::Thread::releaseLock(&lock);
+        throw;
+    }
 }
 
 CmdCache::CmdCache(){
