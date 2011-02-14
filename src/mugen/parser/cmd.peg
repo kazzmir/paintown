@@ -788,6 +788,7 @@ rules:
                   | "animelemno"{case}
                   | "animexist"{case}
                   | "projguarded"{case}
+                  | "projcanceltime"{case}
                   | "projhittime"{case}
                   | "projcontacttime"{case}
                   | "numhelper"{case}
