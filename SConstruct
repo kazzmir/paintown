@@ -1611,6 +1611,10 @@ def wii_elf2dol(target, source, env):
     print "Rename %s to %s.elf if you want to run in dolphin with debugging" % (file, file)
     return 0
 
+def wii_show_data(target, source, env):
+    print "Wii data path is %s" % colorize(getDataPath(), 'light-green')
+    return 0
+
 for i in shared:
     safe = env.Install('.', i)
     if useMinpspw():
@@ -1619,6 +1623,7 @@ for i in shared:
         env.AddPostAction(safe, ps3_pkg)
     if useWii():
         env.AddPostAction(safe, wii_elf2dol)
+        env.AddPostAction(safe, wii_show_data)
     Default(safe)
 
 for i in static:
