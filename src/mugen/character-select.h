@@ -389,19 +389,24 @@ class Cell{
 	    empty = false;
             random = r;
         }
+
 	virtual inline bool isRandom() const {
 	    return random;
 	}
+
         virtual inline void setEmpty(bool e){
             empty = e;
         }
+
 	virtual inline bool isEmpty() const {
 	    return empty;
 	}
+
 	virtual inline void setCharacterOffset(int x, int y){
 	    this->characterOffset.x = x;
 	    this->characterOffset.y = y;
 	}
+
 	virtual inline void setCharacterScale(double x, double y){
 	    this->characterScaleX = x;
 	    this->characterScaleY = y;
@@ -591,6 +596,14 @@ class Grid{
 	virtual inline void setPlayer2Start(int x, int y){
 	    this->player2Start.set(x, y);
 	}
+
+        /* lock for safety. grab this if any changes will be made to the grid
+         * itself or any cells.
+         */
+        virtual void lock();
+        virtual void unlock();
+
+        void addInfo(CharacterInfo * character);
     
     private:
 	
@@ -656,6 +669,9 @@ class Grid{
 	
 	//! Player2 starting position
 	Mugen::Point player2Start;
+
+        /* traffic jam! */
+        PaintownUtil::Thread::Lock gridLock;
 };
 
 /*! Handles Team Menu */
@@ -1018,6 +1034,8 @@ class CharacterSelect {
 	
     private:
         static void * searchForCharacters(void * arg);
+
+        void addInfo(CharacterInfo * info);
 	
 	/*! Temporary to accomodate above above condition */
 	bool checkPlayerData();
@@ -1096,7 +1114,10 @@ class CharacterSelect {
 	Mugen::PlayerType playerType;
 
         PaintownUtil::Thread::Id characterSearchThread;
-        bool quitSearching;
+        PaintownUtil::Thread::Lock searchingLock;
+        volatile bool quitSearching;
+        PaintownUtil::ThreadBoolean searchingCheck;
+        PaintownUtil::Thread::Lock characterAddInfoLock;
 };
 
 }

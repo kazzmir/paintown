@@ -418,19 +418,30 @@ randomSwitchTimeTicker(0),
 portraitScaleX(1),
 portraitScaleY(1),
 type(Mugen::Arcade){
+    PaintownUtil::Thread::initializeLock(&gridLock);
 }
 
 Grid::~Grid(){
     // Destroy cell map
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	std::vector< Cell *> &row = (*i);
-	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-	    if (cell){
-		delete cell;
-	    }
-	}
+        std::vector< Cell *> &row = (*i);
+        for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+            Cell *cell = (*column);
+            if (cell){
+                delete cell;
+            }
+        }
     }
+
+    PaintownUtil::Thread::destroyLock(&gridLock);
+}
+
+void Grid::lock(){
+    PaintownUtil::Thread::acquireLock(&gridLock);
+}
+
+void Grid::unlock(){
+    PaintownUtil::Thread::releaseLock(&gridLock);
 }
 
 void Grid::initialize(){
@@ -517,6 +528,57 @@ void Grid::addBlank(){
             }
         }
     }
+}
+
+void Grid::addInfo(CharacterInfo * character){
+    lock();
+    vector<Cell*> candidates;
+
+    /* first prefer empty cells */
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	vector<Cell *> &row = (*i);
+	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+            if (cell->isEmpty()){
+                candidates.push_back(cell);
+            }
+        }
+    }
+
+    /* then prefer blank cells */
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	vector<Cell *> &row = (*i);
+	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+            if (cell->isBlank()){
+                candidates.push_back(cell);
+            }
+        }
+    }
+
+    /* finally use random cells */
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	vector<Cell *> &row = (*i);
+	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+            if (cell->isRandom()){
+                candidates.push_back(cell);
+            }
+        }
+    }
+
+    if (candidates.size() > 0){
+        Cell * cell = candidates[0];
+        cell->setRandom(false);
+        cell->setBlank(false);
+        cell->setCharacter(character);
+        character->setReferenceCell(cell);
+    } else {
+        /* failed to find an empty cell */
+        delete character;
+    }
+
+    unlock();
 }
 
 void Grid::addCharacter(CharacterInfo *character, bool isRandom){
@@ -1168,8 +1230,13 @@ currentPlayer2(0),
 currentStage(0),
 playerType(playerType),
 characterSearchThread(PaintownUtil::Thread::uninitializedValue),
-quitSearching(false){
-grid.setGameType(gameType);
+quitSearching(false),
+searchingCheck(quitSearching, searchingLock){
+
+    grid.setGameType(gameType);
+
+    PaintownUtil::Thread::initializeLock(&characterAddInfoLock);
+    PaintownUtil::Thread::initializeLock(&searchingLock);
     
     // Set defaults
     reset();
@@ -1206,9 +1273,10 @@ CharacterSelect::~CharacterSelect(){
 	delete currentStage;
     }
 
-    /* FIXME: use a lock here. this is mildly safe but not perfect */
-    quitSearching = true;
+    searchingCheck.set(true);
     PaintownUtil::Thread::joinThread(characterSearchThread);
+    PaintownUtil::Thread::destroyLock(&characterAddInfoLock);
+    PaintownUtil::Thread::destroyLock(&searchingLock);
 }
 
 void CharacterSelect::load(){
@@ -1898,23 +1966,44 @@ public:
     int order;
     std::string song;
 };
+        
+void CharacterSelect::addInfo(CharacterInfo * info){
+    PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
+    grid.addInfo(info);
+    PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
+}
+
+static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::RelativePath & path){
+    try{
+        vector<Filesystem::AbsolutePath> more = Filesystem::getFilesRecursive(Filesystem::find(path), "*.def");
+        where.insert(where.end(), more.begin(), more.end());
+    } catch (const Filesystem::NotFound & fail){
+    }
+}
 
 void * CharacterSelect::searchForCharacters(void * arg){
     try{
         CharacterSelect * select = (CharacterSelect*) arg;
-        vector<Filesystem::AbsolutePath> candidates = Filesystem::getFilesRecursive(Filesystem::find(Data::getInstance().getDirectory()), "*.def");
-        for (vector<Filesystem::AbsolutePath>::iterator it = candidates.begin(); !select->quitSearching && it != candidates.end(); it++){
+        vector<Filesystem::AbsolutePath> candidates;
+
+        /* search in the <motif>/chars directory */
+        addFiles(candidates, Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars")));
+
+        /* search in the mugen/chars directory */
+        addFiles(candidates, Data::getInstance().getCharDirectory());
+
+        for (vector<Filesystem::AbsolutePath>::iterator it = candidates.begin(); !select->searchingCheck.get() && it != candidates.end(); it++){
             const Filesystem::AbsolutePath & path = *it;
             Global::debug(1) << "Checking character " << path.path() << endl;
             try{
                 CharacterInfo * info = new CharacterInfo(path);
-                Global::debug(0) << path.path() << " is good" << endl;
-                delete info;
+                Global::debug(1) << path.path() << " is good" << endl;
+                select->addInfo(info);
             } catch (const Filesystem::NotFound & fail){
             } catch (...){
             }
         }
-        Global::debug(0) << "Done searching for characters" << endl;
+        Global::debug(1) << "Done searching for characters" << endl;
     } catch (...){
         Global::debug(0) << "Search thread died for some reason" << endl;
     }
@@ -1929,6 +2018,8 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     Ast::AstParse parsed(Util::parseDef(file.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
+    
+    PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
 
     characterSearchThread = PaintownUtil::Thread::uninitializedValue;
     if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
@@ -2210,6 +2301,8 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 	}
 	order++;
     }
+
+    PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
 }
 
 void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
@@ -2285,11 +2378,13 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
                 background->act();
 
                 // Grid
-                grid.act(player1Cursor,player2Cursor);
+                grid.lock();
+                grid.act(player1Cursor, player2Cursor);
 
                 // Cursors
                 player1Cursor.act(grid);
                 player2Cursor.act(grid);
+                grid.unlock();
 
                 // Title
                 titleFont.act();
@@ -2309,10 +2404,12 @@ void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
 	    // render backgrounds
 	    background->renderBackground(0,0,workArea);
 	    // Render Grid
+            grid.lock();
 	    grid.render(workArea);
 	    // Render cursors
 	    player1Cursor.render(grid, workArea);
 	    player2Cursor.render(grid, workArea);
+            grid.unlock();
 	    
 	    // render title
 	    titleFont.render(title, workArea);
