@@ -572,6 +572,7 @@ void Grid::addInfo(CharacterInfo * character){
         cell->setRandom(false);
         cell->setBlank(false);
         cell->setCharacter(character);
+        character->setRandomStage(true);
         character->setReferenceCell(cell);
     } else {
         /* failed to find an empty cell */
