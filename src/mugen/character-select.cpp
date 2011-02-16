@@ -532,7 +532,7 @@ void Grid::addBlank(){
     }
 }
 
-void Grid::addInfo(CharacterInfo * character){
+bool Grid::addInfo(CharacterInfo * character){
     lock();
     vector<Cell*> candidates;
 
@@ -569,6 +569,8 @@ void Grid::addInfo(CharacterInfo * character){
         }
     }
 
+    bool success = false;
+
     if (candidates.size() > 0){
         Cell * cell = candidates[0];
         cell->setRandom(false);
@@ -576,12 +578,15 @@ void Grid::addInfo(CharacterInfo * character){
         cell->setCharacter(character);
         character->setRandomStage(true);
         character->setReferenceCell(cell);
+        success = true;
     } else {
         /* failed to find an empty cell */
         delete character;
     }
 
     unlock();
+
+    return success;
 }
 
 void Grid::addCharacter(CharacterInfo *character, bool isRandom){
@@ -1283,29 +1288,30 @@ CharacterSelect::~CharacterSelect(){
 }
 
 void CharacterSelect::load(){
-    Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
-    
-    Global::debug(1) << baseDir.path() << endl;
-    
-    if (systemFile.isEmpty()){
-        throw MugenException( "Cannot locate character select definition file for: " + systemFile.path());
-    }
+    try{
+        Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
 
-    TimeDifference diff;
-    diff.startTime();
-    Ast::AstParse parsed(Util::parseDef(systemFile.path()));
-    diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
-    
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
-        Ast::Section * section = *section_it;
-	std::string head = section->getName();
-        /* this should really be head = Mugen::Util::fixCase(head) */
-	head = Mugen::Util::fixCase(head);
-        if (head == "info"){
-	    /* Nothing right now */
-        } else if (head == "files"){
-            class FileWalker: public Ast::Walker{
+        Global::debug(1) << baseDir.path() << endl;
+
+        if (systemFile.isEmpty()){
+            throw MugenException( "Cannot locate character select definition file for: " + systemFile.path());
+        }
+
+        TimeDifference diff;
+        diff.startTime();
+        Ast::AstParse parsed(Util::parseDef(systemFile.path()));
+        diff.endTime();
+        Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
+
+        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+            Ast::Section * section = *section_it;
+            std::string head = section->getName();
+            /* this should really be head = Mugen::Util::fixCase(head) */
+            head = Mugen::Util::fixCase(head);
+            if (head == "info"){
+                /* Nothing right now */
+            } else if (head == "files"){
+                class FileWalker: public Ast::Walker{
                 public:
                     FileWalker(Mugen::CharacterSelect & select, const Filesystem::AbsolutePath & baseDir):
                         select(select),
@@ -1320,12 +1326,12 @@ void CharacterSelect::load(){
                             simple >> select.sffFile;
                             Global::debug(1) << "Got Sprite File: '" << select.sffFile << "'" << endl;
                             Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(select.sffFile)), Filesystem::AbsolutePath(), select.sprites, true);
-			    for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
-				// Load these sprites so they are ready to use
-				for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-				    if( j->second )j->second->load();
-				}
-			    }
+                            for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
+                                // Load these sprites so they are ready to use
+                                for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+                                    if( j->second )j->second->load();
+                                }
+                            }
                         } else if (simple == "snd"){
                             simple >> select.sndFile;
                             Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(select.sndFile)), select.sounds);
@@ -1349,586 +1355,591 @@ void CharacterSelect::load(){
                             throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
                         }
                     }
-            };
-            
-            FileWalker walker(*this, baseDir);
-            section->walk(walker);
-        } else if (head == "title info"){
-	    /* Nothing */
-	} else if (PaintownUtil::matchRegex(head, "^titlebg")){
-	    /* Nothing */
-	} else if (head == "select info"){ 
-            class SelectInfoWalker: public Ast::Walker{
-            public:
-                SelectInfoWalker(CharacterSelect & self, Mugen::SpriteMap & sprites):
-                    self(self),
-                    sprites(sprites){
-                    }
+                };
 
-                CharacterSelect & self;
-                Mugen::SpriteMap & sprites;
-
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		if (simple == "fadein.time" ){
-                    try{
-                        int time;
-                        simple >> time;
-                        self.fader.setFadeInTime(time);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "fadein.color" ){
-                    try{
-                        int r,g,b;
-                        simple >> r >> g >> b;
-                        self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "fadeout.time"){
-                    try{
-                        int time;
-                        simple >> time;
-                        self.fader.setFadeOutTime(time);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "fadeout.color"){
-                    try{
-                        int r,g,b;
-                        simple >> r >> g >> b;
-                        self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "rows"){
-                    try{
-                        int rows;
-                        simple >> rows;
-                        self.grid.setRows(rows);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "columns"){
-                    try{
-                        int columns;
-                        simple >> columns;
-                        self.grid.setColumns(columns);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "wrapping"){
-                    try{
-                        bool wrap;
-                        simple >> wrap;
-                        self.grid.setWrapping(wrap);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "pos"){
-                    try{
-                        int x,y;
-                        simple >> x >> y;
-                        self.grid.setPosition(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "showemptyboxes"){
-                    try{
-                        bool boxes;
-                        simple >> boxes;
-                        self.grid.setShowEmptyBoxes(boxes);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "moveoveremptyboxes"){
-                    try{
-                        bool boxes;
-                        simple >> boxes;
-                        self.grid.setMoveOverEmptyBoxes(boxes);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "cell.size"){
-                    try{
-                        int x, y;
-                        simple >> x >> y;
-                        self.grid.setCellSize(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "cell.spacing"){
-                    try{
-                        int spacing;
-                        simple >> spacing;
-                        self.grid.setCellSpacing(spacing);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "cell.bg.spr"){
-                    try{
-                        int group, sprite;
-                        simple >> group >> sprite;
-                        self.grid.setCellBackgroundSprite(sprites[group][sprite]);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "cell.random.spr"){
-                    try{
-                        int group, sprite;
-                        simple >> group >> sprite;
-                        self.grid.setCellRandomSprite(sprites[group][sprite]);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "cell.random.switchtime"){
-                    try{
-                        int time;
-                        simple >> time;
-                        self.grid.setCellRandomSwitchTime(time);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "p1.cursor.startcell"){
-                    try{
-                        int x,y;
-                        simple >> x >> y;
-                        self.grid.setPlayer1Start(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "p1.cursor.active.spr"){
-                    try{
-                        int group, sprite;
-                        simple >> group >> sprite;
-                        self.player1Cursor.setActiveSprite(sprites[group][sprite]);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "p1.cursor.done.spr"){
-                    try{
-                        int group, sprite;
-                        simple >> group >> sprite;
-                        self.player1Cursor.setDoneSprite(sprites[group][sprite]);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "p1.cursor.move.snd"){
-                   try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.player1Cursor.setMoveSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if (simple == "p1.cursor.done.snd"){
-                    try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.player1Cursor.setSelectSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if (simple == "p1.random.move.snd"){
-                    try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.player1Cursor.setRandomSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if (simple == "p2.cursor.startcell"){
-                    try{
-                        int x,y;
-                        simple >> x >> y;
-                        self.grid.setPlayer2Start(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "p2.cursor.active.spr"){
-                    try{
-                        int group, sprite;
-                        simple >> group >> sprite;
-                        self.player2Cursor.setActiveSprite(sprites[group][sprite]);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "p2.cursor.done.spr"){
-                    try{
-                        int group, sprite;
-                        simple >> group >> sprite;
-                        self.player2Cursor.setDoneSprite(sprites[group][sprite]);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "p2.cursor.blink"){
-                    try{
-                        bool blink;
-                        simple >> blink;
-                        self.player2Cursor.setBlink(blink);
-                    } catch (const Ast::Exception & e){
-                    }
-		} 
-		else if ( simple == "p2.cursor.move.snd"){ 
-                    try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.player2Cursor.setMoveSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if ( simple == "p2.cursor.done.snd"){
-                    try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.player2Cursor.setSelectSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if ( simple == "p2.random.move.snd"){
-                   try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.player2Cursor.setRandomSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if (simple == "random.move.snd.cancel"){
-                   try{
-                       bool cancel;
-                       simple >> cancel;
-                       self.player1Cursor.setRandomCancel(cancel);
-                       self.player2Cursor.setRandomCancel(cancel);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if ( simple == "stage.move.snd"){
-                   try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.grid.getStageHandler().setMoveSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if ( simple == "stage.done.snd"){
-                   try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.grid.getStageHandler().setSelectSound(self.sounds[group][sound]);
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if ( simple == "cancel.snd"){
-                   try{
-                        int group, sound;
-                        simple >> group >> sound;
-                        self.cancelSound = self.sounds[group][sound];
-                   } catch (const Ast::Exception & e){
-                   }
-                } else if (simple == "portrait.offset"){
-                    try{
-                        int x,y;
-                        simple >> x >> y;
-                        self.grid.setPortraitOffset(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if (simple == "portrait.scale"){
-                    try{
-                        double x,y;
-                        simple >> x >> y;
-                        self.grid.setPortraitScale(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "title.offset"){
-                    try{
-                        int x, y;
-                        simple >> x >> y;
-                        self.titleFont.setLocation(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "title.font"){
-		    int index=0, bank=0, position=0;
-		    try {
-			simple >> index >> bank >> position;
-		    } catch (const Ast::Exception & e){
-			//ignore for now
-		    }
-                    /* -1 indicates no font */
-                    if (index != -1){
-                        /* should this be set even if the parse fails? */
-                        self.titleFont.setPrimary(self.getFont(index), bank, position);
-                    }
-		} else if ( simple == "p1.face.offset"){
-                    try{
-                        int x, y;
-                        simple >> x >> y;
-                        self.player1Cursor.setFaceOffset(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "p1.face.scale"){
-                    try{
-                        double x, y;
-                        simple >> x >> y;
-                        self.player1Cursor.setFaceScale(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "p1.face.facing"){
-                    try{
-                        int f;
-                        simple >> f;
-                        self.player1Cursor.setFacing(f);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "p2.face.offset"){
-                    try{
-                        int x, y;
-                        simple >> x >> y;
-                        self.player2Cursor.setFaceOffset(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "p2.face.scale"){
-                    try{
-                        double x, y;
-                        simple >> x >> y;
-                        self.player2Cursor.setFaceScale(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "p2.face.facing"){
-                    try{
-                        int f;
-                        simple >> f;
-                        self.player2Cursor.setFacing(f);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "p1.name.offset"){
-                    try{
-                        int x, y;
-                        simple >> x >> y;
-                        self.player1Cursor.getFontHandler().setLocation(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		}  else if ( simple == "p1.name.font"){
-		    int index=0, bank=0, position=0;
-		    try {
-			simple >> index >> bank >> position;
-		    } catch (const Ast::Exception & e){
-			//ignore for now
-		    }
-                   
-                    if (index > 0){
-                        self.player1Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
-                    }
-		} else if ( simple == "p2.name.offset"){
-                    try{
-                        int x, y;
-                        simple >> x >> y;
-                        self.player2Cursor.getFontHandler().setLocation(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "p2.name.font"){
-                    try{
-                        int index, bank, position;
-                        simple >> index >> bank >> position;
-                        if (index > 0){
-                            self.player2Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
+                FileWalker walker(*this, baseDir);
+                section->walk(walker);
+            } else if (head == "title info"){
+                /* Nothing */
+            } else if (PaintownUtil::matchRegex(head, "^titlebg")){
+                /* Nothing */
+            } else if (head == "select info"){ 
+                class SelectInfoWalker: public Ast::Walker{
+                public:
+                    SelectInfoWalker(CharacterSelect & self, Mugen::SpriteMap & sprites):
+                        self(self),
+                        sprites(sprites){
                         }
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "stage.pos"){
-                    try{
-                        int x, y;
-                        simple >> x >> y;
-                        self.grid.getStageHandler().getFontHandler().setLocation(x,y);
-                    } catch (const Ast::Exception & e){
-                    }
-		} else if ( simple == "stage.active.font"){
-		    int index=0, bank=0, position=0;
-		    try {
-			simple >> index >> bank >> position;
-		    } catch (const Ast::Exception & e){
-			//ignore for now
-		    }
 
-                    if (index > 0){
-                        self.grid.getStageHandler().getFontHandler().setPrimary(self.getFont(index),bank,position);
-                    }
-		} else if ( simple == "stage.active2.font"){
-                    int index=0, bank=0, position=0;
-		    try {
-			simple >> index >> bank >> position;
-		    } catch (const Ast::Exception & e){
-			//ignore for now
-		    }
+                    CharacterSelect & self;
+                    Mugen::SpriteMap & sprites;
 
-                    if (index > 0){
-                        self.grid.getStageHandler().getFontHandler().setBlink(self.getFont(index),bank,position);
-                    }
-		} else if ( simple == "stage.done.font"){
-                    int index=0, bank=0, position=0;
-		    try {
-			simple >> index >> bank >> position;
-		    } catch (const Ast::Exception & e){
-			//ignore for now
-		    }
-                    if (index > 0){
-                        self.grid.getStageHandler().getFontHandler().setDone(self.getFont(index),bank,position);
-                    }
-		}
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "fadein.time" ){
+                            try{
+                                int time;
+                                simple >> time;
+                                self.fader.setFadeInTime(time);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "fadein.color" ){
+                            try{
+                                int r,g,b;
+                                simple >> r >> g >> b;
+                                self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "fadeout.time"){
+                            try{
+                                int time;
+                                simple >> time;
+                                self.fader.setFadeOutTime(time);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "fadeout.color"){
+                            try{
+                                int r,g,b;
+                                simple >> r >> g >> b;
+                                self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "rows"){
+                            try{
+                                int rows;
+                                simple >> rows;
+                                self.grid.setRows(rows);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "columns"){
+                            try{
+                                int columns;
+                                simple >> columns;
+                                self.grid.setColumns(columns);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "wrapping"){
+                            try{
+                                bool wrap;
+                                simple >> wrap;
+                                self.grid.setWrapping(wrap);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "pos"){
+                            try{
+                                int x,y;
+                                simple >> x >> y;
+                                self.grid.setPosition(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "showemptyboxes"){
+                            try{
+                                bool boxes;
+                                simple >> boxes;
+                                self.grid.setShowEmptyBoxes(boxes);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "moveoveremptyboxes"){
+                            try{
+                                bool boxes;
+                                simple >> boxes;
+                                self.grid.setMoveOverEmptyBoxes(boxes);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "cell.size"){
+                            try{
+                                int x, y;
+                                simple >> x >> y;
+                                self.grid.setCellSize(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "cell.spacing"){
+                            try{
+                                int spacing;
+                                simple >> spacing;
+                                self.grid.setCellSpacing(spacing);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "cell.bg.spr"){
+                            try{
+                                int group, sprite;
+                                simple >> group >> sprite;
+                                self.grid.setCellBackgroundSprite(sprites[group][sprite]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "cell.random.spr"){
+                            try{
+                                int group, sprite;
+                                simple >> group >> sprite;
+                                self.grid.setCellRandomSprite(sprites[group][sprite]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "cell.random.switchtime"){
+                            try{
+                                int time;
+                                simple >> time;
+                                self.grid.setCellRandomSwitchTime(time);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.cursor.startcell"){
+                            try{
+                                int x,y;
+                                simple >> x >> y;
+                                self.grid.setPlayer1Start(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.cursor.active.spr"){
+                            try{
+                                int group, sprite;
+                                simple >> group >> sprite;
+                                self.player1Cursor.setActiveSprite(sprites[group][sprite]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.cursor.done.spr"){
+                            try{
+                                int group, sprite;
+                                simple >> group >> sprite;
+                                self.player1Cursor.setDoneSprite(sprites[group][sprite]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.cursor.move.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.player1Cursor.setMoveSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.cursor.done.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.player1Cursor.setSelectSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.random.move.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.player1Cursor.setRandomSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p2.cursor.startcell"){
+                            try{
+                                int x,y;
+                                simple >> x >> y;
+                                self.grid.setPlayer2Start(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p2.cursor.active.spr"){
+                            try{
+                                int group, sprite;
+                                simple >> group >> sprite;
+                                self.player2Cursor.setActiveSprite(sprites[group][sprite]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p2.cursor.done.spr"){
+                            try{
+                                int group, sprite;
+                                simple >> group >> sprite;
+                                self.player2Cursor.setDoneSprite(sprites[group][sprite]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p2.cursor.blink"){
+                            try{
+                                bool blink;
+                                simple >> blink;
+                                self.player2Cursor.setBlink(blink);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } 
+                        else if ( simple == "p2.cursor.move.snd"){ 
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.player2Cursor.setMoveSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.cursor.done.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.player2Cursor.setSelectSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.random.move.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.player2Cursor.setRandomSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "random.move.snd.cancel"){
+                            try{
+                                bool cancel;
+                                simple >> cancel;
+                                self.player1Cursor.setRandomCancel(cancel);
+                                self.player2Cursor.setRandomCancel(cancel);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "stage.move.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.grid.getStageHandler().setMoveSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "stage.done.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.grid.getStageHandler().setSelectSound(self.sounds[group][sound]);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "cancel.snd"){
+                            try{
+                                int group, sound;
+                                simple >> group >> sound;
+                                self.cancelSound = self.sounds[group][sound];
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "portrait.offset"){
+                            try{
+                                int x,y;
+                                simple >> x >> y;
+                                self.grid.setPortraitOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "portrait.scale"){
+                            try{
+                                double x,y;
+                                simple >> x >> y;
+                                self.grid.setPortraitScale(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "title.offset"){
+                            try{
+                                int x, y;
+                                simple >> x >> y;
+                                self.titleFont.setLocation(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "title.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            /* -1 indicates no font */
+                            if (index != -1){
+                                /* should this be set even if the parse fails? */
+                                self.titleFont.setPrimary(self.getFont(index), bank, position);
+                            }
+                        } else if ( simple == "p1.face.offset"){
+                            try{
+                                int x, y;
+                                simple >> x >> y;
+                                self.player1Cursor.setFaceOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.face.scale"){
+                            try{
+                                double x, y;
+                                simple >> x >> y;
+                                self.player1Cursor.setFaceScale(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.face.facing"){
+                            try{
+                                int f;
+                                simple >> f;
+                                self.player1Cursor.setFacing(f);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.face.offset"){
+                            try{
+                                int x, y;
+                                simple >> x >> y;
+                                self.player2Cursor.setFaceOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.face.scale"){
+                            try{
+                                double x, y;
+                                simple >> x >> y;
+                                self.player2Cursor.setFaceScale(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.face.facing"){
+                            try{
+                                int f;
+                                simple >> f;
+                                self.player2Cursor.setFacing(f);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.name.offset"){
+                            try{
+                                int x, y;
+                                simple >> x >> y;
+                                self.player1Cursor.getFontHandler().setLocation(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        }  else if ( simple == "p1.name.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+
+                            if (index > 0){
+                                self.player1Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
+                            }
+                        } else if ( simple == "p2.name.offset"){
+                            try{
+                                int x, y;
+                                simple >> x >> y;
+                                self.player2Cursor.getFontHandler().setLocation(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.name.font"){
+                            try{
+                                int index, bank, position;
+                                simple >> index >> bank >> position;
+                                if (index > 0){
+                                    self.player2Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
+                                }
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "stage.pos"){
+                            try{
+                                int x, y;
+                                simple >> x >> y;
+                                self.grid.getStageHandler().getFontHandler().setLocation(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "stage.active.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+
+                            if (index > 0){
+                                self.grid.getStageHandler().getFontHandler().setPrimary(self.getFont(index),bank,position);
+                            }
+                        } else if ( simple == "stage.active2.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+
+                            if (index > 0){
+                                self.grid.getStageHandler().getFontHandler().setBlink(self.getFont(index),bank,position);
+                            }
+                        } else if ( simple == "stage.done.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            if (index > 0){
+                                self.grid.getStageHandler().getFontHandler().setDone(self.getFont(index),bank,position);
+                            }
+                        }
 #if 0
-                else if ( simple.find("teammenu")!=std::string::npos ){
-                    /* Ignore for now */
-                }
+                        else if ( simple.find("teammenu")!=std::string::npos ){
+                            /* Ignore for now */
+                        }
 #endif
-		//else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
-                }
-            };
-
-            SelectInfoWalker walker(*this, sprites);
-            section->walk(walker);
-	} else if (head == "selectbgdef"){ 
-	    /* Background management */
-	    Mugen::Background *manager = new Mugen::Background(systemFile, "selectbg");
-	    background = manager;
-	} else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
-	else if (head == "vs screen" ){
-	    class VersusWalker: public Ast::Walker{
-            public:
-                VersusWalker(VersusScreen & self, const CharacterSelect & select):
-                    self(self),
-		    select(select){
+                        //else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
                     }
+                };
 
-                VersusScreen & self;
-                const CharacterSelect & select;
+                SelectInfoWalker walker(*this, sprites);
+                section->walk(walker);
+            } else if (head == "selectbgdef"){ 
+                /* Background management */
+                Mugen::Background *manager = new Mugen::Background(systemFile, "selectbg");
+                background = manager;
+            } else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "vs screen" ){
+                class VersusWalker: public Ast::Walker{
+                public:
+                    VersusWalker(VersusScreen & self, const CharacterSelect & select):
+                        self(self),
+                        select(select){
+                        }
 
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		    if (simple == "time" ){
-                        try{
-                            int time;
-                            simple >> time;
-                            self.setTime(time);
-                        } catch (const Ast::Exception & e){
+                    VersusScreen & self;
+                    const CharacterSelect & select;
+
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "time" ){
+                            try{
+                                int time;
+                                simple >> time;
+                                self.setTime(time);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "fadein.time"){
+                            try{
+                                int time;
+                                simple >> time;
+                                self.getFadeTool().setFadeInTime(time);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "fadeout.time"){
+                            try{
+                                int time;
+                                simple >> time;
+                                self.getFadeTool().setFadeOutTime(time);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.pos"){
+                            int x=0,y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (Ast::Exception & e){
+                            }
+                            self.setPlayer1Position(Mugen::Point(x,y));
+                        } else if (simple == "p1.facing"){
+                            try{
+                                int face;
+                                simple >> face;
+                                self.setPlayer1Facing(face);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.scale"){
+                            double x,y;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.setPlayer1Scale(x,y);
+                        } else if (simple == "p2.pos"){
+                            int x=0,y=0;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.setPlayer2Position(Mugen::Point(x,y));
+                        } else if (simple == "p2.facing"){
+                            try{
+                                int face;
+                                simple >> face;
+                                self.setPlayer2Facing(face);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p2.scale"){
+                            double x,y;
+                            try{
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.setPlayer2Scale(x,y);
+                        } else if (simple == "p1.name.pos"){
+                            int x, y;
+                            try {
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.getPlayer1Font().setLocation(x,y);
+                        } else if (simple == "p1.name.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            if (index > 0){
+                                self.getPlayer1Font().setPrimary(select.getFont(index),bank,position);
+                            }
+                        } else if (simple == "p2.name.pos"){
+                            int x, y;
+                            try {
+                                simple >> x >> y;
+                            } catch (const Ast::Exception & e){
+                            }
+                            self.getPlayer2Font().setLocation(x,y);
+                        } else if (simple == "p2.name.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            if (index > 0){
+                                self.getPlayer2Font().setPrimary(select.getFont(index),bank,position);
+                            }
                         }
-		    } else if (simple == "fadein.time"){
-                        try{
-                            int time;
-                            simple >> time;
-                            self.getFadeTool().setFadeInTime(time);
-                        } catch (const Ast::Exception & e){
-                        }
-		    } else if (simple == "fadeout.time"){
-                        try{
-                            int time;
-                            simple >> time;
-                            self.getFadeTool().setFadeOutTime(time);
-                        } catch (const Ast::Exception & e){
-                        }
-		    } else if (simple == "p1.pos"){
-			int x=0,y=0;
-			try{
-			    simple >> x >> y;
-			} catch (Ast::Exception & e){
-			}
-			self.setPlayer1Position(Mugen::Point(x,y));
-		    } else if (simple == "p1.facing"){
-                        try{
-                            int face;
-                            simple >> face;
-                            self.setPlayer1Facing(face);
-                        } catch (const Ast::Exception & e){
-                        }
-		    } else if (simple == "p1.scale"){
-			double x,y;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.setPlayer1Scale(x,y);
-		    } else if (simple == "p2.pos"){
-			int x=0,y=0;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.setPlayer2Position(Mugen::Point(x,y));
-		    } else if (simple == "p2.facing"){
-                        try{
-                            int face;
-                            simple >> face;
-                            self.setPlayer2Facing(face);
-                        } catch (const Ast::Exception & e){
-                        }
-		    } else if (simple == "p2.scale"){
-			double x,y;
-			try{
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.setPlayer2Scale(x,y);
-		    } else if (simple == "p1.name.pos"){
-			int x, y;
-			try {
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.getPlayer1Font().setLocation(x,y);
-		    } else if (simple == "p1.name.font"){
-			int index=0, bank=0, position=0;
-			try {
-			    simple >> index >> bank >> position;
-			} catch (const Ast::Exception & e){
-			    //ignore for now
-			}
-                        if (index > 0){
-                            self.getPlayer1Font().setPrimary(select.getFont(index),bank,position);
-                        }
-		    } else if (simple == "p2.name.pos"){
-			int x, y;
-			try {
-			    simple >> x >> y;
-			} catch (const Ast::Exception & e){
-			}
-			self.getPlayer2Font().setLocation(x,y);
-		    } else if (simple == "p2.name.font"){
-			int index=0, bank=0, position=0;
-			try {
-			    simple >> index >> bank >> position;
-			} catch (const Ast::Exception & e){
-			    //ignore for now
-			}
-                        if (index > 0){
-                            self.getPlayer2Font().setPrimary(select.getFont(index),bank,position);
-                        }
-		    }
-		}
-	    };
-	    
-            VersusWalker walker(versus, *this);
-            section->walk(walker);
-	}
-	else if (head == "versusbgdef" ){
-	    /* Background management */
-	    Mugen::Background *manager = new Mugen::Background(systemFile, "versusbg");
-	    versus.setBackground(manager);
-	}
-	else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
-	else if (head == "demo mode" ){ /* Ignore for now */ }
-	else if (head == "continue screen" ){ /* Ignore for now */ }
-	else if (head == "game over screen" ){ /* Ignore for now */ }
-	else if (head == "win screen" ){ /* Ignore for now */ }
-	else if (head == "default ending" ){ /* Ignore for now */ }
-	else if (head == "end credits" ){ /* Ignore for now */ }
-	else if (head == "survival results screen" ){ /* Ignore for now */ }
-	else if (head == "option info" ){ /* Ignore for now */ }
-	else if (head == "optionbgdef" ){ /* Ignore for now */ }
-	else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
-	else if (head == "music" ){ /* Ignore for now */ }
-	else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
-        else {
-            // throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
-            ostringstream context;
-            context << __FILE__ << ":" << __LINE__;
-            Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + systemFile.path() + "': " + head << endl;
+                    }
+                };
+
+                VersusWalker walker(versus, *this);
+                section->walk(walker);
+            }
+            else if (head == "versusbgdef" ){
+                /* Background management */
+                Mugen::Background *manager = new Mugen::Background(systemFile, "versusbg");
+                versus.setBackground(manager);
+            }
+            else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "demo mode" ){ /* Ignore for now */ }
+            else if (head == "continue screen" ){ /* Ignore for now */ }
+            else if (head == "game over screen" ){ /* Ignore for now */ }
+            else if (head == "win screen" ){ /* Ignore for now */ }
+            else if (head == "default ending" ){ /* Ignore for now */ }
+            else if (head == "end credits" ){ /* Ignore for now */ }
+            else if (head == "survival results screen" ){ /* Ignore for now */ }
+            else if (head == "option info" ){ /* Ignore for now */ }
+            else if (head == "optionbgdef" ){ /* Ignore for now */ }
+            else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "music" ){ /* Ignore for now */ }
+            else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
+            else {
+                // throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
+                ostringstream context;
+                context << __FILE__ << ":" << __LINE__;
+                Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + systemFile.path() + "': " + head << endl;
+            }
         }
+
+        // Set up Grid
+        grid.initialize();
+
+        // Setup cursors
+        switch (gameType){
+            case Versus:
+                grid.setCursorPlayer1Start(player1Cursor);
+                grid.setCursorPlayer2Start(player2Cursor);
+                break;
+            case Arcade:
+            case Training:
+                if (playerType == Player1){
+                    grid.setCursorPlayer1Start(player1Cursor);
+                } else if (playerType == Player2){
+                    grid.setCursorPlayer2Start(player2Cursor);
+                }
+            case Watch:
+            default:
+                if (playerType == Player1){
+                    grid.setCursorPlayer1Start(player1Cursor);
+                } else if (playerType == Player2){
+                    grid.setCursorPlayer2Start(player2Cursor);
+                }
+                break;
+        }
+        // Now load up our characters
+        parseSelect(Mugen::Util::fixFileName(baseDir, Mugen::Util::stripDir(selectFile)));
+    } catch (const Filesystem::NotFound & fail){
+        ostringstream out;
+        out << "Could not load select screen because " << fail.getTrace();
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
-    
-    // Set up Grid
-    grid.initialize();
-    
-    // Setup cursors
-    switch (gameType){
-	case Versus:
-	    grid.setCursorPlayer1Start(player1Cursor);
-	    grid.setCursorPlayer2Start(player2Cursor);
-	    break;
-        case Arcade:
-        case Training:
-            if (playerType == Player1){
-		grid.setCursorPlayer1Start(player1Cursor);
-	    } else if (playerType == Player2){
-		grid.setCursorPlayer2Start(player2Cursor);
-	    }
-	case Watch:
-        default:
-	    if (playerType == Player1){
-		grid.setCursorPlayer1Start(player1Cursor);
-	    } else if (playerType == Player2){
-		grid.setCursorPlayer2Start(player2Cursor);
-	    }
-	    break;
-    }
-    // Now load up our characters
-    parseSelect(Mugen::Util::fixFileName(baseDir, Mugen::Util::stripDir(selectFile)));
 }
 
 //! Get group of characters by order number
@@ -1970,10 +1981,8 @@ public:
     std::string song;
 };
         
-void CharacterSelect::addInfo(CharacterInfo * info){
-    // PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
-    grid.addInfo(info);
-    // PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
+bool CharacterSelect::addInfo(CharacterInfo * info){
+    return grid.addInfo(info);
 }
 
 static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::RelativePath & path){
@@ -1995,13 +2004,14 @@ void * CharacterSelect::searchForCharacters(void * arg){
         /* search in the mugen/chars directory */
         addFiles(candidates, Data::getInstance().getCharDirectory());
 
-        for (vector<Filesystem::AbsolutePath>::iterator it = candidates.begin(); !select->searchingCheck.get() && it != candidates.end(); it++){
+        bool ok = true;
+        for (vector<Filesystem::AbsolutePath>::iterator it = candidates.begin(); ok && !select->searchingCheck.get() && it != candidates.end(); it++){
             const Filesystem::AbsolutePath & path = *it;
             Global::debug(1) << "Checking character " << path.path() << endl;
             try{
                 CharacterInfo * info = new CharacterInfo(path);
                 Global::debug(1) << path.path() << " is good" << endl;
-                select->addInfo(info);
+                ok = select->addInfo(info);
             } catch (const Filesystem::NotFound & fail){
             } catch (...){
             }

@@ -603,7 +603,7 @@ class Grid{
         virtual void lock();
         virtual void unlock();
 
-        void addInfo(CharacterInfo * character);
+        bool addInfo(CharacterInfo * character);
     
     private:
 	
@@ -1035,7 +1035,7 @@ class CharacterSelect {
     private:
         static void * searchForCharacters(void * arg);
 
-        void addInfo(CharacterInfo * info);
+        bool addInfo(CharacterInfo * info);
 	
 	/*! Temporary to accomodate above above condition */
 	bool checkPlayerData();
