@@ -83,10 +83,16 @@ namespace Util{
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
     const std::string probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search);
     const std::string probeDef(const Ast::AstParse & parsed, const std::string & section, const std::string & search);
-    /*! Use to probe a SFF file for a specific sprite without loading the whole sprite list
-       Throws exception if not found
-    */
+
+    /* Use to probe a SFF file for a specific sprite without loading the
+     * whole sprite list
+     * Throws exception if not found
+     */
     MugenSprite *probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
+    /* similar to probeSff but searches for sprites 9000,0 and 9000,1 which are
+     * the icon and the portrait respectively.
+     */
+    void getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, MugenSprite ** icon, MugenSprite ** portrait);
 
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.

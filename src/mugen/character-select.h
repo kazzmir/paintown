@@ -1117,7 +1117,6 @@ class CharacterSelect {
         PaintownUtil::Thread::Lock searchingLock;
         volatile bool quitSearching;
         PaintownUtil::ThreadBoolean searchingCheck;
-        PaintownUtil::Thread::Lock characterAddInfoLock;
 };
 
 }

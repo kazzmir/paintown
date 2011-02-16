@@ -1079,6 +1079,28 @@ MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int gro
     out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file.path();
     throw MugenException(out.str());
 }
+        
+void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, MugenSprite ** icon, MugenSprite ** portrait){
+    SffReader reader(sffPath, actPath);
+    *icon = reader.findSprite(9000, 0, true);
+    *portrait = reader.findSprite(9000, 1, true);
+    reader.cleanup();
+    if (*icon == NULL || *portrait == NULL){
+        bool failed_icon = *icon == NULL;
+        bool failed_portrait = *portrait == NULL;
+        delete *icon;
+        *icon = NULL;
+        delete *portrait;
+        *portrait = NULL;
+        ostringstream out;
+        if (failed_icon){
+            out << "Could not find sprite " << 9000 << ", " << 0 << " in " << sffPath.path();
+        } else {
+            out << "Could not find sprite " << 9000 << ", " << 1 << " in " << sffPath.path();
+        }
+        throw MugenException(out.str());
+    }
+}
 
 Mugen::Point::Point():
 x(0),

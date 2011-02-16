@@ -193,9 +193,11 @@ character2(0){
         // just a precaution
         // spriteFile = Util::removeSpaces(spriteFile);
         Filesystem::AbsolutePath realSpriteFile = Filesystem::findInsensitive(Filesystem::cleanse(baseDirectory).join(spriteFile));
-        icon = Util::probeSff(realSpriteFile, 9000, 0, true, baseDirectory.join(actCollection[0]));
-        portrait = Util::probeSff(realSpriteFile, 9000, 1, true, baseDirectory.join(actCollection[0]));
+        // icon = Util::probeSff(realSpriteFile, 9000, 0, true, baseDirectory.join(actCollection[0]));
+        // portrait = Util::probeSff(realSpriteFile, 9000, 1, true, baseDirectory.join(actCollection[0]));
 
+        /* pull out the icon and the portrait from the sff */
+        Util::getIconAndPortrait(realSpriteFile, baseDirectory.join(actCollection[0]), &icon, &portrait);
     } catch (...){
         cleanup();
         throw;
@@ -1236,7 +1238,7 @@ searchingCheck(quitSearching, searchingLock){
 
     grid.setGameType(gameType);
 
-    PaintownUtil::Thread::initializeLock(&characterAddInfoLock);
+    // PaintownUtil::Thread::initializeLock(&characterAddInfoLock);
     PaintownUtil::Thread::initializeLock(&searchingLock);
     
     // Set defaults
@@ -1276,7 +1278,7 @@ CharacterSelect::~CharacterSelect(){
 
     searchingCheck.set(true);
     PaintownUtil::Thread::joinThread(characterSearchThread);
-    PaintownUtil::Thread::destroyLock(&characterAddInfoLock);
+    // PaintownUtil::Thread::destroyLock(&characterAddInfoLock);
     PaintownUtil::Thread::destroyLock(&searchingLock);
 }
 
@@ -1969,9 +1971,9 @@ public:
 };
         
 void CharacterSelect::addInfo(CharacterInfo * info){
-    PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
+    // PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
     grid.addInfo(info);
-    PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
+    // PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
 }
 
 static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::RelativePath & path){
@@ -2020,12 +2022,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     
-    PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
-
-    characterSearchThread = PaintownUtil::Thread::uninitializedValue;
-    if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
-        Global::debug(0) << "Could not create character search thread" << endl;
-    }
+    // PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
     
     // Characters
     std::vector< CharacterCollect > characterCollection;
@@ -2303,7 +2300,12 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 	order++;
     }
 
-    PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
+    // PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
+
+    characterSearchThread = PaintownUtil::Thread::uninitializedValue;
+    if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
+        Global::debug(0) << "Could not create character search thread" << endl;
+    }
 }
 
 void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
