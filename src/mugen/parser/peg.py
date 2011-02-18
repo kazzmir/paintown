@@ -19,6 +19,8 @@
 # add generator for scheme, haskell, java, scala, ocaml, erlang, javascript, php, pascal, perl, C
 # fix error message reporting (whats wrong with it?)
 # Don't memoize if a rule accepts parameters (ruby, python)
+# Robert Grimm suggested "His Elkhound-generated C++ parsers do not free memory nor do they integrate GC. Instead, you just allocate from a dedicated region, copy out the AST after parsing, and kill the entire region in one operation."
+#
 
 # create a variable name
 next_var = 0

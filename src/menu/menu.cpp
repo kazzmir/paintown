@@ -1342,106 +1342,112 @@ void Menu::Menu::closeOptions(){
 }
 
 void Menu::Menu::run(const Context & parentContext){
-    // Setup context from parent and this menu and initialize
-    Context localContext(parentContext, context);
-    localContext.initialize();
+    Keyboard::pushRepeatState(true);
+    try{
+        // Setup context from parent and this menu and initialize
+        Context localContext(parentContext, context);
+        localContext.initialize();
 
-    // Setup menu fonts etc
-    if (renderer){        
-        renderer->initialize(localContext);
-    }
-    
-    //Play music
-    localContext.playMusic();
-
-    if (Configuration::getLanguage() == ""){
-        setupDefaultLanguage(localContext, *this);
-    }
-
-    /* do any lazy loading options want to do */
-    openOptions();
-
-    /* vi keys -- make these optional? */
-    input.set(Keyboard::Key_J, 0, true, Down);
-    input.set(Keyboard::Key_K, 0, true, Up);
-    input.set(Keyboard::Key_H, 0, true, Left);
-    input.set(Keyboard::Key_L, 0, true, Right);
-    input.set(Keyboard::Key_UP, 0, true, Up);
-    /* regular keys */
-    input.set(Configuration::config(0).getDown(), 0, true, Down);
-    input.set(Configuration::config(0).getLeft(), 0, true, Left);
-    input.set(Configuration::config(0).getRight(), 0, true, Right);
-    input.set(Keyboard::Key_F11, 0, true, Fullscreen);
-    /* FIXME: use configuration keys */
-    input.set(Keyboard::Key_ENTER, 0, true, Select);
-    input.set(Keyboard::Key_ESC, 0, true, Cancel);
-    /* joystick */
-    input.set(Configuration::config(0).getJoystickUp(), 0, true, Up);
-    input.set(Configuration::config(0).getJoystickDown(), 0, true, Down);
-    input.set(Configuration::config(0).getJoystickLeft(), 0, true, Left);
-    input.set(Configuration::config(0).getJoystickRight(), 0, true, Right);
-    /*! FIXME this should be changed to Select/Cancel buttons, all other buttons should be Select */
-    input.set(Configuration::config(0).getJoystickAttack1(), 0, true, Select);
-    input.set(Configuration::config(0).getJoystickAttack2(), 0, true, Cancel);
-    input.set(Configuration::config(0).getJoystickQuit(), 0, true, Cancel);
-   
-    /*
-    Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
-    work.updateOnResize();
-    */
-    Bitmap work(Menu::Width, Menu::Height);
-    
-    double runCounter = 0;
-    Global::speed_counter = 0;
-
-    // InputManager::enableBufferInput();
+        // Setup menu fonts etc
+        if (renderer){        
+            renderer->initialize(localContext);
+        }
         
-    // MenuException or something
-    bool specialExit = false;
-        
-    // Run while till the localContext is done
-    while (localContext.getState() != Context::Completed &&
-          (renderer && renderer->active())){
+        //Play music
+        localContext.playMusic();
 
-        if (Global::speed_counter > 0){
-            runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-            Global::speed_counter = 0;
+        if (Configuration::getLanguage() == ""){
+            setupDefaultLanguage(localContext, *this);
+        }
+
+        /* do any lazy loading options want to do */
+        openOptions();
+
+        /* vi keys -- make these optional? */
+        input.set(Keyboard::Key_J, 0, true, Down);
+        input.set(Keyboard::Key_K, 0, true, Up);
+        input.set(Keyboard::Key_H, 0, true, Left);
+        input.set(Keyboard::Key_L, 0, true, Right);
+        input.set(Keyboard::Key_UP, 0, true, Up);
+        /* regular keys */
+        input.set(Configuration::config(0).getDown(), 0, true, Down);
+        input.set(Configuration::config(0).getLeft(), 0, true, Left);
+        input.set(Configuration::config(0).getRight(), 0, true, Right);
+        input.set(Keyboard::Key_F11, 0, true, Fullscreen);
+        /* FIXME: use configuration keys */
+        input.set(Keyboard::Key_ENTER, 0, true, Select);
+        input.set(Keyboard::Key_ESC, 0, true, Cancel);
+        /* joystick */
+        input.set(Configuration::config(0).getJoystickUp(), 0, true, Up);
+        input.set(Configuration::config(0).getJoystickDown(), 0, true, Down);
+        input.set(Configuration::config(0).getJoystickLeft(), 0, true, Left);
+        input.set(Configuration::config(0).getJoystickRight(), 0, true, Right);
+        /*! FIXME this should be changed to Select/Cancel buttons, all other buttons should be Select */
+        input.set(Configuration::config(0).getJoystickAttack1(), 0, true, Select);
+        input.set(Configuration::config(0).getJoystickAttack2(), 0, true, Cancel);
+        input.set(Configuration::config(0).getJoystickQuit(), 0, true, Cancel);
+       
+        /*
+        Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
+        work.updateOnResize();
+        */
+        Bitmap work(Menu::Width, Menu::Height);
+        
+        double runCounter = 0;
+        Global::speed_counter = 0;
+
+        // InputManager::enableBufferInput();
             
-            /* Added to make the psp update more frequently. */
-            /*
-            if (runCounter > 3){
-                runCounter = 3;
-            }
-            */
+        // MenuException or something
+        bool specialExit = false;
+            
+        // Run while till the localContext is done
+        while (localContext.getState() != Context::Completed &&
+              (renderer && renderer->active())){
 
-            while (runCounter >= 1.0){
-                runCounter -= 1;
-                try {
-                    act(localContext);
-                } catch (const Exception::Return & ex){
-                    // signaled to quit current menu, closing this one out
-                    localContext.finish();
-                    if (renderer){
-                        renderer->finish();
+            if (Global::speed_counter > 0){
+                runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+                Global::speed_counter = 0;
+                
+                /* Added to make the psp update more frequently. */
+                /*
+                if (runCounter > 3){
+                    runCounter = 3;
+                }
+                */
+
+                while (runCounter >= 1.0){
+                    runCounter -= 1;
+                    try {
+                        act(localContext);
+                    } catch (const Exception::Return & ex){
+                        // signaled to quit current menu, closing this one out
+                        localContext.finish();
+                        if (renderer){
+                            renderer->finish();
+                        }
                     }
                 }
+
+                // Render
+                render(localContext, work);
+                // screen
+                work.BlitToScreen();
             }
 
-            // Render
-            render(localContext, work);
-            // screen
-            work.BlitToScreen();
+            while (Global::speed_counter < 1){
+                Util::rest(1);
+            }
         }
 
-        while (Global::speed_counter < 1){
-            Util::rest(1);
-        }
+        closeOptions();
+        
+        // FIXME Menu is finished, lets return. Is this even required anymore?
+        throw Exception::Return(__FILE__, __LINE__);
+    } catch (...){
+        Keyboard::popRepeatState();
+        throw;
     }
-
-    closeOptions();
-    
-    // FIXME Menu is finished, lets return. Is this even required anymore?
-    throw Exception::Return(__FILE__, __LINE__);
 }
 
 static void changeScreenMode(){

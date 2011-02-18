@@ -737,11 +737,14 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
     Global::info("World setup");
     Global::info(funnyGo());
 
+    Keyboard::pushRepeatState(false);
+
     Music::changeSong();
 
     initializePlayers(context.getPlayers());
 
     bool gameState = playLevel(context.getWorld(), context.getPlayers());
+    Keyboard::popRepeatState();
     ObjectFactory::destroy();
     HeartFactory::destroy();
 
