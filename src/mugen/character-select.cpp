@@ -124,7 +124,7 @@ void FontHandler::act(){
     }
 }
 
-void FontHandler::render(const std::string &text, const Bitmap &bmp){
+void FontHandler::render(const std::string &text, const Graphics::Bitmap &bmp){
     switch(state){
 	default:
 	case Normal:
@@ -269,7 +269,7 @@ void StageHandler::act(){
     font.act();
 }
 
-void StageHandler::render(const Bitmap &bmp){
+void StageHandler::render(const Graphics::Bitmap &bmp){
     if (display){
 	font.render(stageNames[currentStage],bmp);
     }
@@ -382,7 +382,7 @@ void Cell::randomize(std::vector<CharacterInfo *> &characters){
     }
 }
 
-void Cell::render(const Bitmap & bmp){
+void Cell::render(const Graphics::Bitmap & bmp){
     if (!blank){
         if (background != 0){
             background->render(position.x,position.y,bmp);
@@ -399,8 +399,8 @@ void Cell::render(const Bitmap & bmp){
         }
         if (flash){
             // Bitmap::drawingMode(Bitmap::MODE_TRANS);
-            Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
-            bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Bitmap::makeColor(255,255,255));
+            Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
+            bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Graphics::Bitmap::makeColor(255,255,255));
             // Bitmap::drawingMode(Bitmap::MODE_SOLID);
         }
     }
@@ -503,7 +503,7 @@ void Grid::act(Cursor & player1Cursor, Cursor & player2Cursor){
     stages.getFontHandler().act();
 }
 
-void Grid::render(const Bitmap & bmp){
+void Grid::render(const Graphics::Bitmap & bmp){
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
 	std::vector< Cell *> &row = (*i);
 	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
@@ -876,7 +876,7 @@ void Cursor::act(Grid &grid){
     }
 }
 
-void Cursor::render(Grid &grid, const Bitmap & bmp){
+void Cursor::render(Grid &grid, const Graphics::Bitmap & bmp){
     switch (state){
 	case NotActive:
 	    return;
@@ -926,7 +926,7 @@ void Cursor::playRandomSound(){
     } 
 }
 
-void Cursor::renderPortrait(const Bitmap &bmp){
+void Cursor::renderPortrait(const Graphics::Bitmap &bmp){
     // Lets do the portrait and name
     if (!currentCell->isEmpty() && !currentCell->isBlank()){
 	const CharacterInfo *character = currentCell->getCharacter();
@@ -992,8 +992,8 @@ VersusScreen::~VersusScreen(){
     delete background;
 }
 
-void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Bitmap &bmp){
-    Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Graphics::Bitmap &bmp){
+    Graphics::Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     bool done = false;
     bool escaped = false;
     
@@ -1386,7 +1386,7 @@ void CharacterSelect::load(){
                             try{
                                 int r,g,b;
                                 simple >> r >> g >> b;
-                                self.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                                self.fader.setFadeInColor(Graphics::Bitmap::makeColor(r,g,b));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "fadeout.time"){
@@ -1400,7 +1400,7 @@ void CharacterSelect::load(){
                             try{
                                 int r,g,b;
                                 simple >> r >> g >> b;
-                                self.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                                self.fader.setFadeOutColor(Graphics::Bitmap::makeColor(r,g,b));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "rows"){
@@ -2318,8 +2318,8 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     }
 }
 
-void CharacterSelect::run(const std::string & title, const Bitmap &bmp){
-    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp){
+    Graphics::Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     bool done = false;
     bool escaped = false;
     
@@ -2524,7 +2524,7 @@ void CharacterSelect::reset(){
     }
 }
 
-void CharacterSelect::renderVersusScreen(const Bitmap & bmp){
+void CharacterSelect::renderVersusScreen(const Graphics::Bitmap & bmp){
     
     // start bgm
     try {

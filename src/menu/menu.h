@@ -26,7 +26,9 @@ typedef unsigned __int32 uint32_t;
 #endif
 
 class Font;
+namespace Graphics{
 class Bitmap;
+}
 class MenuOption;
 class Token;
 class TokenView;
@@ -47,8 +49,8 @@ class InfoBox: public Gui::Widget {
         ~InfoBox();
         
         void act(const Font &);
-        virtual void render(const Bitmap &);
-        void render(const Bitmap &, const Font & font);
+        virtual void render(const Graphics::Bitmap &);
+        void render(const Graphics::Bitmap &, const Font & font);
         void open();
         void close();
         void setText(const std::string &);
@@ -150,13 +152,13 @@ class Background{
         /*! Logic - Change over to Gui::Space later */
         void act(const Gui::Coordinate &);
 
-        void render(const Gui::Animation::Depth &, const Bitmap &);
+        void render(const Gui::Animation::Depth &, const Graphics::Bitmap &);
 
         void add(Gui::Animation *);
     private:
         std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> > backgrounds;
 
-        void drawBackgrounds(std::vector<Gui::Animation *> &, const Bitmap &);
+        void drawBackgrounds(std::vector<Gui::Animation *> &, const Graphics::Bitmap &);
 };
 
 /*! Menu actions */
@@ -192,7 +194,7 @@ class Renderer{
         virtual bool active()=0;
         
         virtual void act(const Context &)=0;
-        virtual void render(const Bitmap &, const Font & font)=0;
+        virtual void render(const Graphics::Bitmap &, const Font & font)=0;
 	
 	// Set font if applicable
 	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
@@ -219,7 +221,7 @@ class Renderer{
         virtual void actInfo(const Font &);
         
         /*! render info box */
-        virtual void renderInfo(const Bitmap &, const Font & font);
+        virtual void renderInfo(const Graphics::Bitmap &, const Font & font);
 };
 
 /*! Regular Menu */
@@ -234,7 +236,7 @@ class DefaultRenderer : public Renderer {
         virtual void finish();
         virtual bool active();
         virtual void act(const Context &);
-        virtual void render(const Bitmap &, const Font &); 
+        virtual void render(const Graphics::Bitmap &, const Font &); 
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<MenuOption*> getOptions() const;
@@ -274,7 +276,7 @@ class TabRenderer : public Renderer {
         virtual void finish();
         virtual bool active();
         virtual void act(const Context &);
-        virtual void render(const Bitmap &, const Font &);
+        virtual void render(const Graphics::Bitmap &, const Font &);
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<MenuOption*> getOptions() const;
@@ -307,7 +309,7 @@ class Context{
         /*! Pass the widget (Menu ContextBox in this case) to be drawn
          * Allows for custom widget menus to be draw in place (ie for tabs or something)
         */
-        virtual void render(Renderer *, const Bitmap &);
+        virtual void render(Renderer *, const Graphics::Bitmap &);
         
         /*! Parse data */
         virtual void parseToken(const Token *);
@@ -315,7 +317,7 @@ class Context{
         //! Compatibility stuff
         virtual void addBackground(const Token *);
         virtual void addBackground(const std::string &);
-        virtual void addBackground(const Bitmap & image);
+        virtual void addBackground(const Graphics::Bitmap & image);
         
         /*! Initializes things like faders */
         virtual void initialize();
@@ -445,7 +447,7 @@ class Menu{
         virtual void act(Context &);
 
         /*! render pass local context and work */
-        virtual void render(Context &, const Bitmap &);
+        virtual void render(Context &, const Graphics::Bitmap &);
 
         virtual void setRenderer(const Type &);
         

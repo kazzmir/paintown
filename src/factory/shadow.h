@@ -3,7 +3,9 @@
 
 #include <vector>
 
+namespace Graphics{
 class Bitmap;
+}
 
 /* nothing special, just the shadow that is shown under a character 
  * Shadow is a singleton factory class that returns the proper
@@ -11,7 +13,7 @@ class Bitmap;
  */
 class Shadow{
 public:
-	static Bitmap const * getShadow( unsigned int y );
+	static Graphics::Bitmap const * getShadow( unsigned int y );
 	static void destroy();
 
 protected:
@@ -19,7 +21,7 @@ private:
 	Shadow();
 	~Shadow();
 
-        std::vector< Bitmap * > shadows;
+        std::vector< Graphics::Bitmap * > shadows;
 	static Shadow * my_shadow;
 };
 

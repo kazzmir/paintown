@@ -95,7 +95,7 @@ void Game::run(){
         out << "Press ENTER to continue\n";
         out << "\n";
         out << "We are very sorry but an error has occured while trying to load MUGEN.";
-        Bitmap screen(GFX_X, GFX_Y);
+        Graphics::Bitmap screen(GFX_X, GFX_Y);
         PaintownUtil::showError(screen, e, out.str());
         InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
     }
@@ -112,7 +112,7 @@ public:
 };
 
 static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = ""){
-    Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    Graphics::Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     InputMap<int> gameInput;
     /* FIXME: use an enum here */
     gameInput.set(Keyboard::Key_F1, 10, false, 0);
@@ -241,7 +241,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
             if (show_fps){
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
-                font.printf(work.getWidth() - 60, work.getHeight() - font.getHeight() - 1, Bitmap::makeColor(255,255,255), work, "FPS: %0.2f", 0, fps);
+                font.printf(work.getWidth() - 60, work.getHeight() - font.getHeight() - 1, Graphics::Bitmap::makeColor(255,255,255), work, "FPS: %0.2f", 0, fps);
             }
 
             work.BlitToScreen();
@@ -424,7 +424,7 @@ void Game::doTraining(){
             select.load();
             try{
                 {
-                    Bitmap screen(GFX_X, GFX_Y);
+                    Graphics::Bitmap screen(GFX_X, GFX_Y);
                     select.run("Training Mode", screen);
                     select.renderVersusScreen(screen);
                 }
@@ -462,7 +462,7 @@ void Game::doWatch(){
 	select.load();
         try{
             {
-                Bitmap screen(GFX_X, GFX_Y);
+                Graphics::Bitmap screen(GFX_X, GFX_Y);
                 select.run("Watch Mode", screen);
                 select.renderVersusScreen(screen);
             }
@@ -487,7 +487,7 @@ void Game::doArcade(){
     /* FIXME: there isn't really a need to have this bitmap exist forever.
      * a temporary bitmap can be created when its needed.
      */
-    Bitmap screen(GFX_X, GFX_Y);
+    Graphics::Bitmap screen(GFX_X, GFX_Y);
     Mugen::CharacterSelect select(systemFile, playerType, gameType);
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
     select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
@@ -721,7 +721,7 @@ void Game::doVersus(){
         select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
         select.load();
         {
-            Bitmap screen(GFX_X, GFX_Y);
+            Graphics::Bitmap screen(GFX_X, GFX_Y);
             select.run("Versus Mode", screen);
             select.renderVersusScreen(screen);
         }

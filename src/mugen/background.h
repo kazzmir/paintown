@@ -40,7 +40,7 @@ class BackgroundElement: public Element {
 	virtual ~BackgroundElement();
 	
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL) = 0;
+	virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL) = 0;
 
         //! Set the passed element to this elements values, this is called when the next element is linked to this one
         virtual void setLink(BackgroundElement *element);
@@ -259,7 +259,7 @@ class NormalElement : public BackgroundElement {
 	NormalElement(const std::string & name, Ast::Section * data, const Mugen::SpriteMap & sprites);
 	virtual ~NormalElement();
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
+	virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
 	virtual inline void setSprite(MugenSprite *sprite){
 	    this->sprite = sprite;
 	}
@@ -275,7 +275,7 @@ public:
 
     virtual ~AnimationElement();
     virtual void act();
-    virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
+    virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
     virtual void setAnimation(MugenAnimation * animation);
 private:
     PaintownUtil::ClassPointer<MugenAnimation> animation;
@@ -287,7 +287,7 @@ class ParallaxElement : public BackgroundElement {
 	ParallaxElement(const std::string & name, Ast::Section * data, const Mugen::SpriteMap & sprites);
 	virtual ~ParallaxElement();
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
+	virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
 	virtual inline void setSprite(MugenSprite *sprite){
 	    this->sprite = sprite;
 	}
@@ -332,7 +332,7 @@ class DummyElement : public BackgroundElement {
 	DummyElement(const std::string & name, Ast::Section * data);
 	virtual ~DummyElement();
 	virtual void act();
-	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
+	virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
     private:
 };
 
@@ -420,8 +420,8 @@ class Background{
 	virtual ~Background();
 	
 	virtual void act();
-	virtual void renderBackground(int cameraX, int cameraY, const Bitmap &, Bitmap::Filter * filter = NULL);
-	virtual void renderForeground(int cameraX, int cameraY, const Bitmap &, Bitmap::Filter * filter = NULL);
+	virtual void renderBackground(int cameraX, int cameraY, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
+	virtual void renderForeground(int cameraX, int cameraY, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
 	
         //! Returns a vector of Elements by given ID
         std::vector< BackgroundElement * > getIDList(int ID);

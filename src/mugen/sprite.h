@@ -8,7 +8,9 @@
 
 #include "util.h"
 
+namespace Graphics{
 class Bitmap;
+}
 
 class MugenSprite{
     public:
@@ -26,7 +28,7 @@ class MugenSprite{
 	// Render sprite
 	//void render(const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
 	//void render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
-	void render(const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects = Mugen::Effects());
+	void render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects = Mugen::Effects());
 	
 	// load/reload sprite
 	void load(bool mask=true);
@@ -38,10 +40,10 @@ class MugenSprite{
         void copyImage(const MugenSprite * copy);
 	
 	/* get the internal bitmap */
-	Bitmap * getBitmap(bool mask);
+        Graphics::Bitmap * getBitmap(bool mask);
 
         /* get the properly scaled sprite */
-        Bitmap getFinalBitmap(const Mugen::Effects & effects);
+        Graphics::Bitmap getFinalBitmap(const Mugen::Effects & effects);
 	int getWidth();
 	int getHeight();
 	
@@ -74,7 +76,7 @@ class MugenSprite{
 	inline bool getSamePalette() const { return samePalette; }
 	inline const char *getComments() const { return comments; }
 	
-        static void draw(const Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Bitmap &where, const Mugen::Effects &effects);
+        static void draw(const Graphics::Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects);
 
     protected:
         /* destroy allocated things */
@@ -100,10 +102,10 @@ class MugenSprite{
 	char * pcx;
         int maskColor;
 	
-	Bitmap * unmaskedBitmap;
-        Bitmap * maskedBitmap;
+        Graphics::Bitmap * unmaskedBitmap;
+        Graphics::Bitmap * maskedBitmap;
         
-        void draw(const Bitmap &, const int xaxis, const int yaxis, const Bitmap &, const Mugen::Effects &);
+        void draw(const Graphics::Bitmap &, const int xaxis, const int yaxis, const Graphics::Bitmap &, const Mugen::Effects &);
 };
 
 #endif

@@ -41,7 +41,7 @@ public:
     virtual void next()=0;
     virtual void prev()=0;
     virtual void enter();
-    virtual void render(MugenFont &, int x, int y, const Bitmap &);
+    virtual void render(MugenFont &, int x, int y, const Graphics::Bitmap &);
     virtual inline const Mugen::Point & getPosition() const {
         return this->position;
     }
@@ -72,7 +72,7 @@ private:
     std::vector<class Option *> options;
     std::vector<class Option *>::iterator selectedOption;
     
-    void doOptions(MugenFont & font, int x, int y, const Bitmap &);
+    void doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap &);
 };
 
 }

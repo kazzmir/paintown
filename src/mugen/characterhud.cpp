@@ -108,7 +108,7 @@ void FightElement::act(){
 	    
 }
 
-void FightElement::render(int x, int y, const Bitmap & bmp, Bitmap::Filter * filter){
+void FightElement::render(int x, int y, const Graphics::Bitmap & bmp, Graphics::Bitmap::Filter * filter){
     if (isDone()){
 	return;
     }
@@ -130,7 +130,7 @@ void FightElement::render(int x, int y, const Bitmap & bmp, Bitmap::Filter * fil
     }
 }
 
-void FightElement::render(const Element::Layer & layer, int x, int y, const Bitmap & bmp, int width = -99999){
+void FightElement::render(const Element::Layer & layer, int x, int y, const Graphics::Bitmap & bmp, int width = -99999){
     if (isDone()){
 	return;
     }
@@ -420,7 +420,7 @@ void Bar::act(Mugen::Character & character){
     }
 }
 
-void Bar::render(Element::Layer layer, const Bitmap & bmp){
+void Bar::render(Element::Layer layer, const Graphics::Bitmap & bmp){
     if (type != None){
         // Background is full range
         back0.render(layer, position.x, position.y, bmp);
@@ -467,7 +467,7 @@ void Face::act(Character & character){
     face.setSprite(character.getSprite(face.getSpriteData().x,face.getSpriteData().y));
 }
 
-void Face::render(const Element::Layer & layer, const Bitmap & bmp){
+void Face::render(const Element::Layer & layer, const Graphics::Bitmap & bmp){
     background.render(layer, position.x, position.y, bmp);
     face.render(layer, position.x, position.y, bmp);
 }
@@ -482,7 +482,7 @@ void Name::act(Mugen::Character & character){
     font.setText(character.getDisplayName());
 }
 
-void Name::render(const Element::Layer & layer, const Bitmap & bmp){
+void Name::render(const Element::Layer & layer, const Graphics::Bitmap & bmp){
     background.render(layer, position.x, position.y, bmp);
     font.render(layer, position.x, position.y, bmp);
 }
@@ -587,7 +587,7 @@ void GameTime::act(){
     timer.setText(str.str());
 }
 
-void GameTime::render(const Element::Layer & layer, const Bitmap & bmp){
+void GameTime::render(const Element::Layer & layer, const Graphics::Bitmap & bmp){
     background.render(layer, position.x, position.y, bmp);
     timer.render(layer, position.x, position.y, bmp);
 }
@@ -720,7 +720,7 @@ void Combo::act(Mugen::Character & player1, Mugen::Character & player2){
     player2Total = player2.getCurrentCombo();
 }
 
-void Combo::render(const Element::Layer & layer, const Bitmap & bmp){
+void Combo::render(const Element::Layer & layer, const Graphics::Bitmap & bmp){
     if (player1State != Disabled){
 	const int modifierX = (player1ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
 	const int modifierY = (player1ShakeTime > 0 ? PaintownUtil::rnd( 8 ) - 4 : 0);
@@ -1052,7 +1052,7 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
     }
 }
 
-void Round::render(const Element::Layer & layer, const Bitmap & bmp){
+void Round::render(const Element::Layer & layer, const Graphics::Bitmap & bmp){
     FightElement & round = getRoundElement();
     if (!round.notStarted() && !round.isDone()){
         round.render(layer, position.x, position.y, bmp);
@@ -1257,7 +1257,7 @@ void WinIcon::act(const Character & p1, const Character & p2){
 	}
     }
 }
-void WinIcon::render(const Element::Layer & layer, const Bitmap &bmp){
+void WinIcon::render(const Element::Layer & layer, const Graphics::Bitmap &bmp){
     if (player1Wins.size() < useIconUpTo){
 	Mugen::Point position = player1Position;
 	for (std::vector<WinGame>::const_iterator i = player1Wins.begin(); i != player1Wins.end(); ++i){
@@ -2002,7 +2002,7 @@ void GameInfo::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Char
     }
 }
 
-void GameInfo::render(const Element::Layer & layer, const Bitmap &bmp){
+void GameInfo::render(const Element::Layer & layer, const Graphics::Bitmap &bmp){
     player1LifeBar.render(layer,bmp);
 
     // Program received signal SIGFPE, Arithmetic exception.

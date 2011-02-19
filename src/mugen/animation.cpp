@@ -14,7 +14,7 @@
 
 using namespace std;
 
-static void renderCollision( const std::vector< MugenArea > &vec, const Bitmap &bmp, int x, int y, int color ){
+static void renderCollision( const std::vector< MugenArea > &vec, const Graphics::Bitmap &bmp, int x, int y, int color ){
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
     }
@@ -103,7 +103,7 @@ MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
     return *this;
 }
 
-void MugenFrame::render(int x, int y, const Bitmap & work, const Mugen::Effects & effects){
+void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     const int placex = x + xoffset;
     const int placey = y + yoffset;
     sprite->render(placex, placey, work, effects);
@@ -274,20 +274,20 @@ void MugenAnimation::logic(){
     }
 }
 
-void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects){
+void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     
     frame->render(xaxis, yaxis, work, effects);
 
     if (showDefense){
-        renderCollision(getDefenseBoxes(effects.facing == -1), work, xaxis, yaxis, Bitmap::makeColor(0, 255, 0));
+        renderCollision(getDefenseBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::Bitmap::makeColor(0, 255, 0));
     }
 
     if (showOffense){
-        renderCollision(getAttackBoxes(effects.facing == -1), work, xaxis, yaxis, Bitmap::makeColor(255,0,0 ));
+        renderCollision(getAttackBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::Bitmap::makeColor(255,0,0 ));
     }
 }
 
-void MugenAnimation::render(int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects){
+void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     if (position >= frames.size()){
         return;
     }
@@ -300,7 +300,7 @@ void MugenAnimation::render(int xaxis, int yaxis, const Bitmap & work, const Mug
     renderFrame(frames[position], xaxis, yaxis, work, combined);
 }
 
-void MugenAnimation::render(int xaxis, int yaxis, const Bitmap &work, double scalex, double scaley){
+void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex, double scaley){
     if (position >= frames.size()){
         return;
     }
@@ -347,7 +347,7 @@ Mugen::Effects MugenAnimation::getCurrentEffects(bool facing, bool vfacing, doub
     return effects;
 }
 
-void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex, const double scaley, Bitmap::Filter * filter){
+void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley, Graphics::Bitmap::Filter * filter){
     if (position >= frames.size()){
         return;
     }
@@ -367,7 +367,7 @@ void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const in
     renderFrame(frame, xaxis, yaxis, work, effects);
 }
 
-void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Bitmap &work, const double scalex, const double scaley){
+void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley){
     if (position >= frames.size()){
         return;
     }

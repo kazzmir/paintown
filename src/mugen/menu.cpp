@@ -101,16 +101,16 @@ void CursorHandler::act(){
     }
 }
 
-void CursorHandler::renderCursor(int x, int y, const Bitmap & bmp){
+void CursorHandler::renderCursor(int x, int y, const Graphics::Bitmap & bmp){
     if (cursor.visible){
 	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	Bitmap::transBlender(0, 0, 0, cursor.alpha);
-	bmp.translucent().rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Bitmap::makeColor(255,255,255));
+        Graphics::Bitmap::transBlender(0, 0, 0, cursor.alpha);
+	bmp.translucent().rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Graphics::Bitmap::makeColor(255,255,255));
 	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
 
-void CursorHandler::renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> & fonts, const Bitmap & bmp){
+void CursorHandler::renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> & fonts, const Graphics::Bitmap & bmp){
     if (active){
 	renderCursor(x, y, bmp);
 	fonts[activeFont.index-1]->render(x, y, activeFont.position, activeFont.bank, bmp, text);
@@ -149,7 +149,7 @@ void Mugen::ItemOption::logic(){
 void Mugen::ItemOption::run(const Menu::Context & context){
 }
 
-void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<MugenFont *> & fonts, const Bitmap & bmp){
+void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<MugenFont *> & fonts, const Graphics::Bitmap & bmp){
     handler.renderText(x, y, (getState() == MenuOption::Selected), getText(), fonts, bmp);
 }
 
@@ -418,7 +418,7 @@ void MugenMenu::loadData(){
                             try{
                                 int r,g,b;
                                 simple >> r >> g >> b;
-                                menu.fader.setFadeInColor(Bitmap::makeColor(r,g,b));
+                                menu.fader.setFadeInColor(Graphics::Bitmap::makeColor(r,g,b));
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "fadeout.time"){
@@ -431,7 +431,7 @@ void MugenMenu::loadData(){
                         } else if (simple == "fadeout.color"){
                             int r,g,b;
                             simple >> r >> g >> b;
-                            menu.fader.setFadeOutColor(Bitmap::makeColor(r,g,b));
+                            menu.fader.setFadeOutColor(Graphics::Bitmap::makeColor(r,g,b));
                         } else if (simple == "menu.pos"){
                             simple >> menu.position.x;
                             simple >> menu.position.y;
@@ -685,14 +685,14 @@ void MugenMenu::run(){
     // Do we have logos or intros?
     // Logo run it no repeat
     if (logo){
-        Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
+        Graphics::Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         logo->setInput(player1Input);
 	logo->run(work, false);
     }
 
     // Intro run it no repeat
     if (intro){
-        Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
+        Graphics::Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         intro->setInput(player1Input);
 	intro->run(work, false);
     }
@@ -722,8 +722,8 @@ void MugenMenu::run(){
     
         /* Extra scope to force temporary bitmaps to be destroyed */
         {
-            Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
-            Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+            Graphics::Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
+            Graphics::Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
             while (!done &&
                    (*currentOption)->getState() != MenuOption::Run &&
                    fader.getState() != Gui::FadeTool::EndFade){
@@ -923,7 +923,7 @@ void MugenMenu::doMenuMovement(){
 }
 
 // Draw text
-void MugenMenu::renderText(Bitmap *bmp){
+void MugenMenu::renderText(Graphics::Bitmap *bmp){
     
     // Top of the window
     const int top = position.y - windowMargin.x;

@@ -57,11 +57,11 @@ maskedBitmap(NULL){
     }
 
     if (copy.unmaskedBitmap){
-        this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
+        this->unmaskedBitmap = new Graphics::Bitmap(*copy.unmaskedBitmap);
     }
 
     if (copy.maskedBitmap){
-        this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
+        this->maskedBitmap = new Graphics::Bitmap(*copy.maskedBitmap);
     }
 }
 
@@ -89,11 +89,11 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     }
 
     if (copy.unmaskedBitmap){
-        this->unmaskedBitmap = new Bitmap(*copy.unmaskedBitmap);
+        this->unmaskedBitmap = new Graphics::Bitmap(*copy.unmaskedBitmap);
     }
 
     if (copy.maskedBitmap){
-        this->maskedBitmap = new Bitmap(*copy.maskedBitmap);
+        this->maskedBitmap = new Graphics::Bitmap(*copy.maskedBitmap);
     }
     
     return *this;
@@ -103,11 +103,11 @@ void MugenSprite::copyImage(const MugenSprite * copy){
     cleanup();
 
     if (copy->unmaskedBitmap){
-        this->unmaskedBitmap = new Bitmap(*copy->unmaskedBitmap);
+        this->unmaskedBitmap = new Graphics::Bitmap(*copy->unmaskedBitmap);
     }
 
     if (copy->maskedBitmap){
-        this->maskedBitmap = new Bitmap(*copy->maskedBitmap);
+        this->maskedBitmap = new Graphics::Bitmap(*copy->maskedBitmap);
     }
 }
 
@@ -207,29 +207,29 @@ static bool isScaled(const Mugen::Effects & effects){
            fabs(effects.scaley - 1) > epsilon;
 }
 
-Bitmap MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
-    Bitmap * use = getBitmap(effects.mask);
+Graphics::Bitmap MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
+    Graphics::Bitmap * use = getBitmap(effects.mask);
 
-    Bitmap modImage = *use;
+    Graphics::Bitmap modImage = *use;
     if (isScaled(effects)){
-        modImage = Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley));
+        modImage = Graphics::Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley));
         use->Stretch(modImage);
     }
 
     return modImage;
 }
 
-void MugenSprite::render(const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
+void MugenSprite::render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     draw(getFinalBitmap(effects), xaxis, yaxis, where, effects);
 }
 
 void MugenSprite::load(bool mask){
     if (pcx){
         if (mask){
-            maskedBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
-            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Bitmap::MaskColor());
+            maskedBitmap = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::Bitmap::MaskColor());
         } else {
-            unmaskedBitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+            unmaskedBitmap = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
         }
     }
 }
@@ -248,14 +248,14 @@ void MugenSprite::reload(bool mask){
     load(mask);
 }
 
-Bitmap * MugenSprite::getBitmap(bool mask){
+Graphics::Bitmap * MugenSprite::getBitmap(bool mask){
     if (mask){
         if (maskedBitmap){
             return maskedBitmap;
         }
         if (unmaskedBitmap){
-            maskedBitmap = new Bitmap(*unmaskedBitmap, true);
-            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Bitmap::MaskColor());
+            maskedBitmap = new Graphics::Bitmap(*unmaskedBitmap, true);
+            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::Bitmap::MaskColor());
             return maskedBitmap;
         }
     } else {
@@ -337,7 +337,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
     load(mask);
 }
 
-void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Bitmap &where, const Mugen::Effects &effects){
+void MugenSprite::draw(const Graphics::Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     int startWidth = 0;
     int startHeight = 0;
     int width = bmp.getWidth();
@@ -370,24 +370,24 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
     switch (effects.trans){
 	case AddAlpha : {
 	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
-	    Bitmap::transBlender(0, 0, 0, effects.alphalow);
+            Graphics::Bitmap::transBlender(0, 0, 0, effects.alphalow);
 	    break;
 	}
 	case Add : {
 	    // this additive 100% I assume... not totally sure
 	    // Bitmap::addBlender( 255, 255, 255, 255 );
-	    Bitmap::addBlender(0, 0, 0, 255);
+            Graphics::Bitmap::addBlender(0, 0, 0, 255);
 	    break;
 	}
 	case Add1 : {
 	    // 50%
-	    Bitmap::addBlender(128, 128, 128, 255);
+            Graphics::Bitmap::addBlender(128, 128, 128, 255);
 	    break;
 	}
 	case Sub : {
 	    // Shadow effect
 	    // Bitmap::multiplyBlender( 0, 0, 0, 128 );
-	    Bitmap::differenceBlender(0, 0, 0, 255);
+            Graphics::Bitmap::differenceBlender(0, 0, 0, 255);
 	    // Bitmap::burnBlender(0, 0, 0, 0);
 	    break;
 	}
@@ -429,6 +429,6 @@ void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, cons
     }
 }
 
-void MugenSprite::draw(const Bitmap &bmp, const int xaxis, const int yaxis, const Bitmap &where, const Mugen::Effects &effects){
+void MugenSprite::draw(const Graphics::Bitmap &bmp, const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     draw(bmp, xaxis, yaxis, this->x, this->y, where, effects);
 }

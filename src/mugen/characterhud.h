@@ -10,7 +10,9 @@
 #include "character.h"
 #include "behavior.h"
 
+namespace Graphics{
 class Bitmap;
+}
 class MugenSprite;
 class MugenAnimation;
 class MugenFont;
@@ -32,8 +34,8 @@ class FightElement: public Element {
 	virtual ~FightElement();
 	
 	virtual void act();
-        virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter = NULL);
-	virtual void render(const Element::Layer & layer, int x, int y, const Bitmap &, int width);
+        virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
+	virtual void render(const Element::Layer & layer, int x, int y, const Graphics::Bitmap &, int width);
 	virtual void play();
 	
 	enum ElementType{
@@ -148,7 +150,7 @@ class Bar{
 	virtual ~Bar();
 	
 	virtual void act(Character &);
-	virtual void render(Element::Layer layer, const Bitmap &);
+	virtual void render(Element::Layer layer, const Graphics::Bitmap &);
 
         enum Type{
             None,
@@ -264,7 +266,7 @@ class Face{
 	virtual ~Face();
 	
 	virtual void act(Character &);
-	virtual void render(const Element::Layer & layer, const Bitmap & bmp);
+	virtual void render(const Element::Layer & layer, const Graphics::Bitmap & bmp);
 	virtual inline void setPosition(int x, int y){
             position.x = x;
             position.y = y;
@@ -293,7 +295,7 @@ class Name{
 	virtual ~Name();
 	
 	virtual void act(Mugen::Character & character);
-	virtual void render(const Element::Layer &, const Bitmap &);
+	virtual void render(const Element::Layer &, const Graphics::Bitmap &);
 	virtual void setPosition(int x, int y){
             this->position.x = x;
             this->position.y = y;
@@ -316,7 +318,7 @@ class GameTime{
 	GameTime();
 	virtual ~GameTime();
 	virtual void act();
-	virtual void render(const Element::Layer &, const Bitmap &);
+	virtual void render(const Element::Layer &, const Graphics::Bitmap &);
 	virtual void start();
 	virtual void stop();
 	virtual void reset();
@@ -361,7 +363,7 @@ class Combo{
 	Combo();
 	virtual ~Combo();
 	virtual void act(Mugen::Character & player1, Mugen::Character & player2);
-	virtual void render(const Element::Layer &, const Bitmap &);
+	virtual void render(const Element::Layer &, const Graphics::Bitmap &);
 	
 	virtual inline void setPosition(int x, int y){
 	    position.set(x,y);
@@ -420,7 +422,7 @@ class Round{
 	virtual ~Round();
 	
 	virtual void act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
-	virtual void render(const Element::Layer &, const Bitmap &);
+	virtual void render(const Element::Layer &, const Graphics::Bitmap &);
         virtual void reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
 	enum State{
@@ -700,7 +702,7 @@ class WinIcon{
 	virtual ~WinIcon();
 	    
 	virtual void act(const Mugen::Character &, const Mugen::Character &);
-	virtual void render(const Element::Layer &, const Bitmap &);
+	virtual void render(const Element::Layer &, const Graphics::Bitmap &);
 	
         virtual inline void setPlayer1Position(int x, int y){
 	    this->player1Position.set(x,y);
@@ -769,7 +771,7 @@ class GameInfo{
 	virtual ~GameInfo();
 
         virtual void act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
-        virtual void render(const Element::Layer &, const Bitmap &);
+        virtual void render(const Element::Layer &, const Graphics::Bitmap &);
 
         virtual void reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	

@@ -47,7 +47,7 @@ class FontHandler{
 	virtual ~FontHandler();
 	
 	void act();
-	void render(const std::string &text, const Bitmap &);
+	void render(const std::string &text, const Graphics::Bitmap &);
 	
 	enum State{
 	    Normal,
@@ -257,7 +257,7 @@ class StageHandler{
 	virtual ~StageHandler();
 	
 	virtual void act();
-	virtual void render(const Bitmap &);
+	virtual void render(const Graphics::Bitmap &);
 	
 	//! Get current selected stage
 	virtual const Filesystem::RelativePath &getStage();
@@ -335,7 +335,7 @@ class Cell{
 
         virtual void act();
         virtual void randomize(std::vector<CharacterInfo *> &characters);
-        virtual void render(const Bitmap &);
+        virtual void render(const Graphics::Bitmap &);
 	
 	virtual inline bool operator==(const Cell &cell) const{
 	    return (this->location == cell.location);
@@ -516,7 +516,7 @@ class Grid{
 
         virtual void act(Cursor & player1, Cursor & player2);
 	
-	virtual void render(const Bitmap &);
+	virtual void render(const Graphics::Bitmap &);
 	
         virtual void addBlank();
 	virtual void addCharacter(CharacterInfo *character, bool isRandom = false);
@@ -681,7 +681,7 @@ class TeamMenu{
 	virtual ~TeamMenu();
 	
 	void act();
-	void render(const Bitmap &);
+	void render(const Graphics::Bitmap &);
 	
     private:
 	/*! Allow cursor to wrap up and down the menu */
@@ -734,7 +734,7 @@ class Cursor{
 	
 	virtual void act(Grid &grid);
 	
-	virtual void render(Grid &grid, const Bitmap &);
+	virtual void render(Grid &grid, const Graphics::Bitmap &);
 	
 	virtual inline void setInput(const InputMap<Mugen::Keys> & input){
 	    this->input = input;
@@ -829,7 +829,7 @@ class Cursor{
 	
     private:
 	
-	void renderPortrait(const Bitmap &);
+	void renderPortrait(const Graphics::Bitmap &);
 	
 	InputMap<Mugen::Keys> input;
 	
@@ -899,7 +899,7 @@ class VersusScreen {
 	virtual ~VersusScreen();
 	
 	//! Renders the versus screen as well as loads the characters and stage
-	virtual void render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Bitmap &);
+	virtual void render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Graphics::Bitmap &);
 	
 	virtual inline void setBackground(Background * background){
 	    this->background = background;
@@ -975,12 +975,12 @@ class CharacterSelect {
 	
 	virtual void load();
 	
-	virtual void run(const std::string & title, const Bitmap &);
+	virtual void run(const std::string & title, const Graphics::Bitmap &);
 
         virtual void reset();
 	
 	//! This will load the character and stage so that you can retrieve them when setting up
-	virtual void renderVersusScreen(const Bitmap &);
+	virtual void renderVersusScreen(const Graphics::Bitmap &);
 	
 	//! Get next arcade match character returns false if there are no more characters
 	virtual bool setNextArcadeMatch();

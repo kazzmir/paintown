@@ -99,11 +99,11 @@ void Menu::InfoBox::act(const Font & font){
     }
 }
         
-void Menu::InfoBox::render(const Bitmap &){
+void Menu::InfoBox::render(const Graphics::Bitmap &){
     throw MenuException(__FILE__, __LINE__, "Don't call the render(Bitmap) function");
 }
 
-void Menu::InfoBox::render(const Bitmap & bmp, const Font & vFont){
+void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     popup.render(bmp);
     
     // const Font & vFont = Configuration::getMenuFont()->get(*font);
@@ -115,11 +115,11 @@ void Menu::InfoBox::render(const Bitmap & bmp, const Font & vFont){
     bmp.setClipRect(x1, y1, x2, y2);
     
     int sy = location.getY() - 5;
-    static int white = Bitmap::makeColor(255,255,255);
+    static int white = Graphics::Bitmap::makeColor(255,255,255);
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
         string & str = *it;
         if (fadeAlpha < 255){
-            Bitmap::transBlender(0, 0, 0, fadeAlpha);
+            Graphics::Bitmap::transBlender(0, 0, 0, fadeAlpha);
             // Bitmap::drawingMode( Bitmap::MODE_TRANS );
             vFont.printf(location.getX() + 5, sy, white, bmp.translucent(), str, 0 );
             // Bitmap::drawingMode(Bitmap::MODE_SOLID);
@@ -363,7 +363,7 @@ void Menu::Background::act(const Gui::Coordinate & coord){
     }
 }
 
-void Menu::Background::render(const Gui::Animation::Depth & depth, const Bitmap & bmp){
+void Menu::Background::render(const Gui::Animation::Depth & depth, const Graphics::Bitmap & bmp){
     for (std::vector<Gui::Animation *>::iterator i = backgrounds[depth].begin(); i != backgrounds[depth].end(); ++i){
         Gui::Animation * anim = *i;
         if (anim){
@@ -428,7 +428,7 @@ void Menu::Renderer::actInfo(const Font & font){
     }
 }
 
-void Menu::Renderer::renderInfo(const Bitmap & work, const Font & font){
+void Menu::Renderer::renderInfo(const Graphics::Bitmap & work, const Font & font){
     for (std::vector< ::Menu::InfoBox *>::iterator i = info.begin(); i != info.end(); ++i){
         ::Menu::InfoBox *box = *i;
         box->render(work, font);
@@ -439,9 +439,9 @@ Menu::DefaultRenderer::DefaultRenderer(){
     // Default the menu to a certain size and details
     menu.location.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
-    menu.colors.body = Bitmap::makeColor(0,0,0);
+    menu.colors.body = Graphics::Bitmap::makeColor(0,0,0);
     menu.colors.bodyAlpha = 128;
-    menu.colors.border = Bitmap::makeColor(200,200,200);
+    menu.colors.border = Graphics::Bitmap::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
 }
         
@@ -568,7 +568,7 @@ void Menu::DefaultRenderer::act(const Context & context){
     actInfo(font);
 }
 
-void Menu::DefaultRenderer::render(const Bitmap & bmp, const Font & font){
+void Menu::DefaultRenderer::render(const Graphics::Bitmap & bmp, const Font & font){
     menu.render(bmp, Configuration::getMenuFont()->get(font));
     menuInfo.render(bmp, font);
     renderInfo(bmp, font);
@@ -656,9 +656,9 @@ Menu::TabRenderer::TabRenderer(){
     // Default the menu to a certain size and details
     //menu.location.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
-    menu.colors.body = Bitmap::makeColor(0,0,0);
+    menu.colors.body = Graphics::Bitmap::makeColor(0,0,0);
     menu.colors.bodyAlpha = 128;
-    menu.colors.border = Bitmap::makeColor(200,200,200);
+    menu.colors.border = Graphics::Bitmap::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
 }
         
@@ -724,35 +724,35 @@ bool Menu::TabRenderer::readToken(const Token * token){
     } else if ( *token == "tab-body" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.tabColors.bodyAlpha;
-        menu.tabColors.body = Bitmap::makeColor(r,g,b);
+        menu.tabColors.body = Graphics::Bitmap::makeColor(r,g,b);
     } else if ( *token == "tab-border" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.tabColors.borderAlpha;
-        menu.tabColors.border = Bitmap::makeColor(r,g,b);
+        menu.tabColors.border = Graphics::Bitmap::makeColor(r,g,b);
     } else if ( *token == "selectedtab-body" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.selectedTabColors.bodyAlpha;
-        menu.selectedTabColors.body = Bitmap::makeColor(r,g,b);
+        menu.selectedTabColors.body = Graphics::Bitmap::makeColor(r,g,b);
     } else if ( *token == "selectedtab-border" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.selectedTabColors.borderAlpha;
-        menu.selectedTabColors.border = Bitmap::makeColor(r,g,b);
+        menu.selectedTabColors.border = Graphics::Bitmap::makeColor(r,g,b);
     } else if ( *token == "runningtab-body" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.runningTabColors.bodyAlpha;
-        menu.runningTabColors.body = Bitmap::makeColor(r,g,b);
+        menu.runningTabColors.body = Graphics::Bitmap::makeColor(r,g,b);
     } else if ( *token == "runningtab-border" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.runningTabColors.borderAlpha;
-        menu.runningTabColors.border = Bitmap::makeColor(r,g,b);
+        menu.runningTabColors.border = Graphics::Bitmap::makeColor(r,g,b);
     } else if ( *token == "font-color" ) {
 	int r,g,b;
         token->view() >> r >> g >> b;
-	menu.setTabFontColor(Bitmap::makeColor(r,g,b));
+	menu.setTabFontColor(Graphics::Bitmap::makeColor(r,g,b));
     } else if ( *token == "selectedfont-color" ) {
 	int r,g,b;
         token->view() >> r >> g >> b;
-	menu.setSelectedTabFontColor(Bitmap::makeColor(r,g,b));
+	menu.setSelectedTabFontColor(Graphics::Bitmap::makeColor(r,g,b));
     } else if ( *token == "runningfont-color" ) {
         
     } else if ( *token == "fade-speed" ) {
@@ -844,7 +844,7 @@ void Menu::TabRenderer::act(const Context & context){
     actInfo(font);
 }
 
-void Menu::TabRenderer::render(const Bitmap & bmp, const Font & font){
+void Menu::TabRenderer::render(const Graphics::Bitmap & bmp, const Font & font){
     menu.render(bmp, font);
     menuInfo.render(bmp, font);
     renderInfo(bmp, font);
@@ -1012,8 +1012,8 @@ void Menu::Context::parseToken(const Token * token){
                 fades = new Gui::FadeTool();
             }
             // Set fader default to white
-            fades->setFadeInColor(Bitmap::makeColor(255,255,255));
-            fades->setFadeOutColor(Bitmap::makeColor(255,255,255));
+            fades->setFadeInColor(Graphics::Bitmap::makeColor(255,255,255));
+            fades->setFadeOutColor(Graphics::Bitmap::makeColor(255,255,255));
             fades->setFadeInTime(25);
             fades->setFadeOutTime(12);
 
@@ -1036,11 +1036,11 @@ void Menu::Context::addBackground(const Token * token){
     background->add(new Gui::Animation(token));
 }
 
-void Menu::Context::addBackground(const Bitmap & image){
+void Menu::Context::addBackground(const Graphics::Bitmap & image){
     if (!background){
         background = new Background();
     }
-    background->add(new Gui::Animation(new Bitmap(image)));
+    background->add(new Gui::Animation(new Graphics::Bitmap(image)));
 }
 
 void Menu::Context::addBackground(const std::string & image){
@@ -1114,14 +1114,14 @@ void Menu::Context::act(){
     }
 }
 
-void Menu::Context::render(Renderer * renderer, const Bitmap & bmp){
+void Menu::Context::render(Renderer * renderer, const Graphics::Bitmap & bmp){
     if (background){
         // background
         background->render(Gui::Animation::BackgroundBottom, bmp);
         background->render(Gui::Animation::BackgroundMiddle, bmp);
         background->render(Gui::Animation::BackgroundTop, bmp);
     } else {
-        bmp.fill(Bitmap::makeColor(0,0,0));
+        bmp.fill(Graphics::Bitmap::makeColor(0,0,0));
     }
     
     // Menu
@@ -1391,7 +1391,7 @@ void Menu::Menu::run(const Context & parentContext){
         Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         work.updateOnResize();
         */
-        Bitmap work(Menu::Width, Menu::Height);
+        Graphics::Bitmap work(Menu::Width, Menu::Height);
         
         double runCounter = 0;
         Global::speed_counter = 0;
@@ -1453,7 +1453,7 @@ void Menu::Menu::run(const Context & parentContext){
 static void changeScreenMode(){
     Configuration::setFullscreen(!Configuration::getFullscreen());
     int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-    Bitmap::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
+    Graphics::Bitmap::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
 }
 
 void Menu::Menu::act(Context & ourContext){
@@ -1505,7 +1505,7 @@ void Menu::Menu::act(Context & ourContext){
     ourContext.act();
 }
 
-void Menu::Menu::render(Context & ourContext, const Bitmap & bmp){
+void Menu::Menu::render(Context & ourContext, const Graphics::Bitmap & bmp){
     // Render context
     ourContext.render(renderer, bmp);
 }

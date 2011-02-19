@@ -504,7 +504,7 @@ public:
     vector<Point>::iterator current_point;
 };
 
-void NormalElement::render(int cameraX, int cameraY, const Bitmap &bmp, Bitmap::Filter * filter){
+void NormalElement::render(int cameraX, int cameraY, const Graphics::Bitmap &bmp, Graphics::Bitmap::Filter * filter){
     if (!getVisible()){
         return;
     }
@@ -684,7 +684,7 @@ void AnimationElement::act(){
     getSinY().act();
 }
 
-void AnimationElement::render(int cameraX, int cameraY, const Bitmap &bmp, Bitmap::Filter * filter){
+void AnimationElement::render(int cameraX, int cameraY, const Graphics::Bitmap &bmp, Graphics::Bitmap::Filter * filter){
     if (!getVisible()){
         return;
     }
@@ -858,7 +858,7 @@ void ParallaxElement::act(){
     getSinY().act();
 }
 
-static void doParallaxXScale(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, double yscaleDelta){
+static void doParallaxXScale(const Graphics::Bitmap & bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, double yscaleDelta){
     const int height = bmp.getHeight();
     const int width = bmp.getWidth();
 
@@ -891,7 +891,7 @@ static void doParallaxXScale(const Bitmap & bmp, const Bitmap & work, int camera
         /* FIXME: sprig has an off-by-1 error so the height can't be 2 here.
          * try to fix this someday!
          */
-        Bitmap single(bmp, 0, liney, width, 2);
+        Graphics::Bitmap single(bmp, 0, liney, width, 2);
         // single.drawStretched(movex, movey, width, 1 - cameraY * (liney + 1) * yscaleDelta, work);
         single.drawStretched(movex, movey, width, 2 - cameraY * liney * yscaleDelta / 100, work);
 
@@ -903,7 +903,7 @@ static void doParallaxXScale(const Bitmap & bmp, const Bitmap & work, int camera
 
 }
 
-static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
+static void doParallax(const Graphics::Bitmap & bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
     const int height = bmp.getHeight();
     const int width = bmp.getWidth();
 
@@ -999,7 +999,7 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
         int destY = y + liney;
         int destWidth = x2 - x1;
         int destHeight = 1;
-        Bitmap single(bmp, 0, liney, width, 1);
+        Graphics::Bitmap single(bmp, 0, liney, width, 1);
         single.drawStretched(x1, y + liney, x2 - x1, 1, work);
         // bmp.Stretch(work, 0, liney, width, 1, x1, y + liney, (x2 - x1), 1);
         // bmp.drawStretched(destX, destY, destWidth, destHeight, work);
@@ -1035,11 +1035,11 @@ static void doParallax(const Bitmap & bmp, const Bitmap & work, int cameraX, int
 
 }
 
-void ParallaxElement::render(int cameraX, int cameraY, const Bitmap & work, Bitmap::Filter * filter){
+void ParallaxElement::render(int cameraX, int cameraY, const Graphics::Bitmap & work, Graphics::Bitmap::Filter * filter){
     if (!getVisible()){
         return;
     }
-    const Bitmap & show = *sprite->getBitmap(getMask());
+    const Graphics::Bitmap & show = *sprite->getBitmap(getMask());
     // const int addw = show.getWidth() + getTileSpacing().x;
     // const int addh = show.getHeight() + getTileSpacing().y;
     /* parallax ignores tile spacing */
@@ -1124,7 +1124,7 @@ void DummyElement::act(){
     getSinY().act();
 }
 
-void DummyElement::render(int x, int y, const Bitmap &bmp, Bitmap::Filter * filter){
+void DummyElement::render(int x, int y, const Graphics::Bitmap &bmp, Graphics::Bitmap::Filter * filter){
 }
 
 
@@ -1856,7 +1856,7 @@ clearColor(-1){
                                 simple >> r >> g >> b;
                             } catch (const Ast::Exception & e){
                             }
-                            self.clearColor = Bitmap::makeColor(r,g,b);
+                            self.clearColor = Graphics::Bitmap::makeColor(r,g,b);
                         } else {
                             //throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
                             Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
@@ -2014,7 +2014,7 @@ clearColor(-1){
                                 simple >> r >> g >> b;
                             } catch (const Ast::Exception & e){
                             }
-                            self.clearColor = Bitmap::makeColor(r,g,b);
+                            self.clearColor = Graphics::Bitmap::makeColor(r,g,b);
                         } else {
                             //throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
                             Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
@@ -2187,13 +2187,13 @@ void Background::act(){
     }
 }
 
-void Background::renderBackground(int x, int y, const Bitmap &bmp, Bitmap::Filter * filter){
+void Background::renderBackground(int x, int y, const Graphics::Bitmap &bmp, Graphics::Bitmap::Filter * filter){
     if ( clearColor != -1){
 	bmp.fill(clearColor);
     }
 	// debug overrides it
     if ( debug ){
-	bmp.fill( Bitmap::makeColor(255,0,255) );
+	bmp.fill( Graphics::Bitmap::makeColor(255,0,255) );
     }
 
     for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
@@ -2202,7 +2202,7 @@ void Background::renderBackground(int x, int y, const Bitmap &bmp, Bitmap::Filte
     }
 }
 
-void Background::renderForeground(int x, int y, const Bitmap &bmp, Bitmap::Filter * filter){
+void Background::renderForeground(int x, int y, const Graphics::Bitmap &bmp, Graphics::Bitmap::Filter * filter){
     for( vector< BackgroundElement *>::iterator i = foregrounds.begin(); i != foregrounds.end(); ++i ){
 	BackgroundElement *element = *i;
 	element->render(x, y, bmp, filter);

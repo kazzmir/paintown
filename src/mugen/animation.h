@@ -7,7 +7,9 @@
 #include "state.h"
 #include "util.h"
 
+namespace Graphics{
 class Bitmap;
+}
 class MugenSprite;
 
 /*
@@ -37,7 +39,7 @@ class MugenFrame{
 	
 	MugenFrame & operator=( const MugenFrame &copy );
 	
-	virtual void render(int x, int y, const Bitmap & work, const Mugen::Effects & effects);
+	virtual void render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects);
 
         virtual inline const std::vector<MugenArea> & getDefenseBoxes() const {
             return defenseCollision;
@@ -127,14 +129,14 @@ class MugenAnimation{
 	void logic();
 	
 	// Render current frame optionally scale defaults to 1
-	void render( int xaxis, int yaxis, const Bitmap &work, double scalex=1, double scaley=1 );
-        void render(int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects);
+	void render( int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex=1, double scaley=1 );
+        void render(int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects);
 	
 	// Render current frame overriding flipping
-	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Bitmap &work, const double scalex = 1, const double scaley = 1, Bitmap::Filter * filter = NULL);
+	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex = 1, const double scaley = 1, Graphics::Bitmap::Filter * filter = NULL);
 
         /* automatically sets the effect trans type to ADDALPHA */
-	void renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Bitmap &work, const double scalex = 1, const double scaley = 1);
+	void renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex = 1, const double scaley = 1);
 
         virtual const std::vector<MugenArea> getDefenseBoxes(bool reverse) const;
         virtual const std::vector<MugenArea> getAttackBoxes(bool reverse) const;
@@ -194,7 +196,7 @@ class MugenAnimation{
 
     protected:
 
-        void renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Bitmap & work, const Mugen::Effects & effects);
+        void renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects);
 	
     private:
 	

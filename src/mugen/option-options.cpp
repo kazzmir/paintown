@@ -54,7 +54,7 @@ Option::~Option(){
 void Option::enter(){
 }
 
-void Option::render(MugenFont & font, int x, int y, const Bitmap & bmp){
+void Option::render(MugenFont & font, int x, int y, const Graphics::Bitmap & bmp){
     const int rightX = x + 195;
     font.render(x+5, y, 1, 0, bmp, optionName);
     font.render(rightX, y, -1, 0, bmp, currentValue);
@@ -69,8 +69,8 @@ void Option::render(MugenFont & font, int x, int y, const Bitmap & bmp){
 	    alphaMod = -6;
 	}
 	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	Bitmap::transBlender(0,0,0,alpha);
-	bmp.translucent().rectangleFill(x+2, y-10, rightX+2, y+2,Bitmap::makeColor(255,255,255));
+        Graphics::Bitmap::transBlender(0,0,0,alpha);
+	bmp.translucent().rectangleFill(x+2, y-10, rightX+2, y+2,Graphics::Bitmap::makeColor(255,255,255));
 	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
@@ -429,8 +429,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     }
     
     // Run options
-    Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-    Bitmap screen(Configuration::getScreenWidth(), Configuration::getScreenHeight());
+    Graphics::Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    Graphics::Bitmap screen(Configuration::getScreenWidth(), Configuration::getScreenHeight());
     bool done = false;
     bool escaped = false;
     
@@ -456,9 +456,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     optionArea.location.setPosition2(Gui::AbsolutePoint(260,210));
     
     optionArea.location.setRadius(5);
-    optionArea.colors.body = Bitmap::makeColor(0,0,60);
+    optionArea.colors.body = Graphics::Bitmap::makeColor(0,0,60);
     optionArea.colors.bodyAlpha = 150;
-    optionArea.colors.border = Bitmap::makeColor(0,0,20);
+    optionArea.colors.border = Graphics::Bitmap::makeColor(0,0,20);
     
     
     while (!done){
@@ -593,7 +593,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     }
 }
 
-void OptionOptions::doOptions(MugenFont & font, int x, int y, const Bitmap & bmp){
+void OptionOptions::doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap & bmp){
     int mod = 30;
     for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
 	class Option * option = *i;

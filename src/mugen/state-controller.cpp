@@ -5068,7 +5068,7 @@ public:
         int blue = PaintownUtil::clamp((int) evaluateNumber(this->blue, environment, 0), 0, 255);
         int time = (int) evaluateNumber(this->time, environment, 1);
         bool under = evaluateBool(this->under, environment, false);
-        stage.setEnvironmentColor(Bitmap::makeColor(red, green, blue), time, under);
+        stage.setEnvironmentColor(Graphics::Bitmap::makeColor(red, green, blue), time, under);
     }
 
     StateController * deepCopy() const {

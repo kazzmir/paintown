@@ -48,10 +48,10 @@ std::vector<Level::LevelInfo> OpenborMod::getLevels(){
     return levels;
 }
     
-Bitmap * OpenborMod::createBitmap(const Filesystem::RelativePath & path){
+Graphics::Bitmap * OpenborMod::createBitmap(const Filesystem::RelativePath & path){
     try{
         char * data = reader.readFile(reader.getFile(path.path()));
-        Bitmap * bitmap = new Bitmap(data, reader.getFileLength(path.path()));
+        Graphics::Bitmap * bitmap = new Graphics::Bitmap(data, reader.getFileLength(path.path()));
         delete[] data;
         return bitmap;
     } catch (const Bor::PackError & error){
@@ -117,8 +117,8 @@ namespace Select{
 }
 
 Filesystem::AbsolutePath OpenborMod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
-    Bitmap background(makeBitmap(Filesystem::RelativePath("data/bgs/select.gif")));
-    Bitmap work(GFX_X / 2, GFX_Y / 2);
+    Graphics::Bitmap background(makeBitmap(Filesystem::RelativePath("data/bgs/select.gif")));
+    Graphics::Bitmap work(GFX_X / 2, GFX_Y / 2);
     background.Blit(work);
     work.BlitToScreen();
     InputMap<Select::Input> input;

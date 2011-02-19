@@ -36,7 +36,9 @@ namespace Compiler{
 
 namespace PaintownUtil = Util;
 
+namespace Graphics{
 class Bitmap;
+}
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
@@ -604,7 +606,7 @@ public:
 	
 	virtual void load(int useAct = 1);
 	
-	virtual void renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp, const int flip=1, const double scalex = 1, const double scaley = 1);
+	virtual void renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Graphics::Bitmap *bmp, const int flip=1, const double scalex = 1, const double scaley = 1);
 			   
 	// Change palettes
 	virtual void nextPalette();
@@ -655,14 +657,14 @@ public:
             return this->sprites[group][image];
         }
 
-        virtual const Bitmap * getCurrentFrame() const;
+        virtual const Graphics::Bitmap * getCurrentFrame() const;
         MugenAnimation * getCurrentAnimation() const;
 
-        virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
+        virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
 
     /*! This all the inherited members */
     virtual void act(std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >*, World*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >*);                       
-    virtual void draw(Bitmap*, int cameraX, int cameraY);
+    virtual void draw(Graphics::Bitmap*, int cameraX, int cameraY);
     virtual void grabbed(Paintown::Object*);
     virtual void unGrab();
     virtual bool isGrabbed();
@@ -1365,7 +1367,7 @@ protected:
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 	// Bitmaps of those sprites
-	std::map< unsigned int, std::map< unsigned int, Bitmap * > > bitmaps;
+	std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
 	
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
 	std::map< int, MugenAnimation * > animations;
@@ -1578,7 +1580,7 @@ public:
          */
         virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply);
     
-        void drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Bitmap & work);
+        void drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Graphics::Bitmap & work);
         void processAfterImages();
 
         struct SpecialStuff{
@@ -1647,7 +1649,7 @@ public:
         PaletteEffects paletteEffects;
 
         virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
-        void drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Bitmap & work);
+        void drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Graphics::Bitmap & work);
 };
 
 }

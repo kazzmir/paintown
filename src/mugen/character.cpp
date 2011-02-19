@@ -409,8 +409,8 @@ Character::~Character(){
     }
     
      // Get rid of bitmaps
-    for( std::map< unsigned int, std::map< unsigned int, Bitmap * > >::iterator i = bitmaps.begin() ; i != bitmaps.end() ; ++i ){
-      for( std::map< unsigned int, Bitmap * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for( std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > >::iterator i = bitmaps.begin() ; i != bitmaps.end() ; ++i ){
+      for( std::map< unsigned int, Graphics::Bitmap * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
@@ -1955,10 +1955,10 @@ void Character::fixAssumptions(){
 }
 
 // Render sprite
-void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Bitmap *bmp , const int flip, const double scalex, const double scaley ){
+void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Graphics::Bitmap *bmp , const int flip, const double scalex, const double scaley ){
     MugenSprite *sprite = sprites[group][image];
     if (sprite){
-	Bitmap *bitmap = sprite->getBitmap(true); //bitmaps[group][image];
+        Graphics::Bitmap *bitmap = sprite->getBitmap(true); //bitmaps[group][image];
 	/*if (!bitmap){
 	    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
 	    bitmaps[group][image] = bitmap;
@@ -1969,8 +1969,8 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
 	    bitmap->drawStretched(x,y, width, height, *bmp);
 	} else if (flip == -1){
 	    // temp bitmap to flip and crap
-	    Bitmap temp = Bitmap::temporaryBitmap(bitmap->getWidth(), bitmap->getHeight());
-	    temp.fill(Bitmap::MaskColor());
+            Graphics::Bitmap temp = Graphics::Bitmap::temporaryBitmap(bitmap->getWidth(), bitmap->getHeight());
+	    temp.fill(Graphics::Bitmap::MaskColor());
 	    bitmap->drawHFlip(0,0,temp);
 	    temp.drawStretched(x-width,y, width, height, *bmp);
 	}
@@ -1997,11 +1997,11 @@ void Character::priorPalette(){
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
 }
 
-const Bitmap * Character::getCurrentFrame() const {
+const Graphics::Bitmap * Character::getCurrentFrame() const {
     return getCurrentAnimation()->getCurrentFrame()->getSprite()->getBitmap(true);
 }
 
-void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
+void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
     getCurrentAnimation()->renderReflection(getFacing() == Object::FACING_LEFT, true, intensity, getRX() - rel_x, (int)(getZ() + getY() - rel_y), *work);
 }
 
@@ -2384,8 +2384,8 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
     return false;
 }
 
-void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Bitmap & work){
-    class AfterImageFilter: public Bitmap::Filter {
+void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Graphics::Bitmap & work){
+    class AfterImageFilter: public Graphics::Bitmap::Filter {
     public:
         AfterImageFilter(const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & post, const AfterImage::RGB & extraAdd, const AfterImage::RGB & extraMultiplier, int extra):
             bright(bright),
@@ -2484,7 +2484,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
                 blue_out = 255;
             }
 
-            int out = Bitmap::makeColor((int) red_out, (int) green_out, (int) blue_out);
+            int out = Graphics::Bitmap::makeColor((int) red_out, (int) green_out, (int) blue_out);
             return (unsigned int) out;
         }
 
@@ -2493,9 +2493,9 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
                 return cache[pixel];
             }
 
-            int red = Bitmap::getRed(pixel);
-            int green = Bitmap::getGreen(pixel);
-            int blue = Bitmap::getBlue(pixel);
+            int red = Graphics::Bitmap::getRed(pixel);
+            int green = Graphics::Bitmap::getGreen(pixel);
+            int blue = Graphics::Bitmap::getBlue(pixel);
             unsigned int out = doFilter(red, green, blue);
             cache[pixel] = out;
             return out;
@@ -2524,8 +2524,8 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     // frame.cache = Bitmap(fixed, true);
 }
 
-void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Bitmap & work){
-    class Effects: public Bitmap::Filter {
+void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Graphics::Bitmap & work){
+    class Effects: public Graphics::Bitmap::Filter {
     public:
         Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
         time(time),
@@ -2613,7 +2613,7 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
                 newBlue = 0;
             }
 
-            return Bitmap::makeColor(newRed, newGreen, newBlue);
+            return Graphics::Bitmap::makeColor(newRed, newGreen, newBlue);
         }
 
         unsigned int filter(unsigned int pixel) const {
@@ -2622,9 +2622,9 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
                 return cache[pixel];
             }
 
-            int red = Bitmap::getRed(pixel);
-            int green = Bitmap::getGreen(pixel);
-            int blue = Bitmap::getBlue(pixel);
+            int red = Graphics::Bitmap::getRed(pixel);
+            int green = Graphics::Bitmap::getGreen(pixel);
+            int blue = Graphics::Bitmap::getBlue(pixel);
             unsigned int out = doFilter(red, green, blue);
             cache[pixel] = out;
             return out;
@@ -2642,7 +2642,7 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
     animation->render(getFacing() == Object::FACING_LEFT, false, x, y, work, xscale, yscale, &effects);
 }
 
-void Character::draw(Bitmap * work, int cameraX, int cameraY){
+void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
     /*
     int color = Bitmap::makeColor(255,255,255);
     font.printf( x, y, color, *work, "State %d Animation %d", 0,  getCurrentState(), currentAnimation);
@@ -2687,7 +2687,7 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
         }
         int y = 1;
-        int color = Bitmap::makeColor(255, 255, 255);
+        int color = Graphics::Bitmap::makeColor(255, 255, 255);
         FontRender * render = FontRender::getInstance();
         render->addMessage(font, x, y, color, -1, "State %d Animation %d", getCurrentState(), currentAnimation);
         y += font.getHeight();
@@ -2718,9 +2718,9 @@ void Character::draw(Bitmap * work, int cameraX, int cameraY){
         if (getAlliance() == Mugen::Stage::Player2Side){
             wx = work->getWidth() - width - 1;
         }
-        Bitmap::transBlender(0, 0, 0, 128);
-        work->translucent().rectangleFill(wx, wy, wx+width, wy+height, Bitmap::makeColor(0, 0, 0));
-        work->translucent().line(0, wy+height, wx+width, wy+height, Bitmap::makeColor(64, 64, 64));
+        Graphics::Bitmap::transBlender(0, 0, 0, 128);
+        work->translucent().rectangleFill(wx, wy, wx+width, wy+height, Graphics::Bitmap::makeColor(0, 0, 0));
+        work->translucent().line(0, wy+height, wx+width, wy+height, Graphics::Bitmap::makeColor(64, 64, 64));
     }
 }
 

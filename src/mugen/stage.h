@@ -11,7 +11,9 @@
 
 #include "paintown-engine/game/world.h"
 
+namespace Graphics{
 class Bitmap;
+}
 namespace Console{
     class Console;
 }
@@ -29,7 +31,7 @@ class Effect{
 public:
     Effect(const Character * owner, MugenAnimation * animation, int id, int x, int y);
     
-    virtual void draw(const Bitmap & work, int cameraX, int cameraY);
+    virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY);
     virtual void logic();
     virtual bool isDead();
 
@@ -139,7 +141,7 @@ public:
     void logic();
 
     // Render the backgrounds appropriately
-    void render( Bitmap *work );
+    void render( Graphics::Bitmap *work );
 
     // Reset scenario
     void reset();
@@ -168,7 +170,7 @@ public:
     }
 
     //! Do continue screen return true to continue playing, false to end
-    virtual bool doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> &,  const Bitmap &);
+    virtual bool doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> &,  const Graphics::Bitmap &);
 
     /* 1 is normal, 0<rate<1 is slower, 1<rate is faster */
     virtual void setGameRate(double rate);
@@ -188,7 +190,7 @@ public:
 
     // Inherited world actions
     virtual void act();
-    virtual void draw( Bitmap * work );
+    virtual void draw( Graphics::Bitmap * work );
     virtual void addObject(Paintown::Object * o);
     virtual bool finished() const;
     virtual void reloadLevel() throw( LoadException );
@@ -198,7 +200,7 @@ public:
     virtual int getY();
     /* this shouldn't be here */
     // I guess ignore this one
-    virtual const std::deque<Bitmap*> & getScreenshots();
+    virtual const std::deque<Graphics::Bitmap*> & getScreenshots();
     virtual int levelLength() const;
     // Since this isn't a paintown level, I guess block wouldn't apply
     virtual const Block * currentBlock() const;
@@ -313,9 +315,9 @@ protected:
 
     PaletteEffects paletteEffects;
 
-    void drawBackgroundWithEffects(int x, int y, const Bitmap & board);
-    void drawForegroundWithEffects(int x, int y, const Bitmap & board);
-    void drawBackgroundWithEffectsSide(int x, int y, const Bitmap & board, void (Mugen::Background::*render) (int, int, const Bitmap &, Bitmap::Filter *));
+    void drawBackgroundWithEffects(int x, int y, const Graphics::Bitmap & board);
+    void drawForegroundWithEffects(int x, int y, const Graphics::Bitmap & board);
+    void drawBackgroundWithEffectsSide(int x, int y, const Graphics::Bitmap & board, void (Mugen::Background::*render) (int, int, const Graphics::Bitmap &, Graphics::Bitmap::Filter *));
 
     /* section loaders */
     void loadSectionInfo(Ast::Section * section);
@@ -543,7 +545,7 @@ protected:
     /* Commands, Triggers or whatever else we come up with */
 
     // Our working bitmap
-    Bitmap *board;
+    Graphics::Bitmap *board;
 
     // Our real axis givin that we have to use negatives
     int xaxis;
@@ -617,7 +619,7 @@ private:
     //void getBackgrounds( std::vector<MugenBackground *> &bgs, int ID );
 
     // What garbage
-    std::deque<Bitmap*> garbage;
+    std::deque<Graphics::Bitmap*> garbage;
 
     void initializeName();
 

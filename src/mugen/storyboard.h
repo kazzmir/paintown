@@ -11,7 +11,10 @@
 
 #include "util/input/input-map.h"
 
+namespace Graphics{
 class Bitmap;
+}
+
 class MugenSprite;
 class MugenSound;
 class MugenAnimation;
@@ -30,7 +33,7 @@ class Layer{
 	Layer();
 	virtual ~Layer();
         virtual void act(int currentTime);
-        virtual void render(int x, int y, const Bitmap &);
+        virtual void render(int x, int y, const Graphics::Bitmap &);
         virtual void reset();
 	virtual inline void setOffset(int x, int y){
 	    this->offset.x = x;
@@ -66,7 +69,7 @@ class Scene {
 	
         virtual void act();
 	
-	virtual void render(const Bitmap &);
+	virtual void render(const Graphics::Bitmap &);
 	
 	virtual bool isDone();
 	
@@ -157,7 +160,7 @@ class Storyboard {
 	virtual ~Storyboard();
 	
 	//! give it the default bitmap to blit to the screen
-	virtual void run(const Bitmap &, bool repeat = false);
+	virtual void run(const Graphics::Bitmap &, bool repeat = false);
 
         virtual void setInput(const InputMap<Mugen::Keys> & input){
             this->input = input;

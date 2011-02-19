@@ -7,7 +7,9 @@
 #include "util/font.h"
 #include "util/file-system.h"
 
+namespace Graphics{
 class Bitmap;
+}
 
 struct render_message{
 	render_message( const Font & f, int x, int y, int sizeX, int sizeY, int fg, int bg, int translucency, const std::string & str ):r_font( f ){
@@ -69,7 +71,7 @@ public:
 	void addMessage( const Font & f, int x, int y, int fg, int bg, int translucency, const std::string & str );
 	void addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... );
 	void addMessage(const Filesystem::RelativePath & font_name, int x, int y, int fg, int bg, const std::string & str );
-	void render(const Bitmap * work);
+	void render(const Graphics::Bitmap * work);
 
 private:
 

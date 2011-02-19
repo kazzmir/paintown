@@ -51,7 +51,7 @@ string Global::getVersionString(){
 
 
 void Global::showTitleScreen(){
-    Bitmap s(Global::titleScreen().path());
+    Graphics::Bitmap s(Global::titleScreen().path());
     s.BlitToScreen();
 }
 
@@ -84,11 +84,11 @@ void info(const std::string & str){
 }
 
 int getScreenWidth(){
-    return Bitmap::getScreenWidth();
+    return Graphics::Bitmap::getScreenWidth();
 }
 
 int getScreenHeight(){
-    return Bitmap::getScreenHeight();
+    return Graphics::Bitmap::getScreenHeight();
 }
 
 }

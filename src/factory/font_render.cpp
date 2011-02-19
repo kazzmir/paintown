@@ -50,20 +50,20 @@ void FontRender::destroy(){
 		delete my_render;
 }
 
-void FontRender::render(const Bitmap * work ){
+void FontRender::render(const Graphics::Bitmap * work ){
 	for ( vector<render_message>::iterator it = messages.begin(); it != messages.end(); it++ ){
 		const render_message & r = *it;
 
                 if (r.translucency != -1){
-                    Bitmap::transBlender(0, 0, 0, r.translucency);
-                    work->drawingMode( Bitmap::MODE_TRANS );
+                    Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
+                    work->drawingMode( Graphics::Bitmap::MODE_TRANS );
                 }
 
 		// work->printf( r.x, r.y, r.fg, r.r_font, r.str );
 		r.r_font.printf( r.x, r.y, r.sizeX, r.sizeY, r.fg, *work, r.str, 0 );
 		// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
                 if (r.translucency != -1){
-                    work->drawingMode( Bitmap::MODE_SOLID );
+                    work->drawingMode( Graphics::Bitmap::MODE_SOLID );
                 }
 	}
 	messages.clear();

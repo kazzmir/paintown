@@ -76,7 +76,7 @@ x(x),
 y(y){
 }
     
-void Effect::draw(const Bitmap & work, int cameraX, int cameraY){
+void Effect::draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
     animation->render((int)(x - cameraX), (int)(y - cameraY), work);
 }
 
@@ -168,7 +168,7 @@ autoturn(true),
 resetBG(true),
 shadowIntensity(128),
 reflect(false),
-shadowColor(Bitmap::makeColor(0,0,0)),
+shadowColor(Graphics::Bitmap::makeColor(0,0,0)),
 shadowYscale(0.4),
 shadowFadeRangeHigh(0),
 shadowFadeRangeMid(0),
@@ -599,7 +599,7 @@ void Mugen::Stage::load(){
     //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
     // Nope we need it to be the size of the entire board... we then pan the blit so our characters will stay put without fiddling with their x coordinates
     // board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
-    board = new Bitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    board = new Graphics::Bitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     camerax = startx;
     cameray = starty;
     // xaxis = (abs(boundleft) + boundright + DEFAULT_WIDTH)/2;//abs(boundleft);
@@ -624,9 +624,9 @@ void Mugen::Stage::load(){
     */
 
     int r, g, b;
-    Bitmap::cymkToRGB(shadow.c, shadow.y, shadow.m, shadow.k, &r, &g, &b);
+    Graphics::Bitmap::cymkToRGB(shadow.c, shadow.y, shadow.m, shadow.k, &r, &g, &b);
     Global::debug(1) << "Shadow c/y/m/k " << shadow.c << " " << shadow.y << " " << shadow.m << " " << shadow.k << " r/g/b " << r << " " << g << " " << b << endl;
-    shadowColor = Bitmap::makeColor(r, g, b);
+    shadowColor = Graphics::Bitmap::makeColor(r, g, b);
 
     /* shadowIntensity is used as the alpha value. its some combination of the
      * cymk components but I'm not sure what it is. This is relatively close
@@ -1124,7 +1124,7 @@ void Mugen::Stage::logic( ){
 #endif
 }
 
-class PaletteShader: public Bitmap::Filter {
+class PaletteShader: public Graphics::Bitmap::Filter {
 public:
     PaletteShader(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
         time(time),
@@ -1212,7 +1212,7 @@ public:
             newBlue = 0;
         }
 
-        return Bitmap::makeColor(newRed, newGreen, newBlue);
+        return Graphics::Bitmap::makeColor(newRed, newGreen, newBlue);
     }
 
     unsigned int filter(unsigned int pixel) const {
@@ -1221,16 +1221,16 @@ public:
             return cache[pixel];
         }
 
-        int red = Bitmap::getRed(pixel);
-        int green = Bitmap::getGreen(pixel);
-        int blue = Bitmap::getBlue(pixel);
+        int red = Graphics::Bitmap::getRed(pixel);
+        int green = Graphics::Bitmap::getGreen(pixel);
+        int blue = Graphics::Bitmap::getBlue(pixel);
         unsigned int out = doFilter(red, green, blue);
         cache[pixel] = out;
         return out;
     }
 };
 
-void Mugen::Stage::drawBackgroundWithEffectsSide(int x, int y, const Bitmap & board, void (Mugen::Background::*render) (int, int, const Bitmap &, Bitmap::Filter *)){
+void Mugen::Stage::drawBackgroundWithEffectsSide(int x, int y, const Graphics::Bitmap & board, void (Mugen::Background::*render) (int, int, const Graphics::Bitmap &, Graphics::Bitmap::Filter *)){
     PaletteShader effects(paletteEffects.counter, paletteEffects.addRed,
                     paletteEffects.addGreen, paletteEffects.addBlue,
                     paletteEffects.multiplyRed, paletteEffects.multiplyGreen,
@@ -1242,15 +1242,15 @@ void Mugen::Stage::drawBackgroundWithEffectsSide(int x, int y, const Bitmap & bo
     (background->*render)(x, y, board, &effects);
 }
         
-void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Bitmap & board){
+void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Graphics::Bitmap & board){
     drawBackgroundWithEffectsSide(x, y, board, &Background::renderBackground);
 }
 
-void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Bitmap & board){
+void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitmap & board){
     drawBackgroundWithEffectsSide(x, y, board, &Background::renderForeground);
 }
 
-void Mugen::Stage::render(Bitmap *work){
+void Mugen::Stage::render(Graphics::Bitmap *work){
     
     // Background
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
@@ -1264,8 +1264,8 @@ void Mugen::Stage::render(Bitmap *work){
     /* darken the background */
     if (superPause.time > 0){
         /* FIXME: this should be faded I think */
-        Bitmap::transBlender(0, 0, 0, 128);
-        board->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Bitmap::makeColor(0, 0, 0));
+        Graphics::Bitmap::transBlender(0, 0, 0, 128);
+        board->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::Bitmap::makeColor(0, 0, 0));
     }
 
     //! Render layer 0 HUD
@@ -1313,15 +1313,15 @@ void Mugen::Stage::render(Bitmap *work){
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
-		board->vLine( 150, (int)character->getX(), (int)character->getZ(), Bitmap::makeColor( 255, 0, 0));
+		board->vLine( 150, (int)character->getX(), (int)character->getZ(), Graphics::Bitmap::makeColor( 255, 0, 0));
 	    }
 	}
     }
     
     // Debug crap for board coordinates
     if (debugMode){
-	board->hLine( 0, abs(boundhigh) + currentZOffset(), board->getWidth(), Bitmap::makeColor( 0,255,0 ));
-	board->vLine( 0, xaxis, board->getHeight(), Bitmap::makeColor(255,0,0));
+	board->hLine( 0, abs(boundhigh) + currentZOffset(), board->getWidth(), Graphics::Bitmap::makeColor( 0,255,0 ));
+	board->vLine( 0, xaxis, board->getHeight(), Graphics::Bitmap::makeColor(255,0,0));
     }
     
     // board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
@@ -1329,8 +1329,8 @@ void Mugen::Stage::render(Bitmap *work){
     
     // Debug crap for screen coordinates
     if (debugMode){
-	work->vLine( 0, tension, 240, Bitmap::makeColor( 0,255,0 ));
-	work->vLine( 0, 320 - tension, 240, Bitmap::makeColor( 0,255,0 ));
+	work->vLine( 0, tension, 240, Graphics::Bitmap::makeColor( 0,255,0 ));
+	work->vLine( 0, 320 - tension, 240, Graphics::Bitmap::makeColor( 0,255,0 ));
     }
     
     // Life bars, will eventually be changed out with mugens interface
@@ -1492,7 +1492,7 @@ void Mugen::Stage::act(){
     logic();
 }
 
-void Mugen::Stage::draw( Bitmap * work ){
+void Mugen::Stage::draw( Graphics::Bitmap * work ){
     render(work);
 }
 
@@ -1517,7 +1517,7 @@ int Mugen::Stage::getY(){
 }
 /* this shouldn't be here */
 // I guess ignore this one
-const deque<Bitmap*> & Mugen::Stage::getScreenshots(){
+const deque<Graphics::Bitmap*> & Mugen::Stage::getScreenshots(){
     return garbage;
 }
 
@@ -1842,7 +1842,7 @@ void Mugen::Stage::setGameRate(double rate){
 }
 
 //! Do continue screen return true to continue playing, false to end
-bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input, const Bitmap & buffer){
+bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input, const Graphics::Bitmap & buffer){
 
     Filesystem::AbsolutePath systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
     
@@ -1947,8 +1947,8 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         
             // do darkened background
             // Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	    Bitmap::transBlender(0,0,0,150);
-	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Bitmap::makeColor(0,0,0));
+            Graphics::Bitmap::transBlender(0,0,0,150);
+	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Graphics::Bitmap::makeColor(0,0,0));
 	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
             
             // Render character

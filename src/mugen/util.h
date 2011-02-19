@@ -178,7 +178,7 @@ class Effects{
             int y1, y2;
         } dimension;
 
-        Bitmap::Filter * filter;
+        Graphics::Bitmap::Filter * filter;
 };
 
 /* Use with fonts */
@@ -384,7 +384,7 @@ class Element {
 	virtual ~Element();
 	
 	virtual void act()=0;
-	virtual void render(int x, int y, const Bitmap &, Bitmap::Filter * filter)=0;
+	virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter)=0;
 	
 	enum Layer {
 	    Background,

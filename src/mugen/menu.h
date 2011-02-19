@@ -42,7 +42,7 @@ class CursorHandler{
 	
 	// Handles cursor box blinking
 	virtual void act();
-	virtual void renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> &, const Bitmap &);
+	virtual void renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> &, const Graphics::Bitmap &);
 	int getFontHeight(std::vector<MugenFont *> & fonts);
 	virtual inline void setCursor(int x1, int y1, int x2, int y2){
 	    this->cursor.x1 = x1;
@@ -70,7 +70,7 @@ class CursorHandler{
 	}
 	
     private:
-	virtual void renderCursor(int x, int y, const Bitmap &);
+	virtual void renderCursor(int x, int y, const Graphics::Bitmap &);
 	MugenMenuArea cursor;
 	Mugen::FontInfo itemFont;
 	Mugen::FontInfo activeFont;
@@ -94,7 +94,7 @@ class ItemOption : public MenuOption {
 	virtual void logic();
 	virtual void run(const Menu::Context &);
 	
-	virtual void render(int x, int y, CursorHandler &, std::vector<MugenFont *> &, const Bitmap &);
+	virtual void render(int x, int y, CursorHandler &, std::vector<MugenFont *> &, const Graphics::Bitmap &);
 	
 	virtual void executeOption(const Mugen::PlayerType &, bool & endGame)=0;
 };
@@ -237,7 +237,7 @@ class MugenMenu {
         void doMenuMovement();
 	
 	// Draw text
-	void renderText(Bitmap *bmp);
+	void renderText(Graphics::Bitmap *bmp);
 	
 	// Move text (for opening sequence where text scrolls into place from the sides)
 	bool moveText;

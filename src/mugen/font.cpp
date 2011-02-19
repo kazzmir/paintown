@@ -180,11 +180,11 @@ int MugenFont::getHeight() const {
     return height;
 }
     
-void MugenFont::printf( int x, int y, int xSize, int ySize, int color, const Bitmap & work, const string & str, int marker, ... ) const {
+void MugenFont::printf( int x, int y, int xSize, int ySize, int color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const {
     /* call the other printf somehow.. */
 }
 
-void MugenFont::printf( int x, int y, int color, const Bitmap & work, const string & str, int marker, ... ) const{
+void MugenFont::printf( int x, int y, int color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const{
     // Va list
     char buf[512];
     va_list ap;
@@ -204,7 +204,7 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
             character.clearToMask();
             bmp->Blit(loc->second.startx, 0, loc->second.width + spacingx, height + spacingy,0,0, character);
             */
-            Bitmap character(*bmp, loc->second.startx, 0, loc->second.width, height);
+            Graphics::Bitmap character(*bmp, loc->second.startx, 0, loc->second.width, height);
             character.draw(x + workoffsetx, y, work);
             workoffsetx += loc->second.width + spacingx;
         } else{
@@ -214,7 +214,7 @@ void MugenFont::printf( int x, int y, int color, const Bitmap & work, const stri
     }
 }
 
-void MugenFont::render(int x, int y, int position, int bank, const Bitmap & work, const string & str){
+void MugenFont::render(int x, int y, int position, int bank, const Graphics::Bitmap & work, const string & str){
     changeBank(bank);
     const int height = getHeight();
     const int length = textLength(str.c_str());
@@ -253,12 +253,12 @@ void MugenFont::changeBank(int bank){
         int r = newpal[i];
         int g = newpal[i+1];
         int b = newpal[i+2];
-        int col = Bitmap::makeColor(r,g,b);
-        if (col == Bitmap::MaskColor()){
+        int col = Graphics::Bitmap::makeColor(r,g,b);
+        if (col == Graphics::Bitmap::MaskColor()){
             int oldCol = col;
             while (oldCol == col){
                 r -= 1;
-                oldCol = Bitmap::makeColor(r,g,b);
+                oldCol = Graphics::Bitmap::makeColor(r,g,b);
             }
             newpal[i] = r;
             newpal[i+1] = g;
@@ -270,8 +270,8 @@ void MugenFont::changeBank(int bank){
     if (bmp){
         delete bmp;
     }
-    bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
-    bmp->replaceColor(bmp->get8BitMaskColor(), Bitmap::MaskColor());
+    bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
+    bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::Bitmap::MaskColor());
 }
 
 void MugenFont::load(){
@@ -298,8 +298,8 @@ void MugenFont::load(){
     ifile.read((char *)pcx, pcxsize);
     memcpy(palette, pcx+(pcxsize)-768, 768);
 
-    bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
-    bmp->replaceColor(bmp->get8BitMaskColor(), Bitmap::MaskColor());
+    bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
+    bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::Bitmap::MaskColor());
 
     // Get the text
     ifile.seekg(pcxlocation+pcxsize, ios::beg);

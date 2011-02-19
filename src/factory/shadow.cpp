@@ -7,7 +7,7 @@
 using namespace std;
 
 Shadow * Shadow::my_shadow = NULL;
-Bitmap const * Shadow::getShadow( unsigned int y ){
+Graphics::Bitmap const * Shadow::getShadow( unsigned int y ){
 	if (my_shadow == NULL){
             my_shadow = new Shadow();
             atexit(destroy);
@@ -40,12 +40,12 @@ Shadow::Shadow(){
         string s = "sprites/shadow/shadow";
         s += (char)(x+'0');
         s += ".png";
-        shadows.push_back(new Bitmap(Filesystem::find(Filesystem::RelativePath(s)).path()));
+        shadows.push_back(new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(s)).path()));
     }
 }
 
 Shadow::~Shadow(){
-    for ( vector< Bitmap * >::iterator it = shadows.begin(); it != shadows.end(); it++ ){
+    for ( vector< Graphics::Bitmap * >::iterator it = shadows.begin(); it != shadows.end(); it++ ){
         delete *it;
     }
 }

@@ -28,8 +28,8 @@ Collector::~Collector(){
     HeartFactory::destroy();
     FontFactory::destroy();
     FontRender::destroy();
-    Bitmap::cleanupTemporaryBitmaps();
-    Bitmap::shutdown();
+    Graphics::Bitmap::cleanupTemporaryBitmaps();
+    Graphics::Bitmap::shutdown();
     Mugen::Data::destroy();
     Sound::uninitialize();
     delete resource;
