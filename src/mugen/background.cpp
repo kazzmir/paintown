@@ -1856,7 +1856,7 @@ clearColor(-1){
                                 simple >> r >> g >> b;
                             } catch (const Ast::Exception & e){
                             }
-                            self.clearColor = Graphics::Bitmap::makeColor(r,g,b);
+                            self.clearColor = Graphics::makeColor(r,g,b);
                         } else {
                             //throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
                             Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
@@ -2014,7 +2014,7 @@ clearColor(-1){
                                 simple >> r >> g >> b;
                             } catch (const Ast::Exception & e){
                             }
-                            self.clearColor = Graphics::Bitmap::makeColor(r,g,b);
+                            self.clearColor = Graphics::makeColor(r,g,b);
                         } else {
                             //throw MugenException("Unhandled option in Background Definition Section: " + simple.toString());
                             Global::debug(0) << "Unhandled option in Background Definition Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
@@ -2193,7 +2193,7 @@ void Background::renderBackground(int x, int y, const Graphics::Bitmap &bmp, Gra
     }
 	// debug overrides it
     if ( debug ){
-	bmp.fill( Graphics::Bitmap::makeColor(255,0,255) );
+	bmp.fill( Graphics::makeColor(255,0,255) );
     }
 
     for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){

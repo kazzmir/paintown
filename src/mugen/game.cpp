@@ -241,7 +241,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
             if (show_fps){
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
-                font.printf(work.getWidth() - 60, work.getHeight() - font.getHeight() - 1, Graphics::Bitmap::makeColor(255,255,255), work, "FPS: %0.2f", 0, fps);
+                font.printf(work.getWidth() - 60, work.getHeight() - font.getHeight() - 1, Graphics::makeColor(255,255,255), work, "FPS: %0.2f", 0, fps);
             }
 
             work.BlitToScreen();

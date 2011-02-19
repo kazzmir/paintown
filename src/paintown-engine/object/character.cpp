@@ -551,7 +551,7 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
 
             for (int num = 0; num < 2; num++){
                 sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::Bitmap::MaskColor());
-                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::Bitmap::makeColor(255,0,0));
+                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::makeColor(255,0,0));
             }
 
             if ( 100.0 * (double) nonMaskingPixels( sub ) / (double) (sub->getWidth() * sub->getHeight()) < 10.0 ){
@@ -671,7 +671,7 @@ static bool invincibility_zero(const Character * const character){
 
 void Character::setInvincibility(const int x){
     invincibility = x;
-    addEffect(new DrawUntilEffect(new DrawGlowEffect(this, Graphics::Bitmap::makeColor(10,10,250), Graphics::Bitmap::makeColor(190, 190, 255), 75), invincibility_zero));
+    addEffect(new DrawUntilEffect(new DrawGlowEffect(this, Graphics::makeColor(10,10,250), Graphics::makeColor(190, 190, 255), 75), invincibility_zero));
 }
 
 Animation * Character::getCurrentMovement() const {
@@ -1471,14 +1471,14 @@ void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
     const int health_height = 7;
     const int maxHealthWidth = 100;
     int max = getMaxHealth() < maxHealthWidth ? getMaxHealth() : maxHealthWidth;
-    translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::Bitmap::makeColor( 192, 32, 32 ) );
+    translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::makeColor( 192, 32, 32 ) );
     Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
 
-    int colors[ 5 ] = { Graphics::Bitmap::makeColor(16, 162, 246),
-        Graphics::Bitmap::makeColor(214, 184, 48),
-        Graphics::Bitmap::makeColor(244, 16, 12),
-        Graphics::Bitmap::makeColor(237, 173, 71),
-        Graphics::Bitmap::makeColor(183, 217, 180)};
+    int colors[ 5 ] = { Graphics::makeColor(16, 162, 246),
+        Graphics::makeColor(214, 184, 48),
+        Graphics::makeColor(244, 16, 12),
+        Graphics::makeColor(237, 173, 71),
+        Graphics::makeColor(183, 217, 180)};
 
     int color = 0;
     for ( int s = 0; s < health; s += maxHealthWidth ){
@@ -1493,7 +1493,7 @@ void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
     }
 
     Graphics::TranslucentBitmap border(Graphics::Bitmap(*work, x, y, max+1, health_height));
-    border.border(0, 1, Graphics::Bitmap::makeColor(255, 255, 255));
+    border.border(0, 1, Graphics::makeColor(255, 255, 255));
 
     // Bitmap::drawingMode( Bitmap::MODE_SOLID );
 }
@@ -1738,7 +1738,7 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
             if (getFacing() == Object::FACING_LEFT){
                 x2 = x - animation_current->getRange();
             }
-            work->rectangle( x, y, x2, y + 1, Graphics::Bitmap::makeColor(255,255,255) );
+            work->rectangle( x, y, x2, y + 1, Graphics::makeColor(255,255,255) );
         }
     }
 }
@@ -1776,7 +1776,7 @@ void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int
             for (int w = 0; w < shade.getWidth(); ++w){
                 int pix = shade.getPixel(w,h);
                 if (pix != Graphics::Bitmap::MaskColor()){
-                    shade.putPixel(w,h, Graphics::Bitmap::makeColor(0,0,0));
+                    shade.putPixel(w,h, Graphics::makeColor(0,0,0));
                 }
             }
         }

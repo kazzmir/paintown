@@ -111,7 +111,7 @@ musicLoop(true){
                     simple >> r >> g >> b;
                 } catch (const Ast::Exception & e){
                 }
-                scene.fader.setFadeInColor(Graphics::Bitmap::makeColor(r,g,b));
+                scene.fader.setFadeInColor(Graphics::makeColor(r,g,b));
             } else if (simple == "fadeout.time"){
                 int time;
                 simple >> time;
@@ -122,7 +122,7 @@ musicLoop(true){
                     simple >> r >> g >> b;
                 } catch (const Ast::Exception & e){
                 }
-                scene.fader.setFadeOutColor(Graphics::Bitmap::makeColor(r, g, b));
+                scene.fader.setFadeOutColor(Graphics::makeColor(r, g, b));
             } else if (simple == "bg.name"){
                 std::string name;
                 simple >> name;
@@ -134,7 +134,7 @@ musicLoop(true){
                     simple >> r >> g >> b;
                 } catch (const Ast::Exception & e){
                 }
-                scene.clearColor = (r == -1 ? r : Graphics::Bitmap::makeColor(r, g, b));
+                scene.clearColor = (r == -1 ? r : Graphics::makeColor(r, g, b));
                 scene.clearColorSet = true;
             } else if (simple == "end.time"){
                 simple >> scene.endTime;
@@ -512,7 +512,7 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
             scene->render(work);
             work.Stretch(bmp);
             if (Global::getDebug() > 0){
-                Font::getDefaultFont().printf( 15, 310, Graphics::Bitmap::makeColor(0,255,128), bmp, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->getTicker(),scene->getEndTime(),scene->getFadeTool().getFadeInTime(),scene->getFadeTool().getFadeOutTime() );
+                Font::getDefaultFont().printf( 15, 310, Graphics::makeColor(0,255,128), bmp, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->getTicker(),scene->getEndTime(),scene->getFadeTool().getFadeInTime(),scene->getFadeTool().getFadeOutTime() );
             }
             bmp.BlitToScreen();
         }

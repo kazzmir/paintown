@@ -2484,7 +2484,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
                 blue_out = 255;
             }
 
-            int out = Graphics::Bitmap::makeColor((int) red_out, (int) green_out, (int) blue_out);
+            int out = Graphics::makeColor((int) red_out, (int) green_out, (int) blue_out);
             return (unsigned int) out;
         }
 
@@ -2613,7 +2613,7 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
                 newBlue = 0;
             }
 
-            return Graphics::Bitmap::makeColor(newRed, newGreen, newBlue);
+            return Graphics::makeColor(newRed, newGreen, newBlue);
         }
 
         unsigned int filter(unsigned int pixel) const {
@@ -2687,7 +2687,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
         }
         int y = 1;
-        int color = Graphics::Bitmap::makeColor(255, 255, 255);
+        int color = Graphics::makeColor(255, 255, 255);
         FontRender * render = FontRender::getInstance();
         render->addMessage(font, x, y, color, -1, "State %d Animation %d", getCurrentState(), currentAnimation);
         y += font.getHeight();
@@ -2719,8 +2719,8 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
             wx = work->getWidth() - width - 1;
         }
         Graphics::Bitmap::transBlender(0, 0, 0, 128);
-        work->translucent().rectangleFill(wx, wy, wx+width, wy+height, Graphics::Bitmap::makeColor(0, 0, 0));
-        work->translucent().line(0, wy+height, wx+width, wy+height, Graphics::Bitmap::makeColor(64, 64, 64));
+        work->translucent().rectangleFill(wx, wy, wx+width, wy+height, Graphics::makeColor(0, 0, 0));
+        work->translucent().line(0, wy+height, wx+width, wy+height, Graphics::makeColor(64, 64, 64));
     }
 }
 

@@ -105,7 +105,7 @@ void CursorHandler::renderCursor(int x, int y, const Graphics::Bitmap & bmp){
     if (cursor.visible){
 	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
         Graphics::Bitmap::transBlender(0, 0, 0, cursor.alpha);
-	bmp.translucent().rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Graphics::Bitmap::makeColor(255,255,255));
+	bmp.translucent().rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Graphics::makeColor(255,255,255));
 	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
@@ -418,7 +418,7 @@ void MugenMenu::loadData(){
                             try{
                                 int r,g,b;
                                 simple >> r >> g >> b;
-                                menu.fader.setFadeInColor(Graphics::Bitmap::makeColor(r,g,b));
+                                menu.fader.setFadeInColor(Graphics::makeColor(r,g,b));
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "fadeout.time"){
@@ -431,7 +431,7 @@ void MugenMenu::loadData(){
                         } else if (simple == "fadeout.color"){
                             int r,g,b;
                             simple >> r >> g >> b;
-                            menu.fader.setFadeOutColor(Graphics::Bitmap::makeColor(r,g,b));
+                            menu.fader.setFadeOutColor(Graphics::makeColor(r,g,b));
                         } else if (simple == "menu.pos"){
                             simple >> menu.position.x;
                             simple >> menu.position.y;

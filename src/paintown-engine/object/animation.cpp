@@ -819,12 +819,12 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
 
     // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
     if ( Global::getDebug() > 5 ){
-        work->rectangle( x - w, y - h, x + w, y, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
-        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Graphics::Bitmap::makeColor(255,0,0) );
+        work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor( 255, 255, 255 ) );
+        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
         // current_collide->draw( *work, x-w, y-h );
         ECollide * c = getCollide( Object::FACING_RIGHT );
         if ( c != NULL ){
-            c->draw( *work, x - w, y - h, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
+            c->draw( *work, x - w, y - h, Graphics::makeColor( 255, 255, 255 ) );
         }
     }
 
@@ -885,12 +885,12 @@ void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Rem
     // work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
     // work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
     if ( Global::getDebug() > 5 ){
-        work->rectangle( x - w, y - h, x + w, y, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
-        work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Graphics::Bitmap::makeColor(255,0,0) );
+        work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor( 255, 255, 255 ) );
+        work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
         // current_collide->draw( *work, x-w, y-h, true );
         ECollide * c = getCollide( Object::FACING_LEFT );
         if ( c != NULL ){
-            c->draw( *work, x - w, y - h, Graphics::Bitmap::makeColor( 255, 255, 255 ), true );
+            c->draw( *work, x - w, y - h, Graphics::makeColor( 255, 255, 255 ), true );
         }
     }
 

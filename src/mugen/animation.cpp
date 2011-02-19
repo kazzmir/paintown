@@ -279,11 +279,11 @@ void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const
     frame->render(xaxis, yaxis, work, effects);
 
     if (showDefense){
-        renderCollision(getDefenseBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::Bitmap::makeColor(0, 255, 0));
+        renderCollision(getDefenseBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::makeColor(0, 255, 0));
     }
 
     if (showOffense){
-        renderCollision(getAttackBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::Bitmap::makeColor(255,0,0 ));
+        renderCollision(getAttackBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::makeColor(255,0,0 ));
     }
 }
 

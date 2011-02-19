@@ -168,7 +168,7 @@ autoturn(true),
 resetBG(true),
 shadowIntensity(128),
 reflect(false),
-shadowColor(Graphics::Bitmap::makeColor(0,0,0)),
+shadowColor(Graphics::makeColor(0,0,0)),
 shadowYscale(0.4),
 shadowFadeRangeHigh(0),
 shadowFadeRangeMid(0),
@@ -626,7 +626,7 @@ void Mugen::Stage::load(){
     int r, g, b;
     Graphics::Bitmap::cymkToRGB(shadow.c, shadow.y, shadow.m, shadow.k, &r, &g, &b);
     Global::debug(1) << "Shadow c/y/m/k " << shadow.c << " " << shadow.y << " " << shadow.m << " " << shadow.k << " r/g/b " << r << " " << g << " " << b << endl;
-    shadowColor = Graphics::Bitmap::makeColor(r, g, b);
+    shadowColor = Graphics::makeColor(r, g, b);
 
     /* shadowIntensity is used as the alpha value. its some combination of the
      * cymk components but I'm not sure what it is. This is relatively close
@@ -1212,7 +1212,7 @@ public:
             newBlue = 0;
         }
 
-        return Graphics::Bitmap::makeColor(newRed, newGreen, newBlue);
+        return Graphics::makeColor(newRed, newGreen, newBlue);
     }
 
     unsigned int filter(unsigned int pixel) const {
@@ -1265,7 +1265,7 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     if (superPause.time > 0){
         /* FIXME: this should be faded I think */
         Graphics::Bitmap::transBlender(0, 0, 0, 128);
-        board->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::Bitmap::makeColor(0, 0, 0));
+        board->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
     }
 
     //! Render layer 0 HUD
@@ -1313,15 +1313,15 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
-		board->vLine( 150, (int)character->getX(), (int)character->getZ(), Graphics::Bitmap::makeColor( 255, 0, 0));
+		board->vLine( 150, (int)character->getX(), (int)character->getZ(), Graphics::makeColor( 255, 0, 0));
 	    }
 	}
     }
     
     // Debug crap for board coordinates
     if (debugMode){
-	board->hLine( 0, abs(boundhigh) + currentZOffset(), board->getWidth(), Graphics::Bitmap::makeColor( 0,255,0 ));
-	board->vLine( 0, xaxis, board->getHeight(), Graphics::Bitmap::makeColor(255,0,0));
+	board->hLine( 0, abs(boundhigh) + currentZOffset(), board->getWidth(), Graphics::makeColor( 0,255,0 ));
+	board->vLine( 0, xaxis, board->getHeight(), Graphics::makeColor(255,0,0));
     }
     
     // board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
@@ -1329,8 +1329,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     
     // Debug crap for screen coordinates
     if (debugMode){
-	work->vLine( 0, tension, 240, Graphics::Bitmap::makeColor( 0,255,0 ));
-	work->vLine( 0, 320 - tension, 240, Graphics::Bitmap::makeColor( 0,255,0 ));
+	work->vLine( 0, tension, 240, Graphics::makeColor( 0,255,0 ));
+	work->vLine( 0, 320 - tension, 240, Graphics::makeColor( 0,255,0 ));
     }
     
     // Life bars, will eventually be changed out with mugens interface
@@ -1948,7 +1948,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
             // do darkened background
             // Bitmap::drawingMode(Bitmap::MODE_TRANS);
             Graphics::Bitmap::transBlender(0,0,0,150);
-	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Graphics::Bitmap::makeColor(0,0,0));
+	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Graphics::makeColor(0,0,0));
 	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
             
             // Render character

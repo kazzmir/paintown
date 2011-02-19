@@ -109,7 +109,7 @@ void Enemy::drawFront( Graphics::Bitmap * work, int rel_x ){
 		const string & name = getName();
 		// const int height = my_font.getHeight( name ) / 2;
 		const int height = 20 / 2;
-		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Graphics::Bitmap::makeColor(255,255,255), -1, name );
+		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Graphics::makeColor(255,255,255), -1, name );
 
 
 		drawLifeBar( icon_x + x + 1, y + height + 1, work );

@@ -154,10 +154,10 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     Util::blend_palette( unselectedGradient, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
     Util::blend_palette( unselectedGradient + maxColor / 2, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
     */
-    Util::blend_palette(unselectedGradient, 3, Graphics::Bitmap::makeColor(0, 0, 0), Graphics::Bitmap::makeColor(255, 0, 0));
+    Util::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
 
-    Util::blend_palette( selectedGradient, maxColor / 2, Graphics::Bitmap::makeColor( 0, 128, 0 ), Graphics::Bitmap::makeColor( 0, 255, 0 ) );
-    Util::blend_palette( selectedGradient + maxColor / 2, maxColor / 2, Graphics::Bitmap::makeColor( 0, 255, 0 ), Graphics::Bitmap::makeColor( 0, 128, 0 ) );
+    Util::blend_palette( selectedGradient, maxColor / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );
+    Util::blend_palette( selectedGradient + maxColor / 2, maxColor / 2, Graphics::makeColor( 0, 255, 0 ), Graphics::makeColor( 0, 128, 0 ) );
 
     Global::speed_counter = 0;
 
@@ -173,8 +173,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     const int maxGradient = 50;
     int gradient[ maxGradient ];	
     /* fade from yellow to some reddish color */
-    Util::blend_palette( gradient, 25, Graphics::Bitmap::makeColor( 255, 255, 0 ), Graphics::Bitmap::makeColor( 0xff, 0x33, 0x11 ) );
-    Util::blend_palette( gradient + 25, 25, Graphics::Bitmap::makeColor( 0xff, 0x33, 0x11 ), Graphics::Bitmap::makeColor( 255, 255, 0 ) );
+    Util::blend_palette( gradient, 25, Graphics::makeColor( 255, 255, 0 ), Graphics::makeColor( 0xff, 0x33, 0x11 ) );
+    Util::blend_palette( gradient + 25, 25, Graphics::makeColor( 0xff, 0x33, 0x11 ), Graphics::makeColor( 255, 255, 0 ) );
 
     bool draw = true;
     unsigned int clock = 0;
@@ -437,16 +437,16 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         int color = 255 - c * 190;
                         int x = 10 + 5 * c;
                         int y = font.getHeight() + 5 + c * 5;
-                        font.printf( x, y, Graphics::Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
+                        font.printf( x, y, Graphics::makeColor(color, color, color ), work, copy.getName(), 0 );
                     }
                 }
 
-                font.printf( 10, 10, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
+                font.printf( 10, 10, Graphics::makeColor( 255, 255, 255 ), work, message, 0 );
 
                 if (!loader.done()){
 
                     const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10 );
-                    font.printf(1, 1, Graphics::Bitmap::makeColor(200,0,0), work, "Loading...", 0);
+                    font.printf(1, 1, Graphics::makeColor(200,0,0), work, "Loading...", 0);
                 }
 
                 int x = startX, y = startY;
@@ -473,7 +473,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         /* FIXME: center the text */
 
                         const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
-                        font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Graphics::Bitmap::makeColor(255, 255, 255), box, displayed->getName(), 0);
+                        font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Graphics::makeColor(255, 255, 255), box, displayed->getName(), 0);
                     }
 
                     if (i == (unsigned int) current){

@@ -418,8 +418,8 @@ static bool miguelBirthday(){
 OptionCredits::OptionCredits( const Token * token ):
 MenuOption(token),
 music(""),
-color(Graphics::Bitmap::makeColor(255,255,255)),
-title(Graphics::Bitmap::makeColor(0,255,255)){
+color(Graphics::makeColor(255,255,255)),
+title(Graphics::makeColor(0,255,255)){
     /* Always */
     if (jonBirthday()){
         credits.push_back("Happy birthday, Jon!");
@@ -485,11 +485,11 @@ title(Graphics::Bitmap::makeColor(0,255,255)){
             } else if ( *tok == "titlecolor" ) {
                 int r,b,g;
                 tok->view() >> r >> g >> b;
-                title = Graphics::Bitmap::makeColor( r, b, g );
+                title = Graphics::makeColor( r, b, g );
 	    } else if ( *tok == "color" ) {
                 int r,b,g;
                 tok->view() >> r >> g >> b;
-                color = Graphics::Bitmap::makeColor( r, b, g );
+                color = Graphics::makeColor( r, b, g );
 	    } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
@@ -684,7 +684,7 @@ void OptionFullscreen::logic(){;
 static void changeScreenMode(){
     Configuration::setFullscreen(!Configuration::getFullscreen());
     int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-    Graphics::Bitmap::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
+    Graphics::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
 }
 
 void OptionFullscreen::run(const Menu::Context & context){
@@ -938,13 +938,13 @@ void OptionJoystick::run(const Menu::Context & context){
     dialog.location.setPosition(Gui::AbsolutePoint(0,0));
     dialog.location.setDimensions(vFont.textLength(message) + 10, vFont.getHeight() + 10);
     dialog.location.setRadius(0);
-    dialog.colors.body = Graphics::Bitmap::makeColor(0,0,0);
+    dialog.colors.body = Graphics::makeColor(0,0,0);
     dialog.colors.bodyAlpha = 200;
-    dialog.colors.border = Graphics::Bitmap::makeColor(255,255,255);
+    dialog.colors.border = Graphics::makeColor(255,255,255);
     dialog.colors.borderAlpha = 255;
     Graphics::Bitmap temp = Graphics::Bitmap::temporaryBitmap(width,height);
     dialog.render(temp, vFont);
-    vFont.printf( 5, 5, Graphics::Bitmap::makeColor(255,255,255), temp, message, -1);
+    vFont.printf( 5, 5, Graphics::makeColor(255,255,255), temp, message, -1);
     temp.BlitToScreen(x,y);
     
     setKey(player, type, readJoystick());
@@ -1141,9 +1141,9 @@ void OptionKey::run(const Menu::Context & context){
     // keyDialog.location.setPosition(Gui::AbsolutePoint((width/2)-(keyDialog.location.getWidth()/2), (height/2)-(keyDialog.location.getHeight()/2)));
     // keyDialog.location.setPosition2(Gui::AbsolutePoint((
     keyDialog.location.setRadius(radius);
-    keyDialog.colors.body = Graphics::Bitmap::makeColor(0,0,0);
+    keyDialog.colors.body = Graphics::makeColor(0,0,0);
     keyDialog.colors.bodyAlpha = 180;
-    keyDialog.colors.border = Graphics::Bitmap::makeColor(255,255,255);
+    keyDialog.colors.border = Graphics::makeColor(255,255,255);
     keyDialog.colors.borderAlpha = 255;
     keyDialog.open();
     InputManager::waitForClear();
@@ -1714,14 +1714,14 @@ void OptionScreenSize::setMode(int width, int height){
 
         Global::debug(1) << "Changing mode to " << width << " x " << height << endl;
         int gfx = Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED;
-        int ok = Graphics::Bitmap::setGraphicsMode(gfx, width, height);
+        int ok = Graphics::setGraphicsMode(gfx, width, height);
         if (ok == 0){
             Global::debug(1) << "Success" << endl;
             Configuration::setScreenWidth(width);
             Configuration::setScreenHeight(height);
         } else {
             Global::debug(1) << "Fail" << endl;
-            int ok = Graphics::Bitmap::setGraphicsMode(gfx, Configuration::getScreenWidth(), Configuration::getScreenHeight());
+            int ok = Graphics::setGraphicsMode(gfx, Configuration::getScreenWidth(), Configuration::getScreenHeight());
             Global::debug(1) << "Set mode back " << ok << endl;
         }
     }

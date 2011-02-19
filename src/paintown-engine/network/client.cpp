@@ -307,14 +307,14 @@ static void drawBox( const Graphics::Bitmap & area, const Graphics::Bitmap & cop
     copy.Blit( area );
     Graphics::Bitmap::transBlender( 0, 0, 0, 192 );
     // area.drawingMode( Graphics::Bitmap::MODE_TRANS );
-    area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::Bitmap::makeColor( 0, 0, 0 ) );
+    area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 0, 0, 0 ) );
     // area.drawingMode( Graphics::Bitmap::MODE_SOLID );
-    int color = Graphics::Bitmap::makeColor( 255, 255, 255 );
+    int color = Graphics::makeColor( 255, 255, 255 );
     if (hasFocus){
-        color = Graphics::Bitmap::makeColor( 255, 255, 0 );
+        color = Graphics::makeColor( 255, 255, 0 );
     }
     area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
-    font.printf( 1, 0, Graphics::Bitmap::makeColor( 255, 255, 255 ), area, str, 0 );
+    font.printf( 1, 0, Graphics::makeColor( 255, 255, 255 ), area, str, 0 );
 }
 
 static char lowerCase( const char * x ){
@@ -387,11 +387,11 @@ static void popup( Graphics::Bitmap & work, const Font & font, const string & me
     Graphics::Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     // area.drawingMode( Bitmap::MODE_TRANS );
-    area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::Bitmap::makeColor( 64, 0, 0 ) );
+    area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 64, 0, 0 ) );
     // area.drawingMode( Bitmap::MODE_SOLID );
-    int color = Graphics::Bitmap::makeColor( 255, 255, 255 );
+    int color = Graphics::makeColor( 255, 255, 255 );
     area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
-    font.printf( 10, area.getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
+    font.printf( 10, area.getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), area, message, 0 );
     work.BlitToScreen();
 }
 
@@ -618,25 +618,25 @@ void networkClient(){
             const int inputBoxLength = font.textLength( "a" ) * 40;
             const int min_y = 140;
 
-            font.printf( 20, min_y - font.getHeight() * 3 - 1, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, "Your name", 0 );
+            font.printf( 20, min_y - font.getHeight() * 3 - 1, Graphics::makeColor( 255, 255, 255 ), work, "Your name", 0 );
             Graphics::Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
             Graphics::Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
             nameBox.Blit(copyNameBox);
 
-            font.printf( 20, min_y - font.getHeight() - 1, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
+            font.printf( 20, min_y - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
             Graphics::Bitmap hostBox(work, 20, min_y, inputBoxLength, font.getHeight());
             Graphics::Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
             hostBox.Blit(copyHostBox);
 
-            font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
+            font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
             Graphics::Bitmap portBox(work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight());
             Graphics::Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
             portBox.Blit(copyPortBox);
 
-            font.printf( 20, 20, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
+            font.printf( 20, 20, Graphics::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
 
-            int focusColor = Graphics::Bitmap::makeColor( 255, 255, 0 );
-            int unFocusColor = Graphics::Bitmap::makeColor( 255, 255, 255 );
+            int focusColor = Graphics::makeColor( 255, 255, 0 );
+            int unFocusColor = Graphics::makeColor( 255, 255, 255 );
 
             drawBox(nameBox, copyNameBox, nameInput.getText(), font, focus == Name);
             drawBox(hostBox, copyHostBox, hostInput.getText(), font, focus == Host);

@@ -109,8 +109,8 @@ ignore_lives(false){
 }
 
 void Player::commonInitialize(){
-    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,255), Graphics::Bitmap::makeColor(255,255,0));
-    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,0), Graphics::Bitmap::makeColor(255,0,0));
+    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::makeColor(255,255,255), Graphics::makeColor(255,255,0));
+    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::makeColor(255,255,0), Graphics::makeColor(255,0,0));
 }
 
 Player::~Player(){
@@ -355,7 +355,7 @@ void Player::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
 
 /* present the current input to the user */
 void Player::drawButtons(Graphics::Bitmap * work, int x, int y){
-    int color = Graphics::Bitmap::makeColor(255, 255, 255);
+    int color = Graphics::makeColor(255, 255, 255);
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
     y -= 10;
     for (deque<Input::PaintownInput>::iterator it = key_cache.begin(); it != key_cache.end(); it++){
@@ -411,7 +411,7 @@ void Player::drawFront(Graphics::Bitmap * work, int rel_x){
 
 	// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
 	FontRender * render = FontRender::getInstance();
-	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::Bitmap::makeColor(255,255,255), -1, name );
+	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), -1, name );
 
         ostringstream score_s;
         score_s << getScore();
@@ -433,7 +433,7 @@ void Player::drawFront(Graphics::Bitmap * work, int rel_x){
 	// work->printf( hasIcon + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
         if (!ignoringLives()){
             int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
-            render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Graphics::Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+            render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Graphics::makeColor(255,255,255), -1, "x %d", getLives() );
         }
 
 	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
@@ -524,7 +524,7 @@ void Player::hurt( int x ){
 void Player::setInvincible(const bool b){
     this->invincible = b;
     if (b){
-        addEffect(new DrawGlowEffect(this, Graphics::Bitmap::makeColor(10,10,250), Graphics::Bitmap::makeColor(190, 190, 255), 75));
+        addEffect(new DrawGlowEffect(this, Graphics::makeColor(10,10,250), Graphics::makeColor(190, 190, 255), 75));
     }
 }
         

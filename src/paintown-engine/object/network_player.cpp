@@ -46,8 +46,8 @@ Object * NetworkPlayer::copy(){
 }
 
 void NetworkPlayer::initializeAttackGradient(){
-    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,255), Graphics::Bitmap::makeColor(255,255,0));
-    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,0), Graphics::Bitmap::makeColor(255,0,0));
+    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::makeColor(255,255,255), Graphics::makeColor(255,255,0));
+    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::makeColor(255,255,0), Graphics::makeColor(255,0,0));
 }
 
 void NetworkPlayer::interpretMessage(World * world, Network::Message & message ){
@@ -125,7 +125,7 @@ void NetworkPlayer::drawFront( Graphics::Bitmap * work, int rel_x ){
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;
     FontRender * render = FontRender::getInstance();
-    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::Bitmap::makeColor(255,255,255), -1, name );
+    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), -1, name );
 
     ostringstream score_s;
     score_s << score;

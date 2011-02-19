@@ -62,11 +62,11 @@ static int getServerPort(){
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
         Graphics::Bitmap black( 300, font.getHeight() * 4 );
         black.clear();
-        black.border( 0, 1, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
+        black.border( 0, 1, Graphics::makeColor( 255, 255, 255 ) );
         Graphics::Bitmap::transBlender( 0, 0, 0, 92 );
         black.translucent().draw( 20, drawY - font.getHeight() - 20, background );
-        font.printf( 40, drawY, Graphics::Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
-        font.printf( 40, drawY - font.getHeight() - 5, Graphics::Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
+        font.printf( 40, drawY, Graphics::makeColor( 255, 255, 255 ), background, "Port:", 0 );
+        font.printf( 40, drawY - font.getHeight() - 5, Graphics::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
         background.BlitToScreen();
     }
 
@@ -91,7 +91,7 @@ static int getServerPort(){
         if (draw){
             work.clear();
             const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-            font.printf(0, 0, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, input.getText(), 0);
+            font.printf(0, 0, Graphics::makeColor( 255, 255, 255 ), work, input.getText(), 0);
             work.Blit(100, drawY, background);
             background.BlitToScreen();
         }
@@ -521,11 +521,11 @@ static void popup( const Font & font, const string & message ){
         Graphics::Bitmap area( background, background.getWidth() / 2 - length / 2, 220, length, font.getHeight() * 3 );
         Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
 	// area.drawingMode( Bitmap::MODE_TRANS );
-	area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::Bitmap::makeColor( 64, 0, 0 ) );
+	area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 64, 0, 0 ) );
 	// area.drawingMode( Bitmap::MODE_SOLID );
-	int color = Graphics::Bitmap::makeColor( 255, 255, 255 );
+	int color = Graphics::makeColor( 255, 255, 255 );
 	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
-	font.printf( 10, area.getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
+	font.printf( 10, area.getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), area, message, 0 );
         background.BlitToScreen();
 }
 

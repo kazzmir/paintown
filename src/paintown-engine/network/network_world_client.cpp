@@ -552,7 +552,7 @@ void NetworkWorldClient::draw(Graphics::Bitmap * work){
      * its coordinate system, something like opengl where -1 is the top and 1
      * is the bottom.
      */
-    render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, Graphics::Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
+    render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, Graphics::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
     // font.printf(1, work->getHeight() - 11, Bitmap::makeColor( 255, 255, 255 ), *work, "Ping %d", 0, (int) (currentPing / 1000));
 
     ChatWidget::drawChat(work, work->getHeight() * 2 - 1 - font.getHeight() - 1);

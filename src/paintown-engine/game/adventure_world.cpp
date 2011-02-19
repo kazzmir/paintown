@@ -54,7 +54,7 @@ is_paused(false),
 slowmotion(0),
 cacher(cacher),
 descriptionTime(DESCRIPTION_TIME),
-descriptionGradient(new Effects::Gradient(100, Graphics::Bitmap::makeColor(255, 255, 255), Graphics::Bitmap::makeColor(128, 128, 128))),
+descriptionGradient(new Effects::Gradient(100, Graphics::makeColor(255, 255, 255), Graphics::makeColor(128, 128, 128))),
 gameTicks(0),
 replayEnabled(false){
 	scene = NULL;
@@ -661,7 +661,7 @@ void AdventureWorld::draw( Graphics::Bitmap * work ){
         if ( on != work ){
             on->Stretch( mini );
             Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
-            mini.border( 0, 1, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
+            mini.border( 0, 1, Graphics::makeColor( 255, 255, 255 ) );
             mini.translucent().draw( mini_position_x, mini_position_y, *work );
             mini_position_x -= mini.getWidth() - 2;
             if ( mini_position_x <= 0 ){
@@ -681,9 +681,9 @@ void AdventureWorld::draw( Graphics::Bitmap * work ){
 
     if (is_paused){
         work->transBlender( 0, 0, 0, 128 );
-        work->translucent().fill(Graphics::Bitmap::makeColor(0, 0, 0));
+        work->translucent().fill(Graphics::makeColor(0, 0, 0));
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
-        font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
+        font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
     }
 
     /*

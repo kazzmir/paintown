@@ -70,7 +70,7 @@ void Option::render(MugenFont & font, int x, int y, const Graphics::Bitmap & bmp
 	}
 	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
         Graphics::Bitmap::transBlender(0,0,0,alpha);
-	bmp.translucent().rectangleFill(x+2, y-10, rightX+2, y+2,Graphics::Bitmap::makeColor(255,255,255));
+	bmp.translucent().rectangleFill(x+2, y-10, rightX+2, y+2, Graphics::makeColor(255,255,255));
 	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
@@ -456,9 +456,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     optionArea.location.setPosition2(Gui::AbsolutePoint(260,210));
     
     optionArea.location.setRadius(5);
-    optionArea.colors.body = Graphics::Bitmap::makeColor(0,0,60);
+    optionArea.colors.body = Graphics::makeColor(0,0,60);
     optionArea.colors.bodyAlpha = 150;
-    optionArea.colors.border = Graphics::Bitmap::makeColor(0,0,20);
+    optionArea.colors.border = Graphics::makeColor(0,0,20);
     
     
     while (!done){

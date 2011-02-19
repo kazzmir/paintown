@@ -400,7 +400,7 @@ void Cell::render(const Graphics::Bitmap & bmp){
         if (flash){
             // Bitmap::drawingMode(Bitmap::MODE_TRANS);
             Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
-            bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Graphics::Bitmap::makeColor(255,255,255));
+            bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Graphics::makeColor(255,255,255));
             // Bitmap::drawingMode(Bitmap::MODE_SOLID);
         }
     }
@@ -1386,7 +1386,7 @@ void CharacterSelect::load(){
                             try{
                                 int r,g,b;
                                 simple >> r >> g >> b;
-                                self.fader.setFadeInColor(Graphics::Bitmap::makeColor(r,g,b));
+                                self.fader.setFadeInColor(Graphics::makeColor(r,g,b));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "fadeout.time"){
@@ -1400,7 +1400,7 @@ void CharacterSelect::load(){
                             try{
                                 int r,g,b;
                                 simple >> r >> g >> b;
-                                self.fader.setFadeOutColor(Graphics::Bitmap::makeColor(r,g,b));
+                                self.fader.setFadeOutColor(Graphics::makeColor(r,g,b));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "rows"){

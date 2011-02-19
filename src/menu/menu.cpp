@@ -115,7 +115,7 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     bmp.setClipRect(x1, y1, x2, y2);
     
     int sy = location.getY() - 5;
-    static int white = Graphics::Bitmap::makeColor(255,255,255);
+    static int white = Graphics::makeColor(255,255,255);
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
         string & str = *it;
         if (fadeAlpha < 255){
@@ -439,9 +439,9 @@ Menu::DefaultRenderer::DefaultRenderer(){
     // Default the menu to a certain size and details
     menu.location.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
-    menu.colors.body = Graphics::Bitmap::makeColor(0,0,0);
+    menu.colors.body = Graphics::makeColor(0,0,0);
     menu.colors.bodyAlpha = 128;
-    menu.colors.border = Graphics::Bitmap::makeColor(200,200,200);
+    menu.colors.border = Graphics::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
 }
         
@@ -656,9 +656,9 @@ Menu::TabRenderer::TabRenderer(){
     // Default the menu to a certain size and details
     //menu.location.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
-    menu.colors.body = Graphics::Bitmap::makeColor(0,0,0);
+    menu.colors.body = Graphics::makeColor(0,0,0);
     menu.colors.bodyAlpha = 128;
-    menu.colors.border = Graphics::Bitmap::makeColor(200,200,200);
+    menu.colors.border = Graphics::makeColor(200,200,200);
     menu.colors.borderAlpha = 255;
 }
         
@@ -724,35 +724,35 @@ bool Menu::TabRenderer::readToken(const Token * token){
     } else if ( *token == "tab-body" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.tabColors.bodyAlpha;
-        menu.tabColors.body = Graphics::Bitmap::makeColor(r,g,b);
+        menu.tabColors.body = Graphics::makeColor(r,g,b);
     } else if ( *token == "tab-border" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.tabColors.borderAlpha;
-        menu.tabColors.border = Graphics::Bitmap::makeColor(r,g,b);
+        menu.tabColors.border = Graphics::makeColor(r,g,b);
     } else if ( *token == "selectedtab-body" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.selectedTabColors.bodyAlpha;
-        menu.selectedTabColors.body = Graphics::Bitmap::makeColor(r,g,b);
+        menu.selectedTabColors.body = Graphics::makeColor(r,g,b);
     } else if ( *token == "selectedtab-border" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.selectedTabColors.borderAlpha;
-        menu.selectedTabColors.border = Graphics::Bitmap::makeColor(r,g,b);
+        menu.selectedTabColors.border = Graphics::makeColor(r,g,b);
     } else if ( *token == "runningtab-body" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.runningTabColors.bodyAlpha;
-        menu.runningTabColors.body = Graphics::Bitmap::makeColor(r,g,b);
+        menu.runningTabColors.body = Graphics::makeColor(r,g,b);
     } else if ( *token == "runningtab-border" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.runningTabColors.borderAlpha;
-        menu.runningTabColors.border = Graphics::Bitmap::makeColor(r,g,b);
+        menu.runningTabColors.border = Graphics::makeColor(r,g,b);
     } else if ( *token == "font-color" ) {
 	int r,g,b;
         token->view() >> r >> g >> b;
-	menu.setTabFontColor(Graphics::Bitmap::makeColor(r,g,b));
+	menu.setTabFontColor(Graphics::makeColor(r,g,b));
     } else if ( *token == "selectedfont-color" ) {
 	int r,g,b;
         token->view() >> r >> g >> b;
-	menu.setSelectedTabFontColor(Graphics::Bitmap::makeColor(r,g,b));
+	menu.setSelectedTabFontColor(Graphics::makeColor(r,g,b));
     } else if ( *token == "runningfont-color" ) {
         
     } else if ( *token == "fade-speed" ) {
@@ -1012,8 +1012,8 @@ void Menu::Context::parseToken(const Token * token){
                 fades = new Gui::FadeTool();
             }
             // Set fader default to white
-            fades->setFadeInColor(Graphics::Bitmap::makeColor(255,255,255));
-            fades->setFadeOutColor(Graphics::Bitmap::makeColor(255,255,255));
+            fades->setFadeInColor(Graphics::makeColor(255,255,255));
+            fades->setFadeOutColor(Graphics::makeColor(255,255,255));
             fades->setFadeInTime(25);
             fades->setFadeOutTime(12);
 
@@ -1121,7 +1121,7 @@ void Menu::Context::render(Renderer * renderer, const Graphics::Bitmap & bmp){
         background->render(Gui::Animation::BackgroundMiddle, bmp);
         background->render(Gui::Animation::BackgroundTop, bmp);
     } else {
-        bmp.fill(Graphics::Bitmap::makeColor(0,0,0));
+        bmp.fill(Graphics::makeColor(0,0,0));
     }
     
     // Menu
@@ -1453,7 +1453,7 @@ void Menu::Menu::run(const Context & parentContext){
 static void changeScreenMode(){
     Configuration::setFullscreen(!Configuration::getFullscreen());
     int gfx = (Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED);
-    Graphics::Bitmap::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
+    Graphics::setGraphicsMode(gfx, Global::getScreenWidth(), Global::getScreenHeight());
 }
 
 void Menu::Menu::act(Context & ourContext){

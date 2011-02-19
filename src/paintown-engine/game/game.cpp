@@ -535,13 +535,13 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             if (state.helpTime > 0){
                 int x = 100;
                 int y = screen_buffer.getHeight() / 5;
-                int color = Graphics::Bitmap::makeColor( 255, 255, 255 );
+                int color = Graphics::makeColor( 255, 255, 255 );
                 Graphics::Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
                 drawHelp( font, x, y, color, screen_buffer.translucent());
             }
 
             if (state.show_fps){
-                font.printf( screen_buffer.getWidth() - 120, 10, Graphics::Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
+                font.printf( screen_buffer.getWidth() - 120, 10, Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
             }
             console.draw(screen_buffer);
 
@@ -573,7 +573,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 int x = work.getWidth() / 2;
                 int y = work.getHeight() / 2;
                 double scale = 0.9;
-                shot->border(0, 1, Graphics::Bitmap::makeColor(64,64,64));
+                shot->border(0, 1, Graphics::makeColor(64,64,64));
                 shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
                 work.Stretch(screen_buffer);
                 screen_buffer.BlitToScreen();
@@ -973,7 +973,7 @@ void fadeOut( const Graphics::Bitmap & work, const string & message ){
     dark.translucent().draw( 0, 0, work );
 
     const Font & f = Font::getFont(Global::DEFAULT_FONT, 50, 50 );
-    f.printf( 200, 200, Graphics::Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
+    f.printf( 200, 200, Graphics::makeColor( 255, 0, 0 ), work, message, 0 );
     work.BlitToScreen();
 
     Util::rest( 2000 );

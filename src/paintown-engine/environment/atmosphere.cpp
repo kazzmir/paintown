@@ -57,7 +57,7 @@ FogAtmosphere::FogAtmosphere():
 Atmosphere(){
     fog = new Graphics::Bitmap( 50, 50 );
     fog->fill( Graphics::Bitmap::MaskColor() );
-    fog->circleFill( 25, 25, 20, Graphics::Bitmap::makeColor( 0xbb, 0xbb, 0xcc ) );
+    fog->circleFill( 25, 25, 20, Graphics::makeColor( 0xbb, 0xbb, 0xcc ) );
 
     for ( int i = -20; i < screenX(); i += 20 ){
         fogs.push_back( new Fog( i + Util::rnd( 9 ) - 4, screenY() - 30, Util::rnd( 360 ) ) );
@@ -215,9 +215,9 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * 
 
 int NightAtmosphere::getSkyColor() const {
     if (lightning){
-        return Graphics::Bitmap::makeColor(255, 255, 255);
+        return Graphics::makeColor(255, 255, 255);
     } else {
-        return Graphics::Bitmap::makeColor(0, 0, 0);
+        return Graphics::makeColor(0, 0, 0);
     }
 }
 
@@ -296,7 +296,7 @@ void NightAtmosphere::act(const Scene & level, const vector<Paintown::Object*> *
 void NightAtmosphere::processLight(const Token * token){
     int x;
     token->view() >> x;
-    addLight(x, 30, 50, 30, Graphics::Bitmap::makeColor(32,32,0), 0);
+    addLight(x, 30, 50, 30, Graphics::makeColor(32,32,0), 0);
 }
     
 void NightAtmosphere::interpret(const Token * message){
@@ -321,8 +321,8 @@ playing( false ){
     rain_sound = Sound(Filesystem::find(Filesystem::RelativePath("sounds/rain.wav")).path());
 
     int colors[ 2 ];
-    colors[0] = Graphics::Bitmap::makeColor( 0x22, 0x66, 0x66 );
-    colors[1] = Graphics::Bitmap::makeColor( 0x11, 0x44, 0x77 );
+    colors[0] = Graphics::makeColor( 0x22, 0x66, 0x66 );
+    colors[1] = Graphics::makeColor( 0x11, 0x44, 0x77 );
     for (int i = 0; i < 100; i++){
         Drop * d = new Drop(Util::rnd(screenX() * 2) - screenX() / 2, Util::rnd( screenY() ), Util::rnd(4) + 3, colors[Util::rnd(2)]);
         rain_drops.push_back(d);
@@ -339,7 +339,7 @@ RainAtmosphere::~RainAtmosphere(){
 }
 
 void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
-    const int bluish = Graphics::Bitmap::makeColor(106, 184, 225);
+    const int bluish = Graphics::makeColor(106, 184, 225);
     Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Puddle*>::iterator it = puddles.begin(); it != puddles.end(); it++){
         Puddle * puddle = *it;
@@ -354,7 +354,7 @@ void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
 }
 
 void RainAtmosphere::drawForeground(Graphics::Bitmap * work, int x){
-    const int bluish = Graphics::Bitmap::makeColor(106, 184, 225);
+    const int bluish = Graphics::makeColor(106, 184, 225);
     Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Puddle*>::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
         Puddle * puddle = *it;
@@ -461,7 +461,7 @@ static void drawFlake0( Flake * f, Graphics::Bitmap * work ){
     if (c > 255){
         c = 255;
     }
-    int color = Graphics::Bitmap::makeColor(c, c, c);
+    int color = Graphics::makeColor(c, c, c);
     // work->circleFill( f->x, f->y, 1, color );
     double pi = 3.141592526;
     double rads = f->angle * pi / 180;

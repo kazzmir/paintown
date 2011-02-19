@@ -130,7 +130,7 @@ void Item::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
 	picture.draw( getRX() - rel_x - picture.getWidth() / 2, getRY() - picture.getHeight(), *work );
 
 	if ( Global::getDebug() > 5 ){
-		work->circleFill( getRX() - rel_x, (int) getZ(), 5, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
+		work->circleFill( getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ) );
 	}
 }
 	

@@ -253,12 +253,12 @@ void MugenFont::changeBank(int bank){
         int r = newpal[i];
         int g = newpal[i+1];
         int b = newpal[i+2];
-        int col = Graphics::Bitmap::makeColor(r,g,b);
+        int col = Graphics::makeColor(r,g,b);
         if (col == Graphics::Bitmap::MaskColor()){
             int oldCol = col;
             while (oldCol == col){
                 r -= 1;
-                oldCol = Graphics::Bitmap::makeColor(r,g,b);
+                oldCol = Graphics::makeColor(r,g,b);
             }
             newpal[i] = r;
             newpal[i+1] = g;
