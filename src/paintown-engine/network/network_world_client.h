@@ -14,7 +14,9 @@
 #include "util/thread.h"
 #include <vector>
 
+namespace Graphics{
 class Bitmap;
+}
 
 class NetworkWorldClient: public AdventureWorld, public ChatWidget {
 public:
@@ -22,7 +24,7 @@ public:
 	NetworkWorldClient( Network::Socket server, const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Paintown::Object::networkid_t id, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
 	
 	virtual void act();
-	virtual void draw(Bitmap * work);
+	virtual void draw(Graphics::Bitmap * work);
 
 	void addIncomingMessage( const Network::Message & message );
 

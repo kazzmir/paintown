@@ -31,7 +31,7 @@ effect(effect),
 countdown(countdown){
 }
 
-void DrawCountdownEffect::draw(int x, Remap * remap, Bitmap * work){
+void DrawCountdownEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
     effect->draw(x, remap, work);
 }
 
@@ -64,15 +64,15 @@ startColor(startColor),
 endColor(endColor){
 }
 
-void DrawGlowEffect::draw(int x, Remap * remap,Bitmap * work){
+void DrawGlowEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
     double f = fabs(sin(Util::radians(180) * angle / period));
     int alpha = 50;
 
-    int color_r = (int)((Bitmap::getRed(endColor) - Bitmap::getRed(startColor)) * f + Bitmap::getRed(startColor));
-    int color_g = (int)((Bitmap::getGreen(endColor) - Bitmap::getGreen(startColor)) * f + Bitmap::getGreen(startColor));
-    int color_b = (int)((Bitmap::getBlue(endColor) - Bitmap::getBlue(startColor)) * f + Bitmap::getBlue(startColor));
+    int color_r = (int)((Graphics::Bitmap::getRed(endColor) - Graphics::Bitmap::getRed(startColor)) * f + Graphics::Bitmap::getRed(startColor));
+    int color_g = (int)((Graphics::Bitmap::getGreen(endColor) - Graphics::Bitmap::getGreen(startColor)) * f + Graphics::Bitmap::getGreen(startColor));
+    int color_b = (int)((Graphics::Bitmap::getBlue(endColor) - Graphics::Bitmap::getBlue(startColor)) * f + Graphics::Bitmap::getBlue(startColor));
 
-    Bitmap::transBlender(color_r, color_g, color_b, alpha);
+    Graphics::Bitmap::transBlender(color_r, color_g, color_b, alpha);
 
     Animation * animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
@@ -101,7 +101,7 @@ DrawNormalEffect::DrawNormalEffect(const Character * owner):
 DrawEffect(owner, 0){
 }
     
-void DrawNormalEffect::draw(int x, Remap * remap, Bitmap * work){
+void DrawNormalEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
     Animation * animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
@@ -129,7 +129,7 @@ effect(effect),
 end(end){
 }
 
-void DrawUntilEffect::draw(int x, Remap * remap, Bitmap * work){
+void DrawUntilEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
     effect->draw(x, remap,work);
 }
 

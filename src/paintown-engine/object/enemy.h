@@ -27,9 +27,9 @@ public:
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
 	using Character::drawLifeBar;
-	virtual void drawLifeBar( int x, int y, Bitmap * work );
+	virtual void drawLifeBar( int x, int y, Graphics::Bitmap * work );
 	
-	virtual void drawFront( Bitmap * work, int rel_x );
+	virtual void drawFront( Graphics::Bitmap * work, int rel_x );
 	
 	virtual void hurt( int x );
 

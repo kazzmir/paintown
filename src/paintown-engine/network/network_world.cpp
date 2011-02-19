@@ -432,7 +432,7 @@ void NetworkWorld::flushOutgoing(){
     }
 }
 	
-void NetworkWorld::draw(Bitmap * work){
+void NetworkWorld::draw(Graphics::Bitmap * work){
     super::draw(work);
     ChatWidget::drawChat(work, work->getHeight() * 2 - 1);
 }

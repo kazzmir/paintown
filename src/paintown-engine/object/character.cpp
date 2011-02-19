@@ -64,8 +64,8 @@ unsigned int Remap::filter(unsigned int pixel) const {
 }
 
 map<unsigned int, unsigned int> Remap::computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to){
-    Bitmap b_from(Paintown::Mod::getCurrentMod()->makeBitmap(from));
-    Bitmap b_to(Paintown::Mod::getCurrentMod()->makeBitmap(to));
+    Graphics::Bitmap b_from(Paintown::Mod::getCurrentMod()->makeBitmap(from));
+    Graphics::Bitmap b_to(Paintown::Mod::getCurrentMod()->makeBitmap(to));
 
     map<unsigned int, unsigned int> remap_colors;
 
@@ -400,7 +400,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( Loa
                 string icon_path;
                 n->view() >> icon_path;
                 // cout<<"Loading icon "<<icon_path<<endl;
-                icon = new Bitmap(Filesystem::find(Filesystem::RelativePath(icon_path)).path());
+                icon = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(icon_path)).path());
             } else if ( *n == "remap" ){
                 string first;
                 string second;
@@ -516,11 +516,11 @@ void Character::addEffect(DrawEffect * effect){
     std::sort(effects.begin(), effects.end(), DrawEffect::compare);
 }
 
-static int nonMaskingPixels( Bitmap * bitmap ){
+static int nonMaskingPixels( Graphics::Bitmap * bitmap ){
     int total = 0;
     for (int x = 0; x < bitmap->getWidth(); x++){
         for (int y = 0; y < bitmap->getHeight(); y++){
-            if (bitmap->getPixel( x, y ) != Bitmap::MaskColor()){
+            if (bitmap->getPixel( x, y ) != Graphics::Bitmap::MaskColor()){
                 total += 1;
             }
         }
@@ -528,7 +528,7 @@ static int nonMaskingPixels( Bitmap * bitmap ){
     return total;
 }
 
-static void replacePart( vector< BodyPart > & parts, Bitmap * bitmap ){
+static void replacePart( vector< BodyPart > & parts, Graphics::Bitmap * bitmap ){
 	int i = Util::rnd( parts.size() );
 	delete parts[ i ].image;
 	parts[ i ].image = bitmap;
@@ -537,7 +537,7 @@ static void replacePart( vector< BodyPart > & parts, Bitmap * bitmap ){
 vector< BodyPart > Character::getBodyParts( Animation * animation ){
     vector< BodyPart > parts;
 
-    Bitmap * bitmap = animation->getFrame( 0 );
+    Graphics::Bitmap * bitmap = animation->getFrame( 0 );
     if ( bitmap == NULL ){
         return parts;	
     }
@@ -546,12 +546,12 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
     for ( int x = 0; x < bitmap->getWidth(); x += gib_size ){
         for ( int y = 0; y < bitmap->getHeight(); y += gib_size ){
             // Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
-            Bitmap * sub = new Bitmap(gib_size, gib_size);
+            Graphics::Bitmap * sub = new Graphics::Bitmap(gib_size, gib_size);
             bitmap->Blit(x, y, 0, 0, *sub);
 
             for (int num = 0; num < 2; num++){
-                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::MaskColor());
-                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Bitmap::makeColor(255,0,0));
+                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::Bitmap::MaskColor());
+                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::Bitmap::makeColor(255,0,0));
             }
 
             if ( 100.0 * (double) nonMaskingPixels( sub ) / (double) (sub->getWidth() * sub->getHeight()) < 10.0 ){
@@ -574,7 +574,7 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
         "misc/body/torso.png" };
 
     for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i++ ){
-        replacePart(parts, new Bitmap(Filesystem::find(Filesystem::RelativePath(more[i])).path()));	
+        replacePart(parts, new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(more[i])).path()));	
     }
 
     return parts;
@@ -671,7 +671,7 @@ static bool invincibility_zero(const Character * const character){
 
 void Character::setInvincibility(const int x){
     invincibility = x;
-    addEffect(new DrawUntilEffect(new DrawGlowEffect(this, Bitmap::makeColor(10,10,250), Bitmap::makeColor(190, 190, 255), 75), invincibility_zero));
+    addEffect(new DrawUntilEffect(new DrawGlowEffect(this, Graphics::Bitmap::makeColor(10,10,250), Graphics::Bitmap::makeColor(190, 190, 255), 75), invincibility_zero));
 }
 
 Animation * Character::getCurrentMovement() const {
@@ -1459,26 +1459,26 @@ bool Character::collision( ObjectAttack * obj ){
 	return realCollision( obj );
 }
 	
-void Character::drawLifeBar( int x, int y, Bitmap * work ){
+void Character::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
     drawLifeBar( x, y, getHealth(), work );
 }
 	
 /* draw a nifty translucent life bar */
-void Character::drawLifeBar(int x, int y, int health, Bitmap * work){
-    TranslucentBitmap translucent(*work);
+void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
+    Graphics::TranslucentBitmap translucent(*work);
     // Bitmap::drawingMode( Bitmap::MODE_TRANS );
-    Bitmap::transBlender( 0, 0, 0, 128 );
+    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     const int health_height = 7;
     const int maxHealthWidth = 100;
     int max = getMaxHealth() < maxHealthWidth ? getMaxHealth() : maxHealthWidth;
-    translucent.rectangleFill( x, y, x + max, y + health_height, Bitmap::makeColor( 192, 32, 32 ) );
-    Bitmap::transBlender( 0, 0, 0, 64 );
+    translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::Bitmap::makeColor( 192, 32, 32 ) );
+    Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
 
-    int colors[ 5 ] = { Bitmap::makeColor(16, 162, 246),
-        Bitmap::makeColor(214, 184, 48),
-        Bitmap::makeColor(244, 16, 12),
-        Bitmap::makeColor(237, 173, 71),
-        Bitmap::makeColor(183, 217, 180)};
+    int colors[ 5 ] = { Graphics::Bitmap::makeColor(16, 162, 246),
+        Graphics::Bitmap::makeColor(214, 184, 48),
+        Graphics::Bitmap::makeColor(244, 16, 12),
+        Graphics::Bitmap::makeColor(237, 173, 71),
+        Graphics::Bitmap::makeColor(183, 217, 180)};
 
     int color = 0;
     for ( int s = 0; s < health; s += maxHealthWidth ){
@@ -1492,8 +1492,8 @@ void Character::drawLifeBar(int x, int y, int health, Bitmap * work){
         }
     }
 
-    TranslucentBitmap border(Bitmap(*work, x, y, max+1, health_height));
-    border.border(0, 1, Bitmap::makeColor(255, 255, 255));
+    Graphics::TranslucentBitmap border(Graphics::Bitmap(*work, x, y, max+1, health_height));
+    border.border(0, 1, Graphics::Bitmap::makeColor(255, 255, 255));
 
     // Bitmap::drawingMode( Bitmap::MODE_SOLID );
 }
@@ -1503,10 +1503,10 @@ bool Character::touchPoint(int x, int y){
         int relativeX = x - getRX() + getWidth() / 2;
         int relativeY = getHeight() - (getRY() - y); 
         // Global::debug(0) << "Test " << relativeX << ", " << relativeY << endl;
-        const Bitmap * frame = animation_current->getCurrentFrame();
+        const Graphics::Bitmap * frame = animation_current->getCurrentFrame();
         if (frame != NULL){
             if (frame->inRange(relativeX, relativeY) && 
-                frame->getPixel(relativeX, relativeY) != Bitmap::MaskColor()){
+                frame->getPixel(relativeX, relativeY) != Graphics::Bitmap::MaskColor()){
                 // Global::debug(0) << " good " << endl;
                 return true;
             }
@@ -1699,7 +1699,7 @@ int Character::getInvincibility() const {
     return invincibility;
 }
 
-void Character::draw(Bitmap * work, int rel_x, int rel_y){
+void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
 
     /* this makes a character blink when they die. death increases
      * so after 15 game ticks the character will start blinking.
@@ -1720,9 +1720,9 @@ void Character::draw(Bitmap * work, int rel_x, int rel_y){
         }
 
         if (drawShadow()){
-            Bitmap const * shadow = Shadow::getShadow(getShadow());
+            Graphics::Bitmap const * shadow = Shadow::getShadow(getShadow());
             // set_multiply_blender( 0, 0, 0, 164 );
-            Bitmap::multiplyBlender( 0, 0, 0, 164 );
+            Graphics::Bitmap::multiplyBlender( 0, 0, 0, 164 );
             shadow->translucent().draw( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
         }
 
@@ -1738,22 +1738,22 @@ void Character::draw(Bitmap * work, int rel_x, int rel_y){
             if (getFacing() == Object::FACING_LEFT){
                 x2 = x - animation_current->getRange();
             }
-            work->rectangle( x, y, x2, y + 1, Bitmap::makeColor(255,255,255) );
+            work->rectangle( x, y, x2, y + 1, Graphics::Bitmap::makeColor(255,255,255) );
         }
     }
 }
 
-const Bitmap * Character::getCurrentFrame() const {
+const Graphics::Bitmap * Character::getCurrentFrame() const {
     if (animation_current){
         return animation_current->getCurrentFrame();
     }
     return NULL;
 }
 
-void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
-    const Bitmap * frame = this->getCurrentFrame();
+void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
+    const Graphics::Bitmap * frame = this->getCurrentFrame();
     if (frame){
-        Bitmap::transBlender(0, 0, 0, intensity);
+        Graphics::Bitmap::transBlender(0, 0, 0, intensity);
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
@@ -1764,28 +1764,28 @@ void Character::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensit
     }
 }
 
-void Character::drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
+void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
     if (animation_current){
-        const Bitmap *bmp = animation_current->getCurrentFrame();
+        const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
         const double newheight = bmp->getHeight() * scale;
-        Bitmap shade = Bitmap::temporaryBitmap(bmp->getWidth(), (int) fabs(newheight));
+        Graphics::Bitmap shade = Graphics::Bitmap::temporaryBitmap(bmp->getWidth(), (int) fabs(newheight));
         bmp->Stretch(shade);
 
         /* Could be slow, but meh, lets do it for now to make it look like a real shadow */
         for (int h = 0; h < shade.getHeight(); ++h){
             for (int w = 0; w < shade.getWidth(); ++w){
                 int pix = shade.getPixel(w,h);
-                if (pix != Bitmap::MaskColor()){
-                    shade.putPixel(w,h, Bitmap::makeColor(0,0,0));
+                if (pix != Graphics::Bitmap::MaskColor()){
+                    shade.putPixel(w,h, Graphics::Bitmap::makeColor(0,0,0));
                 }
             }
         }
 
-        int i = ((Bitmap::getRed(color) * 77 + intensity) + (Bitmap::getGreen(color) * 154 + intensity) + (Bitmap::getBlue(color) * 25 + intensity))/256;
+        int i = ((Graphics::Bitmap::getRed(color) * 77 + intensity) + (Graphics::Bitmap::getGreen(color) * 154 + intensity) + (Graphics::Bitmap::getBlue(color) * 25 + intensity))/256;
         i = 255 - i;
         // Bitmap::drawingMode( Bitmap::MODE_TRANS );
         // Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
-        Bitmap::multiplyBlender((Bitmap::getRed(color) * 77 + intensity), (Bitmap::getGreen(color) * 154 + intensity), (Bitmap::getBlue(color) * 25 + intensity), i);
+        Graphics::Bitmap::multiplyBlender((Graphics::Bitmap::getRed(color) * 77 + intensity), (Graphics::Bitmap::getGreen(color) * 154 + intensity), (Graphics::Bitmap::getBlue(color) * 25 + intensity), i);
         if (scale > 0){
             int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
             int y = (int)(getRZ() + getY() * scale);

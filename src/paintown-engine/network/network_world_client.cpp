@@ -542,7 +542,7 @@ void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages,
     */
 }
 	
-void NetworkWorldClient::draw(Bitmap * work){
+void NetworkWorldClient::draw(Graphics::Bitmap * work){
     super::draw(work);
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
     FontRender * render = FontRender::getInstance();
@@ -552,7 +552,7 @@ void NetworkWorldClient::draw(Bitmap * work){
      * its coordinate system, something like opengl where -1 is the top and 1
      * is the bottom.
      */
-    render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
+    render->addMessage(font, 1, work->getHeight() * 2 - font.getHeight() - 1, Graphics::Bitmap::makeColor(255, 255, 255), -1, "Ping %d", (int) (currentPing / 1000));
     // font.printf(1, work->getHeight() - 11, Bitmap::makeColor( 255, 255, 255 ), *work, "Ping %d", 0, (int) (currentPing / 1000));
 
     ChatWidget::drawChat(work, work->getHeight() * 2 - 1 - font.getHeight() - 1);

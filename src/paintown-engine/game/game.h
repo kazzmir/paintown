@@ -7,7 +7,9 @@
 #include "paintown-engine/level/utils.h"
 #include "util/file-system.h"
 
+namespace Graphics{
 class Bitmap;
+}
 class World;
 
 namespace Util{
@@ -29,7 +31,7 @@ void realGame(const std::vector<Util::Future<Paintown::Object *>* > & players, c
 
 // const Level::LevelInfo selectLevelSet( const std::string & base );
 
-void fadeOut( Bitmap & work, const std::string & message );
+void fadeOut( const Graphics::Bitmap & work, const std::string & message );
 
 // Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
 

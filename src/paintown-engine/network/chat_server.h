@@ -11,7 +11,9 @@ namespace Gui{
     class LineEdit;
 }
 
+namespace Graphics{
 class Bitmap;
+}
 class Keyboard;
 
 enum Focus{
@@ -148,13 +150,13 @@ protected:
 	bool needToDraw();
 
 	/* draw things to work */
-	void draw( const Bitmap & work );
+	void draw( const Graphics::Bitmap & work );
 	
 	/* draw the input box */
-	void drawInputBox( int x, int y, const Bitmap & work );
+	void drawInputBox( int x, int y, const Graphics::Bitmap & work );
 
 	/* draw the buddy list */
-	void drawBuddyList( int x, int y, const Bitmap & work, const Font & font );
+	void drawBuddyList( int x, int y, const Graphics::Bitmap & work, const Font & font );
 
 	/* get the next widget to be focused */
 	Focus nextFocus( Focus f );
@@ -178,7 +180,7 @@ protected:
 protected:
 	bool need_update;
 	Network::Socket socket;
-	Bitmap * background;
+        Graphics::Bitmap * background;
 	Messages messages;
 	// std::string input;
 	Focus focus;

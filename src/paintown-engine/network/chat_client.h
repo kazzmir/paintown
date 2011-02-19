@@ -9,7 +9,9 @@
 #include <queue>
 
 class Keyboard;
+namespace Graphics{
 class Bitmap;
+}
 namespace Gui{
     class LineEdit;
 }
@@ -49,12 +51,12 @@ protected:
 	bool logic();
 	Focus nextFocus( Focus f );
 	bool needToDraw();
-	void draw( const Bitmap & bitmap );
+	void draw( const Graphics::Bitmap & bitmap );
 	void needUpdate();
-	void drawInputBox( int x, int y, const Bitmap & work );
-	void drawBuddies( const Bitmap & area, int x, int y, const Font & f );
+	void drawInputBox( int x, int y, const Graphics::Bitmap & work );
+	void drawBuddies( const Graphics::Bitmap & area, int x, int y, const Font & f );
 	bool sendMessage( const std::string & message );
-	void popup( Bitmap & work, const std::string & str );
+	void popup( Graphics::Bitmap & work, const std::string & str );
 
         static void enter_pressed(void * self);
         static void next_focus(void * self);
@@ -65,7 +67,7 @@ protected:
         */
 
 private:
-	Bitmap * background;
+        Graphics::Bitmap * background;
 	bool need_update;
 	Messages messages;
 	Network::Socket socket;

@@ -6,7 +6,10 @@
 #include <string>
 #include <vector>
 
+namespace Graphics{
 class Bitmap;
+}
+
 class ECollide;
 class World;
 
@@ -51,12 +54,12 @@ public:
 	/* draw:
 	 * Draws the object onto the specified Bitmap
 	 */
-	virtual void draw(Bitmap * work, int rel_x, int rel_y) = 0;
-	virtual void drawFront(Bitmap * work, int rel_x);
+	virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y) = 0;
+	virtual void drawFront(Graphics::Bitmap * work, int rel_x);
         /* draw reflection. default behavior is to do nothing */
-        virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
+        virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
 	/* draw shadow. default behavior is to do nothing */
-        virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
+        virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
 	
 	/* print:
 	 * Print some debugging information

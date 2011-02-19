@@ -6,7 +6,9 @@
 #include "util/file-system.h"
 
 class Token;
+namespace Graphics{
 class Bitmap;
+}
 
 namespace Level{
 
@@ -32,11 +34,11 @@ public:
         return y;
     }
 
-    virtual inline void setBackground(const Bitmap * background){
+    virtual inline void setBackground(const Graphics::Bitmap * background){
         this->background = background;
     }
 
-    virtual inline const Bitmap * getBackground() const {
+    virtual inline const Graphics::Bitmap * getBackground() const {
         return this->background;
     }
 
@@ -55,7 +57,7 @@ protected:
     std::string name;
     std::string _loadingMessage;
     Filesystem::AbsolutePath _loadingBackground;
-    const Bitmap * background;
+    const Graphics::Bitmap * background;
 
     int x, y;
 };

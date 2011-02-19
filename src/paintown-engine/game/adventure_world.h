@@ -6,7 +6,9 @@ class Object;
 class Enemy;
 }
 
+namespace Graphics{
 class Bitmap;
+}
 class Block;
 class Scene;
 
@@ -46,7 +48,7 @@ public:
 	}
 
 	virtual void act();
-	virtual void draw( Bitmap * work );
+	virtual void draw( Graphics::Bitmap * work );
 	virtual void addObject( Paintown::Object * o );
 
 	virtual bool finished() const;
@@ -64,7 +66,7 @@ public:
     virtual void changePause();
     virtual bool isPaused();
 
-    virtual const std::deque<Bitmap*> & getScreenshots();
+    virtual const std::deque<Graphics::Bitmap*> & getScreenshots();
 
     virtual int levelLength() const;
     virtual const Block * currentBlock() const;
@@ -107,7 +109,7 @@ protected:
 	void loadLevel( const Filesystem::AbsolutePath & path );
 	void threadedLoadLevel( const Filesystem::AbsolutePath & path );
 
-	void drawWorld( const PlayerTracker & tracker, Bitmap * where, const std::map< int, std::vector< Paintown::Object * > > & object_z );
+	void drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const std::map< int, std::vector< Paintown::Object * > > & object_z );
 
 	virtual void deleteObjects( std::vector< Paintown::Object * > * objects );
 
@@ -125,7 +127,7 @@ protected:
         takeAScreenshot = true;
     }
 
-    virtual void doTakeScreenshot(Bitmap * work);
+    virtual void doTakeScreenshot(Graphics::Bitmap * work);
 
     static void * do_load_level(void * arg);
 
@@ -145,10 +147,10 @@ protected:
 
     bool draw_minimaps;
 
-    Bitmap * mini_map;
+    Graphics::Bitmap * mini_map;
 
     /* screenshots that are shown at the end of the level */
-    std::deque<Bitmap*> screenshots;
+    std::deque<Graphics::Bitmap*> screenshots;
     /* set during the logic but a screenshot actually happens in draw */
     bool takeAScreenshot;
     /* run the logic or not */

@@ -21,10 +21,10 @@ public:
     BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException );
 
     /* drawing */
-    virtual void draw( Bitmap * work, int rel_x, int rel_y );
+    virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 
     using Character::drawLifeBar;
-    virtual void drawLifeBar( int x, int y, Bitmap * work );
+    virtual void drawLifeBar( int x, int y, Graphics::Bitmap * work );
 
     virtual Object * copy();
 

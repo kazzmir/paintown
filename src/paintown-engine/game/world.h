@@ -11,7 +11,9 @@ class Enemy;
 
 class Scene;
 class Block;
+namespace Graphics{
 class Bitmap;
+}
 
 #include <vector>
 #include <deque>
@@ -37,7 +39,7 @@ public:
 	}
 
 	virtual void act() = 0;
-	virtual void draw( Bitmap * work ) = 0;
+	virtual void draw( Graphics::Bitmap * work ) = 0;
 	virtual void addObject( Paintown::Object * o ) = 0;
 
 	virtual bool finished() const = 0;
@@ -53,7 +55,7 @@ public:
     virtual double ticks(const double in) const;
 
     /* this shouldn't be here */
-    virtual const std::deque<Bitmap*> & getScreenshots() = 0;
+    virtual const std::deque<Graphics::Bitmap*> & getScreenshots() = 0;
 
     virtual int levelLength() const = 0;
     virtual const Block * currentBlock() const = 0;

@@ -21,7 +21,7 @@ public:
     }
     */
 
-    virtual void drawChat(Bitmap * work, int start);
+    virtual void drawChat(Graphics::Bitmap * work, int start);
 
 public:
     void endChatLine();

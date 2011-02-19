@@ -1,6 +1,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include "util/network/network.h"
 #include "chat_server.h"
 #include "chat.h"
@@ -307,7 +308,7 @@ client_id(1),
 name(name),
 accepting(true),
 enterPressed(false){
-    background = new Bitmap(Global::titleScreen().path());
+    background = new Graphics::Bitmap(Global::titleScreen().path());
 
     debug(1) << "Start accepting connections" << endl;
     lineEdit = new Gui::LineEdit();
@@ -315,11 +316,11 @@ enterPressed(false){
     lineEdit->location.setDimensions(400, 30);
     lineEdit->location.setRadius(5);
 
-    lineEdit->colors.body = Bitmap::makeColor( 0, 0, 0 );
+    lineEdit->colors.body = Graphics::Bitmap::makeColor( 0, 0, 0 );
     lineEdit->colors.bodyAlpha = 128;
-    lineEdit->colors.border = Bitmap::makeColor( 255, 255, 0 );
+    lineEdit->colors.border = Graphics::Bitmap::makeColor( 255, 255, 0 );
     lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
-    lineEdit->setTextColor( Bitmap::makeColor( 255, 255, 255 ) );
+    lineEdit->setTextColor( Graphics::Bitmap::makeColor( 255, 255, 255 ) );
 
     lineEdit->setText(welcomeMessage());
     // lineEdit->setFont(Menu::getFont());
@@ -670,47 +671,47 @@ bool ChatServer::needToDraw(){
     return need_update;
 }
 
-void ChatServer::drawInputBox( int x, int y, const Bitmap & work ){
+void ChatServer::drawInputBox( int x, int y, const Graphics::Bitmap & work ){
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
-    work.drawingMode( Bitmap::MODE_TRANS );
-    Bitmap::transBlender( 0, 0, 0, 128 );
-    work.rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Bitmap::makeColor( 0, 0, 0 ) );
-    work.drawingMode( Bitmap::MODE_SOLID );
-    int color = Bitmap::makeColor( 255, 255, 255 );
+    // work.drawingMode( Bitmap::MODE_TRANS );
+    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
+    work.translucent().rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Graphics::Bitmap::makeColor( 0, 0, 0 ) );
+    // work.drawingMode( Bitmap::MODE_SOLID );
+    int color = Graphics::Bitmap::makeColor( 255, 255, 255 );
     if ( focus == INPUT_BOX ){
-        color = Bitmap::makeColor( 255, 255, 0 );
+        color = Graphics::Bitmap::makeColor( 255, 255, 0 );
     }
     work.rectangle( x, y, x + messages.getWidth(), y + font.getHeight(), color );
-    Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
+    Graphics::Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
     // font.printf( x + 1, y, Bitmap::makeColor( 255, 255, 255 ), work, input, 0 );
     // font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
 }
 
-void ChatServer::drawBuddyList( int x, int y, const Bitmap & work, const Font & font ){
-    Bitmap buddyList( work, x, y, GFX_X - x - 5, 200 );
-    buddyList.drawingMode( Bitmap::MODE_TRANS );
-    Bitmap::transBlender( 0, 0, 0, 128 );
-    buddyList.rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-    buddyList.drawingMode( Bitmap::MODE_SOLID );
-    buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ) );
+void ChatServer::drawBuddyList( int x, int y, const Graphics::Bitmap & work, const Font & font ){
+    Graphics::Bitmap buddyList( work, x, y, GFX_X - x - 5, 200 );
+    // buddyList.drawingMode( Bitmap::MODE_TRANS );
+    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
+    buddyList.translucent().rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Graphics::Bitmap::makeColor( 0, 0, 0 ) );
+    // buddyList.drawingMode( Bitmap::MODE_SOLID );
+    buddyList.rectangle( 0, 0, buddyList.getWidth() -1, buddyList.getHeight() - 1, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
     int fy = 1;
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * client = *it;
         const string & name = client->getName();
-        font.printf( 1, fy, Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
+        font.printf( 1, fy, Graphics::Bitmap::makeColor( 255, 255, 255 ), buddyList, name, 0 );
         fy += font.getHeight();
     }
 }
 	
 int ChatServer::focusColor( Focus f ){
     if (f == focus){
-        return Bitmap::makeColor( 255, 255, 0 );
+        return Graphics::Bitmap::makeColor( 255, 255, 0 );
     }
-    return Bitmap::makeColor( 255, 255, 255 );
+    return Graphics::Bitmap::makeColor( 255, 255, 255 );
 }
 
-void ChatServer::draw( const Bitmap & work ){
+void ChatServer::draw( const Graphics::Bitmap & work ){
     int start_x = 20;
     int start_y = 20;
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
@@ -748,16 +749,16 @@ void ChatServer::next_focus(void * self){
     chat->focus = chat->nextFocus(chat->focus);
     chat->lineEdit->setFocused(chat->focus == INPUT_BOX);
     if (chat->focus == INPUT_BOX){
-        chat->lineEdit->colors.border = Bitmap::makeColor(255,255,0);
+        chat->lineEdit->colors.border = Graphics::Bitmap::makeColor(255,255,0);
     } else {
-        chat->lineEdit->colors.border = Bitmap::makeColor(255,255,255);
+        chat->lineEdit->colors.border = Graphics::Bitmap::makeColor(255,255,255);
     }
     chat->needUpdate();
 }
 	
 void ChatServer::run(){
     Global::speed_counter = 0;
-    Bitmap work(GFX_X, GFX_Y);
+    Graphics::Bitmap work(GFX_X, GFX_Y);
     Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
     class Release{

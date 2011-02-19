@@ -21,7 +21,7 @@ public:
 	virtual Object * copy();
 
 public:
-	virtual void drawFront( Bitmap * work, int rel_x );
+	virtual void drawFront( Graphics::Bitmap * work, int rel_x );
 	virtual void interpretMessage(World * world, Network::Message & m );
         virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
 

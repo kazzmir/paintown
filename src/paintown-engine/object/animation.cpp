@@ -27,7 +27,7 @@ using namespace std;
 
 namespace Paintown{
 
-Frame::Frame( Bitmap * p, ECollide * e ){
+Frame::Frame( Graphics::Bitmap * p, ECollide * e ){
 	pic = p;
 	collide = e;
 	mine = true;
@@ -368,7 +368,7 @@ contact( NULL ){
                 Filesystem::RelativePath full = Filesystem::RelativePath(basedir + path);
                 // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
                 if (frames.find(full.path()) == frames.end()){
-                    Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
+                    Graphics::Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
                     ECollide * collide = new ECollide(pic);
                     Frame * f = new Frame(pic, collide);
                     frames[full.path()] = f;
@@ -600,7 +600,7 @@ void Animation::reMap( map< int, int > & colors ){
         for ( map<string,Frame*>::iterator it = frames.begin(); it != frames.end(); it++ ){
             Frame* & xframe = (*it).second;
 
-            Bitmap * xpic = new Bitmap( *(xframe->pic), true );
+            Graphics::Bitmap * xpic = new Graphics::Bitmap( *(xframe->pic), true );
             ECollide * xcollide = new ECollide( xframe->collide );
 
             /* oh evil! I am altering a map while iterating over it.
@@ -614,14 +614,14 @@ void Animation::reMap( map< int, int > & colors ){
     for ( map<string,Frame*>::iterator it = frames.begin(); it != frames.end(); it++ ){
         Frame * xframe = (*it).second;
 
-        Bitmap * use = xframe->pic;
+        Graphics::Bitmap * use = xframe->pic;
         reMap(use, colors);
     }
 
     own_bitmaps = true;
 }
 
-void Animation::reMap( Bitmap * work, map< int, int > & colors ){
+void Animation::reMap( Graphics::Bitmap * work, map< int, int > & colors ){
     const map<int,int>::iterator it_end = colors.end();
 
     /* maybe this is a little faster than just reading every pixel
@@ -756,7 +756,7 @@ bool Animation::hasSequence( const string & seq ){
     return false;
 }
 
-Bitmap * Animation::getFrame( int x ){
+Graphics::Bitmap * Animation::getFrame( int x ){
     int i = 0;
     map< string, Frame * >::iterator it;
     for ( it = frames.begin(); it != frames.end() && i < x; it++, i++ );
@@ -782,7 +782,7 @@ int Animation::getHeight() const{
     return 0;
 }
 
-const Bitmap * Animation::getCurrentFrame() const {
+const Graphics::Bitmap * Animation::getCurrentFrame() const {
     return current_frame;
 }
 
@@ -790,15 +790,15 @@ const string Animation::getCurrentFramePath() const {
     return current_frame->getPath();
 }
 
-void Animation::DrawLit( int x, int y, Remap * remap, Bitmap * work ){
-    doDraw(x, y, LitBitmap(*current_frame), remap, work);
+void Animation::DrawLit( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+    doDraw(x, y, Graphics::LitBitmap(*current_frame), remap, work);
 }
 
-void Animation::DrawLitFlipped( int x, int y, Remap * remap, Bitmap * work ){
-    doDrawFlipped(x, y, LitBitmap(*current_frame), remap, work);
+void Animation::DrawLitFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+    doDrawFlipped(x, y, Graphics::LitBitmap(*current_frame), remap, work);
 }
 
-void Animation::doDraw( int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work ){
+void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
@@ -819,12 +819,12 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Remap * remap, Bitma
 
     // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
     if ( Global::getDebug() > 5 ){
-        work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
-        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
+        work->rectangle( x - w, y - h, x + w, y, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
+        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Graphics::Bitmap::makeColor(255,0,0) );
         // current_collide->draw( *work, x-w, y-h );
         ECollide * c = getCollide( Object::FACING_RIGHT );
         if ( c != NULL ){
-            c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ) );
+            c->draw( *work, x - w, y - h, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
         }
     }
 
@@ -832,7 +832,7 @@ void Animation::doDraw( int x, int y, const Bitmap & frame, Remap * remap, Bitma
     // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
 
-void Animation::Draw( int x, int y, Remap * remap, Bitmap * work ){
+void Animation::Draw( int x, int y, Remap * remap, Graphics::Bitmap * work ){
 
     doDraw( x, y, *current_frame, remap, work);
 
@@ -863,7 +863,7 @@ void Animation::Draw( int x, int y, Remap * remap, Bitmap * work ){
 
 }
 
-void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work ){
+void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
 
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
@@ -885,19 +885,19 @@ void Animation::doDrawFlipped( int x, int y, const Bitmap & frame, Remap * remap
     // work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
     // work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
     if ( Global::getDebug() > 5 ){
-        work->rectangle( x - w, y - h, x + w, y, Bitmap::makeColor( 255, 255, 255 ) );
-        work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
+        work->rectangle( x - w, y - h, x + w, y, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
+        work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Graphics::Bitmap::makeColor(255,0,0) );
         // current_collide->draw( *work, x-w, y-h, true );
         ECollide * c = getCollide( Object::FACING_LEFT );
         if ( c != NULL ){
-            c->draw( *work, x - w, y - h, Bitmap::makeColor( 255, 255, 255 ), true );
+            c->draw( *work, x - w, y - h, Graphics::Bitmap::makeColor( 255, 255, 255 ), true );
         }
     }
 
     // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
 
-void Animation::DrawFlipped( int x, int y, Remap * remap, Bitmap * work ){
+void Animation::DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work ){
 
 	doDrawFlipped( x, y, *current_frame, remap, work);
 	

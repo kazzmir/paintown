@@ -10,7 +10,9 @@
 #include "util/file-system.h"
 #include "util/network/network.h"
 
+namespace Graphics{
 class Bitmap;
+}
 class Stimulation;
 class World;
 class Sound;
@@ -29,10 +31,10 @@ class DrawEffect;
 
 /* used for gibs */
 struct BodyPart{
-	BodyPart( int x, int y, Bitmap * image ):x(x), y(y), image(image){}
+	BodyPart( int x, int y, Graphics::Bitmap * image ):x(x), y(y), image(image){}
 	/* relative to getX()/getY() */
 	int x, y;
-	Bitmap * image;
+        Graphics::Bitmap * image;
 };
 
 /* these should be self explanatory.. */
@@ -51,7 +53,7 @@ const int Status_Falling = 9; /* falling due to lack of ground beneath them */
 class Character;
 
 /* Handles palette swaps */
-class Remap: public Bitmap::Filter {
+class Remap: public Graphics::Bitmap::Filter {
 public:
     Remap(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to);
     Remap(const Remap & copy);
@@ -109,12 +111,12 @@ public:
     virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
     /* drawing */
-    virtual void draw( Bitmap * work, int rel_x, int rel_y );
+    virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 
-    virtual void drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity);
-    virtual void drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
+    virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
+    virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
 
-    virtual const Bitmap * getCurrentFrame() const;
+    virtual const Graphics::Bitmap * getCurrentFrame() const;
 
     // virtual bool collision( Object * obj );
 
@@ -360,7 +362,7 @@ public:
         return z_velocity;
     }
 
-    virtual void drawLifeBar( int x, int y, Bitmap * work );
+    virtual void drawLifeBar( int x, int y, Graphics::Bitmap * work );
 
     virtual inline const Filesystem::AbsolutePath & getPath() const {
         return path;
@@ -426,7 +428,7 @@ protected:
 
     virtual void landed( World * world );
 
-    virtual void drawLifeBar( int x, int y, int he, Bitmap * work );
+    virtual void drawLifeBar( int x, int y, int he, Graphics::Bitmap * work );
 
     virtual ECollide * getNormalCollide() const;
 
@@ -452,7 +454,7 @@ protected:
     // int speed;
     int type;
     int shadow;
-    Bitmap * icon;
+    Graphics::Bitmap * icon;
 
     // int actualx, actualy;
 

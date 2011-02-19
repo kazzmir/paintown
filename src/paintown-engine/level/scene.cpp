@@ -23,7 +23,7 @@
 
 using namespace std;
 
-Panel::Panel( Bitmap * _pic, Bitmap * _neon, Bitmap * _my_screen ){
+Panel::Panel( Graphics::Bitmap * _pic, Graphics::Bitmap * _neon, Graphics::Bitmap * _my_screen ){
     pic = _pic;
     neon = _neon;
     screen_overlay = _my_screen;
@@ -76,7 +76,7 @@ frontBuffer(NULL){
             } else if ( *tok == "background" ){
                 string n;
                 tok->view() >> n;
-                background = new Bitmap(Filesystem::find(Filesystem::RelativePath(n)).path());
+                background = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(n)).path());
             } else if ( *tok == "background-parallax" ){
                 double d;
                 tok->view() >> d;
@@ -122,14 +122,14 @@ frontBuffer(NULL){
                 string normal, neon, s_screen;
                 tok->view() >> num >> normal >> neon >> s_screen;
 
-                Bitmap * x_normal = NULL;
-                Bitmap * x_neon = NULL;
-                Bitmap * x_screen = NULL;
+                Graphics::Bitmap * x_normal = NULL;
+                Graphics::Bitmap * x_neon = NULL;
+                Graphics::Bitmap * x_screen = NULL;
                 if ( normal != "none" ){
-                    x_normal = new Bitmap(Filesystem::find(Filesystem::RelativePath(normal)).path());
+                    x_normal = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(normal)).path());
                 }
-                x_neon = new Bitmap();
-                x_screen = new Bitmap();
+                x_neon = new Graphics::Bitmap();
+                x_screen = new Graphics::Bitmap();
                 /*
                    if ( neon != "none" ){
                    x_neon = new Bitmap( neon );
@@ -150,7 +150,7 @@ frontBuffer(NULL){
             } else if ( *tok == "frontpanel" ){
                 string file;
                 tok->view() >> file;
-                Bitmap * front = new Bitmap(Filesystem::find(Filesystem::RelativePath(file)).path());
+                Graphics::Bitmap * front = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(file)).path());
                 front_panels.push_back( front );
             } else if ( *tok == "order" ){
                 // *tok >> order;
@@ -180,7 +180,7 @@ frontBuffer(NULL){
     current_block = level_blocks.front();
     level_blocks.pop_front();
 
-    arrow = new Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/arrow.png")).path());
+    arrow = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/arrow.png")).path());
     arrow_blink = 0;
 
     // delete current;
@@ -211,7 +211,7 @@ void Scene::calculateLength(){
         if ( cur == NULL ){
             continue;
         }
-        Bitmap * normal = cur->pic;
+        Graphics::Bitmap * normal = cur->pic;
         // normal->draw( fx-x, 0, *work );
         scene_length += normal->getWidth();
     }
@@ -311,7 +311,7 @@ void Scene::act( int min_x, int max_x, vector< Paintown::Object * > * objects ){
 }
 
 /* draw the background */
-void Scene::drawBack( int x, Bitmap * work ){
+void Scene::drawBack( int x, Graphics::Bitmap * work ){
     if ( background ){
         int y = 0;
         background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
@@ -324,7 +324,7 @@ void Scene::drawBack( int x, Bitmap * work ){
         if ( cur == NULL ){
             continue;
         }
-        Bitmap * normal = cur->pic;
+        Graphics::Bitmap * normal = cur->pic;
         normal->draw( fx-x, 0, *work );
         fx += normal->getWidth();
     }
@@ -338,7 +338,7 @@ void Scene::drawBack( int x, Bitmap * work ){
 }
 
 /* draw the foreground */
-void Scene::drawFront( int x, Bitmap * work ){
+void Scene::drawFront( int x, Graphics::Bitmap * work ){
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
@@ -349,7 +349,7 @@ void Scene::drawFront( int x, Bitmap * work ){
      * to be drawn on.
      */
     if (frontBuffer == NULL){
-        frontBuffer = new Bitmap(work->getWidth(), work->getHeight());
+        frontBuffer = new Graphics::Bitmap(work->getWidth(), work->getHeight());
     }
 
     frontBuffer->clearToMask();
@@ -357,8 +357,8 @@ void Scene::drawFront( int x, Bitmap * work ){
     double fx = 0;
     if ( front_panels.size() > 0 ){
         while ( fx < scene_length * getForegroundParallax() ){
-            for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
-                Bitmap * b = *it;
+            for ( vector< Graphics::Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
+                Graphics::Bitmap * b = *it;
                 b->draw( (int)(fx - x * getForegroundParallax()), 0, *frontBuffer);
                 fx += b->getWidth();
             }
@@ -436,7 +436,7 @@ Scene::~Scene(){
     if ( arrow )
         delete arrow;
 
-    for ( vector< Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
+    for ( vector< Graphics::Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
         delete *it;
     }
     for ( map< int, Panel * >::iterator it = panels.begin(); it != panels.end(); it++ ){

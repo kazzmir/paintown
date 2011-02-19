@@ -3,7 +3,9 @@
 
 #include "adventure_world.h"
 
+namespace Graphics{
 class Bitmap;
+}
 
 namespace Paintown{
 class Character;
@@ -14,7 +16,7 @@ public:
 	VersusWorld( int z, Paintown::Character * player1, Paintown::Character * player2 );
 	virtual ~VersusWorld();
 
-	virtual void draw( Bitmap * work );
+	virtual void draw( Graphics::Bitmap * work );
 
 	virtual void act();
 	

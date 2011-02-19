@@ -6,7 +6,9 @@
 #include <vector>
 #include <string>
 
+namespace Graphics{
 class Bitmap;
+}
 class Animation;
 
 namespace Filesystem{
@@ -21,7 +23,7 @@ public:
 	Actor( const Actor & item );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Bitmap * work, int rel_x, int rel_y );
+	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
 	virtual int getWidth() const;

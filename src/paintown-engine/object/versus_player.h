@@ -6,7 +6,9 @@
 #include "util/load_exception.h"
 
 class World;
+namespace Graphics{
 class Bitmap;
+}
 
 namespace Paintown{
 
@@ -19,7 +21,7 @@ public:
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	
-	virtual void draw( Bitmap * work, int rel_x, int rel_y );
+	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 	virtual bool canGrab( Object * enemy );
 
 	virtual ~VersusPlayer();

@@ -24,7 +24,7 @@ public:
 	Item(const Item & item);
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Bitmap * work, int rel_x, int rel_y );
+	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 	virtual bool isCollidable( Object * obj );
 	virtual ECollide * getCollide() const;
 	virtual bool collision( ObjectAttack * obj );
@@ -49,7 +49,7 @@ protected:
 		return stimulation;
 	}
 
-	Bitmap picture;
+        Graphics::Bitmap picture;
 	ECollide * collide;
 	Stimulation * const stimulation;
 	Sound sound;

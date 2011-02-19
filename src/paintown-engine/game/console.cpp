@@ -112,26 +112,26 @@ bool Console::doInput() {
     return true;
 }
 
-void Console::draw(const Bitmap & work){
+void Console::draw(const Graphics::Bitmap & work){
     /* if we can show something */
     if (height > 0){
-        Bitmap::drawingMode(Bitmap::MODE_TRANS);
-	Bitmap::transBlender(0, 0, 0, 160);
-        work.translucent().rectangleFill(0, 0, work.getWidth(), height, Bitmap::makeColor(200,0,0));
-        work.translucent().horizontalLine(0, height, work.getWidth(), Bitmap::makeColor(200, 200, 200));
+        // Graphics::Bitmap::drawingMode(Bitmap::MODE_TRANS);
+        Graphics::Bitmap::transBlender(0, 0, 0, 160);
+        work.translucent().rectangleFill(0, 0, work.getWidth(), height, Graphics::Bitmap::makeColor(200,0,0));
+        work.translucent().horizontalLine(0, height, work.getWidth(), Graphics::Bitmap::makeColor(200, 200, 200));
         const Font & font = Font::getFont(getFont(), textWidth, textHeight);
         //font.printf(0, height - font.getHeight(), Bitmap::makeColor(255, 255, 255), work, "Console!", 0 );
-        Bitmap::drawingMode(Bitmap::MODE_SOLID);
+        // Bitmap::drawingMode(Bitmap::MODE_SOLID);
 	// if (state == Open){
             if (!lines.empty()){
                 int start = height - font.getHeight() * 2;
                 for (std::vector<std::string>::reverse_iterator i = lines.rbegin(); i != lines.rend() && start > 0; ++i){
                     std::string str = *i;
-                    font.printf(0, start, Bitmap::makeColor(255,255,255), work, str, 0);
+                    font.printf(0, start, Graphics::Bitmap::makeColor(255,255,255), work, str, 0);
                     start -= font.getHeight();
                 }
             }
-            font.printf(0, height - font.getHeight(), Bitmap::makeColor(255,255,255), work, "> " + textInput.getText() + "|", 0);
+            font.printf(0, height - font.getHeight(), Graphics::Bitmap::makeColor(255,255,255), work, "> " + textInput.getText() + "|", 0);
         // }
     }
 }

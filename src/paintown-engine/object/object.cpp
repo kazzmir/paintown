@@ -276,13 +276,13 @@ void Object::takeDamage( World & world, ObjectAttack * obj, int x ){
     }
 }
 	
-void Object::drawFront(Bitmap * work, int rel_x){
+void Object::drawFront(Graphics::Bitmap * work, int rel_x){
 }
         
-void Object::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
+void Object::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
 }
 
-void Object::drawShade(Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
+void Object::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
 }
 	
 void Object::touch( Object * obj ){

@@ -5,7 +5,9 @@
 #include "util/sound.h"
 #include <vector>
 
+namespace Graphics{
 class Bitmap;
+}
 class Token;
 
 struct Drop{
@@ -31,10 +33,10 @@ public:
 	RainAtmosphere();	
 	virtual ~RainAtmosphere();
 
-	virtual void drawBackground(Bitmap * work, int x);
-	virtual void drawForeground(Bitmap * work, int x);
-	virtual void drawFront(Bitmap * work, int x);
-	virtual void drawScreen(Bitmap * work, int x);
+	virtual void drawBackground(Graphics::Bitmap * work, int x);
+	virtual void drawForeground(Graphics::Bitmap * work, int x);
+	virtual void drawFront(Graphics::Bitmap * work, int x);
+	virtual void drawScreen(Graphics::Bitmap * work, int x);
 	virtual void act(const Scene & level, const std::vector<Paintown::Object*>*);
     virtual void interpret(const Token * message);
 	

@@ -11,7 +11,9 @@
 
 /* is that crazy hat for chicken? */
 
+namespace Graphics{
 class Bitmap;
+}
 class ECollide;
 class Token;
 class Sound;
@@ -37,10 +39,10 @@ struct KeyPress{
 
 /* stores a bitmap and a collision object to go with it */
 struct Frame{
-    Bitmap * pic;
+    Graphics::Bitmap * pic;
     ECollide * collide;
 
-    Frame( Bitmap * pic, ECollide * e);
+    Frame( Graphics::Bitmap * pic, ECollide * e);
     Frame( const Frame & f );
     ~Frame();
 
@@ -124,8 +126,8 @@ public:
 	void setY( const int x );
 	void setZ( const int x );
 
-	Bitmap * getFrame( int x );
-	const Bitmap * getCurrentFrame() const;
+        Graphics::Bitmap * getFrame( int x );
+	const Graphics::Bitmap * getCurrentFrame() const;
 
 	/* makes the owner jump with velocity x,y,z */
 	void jump( double vx, double vy, double vz );
@@ -248,10 +250,10 @@ public:
 
 	ECollide * getCollide( int facing );
 	ECollide * getNormalCollide();
-	void Draw(int x, int y, Remap * remap, Bitmap * work );
-	void DrawFlipped( int x, int y, Remap * remap, Bitmap * work );
-	void DrawLit( int x, int y, Remap * remap, Bitmap * work );
-	void DrawLitFlipped( int x, int y, Remap * remap, Bitmap * work );
+	void Draw(int x, int y, Remap * remap, Graphics::Bitmap * work );
+	void DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );
+	void DrawLit( int x, int y, Remap * remap, Graphics::Bitmap * work );
+	void DrawLitFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );
 	void setDelay( int _delay );
 	void setStatus( const int status );
 	void setFrame( const std::string & path );
@@ -269,7 +271,7 @@ public:
 
 protected:
 
-	void reMap( Bitmap * work, std::map< int, int > & colors );
+	void reMap( Graphics::Bitmap * work, std::map< int, int > & colors );
 
 	// int convertKeyPress( const string & key_name ) throw( LoadException );
     Input::PaintownInput convertKeyPress( const std::string & key_name );
@@ -277,8 +279,8 @@ protected:
 	// void parseObject( string str ) throw( exception );
 	void upperCase( std::string & who );
 
-	void doDraw(int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work);
-	void doDrawFlipped(int x, int y, const Bitmap & frame, Remap * remap, Bitmap * work);
+	void doDraw(int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work);
+	void doDrawFlipped(int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work);
 
 protected:
         std::string name;
@@ -286,7 +288,7 @@ protected:
 
 	Character * const parent;
 
-	Bitmap * current_frame;
+        Graphics::Bitmap * current_frame;
 	ECollide * current_collide;
 	ECollide * attack_collide;
 	int delay;

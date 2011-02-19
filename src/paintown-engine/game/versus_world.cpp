@@ -127,7 +127,7 @@ bool VersusWorld::finished() const {
 	return player1->getHealth() <= 0 || player2->getHealth() <= 0;
 }
 
-void VersusWorld::draw( Bitmap * work ){
+void VersusWorld::draw( Graphics::Bitmap * work ){
 
 	map< int, vector<Paintown::Object*> > object_z;
 

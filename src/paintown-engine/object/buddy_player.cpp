@@ -32,7 +32,7 @@ leader( leader ){
 	NamePlacer::getPlacement( x, y, name_id );
 }
 	
-void BuddyPlayer::draw( Bitmap * work, int rel_x, int rel_y ){
+void BuddyPlayer::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
     Character::draw(work, rel_x, rel_y);
 
     int x1, y1;
@@ -53,14 +53,14 @@ void BuddyPlayer::draw( Bitmap * work, int rel_x, int rel_y ){
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;
     FontRender * render = FontRender::getInstance();
-    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
+    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::Bitmap::makeColor(255,255,255), -1, name );
     drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
     // int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
     // render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
 
 }
 	
-void BuddyPlayer::drawLifeBar( int x, int y, Bitmap * work ){
+void BuddyPlayer::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
     drawLifeBar( x, y, show_life, work );
 }
 	

@@ -220,7 +220,7 @@ void Cat::act( vector< Object * > * others, World * world, vector< Object * > * 
 	}
 }
 
-void Cat::draw( Bitmap * work, int rel_x, int rel_y ){
+void Cat::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
     if ( getFacing() == Object::FACING_RIGHT ){
         current_animation->Draw(getRX() - rel_x, getRY(), NULL, work);
     } else {

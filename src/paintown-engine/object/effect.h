@@ -7,7 +7,9 @@
 #include "util/load_exception.h"
 #include "util/network/network.h"
 
+namespace Graphics{
 class Bitmap;
+}
 
 extern const int ALLIANCE_NONE;
 
@@ -27,7 +29,7 @@ public:
 	virtual bool isGettable();
 
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Bitmap * work, int rel_x, int rel_y );
+	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 	virtual Object * copy();
 	
 	virtual Network::Message getCreateMessage();

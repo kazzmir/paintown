@@ -109,8 +109,8 @@ ignore_lives(false){
 }
 
 void Player::commonInitialize(){
-    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Bitmap::makeColor(255,255,255), Bitmap::makeColor(255,255,0));
-    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Bitmap::makeColor(255,255,0), Bitmap::makeColor(255,0,0));
+    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,255), Graphics::Bitmap::makeColor(255,255,0));
+    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,0), Graphics::Bitmap::makeColor(255,0,0));
 }
 
 Player::~Player(){
@@ -349,13 +349,13 @@ void Player::attacked( World * world, Object * something, vector< Object * > & o
     world->addMessage(scoreMessage());
 }
 	
-void Player::drawLifeBar( int x, int y, Bitmap * work ){
+void Player::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
 	drawLifeBar( x, y, show_life, work );
 }
 
 /* present the current input to the user */
-void Player::drawButtons(Bitmap * work, int x, int y){
-    int color = Bitmap::makeColor(255, 255, 255);
+void Player::drawButtons(Graphics::Bitmap * work, int x, int y){
+    int color = Graphics::Bitmap::makeColor(255, 255, 255);
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
     y -= 10;
     for (deque<Input::PaintownInput>::iterator it = key_cache.begin(); it != key_cache.end(); it++){
@@ -380,7 +380,7 @@ void Player::drawButtons(Bitmap * work, int x, int y){
     }
 }
 
-void Player::drawFront(Bitmap * work, int rel_x){
+void Player::drawFront(Graphics::Bitmap * work, int rel_x){
 
 	int x1, y1;
 	NamePlacer::getPlacement( x1, y1, name_id );
@@ -411,7 +411,7 @@ void Player::drawFront(Bitmap * work, int rel_x){
 
 	// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
 	FontRender * render = FontRender::getInstance();
-	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
+	render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::Bitmap::makeColor(255,255,255), -1, name );
 
         ostringstream score_s;
         score_s << getScore();
@@ -421,7 +421,7 @@ void Player::drawFront(Bitmap * work, int rel_x){
         }
 
         // int attack_x = (hasIcon + x1) * 2 + player_font.textLength(name.c_str()) + 5;
-        int attack_x = (int)((hasIcon + x1) * 2 + 100 * Bitmap::getScale() - player_font.textLength(score_s.str().c_str()));
+        int attack_x = (int)((hasIcon + x1) * 2 + 100 * Graphics::Bitmap::getScale() - player_font.textLength(score_s.str().c_str()));
 
         render->addMessage(player_font, attack_x, y1 * 2, attack_gradient[attack_color], -1, score_s.str().c_str());
 
@@ -433,10 +433,10 @@ void Player::drawFront(Bitmap * work, int rel_x){
 	// work->printf( hasIcon + x1 + getMaxHealth() + 5, y1 + player_font->getHeight(), Bitmap::makeColor(255,255,255), player_font, "x %d", 3 );
         if (!ignoringLives()){
             int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
-            render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+            render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Graphics::Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
         }
 
-	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Bitmap::makeColor( 255, 255, 255 ) );
+	// work->rectangle( x1, y1, x1 + 100, y1 + nameHeight + 1, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
 }
 
 /* animation keys are lists of lists of keys where inner lists
@@ -524,7 +524,7 @@ void Player::hurt( int x ){
 void Player::setInvincible(const bool b){
     this->invincible = b;
     if (b){
-        addEffect(new DrawGlowEffect(this, Bitmap::makeColor(10,10,250), Bitmap::makeColor(190, 190, 255), 75));
+        addEffect(new DrawGlowEffect(this, Graphics::Bitmap::makeColor(10,10,250), Graphics::Bitmap::makeColor(190, 190, 255), 75));
     }
 }
         

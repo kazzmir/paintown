@@ -119,7 +119,7 @@ void Projectile::act( vector< Object * > * others, World * world, vector< Object
 	}
 }
 
-void Projectile::draw( Bitmap * work, int rel_x, int rel_y ){
+void Projectile::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
     if (getFacing() == Object::FACING_RIGHT){
         currentAnimation->Draw(getRX() - rel_x, getRY(), NULL, work);
     } else {
@@ -127,9 +127,9 @@ void Projectile::draw( Bitmap * work, int rel_x, int rel_y ){
     }
 }
 
-void Projectile::drawReflection(Bitmap * work, int rel_x, int rel_y, int intensity){
+void Projectile::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
     if (currentAnimation){
-        Bitmap::transBlender( 0, 0, 0, intensity );
+        Graphics::Bitmap::transBlender( 0, 0, 0, intensity );
 
         int x = (int)((getRX() - rel_x) - currentAnimation->getCurrentFrame()->getWidth()/2);
         int y = (int)(getRZ() + getY());

@@ -85,11 +85,11 @@ void Enemy::hurt( int x ){
 	show_name_time += 90;
 }
 	
-void Enemy::drawLifeBar( int x, int y, Bitmap * work ){
+void Enemy::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
 	drawLifeBar( x, y, getDeath() == 0 ? show_life : 0, work );
 }
 
-void Enemy::drawFront( Bitmap * work, int rel_x ){
+void Enemy::drawFront( Graphics::Bitmap * work, int rel_x ){
 	if ( show_name_time > 0 ){
 		show_name_time--;
 
@@ -109,7 +109,7 @@ void Enemy::drawFront( Bitmap * work, int rel_x ){
 		const string & name = getName();
 		// const int height = my_font.getHeight( name ) / 2;
 		const int height = 20 / 2;
-		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Bitmap::makeColor(255,255,255), -1, name );
+		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Graphics::Bitmap::makeColor(255,255,255), -1, name );
 
 
 		drawLifeBar( icon_x + x + 1, y + height + 1, work );

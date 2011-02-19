@@ -9,7 +9,7 @@
 
 namespace Paintown{
 
-Gib::Gib( const int x, const int y, const int z, double dx, double dy, double dz, Bitmap * image ):
+Gib::Gib( const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image ):
 ObjectNonAttack( x, z ),
 dx(dx),
 dy(dy),
@@ -26,16 +26,16 @@ Gib::Gib( const Gib & g ):
 ObjectNonAttack( g ){
 }
 
-void Gib::draw( Bitmap * work, int rel_x, int rel_y ){
+void Gib::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
 	if ( fade > 0 ){
 		// Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
-		Bitmap::transBlender( 0, 0, 0, 255 - fade );
+            Graphics::Bitmap::transBlender( 0, 0, 0, 255 - fade );
 		image->translucent().draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
 	} else {
 		for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
 			const Point & p = *it;
 			int l = 200 + p.life * 15;
-			int red = Bitmap::makeColor( l > 255 ? 255 : l, 0, 0 );
+			int red = Graphics::Bitmap::makeColor( l > 255 ? 255 : l, 0, 0 );
 			work->circleFill( p.x - rel_x, p.y, 1, red );
 			// work->putPixel( p.x - rel_x, p.y, red );
 		}

@@ -1,5 +1,5 @@
-#ifndef _scene_h
-#define _scene_h
+#ifndef _paintown_scene_h
+#define _paintown_scene_h
 
 #include <string>
 #include <vector>
@@ -7,7 +7,10 @@
 #include <deque>
 #include "util/load_exception.h"
 
+namespace Graphics{
 class Bitmap;
+}
+
 class Block;
 class Heart;
 class Atmosphere;
@@ -23,11 +26,11 @@ namespace Level{
 }
 
 struct Panel{
-	Bitmap * pic;
-	Bitmap * neon;
-	Bitmap * screen_overlay;
+    Graphics::Bitmap * pic;
+    Graphics::Bitmap * neon;
+    Graphics::Bitmap * screen_overlay;
 
-	Panel( Bitmap * _pic = NULL, Bitmap * _neon = NULL, Bitmap * my_screen = NULL );
+	Panel( Graphics::Bitmap * _pic = NULL, Graphics::Bitmap * _neon = NULL, Graphics::Bitmap * my_screen = NULL );
 	~Panel();
 };
 
@@ -36,8 +39,8 @@ public:
 	Scene(const char * filename, const Level::Cacher & cacher);
 
 	// void Draw( int x, Bitmap * work );
-	void drawFront( int x, Bitmap * work );
-	void drawBack( int x, Bitmap * work );
+	void drawFront( int x, Graphics::Bitmap * work );
+	void drawBack( int x, Graphics::Bitmap * work );
 
 	int getFinished() const;
 
@@ -116,13 +119,13 @@ protected:
 protected:
 
     std::string music;
-    Bitmap * background;
-    Bitmap * arrow;
+    Graphics::Bitmap * background;
+    Graphics::Bitmap * arrow;
     int arrow_blink;
     std::vector< int > order;
     // vector< Panel * > front_panels;
-    // vector< Bitmap * > back_panels;
-    std::vector< Bitmap * > front_panels;
+    // vector< Graphics::Bitmap * > back_panels;
+    std::vector< Graphics::Bitmap * > front_panels;
     std::map< int, Panel * > panels;
 
     std::deque< Block * > level_blocks;
@@ -147,7 +150,7 @@ protected:
     double backgroundParallax;
     double foregroundParallax;
 
-    Bitmap * frontBuffer;
+    Graphics::Bitmap * frontBuffer;
 
     std::vector<Atmosphere*> atmospheres;
     std::vector<Trigger*> triggers;

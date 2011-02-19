@@ -54,7 +54,7 @@ is_paused(false),
 slowmotion(0),
 cacher(cacher),
 descriptionTime(DESCRIPTION_TIME),
-descriptionGradient(new Effects::Gradient(100, Bitmap::makeColor(255, 255, 255), Bitmap::makeColor(128, 128, 128))),
+descriptionGradient(new Effects::Gradient(100, Graphics::Bitmap::makeColor(255, 255, 255), Graphics::Bitmap::makeColor(128, 128, 128))),
 gameTicks(0),
 replayEnabled(false){
 	scene = NULL;
@@ -76,7 +76,7 @@ replayEnabled(false){
          * but it should use the actual values instead of guessing since the screen size
          * could theoretically change
          */
-	mini_map = new Bitmap(screen_size, (int)((double) screen_size / 1.3333));
+	mini_map = new Graphics::Bitmap(screen_size, (int)((double) screen_size / 1.3333));
 
         for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
             PlayerTracker & tracker = *it;
@@ -111,7 +111,7 @@ AdventureWorld::~AdventureWorld(){
 
     deleteObjects(&objects);
 
-    for (deque<Bitmap*>::iterator it = screenshots.begin(); it != screenshots.end(); it++){
+    for (deque<Graphics::Bitmap*>::iterator it = screenshots.begin(); it != screenshots.end(); it++){
         delete *it;
     }
 
@@ -541,7 +541,7 @@ void AdventureWorld::addObject( Paintown::Object * o ){
 	objects.push_back( o );
 }
 
-void AdventureWorld::drawWorld( const PlayerTracker & tracker, Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
+void AdventureWorld::drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
 	int min_x = 0;
 
 	min_x = (int) tracker.min_x;
@@ -588,14 +588,14 @@ bool AdventureWorld::shouldDrawMiniMaps(){
 	return draw_minimaps;
 }
         
-const deque<Bitmap*> & AdventureWorld::getScreenshots(){
+const deque<Graphics::Bitmap*> & AdventureWorld::getScreenshots(){
     return screenshots;
 }
 
-void AdventureWorld::doTakeScreenshot(Bitmap * work){
+void AdventureWorld::doTakeScreenshot(Graphics::Bitmap * work){
     takeAScreenshot = false;
     Global::debug(2) << "Take a screenshot" << endl;
-    screenshots.push_back(new Bitmap(*work, true));
+    screenshots.push_back(new Graphics::Bitmap(*work, true));
 
     /* don't store more than 4 screenshots, so if we go above this number
      * start throwing random ones out
@@ -606,7 +606,7 @@ void AdventureWorld::doTakeScreenshot(Bitmap * work){
         int index = position % screenshots.size();
         position += change + Util::rnd(change);
 
-        deque<Bitmap*>::iterator kill;
+        deque<Graphics::Bitmap*>::iterator kill;
         int i;
         for (i = 0, kill = screenshots.begin(); i < index && kill != screenshots.end(); kill++, i++){
             // nothing
@@ -624,7 +624,7 @@ void AdventureWorld::doTakeScreenshot(Bitmap * work){
     */
 }
 
-void AdventureWorld::draw( Bitmap * work ){
+void AdventureWorld::draw( Graphics::Bitmap * work ){
 
     map< int, vector<Paintown::Object*> > object_z;
 
@@ -648,11 +648,11 @@ void AdventureWorld::draw( Bitmap * work ){
     }
 
     // min_x = (int)min_x_virtual;
-    Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
+    Graphics::Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
     int mini_position_x = work->getWidth() - mini.getWidth() - 1;
     int mini_position_y = work->getHeight() - mini.getHeight() - 1;
     for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-        Bitmap * on = mini_map;
+        Graphics::Bitmap * on = mini_map;
         if ( it == players.begin() ){
             on = work;
         }
@@ -660,8 +660,8 @@ void AdventureWorld::draw( Bitmap * work ){
         drawWorld( *it, on, object_z );
         if ( on != work ){
             on->Stretch( mini );
-            Bitmap::transBlender( 0, 0, 0, 128 );
-            mini.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
+            Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
+            mini.border( 0, 1, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
             mini.translucent().draw( mini_position_x, mini_position_y, *work );
             mini_position_x -= mini.getWidth() - 2;
             if ( mini_position_x <= 0 ){
@@ -681,9 +681,9 @@ void AdventureWorld::draw( Bitmap * work ){
 
     if (is_paused){
         work->transBlender( 0, 0, 0, 128 );
-        work->translucent().fill(Bitmap::makeColor(0, 0, 0));
+        work->translucent().fill(Graphics::Bitmap::makeColor(0, 0, 0));
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
-        font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
+        font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
     }
 
     /*

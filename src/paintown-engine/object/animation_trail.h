@@ -1,7 +1,9 @@
 #ifndef _paintown_animation_trail_h
 #define _paintown_animation_trail_h
 
+namespace Graphics{
 class Bitmap;
+}
 
 namespace Paintown{
 
@@ -9,15 +11,15 @@ class Remap;
 
 class AnimationTrail{
 public:
-    AnimationTrail(const int x, const int y, const int facing, const int life, const Bitmap & sprite);
+    AnimationTrail(const int x, const int y, const int facing, const int life, const Graphics::Bitmap & sprite);
 
-    virtual void draw(const int rel_x, Remap * remap, Bitmap * work) const;
+    virtual void draw(const int rel_x, Remap * remap, Graphics::Bitmap * work) const;
     virtual bool act();
 
     virtual ~AnimationTrail();
 
 protected:
-    const Bitmap & sprite;
+    const Graphics::Bitmap & sprite;
     const int x, y;
     const int facing;
     const int max_life;

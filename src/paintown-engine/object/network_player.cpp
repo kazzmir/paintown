@@ -46,8 +46,8 @@ Object * NetworkPlayer::copy(){
 }
 
 void NetworkPlayer::initializeAttackGradient(){
-    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Bitmap::makeColor(255,255,255), Bitmap::makeColor(255,255,0));
-    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Bitmap::makeColor(255,255,0), Bitmap::makeColor(255,0,0));
+    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,255), Graphics::Bitmap::makeColor(255,255,0));
+    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::Bitmap::makeColor(255,255,0), Graphics::Bitmap::makeColor(255,0,0));
 }
 
 void NetworkPlayer::interpretMessage(World * world, Network::Message & message ){
@@ -111,7 +111,7 @@ Network::Message NetworkPlayer::scoreMessage(){
     return m;
 }
 
-void NetworkPlayer::drawFront( Bitmap * work, int rel_x ){
+void NetworkPlayer::drawFront( Graphics::Bitmap * work, int rel_x ){
     int x1, y1;
     NamePlacer::getPlacement( x1, y1, name_id );
 
@@ -125,7 +125,7 @@ void NetworkPlayer::drawFront( Bitmap * work, int rel_x ){
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;
     FontRender * render = FontRender::getInstance();
-    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Bitmap::makeColor(255,255,255), -1, name );
+    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::Bitmap::makeColor(255,255,255), -1, name );
 
     ostringstream score_s;
     score_s << score;
@@ -134,13 +134,13 @@ void NetworkPlayer::drawFront( Bitmap * work, int rel_x ){
         attack_color = num_attack_gradient - 1;
     }
 
-    int attack_x = (int)((hasIcon + x1) * 2 + 100 * Bitmap::getScale() - player_font.textLength(score_s.str().c_str()));
+    int attack_x = (int)((hasIcon + x1) * 2 + 100 * Graphics::Bitmap::getScale() - player_font.textLength(score_s.str().c_str()));
 
     render->addMessage(player_font, attack_x, y1 * 2, attack_gradient[attack_color], -1, score_s.str().c_str());
 
     drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
     // int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
-    // render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
+    // render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Graphics::Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
 }
 
 /* just performs the current animation */

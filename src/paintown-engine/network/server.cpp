@@ -55,18 +55,18 @@ static void do_quit(void * what){
 }
 
 static int getServerPort(){
-    Bitmap background(Global::titleScreen().path());
+    Graphics::Bitmap background(Global::titleScreen().path());
     const int drawY = 250;
     {
         // background.BlitToScreen();
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-        Bitmap black( 300, font.getHeight() * 4 );
+        Graphics::Bitmap black( 300, font.getHeight() * 4 );
         black.clear();
-        black.border( 0, 1, Bitmap::makeColor( 255, 255, 255 ) );
-        Bitmap::transBlender( 0, 0, 0, 92 );
+        black.border( 0, 1, Graphics::Bitmap::makeColor( 255, 255, 255 ) );
+        Graphics::Bitmap::transBlender( 0, 0, 0, 92 );
         black.translucent().draw( 20, drawY - font.getHeight() - 20, background );
-        font.printf( 40, drawY, Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
-        font.printf( 40, drawY - font.getHeight() - 5, Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
+        font.printf( 40, drawY, Graphics::Bitmap::makeColor( 255, 255, 255 ), background, "Port:", 0 );
+        font.printf( 40, drawY - font.getHeight() - 5, Graphics::Bitmap::makeColor( 255, 255, 255 ), background, "Enter to start. ESC to quit", 0 );
         background.BlitToScreen();
     }
 
@@ -77,7 +77,7 @@ static int getServerPort(){
     input.addBlockingHandle(Keyboard::Key_ESC, do_quit, NULL);
     input.enable();
 
-    Bitmap work(200, 25);
+    Graphics::Bitmap work(200, 25);
 
     bool draw = true;
     Global::speed_counter = 0;
@@ -91,7 +91,7 @@ static int getServerPort(){
         if (draw){
             work.clear();
             const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-            font.printf(0, 0, Bitmap::makeColor( 255, 255, 255 ), work, input.getText(), 0);
+            font.printf(0, 0, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, input.getText(), 0);
             work.Blit(100, drawY, background);
             background.BlitToScreen();
         }
@@ -254,7 +254,7 @@ static Level::LevelInfo selectLevels(){
      * a font set and a background.
      */
     context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, 20, 20)));
-    Bitmap normalBackground(Global::titleScreen().path());
+    Graphics::Bitmap normalBackground(Global::titleScreen().path());
     context.addBackground(normalBackground);
     return doLevelMenu("/levels", context);
 }
@@ -517,15 +517,15 @@ static void playGame(vector<Client*> & clients){
 
 static void popup( const Font & font, const string & message ){
 	int length = font.textLength( message.c_str() ) + 20; 
-        Bitmap background(Global::titleScreen().path());
-	Bitmap area( background, background.getWidth() / 2 - length / 2, 220, length, font.getHeight() * 3 );
-	Bitmap::transBlender( 0, 0, 0, 128 );
-	area.drawingMode( Bitmap::MODE_TRANS );
-	area.rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Bitmap::makeColor( 64, 0, 0 ) );
-	area.drawingMode( Bitmap::MODE_SOLID );
-	int color = Bitmap::makeColor( 255, 255, 255 );
+        Graphics::Bitmap background(Global::titleScreen().path());
+        Graphics::Bitmap area( background, background.getWidth() / 2 - length / 2, 220, length, font.getHeight() * 3 );
+        Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
+	// area.drawingMode( Bitmap::MODE_TRANS );
+	area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::Bitmap::makeColor( 64, 0, 0 ) );
+	// area.drawingMode( Bitmap::MODE_SOLID );
+	int color = Graphics::Bitmap::makeColor( 255, 255, 255 );
 	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
-	font.printf( 10, area.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
+	font.printf( 10, area.getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), area, message, 0 );
         background.BlitToScreen();
 }
 

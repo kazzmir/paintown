@@ -9,7 +9,9 @@
 #include "util/input/text-input.h"
 #include "util/file-system.h"
 
+namespace Graphics{
 class Bitmap;
+}
 
 namespace Console{
 
@@ -40,7 +42,7 @@ public:
 
     /* handle input and whatnot */
     virtual void act();
-    virtual void draw(const Bitmap & work);
+    virtual void draw(const Graphics::Bitmap & work);
     /* enable / disable */
     virtual void toggle();
 

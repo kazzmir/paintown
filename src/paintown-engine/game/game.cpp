@@ -141,7 +141,7 @@ static string findNextFile( const char * name ){
     return string(buf);
 }
 
-static void drawHelp( const Font & font, int x, int y, int color, const Bitmap & buffer ){
+static void drawHelp( const Font & font, int x, int y, int color, const Graphics::Bitmap & buffer ){
     font.printf( x, y, color, buffer, "Controls", 0 );
     y += font.getHeight() + 1;
     font.printf( x, y, color, buffer, "Up: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
@@ -182,7 +182,7 @@ namespace Game{
     };
 }
 
-static void doTakeScreenshot(const Bitmap & work){
+static void doTakeScreenshot(const Graphics::Bitmap & work){
     string file = findNextFile("paintown-screenshot.bmp");
     Global::debug(2) << "Saved screenshot to " << file << endl;
     work.save(file);
@@ -210,7 +210,7 @@ static bool respawnPlayers(const vector<Paintown::Object*> & players, World & wo
 }
 
 /* in-game menu */
-static bool doMenu(const Bitmap & screen_buffer, const Token * data){
+static bool doMenu(const Graphics::Bitmap & screen_buffer, const Token * data){
     // Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
     Menu::Menu menu(data);
     Menu::Context context;
@@ -231,7 +231,7 @@ static bool doMenu(const Bitmap & screen_buffer, const Token * data){
 }
 
 bool playLevel( World & world, const vector< Paintown::Object * > & players){
-    Bitmap screen_buffer(GFX_X, GFX_Y);
+    Graphics::Bitmap screen_buffer(GFX_X, GFX_Y);
 
     /* 150 pixel tall console */
     Console::Console console(150);
@@ -498,7 +498,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
         Console::Console & console;
         World & world;
-        Bitmap work;
+        Graphics::Bitmap work;
         int frames;
         unsigned int second_counter;
         double fps;
@@ -521,7 +521,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             frames += 1;
         }
 
-        void run(const Bitmap & screen_buffer, const GameState & state, bool takeScreenshot){
+        void run(const Graphics::Bitmap & screen_buffer, const GameState & state, bool takeScreenshot){
             updateFrames();
 
             world.draw( &work );
@@ -535,13 +535,13 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             if (state.helpTime > 0){
                 int x = 100;
                 int y = screen_buffer.getHeight() / 5;
-                int color = Bitmap::makeColor( 255, 255, 255 );
-                Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
+                int color = Graphics::Bitmap::makeColor( 255, 255, 255 );
+                Graphics::Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
                 drawHelp( font, x, y, color, screen_buffer.translucent());
             }
 
             if (state.show_fps){
-                font.printf( screen_buffer.getWidth() - 120, 10, Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
+                font.printf( screen_buffer.getWidth() - 120, 10, Graphics::Bitmap::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps );
             }
             console.draw(screen_buffer);
 
@@ -555,11 +555,11 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             work.clear();
         }
 
-        void showScreenshots(const Bitmap & screen_buffer){
+        void showScreenshots(const Graphics::Bitmap & screen_buffer){
             work.clear();
             Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
-            for (deque<Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
-                Bitmap * shot = *it;
+            for (deque<Graphics::Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
+                Graphics::Bitmap * shot = *it;
                 int angle = Util::rnd(-6, 6);
 
                 /*
@@ -573,7 +573,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 int x = work.getWidth() / 2;
                 int y = work.getHeight() / 2;
                 double scale = 0.9;
-                shot->border(0, 1, Bitmap::makeColor(64,64,64));
+                shot->border(0, 1, Graphics::Bitmap::makeColor(64,64,64));
                 shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
                 work.Stretch(screen_buffer);
                 screen_buffer.BlitToScreen();
@@ -965,15 +965,15 @@ const Level::LevelInfo selectLevelSet( const string & base ){
 }
 #endif
 
-void fadeOut( Bitmap & work, const string & message ){
-    Bitmap dark( GFX_X, GFX_Y );
+void fadeOut( const Graphics::Bitmap & work, const string & message ){
+    Graphics::Bitmap dark( GFX_X, GFX_Y );
     dark.clear();
-    Bitmap::transBlender( 0, 0, 0, 128 );
+    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
 
     dark.translucent().draw( 0, 0, work );
 
     const Font & f = Font::getFont(Global::DEFAULT_FONT, 50, 50 );
-    f.printf( 200, 200, Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
+    f.printf( 200, 200, Graphics::Bitmap::makeColor( 255, 0, 0 ), work, message, 0 );
     work.BlitToScreen();
 
     Util::rest( 2000 );
@@ -1250,7 +1250,7 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 			
 			font.printf( 10, 0, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player1->getName().c_str() );
 			player1->drawLifeBar( 10, font.getHeight(), &screen_buffer );
-			font.printf( screen_buffer.getWidth() - 200, 0, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player2->getName().c_str() );
+			font.printf( screen_buffer.getWidth() - 200, 0, Graphics::Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player2->getName().c_str() );
 			player2->drawLifeBar( screen_buffer.getWidth() - 200, font.getHeight(), &screen_buffer );
 
 			FontRender * render = FontRender::getInstance();
@@ -1258,11 +1258,11 @@ void playVersusMode( Paintown::Character * player1, Paintown::Character * player
 
 			if ( paused ){
 				screen_buffer.transBlender( 0, 0, 0, 128 );
-				screen_buffer.drawingMode( Bitmap::MODE_TRANS );
-				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Bitmap::makeColor( 0, 0, 0 ) );
-				screen_buffer.drawingMode( Bitmap::MODE_SOLID );
+				screen_buffer.drawingMode( Graphics::Bitmap::MODE_TRANS );
+				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Graphics::Bitmap::makeColor( 0, 0, 0 ) );
+				screen_buffer.drawingMode( Graphics::Bitmap::MODE_SOLID );
 				const Font & font = Font::getFont(Global::DEFAULT_FONT);
-				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
+				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
 			}
 
 			/* getX/Y move when the world is quaking */

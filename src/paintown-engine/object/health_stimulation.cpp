@@ -20,7 +20,7 @@ void HealthStimulation::stimulate( Object & o ) const {
 void HealthStimulation::stimulate( Character & c ) const {
 	/* cause negative hurt */
 	c.hurt( - value );
-        c.addEffect(new DrawCountdownEffect(new DrawGlowEffect(&c, Bitmap::makeColor(50,50,0), Bitmap::makeColor(190, 190, 20), 50), 150));
+        c.addEffect(new DrawCountdownEffect(new DrawGlowEffect(&c, Graphics::Bitmap::makeColor(50,50,0), Graphics::Bitmap::makeColor(190, 190, 20), 50), 150));
 }
 
 void HealthStimulation::createMessage( Network::Message & message ) const {

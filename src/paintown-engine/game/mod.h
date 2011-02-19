@@ -11,7 +11,9 @@ namespace Level{
     class LevelInfo;
 }
 
+namespace Graphics{
 class Bitmap;
+}
 
 /* encapsulates a configuration for a game */
 namespace Paintown{
@@ -22,10 +24,10 @@ public:
 
     virtual const std::string getMenu();
     /* use the heap */
-    virtual Bitmap * createBitmap(const Filesystem::RelativePath & path);
+    virtual Graphics::Bitmap * createBitmap(const Filesystem::RelativePath & path);
 
     /* use the stack */
-    virtual Bitmap makeBitmap(const Filesystem::RelativePath & path);
+    virtual Graphics::Bitmap makeBitmap(const Filesystem::RelativePath & path);
 
     virtual std::vector<Level::LevelInfo> getLevels();
 

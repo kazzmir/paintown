@@ -6,7 +6,7 @@
 
 namespace Paintown{
 
-AnimationTrail::AnimationTrail(const int x, const int y, const int facing, const int life, const Bitmap & sprite):
+AnimationTrail::AnimationTrail(const int x, const int y, const int facing, const int life, const Graphics::Bitmap & sprite):
 sprite(sprite),
 x(x),
 y(y),
@@ -20,11 +20,11 @@ bool AnimationTrail::act(){
     return life <= 0;
 }
 
-void AnimationTrail::draw(int rel_x, Remap * remap, Bitmap * work) const {
+void AnimationTrail::draw(int rel_x, Remap * remap, Graphics::Bitmap * work) const {
     int w = sprite.getWidth() / 2;
     int h = sprite.getHeight();
 
-    Bitmap::transBlender(0, 0, 0, life * 255 / max_life);
+    Graphics::Bitmap::transBlender(0, 0, 0, life * 255 / max_life);
     if (facing == Object::FACING_RIGHT){
         sprite.translucent().draw(x-w - rel_x, y-h, remap, *work);
     } else {

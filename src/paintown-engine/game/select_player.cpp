@@ -112,10 +112,10 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     InputMap<Select::Input> input;
 
     // Bitmap work( GFX_X / 2, GFX_Y / 2 );
-    Bitmap work(GFX_X, GFX_Y);
+    Graphics::Bitmap work(GFX_X, GFX_Y);
 
     /* TODO: the background should be configurable */
-    Bitmap background(Global::titleScreen().path());
+    Graphics::Bitmap background(Global::titleScreen().path());
 
     /* currently selected character */
     int current = 0;
@@ -139,9 +139,9 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     input.set(Configuration::config(0).getAttack1(), 0, false, Select::Choose);
 
     /* preview box for each character */
-    Bitmap temp(120, 120);
-    Bitmap preview(GFX_X / 2, GFX_Y / 2);
-    Bitmap reflection(GFX_X / 2, GFX_Y / 2);
+    Graphics::Bitmap temp(120, 120);
+    Graphics::Bitmap preview(GFX_X / 2, GFX_Y / 2);
+    Graphics::Bitmap reflection(GFX_X / 2, GFX_Y / 2);
                     
     // const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
     // const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
@@ -154,10 +154,10 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     Util::blend_palette( unselectedGradient, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
     Util::blend_palette( unselectedGradient + maxColor / 2, maxColor / 2, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 255, 0, 0 ) );
     */
-    Util::blend_palette(unselectedGradient, 3, Bitmap::makeColor(0, 0, 0), Bitmap::makeColor(255, 0, 0));
+    Util::blend_palette(unselectedGradient, 3, Graphics::Bitmap::makeColor(0, 0, 0), Graphics::Bitmap::makeColor(255, 0, 0));
 
-    Util::blend_palette( selectedGradient, maxColor / 2, Bitmap::makeColor( 0, 128, 0 ), Bitmap::makeColor( 0, 255, 0 ) );
-    Util::blend_palette( selectedGradient + maxColor / 2, maxColor / 2, Bitmap::makeColor( 0, 255, 0 ), Bitmap::makeColor( 0, 128, 0 ) );
+    Util::blend_palette( selectedGradient, maxColor / 2, Graphics::Bitmap::makeColor( 0, 128, 0 ), Graphics::Bitmap::makeColor( 0, 255, 0 ) );
+    Util::blend_palette( selectedGradient + maxColor / 2, maxColor / 2, Graphics::Bitmap::makeColor( 0, 255, 0 ), Graphics::Bitmap::makeColor( 0, 128, 0 ) );
 
     Global::speed_counter = 0;
 
@@ -173,8 +173,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     const int maxGradient = 50;
     int gradient[ maxGradient ];	
     /* fade from yellow to some reddish color */
-    Util::blend_palette( gradient, 25, Bitmap::makeColor( 255, 255, 0 ), Bitmap::makeColor( 0xff, 0x33, 0x11 ) );
-    Util::blend_palette( gradient + 25, 25, Bitmap::makeColor( 0xff, 0x33, 0x11 ), Bitmap::makeColor( 255, 255, 0 ) );
+    Util::blend_palette( gradient, 25, Graphics::Bitmap::makeColor( 255, 255, 0 ), Graphics::Bitmap::makeColor( 0xff, 0x33, 0x11 ) );
+    Util::blend_palette( gradient + 25, 25, Graphics::Bitmap::makeColor( 0xff, 0x33, 0x11 ), Graphics::Bitmap::makeColor( 255, 255, 0 ) );
 
     bool draw = true;
     unsigned int clock = 0;
@@ -399,20 +399,20 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     copy.setY( 0 );
                     // copy.setZ( preview.getHeight() - stand );
                     copy.setZ(preview.getHeight() - stand);
-                    preview.fill(Bitmap::MaskColor());
-                    reflection.fill(Bitmap::MaskColor());
+                    preview.fill(Graphics::Bitmap::MaskColor());
+                    reflection.fill(Graphics::Bitmap::MaskColor());
                     // preview.fill( 0 );
                     // reflection.fill( 0 );
 
                     copy.draw( &preview, 0, 0 );
                     preview.drawVFlip( 0, 0, reflection );
 
-                    Bitmap::transBlender( 0, 0, 0, 255 );
+                    Graphics::Bitmap::transBlender( 0, 0, 0, 255 );
 
-                    LitBitmap s2(reflection);
+                    Graphics::LitBitmap s2(reflection);
                     s2.draw( 0, preview.getHeight() - stand - stand, preview );
 
-                    Bitmap::transBlender( 0, 0, 0, 128 );
+                    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
                     /* TODO: implement a fading reflection. compute the alpha for each y line.
                      * start out with alpha of 128 then slowly move towards 64 at the middle
                      * of the sprite and then fade to 0 soon after, like after another 10
@@ -437,22 +437,22 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         int color = 255 - c * 190;
                         int x = 10 + 5 * c;
                         int y = font.getHeight() + 5 + c * 5;
-                        font.printf( x, y, Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
+                        font.printf( x, y, Graphics::Bitmap::makeColor(color, color, color ), work, copy.getName(), 0 );
                     }
                 }
 
-                font.printf( 10, 10, Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
+                font.printf( 10, 10, Graphics::Bitmap::makeColor( 255, 255, 255 ), work, message, 0 );
 
                 if (!loader.done()){
 
                     const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10 );
-                    font.printf(1, 1, Bitmap::makeColor(200,0,0), work, "Loading...", 0);
+                    font.printf(1, 1, Graphics::Bitmap::makeColor(200,0,0), work, "Loading...", 0);
                 }
 
                 int x = startX, y = startY;
                 unsigned int i;
                 for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
-                    Bitmap box(work, x, y, boxSize, boxSize);
+                    Graphics::Bitmap box(work, x, y, boxSize, boxSize);
                     Paintown::DisplayCharacter * displayed = players[i].guy;
                     box.clear();
                     // int color = unselectedColor;
@@ -473,7 +473,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                         /* FIXME: center the text */
 
                         const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
-                        font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Bitmap::makeColor(255, 255, 255), box, displayed->getName(), 0);
+                        font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Graphics::Bitmap::makeColor(255, 255, 255), box, displayed->getName(), 0);
                     }
 
                     if (i == (unsigned int) current){

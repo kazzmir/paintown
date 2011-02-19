@@ -1,7 +1,9 @@
 #ifndef _paintown_fog_atmosphere_h
 #define _paintown_fog_atmosphere_h
 
+namespace Graphics{
 class Bitmap;
+}
 
 #include "atmosphere.h"
 #include <vector>
@@ -20,15 +22,15 @@ public:
 	FogAtmosphere();	
 	virtual ~FogAtmosphere();
 
-	virtual void drawBackground(Bitmap * work, int x);
-	virtual void drawForeground(Bitmap * work, int x);
-	virtual void drawFront(Bitmap * work, int x);
-	virtual void drawScreen(Bitmap * work, int x);
+	virtual void drawBackground(Graphics::Bitmap * work, int x);
+	virtual void drawForeground(Graphics::Bitmap * work, int x);
+	virtual void drawFront(Graphics::Bitmap * work, int x);
+	virtual void drawScreen(Graphics::Bitmap * work, int x);
 	virtual void act(const Scene & level, const std::vector<Paintown::Object*>*);
     virtual void interpret(const Token * message);
 
 protected:
-	Bitmap * fog;
+    Graphics::Bitmap * fog;
 	std::vector< Fog * > fogs;
 };
 
