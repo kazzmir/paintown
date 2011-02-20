@@ -71,7 +71,7 @@ int main(int argc, char ** argv){
     set_color_conversion(COLORCONV_NONE);
 #elif USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
-    Bitmap::setFakeGraphicsMode(640, 480);
+    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
 #endif
 
     Global::setDebug(1);

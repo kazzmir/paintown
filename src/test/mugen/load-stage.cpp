@@ -27,7 +27,7 @@ int paintown_main(int argc, char ** argv){
     SDL_Init(SDL_INIT_VIDEO);
 #endif
     Collector janitor;
-    Bitmap::setFakeGraphicsMode(640, 480);
+    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
     InputManager input;
 
     // for (int i = 0; i < 3; i++){

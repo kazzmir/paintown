@@ -38,11 +38,11 @@ int main(int argc, char ** argv){
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
-    Bitmap::setFakeGraphicsMode(640, 480);
+    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
     loadpng_init();
 #elif USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
-    Bitmap::setFakeGraphicsMode(640, 480);
+    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
 #endif
     return paintown_main(argc, argv);
 }
