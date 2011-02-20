@@ -728,6 +728,11 @@ rules:
                 std::string name = combine("projcontact", id);
                 value = makeFunction1(name, arg1);
              }}
+             | name:"projhit"{case} id:integer? s "=" s arg1:integer function_rest {{
+                /* FIXME: handle function rest */
+                std::string name = combine("projhit", id);
+                value = makeFunction1(name, arg1);
+             }}
              | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
                  typedef Ast::Value * (*compare_func)(const Value &, const Value &);
                  Ast::Value * compare_state = as<compare_func>(comparison)(Value(makeSimpleIdentifier("hitdefattr:state")), state);
@@ -791,6 +796,7 @@ rules:
                   | "projcanceltime"{case}
                   | "projhittime"{case}
                   | "projcontacttime"{case}
+                  | "projcontact"{case}
                   | "numhelper"{case}
 
     function_rest = s "," s all_compare? s value
