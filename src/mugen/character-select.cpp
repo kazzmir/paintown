@@ -1045,6 +1045,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
         }
     };
 
+
     PlayerLoader playerLoader(player1, player2);
     playerLoader.start();
     
@@ -2525,13 +2526,13 @@ void CharacterSelect::reset(){
 }
 
 void CharacterSelect::renderVersusScreen(const Graphics::Bitmap & bmp){
-    
+
     // start bgm
     try {
-	std::string music = Util::probeDef(systemFile, "music", "vs.bgm");
-	Music::loadSong(Util::findFile(Filesystem::RelativePath(music)).path());
-	Music::pause();
-	Music::play();
+        std::string music = Util::probeDef(systemFile, "music", "vs.bgm");
+        Music::loadSong(Util::findFile(Filesystem::RelativePath(music)).path());
+        Music::pause();
+        Music::play();
     } catch (const MugenException & ex){
     } catch (const Filesystem::NotFound & fail){
         Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;

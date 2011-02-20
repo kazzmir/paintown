@@ -143,7 +143,7 @@ class Scene {
 	const int maxLayers;
 	
 	//! Music
-	std::string music;
+	Filesystem::AbsolutePath music;
 	
 	//! Don't stop music (this is if it has been ommited)
 	bool musicStop;

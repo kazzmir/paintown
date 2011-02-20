@@ -176,7 +176,11 @@ musicLoop(true){
                     std::string bgm;
                     simple >> bgm;
                     if (!bgm.empty()){
-                        scene.music = file.getDirectory().path() + "/" + bgm;
+                        try{
+                            scene.music = Util::findFile(file.getDirectory(), Filesystem::RelativePath(bgm));
+                        } catch (const Filesystem::NotFound & fail){
+                            Global::debug(0) << "Could not find bgm file " << bgm << " because " << fail.getTrace() << endl;
+                        }
                     }
                 } catch (const Ast::Exception & e){
                     scene.musicStop = true;
@@ -269,14 +273,14 @@ void Scene::reset(){
 void Scene::startMusic(){
     // Run bgm
     if (musicStop){
-	Music::pause();
-    } else if (!music.empty()){
-	try {
-	    Music::loadSong( Filesystem::find(Filesystem::RelativePath(music)).path());
-	    Music::pause();
-	    Music::play();
-	} catch (const MugenException & ex){
-	} catch (const Filesystem::NotFound & fail){
+        Music::pause();
+    } else if (!music.path().empty()){
+        try {
+            Music::loadSong(music.path());
+            Music::pause();
+            Music::play();
+        } catch (const MugenException & ex){
+        } catch (const Filesystem::NotFound & fail){
             Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
         }
     }
@@ -356,7 +360,7 @@ startscene(0){
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "spr"){
-			std::string temp;
+                        std::string temp;
                         simple >> temp;
                         Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
                     } else if (simple == "startscene"){
@@ -419,6 +423,7 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
 
     Graphics::Bitmap work( 320, 240 );
 
+
     for( std::vector< Scene * >::iterator i = scenes.begin() ; i != scenes.end() ; ++i ){
         if( (*i) ){
             (*i)->reset();
@@ -427,6 +432,7 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
 
     std::vector< Scene * >::iterator sceneIterator = scenes.begin() + startscene;
     (*sceneIterator)->startMusic();
+
     
     while (!quit){
         bool draw = false;
@@ -441,7 +447,7 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
                 runCounter -= 1;
                 draw = true;
                 // Key handler
-		InputManager::poll();
+                InputManager::poll();
 
                 InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
 

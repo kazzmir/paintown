@@ -37,7 +37,8 @@ Issues with porting paintown to the Wii:
   a default sd.raw card in the User directory you can use
     $ mkdir x
     $ mount -o loop dolphin/User/sd.raw x
-    $ cp -a data x/.
+    $ mkdir x/paintown
+    $ cp -a data x/paintown/.
     $ umount x
   3. Load paintown.dol in dolphin
 

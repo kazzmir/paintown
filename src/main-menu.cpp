@@ -290,11 +290,6 @@ int paintown_main( int argc, char ** argv ){
 
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
 
-    if (!Filesystem::exists(Util::getDataPath2())){
-        Global::debug(0) << "Cannot find data path '" << Util::getDataPath2().path() << "'! Either use the -d switch to specify the data directory or find the data directory and move it to that path" << endl;
-        return 1;
-    }
-
     /* time how long init takes */
     TimeDifference diff;
     diff.startTime();

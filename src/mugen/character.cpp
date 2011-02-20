@@ -47,6 +47,7 @@
 #include "parser/all.h"
 #include "ast/all.h"
 
+
 using namespace std;
 
 static const int REGENERATE_TIME = 40;

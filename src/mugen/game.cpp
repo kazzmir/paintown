@@ -578,16 +578,20 @@ void Game::doArcade(){
     InputMap<Mugen::Keys> input;
     // Get player keys
     if (playerType == Mugen::Player1){
-	input = Mugen::getPlayer1Keys(20);
+        input = Mugen::getPlayer1Keys(20);
     } else if (playerType == Mugen::Player2){
-	input = Mugen::getPlayer2Keys(20);
+        input = Mugen::getPlayer2Keys(20);
     }
 	
     // Run intro before we begin game
     if (!intro.isEmpty()){
-	Storyboard story(intro, true);
-	story.setInput(input);
-	story.run(screen);
+        try{
+            Storyboard story(intro, true);
+            story.setInput(input);
+            story.run(screen);
+        } catch (...){
+            Global::debug(0) << "Failed to load storyboard for some reason" << std::endl;
+        }
     }
 
     HumanBehavior player1HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
