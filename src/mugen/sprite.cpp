@@ -227,7 +227,7 @@ void MugenSprite::load(bool mask){
     if (pcx){
         if (mask){
             maskedBitmap = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
-            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::Bitmap::MaskColor());
+            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::MaskColor());
         } else {
             unmaskedBitmap = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
         }
@@ -255,7 +255,7 @@ Graphics::Bitmap * MugenSprite::getBitmap(bool mask){
         }
         if (unmaskedBitmap){
             maskedBitmap = new Graphics::Bitmap(*unmaskedBitmap, true);
-            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::Bitmap::MaskColor());
+            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::MaskColor());
             return maskedBitmap;
         }
     } else {

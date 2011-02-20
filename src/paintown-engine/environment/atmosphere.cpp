@@ -56,7 +56,7 @@ static int screenY(){
 FogAtmosphere::FogAtmosphere():
 Atmosphere(){
     fog = new Graphics::Bitmap( 50, 50 );
-    fog->fill( Graphics::Bitmap::MaskColor() );
+    fog->fill(Graphics::MaskColor());
     fog->circleFill( 25, 25, 20, Graphics::makeColor( 0xbb, 0xbb, 0xcc ) );
 
     for ( int i = -20; i < screenX(); i += 20 ){

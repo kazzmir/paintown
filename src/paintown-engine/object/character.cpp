@@ -520,7 +520,7 @@ static int nonMaskingPixels( Graphics::Bitmap * bitmap ){
     int total = 0;
     for (int x = 0; x < bitmap->getWidth(); x++){
         for (int y = 0; y < bitmap->getHeight(); y++){
-            if (bitmap->getPixel( x, y ) != Graphics::Bitmap::MaskColor()){
+            if (bitmap->getPixel(x, y) != Graphics::MaskColor()){
                 total += 1;
             }
         }
@@ -529,9 +529,9 @@ static int nonMaskingPixels( Graphics::Bitmap * bitmap ){
 }
 
 static void replacePart( vector< BodyPart > & parts, Graphics::Bitmap * bitmap ){
-	int i = Util::rnd( parts.size() );
-	delete parts[ i ].image;
-	parts[ i ].image = bitmap;
+    int i = Util::rnd( parts.size() );
+    delete parts[i].image;
+    parts[i].image = bitmap;
 }
 	
 vector< BodyPart > Character::getBodyParts( Animation * animation ){
@@ -550,7 +550,7 @@ vector< BodyPart > Character::getBodyParts( Animation * animation ){
             bitmap->Blit(x, y, 0, 0, *sub);
 
             for (int num = 0; num < 2; num++){
-                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::Bitmap::MaskColor());
+                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::MaskColor());
                 sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::makeColor(255,0,0));
             }
 
@@ -1506,7 +1506,7 @@ bool Character::touchPoint(int x, int y){
         const Graphics::Bitmap * frame = animation_current->getCurrentFrame();
         if (frame != NULL){
             if (frame->inRange(relativeX, relativeY) && 
-                frame->getPixel(relativeX, relativeY) != Graphics::Bitmap::MaskColor()){
+                frame->getPixel(relativeX, relativeY) != Graphics::MaskColor()){
                 // Global::debug(0) << " good " << endl;
                 return true;
             }
@@ -1775,17 +1775,17 @@ void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int
         for (int h = 0; h < shade.getHeight(); ++h){
             for (int w = 0; w < shade.getWidth(); ++w){
                 int pix = shade.getPixel(w,h);
-                if (pix != Graphics::Bitmap::MaskColor()){
+                if (pix != Graphics::MaskColor()){
                     shade.putPixel(w,h, Graphics::makeColor(0,0,0));
                 }
             }
         }
 
-        int i = ((Graphics::Bitmap::getRed(color) * 77 + intensity) + (Graphics::Bitmap::getGreen(color) * 154 + intensity) + (Graphics::Bitmap::getBlue(color) * 25 + intensity))/256;
+        int i = ((Graphics::getRed(color) * 77 + intensity) + (Graphics::getGreen(color) * 154 + intensity) + (Graphics::getBlue(color) * 25 + intensity))/256;
         i = 255 - i;
         // Bitmap::drawingMode( Bitmap::MODE_TRANS );
         // Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
-        Graphics::Bitmap::multiplyBlender((Graphics::Bitmap::getRed(color) * 77 + intensity), (Graphics::Bitmap::getGreen(color) * 154 + intensity), (Graphics::Bitmap::getBlue(color) * 25 + intensity), i);
+        Graphics::Bitmap::multiplyBlender((Graphics::getRed(color) * 77 + intensity), (Graphics::getGreen(color) * 154 + intensity), (Graphics::getBlue(color) * 25 + intensity), i);
         if (scale > 0){
             int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
             int y = (int)(getRZ() + getY() * scale);

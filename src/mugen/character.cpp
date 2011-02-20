@@ -1971,7 +1971,7 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
 	} else if (flip == -1){
 	    // temp bitmap to flip and crap
             Graphics::Bitmap temp = Graphics::Bitmap::temporaryBitmap(bitmap->getWidth(), bitmap->getHeight());
-	    temp.fill(Graphics::Bitmap::MaskColor());
+	    temp.fill(Graphics::MaskColor());
 	    bitmap->drawHFlip(0,0,temp);
 	    temp.drawStretched(x-width,y, width, height, *bmp);
 	}
@@ -2494,9 +2494,9 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
                 return cache[pixel];
             }
 
-            int red = Graphics::Bitmap::getRed(pixel);
-            int green = Graphics::Bitmap::getGreen(pixel);
-            int blue = Graphics::Bitmap::getBlue(pixel);
+            int red = Graphics::getRed(pixel);
+            int green = Graphics::getGreen(pixel);
+            int blue = Graphics::getBlue(pixel);
             unsigned int out = doFilter(red, green, blue);
             cache[pixel] = out;
             return out;
@@ -2623,9 +2623,9 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
                 return cache[pixel];
             }
 
-            int red = Graphics::Bitmap::getRed(pixel);
-            int green = Graphics::Bitmap::getGreen(pixel);
-            int blue = Graphics::Bitmap::getBlue(pixel);
+            int red = Graphics::getRed(pixel);
+            int green = Graphics::getGreen(pixel);
+            int blue = Graphics::getBlue(pixel);
             unsigned int out = doFilter(red, green, blue);
             cache[pixel] = out;
             return out;

@@ -68,9 +68,9 @@ void DrawGlowEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
     double f = fabs(sin(Util::radians(180) * angle / period));
     int alpha = 50;
 
-    int color_r = (int)((Graphics::Bitmap::getRed(endColor) - Graphics::Bitmap::getRed(startColor)) * f + Graphics::Bitmap::getRed(startColor));
-    int color_g = (int)((Graphics::Bitmap::getGreen(endColor) - Graphics::Bitmap::getGreen(startColor)) * f + Graphics::Bitmap::getGreen(startColor));
-    int color_b = (int)((Graphics::Bitmap::getBlue(endColor) - Graphics::Bitmap::getBlue(startColor)) * f + Graphics::Bitmap::getBlue(startColor));
+    int color_r = (int)((Graphics::getRed(endColor) - Graphics::getRed(startColor)) * f + Graphics::getRed(startColor));
+    int color_g = (int)((Graphics::getGreen(endColor) - Graphics::getGreen(startColor)) * f + Graphics::getGreen(startColor));
+    int color_b = (int)((Graphics::getBlue(endColor) - Graphics::getBlue(startColor)) * f + Graphics::getBlue(startColor));
 
     Graphics::Bitmap::transBlender(color_r, color_g, color_b, alpha);
 

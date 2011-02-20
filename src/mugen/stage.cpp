@@ -1221,9 +1221,9 @@ public:
             return cache[pixel];
         }
 
-        int red = Graphics::Bitmap::getRed(pixel);
-        int green = Graphics::Bitmap::getGreen(pixel);
-        int blue = Graphics::Bitmap::getBlue(pixel);
+        int red = Graphics::getRed(pixel);
+        int green = Graphics::getGreen(pixel);
+        int blue = Graphics::getBlue(pixel);
         unsigned int out = doFilter(red, green, blue);
         cache[pixel] = out;
         return out;

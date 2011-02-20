@@ -399,8 +399,8 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                     copy.setY( 0 );
                     // copy.setZ( preview.getHeight() - stand );
                     copy.setZ(preview.getHeight() - stand);
-                    preview.fill(Graphics::Bitmap::MaskColor());
-                    reflection.fill(Graphics::Bitmap::MaskColor());
+                    preview.fill(Graphics::MaskColor());
+                    reflection.fill(Graphics::MaskColor());
                     // preview.fill( 0 );
                     // reflection.fill( 0 );
 
