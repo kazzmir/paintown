@@ -289,6 +289,11 @@ test/exceptions/exception.cpp
 
 sffv2_source = Split("""
 sffv2.cpp
+test/util/debug.cpp
+test/util/file-system.cpp
+test/util/system.cpp
+test/exceptions/exception.cpp
+test/util/thread.cpp
 """)
 
 x = []
