@@ -60,6 +60,17 @@
  * flags
  * 0    unset: literal (use ldata); set: translate (use tdata; decompress on load)
  * 1-15 unused
+ *
+ * Pal node header 2.00
+ * 16 bytes
+ *
+ * dec  hex  size   meaning
+ * 0    0     2  groupno
+ * 2    2     2  itemno
+ * 4    4     2  numcols
+ * 6    6     2  Index number of the linked palette (if linked)
+ * 8    8     4  Offset into ldata
+ * 12   C     4  Palette data length (0: linked)
  */
 
 #include "util/file-system.h"
@@ -79,25 +90,6 @@
 #include "sff.h"
 
 using namespace std;
-
-/*
-namespace Util{
-
-Filesystem::AbsolutePath getDataPath2(){
-    return Filesystem::AbsolutePath("/");
-}
-
-static int upperCase(int c){
-    return toupper(c);
-}
-
-string upperCaseAll(std::string str){
-    std::transform(str.begin(), str.end(), str.begin(), upperCase);
-    return str;
-}
-
-}
-*/
 
 static int computeFileSize(const string & path){
     // Lets get the filesize
@@ -165,6 +157,42 @@ public:
         uint32_t dataLength;
         uint16_t palette;
         uint16_t flags;
+        unsigned int index;
+    };
+
+    struct PaletteHeader{
+
+        PaletteHeader(uint16_t group, uint16_t item, uint16_t colors,
+                      uint16_t linked, uint32_t offset, uint32_t length,
+                      unsigned int index):
+            group(group),
+            item(item),
+            colors(colors),
+            linked(linked),
+            offset(offset),
+            length(length),
+            index(index){
+            }
+
+        PaletteHeader(){
+        }
+
+        PaletteHeader(const PaletteHeader & copy):
+            group(copy.group),
+            item(copy.item),
+            colors(copy.colors),
+            linked(copy.linked),
+            offset(copy.offset),
+            length(copy.length),
+            index(copy.index){
+            }
+
+        uint16_t group;
+        uint16_t item;
+        uint16_t colors;
+        uint16_t linked;
+        uint32_t offset;
+        uint32_t length;
         unsigned int index;
     };
 
@@ -240,7 +268,7 @@ public:
         reader.readByte4();
         
         /* seek to first sprite */
-        sffStream.seekg(suboffset, ios::beg);
+        reader.seek(suboffset);
 
         for (unsigned int index = 0; index < totalImages; index++){
             uint16_t group = reader.readByte2();
@@ -262,6 +290,17 @@ public:
                                            axisx, axisy, linked, format,
                                            colorDepth, dataOffset, dataLength,
                                            palette, flags, index));
+        }
+
+        reader.seek(subpalette);
+        for (unsigned int index = 0; index < totalPalettes; index++){
+            uint16_t group = reader.readByte2();
+            uint16_t item = reader.readByte2();
+            uint16_t colors = reader.readByte2();
+            uint16_t linked = reader.readByte2();
+            uint32_t offset = reader.readByte4();
+            uint32_t length = reader.readByte4();
+            palettes.push_back(PaletteHeader(group, item, colors,linked, offset, length, index));
         }
 
         /*
@@ -335,23 +374,59 @@ public:
             Global::debug(0) << "Ignoring error... " << endl;
         }
 
+        map<uint8_t, int> palette = readPalette(sprite.palette);
         Graphics::Bitmap out(sprite.width, sprite.height);
-        writePixels(out, pixels);
+        writePixels(out, pixels, palette);
         delete[] pixels;
         return out;
     }
 
+    map<uint8_t, int> readPalette(int index){
+        for (vector<PaletteHeader>::iterator it = palettes.begin(); it != palettes.end(); it++){
+            const PaletteHeader & palette = *it;
+            if (palette.index == index){
+                if (palette.length != 0){
+                    return readPalette(palette);
+                } else {
+                    return readPalette(palette.linked);
+                }
+            }
+        }
+
+        throw exception();
+    }
+
+    map<uint8_t, int> readPalette(const PaletteHeader & palette){
+        sffStream.seekg(palette.index + ldataOffset + 4, ios::beg);
+        uint8_t * data = new uint8_t[palette.length - 4];
+        sffStream.read((char*) data, palette.length - 4);
+        map<uint8_t, int> out;
+        for (uint8_t color = 0; color < palette.colors; color++){
+            /* Palette data is stored in 4 byte chunks per color.
+             * The first 3 bytes correspond to 8-bit values for RGB color, and
+             * the last byte is unused (set to 0).
+             */
+            int red = data[color * 4];
+            int green = data[color * 4 + 1];
+            int blue = data[color * 4 + 2];
+            out[color] = Graphics::makeColor(red, green, blue);
+        }
+        delete[] data;
+        return out;
+    }
+
     /* pixels are an index into a palette */
-    void writePixels(Graphics::Bitmap & out, char * pixels){
-        map<char, int> palette;
+    void writePixels(Graphics::Bitmap & out, char * pixels, map<uint8_t, int> & palette){
         for (int y = 0; y < out.getHeight(); y++){
             for (int x = 0; x < out.getWidth(); x++){
                 char pixel = pixels[x + y * out.getWidth()];
+                /*
                 if (palette.find(pixel) == palette.end()){
                     palette[pixel] = Graphics::makeColor(Util::rnd(128) + 128,
                                                          Util::rnd(128) + 128,
                                                          Util::rnd(128) + 128);
                 }
+                */
                 out.putPixel(x, y, palette[pixel]);
             }
         }
@@ -560,44 +635,6 @@ public:
         */
     }
 
-    /* Actually loads the pcx data */
-    /*
-    MugenSprite * loadSprite(MugenSprite * sprite, bool mask){
-        if (sprite->getBitmap(mask) == NULL){
-            if (sprite->getLength() == 0){
-                const MugenSprite * temp = loadSprite(spriteIndex[sprite->getPrevious()], mask);
-                if (!temp){
-                    ostringstream out;
-                    out << "Unknown linked sprite " << sprite->getPrevious() << endl;
-                    throw MugenException(out.str());
-                }
-                sprite->copyImage(temp);
-            } else {
-                bool islinked = false;
-                sprite->loadPCX(sffStream, islinked, useact, palsave1, mask);
-            }
-        }
-        return sprite;
-    }
-    */
-
-    /*
-    MugenSprite * findSprite(int group, int item, bool mask){
-        if (spriteIndex.size() == 0){
-            quickReadSprites();
-        }
-        for (map<int, MugenSprite *>::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
-            MugenSprite * sprite = it->second;
-            if (sprite->getGroupNumber() == group &&
-                sprite->getImageNumber() == item){
-                / * make a deep copy * /
-                return new MugenSprite(*loadSprite(sprite, mask));
-            }
-        }
-        return NULL;
-    }
-    */
-
     /* deletes all sprites, only call this if you don't want them! */
     /*
     void cleanup(){
@@ -649,11 +686,11 @@ protected:
     int totalSprites;
     // map<int, MugenSprite*> spriteIndex;
     vector<SpriteHeader> sprites;
-    bool useact;
+    vector<PaletteHeader> palettes;
+
     int filesize;
     int location;
     uint32_t totalImages;
-    unsigned char palsave1[768]; // First image palette
 
     uint32_t ldataOffset;
     uint32_t ldataLength;
