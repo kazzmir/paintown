@@ -99,6 +99,61 @@ static int computeFileSize(const string & path){
 
 class SffV2Reader{
 public:
+    struct SpriteHeader{
+        SpriteHeader(uint16_t group, uint16_t item, uint16_t width,
+                     uint16_t height, uint16_t axisx, uint16_t axisy,
+                     uint16_t linked, uint8_t format, uint8_t colorDepth,
+                     uint32_t dataOffset, uint32_t dataLength, uint16_t palette,
+                     uint16_t flags):
+        group(group),
+        item(item),
+        width(width),
+        height(height),
+        axisx(axisx),
+        axisy(axisy),
+        linked(linked),
+        format(format),
+        colorDepth(colorDepth),
+        dataOffset(dataOffset),
+        dataLength(dataLength),
+        palette(palette),
+        flags(flags){
+        }
+
+        SpriteHeader(const SpriteHeader & copy):
+        group(copy.group),
+        item(copy.item),
+        width(copy.width),
+        height(copy.height),
+        axisx(copy.axisx),
+        axisy(copy.axisy),
+        linked(copy.linked),
+        format(copy.format),
+        colorDepth(copy.colorDepth),
+        dataOffset(copy.dataOffset),
+        dataLength(copy.dataLength),
+        palette(copy.palette),
+        flags(copy.flags){
+        }
+
+        SpriteHeader(){
+        }
+
+        uint16_t group;
+        uint16_t item;
+        uint16_t width;
+        uint16_t height;
+        uint16_t axisx;
+        uint16_t axisy;
+        uint16_t linked;
+        uint8_t format;
+        uint8_t colorDepth;
+        uint32_t dataOffset;
+        uint32_t dataLength;
+        uint16_t palette;
+        uint16_t flags;
+    };
+
     SffV2Reader(const Filesystem::AbsolutePath & filename):
     filename(filename),
     currentSprite(0){
@@ -170,7 +225,7 @@ public:
         /* seek to first sprite */
         sffStream.seekg(suboffset, ios::beg);
 
-        for (unsigned int i = 0; i < totalImages; i++){
+        for (unsigned int index = 0; index < totalImages; index++){
             uint16_t group = reader.readByte2();
             uint16_t item = reader.readByte2();
             uint16_t width = reader.readByte2();
@@ -184,43 +239,183 @@ public:
             uint32_t dataLength = reader.readByte4();
             uint16_t palette = reader.readByte2();
             uint16_t flags = reader.readByte2();
-            /* if format is 0 (raw) then use ldata, otherwise use tdata */
-            Global::debug(0) << " " << group << ", " << item << " " << width << "x" << height << " format " << formatName(format) << " data " << dataOffset << " length " << dataLength << endl;
+            /* if flags == 0 then use ldata, if 1 then tdata */
+            Global::debug(0) << " " << group << ", " << item << " " << width << "x" << height << " format " << formatName(format) << " data " << dataOffset << " length " << dataLength << (flags == 0 ? " literal" : " translate") << endl;
+            sprites.push_back(SpriteHeader(group, item, width, height,
+                                           axisx, axisy, linked, format,
+                                           colorDepth, dataOffset, dataLength,
+                                           palette, flags));
         }
 
         /*
-        totalGroups = reader.readByte4();
-        totalImages = reader.readByte4();
-        suboffset = reader.readByte4();
-        subhead = reader.readByte4();
-        sharedPal = reader.readByte1();
-
-        if (sharedPal && sharedPal != 1){
-            sharedPal = 0;
+        for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
+            const SpriteHeader & sprite = *it;
+            if (sprite.flags == 0){
+                read(sprite, reader, ldataOffset, ldataLength);
+            } else {
+                read(sprite, reader, tdataOffset, tdataLength);
+            }
         }
-
-        location = suboffset;
-
-        if (location < 512 || location > 2147482717 ){
-            location = 512;
-        }
-
-        Global::debug(0) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
-
-        // spriteIndex = new MugenSprite*[totalImages + 1];
-
-        // Palette related
-        useact = false;
         */
 
-        //unsigned char colorsave[3]; // rgb pal save
+        const SpriteHeader & sprite = sprites.back();
+        if (sprite.flags == 0){
+            read(sprite, reader, ldataOffset + sprite.dataOffset, sprite.dataLength);
+        } else {
+            read(sprite, reader, tdataOffset + sprite.dataOffset, sprite.dataLength);
+        }
+    }
 
-        /*
-        memset(palsave1, 0, sizeof(palsave1));
+    void read(const SpriteHeader & sprite, Filesystem::LittleEndianReader & reader, uint32_t offset, uint32_t length){
+        Global::debug(0) << "Read sprite " << sprite.group << ", " << sprite.item << endl;
+        sffStream.seekg(offset, ios::beg);
+        switch (sprite.format){
+            case 2: readRLE8(reader, length); break;
+            case 3: readRLE5(reader, length); break;
+            case 4: readLZ5(reader, length); break;
+            default: {
+                Global::debug(0) << "Don't understand format " << sprite.format << endl;
+                throw exception();
+            }
+        }
+    }
 
-        // Load in first palette
-        if (readPalette(palette, palsave1)){
-            useact = true;
+    void readRLE8(Filesystem::LittleEndianReader & reader, uint32_t length){
+    }
+
+    void readRLE5(Filesystem::LittleEndianReader & reader, uint32_t length){
+    }
+
+    enum LZ5PacketType{
+        RLEShort,
+        RLELong,
+        LZ5Short,
+        LZ5Long
+    };
+
+    struct LZ5Packet{
+        LZ5PacketType type;
+        int pixel; /* offset for lz5 */
+        int length;
+    };
+
+    /* get the stream of packets */
+    vector<LZ5Packet> readLZ5Packets(Filesystem::LittleEndianReader & reader, uint32_t length){
+        vector<LZ5Packet> packets;
+        uint8_t * compressed = new uint8_t[length];
+        reader.readBytes(compressed, length);
+        uint32_t total = 0;
+
+        uint8_t recycled = 0;
+        uint8_t lz5ShortCount = 0;
+        while (total < length){
+            uint8_t control = compressed[total];
+            total += 1;
+            /*
+            uint8_t data[8];
+            int dataRead = 0;
+            for (dataRead = 0; dataRead < 8 && total < length; dataRead += 1, total += 1){
+                data[dataRead] = compressed[total];
+            }
+            */
+
+            ostream & out = Global::debug(0);
+            for (int packet = 0; packet < 8 && total < length; packet++){
+                if ((control & (1 << packet)) == 0){
+                    /* RLE */
+                    if ((compressed[total] >> 4) == 0){
+                        out << "Long RLE ";
+                        total += 4;
+                    } else {
+                        out << "Short RLE ";
+                        total += 2;
+                    }
+                } else {
+                    /* LZ5 */
+                    if ((compressed[total] & 31) == 0){
+                        if (lz5ShortCount == 3){
+                            out << "Short LZ5* ";
+                            lz5ShortCount = 0;
+                            recycled = 0;
+                            total += 1;
+                        } else {
+                            out << "Short LZ5 ";
+                            recycled = (recycled << 2) | (compressed[total] >> 6);
+                            lz5ShortCount += 1;
+                            total += 2;
+                        }
+                    } else {
+                        total += 4;
+                        out << "Long LZ5 ";
+                    }
+                }
+            }
+            out << endl;
+
+            /*
+            int current = 0;
+            ostream & out = Global::debug(0);
+            while (current < 8){
+                if ((control & (1 << current)) == 0){
+                    if ((data[current] >> 4) == 0){
+                        out << "Long RLE ";
+                        current += 3;
+                    } else {
+                        out << "Short RLE ";
+                        current += 2;
+                    }
+                } else {
+                    if ((data[current] & 31) == 0){
+                        current += 2;
+                        out << "Short LZ5 ";
+                    } else {
+                        current += 4;
+                        out << "Long LZ5 ";
+                    }
+                }
+            }
+            if (current >= 8){
+                out << " overflow!";
+            }
+            out << endl;
+            */
+        }
+
+        delete[] compressed;
+        
+        return packets;
+    }
+
+    void readLZ5(Filesystem::LittleEndianReader & reader, uint32_t length){
+        vector<LZ5Packet> packets = readLZ5Packets(reader, length);
+                /*
+        while (total < length){
+            total += 1;
+            uint8_t data[8];
+            int dataRead = 0;
+            for (dataRead = 0; dataRead < 8 && total < length; dataRead += 1, total += 1){
+                data[dataRead] = reader.readByte1();
+            }
+            ostream & out = Global::debug(0);
+            out << " ";
+            for (int i = 0; i < dataRead; i++){
+                bool enabled = control & (1 << i);
+                out << (i + 1) << ": ";
+                if (enabled){
+                    if ((data[i] & 31) == 0){
+                        out << "Short LZ5 ";
+                    } else {
+                        out << "Long LZ5 ";
+                    }
+                } else {
+                    if ((data[i] >> 4) == 0){
+                        out << "Long RLE ";
+                    } else {
+                        out << "Short RLE ";
+                    }
+                }
+            }
+            out << endl;
         }
         */
     }
@@ -341,6 +536,7 @@ protected:
     unsigned long currentSprite;
     int totalSprites;
     // map<int, MugenSprite*> spriteIndex;
+    vector<SpriteHeader> sprites;
     bool useact;
     int filesize;
     int location;
