@@ -328,11 +328,21 @@ public:
         vector<SpriteHeader> sprites;
         for (vector<SpriteHeader>::iterator it = this->sprites.begin(); it != this->sprites.end(); it++){
             const SpriteHeader & sprite = *it;
-            if (sprite.format == 4 && sprite.dataLength != 0){
+            if (sprite.format == 4){
                 sprites.push_back(sprite);
             }
         }
         return sprites;
+    }
+
+    const SpriteHeader & findSprite(int index){
+        for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
+            const SpriteHeader & sprite = *it;
+            if (sprite.index == index){
+                return sprite;
+            }
+        }
+        throw exception();
     }
 
     Graphics::Bitmap readSprite(int group, int item){
@@ -344,10 +354,15 @@ public:
                  * 4 bytes of each compressed block is an integer representing the
                  * length of the data after decompression.
                  */
-                if (sprite.flags == 0){
-                    return read(sprite, reader, ldataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
+                if (sprite.dataLength == 0){
+                    const SpriteHeader & linked = findSprite(sprite.linked);
+                    return readSprite(linked.group, linked.item);
                 } else {
-                    return read(sprite, reader, tdataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
+                    if (sprite.flags == 0){
+                        return read(sprite, reader, ldataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
+                    } else {
+                        return read(sprite, reader, tdataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
+                    }
                 }
             }
         }
@@ -420,13 +435,6 @@ public:
         for (int y = 0; y < out.getHeight(); y++){
             for (int x = 0; x < out.getWidth(); x++){
                 char pixel = pixels[x + y * out.getWidth()];
-                /*
-                if (palette.find(pixel) == palette.end()){
-                    palette[pixel] = Graphics::makeColor(Util::rnd(128) + 128,
-                                                         Util::rnd(128) + 128,
-                                                         Util::rnd(128) + 128);
-                }
-                */
                 out.putPixel(x, y, palette[pixel]);
             }
         }
