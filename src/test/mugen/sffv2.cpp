@@ -76,6 +76,8 @@
 #include "util/input/input-map.h"
 #include "util/init.h"
 
+#include "sff.h"
+
 using namespace std;
 
 /*
@@ -113,7 +115,7 @@ public:
                      uint16_t height, uint16_t axisx, uint16_t axisy,
                      uint16_t linked, uint8_t format, uint8_t colorDepth,
                      uint32_t dataOffset, uint32_t dataLength, uint16_t palette,
-                     uint16_t flags):
+                     uint16_t flags, unsigned int index):
         group(group),
         item(item),
         width(width),
@@ -126,7 +128,8 @@ public:
         dataOffset(dataOffset),
         dataLength(dataLength),
         palette(palette),
-        flags(flags){
+        flags(flags),
+        index(index){
         }
 
         SpriteHeader(const SpriteHeader & copy):
@@ -142,7 +145,8 @@ public:
         dataOffset(copy.dataOffset),
         dataLength(copy.dataLength),
         palette(copy.palette),
-        flags(copy.flags){
+        flags(copy.flags),
+        index(copy.index){
         }
 
         SpriteHeader(){
@@ -161,6 +165,7 @@ public:
         uint32_t dataLength;
         uint16_t palette;
         uint16_t flags;
+        unsigned int index;
     };
 
     SffV2Reader(const Filesystem::AbsolutePath & filename):
@@ -256,7 +261,7 @@ public:
             sprites.push_back(SpriteHeader(group, item, width, height,
                                            axisx, axisy, linked, format,
                                            colorDepth, dataOffset, dataLength,
-                                           palette, flags));
+                                           palette, flags, index));
         }
 
         /*
@@ -280,18 +285,34 @@ public:
         */
     }
 
+    vector<SpriteHeader> getLZ5Sprites(){
+        vector<SpriteHeader> sprites;
+        for (vector<SpriteHeader>::iterator it = this->sprites.begin(); it != this->sprites.end(); it++){
+            const SpriteHeader & sprite = *it;
+            if (sprite.format == 4 && sprite.dataLength != 0){
+                sprites.push_back(sprite);
+            }
+        }
+        return sprites;
+    }
+
     Graphics::Bitmap readSprite(int group, int item){
         Filesystem::LittleEndianReader reader(sffStream);
         for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
             const SpriteHeader & sprite = *it;
             if (sprite.group == group && sprite.item == item){
+                /* Compression formats are consistent across SFF versions. The first
+                 * 4 bytes of each compressed block is an integer representing the
+                 * length of the data after decompression.
+                 */
                 if (sprite.flags == 0){
-                    return read(sprite, reader, ldataOffset + sprite.dataOffset, sprite.dataLength);
+                    return read(sprite, reader, ldataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
                 } else {
-                    return read(sprite, reader, tdataOffset + sprite.dataOffset, sprite.dataLength);
+                    return read(sprite, reader, tdataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
                 }
             }
         }
+        Global::debug(0) << "Didn't find sprite " << group << ", " << item << endl;
         throw exception();
     }
 
@@ -413,16 +434,18 @@ public:
                         int byte1 = compressed[total];
                         int byte2 = 0;
                         /* check if this is the 4th short lz5 packet */
+                        // recycled = (compressed[total] & 0xc0) >> (2 * lz5ShortCount);
+                        recycled = (recycled << 2) | (compressed[total] >> 6);
                         if (lz5ShortCount == 3){
                             out << "Short LZ5* ";
                             lz5ShortCount = 0;
-                            recycled = (recycled << 2) | (compressed[total] >> 6);
+                            // recycled = (recycled << 2) | (compressed[total] >> 6);
                             byte2 = recycled;
                             recycled = 0;
                             total += 1;
                         } else {
                             out << "Short LZ5 ";
-                            recycled = (recycled << 2) | (compressed[total] >> 6);
+                            // recycled = (recycled << 2) | (compressed[total] >> 6);
                             byte2 = compressed[total + 1];
                             lz5ShortCount += 1;
                             total += 2;
@@ -432,14 +455,18 @@ public:
                         int offset = byte2 + 1;
                         packets.push_back(LZ5Packet(LZ5Short, offset, length));
                     } else {
-                        int offset = compressed[total] >> 6;
+                        // int offset = compressed[total] >> 6;
+                        int offset = compressed[total] << 2;
                         total += 1;
-                        offset = (offset << 8) + compressed[total] + 1;
+                        offset |= compressed[total];
+                        offset += 1;
+                        // offset = (offset << 8) + compressed[total] + 1;
+                        // offset = ((offset << 2) | compressed[total]) + 1;
                         total += 1;
                         int length = compressed[total] + 3;
                         packets.push_back(LZ5Packet(LZ5Long, offset, length));
                         total += 1;
-                        // out << "Long LZ5 ";
+                        out << "Long LZ5 ";
                     }
                 }
             }
@@ -456,12 +483,12 @@ public:
         char * dest = pixels;
         int maxLength = 0;
         int total = 0;
-        Global::debug(0) << packets.size() << " packets " << maxPixelLength << " pixels" << endl;
+        Global::debug(1) << packets.size() << " packets " << maxPixelLength << " pixels" << endl;
         for (vector<LZ5Packet>::iterator it = packets.begin(); it != packets.end(); it++){
             const LZ5Packet & packet = *it;
             int index = (it - packets.begin());
             if (packet.length > maxLength){
-                Global::debug(0) << "packet " << index << " " << packet.type << " length was " << packet.length << endl;
+                Global::debug(1) << "packet " << index << " " << packet.type << " length was " << packet.length << endl;
                 maxLength = packet.length;
             }
             // Global::debug(0) << "Wrote " << total << " packets. Writing " << packet.length << endl;
@@ -484,6 +511,10 @@ public:
                     char * source = dest - packet.data.offset;
                     if (packet.data.offset < 0){
                         Global::debug(0) << "LZ5 offset is negative " << packet.data.offset << endl;
+                        throw exception();
+                    }
+                    if (source < pixels){
+                        Global::debug(0) << "Packet " << index << " type (" << packet.type << ") Source is beneath pixels by " << (pixels - source) << ". dest at " << (dest - pixels) << " length " << packet.length << " offset " << packet.data.offset << endl;
                         throw exception();
                     }
                     for (int i = 0; i < packet.length; i++){
@@ -630,22 +661,102 @@ protected:
     uint32_t tdataLength;
 };
 
+Graphics::Bitmap getSff(const char * path, int index){
+    ifstream in(path);
+    SFF2_FileHeader file(in);
+    SprNode * node = file.GetSprNode(in, index);
+    uint8_t * pixels = file.GetSprite(in, node);
+    Graphics::Bitmap out(node->GetWidth(), node->GetHeight());
+    map<char, int> palette;
+    for (int y = 0; y < node->GetHeight(); y++){
+        for (int x = 0; x < node->GetWidth(); x++){
+            char pixel = pixels[x + y * out.getWidth()];
+            if (palette.find(pixel) == palette.end()){
+                palette[pixel] = Graphics::makeColor(Util::rnd(128) + 128,
+                                                     Util::rnd(128) + 128,
+                                                     Util::rnd(128) + 128);
+            }
+            out.putPixel(x, y, palette[pixel]);
+        }
+    }
+    delete node;
+    delete[] pixels;
+    return out;
+}
+
 int main(int argc, char ** argv){
     Global::debug(0) << "Sffv2 reader" << endl;
     if (argc > 1){
         try{
             Global::init(Global::WINDOWED);
+            Keyboard::pushRepeatState(true);
             Filesystem::AbsolutePath path(argv[1]);
             SffV2Reader reader(path);
+            
+            vector<SffV2Reader::SpriteHeader> sprites = reader.getLZ5Sprites();
+            int index = 0;
+            InputManager manager;
+            InputMap<int> input;
+            input.set(Keyboard::Key_ESC, 0, true, 0);
+            input.set(Keyboard::Key_LEFT, 0, true, 1);
+            input.set(Keyboard::Key_RIGHT, 0, true, 2);
+            Graphics::Bitmap buffer(640, 480);
+            bool done = false;
+            while (!done){
+                buffer.clear();
+                const SffV2Reader::SpriteHeader & sprite = sprites[index];
+                reader.readSprite(sprite.group, sprite.item).draw(5, 5, buffer);
+                getSff(argv[1], sprite.index).draw(300, 5, buffer);
+                buffer.BlitToScreen();
+
+                bool ok = false;
+                while (!ok){
+                    InputManager::poll();
+                    vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
+                    for (vector<InputMap<int>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                        InputMap<int>::InputEvent event = *it;
+
+                        if (!event.enabled){
+                            continue;
+                        }
+
+                        if (event.out == 1){
+                            if (index > 0){
+                                index -= 1;
+                                ok = true;
+                            }
+                        }
+
+                        if (event.out == 2){
+                            if (index < sprites.size() - 1){
+                                index += 1;
+                                ok = true;
+                            }
+                        }
+
+                        if (event.out == 0){
+                            ok = true;
+                            done = true;
+                        }
+                    }
+
+                    if (!ok){
+                        Util::rest(1);
+                    }
+                }
+            }
+
+            /*
             Graphics::Bitmap what = reader.readSprite(1400, 7);
             Graphics::Bitmap buffer(640, 480);
-            buffer.clearToMask();
+            buffer.clear();
             what.draw(5, 5, buffer);
             buffer.BlitToScreen();
             InputManager manager;
             InputMap<int> blah;
             blah.set(Keyboard::Key_ESC, 0, true, 0);
             manager.waitForPress(blah, 0);
+            */
         } catch (...){
         }
     } else {
