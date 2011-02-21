@@ -412,9 +412,9 @@ public:
     }
 
     map<uint8_t, int> readPalette(const PaletteHeader & palette){
-        sffStream.seekg(palette.index + ldataOffset + 4, ios::beg);
-        uint8_t * data = new uint8_t[palette.length - 4];
-        sffStream.read((char*) data, palette.length - 4);
+        sffStream.seekg(palette.index + ldataOffset, ios::beg);
+        uint8_t * data = new uint8_t[palette.length];
+        sffStream.read((char*) data, palette.length);
         map<uint8_t, int> out;
         for (uint8_t color = 0; color < palette.colors; color++){
             /* Palette data is stored in 4 byte chunks per color.
