@@ -323,8 +323,8 @@ public:
     /* pixels are an index into a palette */
     void writePixels(Graphics::Bitmap & out, char * pixels){
         map<char, int> palette;
-        for (int x = 0; x < out.getWidth(); x++){
-            for (int y = 0; y < out.getHeight(); y++){
+        for (int y = 0; y < out.getHeight(); y++){
+            for (int x = 0; x < out.getWidth(); x++){
                 char pixel = pixels[x + y * out.getWidth()];
                 if (palette.find(pixel) == palette.end()){
                     palette[pixel] = Graphics::makeColor(Util::rnd(128) + 128,
@@ -390,6 +390,7 @@ public:
 
             ostream & out = Global::debug(1);
             for (int packet = 0; packet < 8 && total < length; packet++){
+                /* I am 99.999% sure that 0 in the control packet means RLE */
                 if ((control & (1 << packet)) == 0){
                     /* RLE */
                     if ((compressed[total] >> 5) == 0){
@@ -411,9 +412,11 @@ public:
                     if ((compressed[total] & 63) != 0){
                         int byte1 = compressed[total];
                         int byte2 = 0;
+                        /* check if this is the 4th short lz5 packet */
                         if (lz5ShortCount == 3){
                             out << "Short LZ5* ";
                             lz5ShortCount = 0;
+                            recycled = (recycled << 2) | (compressed[total] >> 6);
                             byte2 = recycled;
                             recycled = 0;
                             total += 1;
@@ -468,7 +471,7 @@ public:
                 case RLELong: {
                     for (int i = 0; i < packet.length; i++){
                         if (dest - pixels >= maxPixelLength){
-                            Global::debug(0) << "packet " << index << " tried to write too many pixels! Packets left " << (packets.end() - it) << endl;
+                            Global::debug(0) << "packet " << index << " tried to write too many pixels! length " << packet.length << " Packets left " << (packets.end() - it) << endl;
                             throw exception();
                         }
                         *dest = packet.data.pixel;
@@ -485,7 +488,7 @@ public:
                     }
                     for (int i = 0; i < packet.length; i++){
                         if (dest - pixels >= maxPixelLength){
-                            Global::debug(0) << "packet " << index << " tried to write too many pixels! Packets left " << (packets.end() - it) << endl;
+                            Global::debug(0) << "packet " << index << " tried to write too many pixels! length " << packet.length << " Packets left " << (packets.end() - it) << endl;
                             throw exception();
                         }
                         *dest = *source;
@@ -631,11 +634,14 @@ int main(int argc, char ** argv){
     Global::debug(0) << "Sffv2 reader" << endl;
     if (argc > 1){
         try{
+            Global::init(Global::WINDOWED);
             Filesystem::AbsolutePath path(argv[1]);
             SffV2Reader reader(path);
-            Global::init(Global::WINDOWED);
             Graphics::Bitmap what = reader.readSprite(1400, 7);
-            what.BlitToScreen();
+            Graphics::Bitmap buffer(640, 480);
+            buffer.clearToMask();
+            what.draw(5, 5, buffer);
+            buffer.BlitToScreen();
             InputManager manager;
             InputMap<int> blah;
             blah.set(Keyboard::Key_ESC, 0, true, 0);
