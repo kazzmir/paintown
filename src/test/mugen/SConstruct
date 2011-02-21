@@ -294,6 +294,29 @@ test/util/file-system.cpp
 test/util/system.cpp
 test/exceptions/exception.cpp
 test/util/thread.cpp
+test/util/funcs.cpp
+test/util/bitmap.cpp
+test/util/font.cpp
+test/globals.cpp
+test/factory/font_factory.cpp
+test/util/ftalleg.cpp
+test/util/message-queue.cpp
+test/util/init.cpp
+test/util/music.cpp
+test/util/token.cpp
+test/configuration.cpp
+test/util/network/network.cpp
+test/util/token_exception.cpp
+test/util/input/keyboard.cpp
+test/util/tokenreader.cpp
+test/menu/font-info.cpp
+test/util/load_exception.cpp
+test/util/music-player.cpp
+test/util/sound.cpp
+test/util/input/input-manager.cpp
+test/util/events.cpp
+test/util/input/joystick.cpp
+test/util/input/sdl/joystick.cpp
 """)
 
 x = []

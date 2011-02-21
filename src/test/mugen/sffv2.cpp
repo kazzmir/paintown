@@ -64,13 +64,21 @@
 
 #include "util/file-system.h"
 #include "util/debug.h"
+#include "util/funcs.h"
 #include <stdio.h>
+#include <string.h>
 #include <fstream>
 #include <map>
 #include <algorithm>
+#include "util/bitmap.h"
+#include "util/input/keyboard.h"
+#include "util/input/input-manager.h"
+#include "util/input/input-map.h"
+#include "util/init.h"
 
 using namespace std;
 
+/*
 namespace Util{
 
 Filesystem::AbsolutePath getDataPath2(){
@@ -87,6 +95,7 @@ string upperCaseAll(std::string str){
 }
 
 }
+*/
 
 static int computeFileSize(const string & path){
     // Lets get the filesize
@@ -211,12 +220,15 @@ public:
         Global::debug(0) << "Image offset " << suboffset << " total images " << totalImages << " palette offset " << subpalette << " total palettes " << totalPalettes << endl;
 
         /* compressed data */
-        uint32_t ldataOffset = reader.readByte4();
-        uint32_t ldataLength = reader.readByte4();
+        ldataOffset = reader.readByte4();
+        ldataLength = reader.readByte4();
 
         /* uncompressed data */
-        uint32_t tdataOffset = reader.readByte4();
-        uint32_t tdataLength = reader.readByte4();
+        tdataOffset = reader.readByte4();
+        tdataLength = reader.readByte4();
+
+        Global::debug(0) << "Ldata offset " << ldataOffset << " length " << ldataLength << endl;
+        Global::debug(0) << "Tdata offset " << tdataOffset << " length " << tdataLength << endl;
 
         /* skip reserved */
         reader.readByte4();
@@ -240,7 +252,7 @@ public:
             uint16_t palette = reader.readByte2();
             uint16_t flags = reader.readByte2();
             /* if flags == 0 then use ldata, if 1 then tdata */
-            Global::debug(0) << " " << group << ", " << item << " " << width << "x" << height << " format " << formatName(format) << " data " << dataOffset << " length " << dataLength << (flags == 0 ? " literal" : " translate") << endl;
+            Global::debug(0) << " " << group << ", " << item << " " << width << "x" << height << " format " << formatName(format) << " color depth " << (int) colorDepth << " data " << dataOffset << " length " << dataLength << (flags == 0 ? " literal" : " translate") << endl;
             sprites.push_back(SpriteHeader(group, item, width, height,
                                            axisx, axisy, linked, format,
                                            colorDepth, dataOffset, dataLength,
@@ -258,24 +270,68 @@ public:
         }
         */
 
+        /*
         const SpriteHeader & sprite = sprites.back();
         if (sprite.flags == 0){
             read(sprite, reader, ldataOffset + sprite.dataOffset, sprite.dataLength);
         } else {
             read(sprite, reader, tdataOffset + sprite.dataOffset, sprite.dataLength);
         }
+        */
     }
 
-    void read(const SpriteHeader & sprite, Filesystem::LittleEndianReader & reader, uint32_t offset, uint32_t length){
-        Global::debug(0) << "Read sprite " << sprite.group << ", " << sprite.item << endl;
+    Graphics::Bitmap readSprite(int group, int item){
+        Filesystem::LittleEndianReader reader(sffStream);
+        for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
+            const SpriteHeader & sprite = *it;
+            if (sprite.group == group && sprite.item == item){
+                if (sprite.flags == 0){
+                    return read(sprite, reader, ldataOffset + sprite.dataOffset, sprite.dataLength);
+                } else {
+                    return read(sprite, reader, tdataOffset + sprite.dataOffset, sprite.dataLength);
+                }
+            }
+        }
+        throw exception();
+    }
+
+    Graphics::Bitmap read(const SpriteHeader & sprite, Filesystem::LittleEndianReader & reader, uint32_t offset, uint32_t length){
+        Global::debug(0) << "Read sprite " << sprite.group << ", " << sprite.item << " dimensions " << sprite.width << "x" << sprite.height << endl;
+        char * pixels = new char[sprite.width * sprite.height];
+        memset(pixels, 0, sprite.width * sprite.height);
         sffStream.seekg(offset, ios::beg);
-        switch (sprite.format){
-            case 2: readRLE8(reader, length); break;
-            case 3: readRLE5(reader, length); break;
-            case 4: readLZ5(reader, length); break;
-            default: {
-                Global::debug(0) << "Don't understand format " << sprite.format << endl;
-                throw exception();
+        try{
+            switch (sprite.format){
+                case 2: readRLE8(reader, length); break;
+                case 3: readRLE5(reader, length); break;
+                case 4: readLZ5(reader, length, pixels, sprite.width * sprite.height); break;
+                default: {
+                    Global::debug(0) << "Don't understand format " << sprite.format << endl;
+                    throw exception();
+                }
+            }
+        } catch (...){
+            Global::debug(0) << "Ignoring error... " << endl;
+        }
+
+        Graphics::Bitmap out(sprite.width, sprite.height);
+        writePixels(out, pixels);
+        delete[] pixels;
+        return out;
+    }
+
+    /* pixels are an index into a palette */
+    void writePixels(Graphics::Bitmap & out, char * pixels){
+        map<char, int> palette;
+        for (int x = 0; x < out.getWidth(); x++){
+            for (int y = 0; y < out.getHeight(); y++){
+                char pixel = pixels[x + y * out.getWidth()];
+                if (palette.find(pixel) == palette.end()){
+                    palette[pixel] = Graphics::makeColor(Util::rnd(128) + 128,
+                                                         Util::rnd(128) + 128,
+                                                         Util::rnd(128) + 128);
+                }
+                out.putPixel(x, y, palette[pixel]);
             }
         }
     }
@@ -294,8 +350,21 @@ public:
     };
 
     struct LZ5Packet{
+        LZ5Packet(LZ5PacketType type, int pixel, int length):
+        type(type), length(length){
+            data.pixel = pixel;
+        }
+
+        LZ5Packet(const LZ5Packet & copy):
+        type(copy.type), length(copy.length){
+            data.pixel = copy.data.pixel;
+        }
+
         LZ5PacketType type;
-        int pixel; /* offset for lz5 */
+        union{
+            int pixel; /* for rle */
+            int offset; /* for lz5 */
+        } data;
         int length;
     };
 
@@ -319,66 +388,59 @@ public:
             }
             */
 
-            ostream & out = Global::debug(0);
+            ostream & out = Global::debug(1);
             for (int packet = 0; packet < 8 && total < length; packet++){
                 if ((control & (1 << packet)) == 0){
                     /* RLE */
-                    if ((compressed[total] >> 4) == 0){
+                    if ((compressed[total] >> 5) == 0){
                         out << "Long RLE ";
-                        total += 4;
+                        int color = compressed[total] & 31;
+                        total += 1;
+                        int times = compressed[total] + 8;
+                        total += 1;
+                        packets.push_back(LZ5Packet(RLELong, color, times));
                     } else {
                         out << "Short RLE ";
-                        total += 2;
+                        int color = compressed[total] & 31;
+                        int times = compressed[total] >> 5;
+                        total += 1;
+                        packets.push_back(LZ5Packet(RLEShort, color, times));
                     }
                 } else {
                     /* LZ5 */
-                    if ((compressed[total] & 31) == 0){
+                    if ((compressed[total] & 63) != 0){
+                        int byte1 = compressed[total];
+                        int byte2 = 0;
                         if (lz5ShortCount == 3){
                             out << "Short LZ5* ";
                             lz5ShortCount = 0;
+                            byte2 = recycled;
                             recycled = 0;
                             total += 1;
                         } else {
                             out << "Short LZ5 ";
                             recycled = (recycled << 2) | (compressed[total] >> 6);
+                            byte2 = compressed[total + 1];
                             lz5ShortCount += 1;
                             total += 2;
                         }
-                    } else {
-                        total += 4;
-                        out << "Long LZ5 ";
-                    }
-                }
-            }
-            out << endl;
 
-            /*
-            int current = 0;
-            ostream & out = Global::debug(0);
-            while (current < 8){
-                if ((control & (1 << current)) == 0){
-                    if ((data[current] >> 4) == 0){
-                        out << "Long RLE ";
-                        current += 3;
+                        int length = (byte1 & 63) + 1;
+                        int offset = byte2 + 1;
+                        packets.push_back(LZ5Packet(LZ5Short, offset, length));
                     } else {
-                        out << "Short RLE ";
-                        current += 2;
-                    }
-                } else {
-                    if ((data[current] & 31) == 0){
-                        current += 2;
-                        out << "Short LZ5 ";
-                    } else {
-                        current += 4;
-                        out << "Long LZ5 ";
+                        int offset = compressed[total] >> 6;
+                        total += 1;
+                        offset = (offset << 8) + compressed[total] + 1;
+                        total += 1;
+                        int length = compressed[total] + 3;
+                        packets.push_back(LZ5Packet(LZ5Long, offset, length));
+                        total += 1;
+                        // out << "Long LZ5 ";
                     }
                 }
             }
-            if (current >= 8){
-                out << " overflow!";
-            }
             out << endl;
-            */
         }
 
         delete[] compressed;
@@ -386,38 +448,54 @@ public:
         return packets;
     }
 
-    void readLZ5(Filesystem::LittleEndianReader & reader, uint32_t length){
+    void readLZ5(Filesystem::LittleEndianReader & reader, uint32_t length, char * pixels, int maxPixelLength){
         vector<LZ5Packet> packets = readLZ5Packets(reader, length);
-                /*
-        while (total < length){
-            total += 1;
-            uint8_t data[8];
-            int dataRead = 0;
-            for (dataRead = 0; dataRead < 8 && total < length; dataRead += 1, total += 1){
-                data[dataRead] = reader.readByte1();
+        char * dest = pixels;
+        int maxLength = 0;
+        int total = 0;
+        Global::debug(0) << packets.size() << " packets " << maxPixelLength << " pixels" << endl;
+        for (vector<LZ5Packet>::iterator it = packets.begin(); it != packets.end(); it++){
+            const LZ5Packet & packet = *it;
+            int index = (it - packets.begin());
+            if (packet.length > maxLength){
+                Global::debug(0) << "packet " << index << " " << packet.type << " length was " << packet.length << endl;
+                maxLength = packet.length;
             }
-            ostream & out = Global::debug(0);
-            out << " ";
-            for (int i = 0; i < dataRead; i++){
-                bool enabled = control & (1 << i);
-                out << (i + 1) << ": ";
-                if (enabled){
-                    if ((data[i] & 31) == 0){
-                        out << "Short LZ5 ";
-                    } else {
-                        out << "Long LZ5 ";
+            // Global::debug(0) << "Wrote " << total << " packets. Writing " << packet.length << endl;
+            total += packet.length;
+            switch (packet.type){
+                case RLEShort:
+                case RLELong: {
+                    for (int i = 0; i < packet.length; i++){
+                        if (dest - pixels >= maxPixelLength){
+                            Global::debug(0) << "packet " << index << " tried to write too many pixels! Packets left " << (packets.end() - it) << endl;
+                            throw exception();
+                        }
+                        *dest = packet.data.pixel;
+                        dest += 1;
                     }
-                } else {
-                    if ((data[i] >> 4) == 0){
-                        out << "Long RLE ";
-                    } else {
-                        out << "Short RLE ";
+                    break;
+                }
+                case LZ5Short:
+                case LZ5Long: {
+                    char * source = dest - packet.data.offset;
+                    if (packet.data.offset < 0){
+                        Global::debug(0) << "LZ5 offset is negative " << packet.data.offset << endl;
+                        throw exception();
                     }
+                    for (int i = 0; i < packet.length; i++){
+                        if (dest - pixels >= maxPixelLength){
+                            Global::debug(0) << "packet " << index << " tried to write too many pixels! Packets left " << (packets.end() - it) << endl;
+                            throw exception();
+                        }
+                        *dest = *source;
+                        dest += 1;
+                        source += 1;
+                    }
+                    break;
                 }
             }
-            out << endl;
         }
-        */
     }
 
     string formatName(int format){
@@ -542,6 +620,11 @@ protected:
     int location;
     uint32_t totalImages;
     unsigned char palsave1[768]; // First image palette
+
+    uint32_t ldataOffset;
+    uint32_t ldataLength;
+    uint32_t tdataOffset;
+    uint32_t tdataLength;
 };
 
 int main(int argc, char ** argv){
@@ -550,6 +633,13 @@ int main(int argc, char ** argv){
         try{
             Filesystem::AbsolutePath path(argv[1]);
             SffV2Reader reader(path);
+            Global::init(Global::WINDOWED);
+            Graphics::Bitmap what = reader.readSprite(1400, 7);
+            what.BlitToScreen();
+            InputManager manager;
+            InputMap<int> blah;
+            blah.set(Keyboard::Key_ESC, 0, true, 0);
+            manager.waitForPress(blah, 0);
         } catch (...){
         }
     } else {
