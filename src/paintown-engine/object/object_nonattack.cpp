@@ -33,8 +33,16 @@ bool ObjectNonAttack::isGrabbed(){
 void ObjectNonAttack::unGrab(){
 }
 
-int ObjectNonAttack::getDamage() const{
-	return 0;
+int ObjectNonAttack::getDamage() const {
+    return 0;
+}
+
+double ObjectNonAttack::getForceX() const {
+    return 0;
+}
+
+double ObjectNonAttack::getForceY() const {
+    return 0;
 }
 
 bool ObjectNonAttack::isAttacking(){

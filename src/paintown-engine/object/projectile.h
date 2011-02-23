@@ -29,6 +29,8 @@ public:
 	virtual bool isAttacking();
 	virtual bool collision( ObjectAttack * obj );
 	virtual int getDamage() const;
+        virtual double getForceX() const;
+        virtual double getForceY() const;
 	virtual ECollide * getCollide() const;
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();

@@ -8,30 +8,34 @@
 using namespace std;
 
 Attack::Attack():
-x1( 0 ),
-y1( 0 ),
-x2( 0 ),
-y2( 0 ),
-damage( 0 ),
-force( 0 ){
+x1(0),
+y1(0),
+x2(0),
+y2(0),
+damage(0),
+/* these values were the defaults in versions before 3.5 */
+forceX(1.7),
+forceY(4.4){
 }
 
-Attack::Attack( const int _x1, const int _y1, const int _x2, const int _y2, const int _damage, const int _force ):
+Attack::Attack( const int _x1, const int _y1, const int _x2, const int _y2, const int _damage, double forceX, double forceY):
 x1( _x1 ),
 y1( _y1 ),
 x2( _x2 ),
 y2( _y2 ),
-damage( _damage ),
-force( _force ){
+damage(_damage),
+forceX(forceX),
+forceY(forceY){
 }
 
-Attack::Attack( const Attack & a ){
-	setX1( a.getX1() );
-	setX2( a.getX2() );
-	setY1( a.getY1() );
-	setY2( a.getY2() );
-	setDamage( a.getDamage() );
-	setForce( a.getForce() );
+Attack::Attack(const Attack & a):
+x1(a.x1),
+y1(a.y1),
+x2(a.x2),
+y2(a.y2),
+damage(a.damage),
+forceX(a.forceX),
+forceY(a.forceY){
 }
 
 Attack::Attack(const Token & tok) throw (LoadException):
@@ -40,13 +44,20 @@ y1( 0 ),
 x2( 0 ),
 y2( 0 ),
 damage( 0 ),
-force( 0 ){
+forceX(1.7),
+forceY(4.4){
     tok.match("_/x1", x1);
     tok.match("_/y1", y1);
     tok.match("_/x2", x2);
     tok.match("_/y2", y2);
     tok.match("_/damage", damage);
-    tok.match("_/force", force);
+
+    double x = 0, y = 0;
+    if (tok.match("_/force", x, y)){
+        forceX = x;
+        forceY = y;
+    }
+    // tok.match("_/force", force);
     
     /* TODO: read all attack boxes */
     tok.match("_/box/x1", x1);
@@ -54,7 +65,11 @@ force( 0 ){
     tok.match("_/box/x2", x2);
     tok.match("_/box/y2", y2);
     tok.match("_/box/damage", damage);
-    tok.match("_/box/force", force);
+    x = 0; y = 0;
+    if (tok.match("_/box/force", x, y)){
+        forceX = x;
+        forceY = y;
+    }
 
     /*
 	Token * current;
@@ -113,15 +128,15 @@ int Attack::getYLen() const {
 	return getY2() - getY1();
 }
 
-Attack & Attack::operator = ( const Attack & a ){
+Attack & Attack::operator=( const Attack & a ){
+    setX1(a.getX1());
+    setX2(a.getX2());
+    setY1(a.getY1());
+    setY2(a.getY2());
+    setDamage(a.getDamage());
+    setForceX(a.getForceX());
+    setForceY(a.getForceY());
 
-	setX1( a.getX1() );
-	setX2( a.getX2() );
-	setY1( a.getY1() );
-	setY2( a.getY2() );
-	setDamage( a.getDamage() );
-	setForce( a.getForce() );
-
-	return *this;
+    return *this;
 }
 

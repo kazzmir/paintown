@@ -1545,7 +1545,7 @@ bool Mugen::Stage::shouldDrawMiniMaps(){ return false; }
 void Mugen::Stage::killAllHumans( Paintown::Object * player ){ 
     for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
         Paintown::Object * o = *it;
-        o->takeDamage(*this, NULL, 999999 );
+        o->takeDamage(*this, NULL, 999999, 0, 0);
     }
 }
 

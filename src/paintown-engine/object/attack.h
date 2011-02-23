@@ -11,8 +11,8 @@ public:
 	
 	Attack();
 	Attack(const Token & tok) throw( LoadException );
-	Attack( const int x1, const int y1, const int x2, const int y2, const int damage, const int force );
-	Attack( const Attack & a );
+	Attack(const int x1, const int y1, const int x2, const int y2, const int damage, double forceX, double forceY);
+	Attack(const Attack & a);
 
 	void print();
 
@@ -43,9 +43,13 @@ public:
 		return damage;
 	}
 
-	inline int getForce() const {
-		return force;
-	}
+        inline double getForceX() const {
+            return forceX;
+        }
+        
+        inline double getForceY() const {
+            return forceY;
+        }
 
 public:
 	inline void setX1( const int x ){
@@ -68,14 +72,19 @@ public:
 		damage = d;
 	}
 
-	inline void setForce( const int f ){
-		force = f;
+	inline void setForceX(double x){
+            forceX = x;
 	}
+
+        inline void setForceY(double y){
+            forceY = y;
+        }
 
 protected:
 	int x1, y1, x2, y2;
 	int damage;
-	int force;
+        double forceX;
+        double forceY;
 };
 
 #endif

@@ -104,7 +104,6 @@ shadowY( 0 ),
 range( 0 ),
 is_attack( false ),
 status( Status_Ground ),
-damage( 0 ),
 commision( true ),
 contact( NULL ){
 
@@ -187,8 +186,6 @@ contact( NULL ){
                 }
                 AnimationEventTrail * trail = new AnimationEventTrail(produce, life);
                 events.push_back(trail);
-            } else if ( current == "damage" ){
-                current.view() >> damage;
             } else if ( current == "sequence" ){
                 string p, n;
                 current.view() >> p >> n;
@@ -380,10 +377,9 @@ contact( NULL ){
                 AnimationEvent * ani = new AnimationEventFrame(full.path());
                 events.push_back(ani);
             } else {
-                Global::debug( 0 ) << tok->getFileName() << " Unhandled animation attribute: "<<endl;
+                Global::debug(0) << tok->getFileName() << " Unhandled animation attribute: "<<endl;
                 current.print(" ");
             }
-
         } catch ( const TokenException & te ){
             current1->print(" ");
             throw LoadException(__FILE__, __LINE__, te, "Animation parse error");
@@ -468,7 +464,6 @@ commision( true ){
 	shadowY = animation.shadowY;
 	is_attack = animation.isAttack();
 	status = animation.getStatus();
-	damage = animation.getDamage();
 
 	setCommision( animation.isCommisioned() );
 
@@ -533,12 +528,15 @@ void Animation::nextTicket(){
 }
 	
 int Animation::getDamage() const{
-	return attack.getDamage();
-	// return damage;
+    return attack.getDamage();
 }
 
-void Animation::setDamage( const int d ){
-	damage = d;
+double Animation::getForceX() const {
+    return attack.getForceX();
+}
+
+double Animation::getForceY() const {
+    return attack.getForceY();
 }
 
 void Animation::upperCase( string & who ){

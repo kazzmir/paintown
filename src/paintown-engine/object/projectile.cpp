@@ -183,6 +183,14 @@ bool Projectile::collision( ObjectAttack * obj ){
 int Projectile::getDamage() const {
 	return main->getDamage();
 }
+        
+double Projectile::getForceX() const {
+    return main->getForceX();
+}
+
+double Projectile::getForceY() const {
+    return main->getForceY();
+}
 
 bool Projectile::isCollidable( Object * obj ){
 	return true;

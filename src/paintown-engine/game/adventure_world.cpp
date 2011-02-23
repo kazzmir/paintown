@@ -397,7 +397,7 @@ void AdventureWorld::doLogic(){
                         (*fight)->collided(this, o_good, added_effects );
                         /* move this to the object now */
                         addMessage( (*fight)->collidedMessage() );
-                        (*fight)->takeDamage(*this, o_good, o_good->getDamage() );
+                        (*fight)->takeDamage(*this, o_good, o_good->getDamage(), o_good->getForceX(), o_good->getForceY());
 
 
                         /* TODO: enter slow motion for bosses
@@ -455,7 +455,7 @@ void AdventureWorld::killAllHumans( Paintown::Object * player ){
         Paintown::Object * o = *it;
         if ( o != player ){
             // o->takeDamage( o->getMaxHealth() * 2 );
-            o->takeDamage(*this, NULL, 999999 );
+            o->takeDamage(*this, NULL, 999999, 0, 0);
         }
     }
 }

@@ -2291,9 +2291,9 @@ void Character::didHit(Object * enemy, Mugen::Stage & stage){
         
 void Character::takeDamage(World & world, ObjectAttack * obj, int amount, bool kill, bool defense){
     if (defense){
-        Object::takeDamage(world, obj, (int)(amount / defenseMultiplier));
+        Object::takeDamage(world, obj, (int)(amount / defenseMultiplier), 0, 0);
     } else {
-        Object::takeDamage(world, obj, amount);
+        Object::takeDamage(world, obj, amount, 0, 0);
     }
     if (!kill){
         if (getHealth() < 1){
@@ -2803,6 +2803,14 @@ bool Character::collision(ObjectAttack*){
 }
 
 int Character::getDamage() const {
+    return 0;
+}
+    
+double Character::getForceX() const {
+    return 0;
+}
+
+double Character::getForceY() const {
     return 0;
 }
 

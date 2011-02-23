@@ -779,10 +779,24 @@ Object * Character::copy(){
 }
 	
 int Character::getDamage() const{
-	if ( animation_current != NULL ){
-		return animation_current->getDamage();
-	}
-	return 0;
+    if ( animation_current != NULL ){
+        return animation_current->getDamage();
+    }
+    return 0;
+}
+
+double Character::getForceX() const {
+    if (animation_current != NULL){
+        return animation_current->getForceX();
+    }
+    return 0;
+}
+
+double Character::getForceY() const {
+    if (animation_current != NULL){
+        return animation_current->getForceY();
+    }
+    return 0;
 }
 	
 void Character::setName( const string & str ){
@@ -827,55 +841,60 @@ void Character::fall( double x_vel, double y_vel ){
 	setYVelocity( y_vel );
 }
 	
-void Character::takeDamage( World & world, ObjectAttack * obj, int damage ){
-	/* I think if death >= 1 here I should just return */
-	Object::takeDamage( world, obj, damage );
+void Character::takeDamage(World & world, ObjectAttack * obj, int damage, double forceX, double forceY){
+    /* I think if death >= 1 here I should just return */
+    Object::takeDamage(world, obj, damage, forceX, forceY);
 
-        /* without this, trails might continue for all animations because the
-         * stop trail event might not be seen in the current animation
-         */
-        trail_generator = 0;
-	
-	Global::debug( 2 ) << getName() << " has " << currentDamage() << " damage" << endl;
-	if ( (currentDamage() > getToughness() || getHealth() <= 0 || getStatus() == Status_Jumping) && getStatus() != Status_Fell ){
+    /* without this, trails might continue for all animations because the
+     * stop trail event might not be seen in the current animation
+     */
+    trail_generator = 0;
 
-		if ( currentDamage() > getToughness() && getHealth() <= 0 ){
-			setExplode( true );
-			world.addMessage( explodeMessage() );
-		}
+    Global::debug( 2 ) << getName() << " has " << currentDamage() << " damage" << endl;
+    if ((currentDamage() > getToughness() ||
+         getHealth() <= 0 ||
+         getStatus() == Status_Jumping)
+        && getStatus() != Status_Fell){
 
-		reduceDamage( currentDamage() );
-		/*
-		animation_current = movements[ "fall" ];
-		setStatus( Status_Fell );
-		if ( getLink() != NULL ){
-			getLink()->unGrab();
-		}
-		*/
+        if (currentDamage() > getToughness() && getHealth() <= 0){
+            setExplode(true);
+            world.addMessage( explodeMessage() );
+        }
 
-		fall( -1.7, 4.4 );
-		world.addMessage( fallMessage( -1.7, 4.4 ) );
-	} else	{
-		animation_current = getMovement( "pain" );
-		if ( getStatus() != Status_Grabbed ){
-			setStatus( Status_Hurt );
-		}
-	}
-	animation_current->reset();
+        reduceDamage(currentDamage());
+        /*
+           animation_current = movements[ "fall" ];
+           setStatus( Status_Fell );
+           if ( getLink() != NULL ){
+           getLink()->unGrab();
+           }
+           */
+        
+        /* fall(-1.7, 4.4 ); */
 
-	Global::debug( 1 ) << this << " explode " << getExplode() << " health " << getHealth() << " death " << death << endl;
-	if ( ! getExplode() && getHealth() <= 0 && death == 0 ){
-		death = 1;
-		setHealth( 1 );
-		Global::debug( 1 ) << this << " set death to 1. Health " << getHealth() << endl;
+        fall(-forceX, forceY );
+        world.addMessage(fallMessage(-forceX, forceY));
+    } else	{
+        animation_current = getMovement( "pain" );
+        if ( getStatus() != Status_Grabbed ){
+            setStatus( Status_Hurt );
+        }
+    }
+    animation_current->reset();
 
-		if ( die_sound ){
-			die_sound->play();
-		}
-	}
+    Global::debug(1) << this << " explode " << getExplode() << " health " << getHealth() << " death " << death << endl;
+    if (! getExplode() && getHealth() <= 0 && death == 0){
+        death = 1;
+        setHealth(1);
+        Global::debug(1) << this << " set death to 1. Health " << getHealth() << endl;
 
-	world.addMessage( animationMessage() );
-	world.addMessage( healthMessage() );
+        if (die_sound){
+            die_sound->play();
+        }
+    }
+
+    world.addMessage(animationMessage());
+    world.addMessage(healthMessage());
 }
 	
 void Character::died( vector< Object * > & objects ){
@@ -967,11 +986,11 @@ void Character::landed( World * world ){
                 landed_sound->play();
             }
 
-            double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
+            double cur = fabs(getYVelocity()) + fabs( getXVelocity());
             // cout<<getName()<<" taking "<<cur<<" from falling. Health = "<<getHealth()<<endl;
-            Object::takeDamage(*world, NULL, (int)cur );
+            Object::takeDamage(*world, NULL, (int)cur, 0, 0);
 
-            world->Quake( (int)fabs(getYVelocity()) );
+            world->Quake((int)fabs(getYVelocity()));
 
             // setStatus( Status_Hurt );
 

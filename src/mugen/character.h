@@ -625,6 +625,8 @@ public:
     virtual const std::string getAttackName();
     virtual bool collision(Paintown::ObjectAttack*);
     virtual int getDamage() const;
+    virtual double getForceX() const;
+    virtual double getForceY() const;
     virtual bool isCollidable(Paintown::Object*);
     virtual bool isGettable();
     virtual bool isGrabbable(Paintown::Object*);

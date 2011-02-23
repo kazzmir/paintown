@@ -267,7 +267,8 @@ public:
     virtual AnimationTrail * makeTrail(const int x, const int y, const int facing, const int life) const;
 
 	int getDamage() const;
-	void setDamage( const int d );
+        double getForceX() const;
+        double getForceY() const;
 
 protected:
 
@@ -322,7 +323,6 @@ protected:
 	bool own_events;
 	bool is_attack;
 	int status;
-	int damage;
 
 	/* can we use this animation? */
 	bool commision;
@@ -334,7 +334,6 @@ protected:
         std::vector< std::string > enable_animations;
 
 	Attack attack;
-
 };
 
 }

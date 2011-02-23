@@ -123,12 +123,15 @@ public:
 	/* takeDamage
 	 * Take some damage and do other things
 	 */
-	virtual void takeDamage( World & world, ObjectAttack * obj, int x );
+	virtual void takeDamage(World & world, ObjectAttack * obj, int x, double forceX, double forceY);
 
 	/* getDamage:
 	 * Gets the current amount of damage the object can do
 	 */
 	virtual int getDamage() const = 0;
+        /* get the force for the current attack */
+        virtual double getForceX() const = 0;
+        virtual double getForceY() const = 0;
 
 	/* isCollidable:
 	 * Returns true if this object can collide with other objects

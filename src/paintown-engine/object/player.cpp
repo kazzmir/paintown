@@ -535,15 +535,15 @@ int Player::getInvincibility() const {
     return Character::getInvincibility();
 }
 
-void Player::takeDamage( World & world, ObjectAttack * obj, int x ){
-    if ( getLink() != NULL ){
+void Player::takeDamage(World & world, ObjectAttack * obj, int x, double forceX, double forceY){
+    if (getLink() != NULL){
         getLink()->unGrab();
         unGrab();
     }
 
     attack_bonus = 0;
 
-    Character::takeDamage(world, obj, x);
+    Character::takeDamage(world, obj, x, forceX, forceY);
     if (getDeath() > 0){
         world.dyingObject(*this);
     }

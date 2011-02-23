@@ -154,7 +154,7 @@ public:
     virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
 
     /* obj hurt you, take some damage */
-    virtual void takeDamage( World & world, ObjectAttack * obj, int x );
+    virtual void takeDamage( World & world, ObjectAttack * obj, int x, double forceX, double forceY );
 
     /* make the character jump! */
     virtual void jump();
@@ -281,6 +281,8 @@ public:
 
     /* how much damage I do */
     virtual int getDamage() const;
+    virtual double getForceX() const;
+    virtual double getForceY() const;
 
     /* collision detection object */
     virtual ECollide * getCollide() const;

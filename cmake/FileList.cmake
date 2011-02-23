@@ -11,7 +11,6 @@ src/paintown-engine/game/select_player.cpp
 src/paintown-engine/game/console.cpp
 src/paintown-engine/game/adventure_world.cpp
 src/paintown-engine/game/mod.cpp
-src/paintown-engine/game/versus_world.cpp
 src/util/input/input.cpp
 src/util/input/text-input.cpp
 src/util/input/input-manager.cpp)

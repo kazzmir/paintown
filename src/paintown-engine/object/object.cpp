@@ -264,14 +264,15 @@ void Object::reduceDamage( const double much ){
 	}
 }
 	
-void Object::takeDamage( World & world, ObjectAttack * obj, int x ){
-    this->hurt( x );
+void Object::takeDamage(World & world, ObjectAttack * obj, int x, double forceX, double forceY){
+    this->hurt(x);
     damage += x;
     if (getScriptObject() != NULL){
         void * him = NULL;
         if (obj != NULL){
             him = obj->getScriptObject();
         }
+        /* FIXME: pass force parameters to the scripting engine */
         Script::Engine::getEngine()->objectTakeDamage(getScriptObject(), him, x);
     }
 }
