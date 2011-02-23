@@ -665,14 +665,15 @@ static void initializePlayers(const vector<Paintown::Object*> & players){
 }
 
 static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, const string & level){
+
     class GameContext: public Loader::LoadingContext {
     public:
         GameContext(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Filesystem::RelativePath & path):
-        data(NULL),
-        futurePlayers(futurePlayers),
-        path(path),
-        failed(NULL){
-        }
+            data(NULL),
+            futurePlayers(futurePlayers),
+            path(path),
+            failed(NULL){
+            }
 
         ~GameContext(){
             /* who will delete the players contained in the data? the futures
@@ -717,9 +718,9 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
 
         struct Data{
             Data(vector<Paintown::Object*> players, const Filesystem::AbsolutePath & path):
-            world(players, path),
-            players(players){
-            }
+                world(players, path),
+                players(players){
+                }
 
             AdventureWorld world;
             vector<Paintown::Object*> players;
@@ -731,19 +732,23 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         LoadException * failed;
     };
 
-    Global::info("Setting up world");
-    GameContext context(futurePlayers, Filesystem::RelativePath(level));
-    Loader::loadScreen(context, levelInfo);
-    Global::info("World setup");
-    Global::info(funnyGo());
+    bool gameState = true;
+    { /* force scope so the context is destroyed before the factories */
+        Global::info("Setting up world");
+        GameContext context(futurePlayers, Filesystem::RelativePath(level));
+        Loader::loadScreen(context, levelInfo);
+        Global::info("World setup");
+        Global::info(funnyGo());
 
-    Keyboard::pushRepeatState(false);
+        Keyboard::pushRepeatState(false);
 
-    Music::changeSong();
+        Music::changeSong();
 
-    initializePlayers(context.getPlayers());
+        initializePlayers(context.getPlayers());
 
-    bool gameState = playLevel(context.getWorld(), context.getPlayers());
+        gameState = playLevel(context.getWorld(), context.getPlayers());
+    }
+
     Keyboard::popRepeatState();
     ObjectFactory::destroy();
     HeartFactory::destroy();
