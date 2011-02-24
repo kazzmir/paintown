@@ -306,6 +306,10 @@ Ast::Value * makeFunction1(int line, int column, const Value & name, const Value
     return makeFunction(line, column, name, Value(makeValueList(arg1, Value())));
 }
 
+Ast::Value * makeFunction2(int line, int column, const Value & name, const Value & arg1, const Value & arg2){
+    return makeFunction(line, column, name, Value(makeValueList2(arg1, arg2)));
+}
+
 Ast::Value * makeFunction1(const std::string & name, const Value & arg1){
     return makeFunction(name, Value(makeValueList(arg1, Value())));
 }
@@ -741,7 +745,11 @@ rules:
              | line:<line> name:"projhit"{case} id:integer? s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
                 // std::string name = combine("projhit", id);
-                value = makeFunction1(getCurrentLine(line), getCurrentColumn(line), name, arg1);
+                if (id.getValue() != NULL){
+                        value = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, arg1, id);
+                } else {
+                        value = makeFunction1(getCurrentLine(line), getCurrentColumn(line), name, arg1);
+                }
              }}
              | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
                  typedef Ast::Value * (*compare_func)(const Value &, const Value &);

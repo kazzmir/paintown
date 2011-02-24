@@ -2548,6 +2548,11 @@ public:
             return compile(-1);
         }
 
+        if (function == "projhit"){
+            /* FIXME */
+            return compile(0);
+        }
+
         if (function == "projcontacttime"){
             /* FIXME */
             return compile(-1);

@@ -1118,6 +1118,10 @@ Ast::Value * makeFunction1(int line, int column, const Value & name, const Value
     return makeFunction(line, column, name, Value(makeValueList(arg1, Value())));
 }
 
+Ast::Value * makeFunction2(int line, int column, const Value & name, const Value & arg1, const Value & arg2){
+    return makeFunction(line, column, name, Value(makeValueList2(arg1, arg2)));
+}
+
 Ast::Value * makeFunction1(const std::string & name, const Value & arg1){
     return makeFunction(name, Value(makeValueList(arg1, Value())));
 }
@@ -12659,7 +12663,11 @@ Result rule_function(Stream & stream, const int position){
                     Value value((void*) 0);
                     /* FIXME: handle function rest */
                                     // std::string name = combine("projhit", id);
-                                    value = makeFunction1(getCurrentLine(line), getCurrentColumn(line), name, arg1);
+                                    if (id.getValue() != NULL){
+                                            value = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, arg1, id);
+                                    } else {
+                                            value = makeFunction1(getCurrentLine(line), getCurrentColumn(line), name, arg1);
+                                    }
                     result_peg_315.setValue(value);
                 }
             
