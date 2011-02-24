@@ -38,7 +38,7 @@ forceX(a.forceX),
 forceY(a.forceY){
 }
 
-Attack::Attack(const Token & tok) throw (LoadException):
+Attack::Attack(const Token & tok):
 x1( 0 ),
 y1( 0 ),
 x2( 0 ),

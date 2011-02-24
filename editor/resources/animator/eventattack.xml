@@ -30,8 +30,13 @@
 			<glue />
 		</hbox>
 		<hbox>
-			<label text="Force" />
-			<spinner id="force" />
+			<label text="Force X" />
+			<spinner id="forceX" />
+			<glue />
+		</hbox>
+        <hbox>
+			<label text="Force Y" />
+			<spinner id="forceY" />
 			<glue />
 		</hbox>
 		<hbox>

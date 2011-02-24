@@ -14,6 +14,9 @@ import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
 public class AttackEvent implements AnimationEvent {
+    private static final double DEFAULT_FORCE_X = 1.7;
+    private static final double DEFAULT_FORCE_Y = 4.4;
+
     private class Attack{
         public Attack(){
         }
@@ -23,7 +26,8 @@ public class AttackEvent implements AnimationEvent {
         public int x2;
         public int y2;
         public int damage;
-        public int force;
+        public double forceX = DEFAULT_FORCE_X;
+        public double forceY = DEFAULT_FORCE_Y;
     }
 
     java.util.List<Attack> attacks;
@@ -68,7 +72,16 @@ public class AttackEvent implements AnimationEvent {
 
         Token force_token = token.findToken("force");
         if (force_token != null){
+            /*
             attack.force = force_token.readInt(0);
+            */
+            try{
+                double x = force_token.readDouble(0);
+                double y = force_token.readDouble(1);
+                attack.forceX = x;
+                attack.forceY = y;
+            } catch (NoSuchElementException fail){
+            }
         }
 
         return attack;
@@ -76,6 +89,10 @@ public class AttackEvent implements AnimationEvent {
 
     public void loadToken(Token token){
         this.attacks = new ArrayList();
+        
+        Attack attack = parse(token);
+
+        /*
         Attack attack = new Attack();
 
         Token x1_token = token.findToken("x1");
@@ -107,11 +124,11 @@ public class AttackEvent implements AnimationEvent {
         if (force_token != null){
             attack.force = force_token.readInt(0);
         }
+        */
 
         if (attack.x1 != 0 || attack.y1 != 0 ||
             attack.x2 != 0 || attack.y2 != 0 ||
-            attack.damage != 0 ||
-            attack.force != 0){
+            attack.damage != 0){
             attacks.add(attack);
             }
 
@@ -173,13 +190,21 @@ public class AttackEvent implements AnimationEvent {
                 animation.forceRedraw();
             }
         });
-        final JSpinner forcespin = (JSpinner) engine.find( "force" );
-        forcespin.setValue(new Integer(attack.force));
-        forcespin.addChangeListener( new ChangeListener(){
+        final JSpinner forcespinX = (JSpinner) engine.find("forceX");
+        forcespinX.setModel(new SpinnerNumberModel(attack.forceX, 0, 1000, 0.1));
+        forcespinX.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent changeEvent){
-                attack.force = ((Integer)forcespin.getValue()).intValue();
+                attack.forceX = ((Double)forcespinX.getValue()).doubleValue();
             }
         });
+        final JSpinner forcespinY = (JSpinner) engine.find("forceY");
+        forcespinY.setModel(new SpinnerNumberModel(attack.forceY, 0, 1000, 0.1));
+        forcespinY.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent changeEvent){
+                attack.forceY = ((Double)forcespinY.getValue()).doubleValue();
+            }
+        });
+
         final JSpinner damagespin = (JSpinner) engine.find( "damage" );
         damagespin.setValue(new Integer(attack.damage));
         damagespin.addChangeListener( new ChangeListener(){
@@ -262,7 +287,7 @@ public class AttackEvent implements AnimationEvent {
         Token temp = new Token();
         temp.addToken(new Token("attack"));
         for (Attack attack : attacks){
-            if (attack.x1 == 0 && attack.y1 == 0 && attack.x2 == 0 && attack.y2 == 0 && attack.force == 0 && attack.damage == 0) {
+            if (attack.x1 == 0 && attack.y1 == 0 && attack.x2 == 0 && attack.y2 == 0 && attack.damage == 0) {
                 // temp.addToken(new Token("box"));
             } else {
                 Token box = new Token();
@@ -272,7 +297,7 @@ public class AttackEvent implements AnimationEvent {
                 box.addToken(new String[]{"y1",Integer.toString(attack.y1)});
                 box.addToken(new String[]{"x2",Integer.toString(attack.x2)});
                 box.addToken(new String[]{"y2",Integer.toString(attack.y2)});
-                box.addToken(new String[]{"force",Integer.toString(attack.force)});
+                box.addToken(new String[]{"force", Double.toString(attack.forceX), Double.toString(attack.forceY)});
                 box.addToken(new String[]{"damage",Integer.toString(attack.damage)});
             }
         }
