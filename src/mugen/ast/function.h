@@ -10,7 +10,16 @@ class Function: public Value {
 public:
     Function(const std::string & name, const ValueList * args = NULL):
     name(name),
-    args(args){
+    args(args),
+    line(-1),
+    column(-1){
+    }
+
+    Function(int line, int column,const std::string & name, const ValueList * args = NULL):
+    name(name),
+    args(args),
+    line(line),
+    column(column){
     }
 
     virtual std::string toString() const {
@@ -46,9 +55,17 @@ public:
         return getArg(2);
     }
 
+    int getLine() const {
+        return line;
+    }
+
+    int getColumn() const {
+        return column;
+    }
+
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_FUNCTION << name;
+        *token << SERIAL_FUNCTION << name << line << column;
         if (args != NULL){
             *token << args->serialize();
         }
@@ -101,7 +118,7 @@ public:
         if (args){
             args_copy = (ValueList*) args->copy();
         }
-        return new Function(name, args_copy);
+        return new Function(line, column, name, args_copy);
     }
     
     virtual void mark(std::map<const void*, bool> & marks) const {
@@ -126,6 +143,8 @@ protected:
 
     std::string name;
     const ValueList * args;
+    int line;
+    int column;
 };
 
 }

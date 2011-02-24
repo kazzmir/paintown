@@ -174,6 +174,9 @@ Function * Function::deserialize(const Token * token){
     string name;
     TokenView view = token->view();
     view >> name;
+    int line = -1;
+    int column = -1;
+    view >> line >> column;
     ValueList * args = NULL;
     try{
         const Token * next;
@@ -182,7 +185,7 @@ Function * Function::deserialize(const Token * token){
     } catch (const TokenException & e){
     }
 
-    return new Function(name, args);
+    return new Function(line, column, name, args);
 }
 
 }

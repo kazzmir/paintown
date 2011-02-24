@@ -3403,6 +3403,9 @@ public:
 
         std::ostringstream out;
         out << "Unknown function '" << function.toString() << "'";
+        if (function.getLine() != -1){
+            out << " at line " << function.getLine() << " column " << function.getColumn();
+        }
         throw MugenException(out.str());
     }
 

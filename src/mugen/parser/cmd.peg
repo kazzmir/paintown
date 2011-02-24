@@ -286,6 +286,12 @@ Ast::Value * makeFunction(const Value & name, const Value & arg1){
     return function;
 }
 
+Ast::Value * makeFunction(int line, int column, const Value & name, const Value & arg1){
+    Ast::Value * function = new Ast::Function(line, column, std::string(as<const char*>(name)), as<Ast::ValueList*>(arg1));
+    GC::save(function);
+    return function;
+}
+
 Ast::Value * makeFunction(const std::string & name, const Value & arg1){
     Ast::Value * function = new Ast::Function(name, as<Ast::ValueList*>(arg1));
     GC::save(function);
@@ -294,6 +300,10 @@ Ast::Value * makeFunction(const std::string & name, const Value & arg1){
 
 Ast::Value * makeFunction1(const Value & name, const Value & arg1){
     return makeFunction(name, Value(makeValueList(arg1, Value())));
+}
+
+Ast::Value * makeFunction1(int line, int column, const Value & name, const Value & arg1){
+    return makeFunction(line, column, name, Value(makeValueList(arg1, Value())));
 }
 
 Ast::Value * makeFunction1(const std::string & name, const Value & arg1){
@@ -728,10 +738,10 @@ rules:
                 std::string name = combine("projcontact", id);
                 value = makeFunction1(name, arg1);
              }}
-             | name:"projhit"{case} id:integer? s "=" s arg1:integer function_rest {{
+             | line:<line> name:"projhit"{case} id:integer? s "=" s arg1:integer function_rest {{
                 /* FIXME: handle function rest */
-                std::string name = combine("projhit", id);
-                value = makeFunction1(name, arg1);
+                // std::string name = combine("projhit", id);
+                value = makeFunction1(getCurrentLine(line), getCurrentColumn(line), name, arg1);
              }}
              | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
                  typedef Ast::Value * (*compare_func)(const Value &, const Value &);
