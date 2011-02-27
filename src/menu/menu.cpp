@@ -22,6 +22,7 @@
 
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
+#include "util/parameter.h"
 
 #include <queue>
 #include <map>
@@ -32,6 +33,15 @@
 
 using namespace std;
 using namespace Gui;
+
+template <class Value> vector<Value> Util::Parameter<Value>::stack;
+
+/* the current font is a property of the dynamic execution. so it will
+ * be modified by various functions that call Parameter::push
+ */
+static const Font & currentFont(){
+    return Util::Parameter<Util::ReferenceCount<Menu::FontInfo> >::current()->get();
+}
 
 static std::string sharedFont = "fonts/arial.ttf";
 static int sharedFontWidth = 24;
@@ -527,7 +537,8 @@ void Menu::DefaultRenderer::initialize(Context & context){
     menu.setList(toContextList(options));
     menu.open();
     
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    // const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & font = currentFont();
     // Menu info
     if (!context.getMenuInfoText().empty()){
         menuInfo.setText(context.getMenuInfoText());
@@ -557,7 +568,9 @@ bool Menu::DefaultRenderer::active(){
 }
 
 void Menu::DefaultRenderer::act(const Context & context){
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    // const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & font = currentFont();
+
     // FIXME find a better way to get options to update this is a waste
     for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
         MenuOption * option = *i;
@@ -569,7 +582,7 @@ void Menu::DefaultRenderer::act(const Context & context){
 }
 
 void Menu::DefaultRenderer::render(const Graphics::Bitmap & bmp, const Font & font){
-    menu.render(bmp, Configuration::getMenuFont()->get(font));
+    menu.render(bmp, font);
     menuInfo.render(bmp, font);
     renderInfo(bmp, font);
 }
@@ -579,7 +592,7 @@ void Menu::DefaultRenderer::addOption(MenuOption * opt){
 }
 
 void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & font = currentFont();
     switch(action){
         case Up:
             if (menu.previous(font)){
@@ -616,7 +629,7 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             // setFont(context.getFont());
             context.playMusic();
             /* font might have been recreated */
-            const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+            const Font & font = currentFont();
             addInfo(options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             menuInfo.initialize(font);
             break;
@@ -802,7 +815,7 @@ void Menu::TabRenderer::initialize(Context & context){
     }
     //menu.open();
     
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & font = currentFont();
     // Menu info
     if (!context.getMenuInfoText().empty()){
         menuInfo.setText(context.getMenuInfoText());
@@ -833,7 +846,7 @@ bool Menu::TabRenderer::active(){
 }
 
 void Menu::TabRenderer::act(const Context & context){
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & font = currentFont();
     // FIXME find a better way to get options to update this is a waste
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         TabInfo * tab = *i;
@@ -855,7 +868,7 @@ void Menu::TabRenderer::addOption(MenuOption * opt){
 }
 
 void Menu::TabRenderer::doAction(const Actions & action, Context & context){
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & font = currentFont();
     switch(action){
         case Up:
             menu.up(font);
@@ -913,7 +926,7 @@ cleanup(true),
 state(NotStarted),
 fades(0),
 background(0),
-font(new DefaultFontInfo()),
+font(NULL),
 infoLocation(0, -.5),
 menuInfoLocation(0,.95){
 }
@@ -923,7 +936,7 @@ cleanup(false),
 state(NotStarted),
 fades(NULL),
 background(NULL),
-font(new DefaultFontInfo()),
+font(NULL),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95){
     // Update with parents info
@@ -952,12 +965,20 @@ menuInfoLocation(0,.95){
         music = child.music;
     }
 
+    if (child.hasFont()){
+        font = child.getFontInfo();
+    } else if (parent.hasFont()){
+        font = parent.getFontInfo();
+    }
+
+    /*
     const FontInfo & result = child.getFont()->get(*parent.getFont());
     if (child.getFont() == &result){
         font = child.getFont();
     } else {
         font = parent.getFont();
     }
+    */
 
     /*
     if (child.getFont() != NULL){
@@ -990,6 +1011,10 @@ Menu::Context::~Context(){
             delete background;
         }
     }
+}
+
+bool Menu::Context::hasFont() const {
+    return font != NULL;
 }
 
 void Menu::Context::parseToken(const Token * token){
@@ -1126,7 +1151,7 @@ void Menu::Context::render(Renderer * renderer, const Graphics::Bitmap & bmp){
     
     // Menu
     if (renderer){
-        renderer->render(bmp, Configuration::getMenuFont()->get(getFont()->get()));
+        renderer->render(bmp, currentFont());
     }
     
     if (background){
@@ -1342,10 +1367,15 @@ void Menu::Menu::closeOptions(){
 }
 
 void Menu::Menu::run(const Context & parentContext){
+    /* TODO: replace with Parameter */
     Keyboard::pushRepeatState(true);
     try{
         // Setup context from parent and this menu and initialize
         Context localContext(parentContext, context);
+        Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+        if (context.hasFont()){
+            currentFont.push(context.getFontInfo());
+        }
         localContext.initialize();
 
         // Setup menu fonts etc
@@ -1417,6 +1447,7 @@ void Menu::Menu::run(const Context & parentContext){
                 */
 
                 while (runCounter >= 1.0){
+                    
                     runCounter -= 1;
                     try {
                         act(localContext);
@@ -1429,9 +1460,12 @@ void Menu::Menu::run(const Context & parentContext){
                     }
                 }
 
-                // Render
+                Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+                if (Configuration::hasMenuFont()){
+                    currentFont.push(Configuration::getMenuFont());
+                }
                 render(localContext, work);
-                // screen
+
                 work.BlitToScreen();
             }
 
@@ -1497,7 +1531,10 @@ void Menu::Menu::act(Context & ourContext){
     }
             
     if (renderer){
-        // Menu act
+        Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+        if (Configuration::hasMenuFont()){
+            currentFont.push(Configuration::getMenuFont());
+        }
         renderer->act(ourContext);
     }
 

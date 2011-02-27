@@ -103,6 +103,7 @@ public:
 
     static Util::ReferenceCount<Menu::FontInfo> getMenuFont();
     static void setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & str);
+    static bool hasMenuFont();
     static int getMenuFontWidth();
     static int getMenuFontHeight();
     static void setMenuFontWidth(int x);

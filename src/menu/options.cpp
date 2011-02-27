@@ -13,7 +13,7 @@
 #include "util/music.h"
 
 #include "paintown-engine/object/versus_player.h"
-#include "paintown-engine/object/versus_enemy.h"
+// #include "paintown-engine/object/versus_enemy.h"
 
 #include "paintown-engine/object/object.h"
 #include "paintown-engine/object/player.h"
@@ -1860,7 +1860,8 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
         sort(fonts.begin(), fonts.end(), sortInfo);
         
         // DEFAULT (blank)
-        fonts.insert(fonts.begin(), new Menu::DefaultFontInfo());
+        // fonts.insert(fonts.begin(), new Menu::DefaultFontInfo());
+        fonts.insert(fonts.begin(), NULL);
     } catch (const Filesystem::NotFound & e){
         throw LoadException(__FILE__, __LINE__, e, "Could not load font");
     }
@@ -1934,7 +1935,11 @@ void OptionSelectFont::logic(){
     switch (typeAdjust){
         case fontName:{
 	    std::string name;
-            name = Configuration::getMenuFont()->getName();
+            if (Configuration::hasMenuFont()){
+                name = Configuration::getMenuFont()->getName();
+            } else {
+                name = "Default";
+            }
             setText("Current Font: " + name);
             break;
 	}
@@ -2036,6 +2041,10 @@ static bool saneFont(const Util::ReferenceCount<Menu::FontInfo> & info){
         bool isok;
     };
 
+    if (info == NULL){
+        return true;
+    }
+
     Context context(info);
     /* an empty LevelInfo object, we don't really care about it */
     Level::LevelInfo level;
@@ -2049,12 +2058,12 @@ void OptionSelectFont::nextIndex(bool forward){
     }
     
     int index = 0;
-    if (Configuration::getMenuFont() != NULL){
-	for (unsigned int i = 0 ; i < fonts.size() ; ++i){
-	    if (Configuration::getMenuFont() == fonts[i]){
-		index = i;
-	    }
-	}
+    for (unsigned int i = 0 ; i < fonts.size() ; ++i){
+        if ((Configuration::getMenuFont() == NULL && fonts[i] == NULL) ||
+            ((Configuration::getMenuFont() != NULL && fonts[i] != NULL) &&
+             (*Configuration::getMenuFont() == *fonts[i]))){
+            index = i;
+        }
     }
 
     if (forward){

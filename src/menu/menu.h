@@ -368,7 +368,13 @@ class Context{
             this->font = font;
         }
 
+        virtual bool hasFont() const;
+
         virtual inline const Util::ReferenceCount<FontInfo> & getFont() const {
+            return this->font;
+        }
+        
+        virtual inline const Util::ReferenceCount<FontInfo> & getFontInfo() const {
             return this->font;
         }
 

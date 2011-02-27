@@ -21,6 +21,7 @@
 #include "util/file-system.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
+#include "util/parameter.h"
 #include "globals.h"
 #include "util/debug.h"
 #include "paintown-engine/network/server.h"
@@ -341,6 +342,10 @@ int paintown_main( int argc, char ** argv ){
                 setMugenMotif(mainMenuPath());
                 runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
             } else {
+                using namespace Util;
+                Parameter<ReferenceCount<Menu::FontInfo> > defaultFont(new Menu::RelativeFontInfo(Global::DEFAULT_FONT,
+                                                                                                              Configuration::getMenuFontWidth(),
+                                                                                                              Configuration::getMenuFontHeight()));
                 Menu::Menu game(mainMenuPath());
                 game.run(Menu::Context());
             }

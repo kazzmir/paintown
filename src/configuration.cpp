@@ -281,6 +281,10 @@ int Configuration::getKey( Input::PaintownInput which, int facing ) const {
 Util::ReferenceCount<Menu::FontInfo> Configuration::getMenuFont(){
     return menuFont;
 }
+    
+bool Configuration::hasMenuFont(){
+    return menuFont != NULL;
+}
 
 void Configuration::setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & info){
     menuFont = info;
@@ -901,8 +905,9 @@ void Configuration::saveConfiguration(){
     }
 
     ofstream out(Filesystem::configFile().path().c_str(), ios::trunc | ios::out );
-    if ( ! out.bad() ){
+    if (! out.bad()){
         head.toString( out, string("") );
+        out << endl;
         out.close();
     }
 }
@@ -923,7 +928,7 @@ int Configuration::screen_height = 272;
 int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
 #endif
-Util::ReferenceCount<Menu::FontInfo> Configuration::menuFont = new Menu::DefaultFontInfo();
+Util::ReferenceCount<Menu::FontInfo> Configuration::menuFont;
 int Configuration::menuFontWidth = 24;
 int Configuration::menuFontHeight = 24;
 int Configuration::soundVolume = 80;

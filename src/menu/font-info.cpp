@@ -16,6 +16,30 @@ static bool menuFontAvailable(){
     return Configuration::getMenuFont() != NULL;
 }
 
+bool RelativeFontInfo::operator==(const FontInfo & who) const {
+    return who == *this;
+}
+
+bool RelativeFontInfo::operator==(const AbsoluteFontInfo & who) const {
+    return getName() == who.getName();
+}
+
+bool RelativeFontInfo::operator==(const RelativeFontInfo & who) const {
+    return path == who.path;
+}
+
+bool AbsoluteFontInfo::operator==(const FontInfo & who) const {
+    return who == *this;
+}
+
+bool AbsoluteFontInfo::operator==(const AbsoluteFontInfo & who) const {
+    return path == who.path;
+}
+
+bool AbsoluteFontInfo::operator==(const RelativeFontInfo & who) const {
+    return getName() == who.getName();
+}
+
 /*
 std::string FontInfo::getName() const {
     return font.path();
@@ -38,7 +62,7 @@ const int FontInfo::getHeight(const FontInfo & next) const{
 }
 */
     
-const Font & DefaultFontInfo::get(const Font & next) const {
+const Font & DefaultFontInfo1::get(const Font & next) const {
     return next;
 }
 
@@ -48,27 +72,27 @@ const Filesystem::RelativePath DefaultFontInfo::getFont(const FontInfo & next) c
 }
 */
 
-const FontInfo & DefaultFontInfo::get(const FontInfo & next) const {
+const FontInfo & DefaultFontInfo1::get(const FontInfo & next) const {
     return next;
 }
 
-const Font & DefaultFontInfo::get() const {
+const Font & DefaultFontInfo1::get() const {
     throw Exception::Base(__FILE__, __LINE__);
 }
-    
-std::string DefaultFontInfo::getName() const {
+        
+std::string DefaultFontInfo1::getName() const {
     return "Default";
 }
 
-const bool DefaultFontInfo::empty() const {
+const bool DefaultFontInfo1::empty() const {
     return false;
 }
 
-const int DefaultFontInfo::getWidth(const FontInfo & next) const {
+const int DefaultFontInfo1::getWidth(const FontInfo & next) const {
     throw Exception::Base(__FILE__, __LINE__);
 }
 
-const int DefaultFontInfo::getHeight(const FontInfo & next) const {
+const int DefaultFontInfo1::getHeight(const FontInfo & next) const {
     throw Exception::Base(__FILE__, __LINE__);
 }
 
