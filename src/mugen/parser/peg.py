@@ -258,15 +258,25 @@ class ParseException: std::exception {
 public:
     ParseException(const std::string & reason):
     std::exception(),
+    line(-1), column(-1),
+    message(reason){
+    }
+
+    ParseException(const std::string & reason, int line, int column):
+    std::exception(),
+    line(line), column(column),
     message(reason){
     }
 
     std::string getReason() const;
+    int getLine() const;
+    int getColumn() const;
 
     virtual ~ParseException() throw(){
     }
 
 protected:
+    int line, column;
     std::string message;
 };
 
@@ -463,7 +473,8 @@ public:
         return line_info[position];
     }
 
-    std::string reportError(){
+    /* throws a ParseException */
+    void reportError(const std::string & parsingContext){
         std::ostringstream out;
         int line = 1;
         int column = 1;
@@ -484,7 +495,7 @@ public:
         if (right >= max){
             right = max;
         }
-        out << "Read up till line " << line << " column " << column << std::endl;
+        out << "Error while parsing " << parsingContext << ". Read up till line " << line << " column " << column << std::endl;
         std::ostringstream show;
         for (int i = left; i < right; i++){
             char c = buffer[i];
@@ -514,7 +525,7 @@ public:
         out << "^" << std::endl;
         out << "Last successful rule trace" << std::endl;
         out << makeBacktrace() << std::endl;
-        return out.str();
+        throw ParseException(out.str(), line, column);
     }
 
     std::string makeBacktrace(){
@@ -2367,6 +2378,14 @@ static inline bool compareCharCase(const char a, const char b){
 
 std::string ParseException::getReason() const {
     return message;
+}
+
+int ParseException::getLine() const {
+    return line;
+}
+
+int ParseException::getColumn() const {
+    return column;
 }
 
 Result errorResult(-1);
@@ -4361,9 +4380,7 @@ static const void * doParse(Stream & stream, bool stats, const std::string & con
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
-        std::ostringstream out;
-        out << "Error while parsing " << context << " " << stream.reportError();
-        throw ParseException(out.str());
+        stream.reportError(context);
     }
     if (stats){
         stream.printStats();
@@ -4459,9 +4476,7 @@ static const void * doParse(Stream & stream, bool stats, const std::string & con
     errorResult.setError();
     Result done = rule_%s(stream, 0);
     if (done.error()){
-        std::ostringstream out;
-        out << "Error while parsing " << context << " " << stream.reportError();
-        throw ParseException(out.str());
+        stream.reportError(context);
     }
     if (stats){
         stream.printStats();

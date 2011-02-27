@@ -11,7 +11,6 @@ namespace Menu{
 
 /*
  * class FontInfo
- * class DefaultFontInfo
  * class RelativeFontInfo
  * class AbsoluteFontInfo
  */
@@ -165,18 +164,6 @@ protected:
     int height;
 };
 */
-
-class DefaultFontInfo1: public FontInfo {
-public:
-    virtual const Font & get() const;
-    virtual const Font & get(const Font & next) const;
-    virtual const FontInfo & get(const FontInfo & next) const;
-    // virtual const Filesystem::RelativePath getFont(const FontInfo & next) const;
-    virtual std::string getName() const;
-    virtual const bool empty() const;
-    virtual const int getWidth(const FontInfo & next) const;
-    virtual const int getHeight(const FontInfo & next) const;
-};
 
 }
 

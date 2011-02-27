@@ -456,7 +456,7 @@ void addSection(const Value & section_list_value, const Value & section_value){
     SectionList * sections = (SectionList*) section_list_value.getValue();
     Ast::Section * section = (Ast::Section*) section_value.getValue();
     if (section == 0){
-            throw ParseException("Cannot add null section");
+        throw ParseException("Cannot add null section");
     }
     sections->push_back(section);
 }

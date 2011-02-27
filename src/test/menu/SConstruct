@@ -120,7 +120,6 @@ test/util/music-player.cpp
 test/util/loading.cpp
 test/util/messages.cpp
 test/util/ogg/logg.c
-test/paintown-engine/game/versus_world.cpp
 test/paintown-engine/game/world.cpp
 test/factory/shadow.cpp
 test/mugen/config.cpp
