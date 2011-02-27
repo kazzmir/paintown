@@ -12,6 +12,8 @@ namespace Mugen{
         class ParseException: public std::exception {
         public:
             std::string getReason() const;
+            int getLine() const;
+            int getColumn() const;
             virtual ~ParseException() throw();
         };
     }
@@ -22,6 +24,8 @@ namespace Mugen{
         class ParseException: public std::exception {
         public:
             std::string getReason() const;
+            int getLine() const;
+            int getColumn() const;
             virtual ~ParseException() throw();
         };
     }
@@ -33,6 +37,8 @@ namespace Mugen{
         class ParseException: public std::exception {
         public:
             std::string getReason() const;
+            int getLine() const;
+            int getColumn() const;
             virtual ~ParseException() throw();
         };
     }
