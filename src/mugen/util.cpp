@@ -912,15 +912,32 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
     return animation;
 }
 
+static void parseException(const string & file, const string & error, int line, int column){
+    ifstream safe(file.c_str());
+    char buffer[1024];
+    int last = 0;
+    for (int i = 0; i < line && safe.good(); i++){
+        safe.getline(buffer, sizeof(buffer));
+        last = safe.gcount();
+    }
+    /* force a null byte */
+    if (last == sizeof(buffer) - 1){
+        buffer[sizeof(buffer) - 1] = '\0';
+    }
+    safe.close();
+    ostringstream out;
+    out << "Could not parse " << file << ". Line " << line << " has an error around column " << column << "\n\n" << buffer << "\n\nParser error: " << error;
+    throw MugenException(out.str());
+}
+
 list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
     try{
         return ParseCache::parseAir(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Air::ParseException & e){
-        ostringstream out;
-        out << "Could not parse " << filename << " because " << e.getReason();
-        throw MugenException(out.str());
+        parseException(filename, e.getReason(), e.getLine(), e.getColumn());
+        throw MugenException("won't get here");
     }
 }
 
@@ -930,9 +947,8 @@ list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Def::ParseException & e){
-        ostringstream out;
-        out << "Could not parse " << filename << " because " << e.getReason();
-        throw MugenException(out.str());
+        parseException(filename, e.getReason(), e.getLine(), e.getColumn());
+        throw MugenException("won't get here");
     }
 }
 
@@ -942,9 +958,8 @@ list<Ast::Section*>* Mugen::Util::parseCmd(const string & filename){
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason());
     } catch (const Mugen::Cmd::ParseException & e){
-        ostringstream out;
-        out << "Could not parse " << filename << " because " << e.getReason();
-        throw MugenException(out.str());
+        parseException(filename, e.getReason(), e.getLine(), e.getColumn());
+        throw MugenException("won't get here");
     }
 }
 

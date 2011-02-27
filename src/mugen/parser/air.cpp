@@ -630,6 +630,14 @@ std::string ParseException::getReason() const {
     return message;
 }
 
+int ParseException::getLine() const {
+    return line;
+}
+
+int ParseException::getColumn() const {
+    return column;
+}
+
 Result errorResult(-1);
 
 Result rule_start(Stream &, const int);

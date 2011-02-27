@@ -2380,14 +2380,6 @@ std::string ParseException::getReason() const {
     return message;
 }
 
-int ParseException::getLine() const {
-    return line;
-}
-
-int ParseException::getColumn() const {
-    return column;
-}
-
 Result errorResult(-1);
 
 class Failure: public std::exception {
@@ -4366,6 +4358,14 @@ struct Column{
 
 std::string ParseException::getReason() const {
     return message;
+}
+
+int ParseException::getLine() const {
+    return line;
+}
+
+int ParseException::getColumn() const {
+    return column;
 }
 
 Result errorResult(-1);
