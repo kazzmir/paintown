@@ -742,13 +742,24 @@ rules:
                 std::string name = combine("projcontact", id);
                 value = makeFunction1(name, arg1);
              }}
-             | line:<line> name:"projhit"{case} id:integer? s "=" s arg1:integer function_rest {{
-                /* FIXME: handle function rest */
-                // std::string name = combine("projhit", id);
+             | line:<line> name:"projhit"{case} id:integer? s "=" s arg1:integer (s "," s compare:all_compare s ticks:value)? {{
+                Value finalId;
                 if (id.getValue() != NULL){
-                        value = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, arg1, id);
+                    finalId = id;
                 } else {
-                        value = makeFunction1(getCurrentLine(line), getCurrentColumn(line), name, arg1);
+                    finalId = makeNumber(0);
+                }
+
+                Ast::Value * get = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, arg1, finalId);
+                /* check if the second form is used */
+                if (compare.getValue() != NULL){
+                    typedef Ast::Value * (*compare_func)(const Value &, const Value &);
+                    Ast::Value * comparison = as<compare_func>(compare)(Value(get), ticks);
+                    value = Value(comparison);
+                } else {
+                    Ast::Value * one = makeNumber(1);
+                    Ast::Value * comparison = makeExpressionLessThan(Value(get), Value(one));
+                    value = Value(comparison);
                 }
              }}
              | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{

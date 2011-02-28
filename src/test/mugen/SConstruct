@@ -320,6 +320,17 @@ test/util/input/joystick.cpp
 test/util/input/sdl/joystick.cpp
 """)
 
+parse_source = Split("""
+parse.cpp
+test-parser/cmd.cpp
+test/mugen/ast/ast.cpp
+test/exceptions/exception.cpp
+test/mugen/exception.cpp
+test/util/token.cpp
+test/util/tokenreader.cpp
+test/util/token_exception.cpp
+""")
+
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
@@ -333,6 +344,7 @@ makeTest('load', load_source + most_game_source)
 makeTest('serialize', ['serialize.cpp'] + ast_source)
 makeTest('load-stage', stage_source)
 makeTest('sffv2', sffv2_source)
+makeTest('parse', parse_source)
 # x.append(testEnv.Program('load-stage', stage_source))
 x.append(testEnv.Program('palette', ['palette.cpp', 'test/util/debug.cpp']))
 Return('x')
