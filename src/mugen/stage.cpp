@@ -1378,39 +1378,47 @@ void Mugen::Stage::reset(){
     // background->reset(startx, starty, resetBG);
     
     // Reset player positions
-    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end();){
         Paintown::Object *player = *it;
-        Mugen::Character * character = (Mugen::Character*) player;
-        vector<string> inputs;
-        //character->changeState(*this, Mugen::Intro, inputs);
-	character->setHealth(character->getMaxHealth());
-        if (player->getAlliance() == Player1Side){
-	    //((Player *)player)->deathReset();
-	    player->setX(p1startx);
-	    player->setY(p1starty);
-	    player->setZ(currentZOffset());
-	    player->setFacing(Paintown::Object::FACING_RIGHT);
-	    playerInfo[player].oldx = player->getX();
-	    playerInfo[player].oldy = player->getY();
-	    playerInfo[player].leftTension = false;
-	    playerInfo[player].rightTension = false;
-	    playerInfo[player].leftSide = false;
-	    playerInfo[player].rightSide = false;
-	    playerInfo[player].jumped = false;
-	} else if (player->getAlliance() == Player2Side){
-	    //((Player *)player)->deathReset();
-	    player->setX(p2startx);
-	    player->setY(p2starty);
-	    player->setZ(currentZOffset());
-	    player->setFacing(Paintown::Object::FACING_LEFT);
-	    playerInfo[player].oldx = player->getX();
-	    playerInfo[player].oldy = player->getY();
-	    playerInfo[player].leftTension = false;
-	    playerInfo[player].rightTension = false;
-	    playerInfo[player].leftSide = false;
-	    playerInfo[player].rightSide = false;
-	    playerInfo[player].jumped = false;
-	}
+
+        /* remove any non-player objects, like projectiles or helpers */
+        if (!isaPlayer(player)){
+            delete player;
+            it = objects.erase(it);
+        } else {
+            Mugen::Character * character = (Mugen::Character*) player;
+            vector<string> inputs;
+            //character->changeState(*this, Mugen::Intro, inputs);
+            character->setHealth(character->getMaxHealth());
+            if (player->getAlliance() == Player1Side){
+                //((Player *)player)->deathReset();
+                player->setX(p1startx);
+                player->setY(p1starty);
+                player->setZ(currentZOffset());
+                player->setFacing(Paintown::Object::FACING_RIGHT);
+                playerInfo[player].oldx = player->getX();
+                playerInfo[player].oldy = player->getY();
+                playerInfo[player].leftTension = false;
+                playerInfo[player].rightTension = false;
+                playerInfo[player].leftSide = false;
+                playerInfo[player].rightSide = false;
+                playerInfo[player].jumped = false;
+            } else if (player->getAlliance() == Player2Side){
+                //((Player *)player)->deathReset();
+                player->setX(p2startx);
+                player->setY(p2starty);
+                player->setZ(currentZOffset());
+                player->setFacing(Paintown::Object::FACING_LEFT);
+                playerInfo[player].oldx = player->getX();
+                playerInfo[player].oldy = player->getY();
+                playerInfo[player].leftTension = false;
+                playerInfo[player].rightTension = false;
+                playerInfo[player].leftSide = false;
+                playerInfo[player].rightSide = false;
+                playerInfo[player].jumped = false;
+            }
+            it++;
+        }
     }
     
     inleft = inright = onLeftSide = onRightSide = 0;
