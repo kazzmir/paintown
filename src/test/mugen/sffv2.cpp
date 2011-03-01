@@ -300,7 +300,7 @@ public:
             uint16_t linked = reader.readByte2();
             uint32_t offset = reader.readByte4();
             uint32_t length = reader.readByte4();
-            palettes.push_back(PaletteHeader(group, item, colors,linked, offset, length, index));
+            palettes.push_back(PaletteHeader(group, item, colors, linked, offset, length, index));
         }
 
         /*
@@ -324,18 +324,16 @@ public:
         */
     }
 
-    vector<SpriteHeader> getLZ5Sprites(){
+    vector<SpriteHeader> getSprites(){
         vector<SpriteHeader> sprites;
         for (vector<SpriteHeader>::iterator it = this->sprites.begin(); it != this->sprites.end(); it++){
             const SpriteHeader & sprite = *it;
-            if (sprite.format == 4){
-                sprites.push_back(sprite);
-            }
+            sprites.push_back(sprite);
         }
         return sprites;
     }
 
-    const SpriteHeader & findSprite(int index){
+    const SpriteHeader & findSprite(unsigned int index){
         for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
             const SpriteHeader & sprite = *it;
             if (sprite.index == index){
@@ -377,8 +375,8 @@ public:
         sffStream.seekg(offset, ios::beg);
         try{
             switch (sprite.format){
-                case 2: readRLE8(reader, length); break;
-                case 3: readRLE5(reader, length); break;
+                case 2: readRLE8(reader, length, pixels, sprite.width * sprite.height); break;
+                case 3: readRLE5(reader, length, pixels, sprite.width * sprite.height); break;
                 case 4: readLZ5(reader, length, pixels, sprite.width * sprite.height); break;
                 default: {
                     Global::debug(0) << "Don't understand format " << sprite.format << endl;
@@ -396,7 +394,7 @@ public:
         return out;
     }
 
-    map<uint8_t, int> readPalette(int index){
+    map<uint8_t, int> readPalette(unsigned int index){
         for (vector<PaletteHeader>::iterator it = palettes.begin(); it != palettes.end(); it++){
             const PaletteHeader & palette = *it;
             if (palette.index == index){
@@ -412,11 +410,11 @@ public:
     }
 
     map<uint8_t, int> readPalette(const PaletteHeader & palette){
-        sffStream.seekg(palette.index + ldataOffset, ios::beg);
+        sffStream.seekg(palette.offset + ldataOffset, ios::beg);
         uint8_t * data = new uint8_t[palette.length];
         sffStream.read((char*) data, palette.length);
         map<uint8_t, int> out;
-        for (uint8_t color = 0; color < palette.colors; color++){
+        for (int color = 0; color < palette.colors; color++){
             /* Palette data is stored in 4 byte chunks per color.
              * The first 3 bytes correspond to 8-bit values for RGB color, and
              * the last byte is unused (set to 0).
@@ -434,16 +432,75 @@ public:
     void writePixels(Graphics::Bitmap & out, char * pixels, map<uint8_t, int> & palette){
         for (int y = 0; y < out.getHeight(); y++){
             for (int x = 0; x < out.getWidth(); x++){
-                char pixel = pixels[x + y * out.getWidth()];
+                uint8_t pixel = pixels[x + y * out.getWidth()];
                 out.putPixel(x, y, palette[pixel]);
             }
         }
     }
 
-    void readRLE8(Filesystem::LittleEndianReader & reader, uint32_t length){
+    void readRLE8(Filesystem::LittleEndianReader & reader, uint32_t length, char * pixels, int pixelLength){
+        char * output = pixels;
+        while (length > 0){
+            uint8_t rle = reader.readByte1();
+            length -= 1;
+            if ((rle & 0xc0) == 0x40){
+                uint8_t color = reader.readByte1();
+                length -= 1;
+                int runlength = (rle & 0x3f);
+                for (int i = 0; i < runlength; i++){
+                    *output = color;
+                    output += 1;
+                }
+            } else {
+                *output = rle;
+                output += 1;
+            }
+        }
     }
 
-    void readRLE5(Filesystem::LittleEndianReader & reader, uint32_t length){
+    void readRLE5(Filesystem::LittleEndianReader & reader, uint32_t length, char * pixels, int pixelLength){
+            /*
+RLE5packet = read(2 bytes)
+if RLE5packet.color_bit is 1, then
+color = read(1 byte)
+else
+color = 0
+for run_count from 0 to RLE5packet.run_length, do
+output(color)
+Decode 3RL/5VAL
+for bytes_processed from 0 to RLE5packet.data_length - 1, do
+one_byte = read(1 byte)
+color = one_byte & 0x1F
+run_length = one_byte >> 5
+for run_count from 0 to run_length, do
+output(color)
+*/
+        char * output = pixels;
+        while (length > 0){
+            uint16_t packet = reader.readByte2();
+            int runlength = packet & 0xff;
+            length -= 2;
+            int color = 0;
+            if ((packet & (1 << 15)) == (1 << 15)){
+                color = reader.readByte1();
+                length -= 1;
+            }
+            int data = (packet >> 8) & 0x7f;
+            for (int i = 0; i < runlength; i++){
+                *output = color;
+                output += 1;
+            }
+            for (int i = 0; i < data; i++){
+                uint8_t rle = reader.readByte1();
+                length -= 1;
+                color = rle & 0x1f;
+                runlength = rle >> 5;
+                for (int c = 0; c < runlength; c++){
+                    *output = color;
+                    output += 1;
+                }
+            }
+        }
     }
 
     enum LZ5PacketType{
@@ -712,18 +769,31 @@ Graphics::Bitmap getSff(const char * path, int index){
     SprNode * node = file.GetSprNode(in, index);
     uint8_t * pixels = file.GetSprite(in, node);
     Graphics::Bitmap out(node->GetWidth(), node->GetHeight());
-    map<char, int> palette;
+    map<uint8_t, int> palette;
+    PalNode * paletteNode = file.GetPalNode(in, node->GetPalInd());
     for (int y = 0; y < node->GetHeight(); y++){
         for (int x = 0; x < node->GetWidth(); x++){
-            char pixel = pixels[x + y * out.getWidth()];
+            uint8_t pixel = pixels[x + y * out.getWidth()];
+            if (palette.find(pixel) == palette.end()){
+                colorinfo * color = file.GetColor(in, paletteNode, pixel);
+                if (color != NULL){
+                    palette[pixel] = Graphics::makeColor(color->r, color->g, color->b);
+                }
+                delete color;
+            }
+                // Global::debug(0) << x << ", " << y << " " << (int) pixel << " is " << Graphics::makeColor(color->r, color->g, color->b) << endl;
+            out.putPixel(x, y, palette[pixel]);
+            /*
             if (palette.find(pixel) == palette.end()){
                 palette[pixel] = Graphics::makeColor(Util::rnd(128) + 128,
                                                      Util::rnd(128) + 128,
                                                      Util::rnd(128) + 128);
             }
             out.putPixel(x, y, palette[pixel]);
+            */
         }
     }
+    delete paletteNode;
     delete node;
     delete[] pixels;
     return out;
@@ -738,8 +808,8 @@ int main(int argc, char ** argv){
             Filesystem::AbsolutePath path(argv[1]);
             SffV2Reader reader(path);
             
-            vector<SffV2Reader::SpriteHeader> sprites = reader.getLZ5Sprites();
-            int index = 0;
+            vector<SffV2Reader::SpriteHeader> sprites = reader.getSprites();
+            unsigned int index = 0;
             InputManager manager;
             InputMap<int> input;
             input.set(Keyboard::Key_ESC, 0, true, 0);
