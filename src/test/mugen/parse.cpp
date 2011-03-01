@@ -47,14 +47,12 @@ void destroy(list<Ast::Section*> * sections){
     delete sections;
 }
 
-void parseCmd(const string & file){
+void doParse(const string & file, const void * (*parse)(const std::string &, bool stats)){
     try{
-        list<Ast::Section*> * result = (list<Ast::Section*>*) Mugen::Cmd::parse(file, false);
+        list<Ast::Section*> * result = (list<Ast::Section*>*) parse(file, false);
         for (list<Ast::Section*>::iterator it = result->begin(); it != result->end(); it++){
             Ast::Section * section = *it;
             cout << section->toString() << endl;
-            // walk(*section);
-            // section->debugExplain();
         }
         destroy(result);
     } catch (const Mugen::Cmd::ParseException & fail){
@@ -62,10 +60,16 @@ void parseCmd(const string & file){
     }
 }
 
+void parseCmd(const string & file){
+    doParse(file, Mugen::Cmd::parse);
+}
+
 void parseDef(const string & file){
+    doParse(file, Mugen::Def::parse);
 }
 
 void parseAir(const string & file){
+    doParse(file, Mugen::Air::parse);
 }
 
 void parse(const char * file){

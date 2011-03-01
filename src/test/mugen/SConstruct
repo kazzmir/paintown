@@ -323,6 +323,8 @@ test/util/input/sdl/joystick.cpp
 parse_source = Split("""
 parse.cpp
 test-parser/cmd.cpp
+test-parser/def.cpp
+test-parser/air.cpp
 test/mugen/ast/ast.cpp
 test/exceptions/exception.cpp
 test/mugen/exception.cpp
