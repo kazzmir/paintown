@@ -2014,7 +2014,13 @@ void * CharacterSelect::searchForCharacters(void * arg){
                 Global::debug(1) << path.path() << " is good" << endl;
                 ok = select->addInfo(info);
             } catch (const Filesystem::NotFound & fail){
+                Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
+            } catch (const Filesystem::Exception & fail){
+                Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
+            } catch (const Exception::Base & fail){
+                Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
             } catch (...){
+                Global::debug(1) << "Failed to load " << path.path() << " for an unknown reason" << endl;
             }
         }
         Global::debug(1) << "Done searching for characters" << endl;

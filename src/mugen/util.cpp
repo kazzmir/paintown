@@ -1046,7 +1046,7 @@ const std::string Mugen::Util::probeDef(const Ast::AstParse & parsed, const std:
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == search){
                         simple >> result;
-                        Global::debug(1) << "Found result: " << result << endl;
+                        Global::debug(2) << "Found result: " << result << endl;
                     } 
                 }
 	    };

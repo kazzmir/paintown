@@ -1617,10 +1617,14 @@ void Character::load(int useAct){
          * might not exist
          */
 	Global::debug(1) << "Couldn't find palette: " << currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
-        paletteFile = palFile.begin()->second;
+        if (palFile.size() > 0){
+            paletteFile = palFile.begin()->second;
+        }
     } else {
-	paletteFile = palFile[currentPalette];
-	Global::debug(2) << "Current pal: " << currentPalette << " | Palette File: " << paletteFile << endl;
+        if (currentPalette < palFile.size()){
+            paletteFile = palFile[currentPalette];
+            Global::debug(2) << "Current pal: " << currentPalette << " | Palette File: " << paletteFile << endl;
+        }
     }
     /*
     if (currentPalette > palFile.size() - 1){
@@ -1630,9 +1634,14 @@ void Character::load(int useAct){
     Global::debug(2) << "Reading Sff (sprite) Data..." << endl; 
     /* Sprites */
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
-    Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(sffFile)),
-                      Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(paletteFile)),
-                      sprites, true);
+    Filesystem::AbsolutePath finalPalette;
+    try{
+        finalPalette = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(paletteFile));
+    } catch (const Filesystem::Exception & fail){
+        Global::debug(0) << "Couldn't find palette for '" << paletteFile << "' because " << fail.getTrace() << endl;
+        /* ignore palette */
+    }
+    Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(sffFile)), finalPalette, sprites, true);
     destroyRaw(sprites);
     Global::debug(2) << "Reading Air (animation) Data..." << endl;
     /* Animations */
