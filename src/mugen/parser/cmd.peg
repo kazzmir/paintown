@@ -559,6 +559,27 @@ Ast::Value * makeAnimElem(const Value & line, const Value & arg1){
     return makeAnimElem(line, arg1, comparison, arg2);
 }
 
+Ast::Value * makeProjectileExpression(const Value & line, const Value & name, const Value & id, const Value & arg1, const Value & compare, const Value & ticks){
+    Value finalId;
+    if (id.getValue() != NULL){
+        finalId = id;
+    } else {
+        finalId = makeNumber(0);
+    }
+    
+    Ast::Value * get = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, arg1, finalId);
+    /* check if the second form is used */
+    if (compare.getValue() != NULL){
+        typedef Ast::Value * (*compare_func)(const Value &, const Value &);
+        Ast::Value * comparison = as<compare_func>(compare)(Value(get), ticks);
+        return comparison;
+    } else {
+        Ast::Value * one = makeNumber(1);
+        Ast::Value * comparison = makeExpressionLessThan(Value(get), Value(one));
+        return comparison;
+    }
+}
+
 }}
 
 rules:
@@ -737,30 +758,8 @@ rules:
              #   value = makeFunction1("animelem<=", arg1);
              #}}
              # FIXME: can any integer follow the = or just positive integers?
-             | name:"projcontact"{case} id:integer? s "=" s arg1:integer function_rest {{
-                /* FIXME: handle function rest */
-                std::string name = combine("projcontact", id);
-                value = makeFunction1(name, arg1);
-             }}
-             | line:<line> name:"projhit"{case} id:integer? s "=" s arg1:integer (s "," s compare:all_compare s ticks:value)? {{
-                Value finalId;
-                if (id.getValue() != NULL){
-                    finalId = id;
-                } else {
-                    finalId = makeNumber(0);
-                }
-
-                Ast::Value * get = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, arg1, finalId);
-                /* check if the second form is used */
-                if (compare.getValue() != NULL){
-                    typedef Ast::Value * (*compare_func)(const Value &, const Value &);
-                    Ast::Value * comparison = as<compare_func>(compare)(Value(get), ticks);
-                    value = Value(comparison);
-                } else {
-                    Ast::Value * one = makeNumber(1);
-                    Ast::Value * comparison = makeExpressionLessThan(Value(get), Value(one));
-                    value = Value(comparison);
-                }
+             | line:<line> name:projectile_trigger id:integer? s "=" s arg1:integer (s "," s compare:all_compare s ticks:value)? {{
+                value = Value(makeProjectileExpression(line, name, id, arg1, compare, ticks));
              }}
              | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
                  typedef Ast::Value * (*compare_func)(const Value &, const Value &);
@@ -769,6 +768,9 @@ rules:
                  value = makeExpressionAnd(Value(compare_state), Value(compare_attribute));
              }}
              # FIXME: handle hitdefattr with no attack-attributes listed
+    
+    projectile_trigger = "projhit"{case}
+                       | "projcontact"{case} 
 
     compare_equal = "=" {{ value = (void*) makeExpressionEquals; }}
                   | "!=" {{ value = (void*) makeExpressionUnequals; }}
