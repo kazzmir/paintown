@@ -3817,12 +3817,20 @@ public:
                         out << " >= ";
                         break;
                     }
+                    case ExpressionInfix::LessThanEquals : {
+                        out << " <= ";
+                        break;
+                    }
                     case ExpressionInfix::GreaterThan : {
                         out << " > ";
                         break;
                     }
                     case ExpressionInfix::Or : {
                         out << " || ";
+                        break;
+                    }
+                    case ExpressionInfix::And: {
+                        out << " && ";
                         break;
                     }
                     case ExpressionInfix::LessThan: {
