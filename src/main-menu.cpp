@@ -44,6 +44,7 @@ static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
 static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
 static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
 static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
+static const char * DISABLE_QUIT_ARG[] = {"disable-quit"};
 
 static const char * closestMatch(const char * s1, vector<const char *> args){
     const char * good = NULL;
@@ -99,6 +100,7 @@ static void showOptions(){
         Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
         Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
         Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
+        Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
 #ifdef HAVE_NETWORKING
 	Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
 #endif
@@ -194,6 +196,7 @@ int paintown_main( int argc, char ** argv ){
     bool joystick_on = true;
     bool mugen = false;
     bool just_network_server = false;
+    bool allow_quit = true;
     Collector janitor;
 
     struct MugenInstant{
@@ -254,6 +257,8 @@ int paintown_main( int argc, char ** argv ){
             } else {
                 Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
             }
+        } else if (isArg(argv[q], DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG))){
+            allow_quit = false;
         } else if (isArg(argv[q], MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG))){ 
             q += 1;
             if (q < argc){
@@ -324,6 +329,7 @@ int paintown_main( int argc, char ** argv ){
     Music music(music_on);
 
     while (true){
+        bool normal_quit = false;
         try{
             /* fadein from white */
             //Menu game(true, Bitmap::makeColor(255, 255, 255));
@@ -349,6 +355,7 @@ int paintown_main( int argc, char ** argv ){
                 Menu::Menu game(mainMenuPath());
                 game.run(Menu::Context());
             }
+            normal_quit = true;
         } catch (const Filesystem::Exception & ex){
             Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
         } catch (const TokenException & ex){
@@ -376,7 +383,12 @@ int paintown_main( int argc, char ** argv ){
             Global::debug(0) << "Uncaught exception!" << endl;
         }
         
-        break;
+        if (allow_quit && normal_quit){
+            break;
+        } else if (normal_quit && !allow_quit){
+        } else if (!normal_quit){
+            break;
+        }
     }
 
     Configuration::saveConfiguration();
