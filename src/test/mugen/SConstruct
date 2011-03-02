@@ -333,6 +333,75 @@ test/util/tokenreader.cpp
 test/util/token_exception.cpp
 """)
 
+match_source = Split("""
+run-match.cpp
+test/util/init.cpp
+test/util/file-system.cpp
+test/util/bitmap.cpp
+test/util/network/network.cpp
+test/util/system.cpp
+test/util/debug.cpp
+test/exceptions/exception.cpp
+test/util/funcs.cpp
+test/util/thread.cpp
+test/util/font.cpp
+test/factory/font_factory.cpp
+test/util/message-queue.cpp
+test/util/ftalleg.cpp
+test/configuration.cpp
+test/util/token.cpp
+test/util/tokenreader.cpp
+test/util/token_exception.cpp
+test/util/load_exception.cpp
+test/util/input/keyboard.cpp
+test/util/sound.cpp
+test/util/music.cpp
+test/util/music-player.cpp
+test/globals.cpp
+test/mugen/character.cpp
+test/mugen/stage.cpp
+test/mugen/behavior.cpp
+test/mugen/compiler.cpp
+test/mugen/command.cpp
+test-parser/air.cpp
+test-parser/def.cpp
+test-parser/cmd.cpp
+test/paintown-engine/object/object.cpp
+test/paintown-engine/game/world.cpp
+test/paintown-engine/object/object_attack.cpp
+test/mugen/ast/ast.cpp
+test/script/script.cpp
+test/mugen/exception.cpp
+test/mugen/evaluator.cpp
+test/mugen/helper.cpp
+test/mugen/animation.cpp
+test/mugen/sprite.cpp
+test/mugen/util.cpp
+test/mugen/config.cpp
+test/util/timedifference.cpp
+test/mugen/item-content.cpp
+test/mugen/item.cpp
+test/mugen/background.cpp
+test/util/gui/rectarea.cpp
+test/util/regex.cpp
+test/mugen/sound.cpp
+test/paintown-engine/game/console.cpp
+test/mugen/parse-cache.cpp
+test/util/input/input-manager.cpp
+test/util/events.cpp
+test/util/input/joystick.cpp
+test/util/input/text-input.cpp
+test/util/input/sdl/joystick.cpp
+test/util/input/allegro/allegro-joystick.cpp
+test/mugen/font.cpp
+test/mugen/characterhud.cpp
+test/mugen/section.cpp
+test/mugen/state-controller.cpp
+test/factory/font_render.cpp
+test/util/gui/fadetool.cpp
+test/mugen/reader.cpp
+""")
+
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
@@ -346,7 +415,8 @@ makeTest('load', load_source + most_game_source)
 makeTest('serialize', ['serialize.cpp'] + ast_source)
 makeTest('load-stage', stage_source)
 makeTest('sffv2', sffv2_source)
-makeTest('parse', parse_source)
+x.append(testEnv.Program('run-match', match_source))
+x.append(testEnv.Program('parse', parse_source))
 # x.append(testEnv.Program('load-stage', stage_source))
 x.append(testEnv.Program('palette', ['palette.cpp', 'test/util/debug.cpp']))
 Return('x')
