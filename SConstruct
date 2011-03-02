@@ -1381,6 +1381,7 @@ def display_build_properties():
 display_build_properties()
 
 env['PAINTOWN_TESTS'] = custom_tests
+env['PAINTOWN_COLORIZE'] = colorize
 
 if isWindows():
     staticEnv = env.Clone()

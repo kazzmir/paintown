@@ -1,9 +1,17 @@
 Import('use')
 
 if use['PAINTOWN_BUILD_TESTS']:
+    import atexit
+    tests = {}
+    def show_tests():
+        colorize = use['PAINTOWN_COLORIZE']
+        for name in tests.keys():
+            result = tests[name]
+            if result != 0:
+                print "Test %s failed" % colorize(name, 'light-red')
     def run_it(target, source, env):
         print "Running %s" % target[0].path
-        env.Execute(target[0].path)
+        tests[target[0].path] = env.Execute(target[0].path)
     use['PAINTOWN_TEST'] = Action(run_it, 'Test')
     all = []
     all.extend(SConscript('token/SConstruct', exports = ['use']))
@@ -14,3 +22,4 @@ if use['PAINTOWN_BUILD_TESTS']:
     all.extend(SConscript('paintown/SConstruct', exports = ['use']))
 
     Alias('test-all', all)
+    atexit.register(show_tests)
