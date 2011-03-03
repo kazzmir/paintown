@@ -655,6 +655,10 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
              * command.buffer.time = 1
              */
         }
+    } catch (const MugenException & fail){
+        ostringstream out;
+        out << "Could not parse " << path.path() << ": " << fail.getReason();
+        throw MugenException(out.str());
     } catch (const Mugen::Cmd::ParseException & e){
         /*
         Global::debug(0) << "Could not parse " << path << endl;
