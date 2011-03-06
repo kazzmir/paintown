@@ -11,12 +11,11 @@
 
 using namespace std;
 
-void run(){
+void run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/kfm/kfm.def"){
     Mugen::ParseCache cache;
-    string path = "mugen/chars/kfm/kfm.def";
     string stagePath = "mugen/stages/kfm.def";
-    Mugen::Character kfm1(Filesystem::find(Filesystem::RelativePath(path)));
-    Mugen::Character kfm2(Filesystem::find(Filesystem::RelativePath(path)));
+    Mugen::Character kfm1(Filesystem::find(Filesystem::RelativePath(path1)));
+    Mugen::Character kfm2(Filesystem::find(Filesystem::RelativePath(path2)));
     kfm1.load();
     kfm2.load();
     Mugen::LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
@@ -41,5 +40,11 @@ void run(){
 int main(int argc, char ** argv){
     InputManager manager;
     Global::initNoGraphics();
-    run();
+    if (argc == 1){
+        run();
+    } else if (argc == 2){
+        run(argv[1]);
+    } else if (argc > 2){
+        run(argv[1], argv[2]);
+    }
 }
