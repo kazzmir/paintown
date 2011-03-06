@@ -11,7 +11,15 @@ Vembyr generates programs that use the Parsing Expression Grammar formalism.
 Input to Vembyr is specified by a BNF-like syntax. Currently Vembyr can generate
 C++, Ruby, and Python programs with C++ being the most optimized.
 
-Vembyr is implemented as a single python script, @tt{peg.py}.
+@section{Files}
+@bold{peg.py} The main executable file.@linebreak{}
+@bold{cpp_generator.py} Generates c++ parsers.@linebreak{}
+@bold{python_generator.py} Generates python parsers.@linebreak{}
+@bold{ruby_generator.py} Generates ruby parsers@linebreak{}
+@bold{cpp_interpreter_generator.py} Generates c++ parsers that use an
+interpreter style.@linebreak{}
+@bold{core.py} Contains miscellaneous functions and classes that all other files
+require.
 
 @section{Command line usage}
 
