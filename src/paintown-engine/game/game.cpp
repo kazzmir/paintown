@@ -295,28 +295,35 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     struct GameState{
         GameState():
             force_quit(false),
+            menu_quit(false),
             helpTime(0),
             pressed(0),
             done(false),
-            show_fps(false){
+            show_fps(false),
+            takeScreenshot(false){
             }
 
         bool force_quit;
+        bool menu_quit;
         double helpTime;
         int pressed;
         bool done;
         bool show_fps;
+        bool takeScreenshot;
     };
 
-    class Logic{
+    class Logic: public Util::Logic {
     public:
-        Logic(const vector<Paintown::Object*> & players, World & world, Console::Console & console):
+        Logic(const vector<Paintown::Object*> & players, World & world, Console::Console & console, GameState & state, const Graphics::Bitmap & screen_buffer, Token * menuData):
         runCounter(0),
         gameSpeed(startingGameSpeed()),
         players(players),
         helped(false),
         world(world),
-        console(console){
+        console(console),
+        state(state),
+        screen_buffer(screen_buffer),
+        menuData(menuData){
             if (Global::getDebug() > 0){
                 input.set(Keyboard::Key_MINUS_PAD, 2, false, Game::Slowdown);
                 input.set(Keyboard::Key_PLUS_PAD, 2, false, Game::Speedup);
@@ -342,8 +349,19 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         World & world;
         Util::EventManager eventManager;
         Console::Console & console;
+        GameState & state;
+        const Graphics::Bitmap & screen_buffer;
+        Token * menuData;
 
-        void doInput(GameState & state, bool & takeScreenshot, bool & draw){
+        virtual bool done(){
+            return state.done || state.menu_quit;
+        }
+
+        double ticks(double system){
+            return system * gameSpeed * Global::LOGIC_MULTIPLIER;
+        }
+
+        void doInput(GameState & state){
             vector<InputMap<Game::Input>::InputEvent> events = InputManager::getEvents(input);
 
             bool pressed = false;
@@ -366,7 +384,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                     console.toggle();
                 }
 
-                takeScreenshot = event[Game::Screenshot];
+                state.takeScreenshot = event[Game::Screenshot];
 
                 if (event[Game::Pause]){
                     /*
@@ -410,7 +428,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                     if (event[Game::ReloadLevel]){
                         try{
                             world.reloadLevel();
-                            draw = true;
                         } catch ( const LoadException & le ){
                             Global::debug( 0 ) << "Could not reload world: " << le.getTrace() << endl;
                         }
@@ -437,44 +454,33 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
         }
 
-        bool run(bool & takeScreenshot, GameState & state){
-            bool draw = false;
-            if (Global::speed_counter > 0){
-                runCounter += world.ticks(Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER);
-                Global::speed_counter = 0;
+        using Util::Logic::run;
+        void run(GameState & state){
+            world.act();
+            console.act();
 
-                while (runCounter >= 1.0){
-                    InputManager::poll();
-                    // eventManager.run();
-                    draw = true;
-                    world.act();
-                    console.act();
-                    runCounter -= 1.0;
-
-                    if (!respawnPlayers(players, world)){
-                        throw LoseException();
-                    }
-
-                    if (state.helpTime > 0){
-                        if (helped){
-                            state.helpTime -= 2;
-                        } else {
-                            state.helpTime -= 0.5;
-                        }
-                    }
-                    doInput(state, takeScreenshot, draw);
-                }
-                
-                state.done |= world.finished();
+            if (!respawnPlayers(players, world)){
+                throw LoseException();
             }
 
-            return draw;
+            if (state.helpTime > 0){
+                if (helped){
+                    state.helpTime -= 2;
+                } else {
+                    state.helpTime -= 0.5;
+                }
+            }
+
+            doInput(state);
+
+            state.done |= world.finished();
+            if (state.force_quit){
+                state.menu_quit = state.menu_quit || doMenu(screen_buffer, menuData);
+            }
         }
 
-        void rest(){
-            Util::rest(1);
-            // InputManager::poll();
-            // eventManager.run();
+        void run(){
+            run(state);
         }
 
         void waitForQuit(){
@@ -482,11 +488,13 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         }
     };
 
-    class Draw{
+    class Draw: public Util::Draw {
     public:
-        Draw(Console::Console & console, World & world):
+        Draw(const Graphics::Bitmap & screen_buffer, Console::Console & console, World & world, GameState & state):
+        screen_buffer(screen_buffer),
         console(console),
         world(world),
+        state(state),
         /* the game graphics are meant for 320x240 and will be stretched
          * to fit the screen
          */
@@ -496,8 +504,10 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         fps(Global::TICS_PER_SECOND){
         }
 
+        const Graphics::Bitmap & screen_buffer;
         Console::Console & console;
         World & world;
+        GameState & state;
         Graphics::Bitmap work;
         int frames;
         unsigned int second_counter;
@@ -521,14 +531,18 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             frames += 1;
         }
 
-        void run(const Graphics::Bitmap & screen_buffer, const GameState & state, bool takeScreenshot){
+        void draw(){
+            run(screen_buffer, state);
+        }
+
+        void run(const Graphics::Bitmap & screen_buffer, const GameState & state){
             updateFrames();
 
-            world.draw( &work );
+            world.draw(&work);
 
             work.Stretch(screen_buffer);
             FontRender * render = FontRender::getInstance();
-            render->render( &screen_buffer );
+            render->render(&screen_buffer);
 
             const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
@@ -548,7 +562,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             /* getX/Y move when the world is quaking */
             screen_buffer.BlitToScreen(world.getX(), world.getY());
 
-            if (takeScreenshot){
+            if (state.takeScreenshot){
                 doTakeScreenshot(work);
             }
 
@@ -591,23 +605,34 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     Token * menuData = reader.readToken(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")).path());
 
     bool finish = true;
-    Logic logic(players, world, console);
-    Draw drawer(console, world);
     GameState state;
+    Logic logic(players, world, console, state, screen_buffer, menuData);
+    Draw drawer(screen_buffer, console, world, state);
     // state.helpTime = helpTime;
 
     /* don't put anything after these variables and before the while loop */
-    Global::speed_counter = 0;
+    // Global::speed_counter = 0;
 
+    try{
+        /* run the game */
+        Util::standardLoop(logic, drawer);
+        if (!state.force_quit){
+            drawer.showScreenshots(screen_buffer);
+        }
+    } catch (const LoseException & lose){
+        fadeOut(screen_buffer, "You lose");
+        finish = false;
+    }
+
+#if 0
     try{
         /* Main Loop! */
         while (!state.done && !state.force_quit){
             bool draw = false;
-            bool takeScreenshot = false;
-            draw = logic.run(takeScreenshot, state);
+            draw = logic.run(state);
 
             if (draw){
-                drawer.run(screen_buffer, state, takeScreenshot);
+                drawer.run(screen_buffer, state);
             }
 
             if (state.force_quit){
@@ -626,6 +651,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         fadeOut(screen_buffer, "You lose");
         finish = false;
     }
+#endif
 
     world.getEngine()->destroyWorld(world);
 
