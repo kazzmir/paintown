@@ -1055,7 +1055,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 
         if ( Global::speed_counter > 0 ){
             draw = true;
-            runCounter += Util::gameTicks();
+            runCounter += Util::gameTicks(Global::speed_counter);
             Global::speed_counter = 0;
             while ( runCounter >= 1.0 ){
                 // tick tock
@@ -2358,7 +2358,7 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
 	
         if ( Global::speed_counter > 0 ){
             draw = true;
-            runCounter += Util::gameTicks();
+            runCounter += Util::gameTicks(Global::speed_counter);
             Global::speed_counter = 0;
             while ( runCounter >= 1.0 ){
                 runCounter -= 1;

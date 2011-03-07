@@ -236,9 +236,9 @@ MugenItemContent *Mugen::Util::parseOpt( const std::string &opt ){
     return temp;
 }
 
-double Mugen::Util::gameTicks(double gameSpeed){
+double Mugen::Util::gameTicks(double ticks, double gameSpeed){
     int mugenSpeed = 60;
-    return Global::speed_counter * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
+    return ticks * gameSpeed * mugenSpeed / Global::TICS_PER_SECOND;
 }
 
 /* PCX HEADER */

@@ -732,7 +732,7 @@ void MugenMenu::run(){
 
                 if ( Global::speed_counter > 0 ){
                     draw = true;
-                    runCounter += Mugen::Util::gameTicks();
+                    runCounter += Mugen::Util::gameTicks(Global::speed_counter);
                     Global::speed_counter = 0;
                     while (runCounter >= 1.0){
                         //input

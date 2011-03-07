@@ -610,9 +610,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     Draw drawer(screen_buffer, console, world, state);
     // state.helpTime = helpTime;
 
-    /* don't put anything after these variables and before the while loop */
-    // Global::speed_counter = 0;
-
     try{
         /* run the game */
         Util::standardLoop(logic, drawer);

@@ -441,7 +441,7 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
         if (Global::speed_counter > 0){
 
             // runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;//(double) 90 / (double) 60;
-            runCounter += Util::gameTicks();
+            runCounter += Util::gameTicks(Global::speed_counter);
             Global::speed_counter = 0;
             while (runCounter > 1){
                 runCounter -= 1;

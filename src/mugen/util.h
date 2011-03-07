@@ -105,7 +105,7 @@ namespace Util{
      * speed adjusts the rate. lower values slow the game down,
      * higher values speed it up.
      */
-    double gameTicks(double speed = 1);
+    double gameTicks(double ticks, double speed = 1);
 }
 
 class Point{

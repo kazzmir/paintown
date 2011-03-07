@@ -13,6 +13,7 @@
 #include "util/input/input-map.h"
 #include "util/funcs.h"
 #include "util/timedifference.h"
+#include "util/events.h"
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
@@ -112,17 +113,6 @@ public:
 };
 
 static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = ""){
-    Graphics::Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    InputMap<int> gameInput;
-    /* FIXME: use an enum here */
-    gameInput.set(Keyboard::Key_F1, 10, false, 0);
-    gameInput.set(Keyboard::Key_F2, 10, false, 1);
-    gameInput.set(Keyboard::Key_F3, 10, false, 2);
-    gameInput.set(Keyboard::Key_F4, 10, true, 3);
-    gameInput.set(Keyboard::Key_ESC, 0, true, 4);
-    gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, 4);
-    gameInput.set(Keyboard::Key_F5, 10, true, 5);
-
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
     Filesystem::AbsolutePath file;
@@ -140,17 +130,120 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     Music::pause();
     Music::play();
 
-    double gameSpeed = 1.0;
     double runCounter = 0;
-    double mugenSpeed = 60;
 
     unsigned int second_counter = Global::second_counter;
     int frames = 0;
     double fps = Global::TICS_PER_SECOND;
     bool show_fps = true;
 
-    bool endMatch = false;
+    struct GameState{
+        GameState():
+            endMatch(false){
+            }
 
+        bool endMatch;
+    };
+
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(GameState & state, Mugen::Stage * stage):
+        state(state),
+        gameSpeed(1.0),
+        stage(stage){
+            /* FIXME: use an enum here */
+            gameInput.set(Keyboard::Key_F1, 10, false, 0);
+            gameInput.set(Keyboard::Key_F2, 10, false, 1);
+            gameInput.set(Keyboard::Key_F3, 10, false, 2);
+            gameInput.set(Keyboard::Key_F4, 10, true, 3);
+            gameInput.set(Keyboard::Key_ESC, 0, true, 4);
+            gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, 4);
+            gameInput.set(Keyboard::Key_F5, 10, true, 5);
+        }
+
+        InputMap<int> gameInput;
+        GameState & state;
+        double gameSpeed;
+        Mugen::Stage * stage;
+
+        void doInput(){
+            std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput);
+            for (std::vector<InputMap<int>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                const InputMap<int>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+                if (event[0]){
+                    gameSpeed -= 0.1;
+                }
+                if (event[1]){
+                    gameSpeed += 0.1;
+                }
+                if (event[2]){
+                    gameSpeed = 1;
+                }
+                if (event[3]){
+                    stage->toggleDebug();
+                }
+                if (event[4]){
+                    throw QuitGameException();
+                    /*
+                       quit = true;
+                       endMatch = true;
+                       */
+                }
+                if (event[5]){
+                    stage->setPlayerHealth(1);
+                }
+            }
+
+            if (gameSpeed < 0.1){
+                gameSpeed = 0.1;
+            }
+        }
+
+        virtual void run(){
+            // Do stage logic catch match exception to handle the next match
+            stage->logic();
+            state.endMatch = stage->isMatchOver();
+
+            doInput();
+        }
+
+        virtual bool done(){
+            return state.endMatch;
+        }
+
+        virtual double ticks(double system){
+            return Mugen::Util::gameTicks(system, gameSpeed);
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(Mugen::Stage * stage):
+            stage(stage),
+            work(DEFAULT_WIDTH, DEFAULT_HEIGHT){
+            }
+
+        Mugen::Stage * stage;
+        Graphics::Bitmap work;
+    
+        virtual void draw(){
+            stage->render(&work);
+            work.BlitToScreen();
+        }
+    };
+
+    GameState state;
+    Logic logic(state, stage);
+    Draw draw(stage);
+
+    /* TODO: handle fps count */
+    PaintownUtil::standardLoop(logic, draw);
+
+#if 0
     Global::speed_counter = 0;
 
     while (!endMatch){
@@ -251,6 +344,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             PaintownUtil::rest(1);
         }
     }
+#endif
 }
 
 /*
