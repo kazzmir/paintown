@@ -6,6 +6,7 @@
 #include "util/sound.h"
 #include "util/font.h"
 #include "util/token.h"
+#include "util/events.h"
 #include "util/tokenreader.h"
 #include "util/file-system.h"
 #include "util/resource.h"
@@ -1421,16 +1422,78 @@ void Menu::Menu::run(const Context & parentContext){
         Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         work.updateOnResize();
         */
-        Graphics::Bitmap work(Menu::Width, Menu::Height);
         
-        double runCounter = 0;
-        Global::speed_counter = 0;
+        // double runCounter = 0;
+        // Global::speed_counter = 0;
 
         // InputManager::enableBufferInput();
             
         // MenuException or something
-        bool specialExit = false;
+        // bool specialExit = false;
+
+        class Logic: public Util::Logic {
+        public:
+            Logic(Menu & menu, Context & localContext, Renderer * renderer):
+            menu(menu),
+            localContext(localContext),
+            renderer(renderer){
+            }
+        
+            Menu & menu;
+            Context & localContext;
+            Renderer * renderer;
+
+            void run(){
+                try {
+                    menu.act(localContext);
+                } catch (const Exception::Return & ex){
+                    // signaled to quit current menu, closing this one out
+                    localContext.finish();
+                    if (renderer){
+                        renderer->finish();
+                    }
+                }
+            }
+
+            double ticks(double system){
+                return system * Global::LOGIC_MULTIPLIER;
+            }
+
+            bool done(){
+                return localContext.getState() == Context::Completed ||
+                       !(renderer && renderer->active());
+            }
+        };
+
+        class Draw: public Util::Draw {
+        public:
+            Draw(Menu & menu, Context & localContext):
+            menu(menu),
+            localContext(localContext),
+            work(Menu::Width, Menu::Height){
+            }
+
+            Menu & menu;
+            Context & localContext;
+            Graphics::Bitmap work;
+
+            void draw(){
+                Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+                if (Configuration::hasMenuFont()){
+                    currentFont.push(Configuration::getMenuFont());
+                }
+                menu.render(localContext, work);
+
+                work.BlitToScreen();
+            }
+        };
+
+        Logic logic(*this, localContext, renderer);
+        Draw draw(*this, localContext);
+
+        Util::standardLoop(logic, draw);
             
+#if 0
         // Run while till the localContext is done
         while (localContext.getState() != Context::Completed &&
               (renderer && renderer->active())){
@@ -1473,6 +1536,7 @@ void Menu::Menu::run(const Context & parentContext){
                 Util::rest(1);
             }
         }
+#endif
 
         closeOptions();
         
@@ -1492,7 +1556,7 @@ static void changeScreenMode(){
 
 void Menu::Menu::act(Context & ourContext){
     // Keys
-    InputManager::poll();
+    // InputManager::poll();
     // InputMap<Actions>::Output inputState = InputManager::getMap(input);
     vector<InputMap<Actions>::InputEvent> events = InputManager::getEvents(input);
 

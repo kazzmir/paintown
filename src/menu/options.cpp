@@ -2186,8 +2186,13 @@ void OptionTabMenu::logic(){
 }
 
 void OptionTabMenu::run(const Menu::Context & context){
-	// Do our new menu
-	menu->run(context);
+    // Do our new menu
+    // menu->run(context);
+    try{
+        menu->run(context);
+    } catch (const Exception::Return ignore){
+        throw Menu::Reload(__FILE__, __LINE__);
+    }
 }
 
 OptionSound::OptionSound(const Token *token):
