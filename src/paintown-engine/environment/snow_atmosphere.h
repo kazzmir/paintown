@@ -10,8 +10,13 @@ class Token;
 
 #include "atmosphere.h"
 
+enum FlakeType{
+    Small,
+    Medium
+};
+
 struct Flake{
-    Flake(int x, int y, int type, int angle ):
+    Flake(int x, int y, FlakeType type, int angle ):
         x(x),
         y(y),
         dx(x),
@@ -23,7 +28,7 @@ struct Flake{
     int x, y;
     double dx, dy;
     int angle;
-    int type;
+    FlakeType type;
     int dir;
     int spin;
 };

@@ -445,8 +445,8 @@ void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * 
 SnowAtmosphere::SnowAtmosphere():
 Atmosphere(){
     for ( int i = 0; i < 150; i++ ){
-        Flake * f = new Flake(Util::rnd( screenX() * 2 ) - screenX() / 2, Util::rnd( screenY() ), Util::rnd(360), Util::rnd( 3 ) );
-        flakes.push_back( f );
+        Flake * f = new Flake(Util::rnd(screenX() * 2 ) - screenX() / 2, Util::rnd( screenY() ), FlakeType(Util::rnd(2)), Util::rnd(360));
+        flakes.push_back(f);
     }
 }
 
@@ -454,6 +454,15 @@ SnowAtmosphere::~SnowAtmosphere(){
     for ( vector< Flake * >::iterator it = flakes.begin(); it != flakes.end(); it++ ){
         delete *it;
     }
+}
+
+static void drawFlakeSmall(Flake * flake, Graphics::Bitmap * work){
+    int c = (int)(200 + 3 * log((double)(flake->y < 1 ? 1 : 2 * flake->y)));
+    if (c > 255){
+        c = 255;
+    }
+    int color = Graphics::makeColor(c, c, c);
+    work->putPixel(flake->x, flake->y, color);
 }
 
 static void drawFlake0( Flake * f, Graphics::Bitmap * work ){
@@ -498,9 +507,13 @@ void SnowAtmosphere::drawFront(Graphics::Bitmap * work, int x){
 void SnowAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
     for ( vector< Flake * >::iterator it = flakes.begin(); it != flakes.end(); it++ ){
         Flake * f = *it;
-        switch ( f->type ){
-            default : {
-                drawFlake0( f, work );
+        switch (f->type){
+            case Small: {
+                drawFlakeSmall(f, work);
+                break;
+            }
+            case Medium: {
+                drawFlake0(f, work);
                 break;
             }
         }
