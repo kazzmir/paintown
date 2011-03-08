@@ -2,6 +2,7 @@
 
 #include "options.h"
 #include "util/token.h"
+#include "util/parameter.h"
 #include "util/tokenreader.h"
 #include "menu.h"
 #include "configuration.h"
@@ -9,6 +10,7 @@
 #include "mugen/menu.h"
 #include "mugen/config.h"
 #include "util/init.h"
+#include "util/events.h"
 
 #include "util/music.h"
 
@@ -524,11 +526,9 @@ void OptionCredits::run(const Menu::Context & context){
 
     const int maxCredits = credits.size();
 
-    Global::speed_counter = 0;
-    double min_y = GFX_Y;
+    // Global::speed_counter = 0;
+    // double min_y = GFX_Y;
 
-    /* use Bitmap::temporaryBitmap here? no! BlitToScreen uses temporaryBitmap */
-    Graphics::Bitmap tmp(Menu::Menu::Width, Menu::Menu::Height);
     // Bitmap fireWork(GFX_X, GFX_Y);
     if (! music.empty()){
         //MenuGlobals::setMusic(music);
@@ -538,14 +538,116 @@ void OptionCredits::run(const Menu::Context & context){
 	}
     }
 
-    Paintown::Fire fire;
+    // const Font & vFont = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & vFont = Util::Parameter<Util::ReferenceCount<Menu::FontInfo> >::current()->get();
 
-    const Font & vFont = Configuration::getMenuFont()->get(context.getFont()->get());
-
-    bool quit = false;
+    // bool quit = false;
 
     Graphics::Bitmap::transBlender(0, 0, 0, 128);
 
+    struct State{
+        State(const Font & vFont, const vector<string> & credits, int color, int title):
+        min_y(GFX_Y),
+        maxCredits(credits.size()),
+        font(vFont),
+        credits(credits),
+        color(color),
+        title(title){
+        }
+
+        double min_y;
+        const int maxCredits;
+        const Font & font;
+        Paintown::Fire fire;
+        const vector<string> & credits;
+        int color, title;
+    };
+
+    class Logic: public Util::Logic {
+    public:
+        Logic(State & state, InputMap<CreditKey> & input):
+        state(state),
+        input(input),
+        quit(false){
+        }
+
+        State & state;
+        InputMap<CreditKey> & input;
+        bool quit;
+
+        void run(){
+            vector<InputMap<CreditKey>::InputEvent> out = InputManager::getEvents(input);
+            for (vector<InputMap<CreditKey>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                const InputMap<CreditKey>::InputEvent & event = *it;
+                if (event.enabled){
+                    if (event.out == Exit){
+                        quit = true;
+                    }
+                }
+            }
+
+            state.min_y -= 0.8;
+            if (state.min_y < -(int)(state.maxCredits * state.font.getHeight() * 1.1)){
+                state.min_y = GFX_Y;
+            }
+            // state.fire.update();
+        }
+
+        bool done(){
+            return quit;
+        }
+
+        double ticks(double system){
+            return system * Global::LOGIC_MULTIPLIER;
+        }
+    };
+
+    class Draw: public Util::Draw {
+    public:
+        Draw(State & state, Graphics::Bitmap & background):
+        state(state),
+        work(Menu::Menu::Width, Menu::Menu::Height),
+        background(background){
+        }
+    
+        State & state;
+
+        /* use Bitmap::temporaryBitmap here? no! BlitToScreen uses temporaryBitmap */
+        Graphics::Bitmap work;
+        Graphics::Bitmap & background;
+
+        void draw(){
+            background.Blit(work);
+            int y = (int) state.min_y;
+            vector<std::string>::const_iterator b = state.credits.begin();
+            vector<std::string>::const_iterator e = state.credits.end();
+            bool isTitle = true;
+            for (/**/ ; b != e; b++){
+                if (isTitle){
+                    state.font.printf(100, y, state.title, work, (*b), 0);
+                    isTitle = false;
+                } else {
+                    state.font.printf(100, y, state.color, work, (*b), 0);
+                }
+                y += state.font.getHeight() + 2;
+
+                if ( (*b).empty() ){
+                    isTitle = true;
+                }
+            }
+            
+            // state.fire.draw(work);
+            work.BlitToScreen();
+        }
+    };
+
+    State state(vFont, credits, color, title);
+    Logic logic(state, input);
+    Draw draw(state, backgroundImage);
+
+    Util::standardLoop(logic, draw);
+
+#if 0
     double think = 0;
     while (!quit){
 
@@ -617,6 +719,7 @@ void OptionCredits::run(const Menu::Context & context){
             Util::rest(1);
         }
     }
+#endif
 
     InputManager::waitForRelease(input, Exit);
     throw Menu::Reload(__FILE__, __LINE__);
