@@ -80,6 +80,13 @@ void registerInfo(MessageQueue * queue){
     Util::Thread::releaseLock(&messageLock);
 }
 
+/* clear any buffered messages */
+void clearInfo(){
+    Util::Thread::acquireLock(&messageLock);
+    messageBuffer.clear();
+    Util::Thread::releaseLock(&messageLock);
+}
+
 void unregisterInfo(MessageQueue * queue){
     Util::Thread::acquireLock(&messageLock);
     if (current == queue){

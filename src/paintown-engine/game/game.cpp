@@ -757,6 +757,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
 
     bool gameState = true;
     { /* force scope so the context is destroyed before the factories */
+        Global::clearInfo();
         Global::info("Setting up world");
         GameContext context(futurePlayers, Filesystem::RelativePath(level));
         Loader::loadScreen(context, levelInfo);

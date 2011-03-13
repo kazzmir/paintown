@@ -43,6 +43,7 @@ const Filesystem::AbsolutePath titleScreen();
 void registerInfo(MessageQueue *);
 void unregisterInfo(MessageQueue *);
 void info(const std::string & str);
+void clearInfo();
 
 /* the real, physical screen size */
 int getScreenWidth();
