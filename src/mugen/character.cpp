@@ -1340,6 +1340,8 @@ void Character::load(int useAct){
         throw MugenException( "Cannot locate player definition file for: " + location );
     }
 #endif
+
+    Global::info("Loading " + location.getFilename().path());
     
     // baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
     baseDir = location.getDirectory();

@@ -4,6 +4,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/message-queue.h"
+#include "util/thread.h"
 #include <iostream>
 #include <sstream>
 
@@ -49,7 +50,6 @@ string Global::getVersionString(){
     return str.str();
 }
 
-
 void Global::showTitleScreen(){
     Graphics::Bitmap s(Global::titleScreen().path());
     s.BlitToScreen();
@@ -61,26 +61,42 @@ const Filesystem::AbsolutePath Global::titleScreen(){
 
 namespace Global{
 
-
 /* just some random number I picked out of thin air */
 const unsigned int MagicId = 0x0dff2110;
 
+static vector<string> messageBuffer;
 /* should support infinite queues eventually */
 static MessageQueue * current = NULL;
 void registerInfo(MessageQueue * queue){
+    Util::Thread::acquireLock(&messageLock);
     current = queue;
+    if (current != NULL){
+        /* push all saved messages immediately to the queue */
+        for (vector<string>::iterator it = messageBuffer.begin(); it != messageBuffer.end(); it++){
+            current->add(*it);
+        }
+        messageBuffer.clear();
+    }
+    Util::Thread::releaseLock(&messageLock);
 }
 
 void unregisterInfo(MessageQueue * queue){
+    Util::Thread::acquireLock(&messageLock);
     if (current == queue){
         current = NULL;
     }
+    Util::Thread::releaseLock(&messageLock);
 }
 
 void info(const std::string & str){
+    Util::Thread::acquireLock(&messageLock);
     if (current != NULL){
         current->add(str);
+    } else {
+        /* save it for later until a message-queue is registered */
+        messageBuffer.push_back(str);
     }
+    Util::Thread::releaseLock(&messageLock);
 }
 
 int getScreenWidth(){

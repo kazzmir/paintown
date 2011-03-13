@@ -1218,7 +1218,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
         Level::LevelInfo info;
         info.setBackground(&bmp);
         info.setLoadingMessage("Loading...");
-        info.setPosition(-1, 400);
+        info.setPosition(10, 200);
 
         class Context: public Loader::LoadingContext {
         public:
