@@ -16,6 +16,7 @@
 #include "stage.h"
 
 #include "util/init.h"
+#include "util/events.h"
 #include "util/resource.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -155,9 +156,6 @@ void FontHandler::render(const std::string &text, const Graphics::Bitmap &bmp){
 CharacterInfo::CharacterInfo(const Filesystem::AbsolutePath &definitionFile):
 definitionFile(definitionFile),
 baseDirectory(definitionFile.getDirectory()),
-// spriteFile(Util::probeDef(definitionFile, "files", "sprite")),
-// name(Util::probeDef(definitionFile, "info", "name")),
-// displayName(Util::probeDef(definitionFile, "info", "displayname")),
 currentPlayer1Act(1),
 currentPlayer2Act(1),
 icon(0),
@@ -193,12 +191,11 @@ character2(0){
         // just a precaution
         // spriteFile = Util::removeSpaces(spriteFile);
         Filesystem::AbsolutePath realSpriteFile = Filesystem::findInsensitive(Filesystem::cleanse(baseDirectory).join(spriteFile));
-        // icon = Util::probeSff(realSpriteFile, 9000, 0, true, baseDirectory.join(actCollection[0]));
-        // portrait = Util::probeSff(realSpriteFile, 9000, 1, true, baseDirectory.join(actCollection[0]));
 
         /* pull out the icon and the portrait from the sff */
         Util::getIconAndPortrait(realSpriteFile, baseDirectory.join(actCollection[0]), &icon, &portrait);
     } catch (...){
+        /* barf! */
         cleanup();
         throw;
     }
@@ -993,19 +990,20 @@ VersusScreen::~VersusScreen(){
 }
 
 void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Graphics::Bitmap &bmp){
-    Graphics::Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    bool done = false;
+    // bool done = false;
     bool escaped = false;
     
-    int ticker = 0;
+    // int ticker = 0;
     // ParseCache cache;
     
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
   
+    /*
     double runCounter = 0;
     Global::speed_counter = 0;
     Global::second_counter = 0;
+    */
     
     // Set game keys temporary
     InputMap<Mugen::Keys> gameInput;
@@ -1045,10 +1043,236 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
         }
     };
 
-
     PlayerLoader playerLoader(player1, player2);
     playerLoader.start();
+
+    /* loading has three phases.
+     * 1. show the animations (portraits and backgrounds) for a second or two. if the
+     * user presses a key then continue to the next phase immediately instead of waiting.
+     * 2. if the players haven't been fully loaded yet then show a "Loading" screen and
+     * wait until the players fully load.
+     * 3. fade out.
+     *
+     * we can use 3 different logic classes to implement each phase
+     */
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(CharacterInfo & player1, CharacterInfo & player2,
+             Background * background, FontHandler & player1Font,
+             FontHandler & player2Font,
+             const Mugen::Point & player1Position,
+             const Mugen::Point & player2Position,
+             const Mugen::Effects & player1Effects,
+             const Mugen::Effects & player2Effects,
+             Gui::FadeTool & fader,
+             const Graphics::Bitmap & screen
+             ):
+            player1(player1),
+            player2(player2),
+            background(background),
+            player1Font(player1Font),
+            player2Font(player2Font),
+            player1Position(player1Position),
+            player2Position(player2Position),
+            player1Effects(player1Effects),
+            player2Effects(player2Effects),
+            fader(fader),
+            screen(screen),
+            workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT){
+            }
+
+        CharacterInfo & player1;
+        CharacterInfo & player2;
+        Background * background;
+        FontHandler & player1Font;
+        FontHandler & player2Font;
+        const Mugen::Point & player1Position;
+        const Mugen::Point & player2Position;
+	const Mugen::Effects & player1Effects;
+	const Mugen::Effects & player2Effects;
+        Gui::FadeTool & fader;
+        const Graphics::Bitmap & screen;
+        Graphics::Bitmap workArea;
+
+        void draw(){
+            // render backgrounds
+            background->renderBackground(0, 0, workArea);
+
+            // render portraits
+            player1.getPortrait()->render(player1Position.x, player1Position.y, workArea, player1Effects);
+            player2.getPortrait()->render(player2Position.x, player2Position.y, workArea, player2Effects);
+
+            // render fonts
+            player1Font.render(player1.getDisplayName(), workArea);
+            player2Font.render(player2.getDisplayName(), workArea);
+
+            // render Foregrounds
+            background->renderForeground(0,0,workArea);
+
+            // render fades
+            fader.draw(workArea);
+
+            // Finally render to screen
+            workArea.Stretch(screen);
+            screen.BlitToScreen();
+        }
+    };
+
+    /* FIXME: handle ESC like the original code did */
+    class Logic1: public PaintownUtil::Logic {
+    public:
+        Logic1(Gui::FadeTool & fader,
+               Background * background,
+               FontHandler & player1Font,
+               FontHandler & player2Font, int time):
+            fader(fader),
+            background(background),
+            player1Font(player1Font),
+            player2Font(player2Font),
+            time(time),
+            ticker(0){
+        }
+	
+        Gui::FadeTool & fader;
+        Background * background;
+        FontHandler & player1Font;
+        FontHandler & player2Font;
+        int time;
+        int ticker;
+
+        double ticks(double system){
+            return Util::gameTicks(system);
+        }
+
+        bool done(){
+            return ticker >= time;
+        }
+
+        void run(){
+            ticker += 1;
+
+            // Fader
+            fader.act();
+
+            // Backgrounds
+            background->act();
+
+            // Player fonts
+            player1Font.act();
+            player2Font.act();
+        }
+    };
+
+    /* phase 2 consists of running the loading screen, we don't need a logic class 
+     * for that
+     */
+    /*
+    class Logic2: public PaintownUtil::Logic {
+    };
+    */
+
+    class Logic3: public PaintownUtil::Logic {
+    public:
+        Logic3(Gui::FadeTool & fader,
+               Background * background,
+               FontHandler & player1Font,
+               FontHandler & player2Font):
+            fader(fader),
+            background(background),
+            player1Font(player1Font),
+            player2Font(player2Font){
+        }
+	
+        Gui::FadeTool & fader;
+        Background * background;
+        FontHandler & player1Font;
+        FontHandler & player2Font;
+
+        bool done(){
+            return fader.getState() == Gui::FadeTool::EndFade;
+        }
+
+        double ticks(double system){
+            return Util::gameTicks(system);
+        }
+
+        void run(){
+            fader.act();
+            background->act();
+            player1Font.act();
+            player2Font.act();
+        }
+    };
+
+    Draw drawer(player1, player2, background,
+                player1Font, player2Font,
+                player1Position, player2Position,
+                player1Effects, player2Effects, fader, bmp);
+
+    Logic1 logic1(fader, background, player1Font, player2Font, time);
+
+    PaintownUtil::standardLoop(logic1, drawer);
+
+    try{
+        Level::LevelInfo info;
+        info.setBackground(&bmp);
+        info.setLoadingMessage("Loading...");
+        info.setPosition(-1, 400);
+
+        class Context: public Loader::LoadingContext {
+        public:
+            Context(PlayerLoader & playerLoader, Mugen::Stage *& stage):
+                playerLoader(playerLoader),
+                stage(stage),
+                fail(NULL){
+                }
+
+            virtual void maybeFail(){
+                if (fail != NULL){
+                    fail->throwSelf();
+                }
+            }
+
+            virtual ~Context(){
+                delete fail;
+            }
+
+            virtual void load(){
+                try{
+                    /* future */
+                    int ok = playerLoader.get();
+
+                    // Load stage
+                    stage->addPlayer1(playerLoader.player1.getPlayer1());
+                    stage->addPlayer2(playerLoader.player2.getPlayer2());
+                    stage->load();
+                } catch (const MugenException & fail){
+                    this->fail = new MugenException(fail);
+                } catch (const LoadException & fail){
+                    this->fail = new LoadException(fail);
+                }
+            }
+
+            PlayerLoader & playerLoader;
+            Mugen::Stage *& stage;
+            Exception::Base * fail;
+        };
+
+        Context context(playerLoader, stage);
+        Loader::loadScreen(context, info);
+        context.maybeFail();
+
+        fader.setState(Gui::FadeTool::FadeOut);
+    } catch (const MugenException & e){
+        throw e;
+    }
+
+    fader.setState(Gui::FadeTool::FadeOut);
+    Logic3 logic3(fader, background, player1Font, player2Font);
+    PaintownUtil::standardLoop(logic3, drawer);
     
+#if 0
     while (!done || fader.getState() != Gui::FadeTool::EndFade){
 
         bool draw = false;
@@ -1185,6 +1409,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
             PaintownUtil::rest(1);
         }
     }
+#endif
     
     // **FIXME Hack figure something out
     if (escaped){
