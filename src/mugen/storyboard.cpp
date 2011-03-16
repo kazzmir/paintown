@@ -3,6 +3,7 @@
 #include "util/bitmap.h"
 #include "util/resource.h"
 #include "util/funcs.h"
+#include "util/events.h"
 #include "globals.h"
 #include "util/init.h"
 #include "factory/font_render.h"
@@ -417,23 +418,139 @@ Storyboard::~Storyboard(){
 }
 
 void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
-    double gameSpeed = 1.0;
-    double runCounter = 0;
-    bool quit = false;
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(InputMap<Mugen::Keys> & input, const vector<Scene*> & scenes, int startscene, bool repeat, Scene *& scene):
+        input(input),
+        scenes(scenes),
+        quit(false),
+        repeat(repeat),
+        scene(scene){
 
-    Graphics::Bitmap work( 320, 240 );
+            for (std::vector<Scene *>::const_iterator i = scenes.begin(); i != scenes.end(); ++i){
+                if ((*i)){
+                    (*i)->reset();
+                }
+            }
 
-
-    for( std::vector< Scene * >::iterator i = scenes.begin() ; i != scenes.end() ; ++i ){
-        if( (*i) ){
-            (*i)->reset();
+            sceneIterator = scenes.begin() + startscene;
+            (*sceneIterator)->startMusic();
         }
-    }
 
-    std::vector< Scene * >::iterator sceneIterator = scenes.begin() + startscene;
-    (*sceneIterator)->startMusic();
+        InputMap<Mugen::Keys> & input;
+        const vector<Scene*> & scenes;
+        std::vector<Scene*>::const_iterator sceneIterator;
+        bool quit;
+        bool repeat;
+        /* shared between logic and draw */
+        Scene *& scene;
 
+        double ticks(double system){
+            return Util::gameTicks(system);
+        }
+
+        bool done(){
+            return quit;
+        }
+
+        void run(){
+            InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
+
+            if (out[Up]){
+            }
+            if (out[Down]){
+            }
+            if (out[Left]){
+            }
+            if (out[Right]){
+            }
+            if (out[A]){
+                quit = true;
+                return;
+            }
+            if (out[B]){
+                quit = true;
+                return;
+            }
+            if (out[C]){
+                quit = true;
+                return;
+            }
+            if (out[X]){
+                quit = true;
+                return;
+            }
+            if (out[Y]){
+                quit = true;
+                return;
+            }
+            if (out[Z]){
+                quit = true;
+                return;
+            }
+            if (out[Start]){
+                quit = true;
+                return;
+            }	
+            if (out[Esc]){
+                quit = true;
+                return;
+            }
+            if (out[Enter]){
+                quit = true;
+                return;
+            }
+
+            scene = *sceneIterator;
+            scene->act();
+
+            if (scene->isDone()){
+                sceneIterator++;
+                if (sceneIterator == scenes.end()){
+                    if (repeat){
+                        sceneIterator = scenes.begin();
+                    } else {
+                        quit = true;
+                        return;
+                    }
+                }
+                scene = *sceneIterator;
+                scene->reset();
+                scene->startMusic();
+            }
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(const Graphics::Bitmap & screen, Scene *& scene):
+        screen(screen),
+        work(320, 240),
+        scene(scene){
+        }
+
+        const Graphics::Bitmap & screen;
+        Graphics::Bitmap work;
+        Scene *& scene;
+
+        void draw(){
+            if (scene != NULL){
+                scene->render(work);
+                work.Stretch(screen);
+                if (Global::getDebug() > 0){
+                    Font::getDefaultFont().printf( 15, 310, Graphics::makeColor(0,255,128), screen, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->getTicker(),scene->getEndTime(),scene->getFadeTool().getFadeInTime(),scene->getFadeTool().getFadeOutTime() );
+                }
+                screen.BlitToScreen();
+            }
+        }
+    };
+
+    Scene * scene = NULL;
+    Logic logic(input, scenes, startscene, repeat, scene);
+    Draw draw(bmp, scene);
+    PaintownUtil::standardLoop(logic, draw);
     
+#if 0
     while (!quit){
         bool draw = false;
 
@@ -527,4 +644,5 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
             PaintownUtil::rest(1);
         }
     }
+#endif
 }
