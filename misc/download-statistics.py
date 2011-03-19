@@ -56,6 +56,9 @@ def downloads(data):
 # data = readJson(lastWeek(), today(), "3.4.0")
 # data = hack()
 
+print "Today is %s" % today()
+print
+
 try:
     print "Downloads for the last week %s" % downloads(readJson(lastWeek(), today()))
     print "Downloads for the last month %s" % downloads(readJson(lastMonth(), today()))
