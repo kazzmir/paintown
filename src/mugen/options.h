@@ -70,9 +70,9 @@ public:
 private:
 
     std::vector<class Option *> options;
-    std::vector<class Option *>::iterator selectedOption;
+    std::vector<class Option *>::const_iterator selectedOption;
     
-    void doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap &);
+    // void doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap &);
 };
 
 }

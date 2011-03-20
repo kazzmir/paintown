@@ -16,6 +16,7 @@
 
 #include "ast/all.h"
 #include "parser/all.h"
+#include "util/events.h"
 #include "util/init.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -339,7 +340,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     Global::debug(1) << baseDir.path() << endl;
     
     if (systemFile.isEmpty()){
-        throw MugenException( "Cannot locate character select definition file for: " + systemFile.path());
+        throw MugenException("Cannot locate character select definition file for: " + systemFile.path());
     }
 
     TimeDifference diff;
@@ -348,7 +349,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
-    Background * background = 0;
+    Background * background = NULL;
     std::vector< MugenFont *> fonts;
     SoundMap sounds;
     
@@ -427,10 +428,13 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	    background = new Background(systemFile, "optionbg");
 	}
     }
+
+    /* FIXME: do all other cleanup here too */
+    if (background == NULL){
+        throw MugenException("OptionBGDef was not specified");
+    }
     
     // Run options
-    Graphics::Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-    Graphics::Bitmap screen(Configuration::getScreenWidth(), Configuration::getScreenHeight());
     bool done = false;
     bool escaped = false;
     
@@ -439,28 +443,180 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     double runCounter = 0;
     Global::speed_counter = 0;
     Global::second_counter = 0;
-    int game_time = 100;
+    // int game_time = 100;
     
     // Set game keys temporary
-    InputMap<Keys> player1Input = getPlayer1Keys(20);
-    InputMap<Keys> player2Input = getPlayer2Keys(20);
+    // InputMap<Keys> player1Input = getPlayer1Keys(20);
+    // InputMap<Keys> player2Input = getPlayer2Keys(20);
     
     // Our Font
     MugenFont * font = fonts[1];
     
     // Box
-    Box optionArea;
     
-    //optionArea.location.setDimensions(Gui::AbsolutePoint(260),210);
-    optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
-    optionArea.location.setPosition2(Gui::AbsolutePoint(260,210));
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(bool & escaped, MugenSound * cancel, MugenSound * move, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption, Background * background):
+        escaped(escaped),
+        logic_done(false),
+        cancelSound(cancel),
+        moveSound(move),
+        background(background),
+        options(options),
+        selectedOption(selectedOption){
+            player1Input = getPlayer1Keys(20);
+            player2Input = getPlayer2Keys(20);
+        }
     
-    optionArea.location.setRadius(5);
-    optionArea.colors.body = Graphics::makeColor(0,0,60);
-    optionArea.colors.bodyAlpha = 150;
-    optionArea.colors.border = Graphics::makeColor(0,0,20);
+        InputMap<Keys> player1Input;
+        InputMap<Keys> player2Input;
+
+        bool & escaped;
+        bool logic_done;
+
+        MugenSound * cancelSound;
+        MugenSound * moveSound;
     
+        Background * background;
+
+        const vector<class Option *> & options;
+        vector<class Option *>::const_iterator & selectedOption;
+
+        double ticks(double system){
+	    return Util::gameTicks(system);
+        }
+
+        void run(){
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input);
+            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input);
+            out1.insert(out1.end(), out2.begin(), out2.end());
+            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+
+                if (event[Esc]){
+                    logic_done = escaped = true;
+                    if (cancelSound != NULL){
+                        cancelSound->play();
+                    }
+                    InputManager::waitForRelease(player1Input, Esc);
+                    InputManager::waitForRelease(player2Input, Esc);
+                }
+
+                if (event[Up]){
+                    (*selectedOption)->toggleSelected();
+                    if (selectedOption > options.begin()){
+                        selectedOption--;
+                    } else {
+                        selectedOption = options.begin() + options.size()-1;
+                    }
+                    (*selectedOption)->toggleSelected();
+                    if (moveSound != NULL){
+                        moveSound->play();
+                    }
+                }
+                if (event[Down]){
+                    (*selectedOption)->toggleSelected();
+                    selectedOption++;
+                    if (selectedOption == options.end()){
+                        selectedOption = options.begin();
+                    }
+                    (*selectedOption)->toggleSelected();
+                    if (moveSound != NULL){
+                        moveSound->play();
+                    }
+                }
+                if (event[Left]){
+                    (*selectedOption)->prev();
+                }
+                if (event[Right]){
+                    (*selectedOption)->next();
+                }
+                if (event[Start]){
+                    (*selectedOption)->enter();
+                }
+            }
+
+            // Backgrounds
+            background->act();
+        }
+
+        bool done(){
+            return logic_done;
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(Background * background, MugenFont * font, const vector<class Option *> & options):
+        background(background),
+        font(font),
+        workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT),
+        screen(Configuration::getScreenWidth(), Configuration::getScreenHeight()),
+        options(options){
+            //optionArea.location.setDimensions(Gui::AbsolutePoint(260),210);
+            optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
+            optionArea.location.setPosition2(Gui::AbsolutePoint(260,210));
+
+            optionArea.location.setRadius(5);
+            optionArea.colors.body = Graphics::makeColor(0,0,60);
+            optionArea.colors.bodyAlpha = 150;
+            optionArea.colors.border = Graphics::makeColor(0,0,20);
+        }
+
+        Background * background;
+        MugenFont * font;
+        Graphics::Bitmap workArea;
+        Graphics::Bitmap screen;
+        Box optionArea;
+        const vector<class Option *> & options;
+
+        void doOptions(MugenFont & font, int x, int y, Graphics::Bitmap & where){
+            /* where do the numbers 30 and 20 come from? */
+            int mod = 30;
+            for (vector<class Option *>::const_iterator i = options.begin(); i != options.end(); ++i){
+                class Option * option = *i;
+                option->render(font, x, y+mod, where);
+                mod += 20;
+            }
+        }
+
+        void draw(){
+            // render backgrounds
+	    background->renderBackground(0, 0, workArea);
+	    
+	    // render fonts
+	    font->render(DEFAULT_WIDTH/2, 20, 0, 0, workArea, "OPTIONS" );
+	    
+	    optionArea.render(workArea);
+	    
+	    doOptions(*font, optionArea.location.getX(), optionArea.location.getY(), workArea);
+	    
+	    // render Foregrounds
+	    background->renderForeground(0, 0, workArea);
+	    
+	    // Finally render to screen
+	    workArea.Stretch(screen);
+	    screen.BlitToScreen();
+        }
+    };
+
+    MugenSound * cancel = NULL;
+    if (sounds[cancelSound.x][cancelSound.y]){
+        cancel = sounds[cancelSound.x][cancelSound.y];
+    }
+    MugenSound * move = NULL;
+    if (sounds[moveSound.x][moveSound.y]){
+        move = sounds[moveSound.x][moveSound.y];
+    }
+    Logic logic(escaped, cancel, move, options, selectedOption, background);
+    Draw draw(background, font, options);
+    PaintownUtil::standardLoop(logic, draw);
     
+#if 0
     while (!done){
     
 	bool draw = false;
@@ -569,17 +725,18 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 		PaintownUtil::rest( 1 );
 	}
     }
+#endif
     
     delete background;
     
     // Get rid of sprites
-    for( std::vector<MugenFont *>::iterator i = fonts.begin() ; i != fonts.end() ; ++i ){
+    for (std::vector<MugenFont *>::iterator i = fonts.begin() ; i != fonts.end() ; ++i){
 	if (*i){
 	    delete *i;
 	}
     }
     // Get rid of sounds
-    for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+    for (std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
 	for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	    if (j->second){
 		delete j->second;
@@ -593,6 +750,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     }
 }
 
+/*
 void OptionOptions::doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap & bmp){
     int mod = 30;
     for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
@@ -601,6 +759,7 @@ void OptionOptions::doOptions(MugenFont & font, int x, int y, const Graphics::Bi
 	mod+=20;
     }
 }
+*/
 
 OptionArcade::OptionArcade(const string & name){
     if (name.empty()){
