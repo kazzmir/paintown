@@ -129,6 +129,13 @@ class MugenMenu {
         }
 	
     private:
+        enum SoundType{
+            Move,
+            Cancel,
+            Done
+        };
+
+        void playSound(SoundType sound);
         void playSound(int group, int item);
         
         std::string name;

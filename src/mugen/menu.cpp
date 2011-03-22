@@ -640,7 +640,7 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
                 }
                 // Set the fade state
                 fader.setState(Gui::FadeTool::FadeOut);
-                playSound(doneSound.x, doneSound.y);
+                playSound(Done);
                 chosenPlayer = type;
                 break;
             }
@@ -650,7 +650,7 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
                 fader.setState(Gui::FadeTool::FadeOut);
                 (*currentOption)->setState(MenuOption::Deselected);
                 InputManager::waitForRelease(input, Mugen::Esc);
-                playSound(cancelSound.x, cancelSound.y);
+                playSound(Cancel);
                 break;
             }
         }
@@ -764,7 +764,7 @@ void MugenMenu::run(){
                         }
                         // Set the fade state
                         fader.setState(Gui::FadeTool::FadeOut);
-                        menu.playSound(menu.doneSound.x, menu.doneSound.y);
+                        menu.playSound(Done);
                         chosenPlayer = type;
                         break;
                     }
@@ -774,7 +774,7 @@ void MugenMenu::run(){
                         fader.setState(Gui::FadeTool::FadeOut);
                         (*currentOption)->setState(MenuOption::Deselected);
                         InputManager::waitForRelease(input, Mugen::Esc);
-                        menu.playSound(menu.cancelSound.x, menu.cancelSound.y);
+                        menu.playSound(Cancel);
                         break;
                     }
                 }
@@ -1048,7 +1048,15 @@ void MugenMenu::moveMenuUp(){
         menuRange.y = options.size() - 1;
     }
     (*currentOption)->setState(MenuOption::Selected);
-    playSound(moveSound.x, moveSound.y);
+    playSound(Move);
+}
+
+void MugenMenu::playSound(SoundType sound){
+    switch (sound){
+        case Move: playSound(moveSound.x, moveSound.y); break;
+        case Cancel: playSound(cancelSound.x, cancelSound.y); break;
+        case Done: playSound(doneSound.x, doneSound.y); break;
+    }
 }
 
 void MugenMenu::playSound(int group, int item){
@@ -1074,7 +1082,7 @@ void MugenMenu::moveMenuDown(){
         menuRange.y = windowVisibleItems-1;
     }
     (*currentOption)->setState(MenuOption::Selected);
-    playSound(moveSound.x, moveSound.y);
+    playSound(Move);
 }
 
 void MugenMenu::doMenuMovement(){
