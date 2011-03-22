@@ -249,7 +249,7 @@ class MugenMenu {
 	// Move text (for opening sequence where text scrolls into place from the sides)
 	bool moveText;
 
-        bool doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chosenPlayer, Mugen::PlayerType type);
+        // bool doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chosenPlayer, Mugen::PlayerType type);
 	
         /* FIXME: don't use Point, make up a new object so we can call the
          * data 'left' and 'right' instead of 'x' and 'y'

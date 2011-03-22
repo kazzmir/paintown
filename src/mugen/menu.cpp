@@ -605,6 +605,7 @@ MugenMenu::~MugenMenu(){
     cleanup();
 }
 
+/*
 bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chosenPlayer, Mugen::PlayerType type){
     bool quit = false;
     vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(input);
@@ -658,6 +659,7 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
 
     return quit;
 }
+*/
 
 void MugenMenu::run(){
     bool done = false;
@@ -861,7 +863,7 @@ void MugenMenu::run(){
         }
     };
   
-    double runCounter = 0;
+    // double runCounter = 0;
     
     // Set move position info
     moveText = true;
@@ -869,9 +871,9 @@ void MugenMenu::run(){
     movePosition.y = DEFAULT_WIDTH;
 
     while (! endGame){
-	Global::speed_counter = 0;
-	Global::second_counter = 0;
-	int game_time = 100;
+	// Global::speed_counter = 0;
+	// Global::second_counter = 0;
+	// int game_time = 100;
 	
 	/* Start music NOTE load select and versus screen bgm */
         try{
@@ -973,7 +975,7 @@ void MugenMenu::run(){
 	if ((*currentOption)->getState() == MenuOption::Run){
 	    try{
 		(*currentOption)->executeOption(logic.getSelectingPlayer(), endGame);
-	    } catch ( const Exception::Return & re ){
+	    } catch (const Exception::Return & re){
 	    }
 	    // Reset it's state
 	    (*currentOption)->setState(MenuOption::Selected);
@@ -1210,12 +1212,7 @@ void run(){
         MugenMenu menu;
         Exception::Base * exception;
     };
-    /*
-    PaintownUtil::Thread::Id loading;
-    Level::LevelInfo info;
-    info.setLoadingMessage("Loading M.U.G.E.N");
-    Loader::startLoading(&loading, (void*) &info);
-    */
+    
     Level::LevelInfo info;
     info.setLoadingMessage("Loading M.U.G.E.N");
     Context menuLoader;
