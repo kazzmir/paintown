@@ -3,6 +3,7 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
 #include "client.h"
+#include "util/events.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-map.h"
 #include "util/input/input-manager.h"
@@ -381,7 +382,7 @@ static bool handlePortInput( string & str, const vector< int > & keys ){
 }
 */
 
-static void popup( Graphics::Bitmap & work, const Font & font, const string & message ){
+static void popup(const Graphics::Bitmap & work, const Font & font, const string & message ){
     int length = font.textLength( message.c_str() ) + 20; 
     // Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
     Graphics::Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
@@ -491,22 +492,15 @@ static void doQuit(void * stuff){
     throw Exception::Return(__FILE__, __LINE__);
 }
 
+/* this whole thing needs to be modularized and abstracted away into
+ * some domain specific language.
+ */
 void networkClient(){
-    Graphics::Bitmap background(Global::titleScreen().path());
-    Global::speed_counter = 0;
+    // Global::speed_counter = 0;
     
-    InputMap<ClientActions> input;
-    input.set(Keyboard::Key_TAB, 0, true, Next);
-    input.set(Keyboard::Key_DOWN, 0, true, Next);
-    input.set(Keyboard::Key_UP, 0, true, Back);
-    input.set(Keyboard::Key_ESC, 0, true, Quit);
-    input.set(Keyboard::Key_ENTER, 0, true, Action);
-
     TextInput nameInput(Configuration::getStringProperty(propertyLastClientName, string("player") + getANumber() + getANumber()));
     TextInput hostInput(Configuration::getStringProperty(propertyLastClientHost, "localhost"));
     TextInput portInput(Configuration::getStringProperty(propertyLastClientPort, "7887"));
-
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
     Graphics::Bitmap work(GFX_X, GFX_Y);
 
@@ -531,6 +525,180 @@ void networkClient(){
     portInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
     hostInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
 
+    struct State{
+        bool draw;
+    };
+
+    class Logic: public Util::Logic {
+    public:
+        /* it sucks that `work' has to be passed in */
+        Logic(Focus & focus, State & state, TextInput & nameInput, TextInput & portInput, TextInput & hostInput, FocusBundle & bundle, const Graphics::Bitmap & work):
+        is_done(false),
+        focus(focus),
+        state(state),
+        nameInput(nameInput),
+        portInput(portInput),
+        hostInput(hostInput),
+        bundle(bundle),
+        work(work){
+            input.set(Keyboard::Key_TAB, 0, true, Next);
+            input.set(Keyboard::Key_DOWN, 0, true, Next);
+            input.set(Keyboard::Key_UP, 0, true, Back);
+            input.set(Keyboard::Key_ESC, 0, true, Quit);
+            input.set(Keyboard::Key_ENTER, 0, true, Action);
+        }
+
+        bool is_done;
+        Focus & focus;
+        State & state;
+        InputMap<ClientActions> input;
+
+        TextInput & nameInput;
+        TextInput & portInput;
+        TextInput & hostInput;
+
+        FocusBundle & bundle;
+
+        const Graphics::Bitmap & work;
+
+        double ticks(double system){
+            return system;
+        }
+
+        void run(){
+            Focus oldFocus = focus;
+            vector<InputMap<ClientActions>::InputEvent> events = InputManager::getEvents(input);
+
+            switch (focus){
+                case Name: state.draw = state.draw || nameInput.doInput(); break;
+                case Port: state.draw = state.draw || portInput.doInput(); break;
+                case Host: state.draw = state.draw || hostInput.doInput(); break;
+                default: break;
+            }
+
+            for (vector<InputMap<ClientActions>::InputEvent>::iterator it = events.begin(); it != events.end() && !is_done; it++){
+                const InputMap<ClientActions>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+                if (event[Next]){
+                    nextFocus(&bundle);
+                }
+
+                if (event[Back]){
+                    previousFocus(&bundle);
+                }
+
+                if (event[Quit]){
+                    throw Exception::Return(__FILE__, __LINE__);
+                }
+
+                if (event[Action]){
+                    switch (focus){
+                        case Name:
+                        case Host:
+                        case Port: break;
+                        case Connect: {
+                            is_done = true;
+                            try{
+                                runClient(nameInput.getText(), hostInput.getText(), portInput.getText(), input);
+                            } catch (const NetworkException & e){
+                                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+                                popup(work, font, e.getMessage());
+                                InputManager::waitForRelease(input, Action);
+                                InputManager::waitForPress(input, Action);
+                                InputManager::waitForRelease(input, Action);
+                                
+                                is_done = false;
+                                state.draw = true;
+                            }
+                            break;
+                        }
+                        case FocusBack : is_done = true; break;
+                    }
+                }
+
+            }
+
+            state.draw = state.draw || oldFocus != focus;
+        }
+
+        bool done(){
+            return is_done;
+        }
+    };
+
+    class Draw: public Util::Draw {
+    public:
+        Draw(const Graphics::Bitmap & work, State & state, const Focus & focus, TextInput & nameInput, TextInput & portInput, TextInput & hostInput):
+        state(state),
+        background(Global::titleScreen().path()),
+        work(work),
+        focus(focus),
+        nameInput(nameInput),
+        portInput(portInput),
+        hostInput(hostInput){
+        }
+
+        State & state;
+        Graphics::Bitmap background;
+        const Graphics::Bitmap & work;
+        const Focus & focus;
+
+        TextInput & nameInput;
+        TextInput & portInput;
+        TextInput & hostInput;
+
+        void draw(){
+            if (state.draw){
+                state.draw = false;
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+                background.Blit(work);
+
+                const int inputBoxLength = font.textLength("a") * 40;
+                const int min_y = 140;
+
+                font.printf( 20, min_y - font.getHeight() * 3 - 1, Graphics::makeColor( 255, 255, 255 ), work, "Your name", 0 );
+                Graphics::Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
+                Graphics::Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
+                nameBox.Blit(copyNameBox);
+
+                font.printf( 20, min_y - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
+                Graphics::Bitmap hostBox(work, 20, min_y, inputBoxLength, font.getHeight());
+                Graphics::Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
+                hostBox.Blit(copyHostBox);
+
+                font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
+                Graphics::Bitmap portBox(work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight());
+                Graphics::Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
+                portBox.Blit(copyPortBox);
+
+                font.printf( 20, 20, Graphics::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
+
+                int focusColor = Graphics::makeColor( 255, 255, 0 );
+                int unFocusColor = Graphics::makeColor( 255, 255, 255 );
+
+                drawBox(nameBox, copyNameBox, nameInput.getText(), font, focus == Name);
+                drawBox(hostBox, copyHostBox, hostInput.getText(), font, focus == Host);
+                drawBox(portBox, copyPortBox, portInput.getText(), font, focus == Port);
+                font.printf( 20, min_y + font.getHeight() * 5, focus == Connect ? focusColor : unFocusColor, work, "Connect", 0 );
+                font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == FocusBack ? focusColor : unFocusColor, work, "Back", 0 );
+
+                work.BlitToScreen();
+            }
+        }
+    };
+
+    State state;
+    state.draw = true;
+    Logic logic(focus, state, nameInput, portInput, hostInput, bundle, work);
+    Draw draw(work, state, focus, nameInput, portInput, hostInput);
+
+    draw.draw();
+    Util::standardLoop(logic, draw);
+
+#if 0
     bool done = false;
     bool draw = true;
     while ( ! done ){
@@ -651,6 +819,7 @@ void networkClient(){
             Util::rest(1);
         }
     }
+#endif
 }
 
 }

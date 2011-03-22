@@ -440,7 +440,7 @@ static void set_to_true(void * b){
 }
 
 void ChatClient::run(){
-    Global::speed_counter = 0;
+    Global::speed_counter2 = 0;
     Graphics::Bitmap work(GFX_X, GFX_Y);
     // Keyboard keyboard;
 
@@ -454,8 +454,8 @@ void ChatClient::run(){
     bool kill = false;
     lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
     while (! done){
-        int think = Global::speed_counter;
-        Global::speed_counter = 0;
+        int think = Global::speed_counter2;
+        Global::speed_counter2 = 0;
         while (think > 0){
             InputManager::poll();
             vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
@@ -515,7 +515,7 @@ void ChatClient::run(){
             work.clear();
         }
 
-        while (Global::speed_counter == 0){
+        while (Global::speed_counter2 == 0){
             Util::rest(1);
         }
     }

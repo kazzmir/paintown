@@ -80,12 +80,12 @@ static int getServerPort(){
     Graphics::Bitmap work(200, 25);
 
     bool draw = true;
-    Global::speed_counter = 0;
+    Global::speed_counter2 = 0;
     while (! done){
-        while (Global::speed_counter > 0){
+        while (Global::speed_counter2 > 0){
             InputManager::poll();
             draw = input.doInput();
-            Global::speed_counter -= 1;
+            Global::speed_counter2 -= 1;
         }
 
         if (draw){
@@ -98,7 +98,7 @@ static int getServerPort(){
         
         draw = false;
 
-        while ( Global::speed_counter == 0 ){
+        while ( Global::speed_counter2 == 0 ){
             Util::rest(1);
         }
     }

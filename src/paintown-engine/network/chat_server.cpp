@@ -757,7 +757,7 @@ void ChatServer::next_focus(void * self){
 }
 	
 void ChatServer::run(){
-    Global::speed_counter = 0;
+    Global::speed_counter2 = 0;
     Graphics::Bitmap work(GFX_X, GFX_Y);
     Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
@@ -785,8 +785,8 @@ void ChatServer::run(){
     lineEdit->hookKey(Keyboard::Key_TAB, ChatServer::next_focus, this);
     bool done = false;
     while ( ! done ){
-        int think = Global::speed_counter;
-        Global::speed_counter = 0;
+        int think = Global::speed_counter2;
+        Global::speed_counter2 = 0;
         while (think > 0){
             InputManager::poll();
             /* I forgot why this hack needs to be put inside the main loop.
@@ -867,7 +867,7 @@ void ChatServer::run(){
             work.clear();
         }
 
-        while (Global::speed_counter == 0){
+        while (Global::speed_counter2 == 0){
             Util::rest(1);
         }
     }

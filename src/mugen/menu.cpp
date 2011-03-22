@@ -815,7 +815,7 @@ void MugenMenu::run(){
         }
 
         double ticks(double system){
-            return Mugen::Util::gameTicks(Global::speed_counter);
+            return Mugen::Util::gameTicks(system);
         }
     };
 

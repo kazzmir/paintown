@@ -441,7 +441,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     int ticker = 0;
   
     double runCounter = 0;
-    Global::speed_counter = 0;
+    // Global::speed_counter = 0;
     Global::second_counter = 0;
     // int game_time = 100;
     

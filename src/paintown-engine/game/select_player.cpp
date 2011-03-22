@@ -159,7 +159,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
     Util::blend_palette( selectedGradient, maxColor / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );
     Util::blend_palette( selectedGradient + maxColor / 2, maxColor / 2, Graphics::makeColor( 0, 255, 0 ), Graphics::makeColor( 0, 128, 0 ) );
 
-    Global::speed_counter = 0;
+    Global::speed_counter2 = 0;
 
     /* these should be computed based on the dimensions of GFX_X and GFX_Y */
     const int boxSize = 80;
@@ -197,10 +197,10 @@ static int choosePlayer(const PlayerVector & players, const string & message){
             /* FIXME: bad variable name */
             Paintown::DisplayCharacter * ch = players[current].guy;
 
-            if (Global::speed_counter > 0){
+            if (Global::speed_counter2 > 0){
                 // double think = Global::speed_counter;
-                runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
-                Global::speed_counter = 0;
+                runCounter += Global::speed_counter2 * gameSpeed * Global::LOGIC_MULTIPLIER;
+                Global::speed_counter2 = 0;
                 while (runCounter >= 1.0){
                     int old = current;
                     runCounter -= 1;
@@ -517,7 +517,7 @@ static int choosePlayer(const PlayerVector & players, const string & message){
                 draw = false;
             }
 
-            while ( Global::speed_counter == 0 ){
+            while ( Global::speed_counter2 == 0 ){
                 Util::rest(1);
             }
         }
