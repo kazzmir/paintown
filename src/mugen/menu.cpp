@@ -23,6 +23,7 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/music.h"
+#include "util/events.h"
 // #include "game/console.h"
 /*
 #include "object/animation.h"
@@ -661,7 +662,6 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
 void MugenMenu::run(){
     bool done = false;
     bool endGame = false;
-
     
     if (options.empty()){
         return;
@@ -679,8 +679,7 @@ void MugenMenu::run(){
     InputMap<Mugen::Keys> player2Input = Mugen::getPlayer2Keys(20);
     
     // Selecting player
-    Mugen::PlayerType selectingPlayer;
-    
+    // Mugen::PlayerType selectingPlayer;
   
     // Do we have logos or intros?
     // Logo run it no repeat
@@ -696,6 +695,171 @@ void MugenMenu::run(){
         intro->setInput(player1Input);
 	intro->run(work, false);
     }
+
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(bool & endGame, vector<Mugen::ItemOption *>::iterator & currentOption, Gui::FadeTool & fader, int & ticker, InputMap<Mugen::Keys> & player1Input, InputMap<Mugen::Keys> & player2Input, MugenMenu & menu, Mugen::Background * background):
+        is_done(false),
+        endGame(endGame),
+        currentOption(currentOption),
+        fader(fader),
+        ticker(ticker),
+        player1Input(player1Input),
+        player2Input(player2Input),
+        menu(menu),
+        background(background){
+        }
+
+        bool is_done;
+        bool & endGame;
+	vector<Mugen::ItemOption *>::iterator & currentOption;
+	Gui::FadeTool & fader;
+        int & ticker;
+    
+        InputMap<Mugen::Keys> & player1Input;
+        InputMap<Mugen::Keys> & player2Input;
+    
+        Mugen::PlayerType selectingPlayer;
+                
+        MugenMenu & menu;
+
+        Mugen::Background * background;
+
+        Mugen::PlayerType getSelectingPlayer() const {
+            return selectingPlayer;
+        }
+
+        bool doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chosenPlayer, Mugen::PlayerType type){
+            bool quit = false;
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(input);
+            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+                switch (event.out){
+                    case Mugen::Up: {
+                        menu.moveMenuUp();
+                        break;
+                    }
+                    case Mugen::Down: {
+                        menu.moveMenuDown();
+                        break;
+                    }
+                    case Mugen::Enter:
+                    case Mugen::Right:
+                    case Mugen::Left: {
+                        break;
+                    }
+                    case Mugen::A:
+                    case Mugen::B:
+                    case Mugen::C:
+                    case Mugen::X:
+                    case Mugen::Y:
+                    case Mugen::Z:
+                    case Mugen::Start: {
+                        if ((*currentOption)->isRunnable()){
+                            (*currentOption)->setState(MenuOption::Run);
+                        }
+                        // Set the fade state
+                        fader.setState(Gui::FadeTool::FadeOut);
+                        menu.playSound(menu.doneSound.x, menu.doneSound.y);
+                        chosenPlayer = type;
+                        break;
+                    }
+                    case Mugen::Esc: {
+                        quit = true;
+                        // Set the fade state
+                        fader.setState(Gui::FadeTool::FadeOut);
+                        (*currentOption)->setState(MenuOption::Deselected);
+                        InputManager::waitForRelease(input, Mugen::Esc);
+                        menu.playSound(menu.cancelSound.x, menu.cancelSound.y);
+                        break;
+                    }
+                }
+            }
+
+            return quit;
+        }
+
+        bool done(){
+            return is_done ||
+                   ((*currentOption)->getState() == MenuOption::Run) ||
+                   (fader.getState() == Gui::FadeTool::EndFade);
+        }
+
+        void run(){
+            ticker++;
+
+            if (fader.getState() == Gui::FadeTool::NoFade){
+                bool quit = false;
+                quit = quit || doInput(player1Input, selectingPlayer, Mugen::Player1);
+                quit = quit || doInput(player2Input, selectingPlayer, Mugen::Player2);
+                endGame = is_done = quit;
+            }
+
+            // Update menu position
+            menu.doMenuMovement(); 
+
+            // Font Cursor
+            menu.fontCursor.act();
+
+            // Fader
+            fader.act();
+
+            // Backgrounds
+            background->act();
+        }
+
+        double ticks(double system){
+            return Mugen::Util::gameTicks(Global::speed_counter);
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(MugenMenu & menu, Mugen::Background * background, Gui::FadeTool & fader):
+        menu(menu),
+        work(Global::getScreenWidth(), Global::getScreenHeight()),
+        workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT),
+        background(background),
+        fader(fader){
+        }
+
+        MugenMenu & menu;
+
+        Graphics::Bitmap work;
+        Graphics::Bitmap workArea;
+
+        Mugen::Background * background;
+
+        Gui::FadeTool & fader;
+
+        void draw(){
+            /* This logic doesn't make sense.. why does it draw to `work'
+             * and then stretch blit `workArea' to `work'? That will just
+             * clear anything drawn to `work', won't it?
+             */
+
+            // backgrounds
+            background->renderBackground(0, 0, workArea);
+
+            // Draw any misc stuff in the background of the menu of selected object 
+            //(*currentOption)->drawBelow(&work);
+            // Draw text
+            menu.renderText(&workArea);
+            // Foregrounds
+            background->renderForeground(0, 0, workArea);
+            // Draw any misc stuff in the foreground of the menu of selected object 
+            //(*currentOption)->drawAbove(&work);
+            // Do fades
+            fader.draw(workArea);
+            // Finally render to screen
+            workArea.Stretch(work);
+            work.BlitToScreen();
+        }
+    };
   
     double runCounter = 0;
     
@@ -719,7 +883,13 @@ void MugenMenu::run(){
         } catch (const Filesystem::NotFound & fail){
             Global::debug(0) << "Warning: could not load music because " << fail.getTrace() << endl;
         }
+
+        Logic logic(endGame, currentOption, fader, ticker, player1Input, player2Input, *this, background);
+        Draw draw(*this, background, fader);
+        /* run the menu */
+        Util::standardLoop(logic, draw);
     
+#if 0
         /* Extra scope to force temporary bitmaps to be destroyed */
         {
             Graphics::Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
@@ -797,11 +967,12 @@ void MugenMenu::run(){
                 }              
             }
         }
+#endif
 	    
 	// do we got an option to run, lets do it
 	if ((*currentOption)->getState() == MenuOption::Run){
 	    try{
-		(*currentOption)->executeOption(selectingPlayer, endGame);
+		(*currentOption)->executeOption(logic.getSelectingPlayer(), endGame);
 	    } catch ( const Exception::Return & re ){
 	    }
 	    // Reset it's state
