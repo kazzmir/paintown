@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Start a shell that Jon likes to use to develop Paintown in
+
+export DEBUG=1
+export timing=1
+export llvm=1
+echo "Entering Jon's environment"
+bash
