@@ -3,6 +3,7 @@
 #include "util/bitmap.h"
 #include "util/network/network.h"
 #include "util/trans-bitmap.h"
+#include "util/events.h"
 #include "chat_client.h"
 #include "chat.h"
 #include "util/bitmap.h"
@@ -101,9 +102,9 @@ void ChatClient::enter_pressed(void * self){
 ChatClient::ChatClient( Network::Socket socket, const string & name ):
 need_update(true),
 messages( 400, 300 ),
-socket( socket ),
-focus( INPUT_BOX ),
-finished( false ),
+socket(socket),
+focus(INPUT_BOX),
+finished(false),
 enterPressed( false ){
     background = new Graphics::Bitmap(Global::titleScreen().path());
     Util::Thread::initializeLock(&lock);
@@ -241,7 +242,7 @@ bool ChatClient::sendMessage( const string & message ){
     return false;
 }
 
-void ChatClient::popup( Graphics::Bitmap & work, const std::string & str ){
+void ChatClient::popup(const Graphics::Bitmap & work, const std::string & str ){
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
     int length = font.textLength( str.c_str() ) + 20;
     int height = font.getHeight() * 2;
@@ -440,10 +441,105 @@ static void set_to_true(void * b){
 }
 
 void ChatClient::run(){
-    Global::speed_counter2 = 0;
-    Graphics::Bitmap work(GFX_X, GFX_Y);
-    // Keyboard keyboard;
+    // Global::speed_counter2 = 0;
 
+    class Logic: public Util::Logic {
+    public:
+        Logic(bool & kill, ChatClient & client):
+        is_done(false),
+        kill(kill),
+        client(client),
+        forceQuit(false){
+            input.set(Keyboard::Key_TAB, 0, true, 0);
+            input.set(Keyboard::Key_ENTER, 0, true, 1);
+            input.set(Keyboard::Key_ESC, 0, true, 2);
+            client.lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
+        }
+
+        InputMap<int> input;
+        bool is_done;
+        bool & kill;
+        ChatClient & client;
+        bool forceQuit;
+
+        double ticks(double system){
+            return system;
+        }
+
+        bool done(){
+            return is_done;
+        }
+
+        void run(){
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
+
+            bool hasInputFocus = client.focus == INPUT_BOX;
+            bool next = false;
+            bool select = false;
+            bool quit = false;
+            for (vector<InputMap<int>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                const InputMap<int>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+                next = next || event[0];
+                select = select || event[1];
+                quit = quit || event[2];
+            }
+
+            if (client.logic() || forceQuit || quit){
+                kill = true;
+                is_done = true;
+                return;
+            }
+
+            if (next && !hasInputFocus){
+                next_focus(&client);
+            }
+
+            if (quit || (select && client.focus == QUIT)){
+                Global::debug(0) << "Quit!" << endl;
+                kill = true;
+                is_done = true;
+            }
+
+            while (! client.toSend.empty()){
+                if (! client.sendMessage(client.toSend.front())){
+                    popup(Graphics::Bitmap(GFX_X, GFX_Y), "Could not send message" );
+                }
+                client.toSend.pop();
+            }
+
+            is_done = is_done || client.isFinished();
+        }
+    };
+
+    class Draw: public Util::Draw {
+    public:
+        Draw(ChatClient & client):
+        work(GFX_X, GFX_Y),
+        client(client){
+        }
+
+        Graphics::Bitmap work;
+        ChatClient & client;
+
+        void draw(){
+            if (client.needToDraw()){
+                client.draw(work);
+                work.BlitToScreen();
+                work.clear();
+            }
+        }
+    };
+
+    bool kill = false;
+    Logic logic(kill, *this);
+    Draw draw(*this);
+
+    Util::standardLoop(logic, draw);
+
+#if 0
     InputMap<int> input;
     input.set(Keyboard::Key_TAB, 0, true, 0);
     input.set(Keyboard::Key_ENTER, 0, true, 1);
@@ -451,7 +547,6 @@ void ChatClient::run(){
 
     bool forceQuit = false;
     bool done = false;
-    bool kill = false;
     lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
     while (! done){
         int think = Global::speed_counter2;
@@ -519,6 +614,7 @@ void ChatClient::run(){
             Util::rest(1);
         }
     }
+#endif
 
     lineEdit->setFocused(false);
 

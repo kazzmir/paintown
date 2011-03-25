@@ -1684,136 +1684,136 @@ void Menu::Menu::handleCompatibility(const Token * token, int version){
     Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
         TokenView view = token->view();
-	while (view.hasMore()){
-	    try {
-		const Token * tok;
-		view >> tok;
-		if ( *tok == "name" ){
-		    ValueHolder * value = new ValueHolder("name");
+        while (view.hasMore()){
+            try {
+                const Token * tok;
+                view >> tok;
+                if ( *tok == "name" ){
+                    ValueHolder * value = new ValueHolder("name");
                     TokenView nameView = tok->view();
-		    *value << nameView;
-		    addData(value);
-		} else if ( *tok == "music" ) {
-		    ValueHolder * value = new ValueHolder("music");
+                    *value << nameView;
+                    addData(value);
+                } else if ( *tok == "music" ) {
+                    ValueHolder * value = new ValueHolder("music");
                     TokenView musicView = tok->view();
-		    *value << musicView;
-		    addData(value);
-		    try {
-			std::string music;
-			*value >> music;
-			context.setMusic(Filesystem::RelativePath(music));
-		    } catch (const MenuException & ex){
-		    }
-		} else if( *tok == "select-sound" ) {
-		    ValueHolder * value = new ValueHolder("select-sound");
+                    *value << musicView;
+                    addData(value);
+                    try {
+                        std::string music;
+                        *value >> music;
+                        context.setMusic(Filesystem::RelativePath(music));
+                    } catch (const MenuException & ex){
+                    }
+                } else if( *tok == "select-sound" ) {
+                    ValueHolder * value = new ValueHolder("select-sound");
                     TokenView soundView = tok->view();
-		    *value << soundView;
-		    addData(value);
-		    try{
-			std::string sound;
-			*value >> sound;
-			context.addSound(Up,Filesystem::RelativePath(sound));
-			context.addSound(Down,Filesystem::RelativePath(sound));
-		    } catch (const MenuException & ex){
-		    }
-		} else if (*tok == "back-sound"){
-		    ValueHolder * value = new ValueHolder("back-sound");
+                    *value << soundView;
+                    addData(value);
+                    try{
+                        std::string sound;
+                        *value >> sound;
+                        context.addSound(Up,Filesystem::RelativePath(sound));
+                        context.addSound(Down,Filesystem::RelativePath(sound));
+                    } catch (const MenuException & ex){
+                    }
+                } else if (*tok == "back-sound"){
+                    ValueHolder * value = new ValueHolder("back-sound");
                     TokenView soundView = tok->view();
-		    *value << soundView;
-		    addData(value);
-		    try{
-			std::string sound;
-			*value >> sound;
-			context.addSound(Back,Filesystem::RelativePath(sound));
-			context.addSound(Cancel,Filesystem::RelativePath(sound));
-		    } catch (const MenuException & ex){
-		    }
-		} else if (*tok == "ok-sound"){
-		    ValueHolder * value = new ValueHolder("ok-sound");
+                    *value << soundView;
+                    addData(value);
+                    try{
+                        std::string sound;
+                        *value >> sound;
+                        context.addSound(Back,Filesystem::RelativePath(sound));
+                        context.addSound(Cancel,Filesystem::RelativePath(sound));
+                    } catch (const MenuException & ex){
+                    }
+                } else if (*tok == "ok-sound"){
+                    ValueHolder * value = new ValueHolder("ok-sound");
                     TokenView okView = tok->view();
-		    *value << okView;
-		    addData(value);
-		    try{
-			std::string sound;
-			*value >> sound;
-			context.addSound(Select,Filesystem::RelativePath(sound));
-		    } catch (const MenuException & ex){
-		    }
-		} else if ( *tok == "background" ) {
-		    std::string temp;
-		    tok->view() >> temp;
-		    context.addBackground(temp);
-		} else if (*tok == "anim"){
-		    context.addBackground(tok);
-		} else if ( *tok == "clear-color" ) {
-		    // Not necessary ignore
-		} else if ( renderer && renderer->readToken(tok) ) {
-		    // Nothing checks compatible version of renderer
-		} else if ( *tok == "font" ) {
-		    ValueHolder * value = new ValueHolder("font");
+                    *value << okView;
+                    addData(value);
+                    try{
+                        std::string sound;
+                        *value >> sound;
+                        context.addSound(Select,Filesystem::RelativePath(sound));
+                    } catch (const MenuException & ex){
+                    }
+                } else if ( *tok == "background" ) {
+                    std::string temp;
+                    tok->view() >> temp;
+                    context.addBackground(temp);
+                } else if (*tok == "anim"){
+                    context.addBackground(tok);
+                } else if ( *tok == "clear-color" ) {
+                    // Not necessary ignore
+                } else if ( renderer && renderer->readToken(tok) ) {
+                    // Nothing checks compatible version of renderer
+                } else if ( *tok == "font" ) {
+                    ValueHolder * value = new ValueHolder("font");
                     TokenView fontView = tok->view();
-		    *value << fontView << fontView << fontView;
-		    addData(value);
-		    try {
-			std::string font;
-			int w = 24, h = 24;
-			*value >> font >> w >> h;
-			/*context.setFont(Filesystem::RelativePath(font));
-			context.setFontWidth(w);
-			context.setFontHeight(h);*/
-			context.setFont(new RelativeFontInfo(Filesystem::RelativePath(font), w, h));
-		    } catch (const MenuException & ex){
-		    }
-		} else if ( *tok == "action"){
-		    // Set speed
-		    //ActionAct(tok);
-		} else if ( *tok == "info-position"){
-		    ValueHolder * value = new ValueHolder("info-position");
+                    *value << fontView << fontView << fontView;
+                    addData(value);
+                    try {
+                        std::string font;
+                        int w = 24, h = 24;
+                        *value >> font >> w >> h;
+                        /*context.setFont(Filesystem::RelativePath(font));
+                          context.setFontWidth(w);
+                          context.setFontHeight(h);*/
+                        context.setFont(new RelativeFontInfo(Filesystem::RelativePath(font), w, h));
+                    } catch (const MenuException & ex){
+                    }
+                } else if ( *tok == "action"){
+                    // Set speed
+                    //ActionAct(tok);
+                } else if ( *tok == "info-position"){
+                    ValueHolder * value = new ValueHolder("info-position");
                     TokenView infoView = tok->view();
-		    *value << infoView << infoView;
-		    addData(value);
-		    try {
-			double x=0, y=-.5;
-			*value >> x >> y;
-			context.setInfoLocation(x,y);
-		    } catch (const MenuException & ex){
-		    } 
-		} else if (*tok == "menuinfo"){
-		    ValueHolder * value = new ValueHolder("menuinfo");
+                    *value << infoView << infoView;
+                    addData(value);
+                    try {
+                        double x=0, y=-.5;
+                        *value >> x >> y;
+                        context.setInfoLocation(x,y);
+                    } catch (const MenuException & ex){
+                    } 
+                } else if (*tok == "menuinfo"){
+                    ValueHolder * value = new ValueHolder("menuinfo");
                     TokenView infoView = tok->view();
-		    *value << infoView;
-		    addData(value);
-		    try {
-			std::string info;
-			*value >> info;
-			context.setMenuInfoText(info);
-		    } catch (const MenuException & ex){
-		    } 
-		} else if (*tok == "menuinfo-position"){
-		    ValueHolder * value = new ValueHolder("menuinfo-position");
+                    *value << infoView;
+                    addData(value);
+                    try {
+                        std::string info;
+                        *value >> info;
+                        context.setMenuInfoText(info);
+                    } catch (const MenuException & ex){
+                    } 
+                } else if (*tok == "menuinfo-position"){
+                    ValueHolder * value = new ValueHolder("menuinfo-position");
                     TokenView infoView = tok->view();
-		    *value << infoView << infoView;
-		    addData(value);
-		    try {
-			double x=0, y=.95;
-			*value >> x >> y;
-			context.setMenuInfoLocation(x,y);
-		    } catch (const MenuException & ex){
-		    } 
-		} else {
-		    Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
-		    if (Global::getDebug() >= 3){
-			tok->print(" ");
-		    }
-		}
-	    } catch ( const TokenException & ex ) {
-		throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-	    } catch (const LoadException & ex){
-		throw ex;
-	    } catch (const Filesystem::NotFound & ex){
-		throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-	    }
-	}
+                    *value << infoView << infoView;
+                    addData(value);
+                    try {
+                        double x=0, y=.95;
+                        *value >> x >> y;
+                        context.setMenuInfoLocation(x,y);
+                    } catch (const MenuException & ex){
+                    } 
+                } else {
+                    Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+                    if (Global::getDebug() >= 3){
+                        tok->print(" ");
+                    }
+                }
+            } catch ( const TokenException & ex ) {
+                throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+            } catch (const LoadException & ex){
+                throw ex;
+            } catch (const Filesystem::NotFound & ex){
+                throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+            }
+        }
     }
 }
         

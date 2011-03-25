@@ -56,7 +56,7 @@ protected:
 	void drawInputBox( int x, int y, const Graphics::Bitmap & work );
 	void drawBuddies( const Graphics::Bitmap & area, int x, int y, const Font & f );
 	bool sendMessage( const std::string & message );
-	void popup( Graphics::Bitmap & work, const std::string & str );
+	static void popup(const Graphics::Bitmap & work, const std::string & str );
 
         static void enter_pressed(void * self);
         static void next_focus(void * self);
