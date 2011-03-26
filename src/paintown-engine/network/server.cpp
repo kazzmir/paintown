@@ -2,6 +2,7 @@
 
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/events.h"
 
 #include "chat_server.h"
 #include "factory/font_render.h"
@@ -70,15 +71,72 @@ static int getServerPort(){
         background.BlitToScreen();
     }
 
-    bool done = false;
     /* TODO: add filter for numbers */
     TextInput input("7887");
-    input.addBlockingHandle(Keyboard::Key_ENTER, set_to_true, &done);
     input.addBlockingHandle(Keyboard::Key_ESC, do_quit, NULL);
-    input.enable();
 
-    Graphics::Bitmap work(200, 25);
+    class Logic: public Util::Logic {
+    public:
+        Logic(TextInput & input, bool & draw):
+        input(input),
+        is_done(false),
+        draw(draw){
+            input.addBlockingHandle(Keyboard::Key_ENTER, set_to_true, &is_done);
+            input.enable();
+        }
 
+        TextInput & input;
+        bool is_done;
+        bool & draw;
+
+        bool done(){
+            return is_done;
+        }
+
+        double ticks(double system){
+            return system;
+        }
+
+        void run(){
+            draw = input.doInput();
+        }
+    };
+
+    class Draw: public Util::Draw {
+    public:
+        Draw(const Graphics::Bitmap & background, const TextInput & input, int drawY, bool & need_draw):
+        work(200, 25),
+        background(background),
+        input(input),
+        drawY(drawY),
+        need_draw(need_draw){
+        }
+
+        Graphics::Bitmap work;
+        const Graphics::Bitmap & background;
+        const TextInput & input;
+        int drawY;
+        bool & need_draw;
+
+        void draw(){
+            if (need_draw){
+                work.clear();
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+                font.printf(0, 0, Graphics::makeColor(255, 255, 255), work, input.getText(), 0);
+                work.Blit(100, drawY, background);
+                background.BlitToScreen();
+            }
+        }
+    };
+    
+    bool draw = true;
+    Logic logic(input, draw);
+    Draw drawer(background, input, drawY, draw);
+    drawer.draw();
+
+    Util::standardLoop(logic, drawer);
+
+#if 0
     bool draw = true;
     Global::speed_counter2 = 0;
     while (! done){
@@ -102,6 +160,7 @@ static int getServerPort(){
             Util::rest(1);
         }
     }
+#endif
 
     istringstream str(input.getText());
     int port;
