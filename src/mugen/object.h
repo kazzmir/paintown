@@ -7,7 +7,7 @@
 namespace Mugen{
 
 class Stage;
-class HitDefinition;
+struct HitDefinition;
 
 /* maybe put the physics stuff in a different file */
 namespace Physics{

@@ -99,8 +99,10 @@ vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, 
     vector< Heart * > hearts;
 
     /* to silence compiler warnings */
+    /*
     min_x = min_x;
     max_x = max_x;
+    */
 
     // cout<<"Total length = "<<total_length<<" Min_x = "<<min_x<<" Max_x = " << max_x << endl;
     // cout<<"Current block has "<<objects.size()<<" total = "<<total_length<<" min = "<<min_x<<" max_x = "<<max_x<<endl;
