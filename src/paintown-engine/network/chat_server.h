@@ -4,6 +4,7 @@
 #include "util/network/network.h"
 #include "util/messages.h"
 #include "util/thread.h"
+#include "util/pointer.h"
 #include <string>
 #include <vector>
 
@@ -180,7 +181,7 @@ protected:
 protected:
 	bool need_update;
 	Network::Socket socket;
-        Graphics::Bitmap * background;
+        Util::ReferenceCount<Graphics::Bitmap> background;
 	Messages messages;
 	// std::string input;
 	// Focus focus;
@@ -191,7 +192,7 @@ protected:
 	std::string name;
 	bool accepting;
 	// unsigned long long editCounter;
-	bool enterPressed;
+	// bool enterPressed;
         std::vector<Util::Thread::Id> accepted;
         // Gui::LineEdit * lineEdit;
 };

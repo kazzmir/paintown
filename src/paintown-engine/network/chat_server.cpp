@@ -307,8 +307,7 @@ socket(socket),
 messages(400, 350),
 client_id(1),
 name(name),
-accepting(true),
-enterPressed(false){
+accepting(true){
     background = new Graphics::Bitmap(Global::titleScreen().path());
 
     debug(1) << "Start accepting connections" << endl;
@@ -1049,7 +1048,7 @@ void ChatServer::run(){
 }
 	
 ChatServer::~ChatServer(){
-    delete background;
+    // delete background;
     for (vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
         delete *it;
     }
