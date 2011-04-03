@@ -17,9 +17,9 @@ class Bitmap;
 class Keyboard;
 
 enum Focus{
-	INPUT_BOX,
-	START_GAME,
-	QUIT,
+    INPUT_BOX,
+    START_GAME,
+    QUIT
 };
 
 class keys;
@@ -83,7 +83,7 @@ private:
 	std::string name;
         Util::Thread::Id inputThread;
         Util::Thread::Id outputThread;
-        Util::Thread::Lock lock;
+        Util::Thread::LockObject lock;
 	std::vector< Network::Message > outgoing;
 };
 
@@ -125,7 +125,7 @@ public:
         void addAccepter(Util::Thread::Id accepter);
         
         /* add a message to the chat box */
-        void addLine();
+        void addLine(Gui::LineEdit & line);
 
 	/* get the list of connected clients */
         std::vector<Client*> getConnectedClients();
@@ -150,10 +150,10 @@ protected:
 	bool needToDraw();
 
 	/* draw things to work */
-	void draw( const Graphics::Bitmap & work );
+	void draw(const Graphics::Bitmap & work, Gui::LineEdit & lineEdit, Focus focus);
 	
 	/* draw the input box */
-	void drawInputBox( int x, int y, const Graphics::Bitmap & work );
+	// void drawInputBox( int x, int y, const Graphics::Bitmap & work );
 
 	/* draw the buddy list */
 	void drawBuddyList( int x, int y, const Graphics::Bitmap & work, const Font & font );
@@ -162,7 +162,7 @@ protected:
 	Focus nextFocus( Focus f );
 
 	/* get the color a focused widget should be drawn with */
-	int focusColor( Focus f );
+	// int focusColor( Focus f );
 
 	/* stop accepting new connections */
 	void stopAccepting();
@@ -175,7 +175,7 @@ protected:
 		return client_id++;
 	}
 
-        static void next_focus(void * self);
+        // static void next_focus(void * self);
 	
 protected:
 	bool need_update;
@@ -183,17 +183,17 @@ protected:
         Graphics::Bitmap * background;
 	Messages messages;
 	// std::string input;
-	Focus focus;
+	// Focus focus;
 	unsigned int client_id;
-        Util::Thread::Lock lock;
+        Util::Thread::LockObject lock;
         Util::Thread::Id acceptThread;
 	std::vector< Client * > clients;
 	std::string name;
 	bool accepting;
-	unsigned long long editCounter;
+	// unsigned long long editCounter;
 	bool enterPressed;
         std::vector<Util::Thread::Id> accepted;
-        Gui::LineEdit * lineEdit;
+        // Gui::LineEdit * lineEdit;
 };
 
 #endif

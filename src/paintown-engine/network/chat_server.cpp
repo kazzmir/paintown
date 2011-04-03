@@ -3,6 +3,7 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
 #include "util/network/network.h"
+#include "util/events.h"
 #include "chat_server.h"
 #include "chat.h"
 #include "util/bitmap.h"
@@ -32,12 +33,11 @@ static std::ostream & debug( int level ){
 }
 
 Client::Client( Network::Socket socket, ChatServer * server, unsigned int id ):
-socket( socket ),
-server( server ),
-id( id ),
-alive( true ),
-started( false ){
-    Util::Thread::initializeLock(&lock);
+socket(socket),
+server(server),
+id(id),
+alive(true),
+started(false){
 }
 	
 Client::~Client(){
@@ -45,30 +45,30 @@ Client::~Client(){
 	
 string Client::getName(){
     string s;
-    Util::Thread::acquireLock(&lock);
+    lock.acquire();
     s = name;
-    Util::Thread::releaseLock(&lock);
+    lock.release();
     return s;
 }
 
 void Client::kill(){
-    Util::Thread::acquireLock(&lock);
+    lock.acquire();
     alive = false;
-    Util::Thread::releaseLock( &lock );
+    lock.release();
 }
 
 bool Client::isAlive(){
     bool b;
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     b = alive;
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     return b;
 }
 
 void Client::setName( const std::string & s ){
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     name = s;
-    Util::Thread::releaseLock( &lock );
+    lock.release();
 }
 
 static void * clientInput( void * client_ ){
@@ -160,42 +160,42 @@ static void * clientOutput( void * client_ ){
 	
 bool Client::canKill(){
     bool f;
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     f = alive;
     /* why set alive to false here?
      * it was supposed to check if the client was already dead.
      */
     alive = false;
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     return f;
 }
 
 bool Client::getOutgoing(Network::Message & m){
     bool has;
-    Util::Thread::acquireLock(&lock);
+    lock.acquire();
     has = ! outgoing.empty();
     if (has){
         m = outgoing.front();
         outgoing.erase(outgoing.begin());
     }
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     return has;
 }
 
 void Client::addOutputMessage(const Network::Message & s){
-    Util::Thread::acquireLock(&lock);
+    lock.acquire();
     outgoing.push_back(s);
-    Util::Thread::releaseLock(&lock);
+    lock.release();
 }
 
 void Client::startThreads(){
-    Util::Thread::acquireLock(&lock);
+    lock.acquire();
     if (! started){
         Util::Thread::createThread(&inputThread, NULL, (Util::Thread::ThreadFunction) clientInput, this);
         Util::Thread::createThread(&outputThread, NULL, (Util::Thread::ThreadFunction) clientOutput, this);
         started = true;
     }
-    Util::Thread::releaseLock(&lock);
+    lock.release();
 }
 
 struct do_add_stuff{
@@ -283,10 +283,12 @@ static void * acceptConnections( void * server_ ){
     return NULL;
 }
 
+/*
 static void enter_pressed(void * self){
     ChatServer * chat = (ChatServer *) self;
     chat->addLine();
 }
+*/
 
 static const char * welcomeMessage(){
     switch (Util::rnd(5)){
@@ -299,11 +301,10 @@ static const char * welcomeMessage(){
     }
 }
 
-ChatServer::ChatServer( const string & name, Network::Socket socket ):
+ChatServer::ChatServer(const string & name, Network::Socket socket):
 need_update(true),
 socket(socket),
 messages(400, 350),
-focus(INPUT_BOX),
 client_id(1),
 name(name),
 accepting(true),
@@ -311,71 +312,54 @@ enterPressed(false){
     background = new Graphics::Bitmap(Global::titleScreen().path());
 
     debug(1) << "Start accepting connections" << endl;
-    lineEdit = new Gui::LineEdit();
-    lineEdit->location.setPosition(Gui::AbsolutePoint(20, 20 + messages.getHeight() + 5));
-    lineEdit->location.setDimensions(400, 30);
-    lineEdit->location.setRadius(5);
-
-    lineEdit->colors.body = Graphics::makeColor( 0, 0, 0 );
-    lineEdit->colors.bodyAlpha = 128;
-    lineEdit->colors.border = Graphics::makeColor( 255, 255, 0 );
-    lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
-    lineEdit->setTextColor( Graphics::makeColor( 255, 255, 255 ) );
-
-    lineEdit->setText(welcomeMessage());
-    // lineEdit->setFont(Menu::getFont());
-    lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
-    lineEdit->setFocused(true);
-    lineEdit->hookKey(Keyboard::Key_ENTER, enter_pressed, this);
-
-    editCounter = 0;
+    
+    // editCounter = 0;
 
     /* listen() may throw an exception, so call it here so that the destructor
      * can properly delete the other objects that were created.
      */
     debug(1) << "Listen on socket" << endl;
     Network::listen(socket);
-    Util::Thread::initializeLock(&lock);
 }
 
-void ChatServer::addLine(){
-    if (lineEdit->getText().size() > 0){
-        addMessage(name + ": " + lineEdit->getText(), 0);
-        lineEdit->clearText();
+void ChatServer::addLine(Gui::LineEdit & line){
+    if (line.getText().size() > 0){
+        addMessage(name + ": " + line.getText(), 0);
+        line.clearText();
         needUpdate();
     }
 }
 	
 bool ChatServer::isAccepting(){
-    bool f;
-    Util::Thread::acquireLock(&lock);
+    bool f = false;
+    lock.acquire();
     f = accepting;	
-    Util::Thread::releaseLock(&lock);
+    lock.release();
     return f;
 }
         
 void ChatServer::addAccepter(Util::Thread::Id accepter){
-    Util::Thread::acquireLock(&lock);
+    lock.acquire();
     accepted.push_back(accepter);
-    Util::Thread::releaseLock( &lock );
+    lock.release();
 }
 
 void ChatServer::stopAccepting(){
     debug(1) << "Stop accepting" << endl;
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     accepting = false;
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     // #ifndef WINDOWS
-    Network::close( socket );
+    Network::close(socket);
     // #endif
     debug(1) << "Waiting for client accept threads to stop" << endl;
-    Util::Thread::acquireLock(&lock);
+    lock.acquire();
     for (vector<Util::Thread::Id>::iterator it = accepted.begin(); it != accepted.end(); it++){
         Util::Thread::Id accept = *it;
         debug(2) << "Waiting for client accept thread " << endl;
         Util::Thread::joinThread(accept);
     }
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     debug(1) << "Waiting for accepting thread to stop" << endl;
     Util::Thread::joinThread(acceptThread);
     debug(1) << "Not accepting any connections" << endl;
@@ -430,7 +414,7 @@ void ChatServer::addConnection(Network::Socket s){
     }
 
     /* send all the other client names to the just connected client */
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         Network::Message message;
@@ -439,7 +423,7 @@ void ChatServer::addConnection(Network::Socket s){
         message.path = c->getName();
         client->addOutputMessage( message );
     }
-    Util::Thread::releaseLock( &lock );
+    lock.release();
 
     debug(1) << "Adding client " << client->getId() << endl;
 
@@ -454,9 +438,9 @@ void ChatServer::addConnection(Network::Socket s){
     message << client->getName();
     sendMessage(message, 0);
 
-    Util::Thread::acquireLock(&lock);
-    clients.push_back( client );
-    Util::Thread::releaseLock(&lock);
+    lock.acquire();
+    clients.push_back(client);
+    lock.release();
 
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-in.wav"))->play();
 }
@@ -471,35 +455,35 @@ static char lowerCase( const char * x ){
 #endif
 
 void ChatServer::sendMessageNow(const Network::Message & message, unsigned int id){
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     for (vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
         Client * c = *it;
         if (c->getId() != id){
             message.send(c->getSocket());
         }
     }
-    Util::Thread::releaseLock( &lock );
+    lock.release();
 }
 
 void ChatServer::sendMessage( const Network::Message & message, unsigned int id ){
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         if ( c->getId() != id ){
             c->addOutputMessage( message );
         }
     }
-    Util::Thread::releaseLock( &lock );
+    lock.release();
 }
 
 void ChatServer::addMessage(const string & s, unsigned int id){
     Network::Message message;
     message << ADD_MESSAGE;
     message.path = s;
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     messages.addMessage(s);
     needUpdate();
-    Util::Thread::releaseLock( &lock );
+    lock.release();
 
     sendMessage(message, id);
     /*
@@ -516,13 +500,13 @@ void ChatServer::shutdownClientThreads(){
     debug(1) << "Shutting down client threads" << endl;
 
     /* end the output threads */
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
         Client * c = *it;
         c->kill();
         Util::Thread::joinThread(c->getOutputThread());
     }
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     
     /* tell clients that the game is starting */
     Network::Message message;
@@ -559,9 +543,9 @@ vector<Client*> ChatServer::getConnectedClients(){
 
 void ChatServer::killAllClients(){
     vector< Client * > all;
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     all = clients;
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     for ( vector< Client * >::iterator it = all.begin(); it != all.end(); it++ ){
         killClient( *it );
     }
@@ -570,7 +554,7 @@ void ChatServer::killAllClients(){
 void ChatServer::killClient(Client * c){
     int id = c->getId();
     string name = c->getName();
-    Util::Thread::acquireLock( &lock );
+    lock.acquire();
     for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); ){
         Client * client = *it;
         if ( client == c ){
@@ -598,7 +582,7 @@ void ChatServer::killClient(Client * c){
         }
     }
     needUpdate();
-    Util::Thread::releaseLock( &lock );
+    lock.release();
     addMessage("** " + name + " quit", 0);
     Resource::getSound(Filesystem::RelativePath("menu/sounds/chip-out.wav"))->play();
     Network::Message remove;
@@ -608,11 +592,13 @@ void ChatServer::killClient(Client * c){
 }
 
 bool ChatServer::logic(){
+    /*
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
     lineEdit->act(font);
     if (lineEdit->didChanged(editCounter)){
         needUpdate();
     }
+    */
 
 #if 0
     if (keyboard[Keyboard::Key_TAB]){
@@ -671,22 +657,24 @@ bool ChatServer::needToDraw(){
     return need_update;
 }
 
-void ChatServer::drawInputBox( int x, int y, const Graphics::Bitmap & work ){
+/*
+void ChatServer::drawInputBox(int x, int y, const Graphics::Bitmap & work){
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
     // work.drawingMode( Bitmap::MODE_TRANS );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     work.translucent().rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Graphics::makeColor( 0, 0, 0 ) );
     // work.drawingMode( Bitmap::MODE_SOLID );
-    int color = Graphics::makeColor( 255, 255, 255 );
-    if ( focus == INPUT_BOX ){
-        color = Graphics::makeColor( 255, 255, 0 );
+    int color = Graphics::makeColor(255, 255, 255);
+    if (focus == INPUT_BOX){
+        color = Graphics::makeColor(255, 255, 0);
     }
-    work.rectangle( x, y, x + messages.getWidth(), y + font.getHeight(), color );
+    work.rectangle(x, y, x + messages.getWidth(), y + font.getHeight(), color);
     Graphics::Bitmap input_box( work, x + 1, y, messages.getWidth(), font.getHeight() );
     // font.printf( x + 1, y, Bitmap::makeColor( 255, 255, 255 ), work, input, 0 );
     // font.printf( 0, 0, Bitmap::makeColor( 255, 255, 255 ), input_box, input, 0 );
 }
+*/
 
 void ChatServer::drawBuddyList( int x, int y, const Graphics::Bitmap & work, const Font & font ){
     Graphics::Bitmap buddyList( work, x, y, GFX_X - x - 5, 200 );
@@ -704,39 +692,39 @@ void ChatServer::drawBuddyList( int x, int y, const Graphics::Bitmap & work, con
     }
 }
 	
-int ChatServer::focusColor( Focus f ){
-    if (f == focus){
-        return Graphics::makeColor( 255, 255, 0 );
+static int focusColor(Focus want, Focus now){
+    if (want == now){
+        return Graphics::makeColor(255, 255, 0);
     }
-    return Graphics::makeColor( 255, 255, 255 );
+    return Graphics::makeColor(255, 255, 255);
 }
 
-void ChatServer::draw( const Graphics::Bitmap & work ){
+void ChatServer::draw(const Graphics::Bitmap & work, Gui::LineEdit & lineEdit, Focus focus){
     int start_x = 20;
     int start_y = 20;
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
-    background->Blit( work );
-    messages.draw( start_x, start_y, work, font );
+    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+    background->Blit(work);
+    messages.draw(start_x, start_y, work, font);
 
     // drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
 
-    drawBuddyList( start_x + messages.getWidth() + 10, start_y, work, font );
+    drawBuddyList(start_x + messages.getWidth() + 10, start_y, work, font);
 
-    font.printf( start_x, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( START_GAME ), work, "Start the game", 0 );
-    font.printf( start_x + font.textLength( "Start the game" ) + 20, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor( QUIT ), work, "Quit", 0 );
+    font.printf(start_x, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor(START_GAME, focus), work, "Start the game", 0);
+    font.printf(start_x + font.textLength("Start the game") + 20, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor(QUIT, focus), work, "Quit", 0);
 
-    lineEdit->render(work);
+    lineEdit.render(work);
 
     need_update = false;
 }
 
 void ChatServer::startThreadsHack(){
-    Util::Thread::acquireLock(&lock);
-    for ( vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++ ){
+    lock.acquire();
+    for (vector< Client * >::iterator it = clients.begin(); it != clients.end(); it++){
         Client * c = *it;
         c->startThreads();
     }
-    Util::Thread::releaseLock(&lock);
+    lock.release();
 }
 
 static void set_to_true(void * b){
@@ -744,6 +732,7 @@ static void set_to_true(void * b){
     *what = true;
 }
 
+/*
 void ChatServer::next_focus(void * self){
     ChatServer * chat = (ChatServer*) self;
     chat->focus = chat->nextFocus(chat->focus);
@@ -755,12 +744,195 @@ void ChatServer::next_focus(void * self){
     }
     chat->needUpdate();
 }
+*/
 	
 void ChatServer::run(){
-    Global::speed_counter2 = 0;
-    Graphics::Bitmap work(GFX_X, GFX_Y);
+    // Global::speed_counter2 = 0;
     Util::Thread::createThread(&acceptThread, NULL, (Util::Thread::ThreadFunction) acceptConnections, this);
 
+    Gui::LineEdit lineEdit;
+    lineEdit.location.setPosition(Gui::AbsolutePoint(20, 20 + messages.getHeight() + 5));
+    lineEdit.location.setDimensions(400, 30);
+    lineEdit.location.setRadius(5);
+
+    lineEdit.colors.body = Graphics::makeColor( 0, 0, 0 );
+    lineEdit.colors.bodyAlpha = 128;
+    lineEdit.colors.border = Graphics::makeColor( 255, 255, 0 );
+    lineEdit.setHorizontalAlign(Gui::LineEdit::T_Left);
+    lineEdit.setTextColor( Graphics::makeColor( 255, 255, 255 ) );
+
+    lineEdit.setText(welcomeMessage());
+    // lineEdit->setFont(Menu::getFont());
+    lineEdit.setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
+    lineEdit.setFocused(true);
+
+    class Logic: public Util::Logic {
+    public:
+        Logic(Gui::LineEdit & lineEdit, ChatServer & server, Focus & focus):
+        editCounter(0),
+        forceQuit(false),
+        lineEdit(lineEdit),
+        focus(focus),
+        is_done(false),
+        server(server){
+            input.set(Keyboard::Key_TAB, 0, true, 0);
+            input.set(Keyboard::Key_ENTER, 0, true, 1);
+            input.set(Keyboard::Key_ESC, 0, true, 2);
+            lineEdit.hookKey(Keyboard::Key_ENTER, enter_pressed, this);
+            lineEdit.hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
+            lineEdit.hookKey(Keyboard::Key_TAB, next_focus, this);
+        }
+
+        InputMap<int> input;
+        unsigned long long editCounter;
+        bool forceQuit;
+        Gui::LineEdit & lineEdit;
+        Focus & focus;
+        bool is_done;
+        ChatServer & server;
+
+        double ticks(double system){
+            return system;
+        }
+
+        static void enter_pressed(void * self){
+            Logic * logic = (Logic*) self;
+            logic->server.addLine(logic->lineEdit);
+        }
+
+        static Focus nextFocus(Focus f){
+            switch (f){
+                case INPUT_BOX: return START_GAME;
+                case START_GAME: return QUIT;
+                case QUIT: return INPUT_BOX;
+                default : return INPUT_BOX;
+            }
+        }
+
+        static void next_focus(void * self){
+            Logic * logic = (Logic*) self;
+            logic->focus = nextFocus(logic->focus);
+            logic->lineEdit.setFocused(logic->focus == INPUT_BOX);
+            if (logic->focus == INPUT_BOX){
+                logic->lineEdit.colors.border = Graphics::makeColor(255,255,0);
+            } else {
+                logic->lineEdit.colors.border = Graphics::makeColor(255,255,255);
+            }
+            logic->server.needUpdate();
+        }
+
+        void startGame(){
+            server.stopAccepting();
+            debug(1) << "Shut down client threads" << endl;
+            server.shutdownClientThreads();
+            debug(1) << "Finished shutting things down" << endl;
+            is_done = true;
+        }
+
+        void doQuit(){
+            server.addMessage("** Server quit", 0);
+            server.stopAccepting();
+            server.killAllClients();
+            is_done = true;
+            throw Exception::Return(__FILE__, __LINE__);
+        }
+
+        void handleInput(bool inputHadFocus){
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
+            bool select = false;
+            bool next = false;
+            bool quit = false;
+            for (vector<InputMap<int>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                const InputMap<int>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+                next = next || event[0];
+                select = select || event[1];
+                quit = quit || event[2];
+            }
+
+            if (forceQuit || (is_done && focus == QUIT) || quit){
+                doQuit();
+            }
+
+            if (next && !inputHadFocus){
+                next_focus(this);
+            }
+
+            if (select){
+                switch (focus){
+                    case START_GAME: {
+                        startGame();
+                        break;
+                    }
+                    case QUIT: {
+                        doQuit();
+                        break;
+                    }
+                    case INPUT_BOX: {
+                        Global::debug(0) << "Shouldn't get here" << endl;
+                        throw Exception::Return(__FILE__, __LINE__);
+                    }
+                }
+            }
+        }
+
+        void run(){
+            server.startThreadsHack();
+
+            /* hack to know if the input box had the focus so we don't register
+             * the TAB key too many times.
+             * if the input box has focus and tab is pressed, the next_focus()
+             * function will be executed twice, once due to the input box
+             * and once due to the loop below.
+             */
+            bool inputHadFocus = focus == INPUT_BOX;
+
+            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+            lineEdit.act(font);
+            if (lineEdit.didChanged(editCounter)){
+                server.needUpdate();
+            }
+
+            handleInput(inputHadFocus);
+        }
+
+        bool done(){
+            return is_done;
+        }
+    };
+
+    class Draw: public Util::Draw {
+    public:
+        Draw(Gui::LineEdit & lineEdit, ChatServer & server, Focus & focus):
+        lineEdit(lineEdit),
+        server(server),
+        work(GFX_X, GFX_Y),
+        focus(focus){
+        }
+
+        Gui::LineEdit & lineEdit;
+        ChatServer & server;
+        Graphics::Bitmap work;
+        Focus & focus;
+
+        void draw(){
+            if (server.needToDraw()){
+                server.draw(work, lineEdit, focus);
+                work.BlitToScreen();
+            }
+        }
+    };
+
+    Focus focus(INPUT_BOX);
+    Logic logic(lineEdit, *this, focus);
+    Draw draw(lineEdit, *this, focus);
+            
+    needUpdate();
+    Util::standardLoop(logic, draw);
+
+#if 0
     class Release{
     public:
         Release(Gui::LineEdit * line):
@@ -784,7 +956,7 @@ void ChatServer::run(){
     lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
     lineEdit->hookKey(Keyboard::Key_TAB, ChatServer::next_focus, this);
     bool done = false;
-    while ( ! done ){
+    while (! done){
         int think = Global::speed_counter2;
         Global::speed_counter2 = 0;
         while (think > 0){
@@ -871,6 +1043,7 @@ void ChatServer::run(){
             Util::rest(1);
         }
     }
+#endif
 
     debug(1) << "Chat server done" << endl;
 }
@@ -880,7 +1053,7 @@ ChatServer::~ChatServer(){
     for (vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++){
         delete *it;
     }
-    delete lineEdit;
+    // delete lineEdit;
 }
 
 #endif
