@@ -1902,8 +1902,8 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
     while (!endMatch){
         bool draw = false;
 
-        if (Global::speed_counter2 > 0){
-            runCounter += Util::gameTicks(Global::speed_counter2, gameSpeed);
+        if (Global::speed_counter3 > 0){
+            runCounter += Util::gameTicks(Global::speed_counter3, gameSpeed);
             if (runCounter > 10){
                 runCounter = 10;
             }
@@ -1936,7 +1936,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
                     gameSpeed = 0.1;
                 }
             }
-            Global::speed_counter2 = 0;
+            Global::speed_counter3 = 0;
         }
 
         if (second_counter != Global::second_counter){
@@ -1988,7 +1988,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
             buffer.BlitToScreen();
         }
 
-        while (Global::speed_counter2 == 0){
+        while (Global::speed_counter3 == 0){
             PaintownUtil::rest(1);
         }
     }

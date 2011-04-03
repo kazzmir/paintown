@@ -2559,7 +2559,7 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
     fader.setState(Gui::FadeTool::FadeIn);
   
     double runCounter = 0;
-    Global::speed_counter2 = 0;
+    Global::speed_counter3 = 0;
     Global::second_counter = 0;
     int game_time = 100;
     
@@ -2581,10 +2581,10 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
     
 	bool draw = false;
 	
-        if ( Global::speed_counter2 > 0 ){
+        if ( Global::speed_counter3 > 0 ){
             draw = true;
-            runCounter += Util::gameTicks(Global::speed_counter2);
-            Global::speed_counter2 = 0;
+            runCounter += Util::gameTicks(Global::speed_counter3);
+            Global::speed_counter3 = 0;
             while ( runCounter >= 1.0 ){
                 runCounter -= 1;
                 // Key handler
@@ -2670,7 +2670,7 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
 	    bmp.BlitToScreen();
 	}
 
-	while (Global::speed_counter2 < 1){
+	while (Global::speed_counter3 < 1){
             PaintownUtil::rest(1);
 	}
     }
