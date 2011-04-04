@@ -126,28 +126,17 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 #define MAXCOLOR 40
 #define MAXGRADIENT 50
 
-    class Main: public Util::Logic, public Util::Draw {
+    class Logic: public Util::Logic {
     public:
-        Main(const PlayerVector & players, Paintown::DisplayCharacterLoader & loader, const string & message):
-        current(0),
+        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock):
+        current(current),
         is_done(false),
-        clock(0),
-        backgroundX(0),
+        clock(clock),
+        backgroundX(backgroundX),
+        boxesPerLine(boxesPerLine),
         players(players),
         loader(loader),
-        beep(Filesystem::find(Filesystem::RelativePath("sounds/beep1.wav")).path()),
-        work(GFX_X, GFX_Y),
-        background(Global::titleScreen().path()),
-        temp(120, 120),
-        preview(GFX_X / 2, GFX_Y / 2),
-        reflection(GFX_X / 2, GFX_Y / 2),
-        boxSize(80),
-        startX(GFX_X / 2 - 20),
-        startY(20),
-        boxesPerLine((work.getWidth() - startX) / (boxSize + 10)),
-        boxesPerColumn((work.getHeight() - startY) / (boxSize + 10)),
-        top(0),
-        message(message){
+        beep(Filesystem::find(Filesystem::RelativePath("sounds/beep1.wav")).path()){
             input.set(Configuration::config( 0 ).getRight(), 300, false, Select::Right);
             input.set(Configuration::config( 0 ).getUp(), 300, false, Select::Up);
             input.set(Configuration::config( 0 ).getDown(), 300, false, Select::Down);
@@ -169,47 +158,20 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             /* wait for the player to let go of the choose button */
             InputManager::waitForRelease(input, Select::Choose);
 
-            Util::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
-
-            Util::blend_palette( selectedGradient, MAXCOLOR / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );
-            Util::blend_palette( selectedGradient + MAXCOLOR / 2, MAXCOLOR / 2, Graphics::makeColor( 0, 255, 0 ), Graphics::makeColor( 0, 128, 0 ) );
-
-            /* fade from yellow to some reddish color */
-            Util::blend_palette(gradient, MAXGRADIENT / 2, Graphics::makeColor( 255, 255, 0 ), Graphics::makeColor(0xff, 0x33, 0x11));
-            Util::blend_palette(gradient + MAXGRADIENT / 2, MAXGRADIENT / 2, Graphics::makeColor( 0xff, 0x33, 0x11 ), Graphics::makeColor(255, 255, 0));
         }
 
-        unsigned int current;
+        unsigned int & current;
         bool is_done;
-        unsigned int clock;
-        int backgroundX;
+        unsigned int & clock;
+        int & backgroundX;
+        int & boxesPerLine;
     
         InputMap<Select::Input> input;
 
         const PlayerVector & players;
         Paintown::DisplayCharacterLoader & loader;
         Sound beep;
-    
-        Graphics::Bitmap work;
-        Graphics::Bitmap background;
-        Graphics::Bitmap temp;
-        Graphics::Bitmap preview;
-        Graphics::Bitmap reflection;
-
-        const int boxSize;
-        const int startX;
-        const int startY;
-        const int boxesPerLine;
-        const int boxesPerColumn;
-        int top;
-
-        const string & message;
-
-        int selectedGradient[MAXCOLOR];
-        int unselectedGradient[3];
-
-        int gradient[MAXGRADIENT];	
-
+        
         bool done(){
             return is_done;
         }
@@ -221,9 +183,6 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
             if (clock % 5 == 0){
                 backgroundX -= 1;
-                if (backgroundX < - work.getWidth()){
-                    backgroundX = 0;
-                }
             }
 
             bool choose = false;
@@ -309,14 +268,6 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 }
             }
 
-            while (current < top){
-                top -= boxesPerLine;
-            }
-
-            while (current >= top + boxesPerLine * boxesPerColumn){
-                top += boxesPerLine;
-            }
-
             if (current != old){
                 loader.update(players[current].guy);
             }
@@ -329,15 +280,86 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         }
 
         double ticks(double system){
-            return system;
+            return system * Global::LOGIC_MULTIPLIER;
         }
+
+    };
+
+    class Draw: public Util::Draw {
+    public:
+        Draw(const PlayerVector & players, unsigned int & current, int & backgroundX, int & boxesPerLine, const string & message, Paintown::DisplayCharacterLoader & loader, unsigned int & clock):
+        players(players),
+        current(current),
+        message(message),
+        backgroundX(backgroundX),
+        clock(clock),
+        loader(loader),
+        work(GFX_X, GFX_Y),
+        background(Global::titleScreen().path()),
+        temp(120, 120),
+        preview(GFX_X / 2, GFX_Y / 2),
+        reflection(GFX_X / 2, GFX_Y / 2),
+        boxSize(80),
+        boxesPerLine(boxesPerLine),
+        boxesPerColumn((work.getHeight() - startY) / (boxSize + 10)),
+        startX(GFX_X / 2 - 20),
+        startY(20),
+        top(0){
+            boxesPerLine = (work.getWidth() - startX) / (boxSize + 10);
+            Util::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
+
+            Util::blend_palette( selectedGradient, MAXCOLOR / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );
+            Util::blend_palette( selectedGradient + MAXCOLOR / 2, MAXCOLOR / 2, Graphics::makeColor( 0, 255, 0 ), Graphics::makeColor( 0, 128, 0 ) );
+
+            /* fade from yellow to some reddish color */
+            Util::blend_palette(gradient, MAXGRADIENT / 2, Graphics::makeColor( 255, 255, 0 ), Graphics::makeColor(0xff, 0x33, 0x11));
+            Util::blend_palette(gradient + MAXGRADIENT / 2, MAXGRADIENT / 2, Graphics::makeColor( 0xff, 0x33, 0x11 ), Graphics::makeColor(255, 255, 0));
+
+        }
+
+        const PlayerVector & players;
+        unsigned int & current;
+        const string & message;
+        int & backgroundX;
+        unsigned int & clock;
+        Paintown::DisplayCharacterLoader & loader;
+ 
+        Graphics::Bitmap work;
+        Graphics::Bitmap background;
+        Graphics::Bitmap temp;
+        Graphics::Bitmap preview;
+        Graphics::Bitmap reflection;
+
+        const int boxSize;
+        int & boxesPerLine;
+        const int boxesPerColumn;
+        const int startX;
+        const int startY;
+        int top;
+
+        int selectedGradient[MAXCOLOR];
+        int unselectedGradient[3];
+
+        int gradient[MAXGRADIENT];	
 
         void draw(){
             Paintown::DisplayCharacter * character = players[current].guy;
 
+            if (backgroundX < - work.getWidth()){
+                backgroundX += work.getWidth();
+            }
+
+            while (current < top){
+                top -= boxesPerLine;
+            }
+
+            while (current >= top + boxesPerLine * boxesPerColumn){
+                top += boxesPerLine;
+            }
+
             // background.Stretch( work );
-            background.Blit( backgroundX, 0, work );
-            background.Blit( work.getWidth() + backgroundX, 0, work );
+            background.Blit(backgroundX, 0, work);
+            background.Blit(work.getWidth() + backgroundX, 0, work);
             const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
             if (character->isLoaded()){
@@ -394,7 +416,6 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             font.printf( 10, 10, Graphics::makeColor( 255, 255, 255 ), work, message, 0 );
 
             if (!loader.done()){
-
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10 );
                 font.printf(1, 1, Graphics::makeColor(200,0,0), work, "Loading...", 0);
             }
@@ -426,7 +447,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                     font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Graphics::makeColor(255, 255, 255), box, displayed->getName(), 0);
                 }
 
-                if (i == (unsigned int) current){
+                if (i == current){
                     box.border(0, 3, selectedGradient[clock % MAXCOLOR]);
                 } else {
                     for (int border = 0; border < 3; border++){
@@ -474,15 +495,26 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
 
-    Main main(players, loader, message);
+    unsigned int current = 0;
+    int backgroundX = 0;
+    int boxesPerLine = 0;
+    unsigned int clock = 0;
+    Logic logic(players, current, loader, backgroundX, boxesPerLine, clock);
+    Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock);
 
     try{
-        Util::standardLoop(main, main);
+        Util::standardLoop(logic, draw);
     } catch (const Exception::Return & fail){
         loader.stop();
         Util::Thread::joinThread(loadingThread);
         throw fail;
     }
+
+    loader.stop();
+    Util::Thread::joinThread(loadingThread);
+
+    return logic.getCurrent();
+
 
 #if 0
     try{
@@ -818,11 +850,6 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         Global::debug(0, DEBUG_CONTEXT) << "Error during select player screen: " << ex.getTrace() << endl;
     }
 #endif
-
-    loader.stop();
-    Util::Thread::joinThread(loadingThread);
-
-    return main.getCurrent();
 }
 
 static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, const string & message, const Level::LevelInfo & info, int & remap){
