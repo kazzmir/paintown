@@ -178,7 +178,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
         void run(){
             Paintown::DisplayCharacter * character = players[current].guy;
-            int old = current;
+            unsigned int old = current;
             clock += 1;
 
             if (clock % 5 == 0){
@@ -258,7 +258,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             Handler handler(choose, character, loader, beep, current, boxesPerLine, input);
             InputManager::handleEvents(input, handler);
 
-            if (current >= (signed) players.size()){
+            if (current >= players.size()){
                 current = players.size() - 1;
             }
 
