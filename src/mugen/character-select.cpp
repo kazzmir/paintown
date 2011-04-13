@@ -2550,33 +2550,163 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     }
 }
 
-void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp){
-    Graphics::Bitmap workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-    bool done = false;
-    bool escaped = false;
-    
-    // Set the fade state
-    fader.setState(Gui::FadeTool::FadeIn);
-  
-    double runCounter = 0;
-    Global::speed_counter3 = 0;
-    Global::second_counter = 0;
-    int game_time = 100;
-    
-    // Set game keys temporary
-    InputMap<Mugen::Keys> gameInput = Mugen::getPlayer1Keys(20);
-    
-    // Run select screen bgm
+static void startMusic(const Filesystem::AbsolutePath & systemFile, const string & which){
     try {
-	std::string music = Util::probeDef(systemFile, "music", "select.bgm");
-	Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
+	string music = Mugen::Util::probeDef(systemFile, "music", which);
+	Music::loadSong(Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
 	Music::pause();
 	Music::play();
     } catch (const MugenException & ex){
     } catch (const Filesystem::NotFound & fail){
         Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
     }
+}
+
+void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp){
+    bool escaped = false;
     
+    Gui::FadeTool fader;
+    // Set the fade state
+    fader.setState(Gui::FadeTool::FadeIn);
+  
+    // Run select screen background music
+    startMusic(systemFile, "select.bgm");
+
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(Gui::FadeTool & fader, MugenSound * cancelSound, CharacterSelect & select, Background * background, Grid & grid, Cursor & player1Cursor, Cursor & player2Cursor, FontHandler & titleFont):
+        is_done(false),
+        escaped(false),
+        fader(fader),
+        cancelSound(cancelSound),
+        select(select),
+        background(background),
+        grid(grid),
+        player1Cursor(player1Cursor),
+        player2Cursor(player2Cursor),
+        titleFont(titleFont){
+            gameInput = Mugen::getPlayer1Keys(20);
+        }
+
+        bool is_done;
+        bool escaped;
+        Gui::FadeTool & fader;
+        MugenSound * cancelSound;
+        InputMap<Mugen::Keys> gameInput;
+        CharacterSelect & select;
+        Background * background;
+        Grid & grid;
+        Cursor & player1Cursor;
+        Cursor & player2Cursor;
+        FontHandler & titleFont;
+
+        bool didEscape() const {
+            return escaped;
+        }
+
+        double ticks(double system){
+            return Util::gameTicks(system);
+        }
+
+        void run(){
+            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput);
+            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+                if (event[Mugen::Esc]){
+                    is_done = escaped = true;
+                    fader.setState(Gui::FadeTool::FadeOut);
+                    // play cancel sound
+                    if (cancelSound){
+                        cancelSound->play();
+                    }
+                    InputManager::waitForRelease(gameInput, Mugen::Esc);
+                }
+            }
+
+            /* *FIXME remove later when solution is found */
+            if (select.checkPlayerData()){
+                is_done = true;
+                fader.setState(Gui::FadeTool::FadeOut);
+            }
+
+            fader.act();
+
+            background->act();
+
+            grid.lock();
+            grid.act(player1Cursor, player2Cursor);
+
+            player1Cursor.act(grid);
+            player2Cursor.act(grid);
+            grid.unlock();
+
+            titleFont.act();
+        }
+
+        bool done(){
+            return is_done || fader.getState() == Gui::FadeTool::EndFade;
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(const Graphics::Bitmap & buffer, Background * background, Grid & grid, Cursor & player1Cursor, Cursor & player2Cursor, FontHandler & titleFont, Gui::FadeTool & fader, const string & title):
+        buffer(buffer),
+        workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT),
+        background(background),
+        grid(grid),
+        player1Cursor(player1Cursor),
+        player2Cursor(player2Cursor),
+        titleFont(titleFont),
+        fader(fader),
+        title(title){
+        }
+
+        const Graphics::Bitmap & buffer;
+        Graphics::Bitmap workArea;
+        Background * background;
+        Grid & grid;
+        Cursor & player1Cursor;
+        Cursor & player2Cursor;
+        FontHandler & titleFont;
+        Gui::FadeTool & fader;
+        const string & title;
+
+        void draw(){
+            background->renderBackground(0,0,workArea);
+	    // Render Grid
+            grid.lock();
+	    grid.render(workArea);
+	    // Render cursors
+	    player1Cursor.render(grid, workArea);
+	    player2Cursor.render(grid, workArea);
+            grid.unlock();
+	    
+	    // render title
+	    titleFont.render(title, workArea);
+	    
+	    // render Foregrounds
+	    background->renderForeground(0,0,workArea);
+	    
+	    // render fades
+	    fader.draw(workArea);
+	    
+	    // Finally render to screen
+	    workArea.Stretch(buffer);
+	    buffer.BlitToScreen();
+        }
+    };
+
+    Logic logic(fader, cancelSound, *this, background, grid, player1Cursor, player2Cursor, titleFont);
+    Draw draw(bmp, background, grid, player1Cursor, player2Cursor, titleFont, fader, title);
+
+    PaintownUtil::standardLoop(logic, draw);
+    
+#if 0
     while ( ! done && fader.getState() != Gui::FadeTool::EndFade ){
     
 	bool draw = false;
@@ -2674,11 +2804,12 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
             PaintownUtil::rest(1);
 	}
     }
+#endif
 
     quitSearching = true;
     
     // **FIXME Hack figure something out
-    if (escaped){
+    if (logic.didEscape()){
 	throw Exception::Return(__FILE__, __LINE__);
     }
 }
