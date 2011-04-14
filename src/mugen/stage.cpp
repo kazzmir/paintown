@@ -15,6 +15,7 @@
 #include "util/init.h"
 #include "state.h"
 
+#include "util/events.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/bitmap.h"
@@ -1891,14 +1892,150 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 
     unsigned int second_counter = Global::second_counter;
 
-    bool endMatch = false;
-
-    bool selector = true;
-
     // Put character in continue state
     std::vector<std::string> empty;
     character->changeState(*this, Mugen::Continue, empty);
 
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(InputMap<Mugen::Keys> & input, Mugen::Character * character, Mugen::Stage * stage):
+        is_done(false),
+        answer(false),
+        selector(true),
+        input(input),
+        character(character),
+        stage(stage){
+        }
+
+        bool is_done;
+        bool answer;
+        bool selector;
+        InputMap<Mugen::Keys> & input;
+        Mugen::Character * character;
+        Mugen::Stage * stage;
+
+        bool getAnswer() const {
+            return answer;
+        }
+
+        bool done(){
+            return is_done;
+        }
+
+        bool selectedYes() const {
+            return selector;
+        }
+
+        void run(){
+            InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
+            if (out[Mugen::Left] || out[Mugen::Right]){
+                selector = !selector;
+            }
+            if (out[Mugen::A] || out[Mugen::B] || out[Mugen::C] || out[Mugen::X] || out[Mugen::Y] || out[Mugen::Z]){
+                if (selector){
+                    is_done = true;
+                    answer = true;
+                } else {
+                    is_done = true;
+                    answer = false;
+                }
+            }
+            // If enter return true
+            if (out[Mugen::Esc]){
+                is_done = true;
+                answer = false;
+            }
+            std::vector<Paintown::Object *> add;
+            character->act(&add, stage, &add);
+        }
+
+        double ticks(double system){
+            return Util::gameTicks(system);
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(const Graphics::Bitmap & buffer, Graphics::Bitmap * board, Mugen::Background * background, int reflectionIntensity, Mugen::Character * character, double cameray, int shadowIntensity, int shadowColor, double shadowYscale, int shadowFadeRangeHigh, int shadowFadeRangeMid, MugenFont & font, const Logic & logic):
+        buffer(buffer),
+        board(board),
+        background(background),
+        reflectionIntensity(reflectionIntensity),
+        character(character),
+        cameray(cameray),
+        shadowIntensity(shadowIntensity),
+        shadowColor(shadowColor),
+        shadowYscale(shadowYscale),
+        shadowFadeRangeHigh(shadowFadeRangeHigh),
+        shadowFadeRangeMid(shadowFadeRangeMid),
+        font(font),
+        logic(logic){
+        }
+
+        const Graphics::Bitmap & buffer;
+        Graphics::Bitmap * board;
+        Mugen::Background * background;
+        int reflectionIntensity;
+        Mugen::Character * character;
+        double cameray;
+
+        int shadowIntensity;
+        int shadowColor;
+        double shadowYscale;
+        int shadowFadeRangeHigh;
+        int shadowFadeRangeMid;
+    
+        MugenFont & font;
+        const Logic & logic;
+
+        void draw(){
+            // Render background
+            background->renderBackground(0, 0, *board);
+        
+            // do darkened background
+            // Bitmap::drawingMode(Bitmap::MODE_TRANS);
+            Graphics::Bitmap::transBlender(0,0,0,150);
+	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Graphics::makeColor(0,0,0));
+	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
+            
+            // Render character
+            if (reflectionIntensity > 0){
+                character->drawReflection(board, -(DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
+            }
+
+	    /* Shadow */
+	    character->drawShade(board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+        
+            character->draw(board, -(DEFAULT_WIDTH / 2), (int) cameray); 
+            
+            // Render continue text
+            font.render(DEFAULT_WIDTH/2, 40, 0, 0, *board, "Continue?" );
+
+            // Render yes and no
+            if (logic.selectedYes()){
+                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 4, *board, "Yes");
+                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 0, *board, "No");
+            } else {
+                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 0, *board, "Yes");
+                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 4, *board, "No");
+            }
+        
+            // Foreground
+            background->renderForeground(0, 0, *board);
+
+            board->Stretch(buffer);
+            buffer.BlitToScreen();
+        }
+    };
+
+    Logic logic(input, character, this);
+    Draw draw(buffer, board, background, reflectionIntensity, character, cameray, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeHigh, shadowFadeRangeMid, font, logic);
+
+    PaintownUtil::standardLoop(logic, draw);
+
+    return logic.getAnswer();
+
+#if 0
     while (!endMatch){
         bool draw = false;
 
@@ -1992,11 +2129,12 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
             PaintownUtil::rest(1);
         }
     }
+#endif
 
     /* FIXME: what should we do here? I just added 'return false' to
      * silence the compiler.
      */
-    return false;
+    // return false;
 }
     
 Mugen::Character * Mugen::Stage::getEnemy(const Mugen::Character * who) const {
