@@ -1572,8 +1572,8 @@ use = staticEnv
 static = SConscript('src/SConscript', variant_dir = buildDirStatic, exports = ['use'] )
 
 scripts = Split("""
-src/script/modules/paintown.py
-src/script/modules/paintown.rb
+src/paintown-engine/script/modules/paintown.py
+src/paintown-engine/script/modules/paintown.rb
 """);
 
 Default(Install('data/scripts', scripts))

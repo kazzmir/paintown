@@ -4,7 +4,7 @@
 #ifdef HAVE_PYTHON
 
 #include <Python.h>
-#include "script/script.h"
+#include "../script.h"
 #include <string>
 #include "util/file-system.h"
 

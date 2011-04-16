@@ -16,8 +16,8 @@ src/util/input/text-input.cpp
 src/util/input/input-manager.cpp)
 
 set(SCRIPT_SRC
-src/script/script.cpp
-src/script/modules/python.cpp)
+src/paintown-engine/script/script.cpp
+src/paintown-engine/script/modules/python.cpp)
 
 set(OGG_SRC
 src/util/ogg/logg.c)

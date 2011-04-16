@@ -4,7 +4,7 @@
 
 #include "paintown-engine/object/character.h"
 #include "paintown-engine/object/player-common.h"
-#include "script/script.h"
+#include "../script.h"
 #include "python.h"
 #include <string>
 #include "util/debug.h"

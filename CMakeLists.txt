@@ -255,7 +255,7 @@ add_library(algif_module src/util/gif/algif.c src/util/gif/gif.c src/util/gif/lz
 add_library(gme_module src/util/gme/Ay_Apu.cpp src/util/gme/Ay_Cpu.cpp src/util/gme/Ay_Emu.cpp src/util/gme/Blip_Buffer.cpp src/util/gme/Classic_Emu.cpp src/util/gme/Data_Reader.cpp src/util/gme/Dual_Resampler.cpp src/util/gme/Effects_Buffer.cpp src/util/gme/Fir_Resampler.cpp src/util/gme/Gb_Apu.cpp src/util/gme/Gb_Cpu.cpp src/util/gme/Gb_Oscs.cpp src/util/gme/Gbs_Emu.cpp src/util/gme/gme.cpp src/util/gme/Gme_File.cpp src/util/gme/Gym_Emu.cpp src/util/gme/Hes_Apu.cpp src/util/gme/Hes_Cpu.cpp src/util/gme/Hes_Emu.cpp src/util/gme/Kss_Cpu.cpp src/util/gme/Kss_Emu.cpp src/util/gme/Kss_Scc_Apu.cpp src/util/gme/M3u_Playlist.cpp src/util/gme/Multi_Buffer.cpp src/util/gme/Music_Emu.cpp src/util/gme/Nes_Apu.cpp src/util/gme/Nes_Cpu.cpp src/util/gme/Nes_Fme7_Apu.cpp src/util/gme/Nes_Namco_Apu.cpp src/util/gme/Nes_Oscs.cpp src/util/gme/Nes_Vrc6_Apu.cpp src/util/gme/Nsfe_Emu.cpp src/util/gme/Nsf_Emu.cpp src/util/gme/Sap_Apu.cpp src/util/gme/Sap_Cpu.cpp src/util/gme/Sap_Emu.cpp src/util/gme/Sms_Apu.cpp src/util/gme/Snes_Spc.cpp src/util/gme/Spc_Cpu.cpp src/util/gme/Spc_Dsp.cpp src/util/gme/Spc_Emu.cpp src/util/gme/Vgm_Emu.cpp src/util/gme/Vgm_Emu_Impl.cpp src/util/gme/Ym2413_Emu.cpp src/util/gme/Ym2612_Emu.cpp)
 
 #Script directory
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/script)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine/script)
 
 add_library(game_module ${GAME_SRC})
 add_library(mugen_module ${MUGEN_SRC})
@@ -296,7 +296,7 @@ target_link_libraries(paintown ${GROUP_START} base_module level_module factory_m
 
 # Copy scripts and setup lex files
 if(UNIX OR LINUX OR CYGWIN OR MINGW)
-  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/src/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/src/paintown-engine/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/src/paintown-engine/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
 endif(UNIX OR LINUX OR CYGWIN OR MINGW)
 

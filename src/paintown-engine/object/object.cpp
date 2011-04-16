@@ -3,7 +3,7 @@
 #include "object_attack.h"
 #include "stimulation.h"
 #include "util/ebox.h"
-#include "script/script.h"
+#include "../script/script.h"
 #include <math.h>
 #include <exception>
 #include <iostream>

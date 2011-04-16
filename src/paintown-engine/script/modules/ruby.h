@@ -3,7 +3,7 @@
 
 #ifdef HAVE_RUBY
 
-#include "script/script.h"
+#include "../script.h"
 #include <string>
 #include "util/file-system.h"
 
