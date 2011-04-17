@@ -4522,7 +4522,37 @@ public:
                 } else if (simple == "mul"){
                     simple >> controller.multiplyRed >> controller.multiplyGreen >> controller.multiplyBlue;
                 } else if (simple == "sinadd"){
-                    simple >> controller.sinRed >> controller.sinGreen >> controller.sinBlue >> controller.period;
+                    try{
+                        simple >> controller.sinRed;
+                    } catch (const Ast::Exception & fail){
+                        ostringstream out;
+                        out << "Could not get the red component of sinadd. " << fail.getTrace();
+                        throw MugenException(out.str(), __FILE__, __LINE__);
+                    }
+                   
+                    try{
+                        simple >> controller.sinGreen;
+                    } catch (const Ast::Exception & fail){
+                        ostringstream out;
+                        out << "Could not get the green component of sinadd. " << fail.getTrace();
+                        throw MugenException(out.str(), __FILE__, __LINE__);
+                    }
+
+                    try{
+                        simple >> controller.sinBlue;
+                    } catch (const Ast::Exception & fail){
+                        ostringstream out;
+                        out << "Could not get the blue component of sinadd. " << fail.getTrace();
+                        throw MugenException(out.str(), __FILE__, __LINE__);
+                    }
+
+                    try{
+                        simple >> controller.period;
+                    } catch (const Ast::Exception & fail){
+                        ostringstream out;
+                        out << "Could not get the period component of sinadd. " << fail.getTrace();
+                        throw MugenException(out.str(), __FILE__, __LINE__);
+                    }
                 } else if (simple == "invertall"){
                     simple >> controller.invert;
                 } else if (simple == "color"){
