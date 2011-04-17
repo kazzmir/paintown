@@ -104,7 +104,7 @@ test/util/gui/coordinate.cpp
 test/util/ftalleg.cpp
 test/util/ebox.cpp
 test/factory/font_render.cpp
-test/script/script.cpp
+test/paintown-engine/script/script.cpp
 test/factory/heart_factory.cpp
 test/util/timedifference.cpp
 test/util/language-string.cpp

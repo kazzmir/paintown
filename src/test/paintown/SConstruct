@@ -34,7 +34,7 @@ test-parser/cmd.cpp
 test/object/object.cpp
 test/object/object_attack.cpp
 test/util/sound.cpp
-test/script/script.cpp
+test/paintown-engine/script/script.cpp
 test/util/load_exception.cpp
 test/util/network/network.cpp
 test/mugen/ast/ast.cpp
@@ -147,7 +147,7 @@ test/paintown-engine/object/network_player.cpp
 test/paintown-engine/object/network_character.cpp
 test/util/sound.cpp
 test/mugen/ast/ast.cpp
-test/script/script.cpp
+test/paintown-engine/script/script.cpp
 test/util/load_exception.cpp
 test/util/network/network.cpp
 test/util/input/input-manager.cpp
@@ -261,7 +261,7 @@ test/paintown-engine/object/object.cpp
 test/paintown-engine/object/object_attack.cpp
 test/paintown-engine/object/character.cpp
 test/paintown-engine/object/player.cpp
-test/script/script.cpp
+test/paintown-engine/script/script.cpp
 test/util/token_exception.cpp
 test/util/tokenreader.cpp
 test/util/token.cpp
