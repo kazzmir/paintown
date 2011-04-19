@@ -412,9 +412,9 @@ static const char * getANumber(){
     }
 }
 
-static const char * propertyLastClientName = "network:last-client-name";
-static const char * propertyLastClientHost = "network:last-client-host";
-static const char * propertyLastClientPort = "network:last-client-port";
+const char * propertyLastClientName = "network:last-client-name";
+const char * propertyLastClientHost = "network:last-client-host";
+const char * propertyLastClientPort = "network:last-client-port";
 
 enum ClientActions{
     Next,
@@ -423,21 +423,25 @@ enum ClientActions{
     Action
 };
 
-static void runClient(const string & name, const string & host, const string & port, InputMap<ClientActions> & input){
+void runClient(const string & name, const string & host, const string & port){
     Configuration::setStringProperty(propertyLastClientName, name);
     Configuration::setStringProperty(propertyLastClientHost, host);
-    Configuration::getStringProperty(propertyLastClientPort, port);
+    Configuration::setStringProperty(propertyLastClientPort, port);
     istringstream stream(port);
     int portNumber;
     stream >> portNumber;
     Network::Socket socket = Network::connect(host, portNumber);
-    ChatClient chat(socket, name);
-    InputManager::waitForRelease(input, Action);
-    chat.run();
-    if (chat.isFinished()){
-        playGame(socket);
+    try{
+        ChatClient chat(socket, name);
+        chat.run();
+        if (chat.isFinished()){
+            playGame(socket);
+        }
+        Network::close(socket);
+    } catch (...){
+        Network::close(socket);
+        throw;
     }
-    Network::close(socket);
 }
 
 enum Focus{
@@ -602,7 +606,8 @@ void networkClient(){
                         case Connect: {
                             is_done = true;
                             try{
-                                runClient(nameInput.getText(), hostInput.getText(), portInput.getText(), input);
+                                InputManager::waitForRelease(input, Action);
+                                runClient(nameInput.getText(), hostInput.getText(), portInput.getText());
                             } catch (const NetworkException & e){
                                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
                                 popup(work, font, e.getMessage());

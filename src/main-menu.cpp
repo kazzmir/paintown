@@ -13,6 +13,9 @@
 #include "menu/menu-exception.h"
 #include "util/input/input-manager.h"
 #include "paintown-engine/game/mod.h"
+#include "paintown-engine/network/client.h"
+#include "paintown-engine/network/server.h"
+#include "util/network/network.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 #include "util/timedifference.h"
@@ -24,7 +27,6 @@
 #include "util/parameter.h"
 #include "globals.h"
 #include "util/debug.h"
-#include "paintown-engine/network/server.h"
 #include "configuration.h"
 #include "util/init.h"
 #include "mugen/config.h"
@@ -40,6 +42,7 @@ static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-
 static const char * DEBUG_ARG[] = {"-l", "--debug", "debug"};
 static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
+static const char * NETWORK_JOIN_ARG[] = {"network-join"};
 static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
 static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
 static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
@@ -90,21 +93,22 @@ static const char * all(const char * args[], const int num, const char separate 
 }
 
 static void showOptions(){
-	Global::debug(0) << "Paintown by Jon Rafkind" << endl;
-        Global::debug(0) << "Command line options" << endl;
-	Global::debug(0) << " " << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
-	Global::debug(0) << " " << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2().path() << endl;
-	Global::debug(0) << " " << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
-	Global::debug(0) << " " << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
-        Global::debug(0) << " " << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
-        Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
-        Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
-        Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
-        Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
+    Global::debug(0) << "Paintown by Jon Rafkind" << endl;
+    Global::debug(0) << "Command line options" << endl;
+    Global::debug(0) << " " << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
+    Global::debug(0) << " " << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2().path() << endl;
+    Global::debug(0) << " " << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
+    Global::debug(0) << " " << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
+    Global::debug(0) << " " << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
+    Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
+    Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
+    Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
+    Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
 #ifdef HAVE_NETWORKING
-	Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
+    Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
+    Global::debug(0) << " " << all(NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG)) << " [<name>,<server ip>,<port>]: Join a network game directly. If not given, ip and port will be read from the configuration file if one exists otherwise they default to 127.0.0.1:7887. The name will be randomly generated if not given. Do not put spaces between the commas in the optional arguments." << endl;
 #endif
-	Global::debug(0) << endl;
+    Global::debug(0) << endl;
 }
 
 static void addArgs(vector<const char *> & args, const char * strings[], int num){
@@ -131,19 +135,6 @@ static void setMugenMotif(const Filesystem::AbsolutePath & path){
 static Filesystem::AbsolutePath mainMenuPath(){
     string menu = Paintown::Mod::getCurrentMod()->getMenu();
     return Filesystem::find(Filesystem::RelativePath(menu));
-    /*
-    string file = Filesystem::find(currentMod());
-    TokenReader tr(file);
-    Token * head = tr.readToken();
-    Token * menu = head->findToken("game/menu");
-    if (menu == NULL){
-        throw LoadException(file + " does not contain a game/menu token");
-    }
-    string path;
-    *menu >> path;
-    // string path = "/menu/main.txt"
-    return Filesystem::find(path);
-    */
 }
 
 /*
@@ -187,6 +178,31 @@ static void runMugenWatch(const string & player1, const string & player2, const 
     Mugen::Game::startWatch(player1, player2, stage);
 }
 
+static vector<string> split(string input, char splitter){
+    size_t find = input.find(splitter);
+    vector<string> out;
+    while (find != string::npos){
+        out.push_back(input.substr(0, find));
+        input.erase(0, find + 1);
+        find = input.find(splitter);
+    }
+    out.push_back(input);
+    return out;
+}
+
+static void parseNetworkJoin(const char * input, string & port, string & host, string & name){
+    vector<string> args = split(input, ',');
+    if (args.size() > 2){
+        port = args[2];
+    }
+    if (args.size() > 1){
+        host = args[1];
+    }
+    if (args.size() > 0){
+        name = args[0];
+    }
+}
+
 int paintown_main( int argc, char ** argv ){
     
     /* -1 means use whatever is in the configuration */
@@ -198,6 +214,17 @@ int paintown_main( int argc, char ** argv ){
     bool just_network_server = false;
     bool allow_quit = true;
     Collector janitor;
+
+    struct NetworkJoin{
+        NetworkJoin():
+        enabled(false){
+        }
+
+        bool enabled;
+        string name;
+        string host;
+        string port;
+    } networkJoin;
 
     struct MugenInstant{
         enum Kind{
@@ -232,18 +259,22 @@ int paintown_main( int argc, char ** argv ){
     ADD_ARGS(MUGEN_INSTANT_ARG);
 #ifdef HAVE_NETWORKING
     ADD_ARGS(NETWORK_SERVER_ARG);
+    ADD_ARGS(NETWORK_JOIN_ARG);
 #endif
 #undef ADD_ARGS
 
+    /* don't use the Configuration class here because its not loaded until init()
+     * is called.
+     */
     for ( int q = 1; q < argc; q++ ){
         if (isArg(argv[q], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG))){
             gfx = Global::FULLSCREEN;
-        } else if ( isArg( argv[ q ], DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG) ) ){
+        } else if (isArg(argv[q], DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG))){
             q += 1;
-            if ( q < argc ){
-                Util::setDataPath( argv[ q ] );
+            if (q < argc){
+                Util::setDataPath(argv[q]);
             }
-        } else if ( isArg( argv[ q ], MUSIC_ARG, NUM_ARGS(MUSIC_ARG) ) ){
+        } else if (isArg(argv[q], MUSIC_ARG, NUM_ARGS(MUSIC_ARG))){
             music_on = false;
         } else if (isArg(argv[q], MUGEN_ARG, NUM_ARGS(MUGEN_ARG))){
             mugen = true;
@@ -270,15 +301,27 @@ int paintown_main( int argc, char ** argv ){
 
         } else if (isArg(argv[q], DEBUG_ARG, NUM_ARGS(DEBUG_ARG))){
             q += 1;
-            if ( q < argc ){
-                istringstream i( argv[ q ] );
+            if (q < argc){
+                istringstream i(argv[q]);
                 int f;
                 i >> f;
-                Global::setDebug( f );
+                Global::setDebug(f);
             }
 #ifdef HAVE_NETWORKING
         } else if (isArg(argv[q], NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG))){
             just_network_server = true;
+        } else if (isArg(argv[q], NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG))){
+            networkJoin.enabled = true;
+            string port;
+            string host;
+            string name;
+            q += 1;
+            if (q < argc){
+                parseNetworkJoin(argv[q], port, host, name);
+                networkJoin.port = port;
+                networkJoin.host = host;
+                networkJoin.name = name;
+            }
 #endif
         } else {
             const char * arg = argv[q];
@@ -338,6 +381,26 @@ int paintown_main( int argc, char ** argv ){
 #ifdef HAVE_NETWORKING
                 Network::networkServer();
 #endif
+            } else if (networkJoin.enabled){
+                string port = networkJoin.port;
+                string host = networkJoin.host;
+                string name = networkJoin.name;
+                if (port == ""){
+                    /* FIXME: replace 7887 with a constant */
+                    port = Configuration::getStringProperty(Network::propertyLastClientPort, "7887");
+                }
+                if (host == ""){
+                    host = Configuration::getStringProperty(Network::propertyLastClientHost, "127.0.0.1");
+                }
+                if (name == ""){
+                    name = Configuration::getStringProperty(Network::propertyLastClientName, "player");
+                }
+                Global::debug(1) << "Client " << name << " " << host << " " << port << endl;
+                try{
+                    Network::runClient(name, host, port);
+                } catch (const Network::NetworkException & fail){
+                    Global::debug(0) << "Error running the network client: " << fail.getMessage() << endl;
+                }
             } else if (mugen){
                 setMugenMotif(mainMenuPath());
                 Mugen::run();
