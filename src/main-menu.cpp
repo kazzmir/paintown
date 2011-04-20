@@ -371,6 +371,8 @@ int paintown_main( int argc, char ** argv ){
     InputManager input;
     Music music(music_on);
 
+    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+
     while (true){
         bool normal_quit = false;
         try{
@@ -411,10 +413,6 @@ int paintown_main( int argc, char ** argv ){
                 setMugenMotif(mainMenuPath());
                 runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
             } else {
-                using namespace Util;
-                Parameter<ReferenceCount<Menu::FontInfo> > defaultFont(new Menu::RelativeFontInfo(Global::DEFAULT_FONT,
-                                                                                                              Configuration::getMenuFontWidth(),
-                                                                                                              Configuration::getMenuFontHeight()));
                 Menu::Menu game(mainMenuPath());
                 game.run(Menu::Context());
             }
