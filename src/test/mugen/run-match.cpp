@@ -16,7 +16,9 @@ void run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/k
     string stagePath = "mugen/stages/kfm.def";
     Mugen::Character kfm1(Filesystem::find(Filesystem::RelativePath(path1)));
     Mugen::Character kfm2(Filesystem::find(Filesystem::RelativePath(path2)));
+    Global::debug(0) << "Loading player 1 " << path1 << endl;
     kfm1.load();
+    Global::debug(0) << "Loading player 2 " << path2 << endl;
     kfm2.load();
     Mugen::LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
     Mugen::LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());

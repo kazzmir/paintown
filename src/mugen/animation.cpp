@@ -175,10 +175,13 @@ const MugenFrame * MugenAnimation::getNext(){
 
 /* time elapsed since a given element has been shown. negative if the
  * element hasn't been shown yet, 0 if its being shown right now
+ *
+ * position should be between 1 and frames.size() + 1, i.e. the index
+ * starts at 1 instead of 0.
  */
 int MugenAnimation::animationElementElapsed(int position) const {
     int total = 0;
-    if (position < 1 || position > (int) frames.size()){
+    if (position < 1 || position > (int) frames.size() + 1){
         ostringstream out;
         out << "Invalid animation position: " << position;
         throw MugenException(out.str());
