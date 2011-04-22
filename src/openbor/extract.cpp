@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <string>
 #include <fstream>
+#include <algorithm>
 #include <iostream>
 #include "util/file-system.h"
 
@@ -11,6 +12,15 @@ namespace Util{
 
 Filesystem::AbsolutePath getDataPath2(){
     return Filesystem::AbsolutePath(".");
+}
+
+static int upperCase(int c){
+    return toupper(c);
+}
+
+string upperCaseAll(std::string str){
+    std::transform(str.begin(), str.end(), str.begin(), upperCase);
+    return str;
 }
 
 }
@@ -89,6 +99,8 @@ int main(int argc, char ** argv){
         Bor::PackReader reader(path);
         if (extract){
             doExtract(reader, file + "-out");
+        } else {
+            cout << file << " ok. Give 'extract' to extract the files" << endl;
         }
     }
 }

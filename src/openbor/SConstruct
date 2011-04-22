@@ -1,0 +1,22 @@
+import os
+
+env = Environment(ENV = os.environ)
+env.Append(CPPDEFINES = ['USE_SDL'])
+env.VariantDir('build', '..')
+source = Split("""
+pack-reader.cpp
+extract.cpp
+build/util/debug.cpp
+build/exceptions/exception.cpp
+build/util/file-system.cpp
+build/util/system.cpp
+build/util/thread.cpp
+build/util/regex.cpp
+""")
+env.Append(CPPPATH = ['..'])
+env.ParseConfig('sdl-config --cflags --libs')
+use = env
+env.Append(LIBS = SConscript('build/util/sfl/SConscript', exports = ['use']))
+env.Append(LIBS = SConscript('build/util/pcre/SConstruct', exports = ['env']))
+
+env.Program('extract', source)
