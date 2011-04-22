@@ -110,8 +110,8 @@ test-parser/def.cpp
 test-parser/cmd.cpp
 test/factory/collector.cpp
 test/paintown-engine/factory/shadow.cpp
-test/factory/object_factory.cpp
-test/factory/heart_factory.cpp
+test/paintown-engine/factory/object_factory.cpp
+test/paintown-engine/factory/heart_factory.cpp
 test/util/resource.cpp
 test/nameplacer.cpp
 test/paintown-engine/game/mod.cpp
@@ -234,8 +234,8 @@ load-full.cpp
 init.cpp
 test/factory/collector.cpp
 test/paintown-engine/factory/shadow.cpp
-test/factory/object_factory.cpp
-test/factory/heart_factory.cpp
+test/paintown-engine/factory/object_factory.cpp
+test/paintown-engine/factory/heart_factory.cpp
 test/paintown-engine/object/item.cpp
 test/paintown-engine/object/attack.cpp
 test/paintown-engine/object/projectile.cpp

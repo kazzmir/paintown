@@ -46,8 +46,8 @@ src/paintown-engine/environment/atmosphere.cpp)
 
 set(FACTORY_SRC
 src/factory/font_factory.cpp
-src/factory/heart_factory.cpp
-src/factory/object_factory.cpp
+src/paintown-engine/factory/heart_factory.cpp
+src/paintown-engine/factory/object_factory.cpp
 src/factory/font_render.cpp
 src/factory/collector.cpp
 src/paintown-engine/factory/shadow.cpp)

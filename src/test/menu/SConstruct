@@ -52,7 +52,7 @@ test/paintown-engine/level/blockobject.cpp
 test/paintown-engine/level/random-scene.cpp
 test/paintown-engine/level/utils.cpp
 test/util/sound.cpp
-test/factory/object_factory.cpp
+test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/environment/atmosphere.cpp
 test/platformer/world.cpp
 test/platformer/animation.cpp
@@ -105,7 +105,7 @@ test/util/ftalleg.cpp
 test/util/ebox.cpp
 test/factory/font_render.cpp
 test/paintown-engine/script/script.cpp
-test/factory/heart_factory.cpp
+test/paintown-engine/factory/heart_factory.cpp
 test/util/timedifference.cpp
 test/util/language-string.cpp
 test/paintown-engine/trigger/trigger.cpp

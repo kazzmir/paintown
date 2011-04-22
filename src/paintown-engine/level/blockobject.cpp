@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "blockobject.h"
-#include "factory/object_factory.h"
+#include "../factory/object_factory.h"
 #include "util/load_exception.h"
 #include "util/token_exception.h"
 #include "util/token.h"

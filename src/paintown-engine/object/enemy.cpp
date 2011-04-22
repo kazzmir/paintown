@@ -12,7 +12,7 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "heart.h"
-#include "factory/heart_factory.h"
+#include "../factory/heart_factory.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "object.h"

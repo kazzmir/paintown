@@ -8,7 +8,7 @@
 #include "util/token.h"
 #include "util/funcs.h"
 #include "util/token_exception.h"
-#include "factory/object_factory.h"
+#include "../factory/object_factory.h"
 #include "cacher.h"
 
 using namespace std;

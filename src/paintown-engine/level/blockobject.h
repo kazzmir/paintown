@@ -3,7 +3,7 @@
 
 #include "util/load_exception.h"
 #include "util/file-system.h"
-#include "factory/object_factory.h"
+#include "../factory/object_factory.h"
 #include <string>
 
 class Token;

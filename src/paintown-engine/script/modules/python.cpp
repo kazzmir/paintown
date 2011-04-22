@@ -12,7 +12,7 @@
 #include "util/file-system.h"
 #include "paintown-engine/game/world.h"
 #include "paintown-engine/level/blockobject.h"
-#include "factory/object_factory.h"
+#include "paintown-engine/factory/object_factory.h"
 #include "paintown-engine/object/enemy.h"
 #include <sstream>
 

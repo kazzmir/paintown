@@ -1,7 +1,7 @@
 #include "cacher.h"
-#include "factory/object_factory.h"
-#include "paintown-engine/level/blockobject.h"
-#include "paintown-engine/object/object.h"
+#include "../factory/object_factory.h"
+#include "../level/blockobject.h"
+#include "../object/object.h"
 
 NetworkCacher::NetworkCacher():
 Cacher(){

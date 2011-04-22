@@ -16,7 +16,7 @@
 #include "../level/cacher.h"
 #include "../object/object.h"
 #include "../object/player.h"
-#include "factory/object_factory.h"
+#include "../factory/object_factory.h"
 #include <string.h>
 #include "util/gradient.h"
 #include "util/system.h"
@@ -24,9 +24,9 @@
 #include "util/input/input-manager.h"
 #include <sstream>
 
-#include "paintown-engine/object/character.h"
-#include "paintown-engine/object/cat.h"
-#include "paintown-engine/object/item.h"
+#include "../object/character.h"
+#include "../object/cat.h"
+#include "../object/item.h"
 
 using namespace std;
 
