@@ -50,7 +50,7 @@ src/factory/heart_factory.cpp
 src/factory/object_factory.cpp
 src/factory/font_render.cpp
 src/factory/collector.cpp
-src/factory/shadow.cpp)
+src/paintown-engine/factory/shadow.cpp)
 
 set(OBJECT_SRC
 src/paintown-engine/object/actor.cpp

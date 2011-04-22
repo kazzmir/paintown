@@ -109,7 +109,7 @@ test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
 test/factory/collector.cpp
-test/factory/shadow.cpp
+test/paintown-engine/factory/shadow.cpp
 test/factory/object_factory.cpp
 test/factory/heart_factory.cpp
 test/util/resource.cpp
@@ -233,7 +233,7 @@ full_source = most_game_source + Split("""
 load-full.cpp
 init.cpp
 test/factory/collector.cpp
-test/factory/shadow.cpp
+test/paintown-engine/factory/shadow.cpp
 test/factory/object_factory.cpp
 test/factory/heart_factory.cpp
 test/paintown-engine/object/item.cpp

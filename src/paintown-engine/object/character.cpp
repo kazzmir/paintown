@@ -21,7 +21,7 @@
 #include "draw-effect.h"
 #include "gib.h"
 
-#include "factory/shadow.h"
+#include "../factory/shadow.h"
 #include "util/funcs.h"
 #include "util/lit_bitmap.h"
 #include "util/ebox.h"

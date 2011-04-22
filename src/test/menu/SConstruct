@@ -121,7 +121,7 @@ test/util/loading.cpp
 test/util/messages.cpp
 test/util/ogg/logg.c
 test/paintown-engine/game/world.cpp
-test/factory/shadow.cpp
+test/paintown-engine/factory/shadow.cpp
 test/mugen/config.cpp
 test/paintown-engine/network/server.cpp
 test/paintown-engine/network/client.cpp
