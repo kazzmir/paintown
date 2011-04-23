@@ -1,7 +1,20 @@
 <project name="paintown editor" default="jar">
 
-	<target name="compile">
+    <!-- initialize scala stuff -->
+    <target name="init">
+        <property name="scala-library.jar"
+                  value="lib/scala-library.jar" />
+        <taskdef resource="scala/tools/ant/antlib.xml">
+            <classpath>
+                <pathelement location="lib/scala-compiler.jar" />
+                <pathelement location="${scala-library.jar}" />
+            </classpath>
+        </taskdef>
+    </target>
+
+	<target name="compile" depends="init">
 		<mkdir dir="classes" />
+        <!--
 		<javac srcdir="src"
 		       destdir="classes"
 		       target="1.5"
@@ -10,12 +23,21 @@
 		       debug="true"
 		       fork="true">
 		       <classpath>
-			       <!--
+			       <! - -
 		       	<pathelement path="lib/ui.jar" />
-			-->
+			- - >
 		       	<pathelement path="lib/jdom.jar" />
 		       </classpath>
 	       </javac>
+           -->
+        <scalac srcdir="src"
+                destdir="classes"
+                target="jvm-1.5">
+                <classpath>
+                    <pathelement path="lib/jdom.jar" />
+                    <pathelement location="${scala-library.jar}" />
+                </classpath>
+        </scalac>
 	</target>
 
 	<target name="all">

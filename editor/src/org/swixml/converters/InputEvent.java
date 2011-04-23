@@ -156,5 +156,3 @@ public interface InputEvent {
   static final int JDK_1_3_MODIFIERS = SHIFT_DOWN_MASK - 1;
 
 }
-
-;
