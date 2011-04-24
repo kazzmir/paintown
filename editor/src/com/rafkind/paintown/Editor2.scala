@@ -6,7 +6,11 @@ import javax.swing._
 import java.awt._
 import java.awt.image._
 import java.awt.event._
+import javax.swing.event._
 import org.swixml.SwingEngine
+
+// import java.util.List
+import scala.collection.immutable.List
 
 import com.rafkind.paintown.exception.LoadException
 import com.rafkind.paintown.level.Level
@@ -250,107 +254,100 @@ class NewEditor extends JFrame {
     });
   }
 
-  def createEditPanel(level:Level):JPanel = {
-  /*
-        final SwingEngine engine = new SwingEngine( "main.xml" );
+  def createEditPanel(level:Level):JComponent = {
+        val engine = new SwingEngine("main.xml");
 
-        final JPanel viewContainer = (JPanel) engine.find( "view" );
-        final JScrollPane viewScroll = new JScrollPane( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
-        final JPanel view = new JPanel(){
+        val viewContainer = engine.find( "view" ).asInstanceOf[JPanel];
+        val viewScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-            public Dimension getPreferredSize(){
-                return level.getSize();
+        val view = new JPanel(){
+            override def getPreferredSize():Dimension = {
+                level.getSize()
             }
 
-            protected void paintComponent( Graphics g ){
-                JScrollBar h = viewScroll.getHorizontalScrollBar();
-                JScrollBar v = viewScroll.getVerticalScrollBar();
-                g.setColor( new Color( 64, 64, 64 ) );
-                g.fillRect( 0, 0, (int) level.getWidth(), v.getVisibleAmount() );
-                g.clearRect( 0, (int) v.getVisibleAmount() + 1, (int) level.getWidth(), (int) level.getHeight() );
-                level.render( (Graphics2D) g, h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount() );
+            override def paintComponent(g:Graphics){
+                val h = viewScroll.getHorizontalScrollBar();
+                val v = viewScroll.getVerticalScrollBar();
+                g.setColor(new Color(64, 64, 64));
+                g.fillRect(0, 0, level.getWidth().toInt, v.getVisibleAmount());
+                g.clearRect(0, v.getVisibleAmount().toInt + 1, level.getWidth().toInt, level.getHeight().toInt);
+                level.render(g.asInstanceOf[Graphics2D], h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount());
             }
         };
 
-        viewScroll.setPreferredSize( new Dimension( 200, 200 ) );
-        viewScroll.setViewportView( view );
+        viewScroll.setPreferredSize(new Dimension(200, 200));
+        viewScroll.setViewportView(view);
 
-        / * this allows smooth scrolling of the level * /
-        viewScroll.getViewport().setScrollMode( JViewport.BACKINGSTORE_SCROLL_MODE );
+        /* this allows smooth scrolling of the level */
+        viewScroll.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 
-        / *
+        /*
            System.out.println( "JViewport.BLIT_SCROLL_MODE = " + JViewport.BLIT_SCROLL_MODE );
            System.out.println( "JViewport.BACKINGSTORE_SCROLL_MODE = " + JViewport.BACKINGSTORE_SCROLL_MODE );
            System.out.println( "JViewport.SIMPLE_SCROLL_MODE = " + JViewport.SIMPLE_SCROLL_MODE );
            System.out.println( "View scroll mode: " + viewScroll.getViewport().getScrollMode() );
-           * /
-        viewScroll.getHorizontalScrollBar().setBackground( new Color( 128, 255, 0 ) );
+           */
+        viewScroll.getHorizontalScrollBar().setBackground(new Color(128, 255, 0));
 
-        final Lambda1 editSelected = new Lambda1(){
-            public Object invoke( Object t ){
-                Thing thing = (Thing) t;
-                final JDialog dialog = new JDialog( Editor.this, "Edit" );
-                dialog.setSize( 350, 300 );
-                PropertyEditor editor = thing.getEditor();
-                dialog.getContentPane().add( editor.createPane( level, new Lambda0(){
-                    public Object invoke(){
-                        dialog.setVisible( false );
-                        viewScroll.repaint();
-                        return null;
-                    }
-                }));
-                dialog.setVisible( true );
-                return null;
+        def editSelected(thing:Thing){
+          val dialog = new JDialog(NewEditor.this, "Edit");
+          dialog.setSize(350, 300);
+          val editor = thing.getEditor();
+          dialog.getContentPane().add(editor.createPane(level, new Lambda0(){
+              override def invoke():Object = {
+                dialog.setVisible(false);
+                viewScroll.repaint();
+                null
+              }
+            }));
+          dialog.setVisible(true);
+        }
+  
+        class ObjectListModel extends ListModel {
+            var data:List[File] = defaultObjects();
+            var listeners = List[ListDataListener]();
+
+            def add(file:File){
+                data = data :+ file
+                val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size);
+                for (listener <- listeners){
+                    listener.intervalAdded(event)
+                }
             }
-        };
-
-        class ObjectListModel implements ListModel{
-            private List data;
-            private List listeners;
-            public ObjectListModel(){
-                this.data = defaultObjects();
-                this.listeners = new ArrayList();
-            }
-
-            public void add( File file ){
-                data.add( file );
-                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_ADDED, data.size(), data.size() );
-                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-                    ListDataListener l = (ListDataListener) it.next();
-                    l.intervalAdded( event );
+            
+            def remove(index:Int){
+                data = data.remove(data.indexOf(_) == index)
+                val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index);
+                for (listener <- listeners){
+                    listener.intervalAdded(event);
                 }
             }
 
-            public void remove( int index ){
-                data.remove( index );
-                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_REMOVED, index, index );
-                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-                    ListDataListener l = (ListDataListener) it.next();
-                    l.intervalAdded( event );
+            def getAll():List[File] = {
+                data
+            }
+
+            override def addListDataListener(listener:ListDataListener){
+                listeners = listeners :+ listener;
+            }
+
+            override def getElementAt(index:Int):Object = {
+                this.data.find(data.indexOf(_) == index) match {
+                    case Some(obj) => obj
+                    case None => throw new Exception("failed to find " + index)
                 }
-
             }
 
-            public List getAll(){
-                return data;
+            override def getSize():Int = {
+                this.data.size;
             }
 
-            public void addListDataListener( ListDataListener l ){
-                listeners.add( l );
-            }
-
-            public Object getElementAt( int index ){
-                return this.data.get( index );
-            }
-
-            public int getSize(){
-                return this.data.size();
-            }
-
-            public void removeListDataListener( ListDataListener l ){
-                this.listeners.remove( l );
+            override def removeListDataListener(listener:ListDataListener){
+                listeners = this.listeners - listener;
             }
         };
+
+        /*
 
         final ObjectListModel objectsModel = new ObjectListModel();
 
@@ -1492,12 +1489,32 @@ class NewEditor extends JFrame {
                 viewScroll.repaint();
             }
         });
-
-        return (JSplitPane) engine.getRootComponent();
         */
 
-        null;
+        engine.getRootComponent().asInstanceOf[JSplitPane];
     }
+
+    def defaultObjects():List[File] = {
+        List[File]() :+ 
+        new File("chars/angel/angel.txt") :+
+        new File("chars/billy/billy.txt") :+
+        new File("chars/eiji/eiji.txt") :+
+        new File("chars/heavy/heavy.txt") :+
+        new File("chars/jhun/jhun.txt") :+
+        new File("chars/joe/joe.txt") :+
+        new File("chars/punk/punk.txt") :+
+        new File("chars/ralf/ralf.txt") :+
+        new File("chars/robert/robert.txt") :+
+        new File("chars/rugal/rugal.txt") :+
+        new File("chars/shermie/shermie.txt") :+
+        new File("chars/yamazaki/yamazaki.txt") :+
+        new File("chars/yashiro/yashiro.txt") :+
+        new File("misc/apple/apple.txt") :+
+        new File("misc/cake/cake.txt") :+
+        new File("misc/chicken/chicken.txt") :+
+        new File("misc/cat/cat.txt")
+    }
+
 
   def userSelectFile(title:String):File = {
     val chooser = new JFileChooser(new File("."));
