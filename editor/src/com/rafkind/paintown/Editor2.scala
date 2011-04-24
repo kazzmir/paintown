@@ -8,6 +8,7 @@ import java.awt.image._
 import java.awt.event._
 import org.swixml.SwingEngine
 
+import com.rafkind.paintown.exception.LoadException
 import com.rafkind.paintown.level.Level
 import com.rafkind.paintown.level.Block
 import com.rafkind.paintown.level.Thing
@@ -35,14 +36,7 @@ class NewEditor extends JFrame {
     menuBar.add(menuProgram);
     val menuLevel = new JMenu( "Level" );
     menuBar.add(menuLevel);
-    /*
-        final Lambda0 closeHook = new Lambda0(){
-            public Object invoke(){
-                Closer.close();
-                return null;
-            }
-        };
-        */
+    
     val newLevel = new JMenuItem("New Level");
     menuLevel.add(newLevel);
     val loadLevel = new JMenuItem("Open Level");
@@ -187,65 +181,66 @@ class NewEditor extends JFrame {
             }
         });
 
-    /*
-        saveLevelAs.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( tabbed.getSelectedComponent() != null ){
-                    Level level = (Level) levels.get( tabbed.getSelectedComponent() );
-                    File file = userSelectFile("Save level as");
-                    / * write the text to a file * /
-                    if ( file != null ){
-                        try{
-                            doSave.invoke( level, file );
-                            level.setPath( file );
-                            tabbed.setTitleAt( tabbed.getSelectedIndex(), file.getName() );
-                        } catch ( Exception e ){
-                            e.printStackTrace();
-                            showError( "Could not save " + file + " because " + e.getMessage() );
-                        }
-                    }
+      saveLevelAs.addActionListener(new AbstractAction(){
+          override def actionPerformed(event:ActionEvent){
+            if (tabbed.getSelectedComponent() != null){
+              val level = levels.get(tabbed.getSelectedComponent()).asInstanceOf[Level];
+              val file = userSelectFile("Save level as");
+              /* write the text to a file */
+              if (file != null){
+                try{
+                  doSave(level, file);
+                  level.setPath(file);
+                  tabbed.setTitleAt(tabbed.getSelectedIndex(), file.getName());
+                } catch {
+                  case fail:Exception => {
+                    fail.printStackTrace();
+                    showError("Could not save " + file + " because " + fail.getMessage() );
+                  }
                 }
+              }
             }
+          }
         });
 
-        closeLevel.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( tabbed.getSelectedComponent() != null ){
-                    levels.remove( tabbed.getSelectedComponent() );
-                    tabbed.remove( tabbed.getSelectedComponent() );
-                }
+      closeLevel.addActionListener( new AbstractAction(){
+          override def actionPerformed(event:ActionEvent){
+            if ( tabbed.getSelectedComponent() != null ){
+              levels.remove( tabbed.getSelectedComponent() );
+              tabbed.remove( tabbed.getSelectedComponent() );
             }
+          }
         });
 
-        loadLevel.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                JFileChooser chooser = new JFileChooser( new File( "." ) );	
-                chooser.setFileFilter( new FileFilter(){
-                    public boolean accept( File f ){
-                        return f.isDirectory() || f.getName().endsWith( ".txt" );
-                    }
-
-                    public String getDescription(){
-                        return "Level files";
-                    }
-                });
-
-                // chooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
-                int returnVal = chooser.showOpenDialog( Editor.this );
-                if ( returnVal == JFileChooser.APPROVE_OPTION ){
-                    final File f = chooser.getSelectedFile();
-                    try{
-                        Level level = new Level( f );
-                        levels.put( tabbed.add( f.getName(), createEditPanel( level ) ), level );
-                    } catch ( LoadException le ){
-                        showError( "Could not load " + f.getName() );
-                        System.out.println( "Could not load " + f.getName() );
-                        le.printStackTrace();
-                    }
+      loadLevel.addActionListener( new AbstractAction(){
+          override def actionPerformed(event:ActionEvent){
+            val chooser = new JFileChooser( new File( "." ) );	
+            chooser.setFileFilter(new FileFilter(){
+                def accept(f:File):Boolean = {
+                  f.isDirectory() || f.getName().endsWith( ".txt" );
                 }
+
+                def getDescription():String = {
+                  "Level files";
+                }
+              });
+
+            val returnVal = chooser.showOpenDialog( NewEditor.this );
+            if ( returnVal == JFileChooser.APPROVE_OPTION ){
+              val f = chooser.getSelectedFile();
+              try{
+                val level = new Level(f);
+                levels.put(tabbed.add(f.getName(), createEditPanel(level)), level);
+              } catch {
+                case fail:LoadException => {
+                  showError( "Could not load " + f.getName() );
+                  System.out.println( "Could not load " + f.getName() );
+                  fail.printStackTrace();
+                }
+              }
             }
+          }
         });
-        */
 
     this.setJMenuBar(menuBar);
     this.addWindowListener(new WindowAdapter{
