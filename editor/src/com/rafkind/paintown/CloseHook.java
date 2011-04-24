@@ -18,10 +18,10 @@ public class CloseHook implements WindowListener {
         }
 
         public void windowClosing( WindowEvent e ){
-		try{
-			this.function.invoke();
-		} catch ( Exception ex ){
-		}
+            try{
+                this.function.invoke();
+            } catch (Exception ex){
+            }
         }
 
         public void windowDeactivated( WindowEvent e ){

@@ -31,7 +31,7 @@ public class Editor extends JFrame {
     private Thing copy;
 
     public Editor(){
-        super( "Paintown Editor" );
+        super("Paintown Editor");
         this.setSize( (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth() * 4.0/5.0), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 4.0/5.0));
 
         Closer.open();

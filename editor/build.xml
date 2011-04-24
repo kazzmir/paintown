@@ -14,7 +14,6 @@
 
 	<target name="compile" depends="init">
 		<mkdir dir="classes" />
-        <!--
 		<javac srcdir="src"
 		       destdir="classes"
 		       target="1.5"
@@ -23,13 +22,12 @@
 		       debug="true"
 		       fork="true">
 		       <classpath>
-			       <! - -
+			       <!--
 		       	<pathelement path="lib/ui.jar" />
-			- - >
+                -->
 		       	<pathelement path="lib/jdom.jar" />
 		       </classpath>
 	       </javac>
-           -->
         <scalac srcdir="src"
                 destdir="classes"
                 target="jvm-1.5">
@@ -46,6 +44,7 @@
 
 	<target name="jar" depends="compile">
 		<unjar src="lib/jdom.jar" dest="classes" />
+        <unjar src="${scala-library.jar}" dest="classes" />
         <!--
 		<unjar src="lib/substance.jar" dest="classes" />
         -->
