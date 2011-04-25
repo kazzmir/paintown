@@ -23,6 +23,21 @@ import javax.swing.filechooser.FileFilter
 class NewEditor extends JFrame {
   construct();
 
+  def get[T](list:List[T], index:Int):T = {
+    list.find(list.indexOf(_) == index) match {
+      case Some(obj) => obj
+      case None => throw new Exception("failed to find " + index)
+    }
+  }
+
+  def toScalaList[T](list:java.util.List[T]):List[T] = {
+    var out:List[T] = List[T]()
+    for (item <- scala.collection.JavaConversions.asScalaBuffer(list)){
+      out = out :+ item
+    }
+    out
+  }
+
   def construct(){
     val screen = Toolkit.getDefaultToolkit().getScreenSize()
     this.setSize((screen.getWidth() * 4.0/5.0).toInt,
@@ -504,97 +519,95 @@ class NewEditor extends JFrame {
             }
 
             def showAddObjectPopup(event:MouseEvent){
-                /* TODO
                 // JPanel panel = new JPanel();
-                final Vector files = collectCharFiles();
-                Box panel = Box.createVerticalBox();
-                final JList all = new JList( files );
-                panel.add( new JScrollPane( all ) );
-                JButton add = new JButton( "Add" );
-                JButton close = new JButton( "Close" );
-                Box buttons = Box.createHorizontalBox();
-                buttons.add( add );
-                buttons.add( close );
-                panel.add( buttons );
-                if ( currentPopup != null ){
-                    currentPopup.setVisible( false );
+                val files = collectCharFiles();
+                val panel = Box.createVerticalBox();
+                val all = new JList(new java.util.Vector(scala.collection.JavaConversions.asJavaList(files)));
+                panel.add(new JScrollPane(all));
+                val add = new JButton("Add");
+                val close = new JButton("Close");
+                val buttons = Box.createHorizontalBox();
+                buttons.add(add);
+                buttons.add(close);
+                panel.add(buttons);
+                if (currentPopup != null){
+                    currentPopup.setVisible(false);
                 }
-                final JDialog dialog = new JDialog( Editor.this, "Add" );
+                val dialog = new JDialog(NewEditor.this, "Add");
                 dialog.getContentPane().add( panel );
-                dialog.setSize( 220, 250 );
-                dialog.setLocation( event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY() );
-                close.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        dialog.setVisible( false );
+                dialog.setSize(220, 250);
+                dialog.setLocation(event.getX() - viewScroll.getHorizontalScrollBar().getValue(), event.getY());
+                close.addActionListener(new AbstractAction(){
+                    override def actionPerformed(event:ActionEvent){
+                        dialog.setVisible(false);
                     }
                 });
                 currentPopup = dialog;
-                dialog.setVisible( true );
+                dialog.setVisible(true);
 
-                final Lambda1 addThing = new Lambda1(){
-                    private int mid( int a, int b, int c ){
-                        return Math.max( Math.min( b, c ), a );
+                def addThing(file:File){
+                    def mid(a:Int, b:Int, c:Int):Int = {
+                        Math.max(Math.min(b, c), a);
                     }
 
-                    public Object invoke( Object f ){
-                        File file = (File) f;
-                        try{
-                            Block b = findBlock( event );
-                            if ( b != null ){
-                                TokenReader reader = new TokenReader( dataPath( file ) );
-                                Token head = reader.nextToken();
-                                int x = (int)(event.getX() / level.getScale());
-                                int y = (int)(event.getY() / level.getScale());
-                                for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-                                    Block b1 = (Block) it.next();
-                                    if ( b1 == b ){
-                                        break;
-                                    }
-                                    if ( b1.isEnabled() ){
-                                        x -= b1.getLength();
-                                    }
-                                }
-                                b.addThing( makeThing( head, x, mid( 0, y - level.getMinZ(), level.getMaxZ() - level.getMinZ() ), file.getPath() ) );
-                                / *
-                                   Character c = new Character( reader.nextToken() );
-                                   b.add( new Character( reader.nextToken() ) );
-                                   * /
-                                viewScroll.repaint();
-                            } else {
-                                // JOptionPane.showMessageDialog( null, "The cursor is not within a block. Either move the cursor or add a block.", "Paintown Editor Error", JOptionPane.ERROR_MESSAGE );
-                                showError( "The cursor is not within a block. Either move the cursor or add a block." );
+                    try{
+                      val block = findBlock(event);
+                      if (block != null){
+                        val reader = new TokenReader(dataPath(file));
+                        val head = reader.nextToken();
+                        var x = (event.getX() / level.getScale()).toInt;
+                        val y = (event.getY() / level.getScale()).toInt;
+                        val breaks = new scala.util.control.Breaks
+                        import breaks.{break, breakable}
+                        breakable{
+                          for (check <- scala.collection.JavaConversions.asScalaBuffer(level.getBlocks().asInstanceOf[java.util.List[Block]])){
+                            if (block == check){
+                              break;
                             }
-                        } catch ( LoadException e ){
-                            System.out.println( "Could not load " + file );
-                            e.printStackTrace();
+                            if (check.isEnabled()){
+                              x -= check.getLength();
+                            }
+                          }
                         }
-
-                        return null;
+                        block.addThing(makeThing(head, x, mid(0, y - level.getMinZ(), level.getMaxZ() - level.getMinZ()), file.getPath()));
+                        /*
+                        Character c = new Character( reader.nextToken() );
+                        b.add( new Character( reader.nextToken() ) );
+                        */
+                        viewScroll.repaint();
+                      } else {
+                        // JOptionPane.showMessageDialog( null, "The cursor is not within a block. Either move the cursor or add a block.", "Paintown Editor Error", JOptionPane.ERROR_MESSAGE );
+                        showError("The cursor is not within a block. Either move the cursor or add a block.");
+                      }
+                    } catch {
+                    case fail:LoadException => {
+                      System.out.println("Could not load " + file);
+                      fail.printStackTrace();
                     }
-                };
+                  }
+                }
 
-                all.addMouseListener( new MouseAdapter() {
-                    public void mouseClicked( MouseEvent clicked ){
-                        if ( clicked.getClickCount() == 2 ){
-                            int index = all.locationToIndex( clicked.getPoint() );
-                            File f = (File) files.get( index );
-                            addThing.invoke_( f );
-                            dialog.setVisible( false );
+                all.addMouseListener(new MouseAdapter(){
+                    override def mouseClicked(clicked:MouseEvent){
+                        if (clicked.getClickCount() == 2){
+                            val index = all.locationToIndex(clicked.getPoint());
+                            val file = get(files, index);
+                            addThing(file);
+                            dialog.setVisible(false);
                         }
                     }
                 });
 
-                add.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        int index = all.getSelectedIndex();
-                        if ( index != -1 ){
-                            File f = (File) files.get( index );
-                            addThing.invoke_( f );
-                            dialog.setVisible( false );
+                add.addActionListener(new AbstractAction(){
+                    override def actionPerformed(event:ActionEvent){
+                        val index = all.getSelectedIndex();
+                        if (index != -1){
+                            val file = get(files, index);
+                            addThing(file);
+                            dialog.setVisible(false);
                         }
                     }
                 });
-                */
             }
 
             def mousePressed(event:MouseEvent){
@@ -646,61 +659,53 @@ class NewEditor extends JFrame {
             }
         });
 
-        /*
-        val tabbed = (JTabbedPane) engine.find( "tabbed" );
-        final Box holder = Box.createVerticalBox();
-        final Box blocks = Box.createVerticalBox();
-        holder.add( new JScrollPane( blocks ) );
+        val tabbed = engine.find("tabbed").asInstanceOf[JTabbedPane];
+        val holder = Box.createVerticalBox();
+        val blocks = Box.createVerticalBox();
+        holder.add(new JScrollPane(blocks));
+        holder.add(new JSeparator());
 
-        holder.add( new JSeparator() );
+        class ObjectList extends ListModel {
+          /* list listeners */
+          var listeners:List[ListDataListener] = List[ListDataListener]()
+          var things:List[Thing] = List[Thing]()
+          var current:Block = null
 
-        class ObjectList implements ListModel {
-            / * list listeners * /
-            private List listeners;
-            private List things;
-            private Lambda1 update;
-            private Block current;
-            public ObjectList(){
-                listeners = new ArrayList();
-                things = new ArrayList();
-                update = new Lambda1(){
-                    public Object invoke( Object t ){
-                        Thing thing = (Thing) t;
-                        int count = 0;
-                        for ( Iterator it = things.iterator(); it.hasNext(); count += 1 ){
-                            Thing current = (Thing) it.next();
-                            if ( current == thing ){
-                                contentsChanged( new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, count, count ) );
-                            }
-                        }
-                        return null;
+          def update(thing:Thing){
+            val count = 0;
+            for (current <- things){
+              if (current == thing){
+                contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, count, count));
+              }
+            }
+          }
+
+          def setBlock(block:Block){
+            current = block;
+            if (block == null){
+              this.things = List[Thing]()
+            } else {
+              this.things = toScalaList(block.getThings().asInstanceOf[java.util.List[Thing]]);
+              for (thing <- things){
+                thing.addListener(new Lambda1(){
+                    override def invoke(o:Object):Object = {
+                      update(o.asInstanceOf[Thing])
+                      null
                     }
-                };
+                })
+              }
             }
 
-            public void setBlock( Block b ){
-                current = b;
-                if ( b == null ){
-                    this.things = new ArrayList();
-                } else {
-                    this.things = b.getThings();
-                    for ( Iterator it = things.iterator(); it.hasNext(); ){
-                        Thing t = (Thing) it.next();
-                        t.addListener( this.update );
-                    }
-                }
+            contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, 999999));
+          }
 
-                contentsChanged( new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 999999 ) );
+          def contentsChanged(event:ListDataEvent){
+            for (listener <- listeners){
+              listener.contentsChanged(event);
             }
+          }
 
-            private void contentsChanged( ListDataEvent event ){
-                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-                    ListDataListener l = (ListDataListener) it.next();
-                    l.contentsChanged( event );
-                }
-            }
-
-            / *
+            /*
                public void update( int index ){
                ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, index, index + 1 );
                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
@@ -708,29 +713,30 @@ class NewEditor extends JFrame {
                l.contentsChanged( event );
                }
                }
-               * /
+               */
 
-            public Block getBlock(){
-                return current;
+            def getBlock():Block = {
+              current
             }
 
-            public void addListDataListener( ListDataListener l ){
-                listeners.add( l );
+            override def addListDataListener(listener:ListDataListener){
+                this.listeners = this.listeners :+ listener
             }
 
-            public Object getElementAt( int index ){
-                return this.things.get( index );
+            override def getElementAt(index:Int):Object = {
+                get(things, index)
             }
 
-            public int getSize(){
-                return this.things.size();
+            override def getSize():Int = {
+                this.things.size;
             }
 
-            public void removeListDataListener( ListDataListener l ){
-                this.listeners.remove( l );
+            override def removeListDataListener(listener:ListDataListener){
+                listeners = listeners - listener
             }
         }
 
+        /*
         final ObjectList objectList = new ObjectList();
         // final JList currentObjects = new JList( objectList );
         final SwingEngine blockObjectsEngine = new SwingEngine( "block-objects.xml" );
@@ -1523,6 +1529,9 @@ class NewEditor extends JFrame {
         new File("misc/cat/cat.txt")
     }
 
+    def dataPath(file:File):File = {
+      new File(Data.getDataPath().getPath() + "/" + file.getPath());
+    }
 
   def userSelectFile(title:String):File = {
     val chooser = new JFileChooser(new File("."));
