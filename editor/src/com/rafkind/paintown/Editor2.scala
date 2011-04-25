@@ -736,116 +736,123 @@ class NewEditor extends JFrame {
             }
         }
 
-        /*
-        final ObjectList objectList = new ObjectList();
+        val objectList = new ObjectList();
         // final JList currentObjects = new JList( objectList );
-        final SwingEngine blockObjectsEngine = new SwingEngine( "block-objects.xml" );
+        val blockObjectsEngine = new SwingEngine("block-objects.xml");
         // holder.add( new JLabel( "Objects" ) );
         // holder.add( new JScrollPane( currentObjects ) );
-        final JButton objectsAdd = (JButton) blockObjectsEngine.find( "add" );
-        final JButton objectsDelete = (JButton) blockObjectsEngine.find( "delete" );
-        final JButton objectsAddRandom = (JButton) blockObjectsEngine.find( "add-random" );
-        final JButton objectsDeleteAll = (JButton) blockObjectsEngine.find( "delete-all" );
-        final JList currentObjects = (JList) blockObjectsEngine.find( "current" );
-        currentObjects.setModel( objectList );
-        holder.add( (JPanel) blockObjectsEngine.getRootComponent() );
+        val objectsAdd = blockObjectsEngine.find( "add" ).asInstanceOf[JButton];
+        val objectsDelete = blockObjectsEngine.find( "delete" ).asInstanceOf[JButton];
+        val objectsAddRandom = blockObjectsEngine.find( "add-random" ).asInstanceOf[JButton];
+        val objectsDeleteAll = blockObjectsEngine.find( "delete-all" ).asInstanceOf[JButton];
+        val currentObjects = blockObjectsEngine.find( "current" ).asInstanceOf[JList];
+        currentObjects.setModel(objectList);
+        holder.add(blockObjectsEngine.getRootComponent().asInstanceOf[JPanel]);
 
-        holder.add( Box.createVerticalGlue() );
-
-        objectsDelete.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                Block block = objectList.getBlock();
-                Thing t = (Thing) currentObjects.getSelectedValue();
-                if ( t != null && block != null ){
-                    mousey.setSelected( null );
-                    block.removeThing( t );
-                    objectList.setBlock( block );
+        holder.add(Box.createVerticalGlue());
+        
+        objectsDelete.addActionListener(new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
+                val block = objectList.getBlock();
+                val thing = currentObjects.getSelectedValue().asInstanceOf[Thing];
+                if (thing != null && block != null){
+                    mousey.setSelected(null);
+                    block.removeThing(thing);
+                    objectList.setBlock(block);
                     viewScroll.repaint();
                 }
             }
         });
 
-        objectsDeleteAll.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                Block block = objectList.getBlock();
-                if ( block != null ){
+        objectsDeleteAll.addActionListener(new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
+                val block = objectList.getBlock();
+                if (block != null){
                     mousey.setSelected( null );
                     block.removeAllThings();
-                    objectList.setBlock( block );
+                    objectList.setBlock(block);
                     viewScroll.repaint();
                 }
             }
         });
 
-        objectsAdd.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
+        objectsAdd.addActionListener(new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
                 try{
-                    if ( objectList.getBlock() == null ){
-                        throw new EditorException( "Select a block" );
+                    if (objectList.getBlock() == null){
+                        throw new EditorException("Select a block");
                     }
-                    mousey.showAddObject( objectList.getBlock() );
-                } catch ( EditorException e ){
-                    showError( e );
+                    mousey.showAddObject(objectList.getBlock());
+                } catch {
+                  case fail:EditorException => {
+                    showError(fail);
+                  }
                 }
             }
         });
 
-        objectsAddRandom.addActionListener( new AbstractAction(){
-            private int thingsToAdd = 4;
-            private RandomNameAction makeName = new RandomNameAction( "boys.txt" ){
-                public void actionPerformed( ActionEvent event ){
+        objectsAddRandom.addActionListener(new AbstractAction(){
+            private val thingsToAdd = 4;
+            private val makeName = new RandomNameAction("boys.txt"){
+                override def actionPerformed(event:ActionEvent){
                 }
             };
 
-            private int randomX(){
-                if ( Math.random() > 0.5 ){
-                    return -((int)(Math.random() * 640) + 320);
+            private def randomX():Int = {
+                if (Math.random > 0.5){
+                    -((Math.random * 640) + 320).toInt;
                 } else {
-                    return (int)(Math.random() * 800) + 350;
+                    (Math.random * 800).toInt + 350;
                 }
             }
 
-            private int randomY(){
-                return (int)(Math.random() * (level.getMaxZ() - level.getMinZ()));
+            private def randomY():Int = {
+                (Math.random * (level.getMaxZ() - level.getMinZ())).toInt;
             }
 
-            private int randomHealth(){
-                return (int)(Math.random() * 60) + 20;
+            private def randomHealth():Int = {
+                (Math.random * 60).toInt + 20;
             }
 
-            private Character make() throws LoadException {
-                File choose = (File) objectsModel.getElementAt( (int)(Math.random() * (objectsModel.getSize())) );
-                Token temp = new Token();
-                temp.addToken( new Token( "character" ) );
-                temp.addToken( new String[]{ "name", "TempName" } );
-                temp.addToken( new String[]{ "coords", String.valueOf( randomX() ), String.valueOf( randomY() ) } );
-                temp.addToken( new String[]{ "health", String.valueOf( randomHealth() ) } );
-                temp.addToken( new String[]{ "path", choose.getPath() } );
-                Character guy = new Character( temp );
-                guy.setMap( (int)(Math.random() * guy.getMaxMaps()));
+            private def make():Character = {
+                val choose = objectsModel.getElementAt((Math.random * (objectsModel.getSize())).toInt).asInstanceOf[File];
+                val temp = new Token();
+                temp.addToken(new Token("character"));
+                temp.addToken(("name" :: "TempName" :: List[String]()).toArray)
+                temp.addToken(("coords" :: randomX().toString :: randomY().toString :: List[String]()).toArray)
+                temp.addToken(("health" :: randomHealth().toString :: List[String]()).toArray)
+                temp.addToken(("path" :: choose.getPath() :: List[String]()).toArray)
+                val guy = new Character(temp);
+                guy.setMap((Math.random * guy.getMaxMaps()).toInt);
                 return guy;
             }
 
-            public void actionPerformed( ActionEvent event ){
-                try{
-                    if ( objectList.getBlock() == null ){
-                        throw new EditorException( "Select a block" );
-                    }
-                    for ( int i = 0; i < thingsToAdd; i++ ){
-                        try{
-                            objectList.getBlock().addThing( make() );
-                        } catch ( LoadException e ){
-                            System.out.println( "Ignoring exception" );
-                            e.printStackTrace();
-                        }
-                    }
-                    objectList.setBlock( objectList.getBlock() );
-                    viewScroll.repaint();
-                } catch ( EditorException e ){
-                    showError( e );
+            override def actionPerformed(event:ActionEvent){
+              try{
+                if (objectList.getBlock() == null){
+                  throw new EditorException("Select a block");
                 }
+                for (index <- 1 to thingsToAdd){
+                  try{
+                    objectList.getBlock().addThing(make());
+                  } catch {
+                    case fail:LoadException => {
+                      System.out.println("Ignoring exception");
+                      fail.printStackTrace();
+                    }
+                  }
+                }
+                objectList.setBlock(objectList.getBlock());
+                viewScroll.repaint();
+              } catch {
+                case fail:EditorException => {
+                  showError(fail);
+                }
+              }
             }
         });
+
+        /*
 
         / * if an object is selected highlight it and scroll over to it * /
         currentObjects.addListSelectionListener( new ListSelectionListener(){
@@ -1544,6 +1551,10 @@ class NewEditor extends JFrame {
     
   def showError(message:String){
     JOptionPane.showMessageDialog(null, message, "Paintown Editor Error", JOptionPane.ERROR_MESSAGE);
+  }
+
+  def showError(message:EditorException){
+    showError(message.getMessage());
   }
 }
 
