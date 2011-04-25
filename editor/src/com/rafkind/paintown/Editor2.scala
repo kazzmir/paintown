@@ -347,61 +347,59 @@ class NewEditor extends JFrame {
             }
         };
 
-        /*
+        val objectsModel = new ObjectListModel();
 
-        final ObjectListModel objectsModel = new ObjectListModel();
+        class Mouser extends MouseMotionAdapter with MouseInputListener {
+            var selected:Thing = null;
+            var dx:Double = 0
+            var dy:Double = 0
+            var sx:Double = 0
+            var sy:Double = 0
+            var currentPopup:JDialog = null
 
-        class Mouser extends MouseMotionAdapter implements MouseInputListener {
-            Thing selected = null;
-            double dx, dy;
-            double sx, sy;
-            JDialog currentPopup;
-
-            public Thing getSelected(){
-                return selected;
+            def getSelected():Thing = {
+                selected;
             }
 
-            public void setSelected( Thing t ){
-                selected = t;
+            def setSelected(thing:Thing){
+                selected = thing;
             }
 
-            public void mouseDragged( MouseEvent event ){
-
-                if ( selected != null ){
+            override def mouseDragged(event:MouseEvent){
+                if (selected != null){
                     // System.out.println( "sx,sy: " + sx + ", " + sy + " ex,ey: " + (event.getX() / 2) + ", " + (event.getY() / 2) + " dx, dy: " + dx + ", " + dy );
-                    level.moveThing( selected, (int)(sx + event.getX() / level.getScale() - dx), (int)(sy + event.getY() / level.getScale() - dy) );
+                    level.moveThing( selected, (sx + event.getX() / level.getScale() - dx).toInt, (sy + event.getY() / level.getScale() - dy).toInt);
                     viewScroll.repaint();
                 }
             }
 
-            private boolean leftClick( MouseEvent event ){
-                return event.getButton() == MouseEvent.BUTTON1;
+            def leftClick(event:MouseEvent):Boolean = {
+                event.getButton() == MouseEvent.BUTTON1;
             }
 
-            private boolean rightClick( MouseEvent event ){
-                return event.getButton() == MouseEvent.BUTTON3;
+            def rightClick(event:MouseEvent):Boolean = {
+                event.getButton() == MouseEvent.BUTTON3;
             }
 
-            private void selectThing( MouseEvent event ){
-                Thing t = findThingAt( event );
-                Block has = null;
-                for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-                    Block b = (Block) it.next();
-                    b.setHighlight( false );
-                    if ( t != null && b.hasThing( t ) ){
-                        has = b;
+            def selectThing(event:MouseEvent){
+                val thing = findThingAt(event)
+                var has:Block = null;
+                for (block <- scala.collection.JavaConversions.asScalaBuffer(level.getBlocks().asInstanceOf[java.util.List[Block]])){
+                    block.setHighlight(false);
+                    if (thing != null && block.hasThing(thing)){
+                        has = block;
                     }
                 }
 
-                if ( has != null ){
-                    has.setHighlight( true );
+                if (has != null){
+                    has.setHighlight(true);
                     viewScroll.repaint();
                 }
 
-                if ( selected == null && t != null ){
+                if (selected == null && thing != null){
                     // selected = findThingAt( event );
-                    selected = t;
-                    selected.setSelected( true );
+                    selected = thing;
+                    selected.setSelected(true);
                     sx = selected.getX();
                     sy = selected.getY() + level.getMinZ();
                     // System.out.println( "Y: " + selected.getY() + " minZ: " + level.getMinZ() );
@@ -410,37 +408,39 @@ class NewEditor extends JFrame {
                     // System.out.println( "Found: " + selected + " at " + event.getX() + " " + event.getY() );
                 }
 
-                if ( getSelected() != null && event.getClickCount() == 2 ){
+                if (getSelected() != null && event.getClickCount() == 2){
                     try{
-                        editSelected.invoke( getSelected() );
-                    } catch ( Exception e ){
-                        e.printStackTrace();
+                        editSelected(getSelected());
+                    } catch {
+                      case fail:Exception => {
+                        fail.printStackTrace();
+                      }
                     }
                 }
             }
 
-            private List findFiles( File dir, final String ending ){
-                File[] all = dir.listFiles( new java.io.FileFilter(){
-                    public boolean accept( File path ){
-                        return path.isDirectory() || path.getName().endsWith( ending );
+            def findFiles(dir:File, ending:String):List[File] = {
+                val all = dir.listFiles(new java.io.FileFilter(){
+                    override def accept(path:File):Boolean = {
+                        path.isDirectory() || path.getName().endsWith(ending);
                     }
                 });
-                List files = new ArrayList();
-                for ( int i = 0; i < all.length; i++ ){
-                    if ( all[ i ].isDirectory() ){
-                        files.addAll( findFiles( all[ i ], ending ) );
+                var files = List[File]()
+                for (file <- all){
+                    if (file.isDirectory() ){
+                        files = files ++ findFiles(file, ending);
                     } else {
-                        files.add( all[ i ] );
+                        files = files :+ file
                     }
                 }
                 return files;
             }
 
-            private Block findBlock( MouseEvent event ){
-                int x = (int)(event.getX() / level.getScale());
+            def findBlock(event:MouseEvent):Block = {
+                val x = (event.getX() / level.getScale()).toInt
                 // System.out.println( event.getX() + " -> " + x );
-                return level.findBlock( x );
-                / *
+                return level.findBlock(x);
+                /*
                    int total = 0;
                    for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
                    Block b = (Block) it.next();
@@ -452,54 +452,59 @@ class NewEditor extends JFrame {
                    }
                    }
                    return null;
-                   * /
+                   */
             }
 
-            private Thing makeThing( Token head, int x, int y, String path ) throws LoadException {
-                if ( head.getName().equals( "character" ) ){
-                    Token temp = new Token();
-                    temp.addToken( new Token( "character" ) );
-                    temp.addToken( new String[]{ "name", "TempName" } );
-                    temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
-                    temp.addToken( new String[]{ "health", "40" } );
-                    temp.addToken( new String[]{ "path", path } );
-                    return new Character( temp );
-                } else if ( head.getName().equals( "item" ) ){
-                    Token temp = new Token();
-                    temp.addToken( new Token( "item" ) );
-                    temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
-                    temp.addToken( new String[]{ "path", path } );
+            def makeThing(head:Token, x:Int, y:Int, path:String):Thing = {
+                if (head.getName().equals("character")){
+                    val temp = new Token();
+                    temp.addToken(new Token("character"));
+                    temp.addToken(("name" :: "TempName" :: List[String]()).toArray)
+                    temp.addToken(("coords" :: x.toString :: y.toString :: List[String]()).toArray)
+                    temp.addToken(("health" :: "40" :: List[String]()).toArray)
+                    temp.addToken(("path" :: path :: List[String]()).toArray)
+                    return new Character(temp);
+                } else if (head.getName().equals("item")){
+                    val temp = new Token();
+                    temp.addToken(new Token("item"));
+                    temp.addToken(("coords" :: x.toString :: y.toString :: List[String]()).toArray)
+                    temp.addToken(("path" :: path :: List[String]()).toArray)
                     // System.out.println( "Make item from " + temp.toString() );
-                    return new Item( temp );
-                } else if ( head.getName().equals( "cat" ) ){
-                    Token temp = new Token();
-                    temp.addToken( new Token( "item" ) );
-                    temp.addToken( new String[]{ "coords", String.valueOf( x ), String.valueOf( y ) } );
-                    temp.addToken( new String[]{ "path", path } );
-                    return new Item( temp );
+                    return new Item(temp);
+                } else if (head.getName().equals("cat")){
+                    val temp = new Token();
+                    temp.addToken(new Token("item"));
+                    temp.addToken(("coords" :: x.toString :: y.toString :: List[String]()).toArray)
+                    temp.addToken(("path" :: path :: List[String]()).toArray)
+                    return new Item(temp);
                 }
-                throw new LoadException( "Unknown type: " + head.getName() );
+                throw new LoadException("Unknown type: " + head.getName());
             }
 
-            private Vector collectCharFiles(){
-                return new Vector( objectsModel.getAll() );
+            def collectCharFiles():List[File] = {
+                return objectsModel.getAll()
             }
 
-            public void showAddObject( final Block block ) throws EditorException {
-                int x = -1;
-                for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-                    Block b1 = (Block) it.next();
-                    if ( b1 == block ){
-                        break;
-                    }
-                    if ( b1.isEnabled() ){
-                        x += b1.getLength();
-                    }
+            def showAddObject(block:Block){
+              val breaks = new scala.util.control.Breaks
+              import breaks.{break, breakable}
+
+              var x = -1;
+              breakable{
+                for (check <- scala.collection.JavaConversions.asScalaBuffer(level.getBlocks().asInstanceOf[java.util.List[Block]])){
+                  if (check == block){
+                    break;
+                  }
+                  if (check.isEnabled()){
+                    x += check.getLength();
+                  }
                 }
-                showAddObjectPopup( new MouseEvent( Editor.this, -1, 0, 0, (int)((x + block.getLength() / 2) * level.getScale()), (int)((level.getMinZ() + level.getMaxZ()) * level.getScale() / 2), 1, false ) );
+              }
+              showAddObjectPopup(new MouseEvent(NewEditor.this, -1, 0, 0, ((x + block.getLength() / 2) * level.getScale()).toInt, ((level.getMinZ() + level.getMaxZ()) * level.getScale() / 2).toInt, 1, false));
             }
 
-            private void showAddObjectPopup( final MouseEvent event ){
+            def showAddObjectPopup(event:MouseEvent){
+                /* TODO
                 // JPanel panel = new JPanel();
                 final Vector files = collectCharFiles();
                 Box panel = Box.createVerticalBox();
@@ -589,57 +594,60 @@ class NewEditor extends JFrame {
                         }
                     }
                 });
+                */
             }
 
-            public void mousePressed( MouseEvent event ){
-                if ( leftClick( event ) ){
-                    if ( selected != null ){
-                        selected.setSelected( false );
+            def mousePressed(event:MouseEvent){
+                if (leftClick(event)){
+                    if (selected != null){
+                        selected.setSelected(false);
                     }
                     selected = null;
-                    selectThing( event );
-                } else if ( rightClick( event ) ){
-                    showAddObjectPopup( event );
+                    selectThing(event);
+                } else if (rightClick(event)){
+                    showAddObjectPopup(event);
                 }
             }
 
-            public void mouseExited( MouseEvent event ){
-                if ( selected != null ){
+            def mouseExited(event:MouseEvent){
+                if (selected != null){
                     // selected = null;
                     viewScroll.repaint();
                 }
             }
 
-            private Thing findThingAt( MouseEvent event ){
-                return level.findThing( (int)(event.getX() / level.getScale()), (int)(event.getY() / level.getScale()) );
+            def findThingAt(event:MouseEvent):Thing = {
+                level.findThing((event.getX() / level.getScale()).toInt,
+                                (event.getY() / level.getScale()).toInt);
             }
 
-            public void mouseClicked( MouseEvent event ){
+            def mouseClicked(event:MouseEvent){
             }
 
-            public void mouseEntered( MouseEvent event ){
+            def mouseEntered(event:MouseEvent){
             }
 
-            public void mouseReleased( MouseEvent event ){
-                if ( selected != null ){
+            def mouseReleased(event:MouseEvent){
+                if (selected != null ){
                     // selected = null;
                     viewScroll.repaint();
                 }
             }
         }
 
-        final Mouser mousey = new Mouser();
+        val mousey = new Mouser();
 
-        view.addMouseMotionListener( mousey );
-        view.addMouseListener( mousey );
-        view.addMouseListener( new MouseAdapter(){
-            public void mousePressed( MouseEvent event ){
-                / * force focus to move to the view * /
+        view.addMouseMotionListener(mousey );
+        view.addMouseListener(mousey );
+        view.addMouseListener(new MouseAdapter(){
+            override def mousePressed(event:MouseEvent){
+                /* force focus to move to the view */
                 view.requestFocusInWindow(); 
             }
         });
 
-        JTabbedPane tabbed = (JTabbedPane) engine.find( "tabbed" );
+        /*
+        val tabbed = (JTabbedPane) engine.find( "tabbed" );
         final Box holder = Box.createVerticalBox();
         final Box blocks = Box.createVerticalBox();
         holder.add( new JScrollPane( blocks ) );
