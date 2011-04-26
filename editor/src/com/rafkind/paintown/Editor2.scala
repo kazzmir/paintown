@@ -21,6 +21,8 @@ import com.rafkind.paintown.level.Item
 import javax.swing.filechooser.FileFilter
 
 class NewEditor extends JFrame {
+  var copy:Thing = null;
+
   construct();
 
   def get[T](list:List[T], index:Int):T = {
@@ -164,13 +166,17 @@ class NewEditor extends JFrame {
 
       newLevel.addActionListener(new AbstractAction(){
           override def actionPerformed(event:ActionEvent){
-            val level = new Level();
-            /* add 3 blocks to get the user started */
-            for (i <- 1 to 3){
-              level.getBlocks().asInstanceOf[java.util.List[Block]].add(new Block());
-            }
+            SwingUtilities.invokeLater(new Runnable(){
+                def run(){
+                  val level = new Level();
+                  /* add 3 blocks to get the user started */
+                  for (i <- 1 to 3){
+                    level.getBlocks().asInstanceOf[java.util.List[Block]].add(new Block());
+                  }
 
-            levels.put(tabbed.add(createEditPanel(level)), level);
+                  levels.put(tabbed.add(createEditPanel(level)), level);
+                }
+              });
           }
         });
 
@@ -852,82 +858,84 @@ class NewEditor extends JFrame {
             }
         });
 
-        /*
-
-        / * if an object is selected highlight it and scroll over to it * /
-        currentObjects.addListSelectionListener( new ListSelectionListener(){
-            public void valueChanged( ListSelectionEvent e ){
-                Thing t = (Thing) currentObjects.getSelectedValue();
-                if ( mousey.getSelected() != null ){
-                    Thing old = mousey.getSelected();
-                    old.setSelected( false );
-                    level.findBlock( old ).setHighlight( false );
+        /* if an object is selected highlight it and scroll over to it */
+        currentObjects.addListSelectionListener(new ListSelectionListener(){
+            def valueChanged(event:ListSelectionEvent){
+                val thing = currentObjects.getSelectedValue().asInstanceOf[Thing];
+                if (mousey.getSelected() != null){
+                    val old = mousey.getSelected();
+                    old.setSelected(false);
+                    level.findBlock(old).setHighlight(false);
                 }
-                t.setSelected( true );
-                mousey.setSelected( t );
+                thing.setSelected(true);
+                mousey.setSelected(thing);
 
-                / * the current X position within the world * /
-                int currentX = 0;
-                Block b = level.findBlock( t );
-                b.setHighlight( true );
+                /* the current X position within the world */
+                var currentX = 0;
+                val block = level.findBlock(thing);
+                block.setHighlight(true);
+              
+                val breaks = new scala.util.control.Breaks
+                import breaks.{break, breakable}
 
-                / * calculate absolute X position of the selected thing * /
-                for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-                    Block next = (Block) it.next();
-                    if ( next == b ){
-                        break;
+                /* calculate absolute X position of the selected thing */
+                breakable{
+                  for (next <- scala.collection.JavaConversions.asScalaBuffer(level.getBlocks().asInstanceOf[java.util.List[Block]])){
+                    if (next == block){
+                      break;
                     }
-                    if ( next.isEnabled() ){
-                        currentX += next.getLength();
+                    if (next.isEnabled()){
+                      currentX += next.getLength();
                     }
+                  }
                 }
 
-                currentX += t.getX();
-                / * show the object in the center of the view * /
-                int move = (int)(currentX * level.getScale() - viewScroll.getHorizontalScrollBar().getVisibleAmount() / 2);
+                currentX += thing.getX();
+                /* show the object in the center of the view */
+                val move = (currentX * level.getScale() - viewScroll.getHorizontalScrollBar().getVisibleAmount() / 2).toInt;
 
-                / * scroll over to the selected thing * /
+                /* scroll over to the selected thing */
                 // viewScroll.getHorizontalScrollBar().setValue( move );
-                smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), move );
+                smoothScroll(viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), move);
 
                 viewScroll.repaint();
             }
         });
 
-        currentObjects.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "delete" );
-        currentObjects.getActionMap().put( "delete", new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                Thing t = (Thing) currentObjects.getSelectedValue();
-                if ( t != null ){
-                    mousey.setSelected( null );
-                    Block b = level.findBlock( t );
-                    b.removeThing( t );
-                    objectList.setBlock( b );
-                    viewScroll.repaint();
-                }
+        currentObjects.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
+        currentObjects.getActionMap().put("delete", new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
+              val thing = currentObjects.getSelectedValue().asInstanceOf[Thing]
+              if (thing != null){
+                mousey.setSelected(null);
+                val block = level.findBlock(thing);
+                block.removeThing(thing);
+                objectList.setBlock(block);
+                viewScroll.repaint();
+              }
             }
-        });
+          });
 
-        currentObjects.addMouseListener( new MouseAdapter() {
-            public void mouseClicked( MouseEvent clicked ){
-                if ( clicked.getClickCount() == 2 ){
-                    Thing t = (Thing) currentObjects.getSelectedValue();	
-                    editSelected.invoke_( t );
-                }
+        currentObjects.addMouseListener(new MouseAdapter() {
+            override def mouseClicked(clicked:MouseEvent){
+              if (clicked.getClickCount() == 2){
+                val thing = currentObjects.getSelectedValue().asInstanceOf[Thing];
+                editSelected(thing);
+              }
             }
-        });
+          });
 
-        / * so the user can click on the scrolly pane * /
+        /* so the user can click on the scrolly pane */
         // viewScroll.setFocusable( true );
-        view.setFocusable( true );
+        view.setFocusable(true);
 
-        view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "delete" );
+        view.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
 
-        / * ctrl-c * /
+        /* ctrl-c */
         view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_C, 2 ), "copy" );
-        / * ctrl-v * /
+        /* ctrl-v */
         view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_V, 2 ), "paste" );
-        / * ctrl-b * /
+        /* ctrl-b */
         view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_B, 2 ), "change-boy-name" );
         view.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_G, 2 ), "change-girl-name" );
 
@@ -935,40 +943,40 @@ class NewEditor extends JFrame {
         currentObjects.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_G, 2 ), "change-girl-name" );
 
         view.getActionMap().put( "delete", new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( mousey.getSelected() != null ){
-                    Block b = level.findBlock( mousey.getSelected() );
-                    b.removeThing( mousey.getSelected() );
-                    mousey.setSelected( null );
-                    objectList.setBlock( b );
-                    viewScroll.repaint();
-                }
+            override def actionPerformed(event:ActionEvent){
+              if (mousey.getSelected() != null){
+                val block = level.findBlock(mousey.getSelected());
+                block.removeThing(mousey.getSelected());
+                mousey.setSelected(null);
+                objectList.setBlock(block);
+                viewScroll.repaint();
+              }
             }
-        });
+          });
 
         view.getActionMap().put( "copy", new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
+            override def actionPerformed(event:ActionEvent){
                 // System.out.println( "Copy object" );
-                if ( mousey.getSelected() != null ){
-                    setCopy( mousey.getSelected().copy() );
+                if (mousey.getSelected() != null){
+                    setCopy(mousey.getSelected().copy());
                 }
             }
         });
 
-        AbstractAction changeBoy = new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( mousey.getSelected() != null && mousey.getSelected() instanceof Character ){
-                    Character guy = (Character) mousey.getSelected();
-                    guy.setName( Editor.this.generateBoysName() );
+        val changeBoy = new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
+                if (mousey.getSelected() != null && mousey.getSelected().isInstanceOf[Character]){
+                    val guy = mousey.getSelected().asInstanceOf[Character];
+                    guy.setName(NewEditor.this.generateBoysName());
                 }
             }
         };
 
-        AbstractAction changeGirl = new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( mousey.getSelected() != null && mousey.getSelected() instanceof Character ){
-                    Character guy = (Character) mousey.getSelected();
-                    guy.setName( Editor.this.generateGirlsName() );
+        val changeGirl = new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
+                if ( mousey.getSelected() != null && mousey.getSelected().isInstanceOf[Character]){
+                    val guy = mousey.getSelected().asInstanceOf[Character];
+                    guy.setName(NewEditor.this.generateGirlsName() );
                 }
             }
         };
@@ -979,75 +987,75 @@ class NewEditor extends JFrame {
         currentObjects.getActionMap().put( "change-girl-name", changeGirl );
 
         view.getActionMap().put( "paste", new AbstractAction(){
-            private int calculateLength( List blocks ){
-                int total = 0;
-                for ( Iterator it = blocks.iterator(); it.hasNext(); ){
-                    Block b = (Block) it.next();
-                    total += b.getLength();
+            def calculateLength(blocks:List[Block]):Int = {
+                var total = 0
+                for (block <- blocks){
+                    total += block.getLength();
                 }
                 return total;
             }
 
-            public void actionPerformed( ActionEvent event ){
-                / * middle of the current screen * /
-                int x = (int)(viewScroll.getHorizontalScrollBar().getValue() / level.getScale() + viewScroll.getHorizontalScrollBar().getVisibleAmount() / level.getScale() / 2 );
-                / * in between the min and max z lines * /
-                int y = (int)((level.getMaxZ() - level.getMinZ()) / 2);
-                Block b = level.findBlock( x );
-                if ( b != null && getCopy() != null ){
-                    Thing copy = getCopy().copy();
-                    / * x has to be relative to the beginning of the block * /
-                    copy.setX( x - calculateLength( level.getBlocks().subList( 0, level.getBlocks().indexOf( b ) ) ) );
-                    copy.setY( y );
-                    b.addThing( copy );
-                    objectList.setBlock( b );
+            override def actionPerformed(event:ActionEvent){
+                /* middle of the current screen */
+                val x = (viewScroll.getHorizontalScrollBar().getValue() / level.getScale() + viewScroll.getHorizontalScrollBar().getVisibleAmount() / level.getScale() / 2 ).toInt;
+                /* in between the min and max z lines */
+                val y = ((level.getMaxZ() - level.getMinZ()) / 2).toInt;
+                val block = level.findBlock(x);
+                if (block != null && getCopy() != null){
+                    val copy = getCopy().copy();
+                    /* x has to be relative to the beginning of the block */
+                    copy.setX(x - calculateLength(toScalaList(level.getBlocks().subList(0, level.getBlocks().indexOf(block)).asInstanceOf[java.util.List[Block]])));
+                    copy.setY(y);
+                    block.addThing(copy);
+                    objectList.setBlock(block);
                     viewScroll.repaint();
                 } else {
-                    System.out.println( "No block found at " + x );
+                    println("No block found at " + x);
                 }
             }
         });
 
         tabbed.add( "Blocks", holder );
 
-        final SwingEngine objectEngine = new SwingEngine( "objects.xml" );
-        tabbed.add( "Objects", (JComponent) objectEngine.getRootComponent() );
+        val objectEngine = new SwingEngine("objects.xml");
+        tabbed.add("Objects", objectEngine.getRootComponent().asInstanceOf[JComponent]);
 
         // final JList objects = new JList( allowableObjects );
-        final JList objects = (JList) objectEngine.find( "objects" );
-        / * objectsModel is declared way up top * /
-        objects.setModel( objectsModel  );
+        val objects = objectEngine.find( "objects" ).asInstanceOf[JList];
+        /* objectsModel is declared way up top */
+        objects.setModel(objectsModel);
 
         {
-            final JButton add = (JButton) objectEngine.find( "add" );
-            final JButton remove = (JButton) objectEngine.find( "delete" );
+            val add = objectEngine.find( "add" ).asInstanceOf[JButton];
+            val remove = objectEngine.find( "delete" ).asInstanceOf[JButton];
 
-            add.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
-                    int ret = chooser.open();
-                    if ( ret == RelativeFileChooser.OK ){
-                        final String path = chooser.getPath();
-                        objectsModel.add( new File( path ) );
+            add.addActionListener(new AbstractAction(){
+                override def actionPerformed(event:ActionEvent){
+                    val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                    val ret = chooser.open();
+                    if (ret == RelativeFileChooser.OK ){
+                        val path = chooser.getPath();
+                        objectsModel.add(new File(path));
                     }
                 }
             });
 
             remove.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    int index = objects.getSelectedIndex();
-                    if ( index != -1 ){
-                        objectsModel.remove( index );
+                override def actionPerformed(event:ActionEvent){
+                    val index = objects.getSelectedIndex();
+                    if (index != -1){
+                        objectsModel.remove(index);
                     }
                 }
             });
         }
 
-        final SwingEngine levelEngine = new SwingEngine( "level.xml" );
+        val levelEngine = new SwingEngine( "level.xml" );
         // debugSwixml( levelEngine );
-        final JPanel levelPane = (JPanel) levelEngine.getRootComponent();
-        tabbed.add( "Level", levelPane );
+        val levelPane = levelEngine.getRootComponent().asInstanceOf[JPanel];
+        tabbed.add("Level", levelPane);
 
+        /*
         final JSpinner levelMinZ = (JSpinner) levelEngine.find( "min-z" );
         final JSpinner levelMaxZ = (JSpinner) levelEngine.find( "max-z" );
         final JComboBox atmosphere = (JComboBox) levelEngine.find( "atmosphere" );
@@ -1547,6 +1555,47 @@ class NewEditor extends JFrame {
       case JFileChooser.APPROVE_OPTION => chooser.getSelectedFile()
       case _ => null
     }
+  }
+
+  def getCopy():Thing = {
+    copy
+  }
+
+  def setCopy(thing:Thing){
+    copy = thing
+  }
+
+  def smoothScroll(scroll:JScrollBar, starting:Int, end:Int){
+    new Thread(){
+      override def run(){
+        var begin:Int = starting;
+        for (index <- 0 to 5){
+          val to = (begin + end) / 2;
+          scroll.setValue(to);
+          begin = to;
+          try{
+            Thread.sleep(20);
+          } catch {
+            case e:Exception => {}
+          }
+        }
+        scroll.setValue(end);
+      }
+    }.start();
+  }
+
+  def generateBoysName():String = {
+    return new RandomNameAction("boys.txt"){
+        override def actionPerformed(event:ActionEvent){
+        }
+    }.generateName();
+  }
+
+  def generateGirlsName():String = {
+    return new RandomNameAction( "girls.txt" ){
+      override def actionPerformed(event:ActionEvent){
+      }
+    }.generateName();
   }
     
   def showError(message:String){
