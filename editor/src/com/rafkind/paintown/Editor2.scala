@@ -1329,184 +1329,174 @@ class NewEditor extends JFrame {
         view.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
         viewContainer.add(viewScroll);
 
-        /*
-        final Lambda2 setupBlocks = new Lambda2(){
-            private void editBlockProperties( final Block block, final Lambda0 done ){
-                final JDialog dialog = new JDialog( Editor.this, "Edit" );
-                dialog.setSize( 200, 200 );
-                final SwingEngine engine = new SwingEngine( "block.xml" );
-                dialog.getContentPane().add( (JPanel) engine.getRootComponent() );
+        def setupBlocks(level:Level){
+          def editBlockProperties(block:Block, done: () => Unit){
+            val dialog = new JDialog(NewEditor.this, "Edit");
+            dialog.setSize(200, 200);
+            val engine = new SwingEngine("block.xml");
+            dialog.getContentPane().add(engine.getRootComponent().asInstanceOf[JPanel]);
 
-                final JTextField length = (JTextField) engine.find( "length" );
-                final JTextField finish = (JTextField) engine.find( "finish" );
-                final JCheckBox isFinish = (JCheckBox) engine.find( "is-finish" );
-                final JSpinner id = (JSpinner) engine.find("id");
-                final JCheckBox isContinuous = (JCheckBox) engine.find( "is-continuous" );
-                final JButton save = (JButton) engine.find( "save" );
-                final JButton close = (JButton) engine.find( "close" );
+            val length = engine.find( "length" ).asInstanceOf[JTextField];
+            val finish = engine.find( "finish" ).asInstanceOf[JTextField];
+            val isFinish = engine.find( "is-finish" ).asInstanceOf[JCheckBox];
+            val id = engine.find("id").asInstanceOf[JSpinner];
+            val isContinuous = engine.find( "is-continuous" ).asInstanceOf[JCheckBox];
+            val save = engine.find( "save" ).asInstanceOf[JButton];
+            val close = engine.find( "close" ).asInstanceOf[JButton];
 
-                length.setText( String.valueOf( block.getLength() ) );
-                isContinuous.setSelected( block.isContinuous() );
-                id.setValue(block.getId());
-                isFinish.setSelected( block.isFinish() );
-                finish.setEnabled( block.isFinish() );
-                finish.setText( String.valueOf( block.getFinish() ) );
-                isFinish.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        finish.setEnabled( isFinish.isSelected() );
-                    }
-                });
+            length.setText(block.getLength().toString)
+            isContinuous.setSelected(block.isContinuous());
+            id.setValue(block.getId());
+            isFinish.setSelected(block.isFinish());
+            finish.setEnabled(block.isFinish());
+            finish.setText(block.getFinish().toString);
+            isFinish.addActionListener( new AbstractAction(){
+              override def actionPerformed(event:ActionEvent){
+                finish.setEnabled(isFinish.isSelected());
+              }
+            });
 
-                save.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        block.setLength( Integer.parseInt( length.getText() ) );
-                        block.setId(((Integer) id.getValue()).intValue());
-                        if ( isFinish.isSelected() ){
-                            block.setFinish( Integer.parseInt( finish.getText() ) );
-                        } else {
-                            block.setFinish( 0 );
-                        }
-                        block.setContinuous( isContinuous.isSelected() );
-                        done.invoke_();
-                        dialog.setVisible( false );
-                    }
-                });
-
-                close.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        dialog.setVisible( false );
-                    }
-                });
-
-                dialog.setVisible( true );
-            }
-
-            private void scrollToBlock( Block block ){
-                int length = 0;
-                for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-                    Block b = (Block) it.next();
-                    if ( b == block ){
-                        break;
-                    }
-                    if ( b.isEnabled() ){
-                        length += b.getLength();
-                    }
+          save.addActionListener( new AbstractAction(){
+              override def actionPerformed(event:ActionEvent){
+                block.setLength(java.lang.Integer.parseInt(length.getText()))
+                block.setId(id.getValue().asInstanceOf[java.lang.Integer].intValue());
+                if (isFinish.isSelected()){
+                  block.setFinish(java.lang.Integer.parseInt(finish.getText()));
+                } else {
+                  block.setFinish(0);
                 }
-                smoothScroll( viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (int)(length * level.getScale() - 15) );
-                // viewScroll.getHorizontalScrollBar().setValue( (int)(length * level.getScale() - 10) );
-            }
+                block.setContinuous(isContinuous.isSelected());
+                done()
+                dialog.setVisible(false);
+              }
+            });
 
-            / * self_ should be the 'setupBlocks' lambda so that it can
-             * call itself recursively
-             * /
-            public Object invoke( Object l, Object self_ ){
-                final Lambda2 self = (Lambda2) self_;
-                final Level level = (Level) l;
-                blocks.removeAll();
-                int n = 1;
-                int total = 0;
-                for ( Iterator it = level.getBlocks().iterator(); it.hasNext(); ){
-                    final Block block = (Block) it.next();
-                    Box stuff = Box.createHorizontalBox();
-                    JCheckBox check = new JCheckBox( new AbstractAction(){
-                        public void actionPerformed( ActionEvent event ){
-                            JCheckBox c = (JCheckBox) event.getSource();
-                            block.setEnabled( c.isSelected() );
-                            view.revalidate();
-                            viewScroll.repaint();
-                        }
-                    });
+          close.addActionListener( new AbstractAction(){
+              override def actionPerformed(event:ActionEvent){
+                dialog.setVisible(false);
+              }
+            });
 
-                    check.setToolTipText("Check this box to make the block appear in the game");
+          dialog.setVisible( true );
+        }
 
-                    check.setSelected( true );
-                    stuff.add( check );
-                    final JButton button = new JButton( "Block " + n + " : " + block.getLength() );
-                    button.addActionListener( new AbstractAction(){
-                        public void actionPerformed( ActionEvent event ){
-                            if ( block.isEnabled() ){
-                                scrollToBlock( block );
-                                objectList.setBlock( block );
-                            }
-                        }
-                    });
-                    stuff.add( button );
-                    stuff.add( Box.createHorizontalStrut( 3 ) );
-
-                    JButton edit = new JButton( "Edit" );
-                    final int xnum = n;
-                    edit.addActionListener( new AbstractAction(){
-                        public void actionPerformed( ActionEvent event ){
-                            editBlockProperties( block, new Lambda0(){
-                                public Object invoke(){
-                                    button.setText( "Block " + xnum + " : " + block.getLength() );
-                                    view.revalidate();
-                                    viewScroll.repaint();
-                                    return null;
-                                }
-                            });
-                        }
-                    });
-                    stuff.add( edit );
-                    stuff.add( Box.createHorizontalStrut( 3 ) );
-
-                    JButton erase = new JButton( "Delete" );
-                    erase.addActionListener( new AbstractAction(){
-                        public void actionPerformed( ActionEvent event ){
-                            mousey.setSelected( null );
-                            objectList.setBlock( null );
-                            level.getBlocks().remove( block );
-                            self.invoke_( level, self );
-                            view.repaint();
-                        }
-                    });
-                    stuff.add( erase );
-
-                    stuff.add( Box.createHorizontalGlue() );
-                    blocks.add( stuff );
-
-                    total += block.getLength();
-                    n += 1;
+        def scrollToBlock(block:Block){
+          var length = 0;
+          val breaks = new scala.util.control.Breaks
+          import breaks.{break, breakable}
+          breakable{
+            for (next <- toScalaList(level.getBlocks().asInstanceOf[java.util.List[Block]])){
+                if (next == block ){
+                  break;
                 }
-                blocks.add( Box.createVerticalGlue() );
-                Box addf = Box.createHorizontalBox();
-                JButton add = new JButton( "Add block" );
-                add.addActionListener( new AbstractAction(){
-                    public void actionPerformed( ActionEvent event ){
-                        Block b = new Block();
-                        level.getBlocks().add( b );
-                        self.invoke_( level, self );
+                if (next.isEnabled() ){
+                  length += next.getLength();
+                }
+              }
+            }
+            smoothScroll(viewScroll.getHorizontalScrollBar(), viewScroll.getHorizontalScrollBar().getValue(), (length * level.getScale() - 15).toInt);
+            // viewScroll.getHorizontalScrollBar().setValue( (int)(length * level.getScale() - 10) );
+          }
+
+          blocks.removeAll();
+          var n = 1;
+          var total = 0;
+          for (block <- toScalaList(level.getBlocks().asInstanceOf[java.util.List[Block]])){
+              val stuff = Box.createHorizontalBox();
+              val check = new JCheckBox( new AbstractAction(){
+                  override def actionPerformed(event:ActionEvent){
+                    val source = event.getSource().asInstanceOf[JCheckBox];
+                    block.setEnabled(source.isSelected());
+                    view.revalidate();
+                    viewScroll.repaint();
+                  }
+                });
+
+              check.setToolTipText("Check this box to make the block appear in the game");
+
+              check.setSelected(true);
+              stuff.add(check);
+              val button = new JButton("Block " + n + " : " + block.getLength());
+              button.addActionListener( new AbstractAction(){
+                  override def actionPerformed(event:ActionEvent){
+                    if (block.isEnabled()){
+                      scrollToBlock(block);
+                      objectList.setBlock(block);
+                    }
+                  }
+                });
+              stuff.add(button);
+              stuff.add(Box.createHorizontalStrut(3));
+
+              val edit = new JButton( "Edit" );
+              val xnum = n;
+              edit.addActionListener( new AbstractAction(){
+                  override def actionPerformed(event:ActionEvent){
+                    editBlockProperties(block, () => {
+                        button.setText( "Block " + xnum + " : " + block.getLength() );
                         view.revalidate();
                         viewScroll.repaint();
-                    }
+                      })
+                  }
                 });
-                addf.add( add );
-                addf.add( Box.createHorizontalGlue() );
-                blocks.add( addf );
-                Box f = Box.createHorizontalBox();
-                f.add( new JLabel( "Total length " + total ) );
-                f.add( Box.createHorizontalGlue() );
-                blocks.add( f );
-                blocks.revalidate();
-                blocks.repaint();
-                return null;
+              stuff.add(edit);
+              stuff.add(Box.createHorizontalStrut(3));
+
+              val erase = new JButton("Delete");
+              erase.addActionListener( new AbstractAction(){
+                  override def actionPerformed(event:ActionEvent){
+                    mousey.setSelected(null);
+                    objectList.setBlock(null);
+                    level.getBlocks().remove(block);
+                    setupBlocks(level)
+                    view.repaint();
+                  }
+                });
+              stuff.add(erase);
+
+              stuff.add(Box.createHorizontalGlue());
+              blocks.add(stuff);
+
+              total += block.getLength();
+              n += 1;
             }
-        };
 
-        setupBlocks.invoke_( level, setupBlocks );
-        loadLevelProperties.invoke_( level );
+            blocks.add(Box.createVerticalGlue());
+            val addf = Box.createHorizontalBox()
+            val add = new JButton( "Add block" );
+            add.addActionListener( new AbstractAction(){
+                override def actionPerformed(event:ActionEvent){
+                  val b = new Block();
+                  level.getBlocks().asInstanceOf[java.util.List[Block]].add(b);
+                  setupBlocks(level)
+                  view.revalidate();
+                  viewScroll.repaint();
+                }
+              });
+            addf.add(add);
+            addf.add(Box.createHorizontalGlue());
+            blocks.add(addf);
+            val f = Box.createHorizontalBox();
+            f.add(new JLabel("Total length " + total));
+            f.add(Box.createHorizontalGlue());
+            blocks.add(f);
+            blocks.revalidate();
+            blocks.repaint();
+        }
 
-        final JSlider scroll = (JSlider) engine.find( "level-scale" );
-        final JLabel scale = (JLabel) engine.find( "scale" );
+        setupBlocks(level)
+        loadLevelProperties(level);
+
+        val scroll = engine.find( "level-scale" ).asInstanceOf[JSlider];
+        val scale = engine.find( "scale" ).asInstanceOf[JLabel];
         scroll.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                level.setScale( (double) scroll.getValue() * 2.0 / scroll.getMaximum() );
-                scale.setText( "Scale: " + level.getScale() );
+            override def stateChanged(event:ChangeEvent){
+                level.setScale(scroll.getValue().toDouble * 2.0 / scroll.getMaximum());
+                scale.setText("Scale: " + level.getScale());
                 view.revalidate();
                 viewScroll.repaint();
             }
         });
-        */
 
         engine.getRootComponent().asInstanceOf[JSplitPane];
     }
