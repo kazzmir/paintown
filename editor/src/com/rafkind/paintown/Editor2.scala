@@ -1055,47 +1055,46 @@ class NewEditor extends JFrame {
         val levelPane = levelEngine.getRootComponent().asInstanceOf[JPanel];
         tabbed.add("Level", levelPane);
 
-        /*
-        final JSpinner levelMinZ = (JSpinner) levelEngine.find( "min-z" );
-        final JSpinner levelMaxZ = (JSpinner) levelEngine.find( "max-z" );
-        final JComboBox atmosphere = (JComboBox) levelEngine.find( "atmosphere" );
-        final JTextField levelBackground = (JTextField) levelEngine.find( "background" );
-        final JTextField levelDescription = (JTextField) levelEngine.find("description");
-        final JButton levelChangeBackground = (JButton) levelEngine.find( "change-background" );
-        final Vector frontPanelsData = new Vector();
-        final JList frontPanels = (JList) levelEngine.find( "front-panels" );
-        frontPanels.setListData( frontPanelsData );
-        final Vector backPanelsData = new Vector();
-        final JList backPanels = (JList) levelEngine.find( "back-panels" );
-        final JTextArea order = (JTextArea) levelEngine.find( "order" );
-        final JComboBox pickOrder = (JComboBox) levelEngine.find( "pick-order" );
-        final JSlider backgroundParallax = (JSlider) levelEngine.find( "background-parallax-slider" );
-        final JLabel backgroundAmount = (JLabel) levelEngine.find( "background-parallax-amount" );
-        final JSlider foregroundParallax = (JSlider) levelEngine.find( "foreground-parallax-slider" );
-        final JLabel foregroundAmount = (JLabel) levelEngine.find( "foreground-parallax-amount" );
+        val levelMinZ = levelEngine.find( "min-z" ).asInstanceOf[JSpinner];
+        val levelMaxZ = levelEngine.find( "max-z" ).asInstanceOf[JSpinner];
+        val atmosphere = levelEngine.find( "atmosphere" ).asInstanceOf[JComboBox];
+        val levelBackground = levelEngine.find( "background" ).asInstanceOf[JTextField];
+        val levelDescription = levelEngine.find("description").asInstanceOf[JTextField];
+        val levelChangeBackground = levelEngine.find( "change-background" ).asInstanceOf[JButton];
+        val frontPanelsData = new java.util.Vector();
+        val frontPanels = levelEngine.find( "front-panels" ).asInstanceOf[JList];
+        frontPanels.setListData(frontPanelsData);
+        val backPanelsData = new java.util.Vector[String]();
+        val backPanels = levelEngine.find( "back-panels" ).asInstanceOf[JList];
+        val order = levelEngine.find( "order" ).asInstanceOf[JTextArea];
+        val pickOrder = levelEngine.find( "pick-order" ).asInstanceOf[JComboBox];
+        val backgroundParallax = levelEngine.find( "background-parallax-slider" ).asInstanceOf[JSlider];
+        val backgroundAmount = levelEngine.find( "background-parallax-amount" ).asInstanceOf[JLabel];
+        val foregroundParallax = levelEngine.find( "foreground-parallax-slider" ).asInstanceOf[JSlider];
+        val foregroundAmount = levelEngine.find( "foreground-parallax-amount" ).asInstanceOf[JLabel];
 
-        foregroundAmount.setText( String.valueOf( level.getForegroundParallax() ) );
-        backgroundAmount.setText( String.valueOf( level.getBackgroundParallax() ) );
-        backgroundParallax.setValue( (int) level.getBackgroundParallax() );
-        foregroundParallax.setValue( (int) (level.getForegroundParallax() * 10) );
+        foregroundAmount.setText(level.getForegroundParallax().toString);
+        backgroundAmount.setText(level.getBackgroundParallax().toString);
+        backgroundParallax.setValue(level.getBackgroundParallax().toInt);
+        foregroundParallax.setValue((level.getForegroundParallax() * 10).toInt);
 
         backgroundParallax.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                level.setBackgroundParallax( (double) backgroundParallax.getValue() );
-                backgroundAmount.setText( String.valueOf( level.getBackgroundParallax() ) );
+            override def stateChanged(event:ChangeEvent){
+                level.setBackgroundParallax(backgroundParallax.getValue().toDouble);
+                backgroundAmount.setText(level.getBackgroundParallax().toString);
             }
         });
 
         foregroundParallax.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                level.setForegroundParallax( (double) foregroundParallax.getValue() / 10.0 );
-                foregroundAmount.setText( String.valueOf( level.getForegroundParallax() ) );
+            override def stateChanged(event:ChangeEvent){
+                level.setForegroundParallax(foregroundParallax.getValue().toDouble / 10.0);
+                foregroundAmount.setText(level.getForegroundParallax().toString);
             }
         });
         
         levelDescription.setText(level.getDescription());
         levelDescription.addActionListener(new AbstractAction(){
-            public void actionPerformed(ActionEvent e){
+            override def actionPerformed(event:ActionEvent){
                 level.setDescription(levelDescription.getText());
             }
         });
@@ -1109,60 +1108,54 @@ class NewEditor extends JFrame {
         atmosphere.setSelectedItem( level.getAtmosphere() );
 
         atmosphere.addActionListener( new ActionListener(){
-            public void actionPerformed( ActionEvent e ){
-                level.setAtmosphere( (String) atmosphere.getSelectedItem() );
+            override def actionPerformed(event:ActionEvent){
+                level.setAtmosphere(atmosphere.getSelectedItem().asInstanceOf[String]);
             }
         });
 
         atmosphere.setEditable( false );
 
-        class BackPanelCombo implements ComboBoxModel {
-            private Object selected;
-            private Vector data;
-            private List listeners;
+        class BackPanelCombo(data:java.util.Vector[String]) extends ComboBoxModel {
+            var selected:Object = null
+            var listeners:List[ListDataListener] = List[ListDataListener]()
 
-            public BackPanelCombo( Vector data ){
-                this.data = data;
-                this.listeners = new ArrayList();
+            def getSelectedItem():Object = {
+                selected;
             }
 
-            public Object getSelectedItem(){
-                return selected;
-            }
-
-            public void update(){
-                selected = null;
-                ListDataEvent event = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 99999 );
-                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-                    ListDataListener l = (ListDataListener) it.next();
-                    l.contentsChanged( event );
+            def update(){
+                selected = null
+                val event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, 99999)
+                for (listener <- listeners){
+                    listener.contentsChanged(event);
                 }
             }
 
-            public void setSelectedItem( Object i ){
-                selected = i;
+            def setSelectedItem(item:Object){
+                selected = item
             }
 
-            public void addListDataListener( ListDataListener l ){
-                listeners.add( l );
+            override def addListDataListener(listener:ListDataListener){
+                listeners = listeners :+ listener
             }
 
-            public Object getElementAt( int index ){
-                return this.data.get( index );
+            override def getElementAt(index:Int):Object = {
+                this.data.get(index);
             }
 
-            public int getSize(){
-                return this.data.size();
+            override def getSize():Int = {
+                this.data.size();
             }
 
-            public void removeListDataListener( ListDataListener l ){
-                this.listeners.remove( l );
+            override def removeListDataListener(listener:ListDataListener){
+                this.listeners = this.listeners - listener
             }
         };
 
-        final BackPanelCombo comboModel = new BackPanelCombo( backPanelsData );
-        pickOrder.setModel( comboModel );
+        val comboModel = new BackPanelCombo(backPanelsData);
+        pickOrder.setModel(comboModel);
 
+        /*
         final Lambda0 setOrderText = new Lambda0(){
             public Object invoke(){
                 StringBuffer orderText = new StringBuffer();
