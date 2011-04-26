@@ -84,7 +84,6 @@ class NewEditor extends JFrame {
     closeLevel.setMnemonic( KeyEvent.VK_W );
     closeLevel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
 
-
     val tabbed = new JTabbedPane();
     this.getContentPane().add(tabbed);
 
@@ -1061,7 +1060,7 @@ class NewEditor extends JFrame {
         val levelBackground = levelEngine.find( "background" ).asInstanceOf[JTextField];
         val levelDescription = levelEngine.find("description").asInstanceOf[JTextField];
         val levelChangeBackground = levelEngine.find( "change-background" ).asInstanceOf[JButton];
-        val frontPanelsData = new java.util.Vector();
+        val frontPanelsData = new java.util.Vector[String]();
         val frontPanels = levelEngine.find( "front-panels" ).asInstanceOf[JList];
         frontPanels.setListData(frontPanelsData);
         val backPanelsData = new java.util.Vector[String]();
@@ -1155,107 +1154,106 @@ class NewEditor extends JFrame {
         val comboModel = new BackPanelCombo(backPanelsData);
         pickOrder.setModel(comboModel);
 
-        /*
-        final Lambda0 setOrderText = new Lambda0(){
-            public Object invoke(){
-                StringBuffer orderText = new StringBuffer();
-                for ( Iterator it = level.getBackPanelOrder().iterator(); it.hasNext(); ){
-                    Integer num = (Integer) it.next();
-                    String name = level.getBackPanelName( num.intValue() );
-                    orderText.append( name ).append( "\n" );
-                }
-                order.setText( orderText.toString() );
-                return null;
-            }
+        def setOrderText(){
+          val orderText = new StringBuffer();
+          for (order <- toScalaList[java.lang.Integer](level.getBackPanelOrder().asInstanceOf[java.util.List[java.lang.Integer]])){
+            val name = level.getBackPanelName(order.intValue())
+            orderText.append(name).append("\n");
+          }
+          order.setText(orderText.toString());
         };
 
         {
-            final JButton add = (JButton) levelEngine.find( "add-order" );
-            final JButton remove = (JButton) levelEngine.find( "remove-order" );
+            val add = levelEngine.find("add-order").asInstanceOf[JButton];
+            val remove = levelEngine.find( "remove-order" ).asInstanceOf[JButton];
             add.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    String path = (String) pickOrder.getSelectedItem();
-                    if ( path != null ){
-                        level.addBackPanelOrder( path );
-                        setOrderText.invoke_();
+                override def actionPerformed(event:ActionEvent){
+                    val path = pickOrder.getSelectedItem().asInstanceOf[String];
+                    if (path != null){
+                        level.addBackPanelOrder(path);
+                        setOrderText();
                         viewScroll.repaint();
                     }
                 }
             });
 
             remove.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
+                override def actionPerformed(event:ActionEvent){
                     level.removeLastOrder();
-                    setOrderText.invoke_();
+                    setOrderText()
                     viewScroll.repaint();
                 }
             });
         }
 
-        { / * force scope * /
-            final JButton add = (JButton) levelEngine.find( "add-front-panel" );
+        { /* force scope */
+            val add = levelEngine.find( "add-front-panel" ).asInstanceOf[JButton];
             add.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
-                    int ret = chooser.open();
-                    if ( ret == RelativeFileChooser.OK ){
+                override def actionPerformed(event:ActionEvent){
+                    val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                    val ret = chooser.open();
+                    if (ret == RelativeFileChooser.OK){
                         try{
-                            final String path = chooser.getPath();
-                            level.addFrontPanel( path );
-                            frontPanelsData.add( path );
-                            frontPanels.setListData( frontPanelsData );
+                            val path:String = chooser.getPath();
+                            level.addFrontPanel(path);
+                            frontPanelsData.add(path);
+                            frontPanels.setListData(frontPanelsData);
                             viewScroll.repaint();
-                        } catch ( LoadException le ){
-                            le.printStackTrace();
+                        } catch {
+                          case fail:LoadException => {
+                            fail.printStackTrace();
+                          }
                         }
                     }
                 }
             });
 
-            final JButton remove = (JButton) levelEngine.find( "delete-front-panel" );
+            val remove = levelEngine.find( "delete-front-panel" ).asInstanceOf[JButton];
             remove.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    if ( frontPanels.getSelectedValue() != null ){
-                        String path = (String) frontPanels.getSelectedValue();
-                        level.removeFrontPanel( path );
-                        frontPanelsData.remove( path );
-                        frontPanels.setListData( frontPanelsData );
+                override def actionPerformed(event:ActionEvent){
+                    if (frontPanels.getSelectedValue() != null){
+                        val path = frontPanels.getSelectedValue().asInstanceOf[String];
+                        level.removeFrontPanel(path);
+                        frontPanelsData.remove(path);
+                        frontPanels.setListData(frontPanelsData);
                         viewScroll.repaint();
                     }
                 }
             });
         }
 
-        { / * force scope * /
-            final JButton add = (JButton) levelEngine.find( "add-back-panel" );
+        { /* force scope */
+            val add = levelEngine.find( "add-back-panel" ).asInstanceOf[JButton];
             add.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
-                    int ret = chooser.open();
-                    if ( ret == RelativeFileChooser.OK ){
+                override def actionPerformed(event:ActionEvent){
+                    val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                    val ret = chooser.open();
+                    if (ret == RelativeFileChooser.OK){
                         try{
-                            final String path = chooser.getPath();
-                            level.addBackPanel( path );
-                            backPanelsData.add( path );
-                            backPanels.setListData( backPanelsData );
+                            val path = chooser.getPath();
+                            level.addBackPanel(path);
+                            backPanelsData.add(path);
+                            backPanels.setListData(backPanelsData);
                             comboModel.update();
                             viewScroll.repaint();
-                        } catch ( LoadException le ){
-                            le.printStackTrace();
+                        } catch {
+                          case fail:LoadException => {
+                            fail.printStackTrace();
+                          }
                         }
                     }
                 }
             });
 
-            final JButton remove = (JButton) levelEngine.find( "delete-back-panel" );
+            val remove = levelEngine.find( "delete-back-panel" ).asInstanceOf[JButton];
             remove.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    if ( backPanels.getSelectedValue() != null ){
-                        String path = (String) backPanels.getSelectedValue();
-                        level.removeBackPanel( path );
-                        backPanelsData.remove( path );
-                        backPanels.setListData( backPanelsData );
-                        setOrderText.invoke_();
+                override def actionPerformed(event:ActionEvent){
+                    if (backPanels.getSelectedValue() != null){
+                        val path = backPanels.getSelectedValue().asInstanceOf[String];
+                        level.removeBackPanel(path);
+                        backPanelsData.remove(path);
+                        backPanels.setListData(backPanelsData);
+                        setOrderText()
                         comboModel.update();
                         viewScroll.repaint();
                     }
@@ -1263,78 +1261,75 @@ class NewEditor extends JFrame {
             });
         }
 
-        levelMinZ.setModel( new SpinnerNumberModel() );
-        levelMinZ.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                JSpinner spinner = (JSpinner) e.getSource();
-                Integer i = (Integer) spinner.getValue();
-                level.setMinZ( i.intValue() );
+        levelMinZ.setModel(new SpinnerNumberModel());
+        levelMinZ.addChangeListener(new ChangeListener(){
+            override def stateChanged(event:ChangeEvent){
+                val spinner = event.getSource().asInstanceOf[JSpinner];
+                val i = spinner.getValue().asInstanceOf[java.lang.Integer];
+                level.setMinZ(i.intValue());
                 viewScroll.repaint();
             }
         });
 
         levelMaxZ.setModel( new SpinnerNumberModel() );
         levelMaxZ.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                JSpinner spinner = (JSpinner) e.getSource();
-                Integer i = (Integer) spinner.getValue();
-                level.setMaxZ( i.intValue() );
+            override def stateChanged(event:ChangeEvent){
+                val spinner = event.getSource().asInstanceOf[JSpinner];
+                val i = spinner.getValue().asInstanceOf[java.lang.Integer];
+                level.setMaxZ(i.intValue());
                 viewScroll.repaint();
             }
         });
 
-        levelBackground.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                level.loadBackground( levelBackground.getText() );
+        levelBackground.addActionListener(new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
+                level.loadBackground(levelBackground.getText());
                 viewScroll.repaint();
             }
         });
 
-        levelChangeBackground.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
-                int ret = chooser.open();
-                if ( ret == RelativeFileChooser.OK ){
-                    final String path = chooser.getPath();
-                    level.loadBackground( path );
-                    levelBackground.setText( path );
+        levelChangeBackground.addActionListener(new AbstractAction(){
+            override def actionPerformed(event:ActionEvent){
+                val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                val ret = chooser.open();
+                if (ret == RelativeFileChooser.OK){
+                    val path = chooser.getPath();
+                    level.loadBackground(path);
+                    levelBackground.setText(path);
                     viewScroll.repaint();
                 }
             }
         });
 
-        / * initialize all the other crap for a level * /
-        final Lambda1 loadLevelProperties = new Lambda1(){
-            public Object invoke( Object level_ ){
-                Level level = (Level) level_;
-                levelMinZ.setValue( new Integer( level.getMinZ() ) );
-                levelMaxZ.setValue( new Integer( level.getMaxZ() ) );
-                levelBackground.setText( level.getBackgroundFile() );
-                frontPanelsData.clear();
-                frontPanelsData.addAll( level.getFrontPanelNames() );
-                frontPanels.setListData( frontPanelsData );
-                backPanelsData.clear();
-                backPanelsData.addAll( level.getBackPanelNames() );
-                backPanels.setListData( backPanelsData );
+        /* initialize all the other crap for a level */
+        def loadLevelProperties(level:Level){
+          levelMinZ.setValue( new Integer( level.getMinZ() ) );
+          levelMaxZ.setValue( new Integer( level.getMaxZ() ) );
+          levelBackground.setText( level.getBackgroundFile() );
+          frontPanelsData.clear();
+          frontPanelsData.addAll(level.getFrontPanelNames().asInstanceOf[java.util.List[String]]);
+          frontPanels.setListData( frontPanelsData );
+          backPanelsData.clear();
+          backPanelsData.addAll(level.getBackPanelNames().asInstanceOf[java.util.List[String]]);
+          backPanels.setListData( backPanelsData );
 
-                setOrderText.invoke_();
-                comboModel.update();
-                return null;
-            }
+          setOrderText();
+          comboModel.update();
         };
 
-        / * mess around with layout nonsense * /
-        GridBagLayout layout = new GridBagLayout();
-        viewContainer.setLayout( layout );
-        GridBagConstraints constraints = new GridBagConstraints();
+        /* mess around with layout nonsense */
+        val layout = new GridBagLayout();
+        viewContainer.setLayout(layout);
+        val constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
 
         constraints.weightx = 1;
         constraints.weighty = 1;
-        layout.setConstraints( viewScroll, constraints );
-        view.setBorder( BorderFactory.createLineBorder( new Color( 255, 0, 0 ) ) );
-        viewContainer.add( viewScroll );
+        layout.setConstraints(viewScroll, constraints);
+        view.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
+        viewContainer.add(viewScroll);
 
+        /*
         final Lambda2 setupBlocks = new Lambda2(){
             private void editBlockProperties( final Block block, final Lambda0 done ){
                 final JDialog dialog = new JDialog( Editor.this, "Edit" );
