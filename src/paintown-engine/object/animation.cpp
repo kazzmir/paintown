@@ -119,7 +119,7 @@ contact( NULL ){
 
     const Token * current1;
 
-    string basedir("");
+    string basedir(".");
     diff.startTime();
     TokenView view = tok->view();
     while (view.hasMore()){
@@ -362,7 +362,7 @@ contact( NULL ){
             } else if ( current == "frame" ){
                 string path;
                 current.view() >> path;
-                Filesystem::RelativePath full = Filesystem::RelativePath(basedir + path);
+                Filesystem::RelativePath full = Filesystem::RelativePath(basedir).join(Filesystem::RelativePath(path));
                 // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
                 if (frames.find(full.path()) == frames.end()){
                     Graphics::Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
