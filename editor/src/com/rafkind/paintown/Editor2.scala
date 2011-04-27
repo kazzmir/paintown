@@ -42,8 +42,8 @@ class NewEditor extends JFrame {
 
   def construct(){
     val screen = Toolkit.getDefaultToolkit().getScreenSize()
-    this.setSize((screen.getWidth() * 4.0/5.0).toInt,
-                 (screen.getHeight() * 4.0/5.0).toInt);
+    this.setSize((screen.getWidth() * 0.9).toInt,
+                 (screen.getHeight() * 0.9).toInt);
 
     Closer.open();
     val menuBar = new JMenuBar();
@@ -1014,7 +1014,7 @@ class NewEditor extends JFrame {
             }
         });
 
-        tabbed.add( "Blocks", holder );
+        tabbed.add("Blocks", holder);
 
         val objectEngine = new SwingEngine("objects.xml");
         tabbed.add("Objects", objectEngine.getRootComponent().asInstanceOf[JComponent]);
@@ -1498,7 +1498,9 @@ class NewEditor extends JFrame {
             }
         });
 
-        engine.getRootComponent().asInstanceOf[JSplitPane];
+        val split = engine.getRootComponent().asInstanceOf[JSplitPane]
+        split.setContinuousLayout(true)
+        split
     }
 
     def defaultObjects():List[File] = {
