@@ -19,10 +19,10 @@ class Animation;
 class Player: public PlayerCommon {
 public:
 
-    Player( const char * filename, int config = 0 ) throw( LoadException );
-    Player( const Filesystem::AbsolutePath & str, int config = 0 ) throw( LoadException );
-    Player( const Player & pl ) throw( LoadException );
-    Player( const Character & chr ) throw( LoadException );
+    Player( const char * filename, int config = 0 );
+    Player( const Filesystem::AbsolutePath & str, int config = 0 );
+    Player( const Player & pl );
+    Player( const Character & chr );
 
     /* drawing */
     virtual void drawFront( Graphics::Bitmap * work, int rel_x );

@@ -12,10 +12,10 @@ namespace Paintown{
 
 class PlayerCommon: public Character {
 public:
-    PlayerCommon(const Character& chr) throw (LoadException);
-    PlayerCommon(const char * filename) throw (LoadException);
-    PlayerCommon(const Filesystem::AbsolutePath & str) throw (LoadException);
-    PlayerCommon(const PlayerCommon & pl) throw (LoadException);
+    PlayerCommon(const Character& chr);
+    PlayerCommon(const char * filename);
+    PlayerCommon(const Filesystem::AbsolutePath & str);
+    PlayerCommon(const PlayerCommon & pl);
     virtual ~PlayerCommon();
 
     virtual void increaseScore(int much);

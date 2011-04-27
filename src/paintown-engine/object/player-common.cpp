@@ -5,22 +5,22 @@
 
 namespace Paintown{
 
-PlayerCommon::PlayerCommon(const Character& chr) throw (LoadException):
+PlayerCommon::PlayerCommon(const Character& chr):
 Character(chr),
 score(0){
 }
 
-PlayerCommon::PlayerCommon(const char * filename) throw (LoadException):
+PlayerCommon::PlayerCommon(const char * filename):
 Character(filename, ALLIANCE_PLAYER),
 score(0){
 }
 
-PlayerCommon::PlayerCommon(const Filesystem::AbsolutePath & str) throw (LoadException):
+PlayerCommon::PlayerCommon(const Filesystem::AbsolutePath & str):
 Character(str, ALLIANCE_PLAYER),
 score(0){
 }
 
-PlayerCommon::PlayerCommon(const PlayerCommon & pl) throw (LoadException):
+PlayerCommon::PlayerCommon(const PlayerCommon & pl):
 Character(pl),
 score(0){
 }

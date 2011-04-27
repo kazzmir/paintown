@@ -761,6 +761,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         Global::info("Setting up world");
         GameContext context(futurePlayers, Filesystem::RelativePath(level));
         Loader::loadScreen(context, levelInfo);
+        context.failure();
         Global::info("World setup");
         Global::info(funnyGo());
 

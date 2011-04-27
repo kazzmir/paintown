@@ -33,7 +33,7 @@ namespace Paintown{
 
 #define DEFAULT_LIVES 4
 
-Player::Player( const char * filename, int config ) throw( LoadException ): 
+Player::Player( const char * filename, int config ):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
@@ -57,7 +57,7 @@ ignore_lives(false){
         commonInitialize();
 }
 	
-Player::Player( const Filesystem::AbsolutePath & filename, int config ) throw( LoadException ):
+Player::Player( const Filesystem::AbsolutePath & filename, int config ):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
@@ -82,7 +82,7 @@ ignore_lives(false){
         commonInitialize();
 }
 	
-Player::Player(const Character & chr) throw( LoadException ):
+Player::Player(const Character & chr):
 PlayerCommon(chr),
 acts(0),
 name_id(-1),
@@ -95,7 +95,7 @@ ignore_lives(false){
         commonInitialize();
 }
 
-Player::Player(const Player & pl) throw( LoadException ):
+Player::Player(const Player & pl):
 PlayerCommon( pl ),
 acts( 0 ),
 name_id(-1),
@@ -1105,7 +1105,11 @@ remap(remap){
 }
 
 PlayerFuture::~PlayerFuture(){
-    delete get();
+    try{
+        delete get();
+    } catch (...){
+        /* failed to load, so nothing to delete */
+    }
 }
 
 void PlayerFuture::compute(){

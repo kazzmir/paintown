@@ -97,9 +97,9 @@ class Character: public ObjectAttack {
 public:
     /* constructors and destructor */
     Character( int alliance ); 
-    Character( const char * filename, int alliance ) throw( LoadException );
-    Character(const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException );
-    Character( const Character & chr ) throw( LoadException );
+    Character( const char * filename, int alliance );
+    Character(const Filesystem::AbsolutePath & filename, int alliance );
+    Character( const Character & chr );
 
     virtual ~Character();
 
@@ -423,7 +423,7 @@ protected:
     virtual void addRemap(Remap * remap);
     /* true if a mapping between `from' and `to' doesn't already exist */
     virtual bool newRemap(const std::string & from, const std::string & to);
-    void loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException );
+    void loadSelf(const Filesystem::AbsolutePath & filename );
     bool realCollision( ObjectAttack * obj );
 
     std::vector< BodyPart > getBodyParts( Animation * animation );

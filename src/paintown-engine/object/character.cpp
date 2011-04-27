@@ -124,7 +124,7 @@ trail_life(0){
     mapper[current_map] = NULL;
 }
 
-Character::Character(const Filesystem::AbsolutePath & filename, int alliance) throw( LoadException ):
+Character::Character(const Filesystem::AbsolutePath & filename, int alliance):
 ObjectAttack( 0, 0, alliance ),
 type( 0 ),
 shadow( 0 ),
@@ -156,7 +156,7 @@ trail_life(0){
     loadSelf(filename);
 }
 
-Character::Character( const char * filename, int alliance ) throw( LoadException ):
+Character::Character( const char * filename, int alliance ):
 ObjectAttack( 0, 0, alliance ),
 type( 0 ),
 shadow( 0 ),
@@ -189,7 +189,7 @@ trail_life(0){
     loadSelf(Filesystem::AbsolutePath(string(filename)));
 }
 
-Character::Character( const Character & chr ) throw( LoadException ):
+Character::Character( const Character & chr ):
 ObjectAttack(chr),
 animation_current(NULL),
 own_stuff( false ),
@@ -314,7 +314,7 @@ Network::Message Character::getCreateMessage(){
     return message;
 }
 
-void Character::loadSelf(const Filesystem::AbsolutePath & filename ) throw ( LoadException ){
+void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
 
     // setInvincibility( 1000 );
     TokenReader tr(filename.path());
