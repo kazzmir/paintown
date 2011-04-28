@@ -118,7 +118,7 @@ public class Animator extends JFrame {
         levelEditor.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
                 String[] args = new String[0];
-                com.rafkind.paintown.Editor.main(args);
+                com.rafkind.paintown.Editor2.main(args);
             }
         });
 

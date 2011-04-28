@@ -20,7 +20,7 @@ import com.rafkind.paintown.level.Character
 import com.rafkind.paintown.level.Item
 import javax.swing.filechooser.FileFilter
 
-class NewEditor extends JFrame {
+class NewEditor extends JFrame("Paintown Editor"){
   var copy:Thing = null;
 
   construct();
