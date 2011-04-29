@@ -14,6 +14,15 @@
 
 	<target name="compile" depends="init">
 		<mkdir dir="classes" />
+        <scalac srcdir="src"
+                destdir="classes"
+                target="jvm-1.5">
+                <classpath>
+                    <pathelement path="lib/jdom.jar" />
+                    <pathelement location="${scala-library.jar}" />
+                </classpath>
+        </scalac>
+
 		<javac srcdir="src"
 		       destdir="classes"
 		       target="1.5"
@@ -28,15 +37,7 @@
 		       	<pathelement path="lib/jdom.jar" />
 		       </classpath>
 	       </javac>
-        <scalac srcdir="src"
-                destdir="classes"
-                target="jvm-1.5">
-                <classpath>
-                    <pathelement path="lib/jdom.jar" />
-                    <pathelement location="${scala-library.jar}" />
-                </classpath>
-        </scalac>
-	</target>
+    </target>
 
 	<target name="all">
 		<antcall target="jar" />
