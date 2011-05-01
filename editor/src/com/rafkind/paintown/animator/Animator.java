@@ -54,8 +54,6 @@ public class Animator extends JFrame {
         menuProgram.add(levelEditor);
         menuProgram.add( data );
         menuProgram.add( clearCache );
-        menuProgram.add( clearCache );
-        menuProgram.add( clearCache );
         menuProgram.add( closeTab );
         menuProgram.add( quit );
         menuBar.add( menuProgram );
