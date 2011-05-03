@@ -3,6 +3,7 @@ package com.rafkind.paintown.animator
 import java.io._
 import java.awt
 import javax.swing
+import java.util.regex.Pattern
 
 import org.swixml.SwingEngine;
 
@@ -118,6 +119,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       var listeners:List[swing.event.ListDataListener] = List[swing.event.ListDataListener]()
       var data:List[File] = List[File]()
       var filtered:List[File] = List[File]()
+      var filter:Pattern = Pattern.compile(".*")
 
       load()
 
@@ -160,13 +162,20 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         }.execute()
       }
 
+      def modificationCompare(file1:File, file2:File):Boolean = {
+        file1.lastModified() < file2.lastModified()
+      }
+
       def add(files:List[File]){
-        val current = filtered.size
-        filtered = filtered ++ files
-        val event = new swing.event.ListDataEvent(this, swing.event.ListDataEvent.INTERVAL_ADDED, current, filtered.size);
+        data = data ++ files
+        updateView(filter)
+        /*
+        filtered = (filtered ++ files).sort(modificationCompare)
+        val event = new swing.event.ListDataEvent(this, swing.event.ListDataEvent.INTERVAL_ADDED, 0, filtered.size);
         for (listener <- listeners){
           listener.intervalAdded(event);
         }
+        */
       }
 
     /*
@@ -267,16 +276,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
                 }
             }
 
-            private void updateView(){
-                refilter();
-                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_ADDED, filtered.size(), filtered.size() );
-                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-                    ListDataListener l = (ListDataListener) it.next();
-                    l.intervalAdded(event);
-                }
-            }
-
-            public synchronized void add(File file){
+                        public synchronized void add(File file){
                 insert(file);
                 updateView();
             }
@@ -295,6 +295,18 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             }
             */
 
+           def refilter(pattern:Pattern):List[File] = {
+             data.filter((file) => pattern.matcher(file.getCanonicalPath()).matches).sort(modificationCompare)
+           }
+
+           def updateView(filter:Pattern){
+                this.filtered = refilter(filter);
+                val event = new swing.event.ListDataEvent(this, swing.event.ListDataEvent.INTERVAL_ADDED, 0, filtered.size);
+                for (listener <- listeners){
+                  listener.intervalAdded(event);
+                }
+            }
+
             override def addListDataListener(listener:swing.event.ListDataListener){
               listeners = listeners :+ listener
             }
@@ -312,9 +324,9 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
                 listeners = listeners - listener
             }
 
-            def setFilter(filter:String){
-                // this.filter = Pattern.compile(".*" + filter + ".*");
-                // updateView();
+            def setFilter(input:String){
+                this.filter = Pattern.compile(".*" + input + ".*");
+                updateView(filter);
             }
         }
 
