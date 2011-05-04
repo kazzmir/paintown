@@ -6,6 +6,7 @@ import javax.swing
 import java.util.regex.Pattern
 
 import org.swixml.SwingEngine;
+import com.rafkind.paintown.exception._
 
 import com.rafkind.paintown._
 
@@ -121,10 +122,11 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       var filtered:List[File] = List[File]()
       var filter:Pattern = Pattern.compile(".*")
 
-      load()
+      load(Data.getDataPath())
 
-      def load(){
+      def load(path:File){
         val self = this
+        data = List[File]()
         new swing.SwingWorker[List[File], File]{
           override def doInBackground():List[File] = {
             val filter = new FilenameFilter(){
@@ -148,7 +150,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
               }
             }
 
-            find(Data.getDataPath())
+            find(path)
             return List[File]()
           }
 
@@ -349,31 +351,33 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 
         val quickLoader = quickEngine.find("list").asInstanceOf[swing.JList];
 
-        /*
-        final Lambda0 quickDoLoad = new Lambda0(){
-            public Object invoke(){
-                Object[] files = (Object[]) quickLoader.getSelectedValues();
-                for (Object file_ : files){
-                    final File file = (File) file_;
-                    new Thread(new Runnable(){
-                        public void run(){
-                            try{
-                                CharacterStats character = new CharacterStats("", file);
-                                Player tempPlayer = new Player(Animator.this, character);
-                                addNewTab(tempPlayer.getEditor(), character.getName());
-                            } catch (LoadException le){
-                                //showError( "Could not load " + f.getName() );
-                                System.out.println( "Could not load " + file.getName() );
-                                le.printStackTrace();
-                            }
-                        }
-                    }).start();
+        def quickDoLoad(){
+          val files = quickLoader.getSelectedValues().asInstanceOf[Array[Object]];
+          for (file_ <- files){
+            val file = file_.asInstanceOf[File]
+            new Thread(new Runnable(){
+              def run(){
+                try{
+                  /*
+                  CharacterStats character = new CharacterStats("", file);
+                  Player tempPlayer = new Player(NewAnimator.this, character);
+                  SwingUtilities.invokeLater(new Runnable(){
+                    def run(){
+                      addNewTab(tempPlayer.getEditor(), character.getName());
+                    }
+                  }
+                  */
+                } catch {
+                  case le:LoadException => {
+                    //showError( "Could not load " + f.getName() );
+                    System.out.println( "Could not load " + file.getName() );
+                    le.printStackTrace();
+                  }
                 }
-
-                return null;
+              }
+             }).start();
             }
-        };
-        */
+          }
 
         quickLoader.setModel(quickLoaderModel);
         quickLoader.addMouseListener(new awt.event.MouseAdapter(){
@@ -384,25 +388,25 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             }
         });
 
-        /*
-        quickLoader.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "open");
-        quickLoader.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 2), "select-all");
-        quickLoader.getActionMap().put("open", new AbstractAction(){
-            public void actionPerformed(ActionEvent event){
-                quickDoLoad.invoke_();
+        quickLoader.getInputMap().put(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_ENTER, 0), "open");
+        quickLoader.getInputMap().put(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_A, 2), "select-all");
+        quickLoader.getActionMap().put("open", new swing.AbstractAction(){
+            override def actionPerformed(event:awt.event.ActionEvent){
+                // quickDoLoad.invoke_();
             }
         });
         
-        quickLoader.getActionMap().put("select-all", new AbstractAction(){
-            public void actionPerformed(ActionEvent event){
+        quickLoader.getActionMap().put("select-all", new swing.AbstractAction(){
+            override def actionPerformed(event:awt.event.ActionEvent){
+              /*
                 int[] indicies = new int[quickLoaderModel.getSize()];
                 for (int i = 0; i < quickLoaderModel.getSize(); i++){
                     indicies[i] = i;
                 }
                 quickLoader.setSelectedIndices(indicies);
+                */
             }
         });
-        */
 
         val quickLoadButton = quickEngine.find("load").asInstanceOf[swing.JButton];
         quickLoadButton.addActionListener(new swing.AbstractAction(){
@@ -417,6 +421,231 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         pane.add("Quick character loader", quickEngine.getRootComponent().asInstanceOf[swing.JPanel]);
 
         getContentPane().add(pane)
+
+        data.addActionListener(new awt.event.ActionListener(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+                /* just a container for an object */
+                class ObjectBox{
+                  var internal:Object = null
+                  def set(o:Object){
+                    internal = o
+                  }
+
+                  def get():Object = {
+                    return internal;
+                  }
+                }
+                val engine = new SwingEngine("data-path.xml");
+                val path = engine.find("path").asInstanceOf[swing.JTextField];
+                val box = new ObjectBox();
+                box.set(Data.getDataPath());
+                path.setText( Data.getDataPath().getPath() );
+                val change = engine.find("change").asInstanceOf[swing.JButton];
+                change.addActionListener(new swing.AbstractAction(){
+                  override def actionPerformed(event:awt.event.ActionEvent){
+                    val chooser = new swing.JFileChooser(new File("."));	
+                    chooser.setFileSelectionMode(swing.JFileChooser.DIRECTORIES_ONLY);
+                    val returnVal = chooser.showOpenDialog(NewAnimator.this);
+                    if (returnVal == swing.JFileChooser.APPROVE_OPTION){
+                      val newPath:File = chooser.getSelectedFile();
+                      path.setText(newPath.getPath());
+                      box.set(newPath);
+                    }
+                  }
+                });
+                val save = engine.find("save").asInstanceOf[swing.JButton];
+                val cancel = engine.find("cancel").asInstanceOf[swing.JButton];
+                val dialog = new swing.JDialog(NewAnimator.this, "Paintown data path");
+                save.addActionListener(new swing.AbstractAction(){
+                  override def actionPerformed(event:awt.event.ActionEvent){
+                    val path = box.get().asInstanceOf[File];
+                    Data.setDataPath(path);
+                    quickLoaderModel.load(path);
+                    dialog.setVisible(false);
+                  }
+                });
+
+                cancel.addActionListener(new swing.AbstractAction(){
+                  override def actionPerformed(event:awt.event.ActionEvent){
+                    dialog.setVisible(false);
+                  }
+                });
+
+                val panel = engine.getRootComponent().asInstanceOf[swing.JPanel];
+                dialog.getContentPane().add(panel);
+                dialog.setSize(300, 300);
+                dialog.setVisible(true);
+            }
+        });
+
+        // Lets add our tabbedPane and some actions
+
+        /*
+        closeTab.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event){
+                if (CURRENT_TAB > 0 && CURRENT_TAB < pane.getTabCount()){
+                    pane.remove(CURRENT_TAB);
+                }
+            }
+        });
+
+        pane.addChangeListener( new ChangeListener(){
+            public void stateChanged(ChangeEvent changeEvent){
+                JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
+                int index = sourceTabbedPane.getSelectedIndex();
+                CURRENT_TAB = index;
+            }
+        });
+
+        newProjectile.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event){
+                Projectile projectile = new Projectile( "new projectile" );
+                ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
+                addNewTab( pane.getEditor(), projectile.getName() );
+            }
+        });
+
+        newCharacter.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event ){
+                CharacterStats character = new CharacterStats( "New Character" );
+                Player pane = new Player( Animator.this, character );
+
+                addNewTab( pane.getEditor(), "New Character" );
+            }
+        });
+
+        openProjectile.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event ){
+                JFileChooser chooser = new JFileChooser( new File( "." ) );	
+                chooser.setFileFilter( new FileFilter(){
+                    public boolean accept( File f ){
+                        return f.isDirectory() || f.getName().endsWith( ".txt" );
+                    }
+
+                    public String getDescription(){
+                        return "Projectile files";
+                    }
+                });
+
+                int returnVal = chooser.showOpenDialog( Animator.this );
+                if ( returnVal == JFileChooser.APPROVE_OPTION ){
+                    final File f = chooser.getSelectedFile();
+                    try{
+                        Projectile projectile = new Projectile( f.getName(), f );
+                        projectile.setPath( f );
+                        ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
+                        addNewTab( pane.getEditor(), projectile.getName() );
+                    } catch ( LoadException le ){
+                        //showError( "Could not load " + f.getName() );
+                        System.out.println( "Could not load " + f.getName() );
+                        le.printStackTrace();
+                    }
+                }	
+            }
+
+        });
+
+        loadCharacter.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event ){
+                JFileChooser chooser = new JFileChooser( new File( "." ) );	
+                chooser.setFileFilter( new FileFilter(){
+                    public boolean accept( File f ){
+                        return f.isDirectory() || f.getName().endsWith( ".txt" );
+                    }
+
+                    public String getDescription(){
+                        return "Character files (*.txt)";
+                    }
+                });
+
+                int returnVal = chooser.showOpenDialog( Animator.this );
+                if ( returnVal == JFileChooser.APPROVE_OPTION ){
+                    final File f = chooser.getSelectedFile();
+                    try{
+                        CharacterStats character = new CharacterStats( "New Character", f );
+                        Player tempPlayer = new Player( Animator.this, character );
+                        addNewTab( tempPlayer.getEditor(), character.getName() );
+                    } catch ( LoadException le ){
+                        //showError( "Could not load " + f.getName() );
+                        System.out.println( "Could not load " + f.getName() );
+                        le.printStackTrace();
+                    }
+                }	
+            }
+        });
+
+        final Lambda2 saveObject = new Lambda2(){
+            public Object invoke( Object obj, Object path_ ){
+                BasicObject object = (BasicObject) obj;
+                File path = (File) path_;
+
+                object.setPath( path );
+                try{
+                    object.saveData();
+                    doMessagePopup("Saved to " + path);
+                } catch ( Exception e ){
+                    doMessagePopup("Could not save:" + e.getMessage());
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+
+        saveProjectile.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event ){
+                if ( pane.getSelectedComponent() != null ){
+                    BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
+                    if ( object != null ){
+
+                        File file = object.getPath();
+                        if ( file == null ){
+                            file = userSelectFile();
+                        }
+
+                        / * write the text to a file * /
+                        if ( file != null ){
+                            saveObject.invoke_( object, file );
+                        }
+                    }
+                }
+            }
+        });
+
+        saveCharacter.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event ){
+                if ( pane.getSelectedComponent() != null ){
+                    BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
+                    if ( object != null ){
+
+                        File file = object.getPath();
+                        if ( file == null ){
+                            file = userSelectFile();
+                        }
+
+                        / * write the text to a file * /
+                        if ( file != null ){
+                            saveObject.invoke_( object, file );
+                        }
+                    }
+                }
+            }
+        });
+
+        saveCharacterAs.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event ){
+                if ( pane.getSelectedComponent() != null ){
+                    BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
+                    if ( object != null ){
+                        File file = userSelectFile();
+                        / * write the text to a file * /
+                        if ( file != null ){
+                            saveObject.invoke_( object, file );
+                        }
+                    }
+                }
+            }
+        });
+        */
   }
 
   construct()
