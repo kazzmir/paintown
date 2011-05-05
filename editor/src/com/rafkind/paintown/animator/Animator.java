@@ -312,6 +312,7 @@ public class Animator extends JFrame {
 
         final Lambda0 quickDoLoad = new Lambda0(){
             public Object invoke(){
+                /*
                 Object[] files = (Object[]) quickLoader.getSelectedValues();
                 for (Object file_ : files){
                     final File file = (File) file_;
@@ -329,6 +330,7 @@ public class Animator extends JFrame {
                         }
                     }).start();
                 }
+                */
 
                 return null;
             }
@@ -452,18 +454,22 @@ public class Animator extends JFrame {
 
         newProjectile.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event){
+                /*
                 Projectile projectile = new Projectile( "new projectile" );
                 ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
                 addNewTab( pane.getEditor(), projectile.getName() );
+                */
             }
         });
 
         newCharacter.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
+                /*
                 CharacterStats character = new CharacterStats( "New Character" );
                 Player pane = new Player( Animator.this, character );
 
                 addNewTab( pane.getEditor(), "New Character" );
+                */
             }
         });
 
@@ -482,6 +488,7 @@ public class Animator extends JFrame {
 
                 int returnVal = chooser.showOpenDialog( Animator.this );
                 if ( returnVal == JFileChooser.APPROVE_OPTION ){
+                    /*
                     final File f = chooser.getSelectedFile();
                     try{
                         Projectile projectile = new Projectile( f.getName(), f );
@@ -493,6 +500,7 @@ public class Animator extends JFrame {
                         System.out.println( "Could not load " + f.getName() );
                         le.printStackTrace();
                     }
+                    */
                 }	
             }
 
@@ -513,6 +521,7 @@ public class Animator extends JFrame {
 
                 int returnVal = chooser.showOpenDialog( Animator.this );
                 if ( returnVal == JFileChooser.APPROVE_OPTION ){
+                    /*
                     final File f = chooser.getSelectedFile();
                     try{
                         CharacterStats character = new CharacterStats( "New Character", f );
@@ -523,6 +532,7 @@ public class Animator extends JFrame {
                         System.out.println( "Could not load " + f.getName() );
                         le.printStackTrace();
                     }
+                    */
                 }	
             }
         });

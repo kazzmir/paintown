@@ -17,7 +17,7 @@ public class ProjectilePane {
 	
 	private Animation currentAnimation;
 
-	public ProjectilePane( final Animator animator, final Projectile projectile ){
+	public ProjectilePane( final NewAnimator animator, final Projectile projectile ){
 		this.projectile = projectile;
 
 		SwingEngine engine = new SwingEngine( "animator/projectile.xml" );

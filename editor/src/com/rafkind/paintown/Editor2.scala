@@ -95,7 +95,7 @@ class NewEditor extends JFrame("Paintown Editor"){
 
     animationEditor.addActionListener(new AbstractAction(){
         override def actionPerformed(event:ActionEvent){
-          com.rafkind.paintown.animator.Animator.main(new Array[String](0));
+          com.rafkind.paintown.animator.Animator2.main(new Array[String](0));
         }
       });
 

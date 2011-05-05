@@ -358,15 +358,13 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             new Thread(new Runnable(){
               def run(){
                 try{
-                  /*
-                  CharacterStats character = new CharacterStats("", file);
-                  Player tempPlayer = new Player(NewAnimator.this, character);
-                  SwingUtilities.invokeLater(new Runnable(){
+                  val character = new CharacterStats("", file);
+                  val tempPlayer = new Player(NewAnimator.this, character);
+                  swing.SwingUtilities.invokeLater(new Runnable(){
                     def run(){
                       addNewTab(tempPlayer.getEditor(), character.getName());
                     }
-                  }
-                  */
+                  })
                 } catch {
                   case le:LoadException => {
                     //showError( "Could not load " + f.getName() );
@@ -416,9 +414,10 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         });
 
         val pane = new swing.JTabbedPane()
+        val quickLoaderPane = quickEngine.getRootComponent().asInstanceOf[swing.JPanel]
         
         // pane.add("Quick character loader", new JScrollPane(quickLoader));
-        pane.add("Quick character loader", quickEngine.getRootComponent().asInstanceOf[swing.JPanel]);
+        pane.add("Quick character loader", quickLoaderPane)
 
         getContentPane().add(pane)
 
@@ -478,17 +477,15 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             }
         });
 
-        // Lets add our tabbedPane and some actions
-
-        /*
-        closeTab.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event){
-                if (CURRENT_TAB > 0 && CURRENT_TAB < pane.getTabCount()){
-                    pane.remove(CURRENT_TAB);
-                }
+        closeTab.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            if (pane.getSelectedComponent() != quickLoaderPane){
+              pane.remove(pane.getSelectedComponent())
             }
+          }
         });
 
+        /*
         pane.addChangeListener( new ChangeListener(){
             public void stateChanged(ChangeEvent changeEvent){
                 JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
@@ -496,15 +493,17 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
                 CURRENT_TAB = index;
             }
         });
+        */
 
-        newProjectile.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event){
-                Projectile projectile = new Projectile( "new projectile" );
-                ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
-                addNewTab( pane.getEditor(), projectile.getName() );
+        newProjectile.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+                val projectile = new Projectile("new projectile");
+                val pane = new ProjectilePane(NewAnimator.this, projectile);
+                addNewTab(pane.getEditor(), projectile.getName());
             }
         });
 
+        /*
         newCharacter.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
                 CharacterStats character = new CharacterStats( "New Character" );
@@ -649,6 +648,36 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
   }
 
   construct()
+
+  def addNewTab(panel:SpecialPanel, name:String){
+    /*
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run(){
+                pane.add( name, panel );
+                pane.setSelectedIndex(pane.getTabCount()-1);
+                CURRENT_TAB = pane.getSelectedIndex();
+
+                final SpecialPanel tempPanel = (SpecialPanel)pane.getComponentAt(CURRENT_TAB);
+                if ( tempPanel.getTextBox() != null ){
+
+                    panel.getTextBox().getDocument().addDocumentListener(new DocumentListener(){
+                        public void changedUpdate(DocumentEvent e){
+                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+                        }
+
+                        public void insertUpdate(DocumentEvent e){
+                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+                        }
+
+                        public void removeUpdate(DocumentEvent e){
+                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+                        }
+                    });
+                }
+            }
+        });
+        */
+    }
 }
 
 object Animator2{

@@ -26,7 +26,7 @@ public final class Player{
         return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField, character );
     }
 
-    public Player(final Animator animator, final CharacterStats character){
+    public Player(final NewAnimator animator, final CharacterStats character){
         this.character = character;
 
         playerEditor = new SwingEngine( "animator/base.xml" );
