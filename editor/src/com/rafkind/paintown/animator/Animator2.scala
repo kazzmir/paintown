@@ -26,6 +26,8 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     }
     out
   }
+        
+  val pane = new swing.JTabbedPane()
 
   def construct(){
     val screen = awt.Toolkit.getDefaultToolkit().getScreenSize()
@@ -171,166 +173,42 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       def add(files:List[File]){
         data = data ++ files
         updateView(filter)
-        /*
-        filtered = (filtered ++ files).sort(modificationCompare)
+      }
+
+      def refilter(pattern:Pattern):List[File] = {
+        data.filter((file) => pattern.matcher(file.getCanonicalPath()).matches).sort(modificationCompare)
+      }
+
+      def updateView(filter:Pattern){
+        this.filtered = refilter(filter);
         val event = new swing.event.ListDataEvent(this, swing.event.ListDataEvent.INTERVAL_ADDED, 0, filtered.size);
         for (listener <- listeners){
           listener.intervalAdded(event);
         }
-        */
       }
 
-    /*
-      val List[File] data;
-            private List filtered;
-            private Pattern filter;
+      override def addListDataListener(listener:swing.event.ListDataListener){
+        listeners = listeners :+ listener
+      }
 
-            public QuickCharacterLoaderModel(){
-                listeners = new ArrayList();
-                filtered = new ArrayList();
-                load(Data.getDataPath());
-                filter = Pattern.compile(".*");
-            }
+      override def getElementAt(index:Int):Object = {
+        return get(filtered, index)
+        // return this.filtered.get(index);
+      }
 
-            void load(final File path){
-                data = new ArrayList();
-        
-                SwingUtilities.invokeLater(new Runnable(){
-                    public void run(){
-                        quickDisplay.setIcon(quickDisplayIcon);
-                    }
-                });
+      override def getSize():Int = {
+        this.filtered.size
+      }
 
-                final Lambda1 loadMore = new Lambda1(){
-                    int now = 1;
+      override def removeListDataListener(listener:swing.event.ListDataListener){
+        listeners = listeners - listener
+      }
 
-                    private synchronized int add(int x){
-                        now += x;
-                        return now;
-                    }
-
-                    public Object invoke(Object i_){
-                        int x = (Integer) i_;
-                        if (add(x) <= 0){
-                            SwingUtilities.invokeLater(new Runnable(){
-                                public void run(){
-                                    quickDisplay.setIcon(null);
-                                }
-                            });
-                        }
-                        return null;
-                    }
-                };
-
-                new Thread(new Runnable(){
-                    public void run(){
-                        FilenameFilter filter = new FilenameFilter(){
-                            public boolean accept(File dir, String name){
-                                String up = dir.getName();
-                                // System.out.println("Maybe file " + up + "/" + name);
-                                return !dir.getName().equals(".svn") &&
-                                       (new File(dir, name).isDirectory() ||
-                                       name.equals(up + ".txt"));
-                            }
-                        };
-
-                        Animator.this.findPossibleFiles(path, filter, new Lambda1(){
-                            public Object invoke(final Object f){
-                                SwingUtilities.invokeLater(new Runnable(){
-                                    public void run(){
-                                        add((File) f);
-                                    }
-                                });
-                                return null;
-                            }
-                        }, loadMore);
-                    }
-                }).start();
-            }
-
-
-            / * keep list sorted by modification time
-             * possible optimization: binary search for place to insert
-             * /
-            private void insert(File file){
-                long time = file.lastModified();
-                for (int i = 0; i < data.size(); i++){
-                    File ok = (File) data.get(i);
-                    if (time > ok.lastModified()){
-                        data.add(i, file);
-                        return;
-                    }
-                }
-                data.add(file);
-            }
-
-            private void refilter(){
-                filtered = new ArrayList();
-                for (File file : data){
-                    try{
-                        Matcher m = filter.matcher(file.getCanonicalPath());
-                        if (m.matches()){
-                            filtered.add(file);
-                        }
-                    } catch (IOException e){
-                        / * ignore * /
-                    }
-                }
-            }
-
-                        public synchronized void add(File file){
-                insert(file);
-                updateView();
-            }
-
-            public void remove( int index ){
-                data.remove( index );
-                ListDataEvent event = new ListDataEvent( this, ListDataEvent.INTERVAL_REMOVED, index, index );
-                for ( Iterator it = listeners.iterator(); it.hasNext(); ){
-                    ListDataListener l = (ListDataListener) it.next();
-                    l.intervalAdded( event );
-                }
-            }
-
-            public List getAll(){
-                return filtered;
-            }
-            */
-
-           def refilter(pattern:Pattern):List[File] = {
-             data.filter((file) => pattern.matcher(file.getCanonicalPath()).matches).sort(modificationCompare)
-           }
-
-           def updateView(filter:Pattern){
-                this.filtered = refilter(filter);
-                val event = new swing.event.ListDataEvent(this, swing.event.ListDataEvent.INTERVAL_ADDED, 0, filtered.size);
-                for (listener <- listeners){
-                  listener.intervalAdded(event);
-                }
-            }
-
-            override def addListDataListener(listener:swing.event.ListDataListener){
-              listeners = listeners :+ listener
-            }
-
-            override def getElementAt(index:Int):Object = {
-                return get(filtered, index)
-                // return this.filtered.get(index);
-            }
-
-            override def getSize():Int = {
-                this.filtered.size
-            }
-
-            override def removeListDataListener(listener:swing.event.ListDataListener){
-                listeners = listeners - listener
-            }
-
-            def setFilter(input:String){
-                this.filter = Pattern.compile(".*" + input + ".*");
-                updateView(filter);
-            }
-        }
+      def setFilter(input:String){
+        this.filter = Pattern.compile(".*" + input + ".*");
+        updateView(filter);
+      }
+    }
 
         val quickLoaderModel = new QuickCharacterLoaderModel();
 
@@ -381,7 +259,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         quickLoader.addMouseListener(new awt.event.MouseAdapter(){
             override def mouseClicked(event:awt.event.MouseEvent){
                 if (event.getClickCount() == 2){
-                    // quickDoLoad.invoke_();
+                    quickDoLoad()
                 }
             }
         });
@@ -390,7 +268,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         quickLoader.getInputMap().put(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_A, 2), "select-all");
         quickLoader.getActionMap().put("open", new swing.AbstractAction(){
             override def actionPerformed(event:awt.event.ActionEvent){
-                // quickDoLoad.invoke_();
+                quickDoLoad()
             }
         });
         
@@ -409,11 +287,10 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         val quickLoadButton = quickEngine.find("load").asInstanceOf[swing.JButton];
         quickLoadButton.addActionListener(new swing.AbstractAction(){
             override def actionPerformed(event:awt.event.ActionEvent){
-                // quickDoLoad.invoke_();
+                quickDoLoad()
             }
         });
 
-        val pane = new swing.JTabbedPane()
         val quickLoaderPane = quickEngine.getRootComponent().asInstanceOf[swing.JPanel]
         
         // pane.add("Quick character loader", new JScrollPane(quickLoader));
@@ -650,34 +527,30 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
   construct()
 
   def addNewTab(panel:SpecialPanel, name:String){
-    /*
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
-                pane.add( name, panel );
-                pane.setSelectedIndex(pane.getTabCount()-1);
-                CURRENT_TAB = pane.getSelectedIndex();
+    swing.SwingUtilities.invokeLater(new Runnable(){
+      override def run(){
+        pane.add(name, panel);
+        pane.setSelectedIndex(pane.getTabCount()-1);
 
-                final SpecialPanel tempPanel = (SpecialPanel)pane.getComponentAt(CURRENT_TAB);
-                if ( tempPanel.getTextBox() != null ){
-
-                    panel.getTextBox().getDocument().addDocumentListener(new DocumentListener(){
-                        public void changedUpdate(DocumentEvent e){
-                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-                        }
-
-                        public void insertUpdate(DocumentEvent e){
-                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-                        }
-
-                        public void removeUpdate(DocumentEvent e){
-                            pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
-                        }
-                    });
-                }
+        val tempPanel = panel
+        if (tempPanel.getTextBox() != null){
+          panel.getTextBox().getDocument().addDocumentListener(new swing.event.DocumentListener(){
+            override def changedUpdate(event:swing.event.DocumentEvent){
+              pane.setTitleAt(pane.indexOfComponent(tempPanel), tempPanel.getTextBox().getText());
             }
-        });
-        */
-    }
+
+            override def insertUpdate(event:swing.event.DocumentEvent){
+              pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+            }
+
+            override def removeUpdate(event:swing.event.DocumentEvent){
+              pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+            }
+          });
+         }
+       }
+    });
+  }
 }
 
 object Animator2{
