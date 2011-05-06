@@ -362,11 +362,11 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
           }
         });
 
-        /*
-        pane.addChangeListener( new ChangeListener(){
-            public void stateChanged(ChangeEvent changeEvent){
-                JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
-                int index = sourceTabbedPane.getSelectedIndex();
+        /* dont need this
+        pane.addChangeListener(new swing.event.ChangeListener(){
+          override def stateChanged(changeEvent:swing.event.ChangeEvent){
+                val sourceTabbedPane = changeEvent.getSource().asInstanceOf[JTabbedPane];
+                val index = sourceTabbedPane.getSelectedIndex();
                 CURRENT_TAB = index;
             }
         });
@@ -380,76 +380,79 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             }
         });
 
+        newCharacter.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            val character = new CharacterStats("New Character");
+            val pane = new Player(NewAnimator.this, character);
+
+            addNewTab(pane.getEditor(), "New Character");
+          }
+        });
+
+        openProjectile.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            val chooser = new swing.JFileChooser(new File("."));	
+            chooser.setFileFilter(new swing.filechooser.FileFilter(){
+              override def accept(file:File):Boolean = {
+                file.isDirectory() || file.getName().endsWith( ".txt" );
+              }
+
+              override def getDescription():String = {
+                "Projectile files";
+              }
+            });
+
+            val returnVal = chooser.showOpenDialog(NewAnimator.this);
+            if (returnVal == swing.JFileChooser.APPROVE_OPTION){
+              val file = chooser.getSelectedFile();
+              try{
+                val projectile = new Projectile(file.getName(), file);
+                projectile.setPath(file);
+                val pane = new ProjectilePane(NewAnimator.this, projectile);
+                addNewTab(pane.getEditor(), projectile.getName());
+              } catch {
+                case fail:LoadException => {
+                  //showError( "Could not load " + f.getName() );
+                  println("Could not load" + file.getName())
+                  fail.printStackTrace();
+                }
+              }	
+            }
+          }
+        });
+
+        loadCharacter.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            val chooser = new swing.JFileChooser(new File("."));	
+            chooser.setFileFilter(new swing.filechooser.FileFilter(){
+              override def accept(file:File):Boolean = {
+                file.isDirectory() || file.getName().endsWith(".txt");
+              }
+
+              override def getDescription():String = {
+                return "Character files (*.txt)";
+              }
+            });
+
+            val returnVal = chooser.showOpenDialog(NewAnimator.this);
+            if (returnVal == swing.JFileChooser.APPROVE_OPTION){
+              val file = chooser.getSelectedFile();
+              try{
+                val character = new CharacterStats("New Character", file);
+                val tempPlayer = new Player(NewAnimator.this, character);
+                addNewTab(tempPlayer.getEditor(), character.getName());
+              } catch {
+                case fail:LoadException => {
+                  //showError( "Could not load " + f.getName() );
+                  println("Could not load " + file.getName());
+                  fail.printStackTrace();
+                }
+              }	
+            }
+          }
+        });
+
         /*
-        newCharacter.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                CharacterStats character = new CharacterStats( "New Character" );
-                Player pane = new Player( Animator.this, character );
-
-                addNewTab( pane.getEditor(), "New Character" );
-            }
-        });
-
-        openProjectile.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                JFileChooser chooser = new JFileChooser( new File( "." ) );	
-                chooser.setFileFilter( new FileFilter(){
-                    public boolean accept( File f ){
-                        return f.isDirectory() || f.getName().endsWith( ".txt" );
-                    }
-
-                    public String getDescription(){
-                        return "Projectile files";
-                    }
-                });
-
-                int returnVal = chooser.showOpenDialog( Animator.this );
-                if ( returnVal == JFileChooser.APPROVE_OPTION ){
-                    final File f = chooser.getSelectedFile();
-                    try{
-                        Projectile projectile = new Projectile( f.getName(), f );
-                        projectile.setPath( f );
-                        ProjectilePane pane = new ProjectilePane( Animator.this, projectile );
-                        addNewTab( pane.getEditor(), projectile.getName() );
-                    } catch ( LoadException le ){
-                        //showError( "Could not load " + f.getName() );
-                        System.out.println( "Could not load " + f.getName() );
-                        le.printStackTrace();
-                    }
-                }	
-            }
-
-        });
-
-        loadCharacter.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                JFileChooser chooser = new JFileChooser( new File( "." ) );	
-                chooser.setFileFilter( new FileFilter(){
-                    public boolean accept( File f ){
-                        return f.isDirectory() || f.getName().endsWith( ".txt" );
-                    }
-
-                    public String getDescription(){
-                        return "Character files (*.txt)";
-                    }
-                });
-
-                int returnVal = chooser.showOpenDialog( Animator.this );
-                if ( returnVal == JFileChooser.APPROVE_OPTION ){
-                    final File f = chooser.getSelectedFile();
-                    try{
-                        CharacterStats character = new CharacterStats( "New Character", f );
-                        Player tempPlayer = new Player( Animator.this, character );
-                        addNewTab( tempPlayer.getEditor(), character.getName() );
-                    } catch ( LoadException le ){
-                        //showError( "Could not load " + f.getName() );
-                        System.out.println( "Could not load " + f.getName() );
-                        le.printStackTrace();
-                    }
-                }	
-            }
-        });
-
         final Lambda2 saveObject = new Lambda2(){
             public Object invoke( Object obj, Object path_ ){
                 BasicObject object = (BasicObject) obj;
