@@ -274,13 +274,11 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         
         quickLoader.getActionMap().put("select-all", new swing.AbstractAction(){
             override def actionPerformed(event:awt.event.ActionEvent){
-              /*
-                int[] indicies = new int[quickLoaderModel.getSize()];
-                for (int i = 0; i < quickLoaderModel.getSize(); i++){
-                    indicies[i] = i;
-                }
-                quickLoader.setSelectedIndices(indicies);
-                */
+              val indicies:Array[Int] = new Array[Int](quickLoaderModel.getSize())
+              for (index <- 0 to (quickLoaderModel.getSize() - 1)){
+                indicies(index) = index
+              }
+              quickLoader.setSelectedIndices(indicies);
             }
         });
 
@@ -293,7 +291,6 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 
         val quickLoaderPane = quickEngine.getRootComponent().asInstanceOf[swing.JPanel]
         
-        // pane.add("Quick character loader", new JScrollPane(quickLoader));
         pane.add("Quick character loader", quickLoaderPane)
 
         getContentPane().add(pane)
@@ -452,79 +449,56 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
           }
         });
 
-        /*
-        final Lambda2 saveObject = new Lambda2(){
-            public Object invoke( Object obj, Object path_ ){
-                BasicObject object = (BasicObject) obj;
-                File path = (File) path_;
-
-                object.setPath( path );
-                try{
-                    object.saveData();
-                    doMessagePopup("Saved to " + path);
-                } catch ( Exception e ){
-                    doMessagePopup("Could not save:" + e.getMessage());
-                    e.printStackTrace();
-                }
-                return null;
+        def saveObject(obj:BasicObject, path:File){
+          obj.setPath( path );
+          try{
+            obj.saveData();
+            doMessagePopup("Saved to " + path);
+          } catch {
+            case fail:Exception => {
+              doMessagePopup("Could not save:" + fail.getMessage());
+              println(fail)
             }
-        };
+          }
+        }
 
-        saveProjectile.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( pane.getSelectedComponent() != null ){
-                    BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
-                    if ( object != null ){
+        def doSave(forceSelect:Boolean){
+          if (pane.getSelectedComponent() != null){
+            val basic = pane.getSelectedComponent().asInstanceOf[SpecialPanel].getObject()
+            if (basic != null){
+              var file:File = null
+              if (!forceSelect){
+                file = basic.getPath()
+              }
+              if (file == null){
+                file = userSelectFile()
+              }
 
-                        File file = object.getPath();
-                        if ( file == null ){
-                            file = userSelectFile();
-                        }
-
-                        / * write the text to a file * /
-                        if ( file != null ){
-                            saveObject.invoke_( object, file );
-                        }
-                    }
-                }
+              /* write the text to a file */
+              if (file != null){
+                saveObject(basic, file)
+              }
             }
+          }
+        }
+
+        saveProjectile.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            doSave(false)
+         }
+        })
+
+        saveCharacter.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            doSave(false)
+          }
         });
 
-        saveCharacter.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( pane.getSelectedComponent() != null ){
-                    BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
-                    if ( object != null ){
-
-                        File file = object.getPath();
-                        if ( file == null ){
-                            file = userSelectFile();
-                        }
-
-                        / * write the text to a file * /
-                        if ( file != null ){
-                            saveObject.invoke_( object, file );
-                        }
-                    }
-                }
-            }
+        saveCharacterAs.addActionListener(new swing.AbstractAction(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            doSave(true)
+          }
         });
-
-        saveCharacterAs.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( pane.getSelectedComponent() != null ){
-                    BasicObject object = ((SpecialPanel)pane.getSelectedComponent()).getObject();
-                    if ( object != null ){
-                        File file = userSelectFile();
-                        / * write the text to a file * /
-                        if ( file != null ){
-                            saveObject.invoke_( object, file );
-                        }
-                    }
-                }
-            }
-        });
-        */
   }
 
   construct()
@@ -553,6 +527,39 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
          }
        }
     });
+  }
+
+  def doMessagePopup(message:String){
+    val here = this.getLocation();
+    swing.SwingUtilities.convertPointToScreen(here, this)
+    val x = (here.getX() + this.getWidth() / 3).toInt
+    val y = (here.getY() + this.getHeight() / 3).toInt
+    val label = new swing.JLabel(message);
+    label.setBackground(new awt.Color(0,43,250));
+    label.setBorder(swing.BorderFactory.createEtchedBorder(swing.border.EtchedBorder.LOWERED));
+    val popup = swing.PopupFactory.getSharedInstance().getPopup(this, label, x, y );
+    popup.show();
+    val kill = new swing.Timer(1000, new awt.event.ActionListener(){
+      override def actionPerformed(event:awt.event.ActionEvent){
+      }
+    });
+    kill.addActionListener(new awt.event.ActionListener(){
+      override def actionPerformed(event:awt.event.ActionEvent){
+        popup.hide();
+        kill.stop();
+      }
+    });
+    kill.start();
+  }
+
+  def userSelectFile():File = {
+    val chooser = new swing.JFileChooser(new File("."))
+    val returnVal = chooser.showOpenDialog(NewAnimator.this)
+    if (returnVal == swing.JFileChooser.APPROVE_OPTION){
+      chooser.getSelectedFile()
+    } else {
+      null
+    }
   }
 }
 
