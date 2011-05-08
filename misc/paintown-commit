@@ -1,0 +1,3 @@
+#!/bin/sh
+
+svn commit -m "[paintown] $1"
