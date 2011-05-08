@@ -698,6 +698,16 @@ static void initializePlayers(const vector<Paintown::Object*> & players){
     }
 }
 
+struct GameData{
+    GameData(vector<Paintown::Object*> players, const Filesystem::AbsolutePath & path):
+        world(players, path),
+        players(players){
+        }
+
+    AdventureWorld world;
+    vector<Paintown::Object*> players;
+};
+
 static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, const string & level){
 
     class GameContext: public Loader::LoadingContext {
@@ -728,7 +738,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
                     Util::Future<Paintown::Object*> * future = *fit;
                     players.push_back(future->get());
                 }
-                data = new Data(players, Filesystem::find(path));
+                data = new GameData(players, Filesystem::find(path));
             } catch (const LoadException & exception){
                 failed = new LoadException(exception);
             }
@@ -748,17 +758,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
             return data->players;
         }
 
-        struct Data{
-            Data(vector<Paintown::Object*> players, const Filesystem::AbsolutePath & path):
-                world(players, path),
-                players(players){
-                }
-
-            AdventureWorld world;
-            vector<Paintown::Object*> players;
-        };
-
-        Util::ReferenceCount<Data> data;
+        Util::ReferenceCount<GameData> data;
         vector<Util::Future<Paintown::Object*> * > futurePlayers;
         Filesystem::RelativePath path;
         Util::ReferenceCount<LoadException> failed;
