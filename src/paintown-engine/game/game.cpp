@@ -5,6 +5,8 @@
 #include "util/music.h"
 #include "util/funcs.h"
 #include "util/font.h"
+#include "util/pointer.h"
+#include "util/parameter.h"
 #include "menu/menu.h"
 #include "configuration.h"
 #include "../object/object.h"
@@ -39,6 +41,8 @@
 #include <string.h>
 
 using namespace std;
+
+template <class Value> vector<Value> Util::Parameter<Value>::stack;
 
 // static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
@@ -292,9 +296,13 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         }
     };
 
+    /* user presses ESC in the game and brings up the menu. ESC in the menu
+     * should go back to the game. selecting the 'exit' option should quit the game
+     * to the main menu.
+     */ 
+
     struct GameState{
         GameState():
-            force_quit(false),
             menu_quit(false),
             helpTime(0),
             pressed(0),
@@ -303,7 +311,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             takeScreenshot(false){
             }
 
-        bool force_quit;
         bool menu_quit;
         double helpTime;
         int pressed;
@@ -361,7 +368,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             return system * gameSpeed * Global::LOGIC_MULTIPLIER;
         }
 
-        void doInput(GameState & state){
+        void doInput(GameState & state, bool & force_quit){
             vector<InputMap<Game::Input>::InputEvent> events = InputManager::getEvents(input);
 
             bool pressed = false;
@@ -434,7 +441,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                     }
                 }
 
-                state.force_quit |= event[Game::Quit];
+                force_quit |= event[Game::Quit];
             }
 
             if (!pressed){
@@ -450,7 +457,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             try{
                 console.doInput();
             } catch (const Exception::Return & r){
-                state.force_quit = true;
+                force_quit = true;
             }
         }
 
@@ -471,10 +478,11 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 }
             }
 
-            doInput(state);
+            bool force_quit = false;
+            doInput(state, force_quit);
 
             state.done |= world.finished();
-            if (state.force_quit){
+            if (force_quit){
                 state.menu_quit = state.menu_quit || doMenu(screen_buffer, menuData);
             }
         }
@@ -604,6 +612,9 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     TokenReader reader;
     Token * menuData = reader.readToken(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")).path());
 
+    /* set the current player, mainly so the move list option can work */
+    Util::Parameter<Paintown::Player*> currentPlayer((Paintown::Player*) players[0]);
+
     bool finish = true;
     GameState state;
     Logic logic(players, world, console, state, screen_buffer, menuData);
@@ -613,7 +624,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     try{
         /* run the game */
         Util::standardLoop(logic, drawer);
-        if (!state.force_quit){
+        if (!state.menu_quit){
             drawer.showScreenshots(screen_buffer);
         }
     } catch (const LoseException & lose){
@@ -652,7 +663,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
     world.getEngine()->destroyWorld(world);
 
-    if (state.force_quit){
+    if (state.menu_quit){
         logic.waitForQuit();
         finish = false;
     }
@@ -698,16 +709,14 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
             failed(NULL){
             }
 
-        ~GameContext(){
+        virtual ~GameContext(){
             /* who will delete the players contained in the data? the futures
              * passed in as `futurePlayers'
              */
-            delete data;
-            delete failed;
         }
 
         virtual void failure(){
-            if (failed){
+            if (failed != NULL){
                 throw LoadException(*failed);
             }
         }
@@ -749,10 +758,10 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
             vector<Paintown::Object*> players;
         };
 
-        Data * data;
+        Util::ReferenceCount<Data> data;
         vector<Util::Future<Paintown::Object*> * > futurePlayers;
         Filesystem::RelativePath path;
-        LoadException * failed;
+        Util::ReferenceCount<LoadException> failed;
     };
 
     bool gameState = true;

@@ -59,6 +59,8 @@ MenuOption * OptionFactory::getOption(const Token *token){
         return new OptionScreenSize(tok);
     } else if ( *tok == "npc" ){
         return new OptionNpcBuddies(tok);
+    } else if (*tok == "move-list"){
+        return new OptionMoveList(tok);
     } else if (*tok == "play-mode"){
         return new OptionPlayMode(tok);
     } else if ( *tok == "credits" ){
