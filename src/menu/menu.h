@@ -26,14 +26,18 @@ typedef unsigned __int32 uint32_t;
 #endif
 
 class Font;
+
 namespace Graphics{
 class Bitmap;
 }
+
 class MenuOption;
 class Token;
 class TokenView;
 
 namespace Menu{
+
+class OptionFactory;
 class Point{
     public:
     int x;
@@ -187,7 +191,7 @@ class Renderer{
         virtual ~Renderer();
         
         //! Reader
-        virtual bool readToken(const Token *)=0;
+        virtual bool readToken(const Token *, const OptionFactory &)=0;
         
         virtual void initialize(Context &)=0;
         virtual void finish()=0;
@@ -231,7 +235,7 @@ class DefaultRenderer : public Renderer {
         virtual ~DefaultRenderer();
         
 	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
-        virtual bool readToken(const Token *);
+        virtual bool readToken(const Token *, const OptionFactory &);
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
@@ -271,7 +275,7 @@ class TabRenderer : public Renderer {
         virtual ~TabRenderer();
         
 	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
-        virtual bool readToken(const Token *);
+        virtual bool readToken(const Token *, const OptionFactory &);
         virtual void initialize(Context &);
         virtual void finish();
         virtual bool active();
@@ -444,6 +448,7 @@ class Menu{
         Menu(const Type & type = Default);
         Menu(const Filesystem::AbsolutePath &, const Type & type = Default);
         Menu(const Token *, const Type & type = Default);
+        Menu(const Token * token, const OptionFactory & factory, const Type & type = Default);
         virtual ~Menu();
 
         /*! Run Menu pass parent context */
@@ -492,13 +497,13 @@ class Menu{
         Renderer * renderer;
         
         /*! load token */
-        void load(const Token * token);
+        void load(const Token * token, const OptionFactory & factory);
 	
 	/*! Do current version */
 	virtual void handleCurrentVersion(const Token *);
 	
         /*! Prior token compatibility based on version Global::getVersion() */
-        virtual void handleCompatibility(const Token *, int version);
+        virtual void handleCompatibility(const Token *, int version, const OptionFactory & factory);
         
         /*! Add Data */
         void addData(ValueHolder *);

@@ -7,10 +7,18 @@
 
 using namespace std;
 
-MenuOption * OptionFactory::getOption(const Token *token){
+namespace Menu{
+
+OptionFactory::OptionFactory(){
+}
+
+OptionFactory::~OptionFactory(){
+}
+
+MenuOption * OptionFactory::getOption(const Token *token) const {
     const Token * tok;
     token->view() >> tok;
-    if ( *tok == "menu" ){
+    if (*tok == "menu"){
         // Create a sub menu
 	const Token * typeToken = tok->findToken("_/type");
 	if (typeToken != NULL){
@@ -59,8 +67,6 @@ MenuOption * OptionFactory::getOption(const Token *token){
         return new OptionScreenSize(tok);
     } else if ( *tok == "npc" ){
         return new OptionNpcBuddies(tok);
-    } else if (*tok == "move-list"){
-        return new OptionMoveList(tok);
     } else if (*tok == "play-mode"){
         return new OptionPlayMode(tok);
     } else if ( *tok == "credits" ){
@@ -97,4 +103,6 @@ MenuOption * OptionFactory::getOption(const Token *token){
         tok->print(" ");
     }
     return 0;
+}
+
 }

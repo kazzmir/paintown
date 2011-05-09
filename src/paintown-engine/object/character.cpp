@@ -737,9 +737,12 @@ void Character::testReset(){
 	animation_current->reset();
 }
 
-void Character::testAnimation( string name ){
-	animation_current = getMovement( name );
-	animation_current->reset();
+void Character::testAnimation(string name){
+    animation_current = getMovement(name);
+    if (animation_current == NULL){
+        animation_current = getMovement("idle");
+    }
+    animation_current->reset();
 }
 
 void Character::testAnimation( unsigned int x ){

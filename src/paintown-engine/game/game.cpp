@@ -8,10 +8,13 @@
 #include "util/pointer.h"
 #include "util/parameter.h"
 #include "menu/menu.h"
+#include "menu/optionfactory.h"
+#include "menu/menu_option.h"
 #include "configuration.h"
 #include "../object/object.h"
 #include "../object/character.h"
 #include "../object/player.h"
+#include "../object/animation.h"
 #include "../factory/object_factory.h"
 #include "../factory/heart_factory.h"
 #include "paintown-engine/level/utils.h"
@@ -213,10 +216,119 @@ static bool respawnPlayers(const vector<Paintown::Object*> & players, World & wo
     return true;
 }
 
+class OptionMoveList: public MenuOption {
+public:
+    OptionMoveList(const Token * token, Paintown::Player * player):
+    MenuOption(token),
+    player(player){
+        readName(token);
+    }
+
+    Paintown::Player * player;
+
+    virtual ~OptionMoveList(){
+    }
+
+    virtual void logic(){
+    }
+
+    void showMoveList(Paintown::Player * player){
+        class Logic: public Util::Logic {
+        public:
+            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy):
+                playerCopy(playerCopy){
+                }
+
+            Util::ReferenceCount<Paintown::Character> & playerCopy;
+
+            double ticks(double system){
+                return system * Global::LOGIC_MULTIPLIER;
+            }
+
+            void run(){
+                if (playerCopy->testAnimation()){
+                    playerCopy->testReset();
+                }
+            }
+
+            bool done(){
+                return false;
+            }
+        };
+
+        class Draw: public Util::Draw {
+        public:
+            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy):
+                buffer(GFX_X, GFX_Y),
+                playerCopy(playerCopy){
+                    buffer.BlitFromScreen(0, 0);
+                    playerCopy->testAnimation("idle");
+                }
+
+            Graphics::Bitmap buffer;
+            Util::ReferenceCount<Paintown::Character> & playerCopy;
+
+            void listMovements(const Graphics::Bitmap & space){
+                int y = 10;
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+                const map<string, Paintown::Animation*> & movements = playerCopy->getMovements();
+                for (map<std::string, Paintown::Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++){
+                    string name = (*it).first;
+                    Paintown::Animation * animation = (*it).second;
+                    font.printf(5, y, Graphics::makeColor(255, 255, 255), space, name, 0);
+                    y += font.getHeight() + 5;
+                }
+            }
+
+            void draw(){
+                Graphics::Bitmap space(buffer, 50, 50, buffer.getWidth() - 100, buffer.getHeight() - 100);
+                space.clear();
+                playerCopy->setX(space.getWidth() / 2 + 50);
+                playerCopy->setY(0);
+                playerCopy->setZ(space.getHeight() / 2);
+                listMovements(space);
+                playerCopy->draw(&space, 0, 0);
+                space.border(0, 2, Graphics::makeColor(128, 128, 128));
+                buffer.BlitToScreen();
+            }
+        };
+
+        Util::ReferenceCount<Paintown::Character> playerCopy = new Paintown::Character(*player);
+        Logic logic(playerCopy);
+        Draw draw(playerCopy);
+
+        Util::standardLoop(logic, draw);
+    }
+
+    virtual void run(const Menu::Context &){
+        showMoveList(player);
+    }
+};
+
+class GameOptionFactory: public Menu::OptionFactory {
+public:
+    GameOptionFactory(Paintown::Player * player):
+    OptionFactory(),
+    player(player){
+    }
+
+    Paintown::Player * player;
+
+    MenuOption * getOption(const Token * data) const {
+        const Token * head;
+        data->view() >> head;
+        if (*head == "move-list"){
+            return new OptionMoveList(head, player);
+        }
+        return Menu::OptionFactory::getOption(data);
+    }
+};
+
 /* in-game menu */
-static bool doMenu(const Graphics::Bitmap & screen_buffer, const Token * data){
+static bool doMenu(const Graphics::Bitmap & screen_buffer, const Token * data, Paintown::Player * player){
     // Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
-    Menu::Menu menu(data);
+    GameOptionFactory optionFactory(player);
+    Menu::Menu menu(data, optionFactory);
     Menu::Context context;
     /* use the current screen as the background */
     context.addBackground(screen_buffer);
@@ -483,7 +595,8 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
             state.done |= world.finished();
             if (force_quit){
-                state.menu_quit = state.menu_quit || doMenu(screen_buffer, menuData);
+                Paintown::Player * player = (Paintown::Player*) players[0];
+                state.menu_quit = state.menu_quit || doMenu(screen_buffer, menuData, player);
             }
         }
 

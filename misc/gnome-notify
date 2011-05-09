@@ -9,6 +9,7 @@ def gnome(arg):
     
     def notify(message=""):
         n = pynotify.Notification("Paintown", message)
+        n.set_timeout(1000)
         n.show()
     
     pynotify.init("cli notify")

@@ -6,9 +6,15 @@
 class MenuOption;
 class Token;
 
-namespace OptionFactory{
-    MenuOption * getOption(const Token *token);
+namespace Menu{
+
+class OptionFactory{
+public:
+    OptionFactory();
+    virtual MenuOption * getOption(const Token *token) const;
+    virtual ~OptionFactory();
+};
+
 }
 
 #endif
-

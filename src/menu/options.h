@@ -628,12 +628,4 @@ public:
     virtual void run(const Menu::Context &);
 };
 
-class OptionMoveList: public MenuOption {
-public:
-    OptionMoveList(const Token *);
-    virtual ~OptionMoveList();
-    virtual void logic();
-    virtual void run(const Menu::Context &);
-};
-
 #endif

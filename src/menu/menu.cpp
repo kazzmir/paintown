@@ -468,10 +468,10 @@ Menu::DefaultRenderer::~DefaultRenderer(){
         }
     }
 }
-bool Menu::DefaultRenderer::readToken(const Token * token){
+bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory & factory){
     if( *token == "option" ) {
         try{
-            MenuOption *temp = OptionFactory::getOption(token);
+            MenuOption *temp = factory.getOption(token);
             if (temp){
                 options.push_back(temp);
             }
@@ -693,7 +693,7 @@ Menu::TabRenderer::~TabRenderer(){
     }
 }
 
-bool Menu::TabRenderer::readToken(const Token * token){
+bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & factory){
     if (*token == "menu"){
 	TabInfo * tabInfo = new TabInfo();
         TokenView view = token->view();
@@ -709,7 +709,7 @@ bool Menu::TabRenderer::readToken(const Token * token){
 		    tok->view() >> tabInfo->menuInfo;
 		} else if (*tok == "option"){
 		    try {
-			MenuOption *temp = OptionFactory::getOption(tok);
+			MenuOption *temp = factory.getOption(tok);
 			if (temp){
 			    tabInfo->options.push_back(temp);
 			}
@@ -1193,7 +1193,8 @@ type(type){
         Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
         TokenReader tr(filename.path());
         Token * token = tr.readToken();
-        load(token);
+        OptionFactory defaultFactory;
+        load(token, defaultFactory);
     } catch (const TokenException & e){
         throw LoadException(__FILE__, __LINE__, e, "Error loading menu");
     }
@@ -1202,7 +1203,14 @@ type(type){
 Menu::Menu::Menu(const Token * token, const Type & type):
 renderer(0),
 type(type){
-    load(token);
+    OptionFactory defaultFactory;
+    load(token, defaultFactory);
+}
+
+Menu::Menu::Menu(const Token * token, const OptionFactory & factory, const Type & type):
+renderer(0),
+type(type){
+    load(token, factory);
 }
 
 Menu::Menu::~Menu(){
@@ -1228,7 +1236,7 @@ void Menu::Menu::setFont(const Util::ReferenceCount<FontInfo> & font){
     */
 }
 
-void Menu::Menu::load(const Token * token){ 
+void Menu::Menu::load(const Token * token, const OptionFactory & factory){ 
     // version info;
     int major=0, minor=0, micro=0;
     if (!token->hasTokens()){
@@ -1268,7 +1276,7 @@ void Menu::Menu::load(const Token * token){
     
     if (Global::getVersion(major, minor, micro) != Global::getVersion()){
 	// Do compatible translations if necessary
-	handleCompatibility(token, Global::getVersion(major, minor, micro));
+	handleCompatibility(token, Global::getVersion(major, minor, micro), factory);
     } else {
 	handleCurrentVersion(token);
     }
@@ -1680,7 +1688,7 @@ void Menu::Menu::handleCurrentVersion(const Token * token){
     }
 }
 
-void Menu::Menu::handleCompatibility(const Token * token, int version){
+void Menu::Menu::handleCompatibility(const Token * token, int version, const OptionFactory & factory){
     Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
         TokenView view = token->view();
@@ -1747,7 +1755,7 @@ void Menu::Menu::handleCompatibility(const Token * token, int version){
                     context.addBackground(tok);
                 } else if ( *tok == "clear-color" ) {
                     // Not necessary ignore
-                } else if ( renderer && renderer->readToken(tok) ) {
+                } else if (renderer && renderer->readToken(tok, factory)){
                     // Nothing checks compatible version of renderer
                 } else if ( *tok == "font" ) {
                     ValueHolder * value = new ValueHolder("font");

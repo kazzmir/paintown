@@ -14,7 +14,7 @@
 
 #include "util/music.h"
 
-#include "paintown-engine/object/versus_player.h"
+// #include "paintown-engine/object/versus_player.h"
 // #include "paintown-engine/object/versus_enemy.h"
 
 #include "paintown-engine/object/object.h"
@@ -2568,20 +2568,4 @@ void OptionMugenMotif::run(const Menu::Context & context){
         Configuration::setMugenMotif(motif.path());
         Mugen::Data::getInstance().setMotif(motif);
     }
-}
-
-OptionMoveList::OptionMoveList(const Token * token):
-MenuOption(token){
-    readName(token);
-}
-
-OptionMoveList::~OptionMoveList(){
-}
-
-void OptionMoveList::logic(){
-}
-
-void OptionMoveList::run(const Menu::Context & context){
-    Util::Parameter<Paintown::Player*> currentPlayer;
-    Global::debug(0) << "Current player is " << currentPlayer.current() << endl;
 }

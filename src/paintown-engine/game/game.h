@@ -20,6 +20,7 @@ namespace Util{
 namespace Paintown{
     class Object;
     class Character;
+    class Player;
 }
 
 namespace Game{
