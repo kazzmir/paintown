@@ -7,6 +7,8 @@
 #include "util/font.h"
 #include "util/pointer.h"
 #include "util/parameter.h"
+#include "util/gui/coordinate.h"
+#include "util/gui/popup-box.h"
 #include "menu/menu.h"
 #include "menu/optionfactory.h"
 #include "menu/menu_option.h"
@@ -235,11 +237,19 @@ public:
     void showMoveList(Paintown::Player * player){
         class Logic: public Util::Logic {
         public:
-            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy):
-                playerCopy(playerCopy){
-                }
+            enum Input{
+                Quit
+            };
+
+            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area):
+            playerCopy(playerCopy),
+            area(area){
+                input.set(Keyboard::Key_ESC, 0, false, Quit);
+            }
 
             Util::ReferenceCount<Paintown::Character> & playerCopy;
+            Gui::PopupBox & area;
+            InputMap<Input> input;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -249,24 +259,44 @@ public:
                 if (playerCopy->testAnimation()){
                     playerCopy->testReset();
                 }
+
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+                area.act(font);
+
+                vector<InputMap<Input>::InputEvent> events = InputManager::getEvents(input);
+
+                for (vector<InputMap<Input>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                    const InputMap<Input>::InputEvent & event = *it;
+                    if (!event.enabled){
+                        continue;
+                    }
+
+                    if (area.isOpen() && event[Quit]){
+                        area.close();
+                    }
+                }
             }
 
             bool done(){
-                return false;
+                return ! area.isActive();
             }
         };
 
         class Draw: public Util::Draw {
         public:
-            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy):
+            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area):
                 buffer(GFX_X, GFX_Y),
-                playerCopy(playerCopy){
-                    buffer.BlitFromScreen(0, 0);
+                background(GFX_X, GFX_Y),
+                playerCopy(playerCopy),
+                area(area){
+                    background.BlitFromScreen(0, 0);
                     playerCopy->testAnimation("idle");
                 }
 
             Graphics::Bitmap buffer;
+            Graphics::Bitmap background;
             Util::ReferenceCount<Paintown::Character> & playerCopy;
+            Gui::PopupBox & area;
 
             void listMovements(const Graphics::Bitmap & space){
                 int y = 10;
@@ -281,21 +311,34 @@ public:
             }
 
             void draw(){
-                Graphics::Bitmap space(buffer, 50, 50, buffer.getWidth() - 100, buffer.getHeight() - 100);
-                space.clear();
+                background.Blit(buffer);
+                area.render(buffer);
+                Graphics::Bitmap space(buffer, area.getArea().getX(), area.getArea().getY(), area.getArea().getWidth() - area.getArea().getRadius(), area.getArea().getHeight() - area.getArea().getRadius());
+                // space.clear();
                 playerCopy->setX(space.getWidth() / 2 + 50);
                 playerCopy->setY(0);
                 playerCopy->setZ(space.getHeight() / 2);
                 listMovements(space);
                 playerCopy->draw(&space, 0, 0);
-                space.border(0, 2, Graphics::makeColor(128, 128, 128));
+                // space.border(0, 2, Graphics::makeColor(128, 128, 128));
                 buffer.BlitToScreen();
             }
         };
 
         Util::ReferenceCount<Paintown::Character> playerCopy = new Paintown::Character(*player);
-        Logic logic(playerCopy);
-        Draw draw(playerCopy);
+        Gui::PopupBox area;
+        area.location.setDimensions(GFX_X - 100, GFX_Y - 100);
+        area.location.setCenterPosition(Gui::RelativePoint(0, 0));
+        area.location.setRadius(20);
+
+        area.colors.body = Graphics::makeColor(0,0,0);
+        area.colors.bodyAlpha = 220;
+        area.colors.border = Graphics::makeColor(200,200,200);
+        area.colors.borderAlpha = 200;
+
+        area.open();
+        Logic logic(playerCopy, area);
+        Draw draw(playerCopy, area);
 
         Util::standardLoop(logic, draw);
     }
