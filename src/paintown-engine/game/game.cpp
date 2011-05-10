@@ -218,6 +218,11 @@ static bool respawnPlayers(const vector<Paintown::Object*> & players, World & wo
     return true;
 }
 
+enum MoveListInput{
+    Quit
+};
+
+
 class OptionMoveList: public MenuOption {
 public:
     OptionMoveList(const Token * token, Paintown::Player * player):
@@ -237,10 +242,6 @@ public:
     void showMoveList(Paintown::Player * player){
         class Logic: public Util::Logic {
         public:
-            enum Input{
-                Quit
-            };
-
             Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area):
             playerCopy(playerCopy),
             area(area){
@@ -249,7 +250,7 @@ public:
 
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
-            InputMap<Input> input;
+            InputMap<MoveListInput> input;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -263,10 +264,10 @@ public:
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
                 area.act(font);
 
-                vector<InputMap<Input>::InputEvent> events = InputManager::getEvents(input);
+                vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input);
 
-                for (vector<InputMap<Input>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
-                    const InputMap<Input>::InputEvent & event = *it;
+                for (vector<InputMap<MoveListInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                    const InputMap<MoveListInput>::InputEvent & event = *it;
                     if (!event.enabled){
                         continue;
                     }
