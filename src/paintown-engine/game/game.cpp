@@ -219,9 +219,10 @@ static bool respawnPlayers(const vector<Paintown::Object*> & players, World & wo
 }
 
 enum MoveListInput{
-    Quit
+    Quit,
+    Up,
+    Down
 };
-
 
 class OptionMoveList: public MenuOption {
 public:
@@ -239,18 +240,37 @@ public:
     virtual void logic(){
     }
 
+    static map<string, Paintown::Animation*> getAttacks(const map<string, Paintown::Animation*> & movements){
+        map<string, Paintown::Animation*> out;
+        for (map<std::string, Paintown::Animation*>::const_iterator find = movements.begin(); find != movements.end(); find++){
+            string name = find->first;
+            Paintown::Animation * animation = find->second;
+            if (animation->isAttack()){
+                out[name] = animation;
+            }
+        }
+        return out;
+    }
+
     void showMoveList(Paintown::Player * player){
         class Logic: public Util::Logic {
         public:
-            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area):
+            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, int & selected):
             playerCopy(playerCopy),
-            area(area){
+            area(area),
+            selected(selected){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
+                /* some standard way to set up the keys should be used here */
+                input.set(Configuration::config(0).getUp(), 0, true, Up);
+                input.set(Configuration::config(0).getDown(), 0, true, Down);
+                input.set(Configuration::config(0).getJoystickUp(), 0, true, Up);
+                input.set(Configuration::config(0).getJoystickDown(), 0, true, Down);
             }
 
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             InputMap<MoveListInput> input;
+            int & selected;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -259,6 +279,7 @@ public:
             void run(){
                 if (playerCopy->testAnimation()){
                     playerCopy->testReset();
+                    playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
                 }
 
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
@@ -266,6 +287,7 @@ public:
 
                 vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input);
 
+                int old = selected;
                 for (vector<InputMap<MoveListInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                     const InputMap<MoveListInput>::InputEvent & event = *it;
                     if (!event.enabled){
@@ -275,7 +297,43 @@ public:
                     if (area.isOpen() && event[Quit]){
                         area.close();
                     }
+
+                    if (event[Up]){
+                        selected = selectNext(selected, -1);
+                    }
+
+                    if (event[Down]){
+                        selected = selectNext(selected, 1);
+                    }
                 }
+
+                if (old != selected){
+                    changeAnimation(selected);
+                }
+            }
+
+            void changeAnimation(int animation){
+                int count = 0;
+                const map<string, Paintown::Animation*> movements = getAttacks(playerCopy->getMovements());
+                map<std::string, Paintown::Animation*>::const_iterator find;
+                for (find = movements.begin(); count != animation && find != movements.end(); find++, count += 1){ /**/ }
+                if (find != movements.end()){
+                    string name = find->first;
+                    playerCopy->testAnimation(name);
+                    playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
+                }
+            }
+
+            int selectNext(int current, int way){
+                int size = getAttacks(playerCopy->getMovements()).size();
+                int next = current + way;
+                if (next < 0){
+                    return 0;
+                }
+                if (next > size - 1){
+                    return size - 1;
+                }
+                return next;
             }
 
             bool done(){
@@ -285,11 +343,12 @@ public:
 
         class Draw: public Util::Draw {
         public:
-            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area):
+            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, int & selected):
                 buffer(GFX_X, GFX_Y),
                 background(GFX_X, GFX_Y),
                 playerCopy(playerCopy),
-                area(area){
+                area(area),
+                selected(selected){
                     background.BlitFromScreen(0, 0);
                     playerCopy->testAnimation("idle");
                 }
@@ -298,15 +357,21 @@ public:
             Graphics::Bitmap background;
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
+            int & selected;
 
-            void listMovements(const Graphics::Bitmap & space){
+            void listMovements(const Graphics::Bitmap & space, int selected){
                 int y = 10;
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
-                const map<string, Paintown::Animation*> & movements = playerCopy->getMovements();
-                for (map<std::string, Paintown::Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++){
+                const map<string, Paintown::Animation*> movements = getAttacks(playerCopy->getMovements());
+                int count = 0;
+                for (map<std::string, Paintown::Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++, count += 1){
                     string name = (*it).first;
                     Paintown::Animation * animation = (*it).second;
-                    font.printf(5, y, Graphics::makeColor(255, 255, 255), space, name, 0);
+                    int color = Graphics::makeColor(255, 255, 255);
+                    if (count == selected){
+                        color = Graphics::makeColor(27, 237, 239);
+                    }
+                    font.printf(5, y, color, space, name, 0);
                     y += font.getHeight() + 5;
                 }
             }
@@ -319,7 +384,7 @@ public:
                 playerCopy->setX(space.getWidth() / 2 + 50);
                 playerCopy->setY(0);
                 playerCopy->setZ(space.getHeight() / 2);
-                listMovements(space);
+                listMovements(space, selected);
                 playerCopy->draw(&space, 0, 0);
                 // space.border(0, 2, Graphics::makeColor(128, 128, 128));
                 buffer.BlitToScreen();
@@ -338,8 +403,9 @@ public:
         area.colors.borderAlpha = 200;
 
         area.open();
-        Logic logic(playerCopy, area);
-        Draw draw(playerCopy, area);
+        int selected = 0;
+        Logic logic(playerCopy, area, selected);
+        Draw draw(playerCopy, area, selected);
 
         Util::standardLoop(logic, draw);
     }
