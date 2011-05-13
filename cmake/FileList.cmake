@@ -158,6 +158,7 @@ src/util/gui/keyinput_manager.cpp
 src/util/gui/lineedit.cpp
 src/util/gui/rectarea.cpp
 src/util/gui/popup-box.cpp
+src/util/gui/scroll-list.cpp
 src/util/gui/tabbed-box.cpp
 src/util/gui/timer.cpp
 src/util/gui/widget.cpp
