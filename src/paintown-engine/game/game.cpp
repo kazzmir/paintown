@@ -391,6 +391,12 @@ public:
             }
         };
 
+        if (getAttacks(player->getMovements()).size() == 0){
+            /* no attacks, failure! */
+            Global::debug(0) << "No attacks for " << player->getName() << " so the move list can't be shown" << endl;
+            return;
+        }
+
         Util::ReferenceCount<Paintown::Character> playerCopy = new Paintown::Character(*player);
         Gui::PopupBox area;
         area.location.setDimensions(GFX_X - 100, GFX_Y - 100);

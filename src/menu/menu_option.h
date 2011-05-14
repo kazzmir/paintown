@@ -14,7 +14,7 @@ namespace Menu {
     class Context;
 }
 
-class MenuOption : public Gui::ContextItem {
+class MenuOption: public Gui::ContextItem {
 public:
     /* called when the menu containing this option is displayed to the user.
      * default behavior is to do nothing.
