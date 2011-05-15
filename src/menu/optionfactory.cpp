@@ -50,12 +50,6 @@ MenuOption * OptionFactory::getOption(const Token *token) const {
         return new OptionSound(tok);
     } else if (*tok == "music"){
         return new OptionMusic(tok);
-#ifdef HAVE_NETWORKING
-    } else if ( *tok == "network-host" ){
-        return new OptionNetworkHost(tok);
-    } else if ( *tok == "network-join" ){
-        return new OptionNetworkJoin(tok);
-#endif
     } else if (*tok == "screen-size"){
         return new OptionScreenSize(tok);
     } else if ( *tok == "npc" ){

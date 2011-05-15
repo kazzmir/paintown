@@ -31,8 +31,6 @@
 #include "globals.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
-#include "paintown-engine/network/server.h"
-#include "paintown-engine/network/client.h"
 #include "util/font.h"
 #include "util/gui/box.h"
 #include "util/thread.h"
@@ -1114,77 +1112,6 @@ void OptionMugenMenu::run(const Menu::Context & context){
     throw Menu::Reload(__FILE__, __LINE__);
     // throw Exception::Return(__FILE__, __LINE__);
 }
-
-#ifdef HAVE_NETWORKING
-OptionNetworkHost::OptionNetworkHost(const Token *token):
-MenuOption(token){
-    if ( *token != "network-host" ){
-        throw LoadException(__FILE__, __LINE__, "Not a network-host");
-    }
-
-    readName(token);
-}
-
-OptionNetworkHost::~OptionNetworkHost(){
-	// Nothing
-}
-
-void OptionNetworkHost::logic(){
-}
-
-void OptionNetworkHost::run(const Menu::Context & context){
-    // Keyboard key;
-    try{
-        Network::networkServer();
-    } catch (const Exception::Return &e){
-    }
-    /* FIXME */
-    /*
-    key.clear();
-    key.poll();
-    key.wait();
-    */
-    throw Menu::Reload(__FILE__, __LINE__);
-    // throw Exception::Return(__FILE__, __LINE__);
-}
-
-OptionNetworkJoin::OptionNetworkJoin(const Token *token):
-MenuOption(token){
-    if ( *token != "network-join" ){
-        throw LoadException(__FILE__, __LINE__, "Not a network-join");
-    }
-
-    readName(token);
-}
-
-OptionNetworkJoin::~OptionNetworkJoin(){
-	// Nothing
-}
-
-void OptionNetworkJoin::logic(){
-}
-
-void OptionNetworkJoin::run(const Menu::Context & context){
-    /*
-    Keyboard key;
-    key.poll();
-    key.wait();
-    */
-    /* FIXME */
-    try{
-        Network::networkClient();
-    } catch (const Exception::Return &r){
-    }
-
-    /* 
-    key.clear();
-    key.poll();
-    key.wait();
-    */
-    throw Menu::Reload(__FILE__, __LINE__);
-    // throw Exception::Return(__FILE__, __LINE__);
-}
-#endif
 
 OptionNpcBuddies::OptionNpcBuddies( const Token * token ):
 MenuOption(token),

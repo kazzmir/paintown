@@ -266,38 +266,6 @@ private:
     // MugenMenu *_menu;
 };
 
-#ifdef HAVE_NETWORKING
-/*! Handles key reconfiguration */
-class OptionNetworkHost : public MenuOption{
-public:
-	OptionNetworkHost(const Token *token);
-
-	// Do logic before run part
-	virtual void logic();
-	
-	// Finally it has been selected, this is what shall run 
-	// endGame will be set true if it is a terminating option
-	virtual void run(const Menu::Context &);
-	
-	virtual ~OptionNetworkHost();
-};
-
-/*! Handles key reconfiguration */
-class OptionNetworkJoin : public MenuOption{
-public:
-	OptionNetworkJoin(const Token *token);
-
-	// Do logic before run part
-	virtual void logic();
-	
-	// Finally it has been selected, this is what shall run 
-	// endGame will be set true if it is a terminating option
-	virtual void run(const Menu::Context &);
-	
-	virtual ~OptionNetworkJoin();
-};
-#endif
-
 /*! Handles key reconfiguration */
 class OptionNpcBuddies : public MenuOption {
 public:
