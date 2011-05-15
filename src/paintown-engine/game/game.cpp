@@ -41,6 +41,7 @@
 #include "versus_world.h"
 #include "util/init.h"
 #include "util/thread.h"
+#include "options.h"
 #include <iostream>
 #include <math.h>
 #include <string.h>
@@ -421,10 +422,10 @@ public:
     }
 };
 
-class GameOptionFactory: public Menu::OptionFactory {
+class GameOptionFactory: public Paintown::OptionFactory {
 public:
     GameOptionFactory(Paintown::Player * player):
-    OptionFactory(),
+    Paintown::OptionFactory(),
     player(player){
     }
 
@@ -436,7 +437,7 @@ public:
         if (*head == "move-list"){
             return new OptionMoveList(head, player);
         }
-        return Menu::OptionFactory::getOption(data);
+        return Paintown::OptionFactory::getOption(data);
     }
 };
 
