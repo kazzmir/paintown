@@ -425,7 +425,7 @@ public:
         // Nothing
     }
 
-    void OptionNetworkJoin::logic(){
+    void logic(){
     }
 
     void run(const Menu::Context & context){
