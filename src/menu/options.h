@@ -4,51 +4,10 @@
 #include "menu_option.h"
 #include "util/input/input-map.h"
 #include "util/file-system.h"
-#include "paintown-engine/level/utils.h"
 #include "util/pointer.h"
 #include "font-info.h"
 
 class Token;
-
-/* FIXME figure out what to do with this, since network depends on it." */
-Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & context);
-
-class OptionAdventure : public MenuOption{
-    public:
-        // Do logic before run part
-        virtual void logic();
-
-        // Finally it has been selected, this is what shall run 
-        // endGame will be set true if it is a terminating option
-        virtual void run(const Menu::Context &);
-
-        OptionAdventure(const Token *token);
-
-        virtual ~OptionAdventure();
-};
-
-class OptionAdventureCpu : public MenuOption{
-public:
-	OptionAdventureCpu(const Token *token);
-
-	// Do logic before run part
-	virtual void logic();
-	
-	// Finally it has been selected, this is what shall run 
-	// endGame will be set true if it is a terminating option
-	virtual void run(const Menu::Context &);
-	
-	virtual ~OptionAdventureCpu();
-};
-
-/* Change game mod */
-class OptionChangeMod: public MenuOption {
-public:
-    OptionChangeMod(const Token *token);
-    virtual ~OptionChangeMod();
-    virtual void logic();
-    virtual void run(const Menu::Context &);
-};
 
 /*! Handles key reconfiguration */
 class OptionCredits : public MenuOption {

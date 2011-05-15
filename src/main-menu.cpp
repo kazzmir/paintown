@@ -11,7 +11,9 @@
 #include "util/music.h"
 #include "menu/menu.h"
 #include "menu/menu-exception.h"
+#include "menu/optionfactory.h"
 #include "util/input/input-manager.h"
+#include "paintown-engine/game/options.h"
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/network/client.h"
 #include "paintown-engine/network/server.h"
@@ -202,6 +204,22 @@ static void parseNetworkJoin(const char * input, string & port, string & host, s
         name = args[0];
     }
 }
+
+class MainMenuOptionFactory: public Menu::OptionFactory {
+public:
+    MainMenuOptionFactory(){
+    }
+
+    Paintown::OptionFactory paintownFactory;
+    
+    virtual MenuOption * getOption(const Token *token) const {
+        MenuOption * get = paintownFactory.getOption(token);
+        if (get != NULL){
+            return get;
+        }
+        return Menu::OptionFactory::getOption(token);
+    }
+};
 
 int paintown_main( int argc, char ** argv ){
     
@@ -413,7 +431,8 @@ int paintown_main( int argc, char ** argv ){
                 setMugenMotif(mainMenuPath());
                 runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
             } else {
-                Menu::Menu game(mainMenuPath());
+                MainMenuOptionFactory factory;
+                Menu::Menu game(mainMenuPath(), factory);
                 game.run(Menu::Context());
             }
             normal_quit = true;

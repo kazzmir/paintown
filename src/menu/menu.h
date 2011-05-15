@@ -447,6 +447,7 @@ class Menu{
 	};
         Menu(const Type & type = Default);
         Menu(const Filesystem::AbsolutePath &, const Type & type = Default);
+        Menu(const Filesystem::AbsolutePath &, const OptionFactory & factory, const Type & type = Default);
         Menu(const Token *, const Type & type = Default);
         Menu(const Token * token, const OptionFactory & factory, const Type & type = Default);
         virtual ~Menu();

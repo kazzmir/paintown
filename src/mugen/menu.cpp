@@ -24,6 +24,9 @@
 #include "util/timedifference.h"
 #include "util/music.h"
 #include "util/events.h"
+
+/* TODO: remove this dependancy */
+#include "paintown-engine/level/utils.h"
 // #include "game/console.h"
 /*
 #include "object/animation.h"

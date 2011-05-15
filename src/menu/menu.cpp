@@ -1200,6 +1200,20 @@ type(type){
     }
 }
 
+Menu::Menu::Menu(const Filesystem::AbsolutePath & filename, const OptionFactory & factory, const Type & type):
+renderer(0),
+type(type){
+    // Load up tokenizer
+    try{
+        Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
+        TokenReader tr(filename.path());
+        Token * token = tr.readToken();
+        load(token, factory);
+    } catch (const TokenException & e){
+        throw LoadException(__FILE__, __LINE__, e, "Error loading menu");
+    }
+}
+
 Menu::Menu::Menu(const Token * token, const Type & type):
 renderer(0),
 type(type){

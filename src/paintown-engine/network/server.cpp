@@ -33,7 +33,7 @@
 #include "util/input/input-manager.h"
 #include "util/input/text-input.h"
 
-#include "menu/options.h"
+#include "../game/options.h"
 #include "menu/font-info.h"
 
 #include "configuration.h"
@@ -315,7 +315,7 @@ static Level::LevelInfo selectLevels(){
     context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, 20, 20)));
     Graphics::Bitmap normalBackground(Global::titleScreen().path());
     context.addBackground(normalBackground);
-    return doLevelMenu("/levels", context);
+    return Paintown::doLevelMenu("/levels", context);
 }
 
 /* for each client get the player they want and send back an id */

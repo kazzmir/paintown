@@ -50,19 +50,12 @@ MenuOption * OptionFactory::getOption(const Token *token) const {
         return new OptionSound(tok);
     } else if (*tok == "music"){
         return new OptionMusic(tok);
-    } else if ( *tok == "adventure" ){
-        // Adventure mode
-        return new OptionAdventure(tok);
-    } else if ( *tok == "adventure-cpu" ){
-        return new OptionAdventureCpu(tok);
 #ifdef HAVE_NETWORKING
     } else if ( *tok == "network-host" ){
         return new OptionNetworkHost(tok);
     } else if ( *tok == "network-join" ){
         return new OptionNetworkJoin(tok);
 #endif
-    } else if (*tok == "change-mod"){
-        return new OptionChangeMod(tok);
     } else if (*tok == "screen-size"){
         return new OptionScreenSize(tok);
     } else if ( *tok == "npc" ){

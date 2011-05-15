@@ -27,6 +27,9 @@
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
 
+/* TODO: remove this dependancy */
+#include "paintown-engine/level/utils.h"
+
 #include "menu/menu_option.h"
 #include "menu/options.h"
 
