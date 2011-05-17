@@ -432,7 +432,7 @@ OptionFullscreen::~OptionFullscreen()
 	// Nothing
 }
     
-std::string OptionFullscreen::getText(){
+std::string OptionFullscreen::getText() const {
     ostringstream out;
     out << MenuOption::getText() << ": " << (Configuration::getFullscreen() ? "Yes" : "No");
     return out.str();
@@ -479,7 +479,7 @@ OptionInvincible::~OptionInvincible()
 	// Nothing
 }
                 
-std::string OptionInvincible::getText(){
+std::string OptionInvincible::getText() const {
     ostringstream out;
     out << MenuOption::getText() << ": " << (Configuration::getInvincible() ? "Yes" : "No");
     return out.str();
@@ -962,7 +962,7 @@ rgreen(255){
 OptionLives::~OptionLives(){
 }
     
-std::string OptionLives::getText(){
+std::string OptionLives::getText() const {
     ostringstream out;
     out << MenuOption::getText() << ": " << Configuration::getLives();
     return out.str();
@@ -1132,7 +1132,7 @@ OptionNpcBuddies::~OptionNpcBuddies(){
 	// Nothing
 }
         
-std::string OptionNpcBuddies::getText(){
+std::string OptionNpcBuddies::getText() const {
     ostringstream out;
     out << MenuOption::getText() << ": " << Configuration::getNpcBuddies();
     return out.str();
@@ -1179,7 +1179,7 @@ OptionPlayMode::~OptionPlayMode(){
     // Nothing
 }
     
-std::string OptionPlayMode::getText(){
+std::string OptionPlayMode::getText() const {
     ostringstream out;
     out << MenuOption::getText() << ": ";
 
@@ -1806,7 +1806,7 @@ OptionSpeed::~OptionSpeed(){
 }
 
 
-std::string OptionSpeed::getText(){
+std::string OptionSpeed::getText() const {
     ostringstream out;
     out << MenuOption::getText() << ": " << Configuration::getGameSpeed();
     return out.str();

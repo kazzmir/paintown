@@ -76,14 +76,14 @@ public:
         return text;
     }
 
-    virtual inline std::string getText() { return text.get(); }
+    virtual inline std::string getText() const { return text.get(); }
     inline void setInfoText(const LanguageString &t) { infoText = t; }
     inline std::string getInfoText(){ return infoText.get(); }
     inline void setRunnable(const bool r) { runnable = r; }
     inline bool isRunnable() const { return runnable; }
 
 public:
-    inline const std::string getName(){ return this->getText(); }
+    inline const std::string getName() const { return this->getText(); }
 
 protected:
     void readName(const Token * token);

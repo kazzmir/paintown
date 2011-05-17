@@ -201,10 +201,11 @@ void Menu::InfoBox::setText(const std::string & info){
     */
 }
 
-static std::vector<ContextItem *> toContextList(const std::vector<MenuOption *> & list){
-    std::vector<ContextItem *> contextItems;
-    for (std::vector<MenuOption *>::const_iterator i = list.begin(); i != list.end(); ++i){
-        contextItems.push_back(*i);
+static std::vector<Util::ReferenceCount<ContextItem> > toContextList(const std::vector<Util::ReferenceCount<MenuOption> > & list){
+    std::vector<Util::ReferenceCount<ContextItem> > contextItems;
+    for (std::vector<Util::ReferenceCount<MenuOption> >::const_iterator i = list.begin(); i != list.end(); ++i){
+        const Util::ReferenceCount<MenuOption> & option = *i;
+        contextItems.push_back(option.convert<ContextItem>());
     }
     return contextItems;
 }
@@ -456,22 +457,24 @@ Menu::DefaultRenderer::DefaultRenderer(){
     menu.colors.borderAlpha = 255;
 }
         
-vector<MenuOption*> Menu::DefaultRenderer::getOptions() const {
+vector<Util::ReferenceCount<MenuOption> > Menu::DefaultRenderer::getOptions() const {
     return options;
 }
 
 Menu::DefaultRenderer::~DefaultRenderer(){
     // Kill options
+    /*
     for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
         if (*i){
             delete *i;
         }
     }
+    */
 }
 bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory & factory){
     if( *token == "option" ) {
         try{
-            MenuOption *temp = factory.getOption(token);
+            MenuOption * temp = factory.getOption(token);
             if (temp){
                 options.push_back(temp);
             }
@@ -573,8 +576,8 @@ void Menu::DefaultRenderer::act(const Context & context){
     const Font & font = currentFont();
 
     // FIXME find a better way to get options to update this is a waste
-    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
-        MenuOption * option = *i;
+    for (std::vector<Util::ReferenceCount<MenuOption> >::iterator i = options.begin(); i != options.end(); ++i){
+        Util::ReferenceCount<MenuOption> & option = *i;
         option->logic();
     }
     menu.act(font);
@@ -649,18 +652,20 @@ Menu::TabInfo::TabInfo(){
 
 Menu::TabInfo::~TabInfo(){
     // Kill options
+    /*
     for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
         if (*i){
             delete *i;
         }
     }
+    */
 }
 
 void Menu::TabInfo::act(){
     // Miguel: FIXME find a better way to get options to update this is a waste
     // Jon: Whats wrong with it?
-    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
-        MenuOption * option = *i;
+    for (std::vector<Util::ReferenceCount<MenuOption> >::iterator i = options.begin(); i != options.end(); ++i){
+        Util::ReferenceCount<MenuOption> & option = *i;
         option->logic();
     }
 }
@@ -676,8 +681,8 @@ Menu::TabRenderer::TabRenderer(){
     menu.colors.borderAlpha = 255;
 }
         
-vector<MenuOption*> Menu::TabRenderer::getOptions() const {
-    vector<MenuOption*> options;
+vector<Util::ReferenceCount<MenuOption> > Menu::TabRenderer::getOptions() const {
+    vector<Util::ReferenceCount<MenuOption> > options;
     for (vector<TabInfo *>::const_iterator it = tabs.begin(); it != tabs.end(); ++it){
         options.insert(options.end(), (*it)->options.begin(), (*it)->options.end());
     }
@@ -1320,10 +1325,10 @@ public:
 
     static vector<string> findLanguages(const MenuClass & original){
         /* get all languages used in the menu */
-        vector<MenuOption*> options = original.getRenderer()->getOptions();
+        vector<Util::ReferenceCount<MenuOption> > options = original.getRenderer()->getOptions();
         map<string, bool> languages;
-        for (vector<MenuOption*>::iterator it = options.begin(); it != options.end(); it++){
-            MenuOption * option = *it;
+        for (vector<Util::ReferenceCount<MenuOption> >::iterator it = options.begin(); it != options.end(); it++){
+            Util::ReferenceCount<MenuOption> & option = *it;
             
             const map<string, string> strings = option->getLanguageText().getLanguages();
             for (map<string, string>::const_iterator it = strings.begin(); it != strings.end(); it++){
@@ -1374,17 +1379,17 @@ void Menu::Menu::setupDefaultLanguage(const Context & context, const MenuClass &
 }
 
 void Menu::Menu::openOptions(){
-    vector<MenuOption*> options = getRenderer()->getOptions();
-    for (vector<MenuOption*>::iterator it = options.begin(); it != options.end(); it++){
-        MenuOption * option = *it;
+    vector<Util::ReferenceCount<MenuOption> > options = getRenderer()->getOptions();
+    for (vector<Util::ReferenceCount<MenuOption> >::iterator it = options.begin(); it != options.end(); it++){
+        Util::ReferenceCount<MenuOption> & option = *it;
         option->open();
     }
 }
 
 void Menu::Menu::closeOptions(){
-    vector<MenuOption*> options = getRenderer()->getOptions();
-    for (vector<MenuOption*>::iterator it = options.begin(); it != options.end(); it++){
-        MenuOption * option = *it;
+    vector<Util::ReferenceCount<MenuOption> > options = getRenderer()->getOptions();
+    for (vector<Util::ReferenceCount<MenuOption> >::iterator it = options.begin(); it != options.end(); it++){
+        Util::ReferenceCount<MenuOption> & option = *it;
         option->close();
     }
 }

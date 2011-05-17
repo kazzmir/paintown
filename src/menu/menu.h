@@ -205,7 +205,7 @@ class Renderer{
         
         //! Compatibility for now, remove later
         virtual void addOption(MenuOption *)=0;
-        virtual std::vector<MenuOption*> getOptions() const = 0;
+        virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const = 0;
         
         /*! Handle action, with access to context
         */
@@ -243,12 +243,12 @@ class DefaultRenderer : public Renderer {
         virtual void render(const Graphics::Bitmap &, const Font &); 
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
-        virtual std::vector<MenuOption*> getOptions() const;
+        virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
         
     private:
 
         /*! Options */
-        std::vector <MenuOption *> options;
+        std::vector<Util::ReferenceCount<MenuOption> > options;
         
         /*! Context Box */
         Gui::ContextBox menu;
@@ -266,7 +266,7 @@ class TabInfo {
         void act();
         
         /*! Options */
-        std::vector <MenuOption *> options;
+        std::vector<Util::ReferenceCount<MenuOption> > options;
 };
 
 class TabRenderer : public Renderer {
@@ -283,7 +283,7 @@ class TabRenderer : public Renderer {
         virtual void render(const Graphics::Bitmap &, const Font &);
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
-        virtual std::vector<MenuOption*> getOptions() const;
+        virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
         
     private:
 

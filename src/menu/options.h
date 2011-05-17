@@ -60,7 +60,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
     
-    virtual std::string getText();
+    virtual std::string getText() const;
 
     // This is to pass paramaters to an option ie a bar or something
     virtual bool leftKey();
@@ -90,7 +90,7 @@ class OptionInvincible : public MenuOption
 		virtual bool leftKey();
 		virtual bool rightKey();
     
-                virtual std::string getText();
+                virtual std::string getText() const;
 		
 		OptionInvincible(const Token *token);
 	
@@ -214,7 +214,7 @@ public:
     virtual bool leftKey();
     virtual bool rightKey();
     
-    virtual std::string getText();
+    virtual std::string getText() const;
 
     OptionLives(const Token *token);
 
@@ -278,7 +278,7 @@ public:
 	// endGame will be set true if it is a terminating option
 	virtual void run(const Menu::Context &);
     
-        virtual std::string getText();
+        virtual std::string getText() const;
 	
 	// This is to pass paramaters to an option ie a bar or something
 	virtual bool leftKey();
@@ -302,7 +302,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
     
-    virtual std::string getText();
+    virtual std::string getText() const;
 
     // This is to pass paramaters to an option ie a bar or something
     virtual bool leftKey();
@@ -447,7 +447,7 @@ class OptionSpeed : public MenuOption
 		virtual bool leftKey();
 		virtual bool rightKey();
 
-                virtual std::string getText();
+                virtual std::string getText() const;
 		
 		OptionSpeed(const Token *token);
 	
