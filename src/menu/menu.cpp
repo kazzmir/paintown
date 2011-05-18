@@ -145,6 +145,7 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
 void Menu::InfoBox::open(){
     state = Opening;
     popup.location = location;
+    popup.transforms = transforms;
     popup.colors = colors;
     popup.open();
     fadeAlpha = 0;
