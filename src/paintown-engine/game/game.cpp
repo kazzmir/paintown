@@ -380,7 +380,7 @@ public:
             void draw(){
                 background.Blit(buffer);
                 area.render(buffer);
-                Graphics::Bitmap space(buffer, area.getArea().getX(), area.getArea().getY(), area.getArea().getWidth() - area.getArea().getRadius(), area.getArea().getHeight() - area.getArea().getRadius());
+                Graphics::Bitmap space(buffer, area.getArea().getX(), area.getArea().getY(), area.getArea().getWidth() - area.getTransforms().getRadius(), area.getArea().getHeight() - area.getTransforms().getRadius());
                 // space.clear();
                 playerCopy->setX(space.getWidth() / 2 + 50);
                 playerCopy->setY(0);
@@ -402,7 +402,7 @@ public:
         Gui::PopupBox area;
         area.location.setDimensions(GFX_X - 100, GFX_Y - 100);
         area.location.setCenterPosition(Gui::RelativePoint(0, 0));
-        area.location.setRadius(20);
+        area.transforms.setRadius(20);
 
         area.colors.body = Graphics::makeColor(0,0,0);
         area.colors.bodyAlpha = 220;

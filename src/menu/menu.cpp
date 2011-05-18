@@ -119,9 +119,9 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     
     // const Font & vFont = Configuration::getMenuFont()->get(*font);
     
-    const int x1 = popup.getArea().getX()+(int)(popup.getArea().getRadius()/2);
+    const int x1 = popup.getArea().getX()+(int)(popup.getTransforms().getRadius()/2);
     const int y1 = popup.getArea().getY()+2;
-    const int x2 = popup.getArea().getX2()-(int)(popup.getArea().getRadius()/2);
+    const int x2 = popup.getArea().getX2()-(int)(popup.getTransforms().getRadius()/2);
     const int y2 = popup.getArea().getY2()-2;
     bmp.setClipRect(x1, y1, x2, y2);
     
@@ -421,7 +421,7 @@ void Menu::Renderer::addInfo(const std::string & text, const Gui::Widget & defau
     temp->location.setPosition(Gui::AbsolutePoint(context.getInfoLocation().getX() - width/2, context.getInfoLocation().getY() - height/2));
     // have to pass the dimensions back in to correct proper placement
     temp->location.setPosition2(Gui::AbsolutePoint(temp->location.getX() + width,temp->location.getY() + height));
-    temp->location.setRadius(defaults.location.getRadius());
+    temp->transforms.setRadius(defaults.transforms.getRadius());
     temp->colors = defaults.colors;
     temp->open();
     info.push_back(temp);
@@ -449,7 +449,7 @@ void Menu::Renderer::renderInfo(const Graphics::Bitmap & work, const Font & font
 
 Menu::DefaultRenderer::DefaultRenderer(){
     // Default the menu to a certain size and details
-    menu.location.setRadius(15);
+    menu.transforms.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
     menu.colors.body = Graphics::makeColor(0,0,0);
     menu.colors.bodyAlpha = 128;
@@ -552,7 +552,7 @@ void Menu::DefaultRenderer::initialize(Context & context){
         menuInfo.location.setPosition(Gui::AbsolutePoint(context.getMenuInfoLocation().getX() - width/2, context.getMenuInfoLocation().getY() - height/2));
         // have to pass the dimensions back in to correct proper placement
         menuInfo.location.setPosition2(Gui::AbsolutePoint(menuInfo.location.getX() + width, menuInfo.location.getY() + height));
-        menuInfo.location.setRadius(menu.location.getRadius());
+        menuInfo.transforms.setRadius(menu.transforms.getRadius());
         menuInfo.colors = menu.colors;
     }
     
@@ -695,7 +695,7 @@ void Menu::TabInfo::act(){
 Menu::TabRenderer::TabRenderer(){
     
     // Default the menu to a certain size and details
-    //menu.location.setRadius(15);
+    //menu.transforms.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
     menu.colors.body = Graphics::makeColor(0,0,0);
     menu.colors.bodyAlpha = 128;
@@ -853,7 +853,7 @@ void Menu::TabRenderer::initialize(Context & context){
         menuInfo.location.setPosition(Gui::AbsolutePoint(context.getMenuInfoLocation().getX() - width/2, context.getMenuInfoLocation().getY() - height/2));
         // have to pass the dimensions back in to correct proper placement
         menuInfo.location.setPosition2(Gui::AbsolutePoint(menuInfo.location.getX() + width,menuInfo.location.getY() + height));
-        menuInfo.location.setRadius(menu.location.getRadius());
+        menuInfo.transforms.setRadius(menu.transforms.getRadius());
         menuInfo.colors = menu.colors;
     }
 

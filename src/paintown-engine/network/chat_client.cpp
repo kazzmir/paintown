@@ -125,7 +125,7 @@ enterPressed( false ){
     lineEdit = new Gui::LineEdit();
     lineEdit->location.setPosition(Gui::AbsolutePoint(20, 20 + messages.getHeight() + 5));
     lineEdit->location.setDimensions(400, 30);
-    lineEdit->location.setRadius(5);
+    lineEdit->transforms.setRadius(5);
 
     lineEdit->colors.body = Graphics::makeColor(0, 0, 0);
     lineEdit->colors.bodyAlpha = 128;

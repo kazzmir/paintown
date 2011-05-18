@@ -561,7 +561,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
             optionArea.location.setPosition2(Gui::AbsolutePoint(260,210));
 
-            optionArea.location.setRadius(5);
+            optionArea.transforms.setRadius(5);
             optionArea.colors.body = Graphics::makeColor(0,0,60);
             optionArea.colors.bodyAlpha = 150;
             optionArea.colors.border = Graphics::makeColor(0,0,20);

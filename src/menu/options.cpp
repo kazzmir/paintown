@@ -697,7 +697,7 @@ void OptionJoystick::run(const Menu::Context & context){
     Box dialog;
     dialog.location.setPosition(Gui::AbsolutePoint(0,0));
     dialog.location.setDimensions(vFont.textLength(message) + 10, vFont.getHeight() + 10);
-    dialog.location.setRadius(0);
+    dialog.transforms.setRadius(0);
     dialog.colors.body = Graphics::makeColor(0,0,0);
     dialog.colors.bodyAlpha = 200;
     dialog.colors.border = Graphics::makeColor(255,255,255);
@@ -900,7 +900,7 @@ void OptionKey::run(const Menu::Context & context){
     keyDialog.location.setCenterPosition(Gui::RelativePoint(0, 0));
     // keyDialog.location.setPosition(Gui::AbsolutePoint((width/2)-(keyDialog.location.getWidth()/2), (height/2)-(keyDialog.location.getHeight()/2)));
     // keyDialog.location.setPosition2(Gui::AbsolutePoint((
-    keyDialog.location.setRadius(radius);
+    keyDialog.transforms.setRadius(radius);
     keyDialog.colors.body = Graphics::makeColor(0,0,0);
     keyDialog.colors.bodyAlpha = 180;
     keyDialog.colors.border = Graphics::makeColor(255,255,255);
