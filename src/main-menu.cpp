@@ -402,6 +402,7 @@ int paintown_main( int argc, char ** argv ){
                 Network::networkServer();
 #endif
             } else if (networkJoin.enabled){
+#ifdef HAVE_NETWORKING
                 string port = networkJoin.port;
                 string host = networkJoin.host;
                 string name = networkJoin.name;
@@ -421,6 +422,7 @@ int paintown_main( int argc, char ** argv ){
                 } catch (const Network::NetworkException & fail){
                     Global::debug(0) << "Error running the network client: " << fail.getMessage() << endl;
                 }
+#endif
             } else if (mugen){
                 setMugenMotif(mainMenuPath());
                 Mugen::run();
