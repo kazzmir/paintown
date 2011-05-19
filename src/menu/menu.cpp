@@ -1342,7 +1342,7 @@ public:
     class LanguageOption: public MenuOption {
     public:
         LanguageOption(const Gui::ContextBox & box, const string & language):
-        MenuOption(parent, NULL){
+        MenuOption(box, NULL){
             setText(language);
             setInfoText(language);
         }
