@@ -244,6 +244,10 @@ class DefaultRenderer : public Renderer {
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
+
+        virtual const Gui::ContextBox & getBox() const {
+            return menu;
+        }
         
     private:
 

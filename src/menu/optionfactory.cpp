@@ -1,6 +1,7 @@
 #include "util/token.h"
 #include "optionfactory.h"
 #include "util/load_exception.h"
+#include "util/gui/context-box.h"
 #include "menu_option.h"
 #include "options.h"
 #include "util/debug.h"
@@ -15,76 +16,76 @@ OptionFactory::OptionFactory(){
 OptionFactory::~OptionFactory(){
 }
 
-MenuOption * OptionFactory::getOption(const Token *token) const {
+MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Token *token) const {
     const Token * tok;
     token->view() >> tok;
     if (*tok == "menu"){
         // Create a sub menu
-	const Token * typeToken = tok->findToken("_/type");
-	if (typeToken != NULL){
-	    std::string type;
-	    typeToken->view() >> type;
-	    if (type == "tabbed"){
-		return new OptionTabMenu(tok);
-	    }
-	}
-        return new OptionMenu(tok);
+        const Token * typeToken = tok->findToken("_/type");
+        if (typeToken != NULL){
+            std::string type;
+            typeToken->view() >> type;
+            if (type == "tabbed"){
+                return new OptionTabMenu(parent, tok);
+            }
+        }
+        return new OptionMenu(parent, tok);
     } else if (*tok == "tabmenu" ){
         // Create a tab menu
-        return new OptionTabMenu(tok);
+        return new OptionTabMenu(parent, tok);
     } else if ( *tok == "key" ){
         // Reconfigure a given key
-        return new OptionKey(tok);
+        return new OptionKey(parent, tok);
     } else if ( *tok == "joystick" ){
         // Reconfigure a given joystick button
-        return new OptionJoystick(tok);
+        return new OptionJoystick(parent, tok);
     } else if (*tok == "choose-language"){
-        return new OptionLanguage(tok);
+        return new OptionLanguage(parent, tok);
     } else if (*tok == "return"){
-        return new OptionReturn(tok);
+        return new OptionReturn(parent, tok);
     } else if (*tok == "mugen-motif"){
-        return new OptionMugenMotif(tok);
+        return new OptionMugenMotif(parent, tok);
     } else if (*tok == "continue"){
-        return new OptionContinue(tok);
+        return new OptionContinue(parent, tok);
     } else if (*tok == "sound"){
-        return new OptionSound(tok);
+        return new OptionSound(parent, tok);
     } else if (*tok == "music"){
-        return new OptionMusic(tok);
+        return new OptionMusic(parent, tok);
     } else if (*tok == "screen-size"){
-        return new OptionScreenSize(tok);
+        return new OptionScreenSize(parent, tok);
     } else if ( *tok == "npc" ){
-        return new OptionNpcBuddies(tok);
+        return new OptionNpcBuddies(parent, tok);
     } else if (*tok == "play-mode"){
-        return new OptionPlayMode(tok);
+        return new OptionPlayMode(parent, tok);
     } else if ( *tok == "credits" ){
         // Credits mode
-        return new OptionCredits(tok);
+        return new OptionCredits(parent, tok);
     } else if ( *tok == "speed" ){
         // Speed
-        return new OptionSpeed(tok);
+        return new OptionSpeed(parent, tok);
     } else if ( *tok == "invincible" ){
         // Invincible
-        return new OptionInvincible(tok);
+        return new OptionInvincible(parent, tok);
     } else if ( *tok == "fullscreen" ){
         // Full screen Selector
-        return new OptionFullscreen(tok);
+        return new OptionFullscreen(parent, tok);
     } else if ( *tok == "quit" ){
-        return new OptionQuit(tok);
+        return new OptionQuit(parent, tok);
     } else if ( *tok == "lives" ){
         // Live selector
-        return new OptionLives(tok);
+        return new OptionLives(parent, tok);
     } else if ( *tok == "font-select" ){
         // Font Selector
-        return new OptionSelectFont(tok);
+        return new OptionSelectFont(parent, tok);
     } else if ( *tok == "mugen" ){
         // Mugen Option
-        return new OptionMugenMenu(tok);
+        return new OptionMugenMenu(parent, tok);
     } else if ( *tok == "dummy" ){
         // Dummy Option
-        return new OptionDummy(tok);
+        return new OptionDummy(parent, tok);
     } else if ( *tok == "platformer" ){
-	// Platformer
-	return new OptionPlatformer(tok);
+        // Platformer
+        return new OptionPlatformer(parent, tok);
     } else {
         Global::debug(0) <<"Unhandled menu attribute: "<<endl;
         tok->print(" ");

@@ -80,14 +80,18 @@ namespace NewMenu{
     class Context;
 }
 
+namespace Gui{
+    class Context;
+}
+
 namespace Mugen{
     class Background;
     class Character;
     class CharacterSelect;
     class Storyboard;
     
-class ItemOption : public MenuOption {
-    public:
+class ItemOption{
+public:
 	ItemOption();
 	virtual ~ItemOption();
 	
@@ -97,6 +101,27 @@ class ItemOption : public MenuOption {
 	virtual void render(int x, int y, CursorHandler &, std::vector<MugenFont *> &, const Graphics::Bitmap &);
 	
 	virtual void executeOption(const Mugen::PlayerType &, bool & endGame)=0;
+ 
+    enum state{
+        Selected = 0,
+        Deselected,
+        Run
+    };
+    
+    inline void setText(const LanguageString & t) { text = t; }
+    virtual inline std::string getText() const { return text.get(); }
+    
+    inline void setState(const state s) { currentState = s; }
+    inline state getState() const { return currentState; }
+
+    inline void setRunnable(const bool r) { runnable = r; }
+    inline bool isRunnable() const { return runnable; }
+
+protected:
+
+    state currentState;
+    LanguageString text;
+    bool runnable;
 };
 
 }

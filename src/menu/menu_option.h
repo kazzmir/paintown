@@ -50,7 +50,7 @@ public:
         AdjustableOption
     };
 
-    MenuOption(const Token *token) throw (LoadException);
+    MenuOption(const Gui::ContextBox & parent, const Token *token);
 
     virtual ~MenuOption();
 

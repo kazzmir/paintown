@@ -46,8 +46,9 @@ Level::LevelInfo doLevelMenu(const string dir, const Menu::Context & context){
         Menu::Menu temp;
         
         int index = 0;
+        const Gui::ContextBox & box = ((Menu::DefaultRenderer *) temp.getRenderer())->getBox();
         for ( unsigned int i = 0; i < possible.size(); i++ ){
-            OptionLevel *opt = new OptionLevel(0, &index, i);
+            OptionLevel *opt = new OptionLevel(box, 0, &index, i);
             opt->setText(possible[i].getName());
             opt->setInfoText("Select a set of levels to play");
             temp.addOption(opt);
@@ -70,8 +71,8 @@ OptionFactory::OptionFactory(){
 
 class OptionAdventure: public MenuOption {
 public:
-    OptionAdventure(const Token *token):
-        MenuOption(token){
+    OptionAdventure(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token){
             if ( *token != "adventure" ){
                 throw LoadException(__FILE__, __LINE__, "Not an adventure");
             }
@@ -117,8 +118,8 @@ public:
 
 class OptionAdventureCpu: public MenuOption {
 public:
-    OptionAdventureCpu(const Token *token):
-        MenuOption(token){
+    OptionAdventureCpu(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token){
             if (*token != "adventure-cpu"){
                 throw LoadException(__FILE__, __LINE__, "Not an adventure");
             }
@@ -190,8 +191,8 @@ public:
 
 class OptionChangeMod: public MenuOption {
 public:
-    OptionChangeMod(const Token *token):
-        MenuOption(token){
+    OptionChangeMod(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token){
             if ( *token != "change-mod" ){
                 throw LoadException(__FILE__, __LINE__, "Not a change mod");
             }
@@ -330,8 +331,9 @@ public:
             map<int, ModType*> modMap;
             int index = 0;
             std::vector<OptionLevel *> options;
+            const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
             for (vector<ModType>::iterator it = mods.begin(); it != mods.end(); it++){
-                OptionLevel *opt = new OptionLevel(0, &select, index);
+                OptionLevel *opt = new OptionLevel(box, 0, &select, index);
                 string name = modName(*it);
                 modMap[index] = &(*it);
                 opt->setText(name);
@@ -377,8 +379,8 @@ public:
 #ifdef HAVE_NETWORKING
 class OptionNetworkHost: public MenuOption {
 public:
-    OptionNetworkHost(const Token *token):
-        MenuOption(token){
+    OptionNetworkHost(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token){
             if ( *token != "network-host" ){
                 throw LoadException(__FILE__, __LINE__, "Not a network-host");
             }
@@ -412,8 +414,8 @@ public:
 
 class OptionNetworkJoin: public MenuOption {
 public:
-    OptionNetworkJoin(const Token *token):
-        MenuOption(token){
+    OptionNetworkJoin(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token){
             if ( *token != "network-join" ){
                 throw LoadException(__FILE__, __LINE__, "Not a network-join");
             }
@@ -451,25 +453,25 @@ public:
 };
 #endif
 
-MenuOption * OptionFactory::getOption(const Token *token) const {
+MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Token *token) const {
     const Token * child;
     token->view() >> child;
 
     if (*child == "adventure"){
-        return new OptionAdventure(child);
+        return new OptionAdventure(parent, child);
     } else if (*child == "adventure-cpu"){
-        return new OptionAdventureCpu(child);
+        return new OptionAdventureCpu(parent, child);
     } else if (*child == "change-mod"){
-        return new OptionChangeMod(child);
+        return new OptionChangeMod(parent, child);
 #ifdef HAVE_NETWORKING
     } else if (*child == "network-host" ){
-        return new OptionNetworkHost(child);
+        return new OptionNetworkHost(parent, child);
     } else if (*child == "network-join" ){
-        return new OptionNetworkJoin(child);
+        return new OptionNetworkJoin(parent, child);
 #endif
     }
 
-    return Menu::OptionFactory::getOption(token);
+    return Menu::OptionFactory::getOption(parent, token);
 }
 
 OptionFactory::~OptionFactory(){

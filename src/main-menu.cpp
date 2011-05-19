@@ -212,12 +212,12 @@ public:
 
     Paintown::OptionFactory paintownFactory;
     
-    virtual MenuOption * getOption(const Token *token) const {
-        MenuOption * get = paintownFactory.getOption(token);
+    virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const {
+        MenuOption * get = paintownFactory.getOption(parent, token);
         if (get != NULL){
             return get;
         }
-        return Menu::OptionFactory::getOption(token);
+        return Menu::OptionFactory::getOption(parent, token);
     }
 };
 

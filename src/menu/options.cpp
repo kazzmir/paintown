@@ -74,8 +74,8 @@ static bool miguelBirthday(){
     return todaysDate(8, 11, 0);
 }
 
-OptionCredits::OptionCredits( const Token * token ):
-MenuOption(token),
+OptionCredits::OptionCredits(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token),
 music(""),
 color(Graphics::makeColor(255,255,255)),
 title(Graphics::makeColor(0,255,255)){
@@ -383,8 +383,8 @@ void OptionCredits::run(const Menu::Context & context){
     // throw Exception::Return(__FILE__, __LINE__);
 }
 
-OptionDummy::OptionDummy(const Token *token):
-MenuOption(token){
+OptionDummy::OptionDummy(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token){
     if ( *token != "dummy" ){
         throw LoadException(__FILE__, __LINE__, "Not dummy option");
     }
@@ -396,8 +396,8 @@ MenuOption(token){
     }
 }
 
-OptionDummy::OptionDummy( const std::string &name ):
-MenuOption(0){
+OptionDummy::OptionDummy(const Gui::ContextBox & parent, const std::string &name):
+MenuOption(parent, 0){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to dummy");
     }
@@ -413,8 +413,8 @@ void OptionDummy::logic(){
 void OptionDummy::run(const Menu::Context & context){
 }
 
-OptionFullscreen::OptionFullscreen(const Token *token):
-MenuOption(token),
+OptionFullscreen::OptionFullscreen(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -460,8 +460,8 @@ bool OptionFullscreen::rightKey(){
     return true;
 }
 
-OptionInvincible::OptionInvincible(const Token *token):
-MenuOption(token),
+OptionInvincible::OptionInvincible(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -620,8 +620,8 @@ static Configuration::JoystickInput readJoystick(){
     return Joystick::Up;
 }
 
-OptionJoystick::OptionJoystick(const Token *token):
-MenuOption(token),
+OptionJoystick::OptionJoystick(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 name(""),
 player(-1),
 type(Invalidkey),
@@ -827,8 +827,12 @@ static int readKey( Keyboard & key ){
 }
 */
 
-OptionKey::OptionKey(const Token *token): MenuOption(token), name(""), player(-1), type(invalidkey), keyCode(0)
-{
+OptionKey::OptionKey(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
+name(""),
+player(-1),
+type(invalidkey),
+keyCode(0){
     if ( *token != "key" )
         throw LoadException(__FILE__, __LINE__, "Not key option");
 
@@ -926,8 +930,8 @@ void OptionKey::run(const Menu::Context & context){
     InputManager::waitForClear();
 }
 
-OptionLevel::OptionLevel(const Token *token, int * set, int value):
-MenuOption(token),
+OptionLevel::OptionLevel(const Gui::ContextBox & parent, const Token *token, int * set, int value):
+MenuOption(parent, token),
 set(set),
 value(value){
   // Nothing
@@ -944,8 +948,8 @@ void OptionLevel::run(const Menu::Context & context){
     throw Menu::MenuException(__FILE__, __LINE__);
 }
 
-OptionLives::OptionLives( const Token * token ):
-MenuOption(token),
+OptionLives::OptionLives(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -990,8 +994,8 @@ bool OptionLives::rightKey(){
 	return false;
 }
 
-OptionMenu::OptionMenu(const Token *token):
-MenuOption(token),
+OptionMenu::OptionMenu(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 menu(0){
     if (*token != "menu"){
         throw LoadException(__FILE__, __LINE__, "Not a menu");
@@ -1032,8 +1036,8 @@ void OptionMenu::run(const Menu::Context & context){
     }
 }
 
-OptionMugenMenu::OptionMugenMenu(const Token *token):
-MenuOption(token){
+OptionMugenMenu::OptionMugenMenu(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token){
     if ( *token != "mugen" ){
         throw LoadException(__FILE__, __LINE__, "Not a mugen motif menu");
     }
@@ -1113,8 +1117,8 @@ void OptionMugenMenu::run(const Menu::Context & context){
     // throw Exception::Return(__FILE__, __LINE__);
 }
 
-OptionNpcBuddies::OptionNpcBuddies( const Token * token ):
-MenuOption(token),
+OptionNpcBuddies::OptionNpcBuddies(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -1160,8 +1164,8 @@ bool OptionNpcBuddies::rightKey(){
 	return false;
 }
 
-OptionPlayMode::OptionPlayMode(const Token *token):
-MenuOption(token),
+OptionPlayMode::OptionPlayMode(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -1220,8 +1224,8 @@ bool OptionPlayMode::rightKey(){
     return true;
 }
 
-OptionReturn::OptionReturn(const Token * token):
-MenuOption(token){
+OptionReturn::OptionReturn(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token){
     if (*token != "return"){
         throw LoadException(__FILE__, __LINE__, "Not a return option");
     }
@@ -1241,8 +1245,8 @@ void OptionReturn::run(const Menu::Context & context){
 OptionReturn::~OptionReturn(){
 }
 
-OptionContinue::OptionContinue(const Token * token):
-MenuOption(token){
+OptionContinue::OptionContinue(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token){
     if (*token != "continue"){
         throw LoadException(__FILE__, __LINE__, "Not a continue option");
     }
@@ -1259,8 +1263,8 @@ void OptionContinue::run(const Menu::Context & context){
 OptionContinue::~OptionContinue(){
 }
 
-OptionQuit::OptionQuit(const Token *token):
-MenuOption(token){
+OptionQuit::OptionQuit(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token){
     if ( *token != "quit" ){
         throw LoadException(__FILE__, __LINE__, "Not quit option");
     }
@@ -1268,8 +1272,8 @@ MenuOption(token){
     readName(token);
 }
 
-OptionQuit::OptionQuit(const std::string &name):
-MenuOption(0){
+OptionQuit::OptionQuit(const Gui::ContextBox & parent, const std::string &name):
+MenuOption(parent, 0){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to quit");
     }
@@ -1358,8 +1362,8 @@ static vector<ScreenSize> sortResolutions(const vector<ScreenSize> & modes){
     return copy;
 }
 
-OptionScreenSize::OptionScreenSize(const Token *token):
-MenuOption(token),
+OptionScreenSize::OptionScreenSize(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 name(""),
 lblue(255),
 lgreen(255),
@@ -1558,8 +1562,8 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
     return fonts;
 }
 
-OptionSelectFont::OptionSelectFont(const Token *token):
-MenuOption(token),
+OptionSelectFont::OptionSelectFont(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 typeAdjust(fontName),
 lblue(255),
 lgreen(255),
@@ -1791,8 +1795,13 @@ void OptionSelectFont::nextIndex(bool forward){
     */
 }
 
-OptionSpeed::OptionSpeed(const Token *token): MenuOption(token), name(""), lblue(255), lgreen(255), rblue(255), rgreen(255)
-{
+OptionSpeed::OptionSpeed(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
+name(""),
+lblue(255),
+lgreen(255),
+rblue(255),
+rgreen(255){
     setRunnable(false);
 
     if ( *token != "speed" )
@@ -1838,8 +1847,8 @@ bool OptionSpeed::rightKey(){
     return false;
 }
 
-OptionTabMenu::OptionTabMenu(const Token *token):
-MenuOption(token),
+OptionTabMenu::OptionTabMenu(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 menu(0){
     if (token->numTokens() == 1){
         std::string temp;
@@ -1884,8 +1893,8 @@ void OptionTabMenu::run(const Menu::Context & context){
     }
 }
 
-OptionSound::OptionSound(const Token *token):
-MenuOption(token),
+OptionSound::OptionSound(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -1939,8 +1948,8 @@ bool OptionSound::rightKey(){
     return true;
 }
 
-OptionMusic::OptionMusic(const Token *token):
-MenuOption(token),
+OptionMusic::OptionMusic(const Gui::ContextBox & parent, const Token *token):
+MenuOption(parent, token),
 lblue(255),
 lgreen(255),
 rblue(255),
@@ -1995,8 +2004,8 @@ bool OptionMusic::rightKey(){
 OptionMusic::~OptionMusic(){
 }
 
-OptionLanguage::OptionLanguage(const Token * token):
-MenuOption(token){
+OptionLanguage::OptionLanguage(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token){
     readName(token);
     const Token * start = token->getRootParent();
     vector<const Token*> tokens = start->findTokens("*/language");
@@ -2016,8 +2025,8 @@ MenuOption(token){
 void OptionLanguage::run(const Menu::Context & context){
     class LanguageOption: public MenuOption {
     public:
-        LanguageOption(const string & language):
-        MenuOption(NULL){
+        LanguageOption(const Gui::ContextBox & parent, const string & language):
+        MenuOption(parent, NULL){
             setText(language);
             setInfoText(language);
         }
@@ -2036,8 +2045,10 @@ void OptionLanguage::run(const Menu::Context & context){
     Util::ReferenceCount<Menu::FontInfo> info = new Menu::RelativeFontInfo(Filesystem::RelativePath("fonts/arial.ttf"), 24, 24);
     temp.setFont(info);
 
+    const Gui::ContextBox & box = ((Menu::DefaultRenderer*) temp.getRenderer())->getBox();
+
     for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
-        temp.addOption(new LanguageOption(*it));
+        temp.addOption(new LanguageOption(box, *it));
     }
 
     try {
@@ -2053,8 +2064,8 @@ void OptionLanguage::run(const Menu::Context & context){
 void OptionLanguage::logic(){
 }
 
-OptionPlatformer::OptionPlatformer(const Token * token):
-MenuOption(token){
+OptionPlatformer::OptionPlatformer(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token){
     readName(token);
     
     if (!token->match("_/game", gameLocation)){
@@ -2076,8 +2087,8 @@ void OptionPlatformer::run(const Menu::Context & context){
     throw Menu::Reload(__FILE__, __LINE__);
 }
 
-OptionMugenMotif::OptionMugenMotif(const Token * token):
-MenuOption(token){
+OptionMugenMotif::OptionMugenMotif(const Gui::ContextBox & parent, const Token * token):
+MenuOption(parent, token){
     readName(token);
 }
 
@@ -2120,8 +2131,9 @@ void OptionMugenMotif::run(const Menu::Context & context){
         virtual void load(){
             paths = listMotifs();
             vector<Filesystem::AbsolutePath> paths = listMotifs();
+            const Gui::ContextBox & box = ((Menu::DefaultRenderer*) menu.getRenderer())->getBox();
             for (unsigned int i = 0; i < paths.size(); i++){
-                OptionLevel *option = new OptionLevel(0, &index, i);
+                OptionLevel *option = new OptionLevel(box, 0, &index, i);
                 option->setText(Mugen::Util::probeDef(paths[i], "info", "name"));
                 option->setInfoText(Filesystem::cleanse(paths[i]).path());
                 menu.addOption(option);

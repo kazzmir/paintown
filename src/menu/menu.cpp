@@ -475,7 +475,7 @@ Menu::DefaultRenderer::~DefaultRenderer(){
 bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory & factory){
     if( *token == "option" ) {
         try{
-            MenuOption * temp = factory.getOption(token);
+            MenuOption * temp = factory.getOption(menu, token);
             if (temp){
                 options.push_back(temp);
             }
@@ -723,33 +723,36 @@ Menu::TabRenderer::~TabRenderer(){
 
 bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & factory){
     if (*token == "menu"){
-	TabInfo * tabInfo = new TabInfo();
+        TabInfo * tabInfo = new TabInfo();
+        Gui::Tab * tab = new Gui::Tab();
         TokenView view = token->view();
-	while (view.hasMore()){
-	    const Token * tok;
-	    view >> tok;
-	    try{
-		if (*tok == "name"){
-		    tok->view() >> tabInfo->name;
-		} else if (*tok == "info"){
-		    tok->view() >> tabInfo->info;
-		} else if (*tok == "menuinfo"){
-		    tok->view() >> tabInfo->menuInfo;
-		} else if (*tok == "option"){
-		    try {
-			MenuOption *temp = factory.getOption(tok);
-			if (temp){
-			    tabInfo->options.push_back(temp);
-			}
-		    } catch (const LoadException & le){
-			tok->print(" ");
-		    } 
-		}
-	    } catch (const TokenException & ex){
-		// Output something
-	    }
-	}
-	tabs.push_back(tabInfo);
+        while (view.hasMore()){
+            const Token * tok;
+            view >> tok;
+            try{
+                if (*tok == "name"){
+                    tok->view() >> tabInfo->name;
+                    tok->view() >> tab->name;
+                } else if (*tok == "info"){
+                    tok->view() >> tabInfo->info;
+                } else if (*tok == "menuinfo"){
+                    tok->view() >> tabInfo->menuInfo;
+                } else if (*tok == "option"){
+                    try {
+                        MenuOption *temp = factory.getOption(tab->context, tok);
+                        if (temp){
+                            tabInfo->options.push_back(temp);
+                        }
+                    } catch (const LoadException & le){
+                        tok->print(" ");
+                    } 
+                }
+            } catch (const TokenException & ex){
+                // Output something
+            }
+        }
+        menu.addTab(tab);
+        tabs.push_back(tabInfo);
     } else if ( *token == "position" ) {
         // This handles the placement of the menu list and surrounding box
         menu.setCoordinates(token);
@@ -788,15 +791,15 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
         token->view() >> r >> g >> b >> menu.runningTabColors.borderAlpha;
         menu.runningTabColors.border = Graphics::makeColor(r,g,b);
     } else if ( *token == "font-color" ) {
-	int r,g,b;
+        int r,g,b;
         token->view() >> r >> g >> b;
-	menu.setTabFontColor(Graphics::makeColor(r,g,b));
+        menu.setTabFontColor(Graphics::makeColor(r,g,b));
     } else if ( *token == "selectedfont-color" ) {
-	int r,g,b;
+        int r,g,b;
         token->view() >> r >> g >> b;
-	menu.setSelectedTabFontColor(Graphics::makeColor(r,g,b));
+        menu.setSelectedTabFontColor(Graphics::makeColor(r,g,b));
     } else if ( *token == "runningfont-color" ) {
-        
+
     } else if ( *token == "fade-speed" ) {
         // Menu fade in speed
         int speed;
@@ -805,7 +808,7 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
     } else {
         return false;
     }
-    
+
     return true;
 }
 
@@ -838,10 +841,12 @@ void Menu::TabRenderer::initialize(Context & context){
     }
     */
     // setFont(new FontInfo(localFont, width, height));
+    /*
     for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
         TabInfo * tab = *i;
         menu.addTab(tab->name, toContextList(tab->options));
     }
+    */
     //menu.open();
     
     const Font & font = currentFont();
@@ -1287,42 +1292,42 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
         // Get version
         // const Token * tok;
         // token->view() >> tok;
-	const Token *ourToken = token->findToken("_/type");
+        const Token *ourToken = token->findToken("_/type");
         if (ourToken != NULL){
-	    try {
-		std::string menuType;
-		ourToken->view() >> menuType;
-		if (menuType == "default"){
-		    type = Default;
-		} else if (menuType == "tabbed"){
-		    type = Tabbed;
-		}
-	    } catch (const TokenException & ex){
-	    }
-	}
-	ourToken = token->findToken("_/version");
+            try {
+                std::string menuType;
+                ourToken->view() >> menuType;
+                if (menuType == "default"){
+                    type = Default;
+                } else if (menuType == "tabbed"){
+                    type = Tabbed;
+                }
+            } catch (const TokenException & ex){
+            }
+        }
+        ourToken = token->findToken("_/version");
         if (ourToken != NULL){
             try {
                 ourToken->view() >> major >> minor >> micro;
             } catch (const TokenException & ex){
             }
         } else {
-                Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
-                major = 3;
-                minor = 3;
-                micro = 1;
+            Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
+            major = 3;
+            minor = 3;
+            micro = 1;
         }
     }
-    
+
     setRenderer(type);
-    
+
     if (Global::getVersion(major, minor, micro) != Global::getVersion()){
-	// Do compatible translations if necessary
-	handleCompatibility(token, Global::getVersion(major, minor, micro), factory);
+        // Do compatible translations if necessary
+        handleCompatibility(token, Global::getVersion(major, minor, micro), factory);
     } else {
-	handleCurrentVersion(token);
+        handleCurrentVersion(token);
     }
-    
+
 }
 
 typedef Menu::Menu MenuClass;
@@ -1330,8 +1335,8 @@ class LanguageMenu: public Menu::Menu {
 public:
     class LanguageOption: public MenuOption {
     public:
-        LanguageOption(const string & language):
-        MenuOption(NULL){
+        LanguageOption(const Gui::ContextBox & box, const string & language):
+        MenuOption(parent, NULL){
             setText(language);
             setInfoText(language);
         }
@@ -1384,9 +1389,10 @@ public:
     }
 
     LanguageMenu(const MenuClass & original){
+        ::Menu::DefaultRenderer * renderer = (::Menu::DefaultRenderer*) getRenderer();
         vector<string> languages = putEnglishFirst(findLanguages(original));
         for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
-            addOption(new LanguageOption(*it));
+            addOption(new LanguageOption(renderer->getBox(), *it));
         }
     }
 };

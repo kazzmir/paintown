@@ -10,7 +10,7 @@
 class Token;
 
 /*! Handles key reconfiguration */
-class OptionCredits : public MenuOption {
+class OptionCredits: public MenuOption {
 public:
     enum CreditKey{
         Exit
@@ -23,7 +23,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionCredits(const Token *token);
+    OptionCredits(const Gui::ContextBox & parent, const Token *token);
 
     virtual ~OptionCredits();
 private:
@@ -35,10 +35,10 @@ private:
 };
 
 /*! Dummy option, to allow place fillers in menus */
-class OptionDummy : public MenuOption{
+class OptionDummy: public MenuOption{
 public:
-	OptionDummy( const Token *token );
-	OptionDummy( const std::string &name );
+	OptionDummy(const Gui::ContextBox & parent, const Token *token);
+	OptionDummy(const Gui::ContextBox & parent, const std::string &name);
 
 	// Do logic before run part
 	virtual void logic();
@@ -51,7 +51,7 @@ public:
 };
 
 /*! Handles key reconfiguration */
-class OptionFullscreen : public MenuOption{
+class OptionFullscreen: public MenuOption{
 public:
     // Do logic before run part
     virtual void logic();
@@ -66,7 +66,7 @@ public:
     virtual bool leftKey();
     virtual bool rightKey();
 
-    OptionFullscreen(const Token *token);
+    OptionFullscreen(const Gui::ContextBox & parent, const Token *token);
 
     virtual ~OptionFullscreen();
 private:
@@ -90,9 +90,9 @@ class OptionInvincible : public MenuOption
 		virtual bool leftKey();
 		virtual bool rightKey();
     
-                virtual std::string getText() const;
+        virtual std::string getText() const;
 		
-		OptionInvincible(const Token *token);
+		OptionInvincible(const Gui::ContextBox & parent, const Token *token);
 	
 		virtual ~OptionInvincible();
 	private:
@@ -101,7 +101,7 @@ class OptionInvincible : public MenuOption
 };
 
 /*! Handles joystick reconfiguration */
-class OptionJoystick : public MenuOption {
+class OptionJoystick: public MenuOption {
 public:
     // Do logic before run part
     virtual void logic();
@@ -110,7 +110,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionJoystick(const Token *token);
+    OptionJoystick(const Gui::ContextBox & parent, const Token *token);
 
     virtual ~OptionJoystick();
 
@@ -140,7 +140,7 @@ private:
 };
 
 /*! Handles key reconfiguration */
-class OptionKey : public MenuOption{
+class OptionKey: public MenuOption{
     public:
         // Do logic before run part
         virtual void logic();
@@ -149,7 +149,7 @@ class OptionKey : public MenuOption{
         // endGame will be set true if it is a terminating option
         virtual void run(const Menu::Context &);
 
-        OptionKey(const Token *token);
+        OptionKey(const Gui::ContextBox & parent, const Token *token);
 
         virtual ~OptionKey();
 
@@ -180,9 +180,9 @@ class OptionKey : public MenuOption{
 };
 
 /*! Handles key reconfiguration */
-class OptionLevel : public MenuOption {
+class OptionLevel: public MenuOption {
 public:
-	OptionLevel(const Token *token, int * set, int value);
+	OptionLevel(const Gui::ContextBox & parent, const Token *token, int * set, int value);
 
 	// Do logic before run part
 	virtual void logic();
@@ -201,7 +201,7 @@ protected:
 
 
 /*! Handles key reconfiguration */
-class OptionLives : public MenuOption{
+class OptionLives: public MenuOption{
 public:
     // Do logic before run part
     virtual void logic();
@@ -216,7 +216,7 @@ public:
     
     virtual std::string getText() const;
 
-    OptionLives(const Token *token);
+    OptionLives(const Gui::ContextBox & parent, const Token *token);
 
     virtual ~OptionLives();
 private:
@@ -230,7 +230,7 @@ namespace Menu {
 }
 
 /*! Handles sub menus */
-class OptionMenu : public MenuOption {
+class OptionMenu: public MenuOption {
     public:
         // Do logic before run part
         virtual void logic();
@@ -239,7 +239,7 @@ class OptionMenu : public MenuOption {
         // endGame will be set true if it is a terminating option
         virtual void run(const Menu::Context &);
 
-        OptionMenu(const Token *token);
+        OptionMenu(const Gui::ContextBox & parent, const Token *token);
 
         virtual ~OptionMenu();
 
@@ -249,7 +249,7 @@ class OptionMenu : public MenuOption {
 };
 
 /*! Handles sub menus */
-class OptionMugenMenu : public MenuOption {
+class OptionMugenMenu: public MenuOption {
 public:
     // Do logic before run part
     virtual void logic();
@@ -258,7 +258,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionMugenMenu(const Token *token);
+    OptionMugenMenu(const Gui::ContextBox & parent, const Token *token);
 
     virtual ~OptionMugenMenu();
 
@@ -267,9 +267,9 @@ private:
 };
 
 /*! Handles key reconfiguration */
-class OptionNpcBuddies : public MenuOption {
+class OptionNpcBuddies: public MenuOption {
 public:
-	OptionNpcBuddies( const Token *token );
+	OptionNpcBuddies(const Gui::ContextBox & parent, const Token *token );
 
 	// Do logic before run part
 	virtual void logic();
@@ -291,9 +291,9 @@ private:
 };
 
 /*! Handles key reconfiguration */
-class OptionPlayMode : public MenuOption {
+class OptionPlayMode: public MenuOption {
 public:
-    OptionPlayMode(const Token *token);
+    OptionPlayMode(const Gui::ContextBox & parent, const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -322,8 +322,8 @@ private:
 /*! Handles key reconfiguration */
 class OptionQuit : public MenuOption {
 public:
-	OptionQuit( const Token *token );
-	OptionQuit( const std::string &name );
+	OptionQuit(const Gui::ContextBox & parent, const Token *token);
+	OptionQuit(const Gui::ContextBox & parent, const std::string &name);
 
 	// Do logic before run part
 	virtual void logic();
@@ -338,7 +338,7 @@ public:
 /* return to previous menu */
 class OptionReturn: public MenuOption {
 public:
-    OptionReturn(const Token * token);
+    OptionReturn(const Gui::ContextBox & parent, const Token * token);
     virtual void logic();
     virtual void run(const Menu::Context &);
     virtual ~OptionReturn();
@@ -347,7 +347,7 @@ public:
 /* continue the game */
 class OptionContinue: public MenuOption {
 public:
-    OptionContinue(const Token * token);
+    OptionContinue(const Gui::ContextBox & parent, const Token * token);
     virtual void logic();
     virtual void run(const Menu::Context &);
     virtual ~OptionContinue();
@@ -361,7 +361,7 @@ struct ScreenSize{
 /*! Handles key reconfiguration */
 class OptionScreenSize : public MenuOption {
 public:
-    OptionScreenSize(const Token *token);
+    OptionScreenSize(const Gui::ContextBox & parent, const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -391,9 +391,9 @@ private:
 };
 
 /*! Handles font selection */
-class OptionSelectFont : public MenuOption {
+class OptionSelectFont: public MenuOption {
 public:
-    OptionSelectFont(const Token *token);
+    OptionSelectFont(const Gui::ContextBox & parent, const Token *token);
 
     virtual void open();
     virtual void close();
@@ -433,8 +433,7 @@ private:
 };
 
 /*! Handles key reconfiguration */
-class OptionSpeed : public MenuOption
-{
+class OptionSpeed: public MenuOption {
 	public:
 		// Do logic before run part
 		virtual void logic();
@@ -447,9 +446,9 @@ class OptionSpeed : public MenuOption
 		virtual bool leftKey();
 		virtual bool rightKey();
 
-                virtual std::string getText() const;
+        virtual std::string getText() const;
 		
-		OptionSpeed(const Token *token);
+		OptionSpeed(const Gui::ContextBox & parent, const Token *token);
 	
 		virtual ~OptionSpeed();
 	private:
@@ -461,7 +460,7 @@ class OptionSpeed : public MenuOption
 };
 
 /*! Handles sub menus */
-class OptionTabMenu : public MenuOption {
+class OptionTabMenu: public MenuOption {
 public:
     // Do logic before run part
     virtual void logic();
@@ -470,7 +469,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionTabMenu(const Token *token);
+    OptionTabMenu(const Gui::ContextBox & parent, const Token *token);
 
     virtual ~OptionTabMenu();
 
@@ -480,7 +479,7 @@ private:
 
 class OptionSound: public MenuOption {
 public:
-    OptionSound(const Token *token);
+    OptionSound(const Gui::ContextBox & parent, const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -505,7 +504,7 @@ private:
 
 class OptionMusic: public MenuOption {
 public:
-    OptionMusic(const Token *token);
+    OptionMusic(const Gui::ContextBox & parent, const Token *token);
 
     // Do logic before run part
     virtual void logic();
@@ -530,7 +529,7 @@ private:
 
 class OptionLanguage: public MenuOption {
 public:
-    OptionLanguage(const Token * token);
+    OptionLanguage(const Gui::ContextBox & parent, const Token * token);
     virtual void logic();
     virtual void run(const Menu::Context &);
 protected:
@@ -539,7 +538,7 @@ protected:
 
 class OptionPlatformer: public MenuOption {
 public:
-    OptionPlatformer(const Token *);
+    OptionPlatformer(const Gui::ContextBox & parent, const Token *);
     virtual ~OptionPlatformer();
     virtual void logic();
     virtual void run(const Menu::Context &);
@@ -549,7 +548,7 @@ protected:
 
 class OptionMugenMotif: public MenuOption {
 public:
-    OptionMugenMotif(const Token *);
+    OptionMugenMotif(const Gui::ContextBox & parent, const Token *);
     virtual ~OptionMugenMotif();
     virtual void logic();
     virtual void run(const Menu::Context &);

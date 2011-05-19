@@ -349,11 +349,11 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 backgroundX += work.getWidth();
             }
 
-            while (current < top){
+            while ((signed) current < top){
                 top -= boxesPerLine;
             }
 
-            while (current >= top + boxesPerLine * boxesPerColumn){
+            while ((signed) current >= top + boxesPerLine * boxesPerColumn){
                 top += boxesPerLine;
             }
 

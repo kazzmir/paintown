@@ -142,7 +142,8 @@ int CursorHandler::getCursorHeight() const {
 	
 
 Mugen::ItemOption::ItemOption():
-MenuOption(0){
+currentState(Deselected),
+runnable(true){
 }
 
 Mugen::ItemOption::~ItemOption(){
@@ -154,7 +155,7 @@ void Mugen::ItemOption::run(const Menu::Context & context){
 }
 
 void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<MugenFont *> & fonts, const Graphics::Bitmap & bmp){
-    handler.renderText(x, y, (getState() == MenuOption::Selected), getText(), fonts, bmp);
+    handler.renderText(x, y, (getState() == Selected), getText(), fonts, bmp);
 }
 
 namespace Mugen {
@@ -674,7 +675,7 @@ void MugenMenu::run(){
     
     currentOption = options.begin();
     optionLocation = 0;
-    options.front()->setState(MenuOption::Selected);
+    options.front()->setState(Mugen::ItemOption::Selected);
     
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
@@ -765,7 +766,7 @@ void MugenMenu::run(){
                     case Mugen::Z:
                     case Mugen::Start: {
                         if ((*currentOption)->isRunnable()){
-                            (*currentOption)->setState(MenuOption::Run);
+                            (*currentOption)->setState(Mugen::ItemOption::Run);
                         }
                         // Set the fade state
                         fader.setState(Gui::FadeTool::FadeOut);
@@ -777,7 +778,7 @@ void MugenMenu::run(){
                         quit = true;
                         // Set the fade state
                         fader.setState(Gui::FadeTool::FadeOut);
-                        (*currentOption)->setState(MenuOption::Deselected);
+                        (*currentOption)->setState(Mugen::ItemOption::Deselected);
                         InputManager::waitForRelease(input, Mugen::Esc);
                         menu.playSound(Cancel);
                         break;
@@ -790,7 +791,7 @@ void MugenMenu::run(){
 
         bool done(){
             return is_done ||
-                   ((*currentOption)->getState() == MenuOption::Run) ||
+                   ((*currentOption)->getState() == Mugen::ItemOption::Run) ||
                    (fader.getState() == Gui::FadeTool::EndFade);
         }
 
@@ -975,18 +976,18 @@ void MugenMenu::run(){
 #endif
 	    
 	// do we got an option to run, lets do it
-	if ((*currentOption)->getState() == MenuOption::Run){
+	if ((*currentOption)->getState() == Mugen::ItemOption::Run){
 	    try{
 		(*currentOption)->executeOption(logic.getSelectingPlayer(), endGame);
 	    } catch (const Exception::Return & re){
 	    }
 	    // Reset it's state
-	    (*currentOption)->setState(MenuOption::Selected);
+	    (*currentOption)->setState(Mugen::ItemOption::Selected);
 	    fader.setState(Gui::FadeTool::FadeIn);
 	}
 	if (endGame){
 	    // Deselect selected entry
-	    (*currentOption)->setState(MenuOption::Deselected);
+	    (*currentOption)->setState(Mugen::ItemOption::Deselected);
 	}
     }
 
@@ -1038,7 +1039,7 @@ void MugenMenu::cleanupSprites(){
 
 // Move menu up
 void MugenMenu::moveMenuUp(){
-    (*currentOption)->setState(MenuOption::Deselected);
+    (*currentOption)->setState(Mugen::ItemOption::Deselected);
     if ( currentOption > options.begin() ){
         currentOption--;
         optionLocation--;
@@ -1052,7 +1053,7 @@ void MugenMenu::moveMenuUp(){
         menuRange.x = options.size() - (windowVisibleItems);
         menuRange.y = options.size() - 1;
     }
-    (*currentOption)->setState(MenuOption::Selected);
+    (*currentOption)->setState(Mugen::ItemOption::Selected);
     playSound(Move);
 }
 
@@ -1072,7 +1073,7 @@ void MugenMenu::playSound(int group, int item){
 
 // Move menu down
 void MugenMenu::moveMenuDown(){
-    (*currentOption)->setState(MenuOption::Deselected);
+    (*currentOption)->setState(Mugen::ItemOption::Deselected);
     if ( currentOption < options.begin()+options.size()-1 ){
         currentOption++;
         optionLocation++;
@@ -1086,7 +1087,7 @@ void MugenMenu::moveMenuDown(){
         menuRange.x = 0;
         menuRange.y = windowVisibleItems-1;
     }
-    (*currentOption)->setState(MenuOption::Selected);
+    (*currentOption)->setState(Mugen::ItemOption::Selected);
     playSound(Move);
 }
 

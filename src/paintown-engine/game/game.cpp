@@ -227,8 +227,8 @@ enum MoveListInput{
 
 class OptionMoveList: public MenuOption {
 public:
-    OptionMoveList(const Token * token, Paintown::Player * player):
-    MenuOption(token),
+    OptionMoveList(const Gui::ContextBox & parent, const Token * token, Paintown::Player * player):
+    MenuOption(parent, token),
     player(player){
         readName(token);
     }
@@ -431,13 +431,13 @@ public:
 
     Paintown::Player * player;
 
-    MenuOption * getOption(const Token * data) const {
+    MenuOption * getOption(const Gui::ContextBox & parent, const Token * data) const {
         const Token * head;
         data->view() >> head;
         if (*head == "move-list"){
-            return new OptionMoveList(head, player);
+            return new OptionMoveList(parent, head, player);
         }
-        return Paintown::OptionFactory::getOption(data);
+        return Paintown::OptionFactory::getOption(parent, data);
     }
 };
 
