@@ -86,6 +86,8 @@ class InfoBox: public Gui::Widget {
         int fadeAlpha;
         
         std::vector<std::string> text;
+	
+	std::vector<int> padding;
 };
 
 class MenuException : public Exception::Base{

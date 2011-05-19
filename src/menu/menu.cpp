@@ -125,19 +125,22 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     const int y2 = popup.getArea().getY2()-2;
     bmp.setClipRect(x1, y1, x2, y2);
     
-    int sy = location.getY() - 5;
+    // FIXME height is proportionally wrong in a majority of the cases, this is perhaps due to ftalleg.
+    int sy = location.getY() - vFont.getHeight()/6;// - location.getHeight()/2 - vFont.getHeight()/2;
     static int white = Graphics::makeColor(255,255,255);
+    unsigned int padding_index = 0;
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
         string & str = *it;
         if (fadeAlpha < 255){
             Graphics::Bitmap::transBlender(0, 0, 0, fadeAlpha);
             // Bitmap::drawingMode( Bitmap::MODE_TRANS );
-            vFont.printf(location.getX() + 5, sy, white, bmp.translucent(), str, 0 );
+            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp.translucent(), str, 0 );
             // Bitmap::drawingMode(Bitmap::MODE_SOLID);
         } else {
-            vFont.printf(location.getX() + 5, sy, white, bmp, str, 0 );
+            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp, str, 0 );
         }
         sy += vFont.getHeight();
+	padding_index++;
     }
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
@@ -161,7 +164,10 @@ void Menu::InfoBox::initialize(const Font & font){
     int maxWidth = 0;
     int height = 0;
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
-        int w = font.textLength((*it).c_str()) + 10;
+	// Add the padding
+	char pad[] = {(*it)[0], (*it)[(*it).size()-1]};
+	padding.push_back(font.textLength(pad));
+        int w = font.textLength((*it).c_str()) + padding.back();
         if (w > maxWidth){
             maxWidth = w;
         }
