@@ -225,6 +225,27 @@ enum MoveListInput{
     Down
 };
 
+class MoveItem: public Gui::ScrollItem {
+    public:
+        MoveItem(const string & name):
+            name(name){
+            }
+
+        string name;
+
+        virtual void draw(int x, int y, const Graphics::Bitmap & where, const Font & font, int distance) const {
+            int color = Graphics::makeColor(255, 255, 255);
+            if (distance != 0){
+                color = Graphics::makeColor(128, 128, 128);
+            }
+            font.printf(x, y, color, where, name, 0);
+        }
+
+        virtual int size(const Font & font) const {
+            return font.textLength(name.c_str());
+        }
+};
+
 class OptionMoveList: public MenuOption {
 public:
     OptionMoveList(const Gui::ContextBox & parent, const Token * token, Paintown::Player * player):
@@ -256,22 +277,31 @@ public:
     void showMoveList(Paintown::Player * player){
         class Logic: public Util::Logic {
         public:
-            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, int & selected):
+            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, int & selected, Gui::ScrollList & list):
             playerCopy(playerCopy),
             area(area),
-            selected(selected){
+            selected(selected),
+            list(list){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
                 input.set(Configuration::config(0).getUp(), 0, true, Up);
                 input.set(Configuration::config(0).getDown(), 0, true, Down);
                 input.set(Configuration::config(0).getJoystickUp(), 0, true, Up);
                 input.set(Configuration::config(0).getJoystickDown(), 0, true, Down);
+
+                const map<string, Paintown::Animation*> movements = getAttacks(playerCopy->getMovements());
+                for (map<std::string, Paintown::Animation*>::const_iterator find = movements.begin(); find != movements.end(); find++){
+                    list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(find->first)).convert<Gui::ScrollItem>());
+                }
+
+                changeAnimation(list.getCurrentIndex());
             }
 
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             InputMap<MoveListInput> input;
             int & selected;
+            Gui::ScrollList & list;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -288,7 +318,7 @@ public:
 
                 vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input);
 
-                int old = selected;
+                unsigned int old = list.getCurrentIndex();
                 for (vector<InputMap<MoveListInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                     const InputMap<MoveListInput>::InputEvent & event = *it;
                     if (!event.enabled){
@@ -301,15 +331,17 @@ public:
 
                     if (event[Up]){
                         selected = selectNext(selected, -1);
+                        list.previous();
                     }
 
                     if (event[Down]){
                         selected = selectNext(selected, 1);
+                        list.next();
                     }
                 }
 
-                if (old != selected){
-                    changeAnimation(selected);
+                if (old != list.getCurrentIndex()){
+                    changeAnimation(list.getCurrentIndex());
                 }
             }
 
@@ -344,12 +376,13 @@ public:
 
         class Draw: public Util::Draw {
         public:
-            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, int & selected):
+            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, int & selected, const Gui::ScrollList & list):
                 buffer(GFX_X, GFX_Y),
                 background(GFX_X, GFX_Y),
                 playerCopy(playerCopy),
                 area(area),
-                selected(selected){
+                selected(selected),
+                list(list){
                     background.BlitFromScreen(0, 0);
                     playerCopy->testAnimation("idle");
                 }
@@ -359,6 +392,7 @@ public:
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             int & selected;
+            const Gui::ScrollList & list;
 
             void listMovements(const Graphics::Bitmap & space, int selected){
                 int y = 10;
@@ -385,7 +419,9 @@ public:
                 playerCopy->setX(space.getWidth() / 2 + 50);
                 playerCopy->setY(0);
                 playerCopy->setZ(space.getHeight() / 2);
-                listMovements(space, selected);
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+                list.render(space, font);
+                // listMovements(space, selected);
                 playerCopy->draw(&space, 0, 0);
                 // space.border(0, 2, Graphics::makeColor(128, 128, 128));
                 buffer.BlitToScreen();
@@ -397,6 +433,9 @@ public:
             Global::debug(0) << "No attacks for " << player->getName() << " so the move list can't be shown" << endl;
             return;
         }
+
+        Gui::ScrollList list;
+        list.setJustification(Gui::ScrollList::LeftJustify);
 
         Util::ReferenceCount<Paintown::Character> playerCopy = new Paintown::Character(*player);
         Gui::PopupBox area;
@@ -411,8 +450,8 @@ public:
 
         area.open();
         int selected = 0;
-        Logic logic(playerCopy, area, selected);
-        Draw draw(playerCopy, area, selected);
+        Logic logic(playerCopy, area, selected, list);
+        Draw draw(playerCopy, area, selected, list);
 
         Util::standardLoop(logic, draw);
     }
