@@ -602,21 +602,21 @@ void Menu::DefaultRenderer::render(const Graphics::Bitmap & bmp, const Font & fo
     
     // TODO FIXME ContextItem always returns false this overall needs to be changed to a better solution
     if (option->isAdjustable()){
-	// NOTE consider adding getCenter X & Y to coordinate
-	const int x = menu.location.getX()+(menu.location.getWidth()/2);
-	const int y = menu.location.getY()+(menu.location.getHeight()/2);
-	const int triangleSize = 14;
-	// Get current option width
-	const int startx = x - (font.textLength(option->getName().c_str())/2);
-	int cx = startx - 15;
-	
-	// NOTE 1.3 is hardcoded from FONT_SPACER in scroll-list
-	int cy = (int)(y + (font.getHeight()/1.3) / 2 + 2);
+        // NOTE consider adding getCenter X & Y to coordinate
+        const int x = menu.location.getX()+(menu.location.getWidth()/2);
+        const int y = menu.location.getY()+(menu.location.getHeight()/2);
+        const int triangleSize = 14;
+        // Get current option width
+        const int startx = x - (font.textLength(option->getName().c_str())/2);
+        int cx = startx - 15;
 
-	bmp.equilateralTriangle(cx, cy, 180, triangleSize, option->getLeftColor());
+        // NOTE 1.3 is hardcoded from FONT_SPACER in scroll-list
+        int cy = (int)(y + (font.getHeight()/1.3) / 2 + 2);
 
-	cx = (x + startx + font.textLength(option->getName().c_str()))+15;
-	bmp.equilateralTriangle(cx, cy, 0, triangleSize, option->getRightColor());
+        bmp.equilateralTriangle(cx, cy, 180, triangleSize, option->getLeftColor());
+
+        cx = (x + startx + font.textLength(option->getName().c_str()))+15;
+        bmp.equilateralTriangle(cx, cy, 0, triangleSize, option->getRightColor());
     }
 }
 
