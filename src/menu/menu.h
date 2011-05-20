@@ -336,7 +336,7 @@ class Context{
         virtual void finish();
         
         /*! Play sound */
-        virtual void playSound(const Actions &);
+        virtual void playSound(const Actions &) const;
         
         /*! Add sound */
         virtual void addSound(const Actions &, const Filesystem::RelativePath &);

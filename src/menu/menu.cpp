@@ -1140,9 +1140,10 @@ void Menu::Context::finish(){
     }
 }
 
-void Menu::Context::playSound(const Actions & sound){
-    if (Filesystem::exists(sounds[sound])){
-        tryPlaySound(sounds[sound]);
+void Menu::Context::playSound(const Actions & sound) const {
+    map<Actions, Filesystem::RelativePath>::const_iterator find = sounds.find(sound);
+    if (find != sounds.end() && Filesystem::exists(find->second)){
+        tryPlaySound(find->second);
     }
 }
 
@@ -1774,8 +1775,8 @@ void Menu::Menu::handleCompatibility(const Token * token, int version, const Opt
                     try{
                         std::string sound;
                         *value >> sound;
-                        context.addSound(Up,Filesystem::RelativePath(sound));
-                        context.addSound(Down,Filesystem::RelativePath(sound));
+                        context.addSound(Up, Filesystem::RelativePath(sound));
+                        context.addSound(Down, Filesystem::RelativePath(sound));
                     } catch (const MenuException & ex){
                     }
                 } else if (*tok == "back-sound"){

@@ -274,13 +274,14 @@ public:
         return out;
     }
 
-    void showMoveList(Paintown::Player * player){
+    void showMoveList(Paintown::Player * player, const Menu::Context & context){
         class Logic: public Util::Logic {
         public:
-            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::ScrollList & list):
+            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::ScrollList & list, const Menu::Context & context):
             playerCopy(playerCopy),
             area(area),
-            list(list){
+            list(list),
+            context(context){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
                 input.set(Configuration::config(0).getUp(), 0, true, Up);
@@ -299,8 +300,8 @@ public:
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             InputMap<MoveListInput> input;
-            // int & selected;
             Gui::ScrollList & list;
+            const Menu::Context & context;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -330,10 +331,12 @@ public:
 
                     if (event[Up]){
                         list.previous();
+                        context.playSound(Menu::Up);
                     }
 
                     if (event[Down]){
                         list.next();
+                        context.playSound(Menu::Down);
                     }
                 }
 
@@ -390,32 +393,16 @@ public:
             Graphics::Bitmap background;
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
-            // int & selected;
             const Gui::ScrollList & list;
-
-            /*
-            void listMovements(const Graphics::Bitmap & space, int selected){
-                int y = 10;
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
-                const map<string, Paintown::Animation*> movements = getAttacks(playerCopy->getMovements());
-                int count = 0;
-                for (map<std::string, Paintown::Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++, count += 1){
-                    string name = (*it).first;
-                    Paintown::Animation * animation = (*it).second;
-                    int color = Graphics::makeColor(255, 255, 255);
-                    if (count == selected){
-                        color = Graphics::makeColor(27, 237, 239);
-                    }
-                    font.printf(5, y, color, space, name, 0);
-                    y += font.getHeight() + 5;
-                }
-            }
-            */
 
             void draw(){
                 background.Blit(buffer);
                 area.render(buffer);
-                Graphics::Bitmap space(buffer, area.getArea().getX(), area.getArea().getY(), area.getArea().getWidth() - area.getTransforms().getRadius(), area.getArea().getHeight() - area.getTransforms().getRadius());
+                Graphics::Bitmap space(buffer,
+                 area.getArea().getX() + area.getTransforms().getRadius(),
+                 area.getArea().getY(),
+                 area.getArea().getWidth() - area.getTransforms().getRadius(),
+                 area.getArea().getHeight() - area.getTransforms().getRadius());
                 // space.clear();
                 playerCopy->setX(space.getWidth() / 2 + 50);
                 playerCopy->setY(0);
@@ -450,14 +437,14 @@ public:
         area.colors.borderAlpha = 200;
 
         area.open();
-        Logic logic(playerCopy, area, list);
+        Logic logic(playerCopy, area, list, context);
         Draw draw(playerCopy, area, list);
 
         Util::standardLoop(logic, draw);
     }
 
-    virtual void run(const Menu::Context &){
-        showMoveList(player);
+    virtual void run(const Menu::Context & context){
+        showMoveList(player, context);
     }
 };
 
