@@ -6,9 +6,12 @@
 
 #include "exception.h"
 #include "util/gui/fadetool.h"
+#include "util/language-string.h"
 
+/*
 #include "menu/menu.h"
 #include "menu/menu_option.h"
+*/
 
 #include "util.h"
 
@@ -96,7 +99,6 @@ public:
 	virtual ~ItemOption();
 	
 	virtual void logic();
-	virtual void run(const Menu::Context &);
 	
 	virtual void render(int x, int y, CursorHandler &, std::vector<MugenFont *> &, const Graphics::Bitmap &);
 	

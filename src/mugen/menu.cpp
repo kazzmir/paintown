@@ -39,8 +39,10 @@
 #include "factory/font_render.h"
 #include "parse-cache.h"
 
+/*
 #include "menu/menu_option.h"
 #include "menu/options.h"
+*/
 
 #include "util/input/input-manager.h"
 
@@ -150,8 +152,6 @@ Mugen::ItemOption::~ItemOption(){
 }
 
 void Mugen::ItemOption::logic(){
-}
-void Mugen::ItemOption::run(const Menu::Context & context){
 }
 
 void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<MugenFont *> & fonts, const Graphics::Bitmap & bmp){
