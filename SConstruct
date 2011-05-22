@@ -1242,7 +1242,8 @@ def getDataPath():
         return ARGUMENTS['data']
     except KeyError:
         if useWii():
-            return '/paintown/data'
+            # consistent with homebrew
+            return '/apps/paintown/data'
         if useMinpspw():
             return 'ms0:/psp/game150/paintown/data'
         else:
