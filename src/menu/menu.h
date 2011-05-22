@@ -9,6 +9,7 @@
 #include "util/file-system.h"
 #include "util/pointer.h"
 #include "util/input/input-map.h"
+#include "util/gradient.h"
 #include "font-info.h"
 
 #include "util/gui/animation.h"
@@ -36,6 +37,8 @@ class Token;
 class TokenView;
 
 namespace Menu{
+
+Effects::Gradient standardGradient();
 
 class OptionFactory;
 class Point{

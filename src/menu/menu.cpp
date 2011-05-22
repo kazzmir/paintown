@@ -15,6 +15,7 @@
 #include "util/init.h"
 #include "configuration.h"
 #include "util/music.h"
+#include "util/gradient.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 
@@ -48,7 +49,9 @@ static std::string sharedFont = "fonts/arial.ttf";
 static int sharedFontWidth = 24;
 static int sharedFontHeight = 24;
 
-static const int GradientMax = 50;
+Effects::Gradient Menu::standardGradient(){
+    return Gui::standardGradient();
+}
 
 Menu::Point::Point():
 x(0),

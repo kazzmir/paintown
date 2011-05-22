@@ -109,10 +109,8 @@ void CursorHandler::act(){
 
 void CursorHandler::renderCursor(int x, int y, const Graphics::Bitmap & bmp){
     if (cursor.visible){
-	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
         Graphics::Bitmap::transBlender(0, 0, 0, cursor.alpha);
 	bmp.translucent().rectangleFill(x + cursor.x1, y + cursor.y1, x + cursor.x2, y + cursor.y2, Graphics::makeColor(255,255,255));
-	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
     }
 }
 
@@ -894,87 +892,7 @@ void MugenMenu::run(){
         Draw draw(*this, background, fader);
         /* run the menu */
         Util::standardLoop(logic, draw);
-    
-#if 0
-        /* Extra scope to force temporary bitmaps to be destroyed */
-        {
-            Graphics::Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
-            Graphics::Bitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-            while (!done &&
-                   (*currentOption)->getState() != MenuOption::Run &&
-                   fader.getState() != Gui::FadeTool::EndFade){
-
-                bool draw = false;
-
-                if ( Global::speed_counter > 0 ){
-                    draw = true;
-                    runCounter += Mugen::Util::gameTicks(Global::speed_counter);
-                    Global::speed_counter = 0;
-                    while (runCounter >= 1.0){
-                        //input
-                        InputManager::poll();
-                        ticker++;
-                        runCounter -= 1;
-
-                        if (fader.getState() == Gui::FadeTool::NoFade){
-                            bool quit = false;
-                            quit = quit || doInput(player1Input, selectingPlayer, Mugen::Player1);
-                            quit = quit || doInput(player2Input, selectingPlayer, Mugen::Player2);
-                            endGame = done = quit;
-                        }
-                        
-                        // Update menu position
-                        doMenuMovement(); 
-
-                        // Font Cursor
-                        fontCursor.act();
-
-                        // Fader
-                        fader.act();
-
-                        // Backgrounds
-                        background->act();
-                    }
-                }
-
-                while (Global::second_counter > 0){
-                    game_time--;
-                    Global::second_counter--;
-                    if ( game_time < 0 ){
-                        game_time = 0;
-                    }
-                }
-
-                if ( draw ){
-                    /* This logic doesn't make sense.. why does it draw to `work'
-                     * and then stretch blit `workArea' to `work'? That will just
-                     * clear anything drawn to `work', won't it?
-                     */
-                    // backgrounds
-                    background->renderBackground(0, 0, workArea);
-
-                    // Draw any misc stuff in the background of the menu of selected object 
-                    //(*currentOption)->drawBelow(&work);
-                    // Draw text
-                    renderText(&workArea);
-                    // Foregrounds
-                    background->renderForeground(0,0,workArea);
-                    // Draw any misc stuff in the foreground of the menu of selected object 
-                    //(*currentOption)->drawAbove(&work);
-                    // Do fades
-                    fader.draw(workArea);
-                    // Finally render to screen
-                    workArea.Stretch(work);
-                    work.BlitToScreen();
-                }
-
-                while (Global::speed_counter < 1){
-                    Util::rest(1);
-                }              
-            }
-        }
-#endif
-	    
+       
 	// do we got an option to run, lets do it
 	if ((*currentOption)->getState() == Mugen::ItemOption::Run){
 	    try{
@@ -985,6 +903,7 @@ void MugenMenu::run(){
 	    (*currentOption)->setState(Mugen::ItemOption::Selected);
 	    fader.setState(Gui::FadeTool::FadeIn);
 	}
+
 	if (endGame){
 	    // Deselect selected entry
 	    (*currentOption)->setState(Mugen::ItemOption::Deselected);
@@ -1119,7 +1038,6 @@ void MugenMenu::renderText(Graphics::Bitmap *bmp){
     bmp->setClipRect(0, top, bmp->getWidth(), bottom);
     // bmp->rectangle(0, top, bmp->getWidth() - 1, bottom - 1, Bitmap::makeColor(255,255,255));
     
-
     int xplacement = position.x;
     
     // Displace by the offset

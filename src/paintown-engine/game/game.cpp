@@ -227,16 +227,18 @@ enum MoveListInput{
 
 class MoveItem: public Gui::ScrollItem {
     public:
-        MoveItem(const string & name):
-            name(name){
-            }
+        MoveItem(const string & name, const Effects::Gradient & gradient):
+        name(name),
+        gradient(gradient){
+        }
 
         string name;
+        const Effects::Gradient & gradient;
 
         virtual void draw(int x, int y, const Graphics::Bitmap & where, const Font & font, int distance) const {
             int color = Graphics::makeColor(255, 255, 255);
-            if (distance != 0){
-                color = Graphics::makeColor(128, 128, 128);
+            if (distance == 0){
+                color = gradient.current();
             }
             font.printf(x, y, color, where, name, 0);
         }
@@ -281,7 +283,8 @@ public:
             playerCopy(playerCopy),
             area(area),
             list(list),
-            context(context){
+            context(context),
+            gradient(Menu::standardGradient()){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
                 input.set(Configuration::config(0).getUp(), 0, true, Up);
@@ -291,7 +294,7 @@ public:
 
                 const map<string, Paintown::Animation*> movements = getAttacks(playerCopy->getMovements());
                 for (map<std::string, Paintown::Animation*>::const_iterator find = movements.begin(); find != movements.end(); find++){
-                    list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(find->first)).convert<Gui::ScrollItem>());
+                    list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(find->first, gradient)).convert<Gui::ScrollItem>());
                 }
 
                 changeAnimation(list.getCurrentIndex());
@@ -302,6 +305,7 @@ public:
             InputMap<MoveListInput> input;
             Gui::ScrollList & list;
             const Menu::Context & context;
+            Effects::Gradient gradient;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -315,6 +319,7 @@ public:
 
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
                 area.act(font);
+                gradient.update();
 
                 vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input);
 
