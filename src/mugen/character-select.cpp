@@ -54,6 +54,11 @@
 
 namespace PaintownUtil = ::Util;
 
+#ifdef WII
+extern "C" void __sfp_lock_acquire();
+extern "C" void __sfp_lock_release();
+#endif
+
 using namespace std;
 using namespace Mugen;
 
@@ -1042,6 +1047,16 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
             player1.loadPlayer1();
             // Load player 2
             player2.loadPlayer2();
+#ifdef WII
+            /* FIXME: this is a hack, im not sure why its even required but fopen() will hang on sfp_lock_acquire
+             * in another thread without locking and unlocking the sfp lock.
+             * related things
+             *  newlib/libc/stdio/fopen.c -- calls sfp_lock_acquire
+             *  newlib/libc/sys/linux/sys/libc-lock.h - uses pthread's as the lock implementation
+             */
+            __sfp_lock_acquire();
+            __sfp_lock_release();
+#endif
             set(0);
         }
     };
