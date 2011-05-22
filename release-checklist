@@ -28,6 +28,7 @@ Files to update version
  gui-installer
  debian/changelog
  debian/control
+ data/wii/meta.xml
 
 Making a release
 ----------------
