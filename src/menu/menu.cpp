@@ -750,7 +750,9 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                     try {
                         MenuOption *temp = factory.getOption(tab->context, tok);
                         if (temp){
-                            tabInfo->options.push_back(temp);
+                            Util::ReferenceCount<MenuOption> ref(temp);
+                            tabInfo->options.push_back(ref);
+                            tab->addOption(ref.convert<Gui::ContextItem>());
                         }
                     } catch (const LoadException & le){
                         tok->print(" ");
