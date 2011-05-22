@@ -9,14 +9,32 @@
 #include "util/file-system.h"
 #include "util/loadpng/loadpng.h"
 #include "util/bitmap.h"
+#include "paintown-engine/game/options.h"
 #include "factory/collector.h"
 #include "menu/menu.h"
 
 using namespace std;
 
+class MainMenuOptionFactory: public Menu::OptionFactory {
+public:
+    MainMenuOptionFactory(){
+    }
+
+    Paintown::OptionFactory paintownFactory;
+    
+    virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const {
+        MenuOption * get = paintownFactory.getOption(parent, token);
+        if (get != NULL){
+            return get;
+        }
+        return Menu::OptionFactory::getOption(parent, token);
+    }
+};
+
 void load(const char * path){
-    for (int i = 0; i < 10; i++){
-        Menu::Menu menu(Filesystem::find(Filesystem::RelativePath(path)));
+    for (int i = 0; i < 1; i++){
+        MainMenuOptionFactory factory;
+        Menu::Menu menu(Filesystem::find(Filesystem::RelativePath(path)), factory);
     }
 }
 

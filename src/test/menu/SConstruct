@@ -94,6 +94,7 @@ test/util/network/network.cpp
 test/util/system.cpp
 test/factory/font_factory.cpp
 test/util/gui/context-box.cpp
+test/util/gui/scroll-list.cpp
 test/util/gui/tabbed-box.cpp
 test/util/gui/animation.cpp
 test/util/gui/widget.cpp
@@ -110,6 +111,7 @@ test/util/timedifference.cpp
 test/util/language-string.cpp
 test/paintown-engine/trigger/trigger.cpp
 test/paintown-engine/game/select_player.cpp
+test/paintown-engine/game/options.cpp
 test/paintown-engine/game/mod.cpp
 test/util/fire.cpp
 test/paintown-engine/game/adventure_world.cpp

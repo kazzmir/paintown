@@ -5,7 +5,7 @@
 #include <fstream>
 using namespace std;
 #include <cstdio>
- 
+#include <stdint.h>
  
 class RLE8_Packet
 {
