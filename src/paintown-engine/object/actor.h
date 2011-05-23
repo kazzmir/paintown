@@ -19,7 +19,7 @@ namespace Paintown{
 
 class Actor: public ObjectNonAttack {
 public:
-	Actor( const Filesystem::AbsolutePath & filename ) throw( LoadException );
+	Actor( const Filesystem::AbsolutePath & filename );
 	Actor( const Actor & item );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );

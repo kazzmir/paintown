@@ -236,6 +236,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             new Thread(new Runnable(){
               def run(){
                 try{
+                  println("Loading character " + file)
                   val character = new CharacterStats("", file);
                   val tempPlayer = new Player(NewAnimator.this, character);
                   swing.SwingUtilities.invokeLater(new Runnable(){

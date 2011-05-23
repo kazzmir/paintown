@@ -20,7 +20,7 @@ class Object;
 
 class Item: public ObjectNonAttack {
 public:
-	Item(const Filesystem::AbsolutePath & filename, Stimulation * const stimulation) throw( LoadException );
+	Item(const Filesystem::AbsolutePath & filename, Stimulation * const stimulation);
 	Item(const Item & item);
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );

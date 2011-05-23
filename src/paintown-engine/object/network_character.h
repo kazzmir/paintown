@@ -13,9 +13,9 @@ class NetworkCharacter: public Character {
 public:
     /* constructors and destructor */
     NetworkCharacter( int alliance ); 
-    NetworkCharacter( const char * filename, int alliance ) throw( LoadException );
-    NetworkCharacter( const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException );
-    NetworkCharacter( const Character & chr ) throw( LoadException );
+    NetworkCharacter( const char * filename, int alliance );
+    NetworkCharacter( const Filesystem::AbsolutePath & filename, int alliance );
+    NetworkCharacter( const Character & chr );
 
     virtual ~NetworkCharacter();
 

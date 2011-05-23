@@ -21,7 +21,7 @@ class Effect: public ObjectNonAttack {
 public:
 	Effect( int alliance = ALLIANCE_NONE );
 	Effect( const Effect & ef );
-	Effect( const char * _filename, int alliance = ALLIANCE_NONE ) throw( LoadException );
+	Effect( const char * _filename, int alliance = ALLIANCE_NONE );
 	
 	virtual int getWidth() const;
 	virtual int getHeight() const;

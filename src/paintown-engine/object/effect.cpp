@@ -27,7 +27,7 @@ ObjectNonAttack( ef ){
 	image = new Animation( *(ef.image), NULL );
 }
 
-Effect::Effect( const char * _filename, int alliance ) throw( LoadException ):
+Effect::Effect( const char * _filename, int alliance ):
 ObjectNonAttack( 0, 0, alliance ),
 image(NULL){
 

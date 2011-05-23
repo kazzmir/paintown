@@ -20,7 +20,7 @@ using namespace std;
 
 namespace Paintown{
 
-NetworkPlayer::NetworkPlayer(const Filesystem::AbsolutePath & filename, int alliance) throw ( LoadException ):
+NetworkPlayer::NetworkPlayer(const Filesystem::AbsolutePath & filename, int alliance):
 NetworkCharacter( filename, alliance ),
 score(0),
 attack_bonus(0),
@@ -29,7 +29,7 @@ need_confirm_message(false){
     initializeAttackGradient();
 }
 
-NetworkPlayer::NetworkPlayer(const Character & chr) throw( LoadException ):
+NetworkPlayer::NetworkPlayer(const Character & chr):
 NetworkCharacter( chr ),
 score(0),
 attack_bonus(0),

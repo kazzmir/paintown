@@ -14,7 +14,7 @@ class Animation;
 
 class Projectile: public ObjectAttack {
 public:
-	Projectile( Token * token ) throw( LoadException );
+	Projectile( Token * token );
 	Projectile( const Projectile * projectile );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );

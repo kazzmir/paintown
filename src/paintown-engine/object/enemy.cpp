@@ -32,25 +32,25 @@ aggression( NORMAL_AGRESSION ){
 	constructSelf();
 }
 
-Enemy::Enemy( const char * filename ) throw( LoadException ):
+Enemy::Enemy( const char * filename ):
 Character( filename, ALLIANCE_ENEMY  ),
 aggression( NORMAL_AGRESSION ){
 	constructSelf();
 }
 
-Enemy::Enemy( const Filesystem::AbsolutePath & filename ) throw( LoadException ):
+Enemy::Enemy( const Filesystem::AbsolutePath & filename ):
 Character( filename, ALLIANCE_ENEMY  ),
 aggression( NORMAL_AGRESSION ){
 	constructSelf();
 }
 
-Enemy::Enemy( const Enemy & chr ) throw( LoadException ):
+Enemy::Enemy( const Enemy & chr ):
 Character( chr ),
 aggression( chr.getAggression() ){
 	constructSelf();
 }
 
-Enemy::Enemy( const Character & chr ) throw( LoadException ):
+Enemy::Enemy( const Character & chr ):
 Character( chr ),
 aggression( NORMAL_AGRESSION ){
 	constructSelf();

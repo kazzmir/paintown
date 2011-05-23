@@ -18,7 +18,7 @@ class Animation;
 class BuddyPlayer: public PlayerCommon {
 public:
 
-    BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException );
+    BuddyPlayer( const Character * leader, const Character & chr );
 
     /* drawing */
     virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );

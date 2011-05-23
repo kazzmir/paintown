@@ -16,7 +16,7 @@ using namespace std;
 namespace Paintown{
 
 /* the alliance must be set by someone else at some point */
-Projectile::Projectile( Token * token ) throw( LoadException ):
+Projectile::Projectile( Token * token ):
 ObjectAttack( ALLIANCE_NONE ),
 main( NULL ),
 death( NULL ),

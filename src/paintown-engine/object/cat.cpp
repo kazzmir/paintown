@@ -15,7 +15,7 @@ using namespace std;
 
 namespace Paintown{
 
-Cat::Cat(const Filesystem::AbsolutePath & filename) throw( LoadException ):
+Cat::Cat(const Filesystem::AbsolutePath & filename):
 ObjectNonAttack( 0, 0 ),
 state( IDLE1 ){
 

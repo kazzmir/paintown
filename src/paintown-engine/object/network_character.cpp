@@ -25,21 +25,21 @@ show_name_time(0),
 requestedName(false){
 }
 
-NetworkCharacter::NetworkCharacter( const char * filename, int alliance ) throw( LoadException ):
+NetworkCharacter::NetworkCharacter( const char * filename, int alliance ):
 Character( filename, alliance ),
 name_id(-1),
 show_name_time(0),
 requestedName(false){
 }
 
-NetworkCharacter::NetworkCharacter( const Filesystem::AbsolutePath & filename, int alliance ) throw ( LoadException ):
+NetworkCharacter::NetworkCharacter( const Filesystem::AbsolutePath & filename, int alliance ):
 Character( filename, alliance ),
 name_id(-1),
 show_name_time(0),
 requestedName(false){
 }
 
-NetworkCharacter::NetworkCharacter( const Character & chr ) throw( LoadException ):
+NetworkCharacter::NetworkCharacter( const Character & chr ):
 Character(chr),
 name_id(-1),
 show_name_time(0),

@@ -17,10 +17,10 @@ class Object;
 class Enemy: public Character{
 public:
 	Enemy( ); 
-	Enemy( const char * filename ) throw( LoadException );
-	Enemy( const Filesystem::AbsolutePath & filename ) throw( LoadException );
-	Enemy( const Enemy & chr ) throw( LoadException );
-	Enemy( const Character & chr ) throw( LoadException );
+	Enemy( const char * filename );
+	Enemy( const Filesystem::AbsolutePath & filename );
+	Enemy( const Enemy & chr );
+	Enemy( const Character & chr );
 	
 	virtual Object * copy();
 	

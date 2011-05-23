@@ -129,7 +129,7 @@ protected:
 
 class AnimationEventProjectile: public AnimationEvent {
 public:
-	AnimationEventProjectile(const Token * token ) throw( LoadException );
+	AnimationEventProjectile(const Token * token );
 
 	virtual void Interact( Animation * animation ); 
 

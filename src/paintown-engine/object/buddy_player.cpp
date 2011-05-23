@@ -19,7 +19,7 @@ static const int SPAWN_TIME = 1500;
 
 namespace Paintown{
 
-BuddyPlayer::BuddyPlayer( const Character * leader, const Character & chr ) throw( LoadException ):
+BuddyPlayer::BuddyPlayer( const Character * leader, const Character & chr ):
 PlayerCommon( chr ),
 name_id(-1),
 invincible( false ),

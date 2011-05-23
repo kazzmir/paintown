@@ -136,7 +136,7 @@ void AnimationEventOffset::Interact( Animation * animation ){
 	animation->setOffsetY( y );
 }
 
-AnimationEventProjectile::AnimationEventProjectile(const Token * token ) throw( LoadException ):
+AnimationEventProjectile::AnimationEventProjectile(const Token * token ):
 projectile( NULL ),
 x( 0 ),
 y( 0 ),

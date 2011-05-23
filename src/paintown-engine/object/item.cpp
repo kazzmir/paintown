@@ -16,7 +16,7 @@ using namespace std;
 
 namespace Paintown{
 
-Item::Item( const Filesystem::AbsolutePath & filename, Stimulation * const stimulation ) throw( LoadException ):
+Item::Item( const Filesystem::AbsolutePath & filename, Stimulation * const stimulation ):
 ObjectNonAttack( 0, 0 ),
 collide( 0 ),
 stimulation( stimulation ){

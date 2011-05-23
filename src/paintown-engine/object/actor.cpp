@@ -10,7 +10,7 @@ using namespace std;
 
 namespace Paintown{
 
-Actor::Actor( const Filesystem::AbsolutePath & filename ) throw( LoadException ):
+Actor::Actor( const Filesystem::AbsolutePath & filename ):
 ObjectNonAttack( 0, 0 ){
 
 	setMaxHealth( 1 );

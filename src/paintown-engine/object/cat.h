@@ -19,7 +19,7 @@ class Animation;
 
 class Cat: public ObjectNonAttack {
 public:
-	Cat(const Filesystem::AbsolutePath & filename ) throw( LoadException );
+	Cat(const Filesystem::AbsolutePath & filename );
 	Cat( const Cat & cat );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );

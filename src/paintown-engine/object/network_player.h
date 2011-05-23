@@ -13,8 +13,8 @@ namespace Paintown{
 class NetworkPlayer: public NetworkCharacter {
 public:
 
-	NetworkPlayer(const Filesystem::AbsolutePath & filename, int alliance) throw ( LoadException );
-	NetworkPlayer(const Character & chr) throw( LoadException );
+	NetworkPlayer(const Filesystem::AbsolutePath & filename, int alliance);
+	NetworkPlayer(const Character & chr);
 	
 	virtual ~NetworkPlayer();
 	
