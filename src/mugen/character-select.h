@@ -603,7 +603,10 @@ class Grid{
         virtual void lock();
         virtual void unlock();
 
+        /* add the characterinfo to the grid, can be called from another thread */
         bool addInfo(CharacterInfo * character);
+        /* true if no grid cell has the same characterinfo */
+        bool isUniqueCharacter(CharacterInfo * character);
     
     private:
 	
@@ -1036,6 +1039,7 @@ class CharacterSelect {
         static void * searchForCharacters(void * arg);
 
         bool addInfo(CharacterInfo * info);
+        bool isUniqueCharacter(CharacterInfo * character);
 	
 	/*! Temporary to accomodate above above condition */
 	bool checkPlayerData();

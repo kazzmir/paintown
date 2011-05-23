@@ -360,8 +360,9 @@ void StageHandler::addStage(const std::string & stage){
 // Cell
 Cell::Cell(int x, int y):
 location(x,y),
-background(0),
-randomSprite(0),
+background(NULL),
+character(NULL),
+randomSprite(NULL),
 random(false),
 blank(false),
 empty(true),
@@ -535,6 +536,28 @@ void Grid::addBlank(){
             }
         }
     }
+}
+
+bool Grid::isUniqueCharacter(CharacterInfo * character){
+    lock();
+
+    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
+	vector<Cell *> &row = (*i);
+	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
+	    Cell *cell = (*column);
+            if (!cell->isEmpty() && cell->getCharacter() != NULL){
+                CharacterInfo * his = cell->getCharacter();
+                if (*his == *character){
+                    unlock();
+                    return false;
+                }
+            }
+        }
+    }
+
+    unlock();
+
+    return true;
 }
 
 bool Grid::addInfo(CharacterInfo * character){
@@ -2228,6 +2251,10 @@ public:
 bool CharacterSelect::addInfo(CharacterInfo * info){
     return grid.addInfo(info);
 }
+        
+bool CharacterSelect::isUniqueCharacter(CharacterInfo * character){
+    return grid.isUniqueCharacter(character);
+}
 
 static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::RelativePath & path){
     try{
@@ -2255,7 +2282,9 @@ void * CharacterSelect::searchForCharacters(void * arg){
             try{
                 CharacterInfo * info = new CharacterInfo(path);
                 Global::debug(1) << path.path() << " is good" << endl;
-                ok = select->addInfo(info);
+                if (select->isUniqueCharacter(info)){
+                    ok = select->addInfo(info);
+                }
             } catch (const Filesystem::NotFound & fail){
                 Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
             } catch (const Filesystem::Exception & fail){
