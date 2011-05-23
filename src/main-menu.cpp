@@ -1,4 +1,8 @@
+#include <string.h>
+#include <string>
 #include <sstream>
+#include <vector>
+
 #include "util/bitmap.h"
 
 #include "factory/collector.h"
@@ -17,7 +21,6 @@
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/network/client.h"
 #include "paintown-engine/network/server.h"
-#include "util/network/network.h"
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 #include "util/timedifference.h"
@@ -33,10 +36,10 @@
 #include "util/init.h"
 #include "mugen/config.h"
 
-#include <string.h>
-#include <vector>
-
-using namespace std;
+using std::vector;
+using std::endl;
+using std::string;
+using std::istringstream;
 
 #define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
@@ -68,7 +71,7 @@ static const char * closestMatch(const char * s1, vector<const char *> args){
     return good;
 }
 
-static bool isArg( const char * s1, const char * s2[], int num){
+static bool isArg(const char * s1, const char * s2[], int num){
     for (int i = 0; i < num; i++){
         if (strcasecmp(s1, s2[i]) == 0){
             return true;
@@ -211,7 +214,7 @@ public:
     }
 
     Paintown::OptionFactory paintownFactory;
-    
+
     virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const {
         MenuOption * get = paintownFactory.getOption(parent, token);
         if (get != NULL){
@@ -221,8 +224,7 @@ public:
     }
 };
 
-int paintown_main( int argc, char ** argv ){
-    
+int paintown_main(int argc, char ** argv){
     /* -1 means use whatever is in the configuration */
     int gfx = -1;
 
@@ -298,7 +300,7 @@ int paintown_main( int argc, char ** argv ){
             mugen = true;
         } else if (isArg(argv[q], JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG))){
             joystick_on = false;
-        } else if (isArg(argv[q], MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG))){ 
+        } else if (isArg(argv[q], MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG))){
             q += 1;
             if (q < argc){
                 mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
@@ -308,7 +310,7 @@ int paintown_main( int argc, char ** argv ){
             }
         } else if (isArg(argv[q], DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG))){
             allow_quit = false;
-        } else if (isArg(argv[q], MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG))){ 
+        } else if (isArg(argv[q], MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG))){
             q += 1;
             if (q < argc){
                 mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
@@ -395,8 +397,6 @@ int paintown_main( int argc, char ** argv ){
         bool normal_quit = false;
         try{
             /* fadein from white */
-            //Menu game(true, Bitmap::makeColor(255, 255, 255));
-            //game.load(mainMenuPath());
             if (just_network_server){
 #ifdef HAVE_NETWORKING
                 Network::networkServer();
@@ -464,7 +464,7 @@ int paintown_main( int argc, char ** argv ){
         } catch (...){
             Global::debug(0) << "Uncaught exception!" << endl;
         }
-        
+
         if (allow_quit && normal_quit){
             break;
         } else if (normal_quit && !allow_quit){
