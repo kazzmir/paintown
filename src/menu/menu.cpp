@@ -600,6 +600,7 @@ void Menu::DefaultRenderer::render(const Graphics::Bitmap & bmp, const Font & fo
     menuInfo.render(bmp, font);
     renderInfo(bmp, font);
     
+    /*
     // Check for adjustability
     const Util::ReferenceCount<MenuOption> option = options[menu.getCurrentIndex()];
     
@@ -621,6 +622,7 @@ void Menu::DefaultRenderer::render(const Graphics::Bitmap & bmp, const Font & fo
         cx = (x + startx + font.textLength(option->getName().c_str()))+15;
         bmp.equilateralTriangle(cx, cy, 0, triangleSize, option->getRightColor());
     }
+    */
 }
 
 void Menu::DefaultRenderer::addOption(MenuOption * opt){
@@ -1537,16 +1539,18 @@ void Menu::Menu::run(const Context & parentContext){
         public:
             Draw(Menu & menu, Context & localContext):
             menu(menu),
-            localContext(localContext),
-            work(Menu::Width, Menu::Height){
+            localContext(localContext)
+            // work(Menu::Width, Menu::Height)
+            {
             }
 
             Menu & menu;
             Context & localContext;
-            Graphics::Bitmap work;
+            // Graphics::Bitmap work;
 
             void draw(){
                 Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+                const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current();
                 if (Configuration::hasMenuFont()){
                     currentFont.push(Configuration::getMenuFont());
                 }
