@@ -5,6 +5,7 @@
 #include <map>
 #include "util/file-system.h"
 #include "util/font.h"
+#include "util/thread.h"
 
 struct DATAFILE;
 class Font;
@@ -39,6 +40,7 @@ private:
     // DATAFILE * my_data;
     std::map<std::string, Font *> font_mapper;
     NullFont nullFont;
+    Util::Thread::LockObject lock;
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
+#include "util/thread.h"
 #include "font_factory.h"
 #include "globals.h"
 #include "util/debug.h"
@@ -46,6 +47,7 @@ void FontFactory::clear(){
 }
 
 Font * FontFactory::getRealFont(const Filesystem::AbsolutePath & path, int x, int y){
+    Util::Thread::ScopedLock locked(lock);
     if (font_mapper.find(path.path()) == font_mapper.end()){
         font_mapper[path.path()] = new FreeTypeFont(path);
     }
@@ -59,6 +61,7 @@ Font * FontFactory::getRealFont(const Filesystem::AbsolutePath & path, int x, in
 }
 
 Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int x, const int y ){
+    Util::Thread::ScopedLock locked(lock);
     try{
         if (font_mapper.find(path.path()) == font_mapper.end()){
             font_mapper[path.path()] = new FreeTypeFont(Filesystem::find(path));
@@ -101,6 +104,7 @@ FontFactory::~FontFactory(){
         Font * s = (*it).second;
         delete s;
     }
+
         /*
 	if ( my_data != NULL ){
 		unload_datafile( my_data );

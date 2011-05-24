@@ -168,8 +168,9 @@ void Menu::InfoBox::initialize(const Font & font){
     int height = 0;
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
         // Add the padding
-        char pad[] = {(*it)[0], (*it)[(*it).size()-1]};
-        padding.push_back(font.textLength(pad));
+        ostringstream pad;
+        pad << (*it)[0] << (*it)[(*it).size()-1];
+        padding.push_back(font.textLength(pad.str().c_str()));
         int w = font.textLength((*it).c_str()) + padding.back();
         if (w > maxWidth){
             maxWidth = w;
