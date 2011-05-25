@@ -87,11 +87,6 @@ void DisplayCharacter::load(){
             if (name == "idle"){
                 Paintown::Animation * ani = new Animation(&animation, this);
                 ani->setName("idle");
-
-                if (getMovement("idle") != NULL){
-                    delete getMovement("idle");
-                }
-
                 setMovement(ani, "idle");
             }
         }

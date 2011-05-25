@@ -264,11 +264,11 @@ public:
     virtual void logic(){
     }
 
-    static map<string, Paintown::Animation*> getAttacks(const map<string, Paintown::Animation*> & movements){
-        map<string, Paintown::Animation*> out;
-        for (map<std::string, Paintown::Animation*>::const_iterator find = movements.begin(); find != movements.end(); find++){
+    static map<string, Util::ReferenceCount<Paintown::Animation> > getAttacks(const map<string, Util::ReferenceCount<Paintown::Animation> > & movements){
+        map<string, Util::ReferenceCount<Paintown::Animation> > out;
+        for (map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find = movements.begin(); find != movements.end(); find++){
             string name = find->first;
-            Paintown::Animation * animation = find->second;
+            Util::ReferenceCount<Paintown::Animation> animation = find->second;
             if (animation->isAttack()){
                 out[name] = animation;
             }
@@ -292,8 +292,8 @@ public:
                 input.set(Configuration::config(0).getJoystickUp(), 0, true, Up);
                 input.set(Configuration::config(0).getJoystickDown(), 0, true, Down);
 
-                const map<string, Paintown::Animation*> movements = getAttacks(playerCopy->getMovements());
-                for (map<std::string, Paintown::Animation*>::const_iterator find = movements.begin(); find != movements.end(); find++){
+                const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
+                for (map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find = movements.begin(); find != movements.end(); find++){
                     list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(find->first, gradient)).convert<Gui::ScrollItem>());
                 }
 
@@ -352,8 +352,8 @@ public:
 
             void changeAnimation(int animation){
                 int count = 0;
-                const map<string, Paintown::Animation*> movements = getAttacks(playerCopy->getMovements());
-                map<std::string, Paintown::Animation*>::const_iterator find;
+                const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
+                map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find;
                 for (find = movements.begin(); count != animation && find != movements.end(); find++, count += 1){ /**/ }
                 if (find != movements.end()){
                     string name = find->first;

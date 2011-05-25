@@ -182,7 +182,7 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 
 	filterEnemies( enemies, others );
 		
-	if (animation_current && animation_current->Act()){
+	if (animation_current != NULL && animation_current->Act()){
 		animation_current->reset();
 		// nextTicket();
 		// animation_current = movements[ "idle" ];
@@ -231,18 +231,19 @@ void Enemy::act( vector< Object * > * others, World * world, vector< Object * > 
 			 */
 			if ( Util::rnd( 100 ) >= getAggression() ){
 				// cout<<getName()<<":In range"<<endl;
-				vector< Animation * > attacks;
-				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
-					Animation * maybe = (*it).second;
-					if ( maybe->isAttack() )
+				vector<Util::ReferenceCount<Animation> > attacks;
+				for ( map<string, Util::ReferenceCount<Animation> >::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
+                                    Util::ReferenceCount<Animation> maybe = (*it).second;
+					if ( maybe->isAttack() ){
 						attacks.push_back( maybe );
+                                        }
 				}
 
 				double attack_range = fabs( getX() - main_enemy->getX() );
 				double zdistance = ZDistance( main_enemy );
 				// cout<<getName()<<": Range = "<<attack_range<<endl;
-				for ( vector< Animation * >::iterator it = attacks.begin(); it != attacks.end(); ){
-					Animation * maybe = *it;
+				for ( vector<Util::ReferenceCount<Animation> >::iterator it = attacks.begin(); it != attacks.end(); ){
+                                    Util::ReferenceCount<Animation> maybe = *it;
 					// cout<<getName()<<":"<<maybe->getName()<<" range = "<<maybe->getRange()<<endl;
 					if ( attack_range > maybe->getRange() || zdistance > maybe->getMinZDistance() ){
 						it = attacks.erase( it );

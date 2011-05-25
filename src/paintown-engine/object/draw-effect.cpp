@@ -74,7 +74,7 @@ void DrawGlowEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
 
     Graphics::Bitmap::transBlender(color_r, color_g, color_b, alpha);
 
-    Animation * animation = owner->getCurrentMovement();
+    Util::ReferenceCount<Animation> animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
     if (owner->getFacing() == Object::FACING_RIGHT ){
@@ -102,7 +102,7 @@ DrawEffect(owner, 0){
 }
     
 void DrawNormalEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
-    Animation * animation = owner->getCurrentMovement();
+    Util::ReferenceCount<Animation> animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
     if (owner->getFacing() == Object::FACING_RIGHT ){

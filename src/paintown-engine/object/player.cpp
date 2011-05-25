@@ -444,7 +444,7 @@ void Player::drawFront(Graphics::Bitmap * work, int rel_x){
  * (f f (a1 a2)) means that the user must press
  * forward, forward and then a1 and a2 at the same time.
  */
-bool Player::combo( Animation * ani, deque<Input::PaintownInput>::iterator cache_cur_key, deque<Input::PaintownInput>::iterator end ){
+bool Player::combo(Util::ReferenceCount<Animation> ani, deque<Input::PaintownInput>::iterator cache_cur_key, deque<Input::PaintownInput>::iterator end ){
     // cout << "Testing " << ani->getName() << " facing = " << startFacing << ". current facing = " << getFacing() << endl;
     const vector< KeyPress > & keys = ani->getKeys();
     if ( keys.empty() ){
@@ -474,7 +474,7 @@ bool Player::combo( Animation * ani, deque<Input::PaintownInput>::iterator cache
     return true;
 }
 
-bool Player::combo( Animation * ani ){
+bool Player::combo(Util::ReferenceCount<Animation> ani){
     deque<Input::PaintownInput>::iterator cur = key_cache.begin();
     for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
         if ( combo( ani, cur, key_cache.end() ) ){
@@ -593,9 +593,9 @@ void Player::grabEnemy( Object * enemy ){
 	setLink( enemy );
 }
 			
-static Animation * hasGetAnimation( const map< Animation *, int > & animations ){
-	for ( map< Animation *, int >::const_iterator it = animations.begin(); it != animations.end(); it++ ){
-		Animation * a = (*it).first;
+static Util::ReferenceCount<Animation> hasGetAnimation( const map<Util::ReferenceCount<Animation>, int > & animations ){
+	for ( map<Util::ReferenceCount<Animation>, int >::const_iterator it = animations.begin(); it != animations.end(); it++ ){
+            Util::ReferenceCount<Animation> a = (*it).first;
 		if ( a->getName() == "get" ){
 			return a;
 		}
@@ -778,7 +778,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		for ( vector<string>::const_iterator it = allow.begin(); it != allow.end(); it++ ){
 			// cout<<"Commision: "<<*it<<endl;
 			// Animation * ok = movements[ *it ];
-			Animation * ok = getMovement( *it );
+                    Util::ReferenceCount<Animation> ok = getMovement( *it );
 			if ( ok != NULL ){
 				ok->setCommision( true );
 			}
@@ -788,7 +788,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		for ( vector<string>::const_iterator it = disallow.begin(); it != disallow.end(); it++ ){
 			// cout<<"Decommision: "<<*it<<endl;
 			// Animation * ok = movements[ *it ];
-			Animation * ok = getMovement( *it );
+                    Util::ReferenceCount<Animation> ok = getMovement( *it );
 			if ( ok != NULL ){
 				ok->setCommision( false );
 			}
@@ -803,9 +803,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 	// animation_current = NULL;
 
 	if ( true ){
-		Animation * final = NULL;
+            Util::ReferenceCount<Animation> final = NULL;
 		// unsigned int num_keys = 0;
-		map<Animation *, int > possible_animations;
+		map<Util::ReferenceCount<Animation>, int > possible_animations;
 
                 debugDumpKeyCache(3);
 
@@ -825,9 +825,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 		}
 		*/
 
-		for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
+		for ( map<string, Util::ReferenceCount<Animation> >::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
 			if ( (*it).second == NULL ) continue;
-			Animation * b = (*it).second;
+                        Util::ReferenceCount<Animation>  b = (*it).second;
 			if ( b->isCommisioned() && combo(b) && b->getStatus() == getStatus() ){
 				// cout<<b->getName() << " has sequences"<<endl;
 				/*
@@ -839,7 +839,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
 				if ( b->properSequence( current_name ) ){
 				// if ( b->getPreviousSequence() == "none" || current_name == b->getPreviousSequence() ){
 					// cout<<"Possible sequence " <<b->getName()<<endl;
-					possible_animations[ b ] = b->getKeys().size();
+					possible_animations[b] = b->getKeys().size();
 				}
 			} 
 		}
@@ -918,7 +918,7 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
                         /* if its a get animation then it takes precedence
                          * over the rest
                          */
-			Animation * get = hasGetAnimation( possible_animations );
+                    Util::ReferenceCount<Animation> get = hasGetAnimation( possible_animations );
 			if ( get != NULL ){
 				for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
 					Object * o = *it;
@@ -937,9 +937,9 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
                          */
 			if ( getStatus() != Status_Get ){
 
-				for ( map<Animation *, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
+				for ( map<Util::ReferenceCount<Animation>, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
 					int & cur = (*mit).second;
-					Animation * blah = (*mit).first;
+                                        Util::ReferenceCount<Animation> blah = (*mit).first;
 					Global::debug( 3 ) << blah->getName() << "? ";
 					// if ( cur > max || blah->getPreviousSequence() == current_name ){
 					// cout<<"Testing "<<blah->getName()<<endl;

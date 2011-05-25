@@ -93,8 +93,8 @@ protected:
     std::vector<Input::PaintownInput> fillKeyCache();
     void debugDumpKeyCache(int level);
     const char * keyToName(Input::PaintownInput key);
-    bool combo( Animation * ani );
-    bool combo( Animation * ani, std::deque<Input::PaintownInput>::iterator cache_cur_key, std::deque<Input::PaintownInput>::iterator end );
+    bool combo(Util::ReferenceCount<Animation> ani);
+    bool combo(Util::ReferenceCount<Animation> ani, std::deque<Input::PaintownInput>::iterator cache_cur_key, std::deque<Input::PaintownInput>::iterator end );
     virtual int getKey( Input::PaintownInput x, int facing );
     virtual int getKey( Input::PaintownInput x );
 

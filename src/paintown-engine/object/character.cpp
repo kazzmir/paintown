@@ -253,8 +253,8 @@ trail_life(chr.trail_life){
         squish_sound = new Sound( *(chr.squish_sound) );
     }
 
-    for ( map<string,Animation*>::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
-        const Animation * const & ani_copy = (*it).second;
+    for ( map<string,Util::ReferenceCount<Animation> >::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
+        const Util::ReferenceCount<Animation> & ani_copy = (*it).second;
         Animation * copy = new Animation(*ani_copy, this);
         setMovement(copy, copy->getName());
         // movements[ani_copy->getName()] = new Animation( *ani_copy, this );
@@ -535,7 +535,7 @@ static void replacePart( vector< BodyPart > & parts, Graphics::Bitmap * bitmap )
     parts[i].image = bitmap;
 }
 	
-vector< BodyPart > Character::getBodyParts( Animation * animation ){
+vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> animation){
     vector< BodyPart > parts;
 
     Graphics::Bitmap * bitmap = animation->getFrame( 0 );
@@ -675,19 +675,16 @@ void Character::setInvincibility(const int x){
     addEffect(new DrawUntilEffect(new DrawGlowEffect(this, Graphics::makeColor(10,10,250), Graphics::makeColor(190, 190, 255), 75), invincibility_zero));
 }
 
-Animation * Character::getCurrentMovement() const {
+Util::ReferenceCount<Animation> Character::getCurrentMovement() const {
     return this->animation_current;
 }
 	
 void Character::setMovement(Animation * animation, const string & name){
-    if (movements[name] != NULL){
-        delete movements[name];
-    }
     movements[name] = animation;
 }
 	
-Animation * Character::getMovement(const string & name){
-    map<std::string, Animation *>::const_iterator find = getMovements().find(name);
+Util::ReferenceCount<Animation> Character::getMovement(const string & name){
+    map<std::string, Util::ReferenceCount<Animation> >::const_iterator find = getMovements().find(name);
     if (find != getMovements().end()){
         return find->second;
     }
@@ -728,7 +725,7 @@ bool Character::testAnimation(){
 	vector< Object * > more;
 	act( &others, &w, &more );
         */
-    if (animation_current){
+    if (animation_current != NULL){
 	return animation_current->Act();
     }
     return false;
@@ -1204,7 +1201,7 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
 
     if (trail_generator > 0){
         if (trail_counter <= 1){
-            if (animation_current){
+            if (animation_current != NULL){
                 trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), trail_life));
             }
             trail_counter = trail_generator;
@@ -1297,7 +1294,7 @@ bool Character::isAttacking(){
 	if ( getThrown() )
 		return true;
 
-	if ( animation_current )
+	if (animation_current != NULL)
 		return animation_current->isAttack();
 	return false;
 }
@@ -1309,7 +1306,7 @@ void Character::thrown(){
 	
 /* used to find the x/y where the attack takes place for effects */
 void Character::getAttackCoords( int & x, int & y){
-	if ( animation_current ){
+	if ( animation_current != NULL){
 		animation_current->getAttackCoords( x, y );
 		if ( getFacing() == FACING_LEFT ){
 			x = getRX() - x + getWidth() / 2;
@@ -1320,7 +1317,7 @@ void Character::getAttackCoords( int & x, int & y){
 	}
 }
 	
-const map<string, Animation*> & Character::getMovements(){
+const map<string, Util::ReferenceCount<Animation> > & Character::getMovements(){
     return movements;
 }
 	
@@ -1365,7 +1362,7 @@ void Character::collided(World * world, ObjectAttack * obj, vector< Object * > &
 }
 
 int Character::getRX() const {
-    if (animation_current){
+    if (animation_current != NULL){
         if (getFacing() == FACING_LEFT){
             return Object::getRX() - animation_current->getOffsetX();
         } else {
@@ -1385,7 +1382,7 @@ int Character::getRZ() const {
 }
 
 int Character::getRY() const {
-    if ( animation_current ){
+    if (animation_current != NULL){
         return Object::getRY() + animation_current->getOffsetY();
     }
     return Object::getRY();
@@ -1457,7 +1454,7 @@ bool Character::realCollision( ObjectAttack * obj ){
 }
 	
 double Character::minZDistance() const {
-	if ( animation_current ){
+	if (animation_current != NULL){
 		return animation_current->getMinZDistance();
 	}
 	return 10;
@@ -1522,7 +1519,7 @@ void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
 }
 
 bool Character::touchPoint(int x, int y){
-    if (animation_current){
+    if (animation_current != NULL){
         int relativeX = x - getRX() + getWidth() / 2;
         int relativeY = getHeight() - (getRY() - y); 
         // Global::debug(0) << "Test " << relativeX << ", " << relativeY << endl;
@@ -1539,7 +1536,7 @@ bool Character::touchPoint(int x, int y){
 }
 
 int Character::getShadowX(){
-	if ( animation_current ){
+	if (animation_current != NULL){
 		if ( getFacing() == FACING_LEFT ){
 			return -animation_current->getShadowX();
 		} else {
@@ -1550,7 +1547,7 @@ int Character::getShadowX(){
 }
 
 int Character::getShadowY(){
-	if ( animation_current ){
+	if (animation_current != NULL){
 		return animation_current->getShadowY();
 	}
 	return 0;
@@ -1733,7 +1730,7 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
         }
     }
 
-    if (animation_current){
+    if (animation_current != NULL){
         /* trails and shadows can be effects too at some point */
 
         /* draw trails */
@@ -1767,7 +1764,7 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
 }
 
 const Graphics::Bitmap * Character::getCurrentFrame() const {
-    if (animation_current){
+    if (animation_current != NULL){
         return animation_current->getCurrentFrame();
     }
     return NULL;
@@ -1788,7 +1785,7 @@ void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, in
 }
 
 void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
-    if (animation_current){
+    if (animation_current != NULL){
         const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
         const double newheight = bmp->getHeight() * scale;
         Graphics::Bitmap shade = Graphics::Bitmap::temporaryBitmap(bmp->getWidth(), (int) fabs(newheight));
@@ -1839,21 +1836,21 @@ bool Character::collision( Object * obj ){
 */
 	
 int Character::getWidth() const{
-	if ( animation_current ){
+	if (animation_current != NULL){
 		return animation_current->getWidth();
 	}
 	return 0;
 }
 
 int Character::getHeight() const{
-	if ( animation_current ){
+	if (animation_current != NULL){
 		return animation_current->getHeight();
 	}
 	return 0;
 }
 
 ECollide * Character::getCollide() const {
-	if ( animation_current ){
+	if (animation_current != NULL){
 		return animation_current->getCollide( getFacing() );
 	}
         Global::debug(0) << "No animation collide"<<endl;
@@ -1861,7 +1858,7 @@ ECollide * Character::getCollide() const {
 }
 	
 ECollide * Character::getNormalCollide() const {
-	if ( animation_current ){
+	if (animation_current != NULL){
 		return animation_current->getNormalCollide();
 	}
 	return NULL;

@@ -62,12 +62,7 @@ void DisplayCharacter::load(){
                 if ( xname == "idle" ){
                     // name->resetToken();
                     Animation * ani = new Animation(current, this);
-
-                    if ( getMovement( "idle" ) != NULL ){
-                        delete getMovement( "idle" );
-                    }
-
-                    setMovement( ani, "idle" );
+                    setMovement(ani, "idle");
                 }
             } else if (*current == "remap"){
                 string first;

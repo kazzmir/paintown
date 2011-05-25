@@ -8,6 +8,7 @@
 #include "object_attack.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"
+#include "util/pointer.h"
 #include "util/network/network.h"
 
 namespace Graphics{
@@ -302,11 +303,11 @@ public:
     }
 
     virtual bool isGettable();
-    virtual Animation * getCurrentMovement() const;
+    virtual Util::ReferenceCount<Animation> getCurrentMovement() const;
     virtual void setMovement( Animation * animation, const std::string & name );
-    virtual Animation * getMovement( const std::string & str );
+    virtual Util::ReferenceCount<Animation> getMovement( const std::string & str );
     // virtual Animation * getMovement( const unsigned int x );
-    virtual const std::map<std::string, Animation*> & getMovements();
+    virtual const std::map<std::string, Util::ReferenceCount<Animation> > & getMovements();
 
     virtual inline int getShadow() const {
         return shadow;
@@ -426,7 +427,7 @@ protected:
     void loadSelf(const Filesystem::AbsolutePath & filename );
     bool realCollision( ObjectAttack * obj );
 
-    std::vector< BodyPart > getBodyParts( Animation * animation );
+    std::vector< BodyPart > getBodyParts(Util::ReferenceCount<Animation> animation );
 
     virtual void landed( World * world );
 
@@ -467,11 +468,14 @@ protected:
     // unsigned long last_collide;
     std::map< Object *, unsigned long > collision_objects;
 
+private:
     /* map from name of animation to animation */
-    std::map<std::string, Animation *> movements;
+    std::map<std::string, Util::ReferenceCount<Animation> > movements;
+
+protected:
 
     /* current animation */
-    Animation * animation_current;
+    Util::ReferenceCount<Animation> animation_current;
 
     bool own_stuff;
 

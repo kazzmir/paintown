@@ -143,34 +143,34 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 			want_z = (int)(Util::rnd( 3 ) - 1 + main_enemy->getZ());
 			faceObject( main_enemy );
 
-			if ( Util::rnd( 35 ) == 0 ){
-				vector< Animation * > attacks;
-				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
-					Animation * maybe = (*it).second;
-					if ( maybe->isAttack() && maybe->getStatus() == Status_Ground && maybe->getName() != "special" )
-						attacks.push_back( maybe );
-				}
+                        if ( Util::rnd( 35 ) == 0 ){
+                            vector<Util::ReferenceCount<Animation> > attacks;
+                            for ( map<string, Util::ReferenceCount<Animation> >::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
+                                Util::ReferenceCount<Animation> maybe = (*it).second;
+                                if ( maybe->isAttack() && maybe->getStatus() == Status_Ground && maybe->getName() != "special" )
+                                    attacks.push_back(maybe);
+                            }
 
-				double attack_range = fabs( getX() - main_enemy->getX() );
-				double zdistance = ZDistance( main_enemy );
-				for ( vector< Animation * >::iterator it = attacks.begin(); it != attacks.end(); ){
-					Animation * maybe = *it;
-					if ( attack_range > maybe->getRange() || zdistance > maybe->getMinZDistance() ){
-						it = attacks.erase( it );
-					} else {
-						it++;
-					}
-				}
+                            double attack_range = fabs( getX() - main_enemy->getX() );
+                            double zdistance = ZDistance( main_enemy );
+                            for ( vector<Util::ReferenceCount<Animation> >::iterator it = attacks.begin(); it != attacks.end(); ){
+                                Util::ReferenceCount<Animation> maybe = *it;
+                                if ( attack_range > maybe->getRange() || zdistance > maybe->getMinZDistance() ){
+                                    it = attacks.erase(it);
+                                } else {
+                                    it++;
+                                }
+                            }
 
-				if ( !attacks.empty() ){
-					animation_current = attacks[ Util::rnd( attacks.size() ) ];
-					world->addMessage( animationMessage() );
-					nextTicket();
-					animation_current->reset();
-					return;
-				} else {
-				}
-			}
+                            if ( !attacks.empty() ){
+                                animation_current = attacks[ Util::rnd( attacks.size() ) ];
+                                world->addMessage( animationMessage() );
+                                nextTicket();
+                                animation_current->reset();
+                                return;
+                            } else {
+                            }
+                        }
 		}
 
 		if ( want_x != -1 && want_z != -1 ){

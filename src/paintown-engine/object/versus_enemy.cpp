@@ -102,9 +102,9 @@ void VersusEnemy::act( vector< Object * > * others, World * world, vector< Objec
 			 * with a suitable X range.  
 			 */
 			if ( Util::rnd( 100 ) >= getAggression() ){
-				vector< Animation * > attacks;
-				for ( map<string,Animation *>::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
-					Animation * maybe = (*it).second;
+				vector<Util::ReferenceCount<Animation> > attacks;
+				for ( map<string, Util::ReferenceCount<Animation> >::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
+                                    Util::ReferenceCount<Animation>  maybe = (*it).second;
 					if ( maybe->isAttack() )
 						attacks.push_back( maybe );
 				}
@@ -112,8 +112,8 @@ void VersusEnemy::act( vector< Object * > * others, World * world, vector< Objec
 				double attack_range = fabs( getX() - main_enemy->getX() );
 				double zdistance = ZDistance( main_enemy );
 				// cout<<getName()<<": Range = "<<attack_range<<endl;
-				for ( vector< Animation * >::iterator it = attacks.begin(); it != attacks.end(); ){
-					Animation * maybe = *it;
+				for ( vector< Util::ReferenceCount<Animation>  >::iterator it = attacks.begin(); it != attacks.end(); ){
+                                    Util::ReferenceCount<Animation> maybe = *it;
 					if ( attack_range > maybe->getRange() || zdistance > maybe->getMinZDistance() ){
 						it = attacks.erase( it );
 					} else {
