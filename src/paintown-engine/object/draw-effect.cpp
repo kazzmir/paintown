@@ -56,7 +56,7 @@ DrawCountdownEffect::~DrawCountdownEffect(){
     delete effect;
 }
 
-DrawGlowEffect::DrawGlowEffect(const Character * owner, int startColor, int endColor, double period):
+DrawGlowEffect::DrawGlowEffect(const Character * owner, Graphics::Color startColor, Graphics::Color endColor, double period):
 DrawEffect(owner, 1),
 angle(0),
 period(period),

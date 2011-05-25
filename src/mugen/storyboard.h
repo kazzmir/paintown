@@ -81,11 +81,11 @@ class Scene {
 	    return this->fader;
 	}
 	
-	virtual inline void setClearColor(int color){
+	virtual inline void setClearColor(Graphics::Color color){
 	    this->clearColor = color;
 	}
 	
-	virtual inline int getClearColor() const {
+	virtual inline Graphics::Color getClearColor() const {
 	    return this->clearColor;
 	}
 	
@@ -119,7 +119,7 @@ class Scene {
         Gui::FadeTool fader;
 	
         //! Clear color for the scene
-	int clearColor;
+        Graphics::Color clearColor;
 	//! Clear color set?
 	bool clearColorSet;
         //! Ticker for the scene

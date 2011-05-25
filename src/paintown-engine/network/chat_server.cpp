@@ -691,7 +691,7 @@ void ChatServer::drawBuddyList( int x, int y, const Graphics::Bitmap & work, con
     }
 }
 	
-static int focusColor(Focus want, Focus now){
+static Graphics::Color focusColor(Focus want, Focus now){
     if (want == now){
         return Graphics::makeColor(255, 255, 0);
     }

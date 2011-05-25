@@ -12,7 +12,7 @@ class Bitmap;
 }
 
 struct render_message{
-	render_message( const Font & f, int x, int y, int sizeX, int sizeY, int fg, int bg, int translucency, const std::string & str ):r_font( f ){
+	render_message( const Font & f, int x, int y, int sizeX, int sizeY, Graphics::Color fg, Graphics::Color bg, int translucency, const std::string & str ):r_font( f ){
             this->sizeX = sizeX;
             this->sizeY = sizeY;
             this->x = x;
@@ -54,8 +54,8 @@ struct render_message{
         int sizeY;
 	int x;
 	int y;
-	int fg;
-	int bg;
+        Graphics::Color fg;
+        Graphics::Color bg;
         std::string str;
         int translucency;
 };
@@ -67,10 +67,10 @@ public:
 	static FontRender * getInstance();
 	static void destroy();
 
-	void addMessage( const Font & f, int x, int y, int fg, int bg, const std::string & str );
-	void addMessage( const Font & f, int x, int y, int fg, int bg, int translucency, const std::string & str );
-	void addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... );
-	void addMessage(const Filesystem::RelativePath & font_name, int x, int y, int fg, int bg, const std::string & str );
+	void addMessage(const Font & f, int x, int y, Graphics::Color fg, Graphics::Color bg, const std::string & str);
+	void addMessage(const Font & f, int x, int y, Graphics::Color fg, Graphics::Color bg, int translucency, const std::string & str);
+	void addMessage(const Font & f, int x, int y, Graphics::Color fg, Graphics::Color bg, const char * str, ...);
+	void addMessage(const Filesystem::RelativePath & font_name, int x, int y, Graphics::Color fg, Graphics::Color bg, const std::string & str );
 	void render(const Graphics::Bitmap * work);
 
 private:

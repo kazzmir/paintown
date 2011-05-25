@@ -46,8 +46,8 @@ Object * NetworkPlayer::copy(){
 }
 
 void NetworkPlayer::initializeAttackGradient(){
-    Util::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::makeColor(255,255,255), Graphics::makeColor(255,255,0));
-    Util::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::makeColor(255,255,0), Graphics::makeColor(255,0,0));
+    Graphics::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::makeColor(255,255,255), Graphics::makeColor(255,255,0));
+    Graphics::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::makeColor(255,255,0), Graphics::makeColor(255,0,0));
 }
 
 void NetworkPlayer::interpretMessage(World * world, Network::Message & message ){
@@ -125,7 +125,7 @@ void NetworkPlayer::drawFront( Graphics::Bitmap * work, int rel_x ){
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;
     FontRender * render = FontRender::getInstance();
-    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), -1, name );
+    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), Graphics::MaskColor(), name );
 
     ostringstream score_s;
     score_s << score;
@@ -136,7 +136,7 @@ void NetworkPlayer::drawFront( Graphics::Bitmap * work, int rel_x ){
 
     int attack_x = (int)((hasIcon + x1) * 2 + 100 * Graphics::Bitmap::getScale() - player_font.textLength(score_s.str().c_str()));
 
-    render->addMessage(player_font, attack_x, y1 * 2, attack_gradient[attack_color], -1, score_s.str().c_str());
+    render->addMessage(player_font, attack_x, y1 * 2, attack_gradient[attack_color], Graphics::MaskColor(), score_s.str().c_str());
 
     drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
     // int max = getMaxHealth() < 100 ? getMaxHealth() : 100;

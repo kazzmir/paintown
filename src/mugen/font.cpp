@@ -180,11 +180,11 @@ int MugenFont::getHeight() const {
     return height;
 }
     
-void MugenFont::printf( int x, int y, int xSize, int ySize, int color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const {
+void MugenFont::printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const {
     /* call the other printf somehow.. */
 }
 
-void MugenFont::printf( int x, int y, int color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const{
+void MugenFont::printf( int x, int y, Graphics::Color color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const{
     // Va list
     char buf[512];
     va_list ap;
@@ -220,14 +220,14 @@ void MugenFont::render(int x, int y, int position, int bank, const Graphics::Bit
     const int length = textLength(str.c_str());
     switch (position){
 	case -1:
-	    printf(x - length, y - height, 0, work, str, 0);
+	    printf(x - length, y - height, Graphics::makeColor(0, 0, 0), work, str, 0);
 	    break;
 	case 1:
-	    printf(x, y - height, 0, work, str, 0);
+	    printf(x, y - height, Graphics::makeColor(0, 0, 0), work, str, 0);
 	    break;
 	case 0:
 	default:
-	    printf(x - (length/2), y - height, 0, work, str, 0);
+	    printf(x - (length/2), y - height, Graphics::makeColor(0, 0, 0), work, str, 0);
 	    break;
     }
 }
@@ -253,9 +253,9 @@ void MugenFont::changeBank(int bank){
         int r = newpal[i];
         int g = newpal[i+1];
         int b = newpal[i+2];
-        int col = Graphics::makeColor(r,g,b);
+        Graphics::Color col = Graphics::makeColor(r,g,b);
         if (col == Graphics::MaskColor()){
-            int oldCol = col;
+            Graphics::Color oldCol = col;
             while (oldCol == col){
                 r -= 1;
                 oldCol = Graphics::makeColor(r,g,b);

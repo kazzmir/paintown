@@ -106,10 +106,10 @@ void ChatWidget::drawChat(Graphics::Bitmap * work, int start){
     int y = start - font.getHeight();
 
     if (chatInput.isEnabled()){
-        const int green = Graphics::makeColor(0, 255, 0);
+        const Graphics::Color green = Graphics::makeColor(0, 255, 0);
         // render->addMessage(font, 1, y, green, -1, string("Say: ") + chatInput.getText());
-        render->addMessage(font, 1, y, Graphics::makeColor(255, 255, 0), -1, string("Say: "));
-        render->addMessage(font, 1 + font.textLength("Say: "), y, green, -1, chatInput.getText());
+        render->addMessage(font, 1, y, Graphics::makeColor(255, 255, 0), Graphics::MaskColor(), string("Say: "));
+        render->addMessage(font, 1 + font.textLength("Say: "), y, green, Graphics::MaskColor(), chatInput.getText());
         y -= font.getHeight() + 1;
     }
 
@@ -117,9 +117,9 @@ void ChatWidget::drawChat(Graphics::Bitmap * work, int start){
         const Message & message = *it;
         int trans = message.life;
         if (trans < 255){
-            render->addMessage(font, 1, y, Graphics::makeColor(255, 255, 255), -1, trans, message.text);
+            render->addMessage(font, 1, y, Graphics::makeColor(255, 255, 255), Graphics::MaskColor(), trans, message.text);
         } else {
-            render->addMessage(font, 1, y, Graphics::makeColor(255, 255, 255), -1, message.text);
+            render->addMessage(font, 1, y, Graphics::makeColor(255, 255, 255), Graphics::MaskColor(), message.text);
         }
         y -= font.getHeight() + 1;
     }

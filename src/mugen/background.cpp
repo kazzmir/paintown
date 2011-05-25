@@ -1758,7 +1758,7 @@ Background::Background(const Filesystem::AbsolutePath &file, const std::string &
 file(file),
 header(header),
 debug(false),
-clearColor(-1){
+clearColor(Graphics::MaskColor()){
     TimeDifference diff;
     diff.startTime();
     Ast::AstParse parsed(Mugen::Util::parseDef(file.path()));
@@ -1967,7 +1967,7 @@ clearColor(-1){
 Background::Background(const Ast::AstParse & parsed, const string & header, const Mugen::SpriteMap & sprites):
 header(header),
 debug(false),
-clearColor(-1){
+clearColor(Graphics::MaskColor()){
     // for linked position in backgrounds
     BackgroundElement * priorElement = NULL;
     /* use the sprites that are passed in unless the background has a def
@@ -2188,12 +2188,12 @@ void Background::act(){
 }
 
 void Background::renderBackground(int x, int y, const Graphics::Bitmap &bmp, Graphics::Bitmap::Filter * filter){
-    if ( clearColor != -1){
+    if (clearColor != Graphics::MaskColor()){
 	bmp.fill(clearColor);
     }
 	// debug overrides it
-    if ( debug ){
-	bmp.fill( Graphics::makeColor(255,0,255) );
+    if (debug){
+	bmp.fill(Graphics::MaskColor());
     }
 
     for( vector< BackgroundElement *>::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){

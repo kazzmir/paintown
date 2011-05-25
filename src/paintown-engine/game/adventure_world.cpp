@@ -642,9 +642,9 @@ void AdventureWorld::draw( Graphics::Bitmap * work ){
         string description = scene->getDescription();
         int trans = (DESCRIPTION_TIME - descriptionTime) / 2;
         if (trans >= 255){
-            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), -1, description);
+            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), description);
         } else {
-            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), -1, trans, description);
+            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), trans, description);
         }
     }
 

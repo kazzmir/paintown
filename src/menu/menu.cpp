@@ -130,7 +130,7 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     
     // FIXME height is proportionally wrong in a majority of the cases, this is perhaps due to ftalleg.
     int sy = location.getY() - vFont.getHeight()/6;// - location.getHeight()/2 - vFont.getHeight()/2;
-    static int white = Graphics::makeColor(255,255,255);
+    static Graphics::Color white = Graphics::makeColor(255,255,255);
     unsigned int padding_index = 0;
     for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
         string & str = *it;

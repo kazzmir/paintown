@@ -2425,7 +2425,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
         const AfterImage::RGB & extraAdd;
         const AfterImage::RGB & extraMultiplier;
         const int extra;
-        mutable map<unsigned, unsigned int> cache;
+        mutable map<Graphics::Color, Graphics::Color> cache;
 
         double redExtraAdd;
         double redExtraMultiply;
@@ -2434,7 +2434,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
         double blueExtraAdd;
         double blueExtraMultiply;
 
-        unsigned int doFilter(int red, int green, int blue) const {
+        Graphics::Color doFilter(int red, int green, int blue) const {
             double red_out = red;
             double green_out = green;
             double blue_out = blue;
@@ -2500,11 +2500,11 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
                 blue_out = 255;
             }
 
-            int out = Graphics::makeColor((int) red_out, (int) green_out, (int) blue_out);
-            return (unsigned int) out;
+            Graphics::Color out = Graphics::makeColor((int) red_out, (int) green_out, (int) blue_out);
+            return out;
         }
 
-        unsigned int filter(unsigned int pixel) const {
+        Graphics::Color filter(Graphics::Color pixel) const {
             if (cache.find(pixel) != cache.end()){
                 return cache[pixel];
             }
@@ -2512,7 +2512,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
             int red = Graphics::getRed(pixel);
             int green = Graphics::getGreen(pixel);
             int blue = Graphics::getBlue(pixel);
-            unsigned int out = doFilter(red, green, blue);
+            Graphics::Color out = doFilter(red, green, blue);
             cache[pixel] = out;
             return out;
         }
@@ -2573,9 +2573,9 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
         int invert;
         int color;
         
-        mutable map<unsigned, unsigned int> cache;
+        mutable map<Graphics::Color, Graphics::Color> cache;
 
-        unsigned int doFilter(int red, int green, int blue) const {
+        Graphics::Color doFilter(int red, int green, int blue) const {
             int newRed = red;
             int newGreen = green;
             int newBlue = blue;
@@ -2632,7 +2632,7 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
             return Graphics::makeColor(newRed, newGreen, newBlue);
         }
 
-        unsigned int filter(unsigned int pixel) const {
+        Graphics::Color filter(Graphics::Color pixel) const {
             
             if (cache.find(pixel) != cache.end()){
                 return cache[pixel];
@@ -2641,7 +2641,7 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
             int red = Graphics::getRed(pixel);
             int green = Graphics::getGreen(pixel);
             int blue = Graphics::getBlue(pixel);
-            unsigned int out = doFilter(red, green, blue);
+            Graphics::Color out = doFilter(red, green, blue);
             cache[pixel] = out;
             return out;
         }
@@ -2703,28 +2703,29 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
         }
         int y = 1;
-        int color = Graphics::makeColor(255, 255, 255);
+        Graphics::Color color = Graphics::makeColor(255, 255, 255);
+        Graphics::Color backgroundColor = Graphics::MaskColor();
         FontRender * render = FontRender::getInstance();
-        render->addMessage(font, x, y, color, -1, "State %d Animation %d", getCurrentState(), currentAnimation);
+        render->addMessage(font, x, y, color, backgroundColor, "State %d Animation %d", getCurrentState(), currentAnimation);
         y += font.getHeight();
-        render->addMessage(font, x, y, color, -1, "Vx %f Vy %f", getXVelocity(), getYVelocity());
+        render->addMessage(font, x, y, color, backgroundColor, "Vx %f Vy %f", getXVelocity(), getYVelocity());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, -1, "X %f Y %f", getX(), getY());
+        render->addMessage(font, x, y, color, backgroundColor, "X %f Y %f", getX(), getY());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, -1, "Time %d", getStateTime());
+        render->addMessage(font, x, y, color, backgroundColor, "Time %d", getStateTime());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, -1, "State type %s", getStateType().c_str());
+        render->addMessage(font, x, y, color, backgroundColor, "State type %s", getStateType().c_str());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, -1, "Attack type %s", getMoveType().c_str());
+        render->addMessage(font, x, y, color, backgroundColor, "Attack type %s", getMoveType().c_str());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, -1, "Hit enabled %d", hit.isEnabled());
+        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", hit.isEnabled());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, -1, "Control %d", hasControl());
+        render->addMessage(font, x, y, color, backgroundColor, "Control %d", hasControl());
         y += font.getHeight();
         if (getMoveType() == Move::Hit){
-            render->addMessage(font, x, y, color, -1, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
+            render->addMessage(font, x, y, color, backgroundColor, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
             y += font.getHeight();
-            render->addMessage(font, x, y, color, -1, "Hit velocity x %f y %f", getHitState().xVelocity, getHitState().yVelocity);
+            render->addMessage(font, x, y, color, backgroundColor, "Hit velocity x %f y %f", getHitState().xVelocity, getHitState().yVelocity);
         }
 
         int wx = 1;

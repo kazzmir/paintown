@@ -35,7 +35,7 @@ void Gib::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
 		for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
 			const Point & p = *it;
 			int l = 200 + p.life * 15;
-			int red = Graphics::makeColor( l > 255 ? 255 : l, 0, 0 );
+                        Graphics::Color red = Graphics::makeColor( l > 255 ? 255 : l, 0, 0 );
 			work->circleFill( p.x - rel_x, p.y, 1, red );
 			// work->putPixel( p.x - rel_x, p.y, red );
 		}

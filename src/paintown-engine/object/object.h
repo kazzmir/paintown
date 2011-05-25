@@ -3,6 +3,7 @@
 
 #include "util/sound.h"
 #include "util/network/network.h"
+#include "util/bitmap.h"
 #include <string>
 #include <vector>
 
@@ -59,7 +60,7 @@ public:
         /* draw reflection. default behavior is to do nothing */
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
 	/* draw shadow. default behavior is to do nothing */
-        virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
+        virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 	
 	/* print:
 	 * Print some debugging information

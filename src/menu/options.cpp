@@ -203,7 +203,7 @@ void OptionCredits::run(const Menu::Context & context){
     Graphics::Bitmap::transBlender(0, 0, 0, 128);
 
     struct State{
-        State(const Font & vFont, const vector<string> & credits, int color, int title):
+        State(const Font & vFont, const vector<string> & credits, Graphics::Color color, Graphics::Color title):
         min_y(GFX_Y),
         maxCredits(credits.size()),
         font(vFont),
@@ -217,7 +217,7 @@ void OptionCredits::run(const Menu::Context & context){
         const Font & font;
         Paintown::Fire fire;
         const vector<string> & credits;
-        int color, title;
+        Graphics::Color color, title;
     };
 
     class Logic: public Util::Logic {

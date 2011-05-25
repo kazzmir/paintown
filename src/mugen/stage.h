@@ -241,7 +241,7 @@ public:
     virtual Mugen::Effect * findEffect(const Mugen::Character * owner, int id);
     virtual std::vector<Mugen::Effect *> findEffects(const Mugen::Character * owner, int id);
 
-    virtual void setEnvironmentColor(int color, int time, bool under); 
+    virtual void setEnvironmentColor(Graphics::Color color, int time, bool under); 
 
     virtual void removeHelper(Mugen::Character * who);
 
@@ -473,7 +473,7 @@ protected:
       ;Defaults to 0,0,0 if omitted.
       ;intensity and color's effects add up to give the final shadow
       ;result.*/
-    int shadowColor;  // this = 0,0,0 gets converted by Bitmap::makeColor
+    Graphics::Color shadowColor;  // this = 0,0,0 gets converted by Bitmap::makeColor
 
     /*;This is the scale factor of the shadow. Use a big scale factor
       ;to make the shadow longer. You can use a NEGATIVE scale factor

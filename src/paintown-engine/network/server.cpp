@@ -582,7 +582,7 @@ static void popup( const Font & font, const string & message ){
 	// area.drawingMode( Bitmap::MODE_TRANS );
 	area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 64, 0, 0 ) );
 	// area.drawingMode( Bitmap::MODE_SOLID );
-	int color = Graphics::makeColor( 255, 255, 255 );
+        Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
 	area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
 	font.printf( 10, area.getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), area, message, 0 );
         background.BlitToScreen();

@@ -151,7 +151,7 @@ static string findNextFile( const char * name ){
     return string(buf);
 }
 
-static void drawHelp( const Font & font, int x, int y, int color, const Graphics::Bitmap & buffer ){
+static void drawHelp( const Font & font, int x, int y, Graphics::Color color, const Graphics::Bitmap & buffer ){
     font.printf( x, y, color, buffer, "Controls", 0 );
     y += font.getHeight() + 1;
     font.printf( x, y, color, buffer, "Up: %s", 0,  Keyboard::keyToName( Configuration::config( 0 ).getUp() ) );
@@ -236,7 +236,7 @@ class MoveItem: public Gui::ScrollItem {
         const Effects::Gradient & gradient;
 
         virtual void draw(int x, int y, const Graphics::Bitmap & where, const Font & font, int distance) const {
-            int color = Graphics::makeColor(255, 255, 255);
+            Graphics::Color color = Graphics::makeColor(255, 255, 255);
             if (distance == 0){
                 color = gradient.current();
             }
@@ -818,7 +818,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             if (state.helpTime > 0){
                 int x = 100;
                 int y = screen_buffer.getHeight() / 5;
-                int color = Graphics::makeColor( 255, 255, 255 );
+                Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
                 Graphics::Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
                 drawHelp( font, x, y, color, screen_buffer.translucent());
             }

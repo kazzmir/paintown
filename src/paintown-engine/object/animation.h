@@ -7,6 +7,7 @@
 
 #include "util/load_exception.h"
 #include "util/input/input.h"
+#include "util/bitmap.h"
 #include "attack.h"
 
 /* is that crazy hat for chicken? */
@@ -104,7 +105,7 @@ public:
 	 * This method makes this animations bitmaps original, if they 
 	 * were copied
 	 */
-	void reMap( std::map< int, int > & colors );
+	void reMap(std::map<Graphics::Color, Graphics::Color> & colors );
 
 	/* returns true if a previous sequence is seq */
 	bool hasSequence( const std::string & seq );
@@ -272,7 +273,7 @@ public:
 
 protected:
 
-	void reMap( Graphics::Bitmap * work, std::map< int, int > & colors );
+	void reMap(Graphics::Bitmap * work, std::map<Graphics::Color, Graphics::Color> & colors );
 
 	// int convertKeyPress( const string & key_name ) throw( LoadException );
     Input::PaintownInput convertKeyPress( const std::string & key_name );

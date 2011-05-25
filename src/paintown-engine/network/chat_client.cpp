@@ -247,10 +247,8 @@ void ChatClient::popup(const Graphics::Bitmap & work, const std::string & str ){
     int length = font.textLength( str.c_str() ) + 20;
     int height = font.getHeight() * 2;
     Graphics::Bitmap area( work, work.getWidth() / 2 - length / 2, work.getHeight() / 2, length, height );
-    // area.drawingMode( Graphics::Bitmap::MODE_TRANS );
     area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 64, 0, 0 ) );
-    // area.drawingMode( Graphics::Bitmap::MODE_SOLID );
-    int color = Graphics::makeColor( 255, 255, 255 );
+    Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
     area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
     font.printf( 10, area.getHeight() / 3, Graphics::makeColor( 255, 255, 255 ), area, str, 0 );
     work.BlitToScreen();
@@ -363,11 +361,9 @@ bool ChatClient::logic(){
 void ChatClient::drawInputBox( int x, int y, const Graphics::Bitmap & work ){
     const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
 
-    // work.drawingMode( Graphics::Bitmap::MODE_TRANS );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     work.translucent().rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Graphics::makeColor( 0, 0, 0 ) );
-    // work.drawingMode( Bitmap::MODE_SOLID );
-    int color = Graphics::makeColor( 255, 255, 255 );
+    Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
     if ( focus == INPUT_BOX ){
         color = Graphics::makeColor( 255, 255, 0 );
     }
@@ -404,7 +400,7 @@ void ChatClient::draw( const Graphics::Bitmap & work ){
     lineEdit->render(work);
     drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
 
-    int color = Graphics::makeColor( 255, 255, 255 );
+    Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
     if (focus == QUIT){
         color = Graphics::makeColor( 255, 255, 0 );
     }

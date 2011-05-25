@@ -30,7 +30,7 @@ private:
     Filesystem::RelativePath background;
     std::vector<std::string> credits;
     std::string music;
-    int color, title;
+    Graphics::Color color, title;
     InputMap<CreditKey> input;
 };
 

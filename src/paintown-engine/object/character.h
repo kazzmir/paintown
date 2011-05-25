@@ -60,7 +60,7 @@ public:
 
     virtual ~Remap();
             
-    virtual unsigned int filter(unsigned int pixel) const;
+    virtual Graphics::Color filter(Graphics::Color color) const;
 
     virtual inline const Filesystem::RelativePath & getFrom() const {
         return remapFrom;
@@ -71,7 +71,7 @@ public:
     }
 
 protected:
-    std::map<unsigned int, unsigned int> computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to);
+    std::map<Graphics::Color, Graphics::Color> computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to);
 
 
     /*
@@ -90,7 +90,7 @@ protected:
     */
     Filesystem::RelativePath remapFrom;
     Filesystem::RelativePath remapTo;
-    std::map<unsigned int, unsigned int> colors;
+    std::map<Graphics::Color, Graphics::Color> colors;
 };
 
 class Character: public ObjectAttack {
@@ -114,7 +114,7 @@ public:
     virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 
     virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
-    virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh);
+    virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 
     virtual const Graphics::Bitmap * getCurrentFrame() const;
 

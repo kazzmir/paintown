@@ -11,10 +11,10 @@ class Bitmap;
 class Token;
 
 struct Drop{
-	Drop( int x, int y, int length, int color ):x(x),y(y),length(length),color(color){}
-	int x, y;
-	int length;
-	int color;
+    Drop( int x, int y, int length, Graphics::Color color ):x(x),y(y),length(length),color(color){}
+    int x, y;
+    int length;
+    Graphics::Color color;
 };
 
 struct Puddle{

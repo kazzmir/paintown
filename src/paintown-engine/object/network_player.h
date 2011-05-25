@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include "util/load_exception.h"
+#include "util/bitmap.h"
 #include "character.h"
 #include "network_character.h"
 
@@ -44,7 +45,7 @@ protected:
         unsigned int score;
         double attack_bonus;
         static const int num_attack_gradient = 50;
-        int attack_gradient[num_attack_gradient];
+        Graphics::Color attack_gradient[num_attack_gradient];
         bool need_confirm;
         bool need_confirm_message;
 };

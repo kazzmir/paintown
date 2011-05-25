@@ -71,7 +71,7 @@ void Layer::reset(){
 }
 	
 Scene::Scene(Ast::Section * data, const Filesystem::AbsolutePath & file, Ast::AstParse & parsed, SpriteMap & sprites):
-clearColor(-2),
+clearColor(Graphics::MaskColor()),
 clearColorSet(false),
 ticker(0),
 endTime(0),
@@ -135,7 +135,7 @@ musicLoop(true){
                     simple >> r >> g >> b;
                 } catch (const Ast::Exception & e){
                 }
-                scene.clearColor = (r == -1 ? r : Graphics::makeColor(r, g, b));
+                scene.clearColor = (r == -1 ? Graphics::Color() : Graphics::makeColor(r, g, b));
                 scene.clearColorSet = true;
             } else if (simple == "end.time"){
                 simple >> scene.endTime;
@@ -236,7 +236,7 @@ void Scene::act(){
     ticker++;
 }
 void Scene::render(const Graphics::Bitmap & bmp){
-    if (clearColor != -1 && clearColor != -2){
+    if (clearColor != Graphics::MaskColor()){
         bmp.fill(clearColor);
     }
     // backgrounds
@@ -317,7 +317,7 @@ startscene(0){
     
     // Default clear color for all scenes
     bool clearColorSet = false;
-    int clearColor = 0;
+    Graphics::Color clearColor = Graphics::makeColor(0, 0, 0);
     
     for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
         Ast::Section * section = *section_it;

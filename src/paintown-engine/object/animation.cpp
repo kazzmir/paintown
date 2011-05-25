@@ -592,7 +592,7 @@ void Animation::setFacing( const int direction ){
 	}
 }
 	
-void Animation::reMap( map< int, int > & colors ){
+void Animation::reMap(map<Graphics::Color, Graphics::Color> & colors ){
     /* if they arent are own bitmaps, make them so */
     if ( !own_bitmaps ){
         for ( map<string,Frame*>::iterator it = frames.begin(); it != frames.end(); it++ ){
@@ -619,21 +619,21 @@ void Animation::reMap( map< int, int > & colors ){
     own_bitmaps = true;
 }
 
-void Animation::reMap( Graphics::Bitmap * work, map< int, int > & colors ){
-    const map<int,int>::iterator it_end = colors.end();
+void Animation::reMap( Graphics::Bitmap * work, map<Graphics::Color, Graphics::Color> & colors ){
+    const map<Graphics::Color, Graphics::Color>::iterator it_end = colors.end();
 
     /* maybe this is a little faster than just reading every pixel
      * and writing it back. i dunno
      */
     for ( int y1 = 0; y1< work->getHeight(); y1++ ){
-        vector< int > xcols;
-        work->readLine( xcols, y1 );
+        vector<Graphics::Color> xcols;
+        work->readLine(xcols, y1);
         for ( unsigned int x1 = 0; x1 < xcols.size(); x1++ ){
-            int pixel = xcols[ x1 ];
+            Graphics::Color pixel = xcols[x1];
 
-            map<int,int>::iterator find_it = colors.find( pixel );
+            map<Graphics::Color, Graphics::Color>::iterator find_it = colors.find(pixel);
             if (find_it != it_end){
-                work->putPixel( x1, y1, (*find_it).second );
+                work->putPixel(x1, y1, (*find_it).second);
             }
             /*
                if ( colors.find( pixel ) != it_end ){
@@ -817,7 +817,7 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
 
     // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
     if ( Global::getDebug() > 5 ){
-        work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor( 255, 255, 255 ) );
+        work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor(255, 255, 255));
         work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
         // current_collide->draw( *work, x-w, y-h );
         ECollide * c = getCollide( Object::FACING_RIGHT );

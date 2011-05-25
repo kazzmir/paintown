@@ -54,6 +54,7 @@ void FontRender::render(const Graphics::Bitmap * work ){
 	for ( vector<render_message>::iterator it = messages.begin(); it != messages.end(); it++ ){
 		const render_message & r = *it;
 
+                /* FIXME: replace with work->translucent() */
                 if (r.translucency != -1){
                     Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
                     work->drawingMode( Graphics::Bitmap::MODE_TRANS );
@@ -69,16 +70,16 @@ void FontRender::render(const Graphics::Bitmap * work ){
 	messages.clear();
 }
 
-void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, int translucency, const string & str ){
+void FontRender::addMessage( const Font & f, int x, int y, Graphics::Color fg, Graphics::Color bg, int translucency, const string & str ){
     render_message r( f, x, y, f.getSizeX(), f.getSizeY(), fg, bg, translucency, str );
     messages.push_back( r );
 }
 
-void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const string & str ){
+void FontRender::addMessage( const Font & f, int x, int y, Graphics::Color fg, Graphics::Color bg, const string & str ){
     addMessage(f, x, y, fg, bg, -1, str);
 }
 
-void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const char * str, ... ){
+void FontRender::addMessage( const Font & f, int x, int y, Graphics::Color fg, Graphics::Color bg, const char * str, ... ){
 	char buf[1024];
 	va_list ap;
 
@@ -89,6 +90,6 @@ void FontRender::addMessage( const Font & f, int x, int y, int fg, int bg, const
 	addMessage( f, x, y, fg, bg, -1, mm );
 }
 	
-void FontRender::addMessage(const Filesystem::RelativePath & font_name, int x, int y, int fg, int bg, const string & str ){
+void FontRender::addMessage(const Filesystem::RelativePath & font_name, int x, int y, Graphics::Color fg, Graphics::Color bg, const string & str ){
     addMessage(Font::getFont(font_name), x, y, fg, bg, -1, str );
 }

@@ -55,25 +55,26 @@ colors(copy.colors){
 Remap::~Remap(){
 }
     
-unsigned int Remap::filter(unsigned int pixel) const {
-    map<unsigned int, unsigned int>::const_iterator replace = colors.find(pixel);
+Graphics::Color Remap::filter(Graphics::Color pixel) const {
+    map<Graphics::Color, Graphics::Color>::const_iterator replace = colors.find(pixel);
     if (replace != colors.end()){
         return replace->second;
     }
     return pixel;
 }
 
-map<unsigned int, unsigned int> Remap::computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to){
+map<Graphics::Color, Graphics::Color> Remap::computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to){
     Graphics::Bitmap b_from(Paintown::Mod::getCurrentMod()->makeBitmap(from));
     Graphics::Bitmap b_to(Paintown::Mod::getCurrentMod()->makeBitmap(to));
 
-    map<unsigned int, unsigned int> remap_colors;
+    map<Graphics::Color, Graphics::Color> remap_colors;
 
     for (int x1 = 0; x1 < b_from.getWidth(); x1++){
         for (int y1 = 0; y1 < b_from.getHeight(); y1++){
-            int from_col = b_from.getPixel( x1, y1 );
-            int to_col = b_to.getPixel( x1, y1 );
-            if (to_col != -1 && from_col != to_col){
+            Graphics::Color from_col = b_from.getPixel(x1, y1);
+            Graphics::Color to_col = b_to.getPixel(x1, y1);
+            if (to_col != Graphics::MaskColor() &&
+                from_col != to_col){
                 remap_colors[from_col] = to_col;
             }
         }
@@ -516,7 +517,7 @@ void Character::addEffect(DrawEffect * effect){
     std::sort(effects.begin(), effects.end(), DrawEffect::compare);
 }
 
-static int nonMaskingPixels( Graphics::Bitmap * bitmap ){
+static int nonMaskingPixels(Graphics::Bitmap * bitmap){
     int total = 0;
     for (int x = 0; x < bitmap->getWidth(); x++){
         for (int y = 0; y < bitmap->getHeight(); y++){
@@ -1493,10 +1494,10 @@ void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
     const int health_height = 7;
     const int maxHealthWidth = 100;
     int max = getMaxHealth() < maxHealthWidth ? getMaxHealth() : maxHealthWidth;
-    translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::makeColor( 192, 32, 32 ) );
+    translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::makeColor(192, 32, 32));
     Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
 
-    int colors[ 5 ] = { Graphics::makeColor(16, 162, 246),
+    Graphics::Color colors[ 5 ] = { Graphics::makeColor(16, 162, 246),
         Graphics::makeColor(214, 184, 48),
         Graphics::makeColor(244, 16, 12),
         Graphics::makeColor(237, 173, 71),
@@ -1786,7 +1787,7 @@ void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, in
     }
 }
 
-void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int color, double scale, int fademid, int fadehigh){
+void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
     if (animation_current){
         const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
         const double newheight = bmp->getHeight() * scale;
@@ -1796,7 +1797,7 @@ void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, int
         /* Could be slow, but meh, lets do it for now to make it look like a real shadow */
         for (int h = 0; h < shade.getHeight(); ++h){
             for (int w = 0; w < shade.getWidth(); ++w){
-                int pix = shade.getPixel(w,h);
+                Graphics::Color pix = shade.getPixel(w,h);
                 if (pix != Graphics::MaskColor()){
                     shade.putPixel(w,h, Graphics::makeColor(0,0,0));
                 }

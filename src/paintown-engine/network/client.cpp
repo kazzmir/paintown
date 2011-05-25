@@ -310,7 +310,7 @@ static void drawBox( const Graphics::Bitmap & area, const Graphics::Bitmap & cop
     // area.drawingMode( Graphics::Bitmap::MODE_TRANS );
     area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 0, 0, 0 ) );
     // area.drawingMode( Graphics::Bitmap::MODE_SOLID );
-    int color = Graphics::makeColor( 255, 255, 255 );
+    Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
     if (hasFocus){
         color = Graphics::makeColor( 255, 255, 0 );
     }
@@ -390,7 +390,7 @@ static void popup(const Graphics::Bitmap & work, const Font & font, const string
     // area.drawingMode( Bitmap::MODE_TRANS );
     area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 64, 0, 0 ) );
     // area.drawingMode( Bitmap::MODE_SOLID );
-    int color = Graphics::makeColor( 255, 255, 255 );
+    Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
     area.rectangle( 0, 0, area.getWidth() - 1, area.getHeight() - 1, color );
     font.printf( 10, area.getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), area, message, 0 );
     work.BlitToScreen();
@@ -681,8 +681,8 @@ void networkClient(){
 
                 font.printf( 20, 20, Graphics::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
 
-                int focusColor = Graphics::makeColor( 255, 255, 0 );
-                int unFocusColor = Graphics::makeColor( 255, 255, 255 );
+                Graphics::Color focusColor = Graphics::makeColor( 255, 255, 0 );
+                Graphics::Color unFocusColor = Graphics::makeColor( 255, 255, 255 );
 
                 drawBox(nameBox, copyNameBox, nameInput.getText(), font, focus == Name);
                 drawBox(hostBox, copyHostBox, hostInput.getText(), font, focus == Host);

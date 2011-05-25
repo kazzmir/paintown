@@ -9,6 +9,7 @@
 #include "util/input/input.h"
 #include "../game/adventure_world.h"
 #include "util/thread.h"
+#include "util/bitmap.h"
 
 class World;
 
@@ -131,7 +132,7 @@ protected:
     int name_id;
     double attack_bonus;
     static const int num_attack_gradient = 50;
-    int attack_gradient[num_attack_gradient];
+    Graphics::Color attack_gradient[num_attack_gradient];
 
     bool invincible;
     int config;

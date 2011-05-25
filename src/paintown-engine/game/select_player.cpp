@@ -306,14 +306,14 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         startY(20),
         top(0){
             boxesPerLine = (work.getWidth() - startX) / (boxSize + 10);
-            Util::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
+            Graphics::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
 
-            Util::blend_palette( selectedGradient, MAXCOLOR / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );
-            Util::blend_palette( selectedGradient + MAXCOLOR / 2, MAXCOLOR / 2, Graphics::makeColor( 0, 255, 0 ), Graphics::makeColor( 0, 128, 0 ) );
+            Graphics::blend_palette( selectedGradient, MAXCOLOR / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );
+            Graphics::blend_palette( selectedGradient + MAXCOLOR / 2, MAXCOLOR / 2, Graphics::makeColor( 0, 255, 0 ), Graphics::makeColor( 0, 128, 0 ) );
 
             /* fade from yellow to some reddish color */
-            Util::blend_palette(gradient, MAXGRADIENT / 2, Graphics::makeColor( 255, 255, 0 ), Graphics::makeColor(0xff, 0x33, 0x11));
-            Util::blend_palette(gradient + MAXGRADIENT / 2, MAXGRADIENT / 2, Graphics::makeColor( 0xff, 0x33, 0x11 ), Graphics::makeColor(255, 255, 0));
+            Graphics::blend_palette(gradient, MAXGRADIENT / 2, Graphics::makeColor( 255, 255, 0 ), Graphics::makeColor(0xff, 0x33, 0x11));
+            Graphics::blend_palette(gradient + MAXGRADIENT / 2, MAXGRADIENT / 2, Graphics::makeColor( 0xff, 0x33, 0x11 ), Graphics::makeColor(255, 255, 0));
 
         }
 
@@ -337,10 +337,10 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         const int startY;
         int top;
 
-        int selectedGradient[MAXCOLOR];
-        int unselectedGradient[3];
+        Graphics::Color selectedGradient[MAXCOLOR];
+        Graphics::Color unselectedGradient[3];
 
-        int gradient[MAXGRADIENT];	
+        Graphics::Color gradient[MAXGRADIENT];	
 
         void draw(){
             Paintown::DisplayCharacter * character = players[current].guy;

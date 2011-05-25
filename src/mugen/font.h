@@ -24,7 +24,7 @@ struct FontLocation{
     int width;
 };
 
-class MugenFont : public Font {
+class MugenFont: public Font {
 public:
     MugenFont( const Filesystem::AbsolutePath & file );
     // MugenFont( const char * file );
@@ -45,8 +45,8 @@ public:
     virtual int getHeight( const std::string & str ) const;
     virtual int getHeight() const;
 
-    virtual void printf( int x, int y, int color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const;
-    virtual void printf( int x, int y, int xSize, int ySize, int color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const;
+    virtual void printf( int x, int y, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const;
+    virtual void printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const;
     
     virtual void render( int x, int y, int position, int bank, const Graphics::Bitmap & work, const std::string & str );
     

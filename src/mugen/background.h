@@ -464,7 +464,7 @@ class Background{
 	bool debug;
 	
 	//! Clear color
-	int clearColor;
+        Graphics::Color clearColor;
 	
 	//! Backgrounds
 	std::vector< BackgroundElement * > backgrounds;

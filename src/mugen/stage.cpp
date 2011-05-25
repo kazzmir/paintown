@@ -1157,9 +1157,9 @@ public:
     int invert;
     int color;
 
-    mutable map<unsigned, unsigned int> cache;
+    mutable map<Graphics::Color, Graphics::Color> cache;
 
-    unsigned int doFilter(int red, int green, int blue) const {
+    Graphics::Color doFilter(int red, int green, int blue) const {
         int newRed = red;
         int newGreen = green;
         int newBlue = blue;
@@ -1216,7 +1216,7 @@ public:
         return Graphics::makeColor(newRed, newGreen, newBlue);
     }
 
-    unsigned int filter(unsigned int pixel) const {
+    Graphics::Color filter(Graphics::Color pixel) const {
 
         if (cache.find(pixel) != cache.end()){
             return cache[pixel];
@@ -1225,7 +1225,7 @@ public:
         int red = Graphics::getRed(pixel);
         int green = Graphics::getGreen(pixel);
         int blue = Graphics::getBlue(pixel);
-        unsigned int out = doFilter(red, green, blue);
+        Graphics::Color out = doFilter(red, green, blue);
         cache[pixel] = out;
         return out;
     }
@@ -1956,7 +1956,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(const Graphics::Bitmap & buffer, Graphics::Bitmap * board, Mugen::Background * background, int reflectionIntensity, Mugen::Character * character, double cameray, int shadowIntensity, int shadowColor, double shadowYscale, int shadowFadeRangeHigh, int shadowFadeRangeMid, MugenFont & font, const Logic & logic):
+        Draw(const Graphics::Bitmap & buffer, Graphics::Bitmap * board, Mugen::Background * background, int reflectionIntensity, Mugen::Character * character, double cameray, int shadowIntensity, Graphics::Color shadowColor, double shadowYscale, int shadowFadeRangeHigh, int shadowFadeRangeMid, MugenFont & font, const Logic & logic):
         buffer(buffer),
         board(board),
         background(background),
@@ -1980,7 +1980,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         double cameray;
 
         int shadowIntensity;
-        int shadowColor;
+        Graphics::Color shadowColor;
         double shadowYscale;
         int shadowFadeRangeHigh;
         int shadowFadeRangeMid;
@@ -2215,7 +2215,7 @@ vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Charact
 }
     
 /* Set the background to a solid color for some length of time */
-void Mugen::Stage::setEnvironmentColor(int color, int time, bool under){
+void Mugen::Stage::setEnvironmentColor(Graphics::Color color, int time, bool under){
     /* TODO */
 }
     

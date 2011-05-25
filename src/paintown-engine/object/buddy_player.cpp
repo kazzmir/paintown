@@ -53,8 +53,8 @@ void BuddyPlayer::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;
     FontRender * render = FontRender::getInstance();
-    render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), -1, name );
-    drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
+    render->addMessage(player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), Graphics::MaskColor(), name);
+    drawLifeBar(hasIcon + x1, y1 + nameHeight, work);
     // int max = getMaxHealth() < 100 ? getMaxHealth() : 100;
     // render->addMessage( player_font, (x1 + hasIcon + max + 5) * 2, y1 + nameHeight, Bitmap::makeColor(255,255,255), -1, "x %d", getLives() );
 

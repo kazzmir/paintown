@@ -1,9 +1,7 @@
 #ifndef _paintown_draw_effect_h
 #define _paintown_draw_effect_h
 
-namespace Graphics{
-class Bitmap;
-}
+#include "util/bitmap.h"
 
 namespace Paintown{
 
@@ -50,7 +48,7 @@ protected:
 
 class DrawGlowEffect: public DrawEffect {
 public:
-    DrawGlowEffect(const Character * owner, int startColor, int endColor, double period);
+    DrawGlowEffect(const Character * owner, Graphics::Color startColor, Graphics::Color endColor, double period);
     virtual void draw(int x, Remap * remap, Graphics::Bitmap * work);
     virtual bool act();
     virtual DrawEffect * copy(const Character * owner) const;
@@ -58,7 +56,7 @@ public:
 protected:
     int angle;
     double period;
-    int startColor, endColor;
+    Graphics::Color startColor, endColor;
 };
 
 class DrawNormalEffect: public DrawEffect {
