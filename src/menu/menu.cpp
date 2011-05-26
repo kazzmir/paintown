@@ -119,7 +119,7 @@ void Menu::InfoBox::render(const Graphics::Bitmap &){
 
 void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     popup.render(bmp);
-    
+
     // const Font & vFont = Configuration::getMenuFont()->get(*font);
     
     const int x1 = popup.getArea().getX()+(int)(popup.getTransforms().getRadius()/2);
