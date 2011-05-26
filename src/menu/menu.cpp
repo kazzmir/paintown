@@ -1197,12 +1197,12 @@ void Menu::Context::render(Renderer * renderer, const Graphics::Bitmap & bmp){
     } else {
         bmp.fill(Graphics::makeColor(0,0,0));
     }
-    
+
     // Menu
     if (renderer){
         renderer->render(bmp, currentFont());
     }
-    
+
     if (background){
         // foreground
         background->render(Gui::Animation::ForegroundBottom, bmp);
