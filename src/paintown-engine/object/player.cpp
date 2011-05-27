@@ -52,7 +52,7 @@ ignore_lives(false){
 	show_life = getHealth();
 
 	int x, y;
-	NamePlacer::getPlacement( x, y, name_id );
+	NamePlacer::getPlacement(x, y, name_id);
 
         commonInitialize();
 }
@@ -78,7 +78,7 @@ ignore_lives(false){
 	show_life = getHealth();
 
 	int x, y;
-	NamePlacer::getPlacement( x, y, name_id );
+	NamePlacer::getPlacement(x, y, name_id);
         commonInitialize();
 }
 	
@@ -383,7 +383,7 @@ void Player::drawButtons(Graphics::Bitmap * work, int x, int y){
 void Player::drawFront(Graphics::Bitmap * work, int rel_x){
 
 	int x1, y1;
-	NamePlacer::getPlacement( x1, y1, name_id );
+	NamePlacer::getPlacement(x1, y1, name_id);
 	
 	if ( icon )
 		icon->draw( x1, y1, *work );

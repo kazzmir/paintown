@@ -5,6 +5,7 @@
 #include "util/load_exception.h"
 #include "util/funcs.h"
 #include "util/events.h"
+#include "util/parameter.h"
 #include "paintown-engine/object/player.h"
 #include "globals.h"
 #include "paintown-engine/object/display_character.h"
@@ -294,18 +295,17 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         backgroundX(backgroundX),
         clock(clock),
         loader(loader),
-        work(GFX_X, GFX_Y),
         background(Global::titleScreen().path()),
         temp(120, 120),
         preview(GFX_X / 2, GFX_Y / 2),
         reflection(GFX_X / 2, GFX_Y / 2),
         boxSize(80),
         boxesPerLine(boxesPerLine),
-        boxesPerColumn((work.getHeight() - startY) / (boxSize + 10)),
+        boxesPerColumn((Util::Parameter<Graphics::Bitmap*>::current()->getHeight() - startY) / (boxSize + 10)),
         startX(GFX_X / 2 - 20),
         startY(20),
         top(0){
-            boxesPerLine = (work.getWidth() - startX) / (boxSize + 10);
+            boxesPerLine = (Util::Parameter<Graphics::Bitmap*>::current()->getWidth() - startX) / (boxSize + 10);
             Graphics::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
 
             Graphics::blend_palette( selectedGradient, MAXCOLOR / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );
@@ -324,7 +324,6 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         unsigned int & clock;
         Paintown::DisplayCharacterLoader & loader;
  
-        Graphics::Bitmap work;
         Graphics::Bitmap background;
         Graphics::Bitmap temp;
         Graphics::Bitmap preview;
@@ -343,6 +342,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         Graphics::Color gradient[MAXGRADIENT];	
 
         void draw(){
+            const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current();
             Paintown::DisplayCharacter * character = players[current].guy;
 
             if (backgroundX < - work.getWidth()){
