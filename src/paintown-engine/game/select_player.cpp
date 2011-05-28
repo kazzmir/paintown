@@ -366,9 +366,9 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 const int stand = 100;
                 character->setFacing( Paintown::Object::FACING_RIGHT );
                 Paintown::Character copy(*character);
-                copy.setDrawShadow( false );
-                copy.setX( preview.getWidth() / 2 );
-                copy.setY( 0 );
+                copy.setDrawShadow(false);
+                copy.setX(preview.getWidth() / 2);
+                copy.setY(0);
                 // copy.setZ( preview.getHeight() - stand );
                 copy.setZ(preview.getHeight() - stand);
                 preview.fill(Graphics::MaskColor());
@@ -906,6 +906,7 @@ static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
     /* hm, it would be nice to cache this I suppose */
     Context context(info.getPlayerPath());
     Loader::loadScreen(context, info, Loader::SimpleCircle);
+    // context.load();
 
     return context.players;
 }
