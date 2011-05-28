@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
 
 #include "game.h"
 #include "util/music.h"
@@ -495,7 +496,7 @@ static bool doMenu(const Graphics::Bitmap & screen_buffer, const Token * data, P
 }
 
 bool playLevel( World & world, const vector< Paintown::Object * > & players){
-    Graphics::Bitmap screen_buffer(GFX_X, GFX_Y);
+    Graphics::Bitmap screen_buffer(Graphics::getScreenBuffer());
 
     /* 150 pixel tall console */
     Console::Console console(150);
@@ -767,7 +768,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         /* the game graphics are meant for 320x240 and will be stretched
          * to fit the screen
          */
-        work(320, 240),
+        work(320, 240, screen_buffer),
         frames(0),
         second_counter(Global::second_counter),
         fps(Global::TICS_PER_SECOND){
@@ -777,7 +778,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         Console::Console & console;
         World & world;
         GameState & state;
-        Graphics::Bitmap work;
+        Graphics::StretchedBitmap work;
         int frames;
         unsigned int second_counter;
         double fps;
@@ -807,9 +808,12 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         void run(const Graphics::Bitmap & screen_buffer, const GameState & state){
             updateFrames();
 
+            work.start();
+            work.clear();
             world.draw(&work);
 
-            work.Stretch(screen_buffer);
+            work.finish();
+            // work.Stretch(screen_buffer);
             FontRender * render = FontRender::getInstance();
             render->render(&screen_buffer);
 
@@ -834,8 +838,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             if (state.takeScreenshot){
                 doTakeScreenshot(work);
             }
-
-            work.clear();
         }
 
         void showScreenshots(const Graphics::Bitmap & screen_buffer){

@@ -312,7 +312,7 @@ void Scene::act( int min_x, int max_x, vector< Paintown::Object * > * objects ){
 
 /* draw the background */
 void Scene::drawBack( int x, Graphics::Bitmap * work ){
-    if ( background ){
+    if (background){
         int y = 0;
         background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
         background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
@@ -321,7 +321,7 @@ void Scene::drawBack( int x, Graphics::Bitmap * work ){
     int fx = 0;
     for ( unsigned int q = 0; q < order.size(); q++ ){
         Panel *& cur = panels[ order[q] ];
-        if ( cur == NULL ){
+        if (cur == NULL){
             continue;
         }
         Graphics::Bitmap * normal = cur->pic;

@@ -543,42 +543,42 @@ void AdventureWorld::addObject( Paintown::Object * o ){
 }
 
 void AdventureWorld::drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
-	int min_x = 0;
+    int min_x = 0;
 
-	min_x = (int) tracker.min_x;
+    min_x = (int) tracker.min_x;
 
-	int max_x = (int)(tracker.player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : tracker.player->getX() + screen_size / 2);
-	min_x = (int)(max_x - screen_size);
-	if ( min_x < 0 ){
-		min_x = 0;
-	}
+    int max_x = (int)(tracker.player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : tracker.player->getX() + screen_size / 2);
+    min_x = (int)(max_x - screen_size);
+    if ( min_x < 0 ){
+        min_x = 0;
+    }
 
-	if ( min_x > tracker.min_x ){
-		min_x = (int) tracker.min_x;
-	}
+    if ( min_x > tracker.min_x ){
+        min_x = (int) tracker.min_x;
+    }
 
-	scene->drawBack( min_x, where );
+    scene->drawBack(min_x, where);
 
-	for ( map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
-		const vector<Paintown::Object *> & xx = (*it).second;
-		for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+    for ( map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+        const vector<Paintown::Object *> & xx = (*it).second;
+        for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
-			(*mm)->draw( where, min_x, 0 );
-		}
-	}
+            (*mm)->draw(where, min_x, 0);
+        }
+    }
 
-	scene->drawFront( min_x, where );
+    scene->drawFront(min_x, where);
 
-        /* need a special case to draw object stuff in front.
-         * this is things like icon/name/health, not objects that are part of
-         * the scene, and therefore the atmosphere doesn't apply to them.
-         */
-        for ( map<int,vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
-		const vector<Paintown::Object *> & xx = (*it).second;
-		for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
-			(*mm)->drawFront( where, min_x );
-		}
-	}
+    /* need a special case to draw object stuff in front.
+     * this is things like icon/name/health, not objects that are part of
+     * the scene, and therefore the atmosphere doesn't apply to them.
+     */
+    for ( map<int,vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+        const vector<Paintown::Object *> & xx = (*it).second;
+        for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
+            (*mm)->drawFront( where, min_x );
+        }
+    }
 }
 
 void AdventureWorld::drawMiniMaps( bool b ){
@@ -659,7 +659,7 @@ void AdventureWorld::draw( Graphics::Bitmap * work ){
         }
 
         drawWorld( *it, on, object_z );
-        if ( on != work ){
+        if (on != work){
             on->Stretch( mini );
             Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
             mini.border( 0, 1, Graphics::makeColor( 255, 255, 255 ) );
