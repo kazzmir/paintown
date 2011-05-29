@@ -172,11 +172,28 @@ def checkAllegro5(context):
     context.Message("Checking for Allegro 5 ... ")
     tmp = context.env.Clone()
     env = context.env
+    def find(version):
+        try:
+            def make(name):
+                return '%s-%s' % (name, version)
+            libraries = [make('allegro'),
+                         make('allegro_ttf'),
+                         make('allegro_memfile'),
+                         make('allegro_image'),
+                         make('allegro_primitives'),
+                         make('allegro_audio'),
+                         make('allegro_acodec')]
+            env.ParseConfig('pkg-config %s --cflags --libs' % ' '.join(libraries))
+            env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+            return True
+        except Exception:
+            return False
     try:
-        env.ParseConfig('pkg-config allegro-5.1 allegro_ttf-5.1 allegro_memfile-5.1 allegro_image-5.1 allegro_primitives-5.1 --cflags --libs')
-        env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
-        context.Result(colorResult(1))
-        return 1
+        ok = 0
+        if find(5.1) or find(5.0):
+            ok = 1
+        context.Result(colorResult(ok))
+        return ok
     except:
         context.sconf.env = tmp
     context.Result(colorResult(0))
