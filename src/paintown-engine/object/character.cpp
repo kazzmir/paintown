@@ -64,6 +64,7 @@ Graphics::Color Remap::filter(Graphics::Color pixel) const {
 }
 
 map<Graphics::Color, Graphics::Color> Remap::computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to){
+    Graphics::RestoreState state;
     Graphics::Bitmap b_from(Paintown::Mod::getCurrentMod()->makeBitmap(from));
     Graphics::Bitmap b_to(Paintown::Mod::getCurrentMod()->makeBitmap(to));
 
@@ -536,6 +537,7 @@ static void replacePart( vector< BodyPart > & parts, Graphics::Bitmap * bitmap )
 }
 	
 vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> animation){
+    Graphics::RestoreState state;
     vector< BodyPart > parts;
 
     Graphics::Bitmap * bitmap = animation->getFrame( 0 );
