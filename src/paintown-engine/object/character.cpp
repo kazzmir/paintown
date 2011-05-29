@@ -531,9 +531,13 @@ static int nonMaskingPixels(Graphics::Bitmap * bitmap){
 }
 
 static void replacePart( vector< BodyPart > & parts, Graphics::Bitmap * bitmap ){
-    int i = Util::rnd( parts.size() );
-    delete parts[i].image;
-    parts[i].image = bitmap;
+    if (parts.size() == 0){
+        delete bitmap;
+    } else {
+        int i = Util::rnd(parts.size());
+        delete parts[i].image;
+        parts[i].image = bitmap;
+    }
 }
 	
 vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> animation){
