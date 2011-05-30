@@ -385,7 +385,6 @@ public:
         class Draw: public Util::Draw {
         public:
             Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, const Gui::ScrollList & list):
-                buffer(GFX_X, GFX_Y),
                 background(GFX_X, GFX_Y),
                 playerCopy(playerCopy),
                 area(area),
@@ -395,13 +394,13 @@ public:
                     playerCopy->testAnimation("idle");
                 }
 
-            Graphics::Bitmap buffer;
             Graphics::Bitmap background;
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             const Gui::ScrollList & list;
 
             void draw(){
+                const Graphics::Bitmap & buffer = *Util::Parameter<Graphics::Bitmap*>::current();
                 background.Blit(buffer);
                 area.render(buffer);
                 Graphics::Bitmap space(buffer,
@@ -480,7 +479,7 @@ static bool doMenu(const Graphics::Bitmap & screen_buffer, const Token * data, P
     Menu::Menu menu(data, optionFactory);
     Menu::Context context;
     /* use the current screen as the background */
-    context.addBackground(screen_buffer);
+    context.addBackground(Graphics::Bitmap(screen_buffer, true));
     try{
         menu.run(context);
         /* im pretty sure there is no way to get the menu to return normally,
