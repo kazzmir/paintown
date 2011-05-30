@@ -379,6 +379,9 @@ int paintown_main(int argc, char ** argv){
     diff.endTime();
     Global::debug(0) << diff.printTime("Init took") << endl;
 
+    Graphics::Bitmap screen(Graphics::getScreenBuffer());
+    Util::Parameter<Graphics::Bitmap*> use(&screen);
+
     try{
         Paintown::Mod::loadPaintownMod(Configuration::getCurrentGame());
     } catch (const Filesystem::NotFound & e){

@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "menu.h"
 
 #include <fstream>
@@ -24,6 +25,7 @@
 #include "util/timedifference.h"
 #include "util/music.h"
 #include "util/events.h"
+#include "util/parameter.h"
 
 /* TODO: remove this dependancy */
 #include "paintown-engine/level/utils.h"
@@ -825,16 +827,16 @@ void MugenMenu::run(){
     public:
         Draw(MugenMenu & menu, Mugen::Background * background, Gui::FadeTool & fader):
         menu(menu),
-        work(Global::getScreenWidth(), Global::getScreenHeight()),
-        workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT),
+        // work(Global::getScreenWidth(), Global::getScreenHeight()),
+        // workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT),
         background(background),
         fader(fader){
         }
 
         MugenMenu & menu;
 
-        Graphics::Bitmap work;
-        Graphics::Bitmap workArea;
+        // Graphics::Bitmap work;
+        // Graphics::Bitmap workArea;
 
         Mugen::Background * background;
 
@@ -846,6 +848,28 @@ void MugenMenu::run(){
              * clear anything drawn to `work', won't it?
              */
 
+            const Graphics::Bitmap & screen = *PaintownUtil::Parameter<Graphics::Bitmap*>::current();
+            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
+            work.start();
+            background->renderBackground(0, 0, work);
+
+            // Draw any misc stuff in the background of the menu of selected object 
+            //(*currentOption)->drawBelow(&work);
+            // Draw text
+            menu.renderText(&work);
+            // Foregrounds
+            background->renderForeground(0, 0, work);
+            // Draw any misc stuff in the foreground of the menu of selected object 
+            //(*currentOption)->drawAbove(&work);
+            // Do fades
+            fader.draw(work);
+            // Finally render to screen
+            // workArea.Stretch(work);
+            work.finish();
+            screen.BlitToScreen();
+
+
+            /*
             // backgrounds
             background->renderBackground(0, 0, workArea);
 
@@ -862,6 +886,7 @@ void MugenMenu::run(){
             // Finally render to screen
             workArea.Stretch(work);
             work.BlitToScreen();
+            */
         }
     };
   
