@@ -9,6 +9,7 @@
 // Extend the font interface already made for paintown
 #include "util/font.h"
 #include "util/file-system.h"
+#include "util/pointer.h"
 
 namespace Graphics{
 class Bitmap;
@@ -56,7 +57,8 @@ public:
     inline int getTotalBanks() { return colors; };
 
 protected:
-    unsigned char * findBank(int bank);
+    unsigned char * findBankPalette(int bank) const;
+    Graphics::Bitmap * makeBank(int bank) const;
     
 protected:
     // File
@@ -72,7 +74,7 @@ protected:
     int colors;
     int offsetx;
     int offsety;
-    Graphics::Bitmap * bmp;
+    std::map<int, Util::ReferenceCount<Graphics::Bitmap> > banks;
     unsigned char *pcx;
     unsigned char palette[768];
     uint32_t pcxsize;

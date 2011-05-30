@@ -59,7 +59,6 @@ spacingy(0),
 colors(0),
 offsetx(0),
 offsety(0),
-bmp(0),
 pcx(NULL),
 pcxsize(0),
 currentBank(0){
@@ -87,7 +86,6 @@ spacingy(0),
 colors(0),
 offsetx(0),
 offsety(0),
-bmp(0),
 pcx(0),
 pcxsize(0),
 currentBank(0){
@@ -114,15 +112,11 @@ MugenFont::MugenFont( const MugenFont &copy ){
     this->colors = copy.colors;
     this->offsetx = copy.offsetx;
     this->offsety = copy.offsety;
-    this->bmp = copy.bmp;
     this->pcx = copy.pcx;
+    this->banks = copy.banks;
 }
 
 MugenFont::~MugenFont(){
-    if (bmp){
-        delete bmp;
-    }
-
     if (pcx){
         delete[] pcx;
     }
@@ -137,7 +131,7 @@ MugenFont & MugenFont::operator=( const MugenFont &copy ){
     this->colors = copy.colors;
     this->offsetx = copy.offsetx;
     this->offsety = copy.offsety;
-    this->bmp = copy.bmp;
+    this->banks = copy.banks;
     
     return *this;
 }
@@ -194,6 +188,12 @@ void MugenFont::printf( int x, int y, Graphics::Color color, const Graphics::Bit
     va_end(ap);
 
     const std::string newstr(buf);
+            
+    map<int, Util::ReferenceCount<Graphics::Bitmap> >::const_iterator find = banks.find(currentBank);
+    if (find == banks.end()){
+        return;
+    }
+    const Util::ReferenceCount<Graphics::Bitmap> & font = find->second;
 
     int workoffsetx = 0;
     for (unsigned int i = 0; i < newstr.size(); ++i){
@@ -204,7 +204,7 @@ void MugenFont::printf( int x, int y, Graphics::Color color, const Graphics::Bit
             character.clearToMask();
             bmp->Blit(loc->second.startx, 0, loc->second.width + spacingx, height + spacingy,0,0, character);
             */
-            Graphics::Bitmap character(*bmp, loc->second.startx, 0, loc->second.width, height);
+            Graphics::Bitmap character(*font, loc->second.startx, 0, loc->second.width, height);
             character.draw(x + workoffsetx, y, work);
             workoffsetx += loc->second.width + spacingx;
         } else{
@@ -216,6 +216,9 @@ void MugenFont::printf( int x, int y, Graphics::Color color, const Graphics::Bit
 
 void MugenFont::render(int x, int y, int position, int bank, const Graphics::Bitmap & work, const string & str){
     changeBank(bank);
+    if (banks[currentBank] == NULL){
+        return;
+    }
     const int height = getHeight();
     const int length = textLength(str.c_str());
     switch (position){
@@ -233,18 +236,16 @@ void MugenFont::render(int x, int y, int position, int bank, const Graphics::Bit
 }
 
 /* get a pointer to a specific bank. bank numbers start from 0 */
-unsigned char * MugenFont::findBank(int bank){
+unsigned char * MugenFont::findBankPalette(int bank) const {
     return pcx + pcxsize - ((bank+1) * colors * 3);
 }
 
-void MugenFont::changeBank(int bank){
-    if (bank < 0 || bank > (colors -1) || currentBank == bank) return;
-    currentBank = bank;
+Graphics::Bitmap * MugenFont::makeBank(int bank) const {
     unsigned char newpal[768];
     // Reset palette
     memcpy(pcx + (pcxsize - 768), palette, 768);
-    memcpy( newpal, pcx+(pcxsize)-768, 768);
-    unsigned char * newBank = findBank(bank);
+    memcpy(newpal, pcx+(pcxsize)-768, 768);
+    unsigned char * newBank = findBankPalette(bank);
     // Global::debug(1) << "palette start: " << (void*)(pcx + pcxsize - 768) << ". new bank: " << (void*)newBank << endl;
     memcpy((void*) &newpal[768 - colors*3], (void*) newBank, colors * 3);
 
@@ -267,11 +268,20 @@ void MugenFont::changeBank(int bank){
     }
 
     memcpy(pcx + (pcxsize - 768), newpal, 768);
-    if (bmp){
-        delete bmp;
-    }
-    bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
+    Graphics::Bitmap * bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
     bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::MaskColor());
+    return bmp;
+}
+
+void MugenFont::changeBank(int bank){
+    if (bank < 0 || bank > (colors -1) || currentBank == bank) return;
+    currentBank = bank;
+
+    if (banks[currentBank] == NULL){
+        banks[currentBank] = makeBank(currentBank);
+    }
+
+    // return banks[currentBank];
 }
 
 void MugenFont::load(){
@@ -298,8 +308,10 @@ void MugenFont::load(){
     ifile.read((char *)pcx, pcxsize);
     memcpy(palette, pcx+(pcxsize)-768, 768);
 
+    /*
     bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
     bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::MaskColor());
+    */
 
     // Get the text
     ifile.seekg(pcxlocation+pcxsize, ios::beg);
