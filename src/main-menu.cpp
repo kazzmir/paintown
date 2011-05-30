@@ -53,6 +53,7 @@ static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
 static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
 static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 static const char * DISABLE_QUIT_ARG[] = {"disable-quit"};
+static const char * RATE_LIMIT_ARG[] = {"fps", "rate-limit"};
 
 static const char * closestMatch(const char * s1, vector<const char *> args){
     const char * good = NULL;
@@ -109,6 +110,7 @@ static void showOptions(){
     Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
     Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
     Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
+    Global::debug(0) << " " << all(RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG)) << " : Don't rate limit the game to the default fps (40). This is only useful for benchmarking graphics capabilities." << endl;
 #ifdef HAVE_NETWORKING
     Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
     Global::debug(0) << " " << all(NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG)) << " [<name>,<server ip>,<port>]: Join a network game directly. If not given, ip and port will be read from the configuration file if one exists otherwise they default to 127.0.0.1:7887. The name will be randomly generated if not given. Do not put spaces between the commas in the optional arguments." << endl;
@@ -277,6 +279,7 @@ int paintown_main(int argc, char ** argv){
     ADD_ARGS(MUSIC_ARG);
     ADD_ARGS(MUGEN_ARG);
     ADD_ARGS(MUGEN_INSTANT_ARG);
+    ADD_ARGS(RATE_LIMIT_ARG);
 #ifdef HAVE_NETWORKING
     ADD_ARGS(NETWORK_SERVER_ARG);
     ADD_ARGS(NETWORK_JOIN_ARG);
@@ -300,6 +303,8 @@ int paintown_main(int argc, char ** argv){
             mugen = true;
         } else if (isArg(argv[q], JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG))){
             joystick_on = false;
+        } else if (isArg(argv[q], RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG))){
+            Global::rateLimit = false;
         } else if (isArg(argv[q], MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG))){
             q += 1;
             if (q < argc){
