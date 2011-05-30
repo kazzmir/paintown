@@ -25,7 +25,7 @@ struct FontLocation{
     int width;
 };
 
-class MugenFont: public Font {
+class MugenFont{
 public:
     MugenFont( const Filesystem::AbsolutePath & file );
     // MugenFont( const char * file );
@@ -46,14 +46,13 @@ public:
     virtual int getHeight( const std::string & str ) const;
     virtual int getHeight() const;
 
-    virtual void printf( int x, int y, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const;
-    virtual void printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const;
+    virtual void printf( int x, int y, int bank, const Graphics::Bitmap & work, const std::string & str, int marker, ... );
+    // virtual void printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const ;
     
     virtual void render( int x, int y, int position, int bank, const Graphics::Bitmap & work, const std::string & str );
     
-    virtual void changeBank(int bank);
+    virtual Util::ReferenceCount<Graphics::Bitmap> changeBank(int bank);
     
-    inline int getCurrentBank() { return currentBank; };
     inline int getTotalBanks() { return colors; };
 
 protected:
@@ -81,7 +80,7 @@ protected:
     // mapping positions of font in bitmap
     std::map< char, FontLocation> positions;
     
-    int currentBank;
+    // int currentBank;
     
     void load();
 };

@@ -60,8 +60,7 @@ colors(0),
 offsetx(0),
 offsety(0),
 pcx(NULL),
-pcxsize(0),
-currentBank(0){
+pcxsize(0){
     std::string temp = file.path();
     temp = Mugen::Util::invertSlashes(temp);
     Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
@@ -155,7 +154,7 @@ int MugenFont::textLength( const char * text ) const{
     int size =0;
     for (unsigned int i = 0; i < str.size(); ++i){
         std::map<char, FontLocation>::const_iterator loc = positions.find(str[i]);
-        if (loc!=positions.end()){
+        if (loc != positions.end()){
             size += loc->second.width + spacingx;
         } else {
             // Couldn't find a position for this character assume regular width and skip to the next character
@@ -174,11 +173,13 @@ int MugenFont::getHeight() const {
     return height;
 }
     
+#if 0
 void MugenFont::printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const {
     /* call the other printf somehow.. */
 }
+#endif
 
-void MugenFont::printf( int x, int y, Graphics::Color color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const{
+void MugenFont::printf(int x, int y, int bank, const Graphics::Bitmap & work, const string & str, int marker, ... ){
     // Va list
     char buf[512];
     va_list ap;
@@ -189,11 +190,10 @@ void MugenFont::printf( int x, int y, Graphics::Color color, const Graphics::Bit
 
     const std::string newstr(buf);
             
-    map<int, Util::ReferenceCount<Graphics::Bitmap> >::const_iterator find = banks.find(currentBank);
-    if (find == banks.end()){
+    const Util::ReferenceCount<Graphics::Bitmap> & font = changeBank(bank);
+    if (font == NULL){
         return;
     }
-    const Util::ReferenceCount<Graphics::Bitmap> & font = find->second;
 
     int workoffsetx = 0;
     for (unsigned int i = 0; i < newstr.size(); ++i){
@@ -215,22 +215,18 @@ void MugenFont::printf( int x, int y, Graphics::Color color, const Graphics::Bit
 }
 
 void MugenFont::render(int x, int y, int position, int bank, const Graphics::Bitmap & work, const string & str){
-    changeBank(bank);
-    if (banks[currentBank] == NULL){
-        return;
-    }
     const int height = getHeight();
     const int length = textLength(str.c_str());
     switch (position){
 	case -1:
-	    printf(x - length, y - height, Graphics::makeColor(0, 0, 0), work, str, 0);
+	    printf(x - length, y - height, bank, work, str, 0);
 	    break;
 	case 1:
-	    printf(x, y - height, Graphics::makeColor(0, 0, 0), work, str, 0);
+	    printf(x, y - height, bank, work, str, 0);
 	    break;
 	case 0:
 	default:
-	    printf(x - (length/2), y - height, Graphics::makeColor(0, 0, 0), work, str, 0);
+	    printf(x - (length/2), y - height, bank, work, str, 0);
 	    break;
     }
 }
@@ -273,15 +269,16 @@ Graphics::Bitmap * MugenFont::makeBank(int bank) const {
     return bmp;
 }
 
-void MugenFont::changeBank(int bank){
-    if (bank < 0 || bank > (colors -1) || currentBank == bank) return;
-    currentBank = bank;
-
-    if (banks[currentBank] == NULL){
-        banks[currentBank] = makeBank(currentBank);
+Util::ReferenceCount<Graphics::Bitmap> MugenFont::changeBank(int bank){
+    if (bank < 0 || bank > (colors -1)){
+        return NULL;
     }
 
-    // return banks[currentBank];
+    if (banks[bank] == NULL){
+        banks[bank] = makeBank(bank);
+    }
+
+    return banks[bank];
 }
 
 void MugenFont::load(){
