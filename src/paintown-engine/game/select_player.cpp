@@ -364,7 +364,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
             if (character->isLoaded()){
                 const int stand = 100;
-                character->setFacing( Paintown::Object::FACING_RIGHT );
+                character->setFacing(Paintown::Object::FACING_RIGHT);
                 Paintown::Character copy(*character);
                 copy.setDrawShadow(false);
                 copy.setX(preview.getWidth() / 2);
@@ -376,7 +376,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 // preview.fill( 0 );
                 // reflection.fill( 0 );
 
-                copy.draw( &preview, 0, 0 );
+                copy.draw(&preview, 0, 0 );
                 preview.drawVFlip( 0, 0, reflection );
 
                 Graphics::Bitmap::transBlender( 0, 0, 0, 255 );
