@@ -358,6 +358,12 @@ def checkPthreads(context):
         context.Message(" pthreads")
         context.Result(colorResult(1))
         return 1
+    if useAllegro5():
+        env = context.env
+        env.Append(LIBS = ['pthread'])
+        context.Message(' pthreads')
+        context.Result(colorResult(1))
+        return 1
     if useSDL():
         context.Message(" SDL threads")
         context.Result(colorResult(1))
