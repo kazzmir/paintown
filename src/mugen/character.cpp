@@ -2403,7 +2403,7 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
 void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Graphics::Bitmap & work){
     class AfterImageFilter: public Graphics::Bitmap::Filter {
     public:
-        AfterImageFilter(const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & post, const AfterImage::RGB & extraAdd, const AfterImage::RGB & extraMultiplier, int extra):
+        AfterImageFilter(const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & post, const AfterImage::RGBx & extraAdd, const AfterImage::RGBx & extraMultiplier, int extra):
             bright(bright),
             contrast(contrast),
             post(post),
@@ -2419,11 +2419,11 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
                 blueExtraMultiply = pow(extraMultiplier.blue, extra);
             }
 
-        const AfterImage::RGB & bright;
-        const AfterImage::RGB & contrast;
-        const AfterImage::RGB & post;
-        const AfterImage::RGB & extraAdd;
-        const AfterImage::RGB & extraMultiplier;
+        const AfterImage::RGBx & bright;
+        const AfterImage::RGBx & contrast;
+        const AfterImage::RGBx & post;
+        const AfterImage::RGBx & extraAdd;
+        const AfterImage::RGBx & extraMultiplier;
         const int extra;
         mutable map<Graphics::Color, Graphics::Color> cache;
 
@@ -2944,7 +2944,7 @@ void Character::guarded(Object * enemy, const HitDefinition & hit){
     }
 }
 
-void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent, int paletteColor, bool invertColor, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply){
+void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent, int paletteColor, bool invertColor, const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & postBright, const AfterImage::RGBx & add, const AfterImage::RGBx & multiply){
     afterImage.currentTime = 0;
     afterImage.timegap = timegap;
     afterImage.framegap = framegap;

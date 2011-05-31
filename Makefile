@@ -61,6 +61,10 @@ winallegro:
 	@echo Building windows (Allegro)..
 	@scons env=mingw allegro=1
 
+winallegro5:
+	@echo Building windows (Allegro5)..
+	@scons env=mingw allegro5=1
+
 nsis:
 	makensis /V2 misc/installer.nsi
 

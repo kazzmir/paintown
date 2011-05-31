@@ -1430,7 +1430,10 @@ if isWindows():
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
         env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
-    
+    elif useAllegro5():
+        env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+        staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+        env.Append(LIBS = ['allegro-5.0.3-monolith-md', 'wsock32', 'regex.dll', 'z', 'freetype', 'png', 'psapi'])
     elif useSDL():
         if not useMinpspw() and not usePs3() and not useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])

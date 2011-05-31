@@ -1447,8 +1447,9 @@ public:
                 bool show;
             };
 
-            struct RGB{
-                RGB():
+            /* RGB is a macro on windows */
+            struct RGBx{
+                RGBx():
                     red(0),
                     green(0),
                     blue(0){
@@ -1472,11 +1473,11 @@ public:
             int paletteColor;
             bool invertColor;
 
-            RGB bright;
-            RGB contrast;
-            RGB postBright;
-            RGB add;
-            RGB multiply;
+            RGBx bright;
+            RGBx contrast;
+            RGBx postBright;
+            RGBx add;
+            RGBx multiply;
 
             std::deque<Frame> frames;
         } afterImage;
@@ -1533,7 +1534,7 @@ public:
         /* this definition is down here so we can get access to the AfterImage
          * struct definition
          */
-        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGB & bright, const AfterImage::RGB & contrast, const AfterImage::RGB & postBright, const AfterImage::RGB & add, const AfterImage::RGB & multiply);
+        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & postBright, const AfterImage::RGBx & add, const AfterImage::RGBx & multiply);
     
         void drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Graphics::Bitmap & work);
         void processAfterImages();
