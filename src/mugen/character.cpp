@@ -2403,13 +2403,31 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
 void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Graphics::Bitmap & work){
     class AfterImageFilter: public Graphics::Bitmap::Filter {
     public:
+        /* all the components have this formula
+         * x' = (x + bright) * contrast / 256 + post
+         * = x * contrast / 256 + bright * constrast / 256 + post
+         * So we will call 'contrast/256' multiplier and
+         * 'bright * contrast / 256 + post' adder
+         */
+        struct Save{
+            Save(double bright, double contrast, double post):
+                multiplier(contrast / 256.0),
+                adder(bright * contrast / 256.0 + post){
+                }
+            double multiplier;
+            double adder;
+        };
+
         AfterImageFilter(const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & post, const AfterImage::RGBx & extraAdd, const AfterImage::RGBx & extraMultiplier, int extra):
             bright(bright),
             contrast(contrast),
             post(post),
             extraAdd(extraAdd),
             extraMultiplier(extraMultiplier),
-            extra(extra){
+            extra(extra),
+            redPart(bright.red, contrast.red, post.red),
+            greenPart(bright.green, contrast.green, post.green),
+            bluePart(bright.blue, contrast.blue, post.blue){
 
                 redExtraAdd = extraAdd.red * extra;
                 redExtraMultiply = pow(extraMultiplier.red, extra);
@@ -2434,14 +2452,21 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
         double blueExtraAdd;
         double blueExtraMultiply;
 
+        Save redPart;
+        Save greenPart;
+        Save bluePart;
+
         Graphics::Color doFilter(int red, int green, int blue) const {
             double red_out = red;
             double green_out = green;
             double blue_out = blue;
 
-            red_out = (red_out + bright.red) * contrast.red / 256 + post.red;
-            green_out = (green_out + bright.green) * contrast.green / 256 + post.green;
-            blue_out = (blue_out + bright.blue) * contrast.blue / 256 + post.blue;
+            // red_out = (red_out + bright.red) * contrast.red / 256 + post.red;
+            // green_out = (green_out + bright.green) * contrast.green / 256 + post.green;
+            // blue_out = (blue_out + bright.blue) * contrast.blue / 256 + post.blue;
+            red_out = red_out * redPart.multiplier + redPart.adder;
+            green_out = green_out * greenPart.multiplier + greenPart.adder;
+            blue_out = blue_out * bluePart.multiplier + bluePart.adder;
 
             /* the mugen docs lied:
              * "In one application of these palette effects, first the paladd components are added to the afterimage palette, then the components are multiplied by the palmul multipliers. These effects are applied zero times to the most recent afterimage frame, once to the  second-newest afterimage frame, twice in succession to the third-newest afterimage frame, etc."
