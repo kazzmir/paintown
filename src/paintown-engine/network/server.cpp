@@ -2,6 +2,7 @@
 
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/parameter.h"
 #include "util/events.h"
 
 #include "chat_server.h"
@@ -105,26 +106,27 @@ static int getServerPort(){
     class Draw: public Util::Draw {
     public:
         Draw(const Graphics::Bitmap & background, const TextInput & input, int drawY, bool & need_draw):
-        work(200, 25),
         background(background),
         input(input),
         drawY(drawY),
         need_draw(need_draw){
         }
 
-        Graphics::Bitmap work;
         const Graphics::Bitmap & background;
         const TextInput & input;
         int drawY;
         bool & need_draw;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & screen){
             if (need_draw){
+                background.Blit(screen);
+                Graphics::Bitmap work(screen, 100, drawY, 200, 25);
                 work.clear();
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
                 font.printf(0, 0, Graphics::makeColor(255, 255, 255), work, input.getText(), 0);
-                work.Blit(100, drawY, background);
-                background.BlitToScreen();
+                // work.Blit(100, drawY, background);
+                // background.BlitToScreen();
+                screen.BlitToScreen();
             }
         }
     };
@@ -132,7 +134,7 @@ static int getServerPort(){
     bool draw = true;
     Logic logic(input, draw);
     Draw drawer(background, input, drawY, draw);
-    drawer.draw();
+    drawer.draw(*Util::Parameter<Graphics::Bitmap*>::current());
 
     Util::standardLoop(logic, drawer);
 

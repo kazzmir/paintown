@@ -399,8 +399,7 @@ public:
             Gui::PopupBox & area;
             const Gui::ScrollList & list;
 
-            void draw(){
-                const Graphics::Bitmap & buffer = *Util::Parameter<Graphics::Bitmap*>::current();
+            void draw(const Graphics::Bitmap & buffer){
                 background.Blit(buffer);
                 area.render(buffer);
                 Graphics::Bitmap space(buffer,
@@ -472,8 +471,13 @@ public:
     }
 };
 
+static const Graphics::Bitmap & getScreen(){
+    return *Util::Parameter<Graphics::Bitmap*>::current();
+}
+
 /* in-game menu */
-static bool doMenu(const Graphics::Bitmap & screen_buffer, const Token * data, Paintown::Player * player){
+static bool doMenu(const Token * data, Paintown::Player * player){
+    const Graphics::Bitmap & screen_buffer = getScreen();
     // Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
     GameOptionFactory optionFactory(player);
     Menu::Menu menu(data, optionFactory);
@@ -495,8 +499,6 @@ static bool doMenu(const Graphics::Bitmap & screen_buffer, const Token * data, P
 }
 
 bool playLevel( World & world, const vector< Paintown::Object * > & players){
-    Graphics::Bitmap screen_buffer(Graphics::getScreenBuffer());
-
     /* 150 pixel tall console */
     Console::Console console(150);
     {
@@ -581,7 +583,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
     class Logic: public Util::Logic {
     public:
-        Logic(const vector<Paintown::Object*> & players, World & world, Console::Console & console, GameState & state, const Graphics::Bitmap & screen_buffer, Token * menuData):
+        Logic(const vector<Paintown::Object*> & players, World & world, Console::Console & console, GameState & state, Token * menuData):
         runCounter(0),
         gameSpeed(startingGameSpeed()),
         players(players),
@@ -589,7 +591,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         world(world),
         console(console),
         state(state),
-        screen_buffer(screen_buffer),
         menuData(menuData){
             if (Global::getDebug() > 0){
                 input.set(Keyboard::Key_MINUS_PAD, 2, false, Game::Slowdown);
@@ -617,7 +618,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         Util::EventManager eventManager;
         Console::Console & console;
         GameState & state;
-        const Graphics::Bitmap & screen_buffer;
         Token * menuData;
 
         virtual bool done(){
@@ -744,7 +744,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             state.done |= world.finished();
             if (force_quit){
                 Paintown::Player * player = (Paintown::Player*) players[0];
-                state.menu_quit = state.menu_quit || doMenu(screen_buffer, menuData, player);
+                state.menu_quit = state.menu_quit || doMenu(menuData, player);
             }
         }
 
@@ -759,25 +759,21 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
     class Draw: public Util::Draw {
     public:
-        Draw(const Graphics::Bitmap & screen_buffer, Console::Console & console, World & world, GameState & state):
-        screen_buffer(screen_buffer),
+        Draw(Console::Console & console, World & world, GameState & state):
         console(console),
         world(world),
         state(state),
         /* the game graphics are meant for 320x240 and will be stretched
          * to fit the screen
          */
-        work(320, 240, screen_buffer),
         frames(0),
         second_counter(Global::second_counter),
         fps(Global::TICS_PER_SECOND){
         }
 
-        const Graphics::Bitmap & screen_buffer;
         Console::Console & console;
         World & world;
         GameState & state;
-        Graphics::StretchedBitmap work;
         int frames;
         unsigned int second_counter;
         double fps;
@@ -800,11 +796,12 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             frames += 1;
         }
 
-        void draw(){
+        void draw(const Graphics::Bitmap & screen_buffer){
             run(screen_buffer, state);
         }
 
         void run(const Graphics::Bitmap & screen_buffer, const GameState & state){
+            Graphics::StretchedBitmap work(320, 240, screen_buffer);
             updateFrames();
 
             work.start();
@@ -840,8 +837,9 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         }
 
         void showScreenshots(const Graphics::Bitmap & screen_buffer){
-            work.clear();
+            screen_buffer.clear();
             Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
+            Graphics::StretchedBitmap work(320, 240, screen_buffer);
             for (deque<Graphics::Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
                 Graphics::Bitmap * shot = *it;
                 int angle = Util::rnd(-6, 6);
@@ -857,9 +855,10 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 int x = work.getWidth() / 2;
                 int y = work.getHeight() / 2;
                 double scale = 0.9;
+                work.start();
                 shot->border(0, 1, Graphics::makeColor(64,64,64));
                 shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
-                work.Stretch(screen_buffer);
+                work.finish();
                 screen_buffer.BlitToScreen();
                 snapshot.play();
                 Util::restSeconds(1.5);
@@ -879,18 +878,18 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
     bool finish = true;
     GameState state;
-    Logic logic(players, world, console, state, screen_buffer, menuData);
-    Draw drawer(screen_buffer, console, world, state);
+    Logic logic(players, world, console, state, menuData);
+    Draw drawer(console, world, state);
     // state.helpTime = helpTime;
 
     try{
         /* run the game */
         Util::standardLoop(logic, drawer);
         if (!state.menu_quit){
-            drawer.showScreenshots(screen_buffer);
+            drawer.showScreenshots(getScreen());
         }
     } catch (const LoseException & lose){
-        fadeOut(screen_buffer, "You lose");
+        fadeOut(getScreen(), "You lose");
         finish = false;
     }
 
@@ -1267,14 +1266,15 @@ const Level::LevelInfo selectLevelSet( const string & base ){
 #endif
 
 void fadeOut( const Graphics::Bitmap & work, const string & message ){
+    /*
     Graphics::Bitmap dark( GFX_X, GFX_Y );
     dark.clear();
-    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
-
-    dark.translucent().draw( 0, 0, work );
+    */
+    Graphics::Bitmap::transBlender(0, 0, 0, 128);
+    work.applyTrans(Graphics::makeColor(0, 0, 0));
 
     const Font & f = Font::getFont(Global::DEFAULT_FONT, 50, 50 );
-    f.printf( 200, 200, Graphics::makeColor( 255, 0, 0 ), work, message, 0 );
+    f.printf(200, 200, Graphics::makeColor(255, 0, 0), work, message, 0);
     work.BlitToScreen();
 
     Util::rest( 2000 );

@@ -341,8 +341,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
         Graphics::Color gradient[MAXGRADIENT];	
 
-        void draw(){
-            const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current();
+        void draw(const Graphics::Bitmap & work){
             Paintown::DisplayCharacter * character = players[current].guy;
 
             if (backgroundX < - work.getWidth()){

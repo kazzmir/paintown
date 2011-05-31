@@ -1549,9 +1549,8 @@ void Menu::Menu::run(const Context & parentContext){
             Context & localContext;
             // Graphics::Bitmap work;
 
-            void draw(){
+            void draw(const Graphics::Bitmap & work){
                 Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
-                const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current();
                 if (Configuration::hasMenuFont()){
                     currentFont.push(Configuration::getMenuFont());
                 }

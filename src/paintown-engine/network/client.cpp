@@ -4,6 +4,7 @@
 #include "util/trans-bitmap.h"
 #include "client.h"
 #include "util/events.h"
+#include "util/parameter.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-map.h"
 #include "util/input/input-manager.h"
@@ -382,7 +383,8 @@ static bool handlePortInput( string & str, const vector< int > & keys ){
 }
 */
 
-static void popup(const Graphics::Bitmap & work, const Font & font, const string & message ){
+static void popup(const Font & font, const string & message ){
+    const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current();
     int length = font.textLength( message.c_str() ) + 20; 
     // Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
     Graphics::Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
@@ -506,8 +508,6 @@ void networkClient(){
     TextInput hostInput(Configuration::getStringProperty(propertyLastClientHost, "localhost"));
     TextInput portInput(Configuration::getStringProperty(propertyLastClientPort, "7887"));
 
-    Graphics::Bitmap work(GFX_X, GFX_Y);
-
     Focus focus = Name;
     nameInput.enable();
 
@@ -536,15 +536,14 @@ void networkClient(){
     class Logic: public Util::Logic {
     public:
         /* it sucks that `work' has to be passed in */
-        Logic(Focus & focus, State & state, TextInput & nameInput, TextInput & portInput, TextInput & hostInput, FocusBundle & bundle, const Graphics::Bitmap & work):
+        Logic(Focus & focus, State & state, TextInput & nameInput, TextInput & portInput, TextInput & hostInput, FocusBundle & bundle):
         is_done(false),
         focus(focus),
         state(state),
         nameInput(nameInput),
         portInput(portInput),
         hostInput(hostInput),
-        bundle(bundle),
-        work(work){
+        bundle(bundle){
             input.set(Keyboard::Key_TAB, 0, true, Next);
             input.set(Keyboard::Key_DOWN, 0, true, Next);
             input.set(Keyboard::Key_UP, 0, true, Back);
@@ -562,8 +561,6 @@ void networkClient(){
         TextInput & hostInput;
 
         FocusBundle & bundle;
-
-        const Graphics::Bitmap & work;
 
         double ticks(double system){
             return system;
@@ -610,7 +607,7 @@ void networkClient(){
                                 runClient(nameInput.getText(), hostInput.getText(), portInput.getText());
                             } catch (const NetworkException & e){
                                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
-                                popup(work, font, e.getMessage());
+                                popup(font, e.getMessage());
                                 InputManager::waitForRelease(input, Action);
                                 InputManager::waitForPress(input, Action);
                                 InputManager::waitForRelease(input, Action);
@@ -636,10 +633,9 @@ void networkClient(){
 
     class Draw: public Util::Draw {
     public:
-        Draw(const Graphics::Bitmap & work, State & state, const Focus & focus, TextInput & nameInput, TextInput & portInput, TextInput & hostInput):
+        Draw(State & state, const Focus & focus, TextInput & nameInput, TextInput & portInput, TextInput & hostInput):
         state(state),
         background(Global::titleScreen().path()),
-        work(work),
         focus(focus),
         nameInput(nameInput),
         portInput(portInput),
@@ -648,14 +644,13 @@ void networkClient(){
 
         State & state;
         Graphics::Bitmap background;
-        const Graphics::Bitmap & work;
         const Focus & focus;
 
         TextInput & nameInput;
         TextInput & portInput;
         TextInput & hostInput;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & work){
             if (state.draw){
                 state.draw = false;
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
@@ -697,10 +692,10 @@ void networkClient(){
 
     State state;
     state.draw = true;
-    Logic logic(focus, state, nameInput, portInput, hostInput, bundle, work);
-    Draw draw(work, state, focus, nameInput, portInput, hostInput);
+    Logic logic(focus, state, nameInput, portInput, hostInput, bundle);
+    Draw draw(state, focus, nameInput, portInput, hostInput);
 
-    draw.draw();
+    draw.draw(*Util::Parameter<Graphics::Bitmap*>::current());
     Util::standardLoop(logic, draw);
 
 #if 0

@@ -19,6 +19,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/trans-bitmap.h"
 #include "paintown-engine/game/console.h"
 /*
@@ -1851,8 +1852,7 @@ void Mugen::Stage::setGameRate(double rate){
 }
 
 //! Do continue screen return true to continue playing, false to end
-bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input, const Graphics::Bitmap & buffer){
-
+bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input){
     Filesystem::AbsolutePath systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
     
     // Check if we have the continue screen enabled
@@ -1956,9 +1956,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(const Graphics::Bitmap & buffer, Graphics::Bitmap * board, Mugen::Background * background, int reflectionIntensity, Mugen::Character * character, double cameray, int shadowIntensity, Graphics::Color shadowColor, double shadowYscale, int shadowFadeRangeHigh, int shadowFadeRangeMid, MugenFont & font, const Logic & logic):
-        buffer(buffer),
-        board(board),
+        Draw(Mugen::Background * background, int reflectionIntensity, Mugen::Character * character, double cameray, int shadowIntensity, Graphics::Color shadowColor, double shadowYscale, int shadowFadeRangeHigh, int shadowFadeRangeMid, MugenFont & font, const Logic & logic):
         background(background),
         reflectionIntensity(reflectionIntensity),
         character(character),
@@ -1972,8 +1970,6 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         logic(logic){
         }
 
-        const Graphics::Bitmap & buffer;
-        Graphics::Bitmap * board;
         Mugen::Background * background;
         int reflectionIntensity;
         Mugen::Character * character;
@@ -1988,48 +1984,51 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         MugenFont & font;
         const Logic & logic;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & screen){
+            Graphics::StretchedBitmap board(320, 240, screen);
+            board.start();
             // Render background
-            background->renderBackground(0, 0, *board);
+            background->renderBackground(0, 0, board);
         
             // do darkened background
             // Bitmap::drawingMode(Bitmap::MODE_TRANS);
             Graphics::Bitmap::transBlender(0,0,0,150);
-	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Graphics::makeColor(0,0,0));
+	    board.translucent().rectangleFill(0, 0, board.getWidth(), board.getHeight(), Graphics::makeColor(0,0,0));
 	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
             
             // Render character
             if (reflectionIntensity > 0){
-                character->drawReflection(board, -(DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
+                character->drawReflection(&board, -(DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
             }
 
 	    /* Shadow */
-	    character->drawShade(board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+	    character->drawShade(&board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
-            character->draw(board, -(DEFAULT_WIDTH / 2), (int) cameray); 
+            character->draw(&board, -(DEFAULT_WIDTH / 2), (int) cameray); 
             
             // Render continue text
-            font.render(DEFAULT_WIDTH/2, 40, 0, 0, *board, "Continue?" );
+            font.render(DEFAULT_WIDTH/2, 40, 0, 0, board, "Continue?" );
 
             // Render yes and no
             if (logic.selectedYes()){
-                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 4, *board, "Yes");
-                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 0, *board, "No");
+                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 4, board, "Yes");
+                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 0, board, "No");
             } else {
-                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 0, *board, "Yes");
-                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 4, *board, "No");
+                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 0, board, "Yes");
+                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 4, board, "No");
             }
         
             // Foreground
-            background->renderForeground(0, 0, *board);
+            background->renderForeground(0, 0, board);
 
-            board->Stretch(buffer);
-            buffer.BlitToScreen();
+            board.finish();
+            // board->Stretch(buffer);
+            screen.BlitToScreen();
         }
     };
 
     Logic logic(input, character, this);
-    Draw draw(buffer, board, background, reflectionIntensity, character, cameray, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeHigh, shadowFadeRangeMid, font, logic);
+    Draw draw(background, reflectionIntensity, character, cameray, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeHigh, shadowFadeRangeMid, font, logic);
 
     PaintownUtil::standardLoop(logic, draw);
 

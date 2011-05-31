@@ -513,14 +513,12 @@ void ChatClient::run(){
     class Draw: public Util::Draw {
     public:
         Draw(ChatClient & client):
-        work(GFX_X, GFX_Y),
         client(client){
         }
 
-        Graphics::Bitmap work;
         ChatClient & client;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & work){
             if (client.needToDraw()){
                 client.draw(work);
                 work.BlitToScreen();

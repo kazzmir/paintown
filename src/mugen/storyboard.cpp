@@ -1,6 +1,7 @@
 #include "storyboard.h"
 
 #include "util/bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/resource.h"
 #include "util/funcs.h"
 #include "util/events.h"
@@ -417,7 +418,7 @@ Storyboard::~Storyboard(){
     }
 }
 
-void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
+void Storyboard::run(bool repeat){
     class Logic: public PaintownUtil::Logic {
     public:
         Logic(InputMap<Mugen::Keys> & input, const vector<Scene*> & scenes, int startscene, bool repeat, Scene *& scene):
@@ -523,20 +524,19 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(const Graphics::Bitmap & screen, Scene *& scene):
-        screen(screen),
-        work(320, 240),
+        Draw(Scene *& scene):
         scene(scene){
         }
 
-        const Graphics::Bitmap & screen;
-        Graphics::Bitmap work;
         Scene *& scene;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & screen){
             if (scene != NULL){
+                Graphics::StretchedBitmap work(320, 240, screen);
+                work.start();
                 scene->render(work);
-                work.Stretch(screen);
+                work.finish();
+                // work.Stretch(screen);
                 if (Global::getDebug() > 0){
                     Font::getDefaultFont().printf( 15, 310, Graphics::makeColor(0,255,128), screen, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->getTicker(),scene->getEndTime(),scene->getFadeTool().getFadeInTime(),scene->getFadeTool().getFadeOutTime() );
                 }
@@ -547,7 +547,7 @@ void Storyboard::run(const Graphics::Bitmap &bmp, bool repeat){
 
     Scene * scene = NULL;
     Logic logic(input, scenes, startscene, repeat, scene);
-    Draw draw(bmp, scene);
+    Draw draw(scene);
     PaintownUtil::standardLoop(logic, draw);
     
 #if 0

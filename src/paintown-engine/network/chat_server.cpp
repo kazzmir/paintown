@@ -907,16 +907,14 @@ void ChatServer::run(){
         Draw(Gui::LineEdit & lineEdit, ChatServer & server, Focus & focus):
         lineEdit(lineEdit),
         server(server),
-        work(GFX_X, GFX_Y),
         focus(focus){
         }
 
         Gui::LineEdit & lineEdit;
         ChatServer & server;
-        Graphics::Bitmap work;
         Focus & focus;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & work){
             if (server.needToDraw()){
                 server.draw(work, lineEdit, focus);
                 work.BlitToScreen();

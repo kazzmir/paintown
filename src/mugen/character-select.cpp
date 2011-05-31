@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "character-select.h"
 
 #include <fstream>
@@ -17,6 +18,7 @@
 
 #include "util/init.h"
 #include "util/events.h"
+#include "util/parameter.h"
 #include "util/resource.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -1020,7 +1022,11 @@ VersusScreen::~VersusScreen(){
     delete background;
 }
 
-void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Graphics::Bitmap &bmp){
+static const Graphics::Bitmap & getScreen(){
+    return *PaintownUtil::Parameter<Graphics::Bitmap*>::current();
+}
+
+void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage){
     // bool done = false;
     bool escaped = false;
     
@@ -1106,9 +1112,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
              const Mugen::Point & player2Position,
              const Mugen::Effects & player1Effects,
              const Mugen::Effects & player2Effects,
-             Gui::FadeTool & fader,
-             const Graphics::Bitmap & screen
-             ):
+             Gui::FadeTool & fader):
             player1(player1),
             player2(player2),
             background(background),
@@ -1118,9 +1122,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
             player2Position(player2Position),
             player1Effects(player1Effects),
             player2Effects(player2Effects),
-            fader(fader),
-            screen(screen),
-            workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT){
+            fader(fader){
             }
 
         CharacterInfo & player1;
@@ -1133,10 +1135,10 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 	const Mugen::Effects & player1Effects;
 	const Mugen::Effects & player2Effects;
         Gui::FadeTool & fader;
-        const Graphics::Bitmap & screen;
-        Graphics::Bitmap workArea;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & screen){
+            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
+            workArea.start();
             // render backgrounds
             background->renderBackground(0, 0, workArea);
 
@@ -1155,7 +1157,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
             fader.draw(workArea);
 
             // Finally render to screen
-            workArea.Stretch(screen);
+            // workArea.Stretch(screen);
+            workArea.finish();
             screen.BlitToScreen();
         }
     };
@@ -1249,7 +1252,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     Draw drawer(player1, player2, background,
                 player1Font, player2Font,
                 player1Position, player2Position,
-                player1Effects, player2Effects, fader, bmp);
+                player1Effects, player2Effects, fader);
 
     Logic1 logic1(fader, background, player1Font, player2Font, time);
 
@@ -1257,7 +1260,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
 
     try{
         Level::LevelInfo info;
-        info.setBackground(&bmp);
+        Graphics::Bitmap background(getScreen(), true);
+        info.setBackground(&background);
         info.setLoadingMessage("Loading...");
         info.setPosition(10, 200);
 
@@ -2609,7 +2613,7 @@ static void startMusic(const Filesystem::AbsolutePath & systemFile, const string
     }
 }
 
-void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp){
+void CharacterSelect::run(const std::string & title){
     bool escaped = false;
     
     Gui::FadeTool fader;
@@ -2701,9 +2705,7 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(const Graphics::Bitmap & buffer, Background * background, Grid & grid, Cursor & player1Cursor, Cursor & player2Cursor, FontHandler & titleFont, Gui::FadeTool & fader, const string & title):
-        buffer(buffer),
-        workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT),
+        Draw(Background * background, Grid & grid, Cursor & player1Cursor, Cursor & player2Cursor, FontHandler & titleFont, Gui::FadeTool & fader, const string & title):
         background(background),
         grid(grid),
         player1Cursor(player1Cursor),
@@ -2713,8 +2715,6 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
         title(title){
         }
 
-        const Graphics::Bitmap & buffer;
-        Graphics::Bitmap workArea;
         Background * background;
         Grid & grid;
         Cursor & player1Cursor;
@@ -2723,7 +2723,9 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
         Gui::FadeTool & fader;
         const string & title;
 
-        void draw(){
+        void draw(const Graphics::Bitmap & buffer){
+            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, buffer);
+            workArea.start();
             background->renderBackground(0,0,workArea);
 	    // Render Grid
             grid.lock();
@@ -2743,13 +2745,14 @@ void CharacterSelect::run(const std::string & title, const Graphics::Bitmap &bmp
 	    fader.draw(workArea);
 	    
 	    // Finally render to screen
-	    workArea.Stretch(buffer);
+	    // workArea.Stretch(buffer);
+            workArea.finish();
 	    buffer.BlitToScreen();
         }
     };
 
     Logic logic(fader, cancelSound, *this, background, grid, player1Cursor, player2Cursor, titleFont);
-    Draw draw(bmp, background, grid, player1Cursor, player2Cursor, titleFont, fader, title);
+    Draw draw(background, grid, player1Cursor, player2Cursor, titleFont, fader, title);
 
     PaintownUtil::standardLoop(logic, draw);
     
@@ -2934,7 +2937,7 @@ void CharacterSelect::reset(){
     }
 }
 
-void CharacterSelect::renderVersusScreen(const Graphics::Bitmap & bmp){
+void CharacterSelect::renderVersusScreen(){
 
     // start bgm
     try {
@@ -2947,7 +2950,7 @@ void CharacterSelect::renderVersusScreen(const Graphics::Bitmap & bmp){
         Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
     }
     
-    versus.render(*currentPlayer1, *currentPlayer2, currentStage, bmp);
+    versus.render(*currentPlayer1, *currentPlayer2, currentStage);
 }
 
 bool CharacterSelect::setNextArcadeMatch(){

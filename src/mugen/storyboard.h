@@ -160,7 +160,7 @@ class Storyboard {
 	virtual ~Storyboard();
 	
 	//! give it the default bitmap to blit to the screen
-	virtual void run(const Graphics::Bitmap &, bool repeat = false);
+	virtual void run(bool repeat = false);
 
         virtual void setInput(const InputMap<Mugen::Keys> & input){
             this->input = input;

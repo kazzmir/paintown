@@ -690,16 +690,14 @@ void MugenMenu::run(){
     // Do we have logos or intros?
     // Logo run it no repeat
     if (logo){
-        Graphics::Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         logo->setInput(player1Input);
-	logo->run(work, false);
+	logo->run(false);
     }
 
     // Intro run it no repeat
     if (intro){
-        Graphics::Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
         intro->setInput(player1Input);
-	intro->run(work, false);
+	intro->run(false);
     }
 
     class Logic: public PaintownUtil::Logic {
@@ -842,13 +840,7 @@ void MugenMenu::run(){
 
         Gui::FadeTool & fader;
 
-        void draw(){
-            /* This logic doesn't make sense.. why does it draw to `work'
-             * and then stretch blit `workArea' to `work'? That will just
-             * clear anything drawn to `work', won't it?
-             */
-
-            const Graphics::Bitmap & screen = *PaintownUtil::Parameter<Graphics::Bitmap*>::current();
+        void draw(const Graphics::Bitmap & screen){
             Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
             work.start();
             background->renderBackground(0, 0, work);

@@ -902,7 +902,7 @@ class VersusScreen {
 	virtual ~VersusScreen();
 	
 	//! Renders the versus screen as well as loads the characters and stage
-	virtual void render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage, const Graphics::Bitmap &);
+	virtual void render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage);
 	
 	virtual inline void setBackground(Background * background){
 	    this->background = background;
@@ -978,12 +978,12 @@ class CharacterSelect {
 	
 	virtual void load();
 	
-	virtual void run(const std::string & title, const Graphics::Bitmap &);
+	virtual void run(const std::string & title);
 
         virtual void reset();
 	
 	//! This will load the character and stage so that you can retrieve them when setting up
-	virtual void renderVersusScreen(const Graphics::Bitmap &);
+	virtual void renderVersusScreen();
 	
 	//! Get next arcade match character returns false if there are no more characters
 	virtual bool setNextArcadeMatch();

@@ -170,7 +170,7 @@ public:
     }
 
     //! Do continue screen return true to continue playing, false to end
-    virtual bool doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> &,  const Graphics::Bitmap &);
+    virtual bool doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> &);
 
     /* 1 is normal, 0<rate<1 is slower, 1<rate is faster */
     virtual void setGameRate(double rate);

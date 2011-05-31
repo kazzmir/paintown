@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/debug.h"
 #include "configuration.h"
 #include "options.h"
@@ -554,8 +555,6 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         Draw(Background * background, MugenFont * font, const vector<class Option *> & options):
         background(background),
         font(font),
-        workArea(DEFAULT_WIDTH,DEFAULT_HEIGHT),
-        screen(Configuration::getScreenWidth(), Configuration::getScreenHeight()),
         options(options){
             //optionArea.location.setDimensions(Gui::AbsolutePoint(260),210);
             optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
@@ -569,8 +568,6 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
         Background * background;
         MugenFont * font;
-        Graphics::Bitmap workArea;
-        Graphics::Bitmap screen;
         Box optionArea;
         const vector<class Option *> & options;
 
@@ -584,7 +581,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             }
         }
 
-        void draw(){
+        void draw(const Graphics::Bitmap & screen){
+            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
+            workArea.start();
             // render backgrounds
 	    background->renderBackground(0, 0, workArea);
 	    
@@ -599,7 +598,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	    background->renderForeground(0, 0, workArea);
 	    
 	    // Finally render to screen
-	    workArea.Stretch(screen);
+            workArea.finish();
+	    // workArea.Stretch(screen);
 	    screen.BlitToScreen();
         }
     };

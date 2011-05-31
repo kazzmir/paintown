@@ -271,8 +271,7 @@ void OptionCredits::run(const Menu::Context & context){
         /* use Bitmap::temporaryBitmap here? no! BlitToScreen uses temporaryBitmap */
         Graphics::Bitmap & background;
 
-        void draw(){
-            const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current();
+        void draw(const Graphics::Bitmap & work){
             background.Blit(work);
             int y = (int) state.min_y;
             vector<std::string>::const_iterator b = state.credits.begin();

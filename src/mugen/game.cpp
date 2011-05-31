@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "game.h"
 
 #include <ostream>
@@ -223,16 +224,18 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     class Draw: public PaintownUtil::Draw {
     public:
         Draw(Mugen::Stage * stage):
-            stage(stage),
-            work(DEFAULT_WIDTH, DEFAULT_HEIGHT){
+            stage(stage){
             }
 
         Mugen::Stage * stage;
-        Graphics::Bitmap work;
     
-        virtual void draw(){
+        virtual void draw(const Graphics::Bitmap & screen){
+            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
+            work.start();
             stage->render(&work);
-            work.BlitToScreen();
+            work.finish();
+            screen.BlitToScreen();
+            // work.BlitToScreen();
         }
     };
 
@@ -518,9 +521,8 @@ void Game::doTraining(){
             select.load();
             try{
                 {
-                    Graphics::Bitmap screen(GFX_X, GFX_Y);
-                    select.run("Training Mode", screen);
-                    select.renderVersusScreen(screen);
+                    select.run("Training Mode");
+                    select.renderVersusScreen();
                 }
                 HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
                 HumanBehavior player2Behavior(getPlayer2Keys(), getPlayer2InputLeft());
@@ -556,9 +558,8 @@ void Game::doWatch(){
 	select.load();
         try{
             {
-                Graphics::Bitmap screen(GFX_X, GFX_Y);
-                select.run("Watch Mode", screen);
-                select.renderVersusScreen(screen);
+                select.run("Watch Mode");
+                select.renderVersusScreen();
             }
             LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
             LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
@@ -581,12 +582,11 @@ void Game::doArcade(){
     /* FIXME: there isn't really a need to have this bitmap exist forever.
      * a temporary bitmap can be created when its needed.
      */
-    Graphics::Bitmap screen(GFX_X, GFX_Y);
     Mugen::CharacterSelect select(systemFile, playerType, gameType);
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
     select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
     select.load();
-    select.run("Arcade", screen);
+    select.run("Arcade");
     Filesystem::AbsolutePath intro;
     Filesystem::AbsolutePath ending;
     bool displayWinScreen = false;
@@ -682,7 +682,7 @@ void Game::doArcade(){
         try{
             Storyboard story(intro, true);
             story.setInput(input);
-            story.run(screen);
+            story.run();
         } catch (...){
             Global::debug(0) << "Failed to load storyboard for some reason" << std::endl;
         }
@@ -709,7 +709,7 @@ void Game::doArcade(){
     
     try{
         while (!quit){
-            select.renderVersusScreen(screen);
+            select.renderVersusScreen();
 	    
 	    /* Reset characters. TODO: why? */
 	    select.getPlayer1()->resetPlayer();
@@ -762,37 +762,37 @@ void Game::doArcade(){
                             if (!defaultEnding.isEmpty()){
                                 Storyboard story(defaultEnding, true);
                                 story.setInput(input);
-                                story.run(screen);
+                                story.run();
                             }
                         }
                     } else if (defaultEndingEnabled && ending.isEmpty()){
                         if (!defaultEnding.isEmpty()){
                             Storyboard story(defaultEnding, true);
                             story.setInput(input);
-                            story.run(screen);
+                            story.run();
                         }
                     } else if (!ending.isEmpty()){
                         Storyboard story(ending, true);
                         story.setInput(input);
-                        story.run(screen);
+                        story.run();
                     } 
                     if (creditsEnabled){                    
                         // credits
                         if (!credits.isEmpty()){
                             Storyboard story(defaultEnding, true);
                             story.setInput(input);
-                            story.run(screen);
+                            story.run();
                         }
                     }
                     quit = displayGameOver = true;
                 }
             } else {
                 // Player lost do continue screen if enabled for now just quit
-                if (stage->doContinue(playerType, input, screen)){
+                if (stage->doContinue(playerType, input)){
                     select.reset();
                     select.getPlayer1()->resetPlayer();
                     select.getPlayer2()->resetPlayer();
-                    select.run("Arcade", screen);
+                    select.run("Arcade");
                 } else {
                     quit = displayGameOver = true;
                 }
@@ -806,7 +806,7 @@ void Game::doArcade(){
         if (!gameOver.isEmpty()){
             Storyboard story(gameOver, true);
             story.setInput(input);
-            story.run(screen);
+            story.run();
         }
     }
 }
@@ -818,11 +818,8 @@ void Game::doVersus(){
         select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
         select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
         select.load();
-        {
-            Graphics::Bitmap screen(GFX_X, GFX_Y);
-            select.run("Versus Mode", screen);
-            select.renderVersusScreen(screen);
-        }
+        select.run("Versus Mode");
+        select.renderVersusScreen();
 
         HumanBehavior player1Input(getPlayer1Keys(), getPlayer1InputLeft());
         HumanBehavior player2Input(getPlayer2Keys(), getPlayer2InputLeft());
