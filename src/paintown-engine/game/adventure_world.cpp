@@ -625,13 +625,13 @@ void AdventureWorld::doTakeScreenshot(Graphics::Bitmap * work){
     */
 }
 
-void AdventureWorld::draw( Graphics::Bitmap * work ){
+void AdventureWorld::draw(Graphics::Bitmap * work){
 
     map< int, vector<Paintown::Object*> > object_z;
 
     for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
         Paintown::Object * n = *it;
-        object_z[ n->getRZ() ].push_back( n );
+        object_z[n->getRZ()].push_back(n);
     }
 
     Global::debug( 4 ) << "World draw" << endl;
@@ -724,13 +724,13 @@ double AdventureWorld::ticks(const double in) const{
 }
 
 int AdventureWorld::getX(){
-	if (getQuake() > 0)
-		return Util::rnd( 9 ) - 4;
-	return 0;
+    if (getQuake() > 0)
+        return Util::rnd(-7, 7);
+    return 0;
 }
 
 int AdventureWorld::getY(){
-	if (getQuake() > 0)
-		return Util::rnd( 9 ) - 4;
-	return 0;
+    if (getQuake() > 0)
+        return Util::rnd(-7, 7);
+    return 0;
 }

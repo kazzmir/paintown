@@ -17,57 +17,58 @@ dz(dz),
 angle( 0 ),
 fade( 0 ),
 image( image ){
-	setY( y );
-	setMaxHealth( 1 );
-	setHealth( 1 );
+    setY( y );
+    setMaxHealth( 1 );
+    setHealth( 1 );
 }
 
 Gib::Gib( const Gib & g ):
-ObjectNonAttack( g ){
+ObjectNonAttack(g){
 }
 
-void Gib::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
-	if ( fade > 0 ){
-		// Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
-            Graphics::Bitmap::transBlender( 0, 0, 0, 255 - fade );
-		image->translucent().draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
-	} else {
-		for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++ ){
-			const Point & p = *it;
-			int l = 200 + p.life * 15;
-                        Graphics::Color red = Graphics::makeColor( l > 255 ? 255 : l, 0, 0 );
-			work->circleFill( p.x - rel_x, p.y, 1, red );
-			// work->putPixel( p.x - rel_x, p.y, red );
-		}
-		// image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
-		image->drawRotate( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, angle, *work );
-	}
+void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
+    if (fade > 0){
+        // Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
+        Graphics::Bitmap::transBlender(0, 0, 0, 255 - fade);
+        image->translucent().draw(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work);
+    } else {
+        Graphics::Bitmap::transBlender( 0, 0, 0, 200);
+        for (std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++){
+            const Point & p = *it;
+            int l = 200 + p.life * 15;
+            Graphics::Color red = Graphics::makeColor(l > 255 ? 255 : l, 0, 0);
+            work->translucent().circleFill(p.x - rel_x, p.y, 1, red);
+            // work->putPixel( p.x - rel_x, p.y, red );
+        }
+        // image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
+        image->drawRotate(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, angle, *work);
+    }
 }
 	
 Object * Gib::copy(){
-	return new Gib( *this );
+    return new Gib( *this );
 }
 
 bool Gib::isCollidable( Object * obj ){
-	return false;
+    return false;
 }
 
 bool Gib::isGettable(){
-	return false;
+    return false;
 }
 
 int Gib::getWidth() const {
-	return 1;
+    return 1;
 }
 
 int Gib::getHeight() const {
-	return 1;
+    return 1;
 }
 	
 Network::Message Gib::getCreateMessage(){
-	Network::Message m;
+    Network::Message m;
 
-	return m;
+    return m;
 }
 	
 void Gib::act( std::vector< Object * > * others, World * world, std::vector< Object * > * add ){
@@ -98,10 +99,10 @@ void Gib::act( std::vector< Object * > * others, World * world, std::vector< Obj
                */
         }
 
-        for ( int i = 0; i < 3; i++ ){
-            int x = getRX() + Util::rnd( 5 ) - 2;
-            int y = getRY() + Util::rnd( 5 ) - 2;
-            blood.push_back( Point( x, y, 10 ) );
+        for ( int i = 0; i < Util::rnd(3) + 2; i++ ){
+            int x = getRX() + Util::rnd(5) - 2;
+            int y = getRY() + Util::rnd(5) - 2;
+            blood.push_back(Point(x, y, Util::rnd(10) + 5));
         }
 
         for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); ){

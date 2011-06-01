@@ -544,8 +544,8 @@ vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> anima
     Graphics::RestoreState state;
     vector< BodyPart > parts;
 
-    Graphics::Bitmap * bitmap = animation->getFrame( 0 );
-    if ( bitmap == NULL ){
+    Graphics::Bitmap * bitmap = animation->getFrame(0);
+    if (bitmap == NULL){
         return parts;	
     }
 
@@ -561,16 +561,17 @@ vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> anima
                 sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::makeColor(255,0,0));
             }
 
-            if ( 100.0 * (double) nonMaskingPixels( sub ) / (double) (sub->getWidth() * sub->getHeight()) < 10.0 ){
+            if (100.0 * (double) nonMaskingPixels(sub) / (double) (sub->getWidth() * sub->getHeight()) < 10.0){
                 delete sub;
             } else {
-                parts.push_back( BodyPart( x - getWidth() / 2, getHeight() - y, sub ) );
+                parts.push_back(BodyPart( x - getWidth() / 2, getHeight() - y, sub));
             }
         }
     }
 
     /* TODO: cache this in a static list of bitmaps */
-    const char * more[] = {"misc/body/arm.png",
+    const char * more[] = {
+        "misc/body/arm.png",
         "misc/body/bone.png",
         "misc/body/hand.png",
         "misc/body/intestines.png",
@@ -578,9 +579,10 @@ vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> anima
         "misc/body/ribcage.png",
         "misc/body/skull.png",
         "misc/body/spine.png",
-        "misc/body/torso.png" };
+        "misc/body/torso.png"
+    };
 
-    for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i++ ){
+    for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i += Util::rnd(3) + 1){
         replacePart(parts, new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(more[i])).path()));	
     }
 
