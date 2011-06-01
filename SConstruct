@@ -1,5 +1,9 @@
 import os
 
+def isQuiet():
+    import sys
+    return '-s' in sys.argv
+
 def isPlatform(platform):
     import sys
     return platform in sys.platform
@@ -61,6 +65,29 @@ def colorResult(what):
         return colorize('yes', 'light-green')
     else:
         return colorize('no', 'light-red')
+
+def safeParseConfig(environment, config):
+    # redirects stderr, not super safe
+    def version1():
+        out = open('fail.log', 'w')
+        try:
+            sys.stderr = out
+            environment.ParseConfig(config)
+            out.close()
+        except Exception, e:
+            out.close()
+            raise e
+    # use the subprocess module to pass the output of stdout directly
+    # to mergeflags and trash stderr
+    # Not done yet!! This requires python 2.4
+    def version2():
+        import subprocess
+        process = subprocess.Popen(config.split(' '), stdout = subprocess.PIPE)
+        # p = subprocess.Popen(["ruby", "-e", code], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        out = p.stdout.readline().strip()
+        environment.MergeFlags(out)
+
+    version1()
 
 def makeUseEnvironment(key, default):
     def use():
@@ -183,7 +210,7 @@ def checkAllegro5(context):
                          make('allegro_primitives'),
                          make('allegro_audio'),
                          make('allegro_acodec')]
-            env.ParseConfig('pkg-config %s --cflags --libs' % ' '.join(libraries))
+            safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
             env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
             return True
         except Exception:
@@ -215,7 +242,7 @@ def checkSDL(context):
         tmp = context.env.Clone()
         env = context.env
         try:
-            env.ParseConfig('sdl-config --cflags --libs')
+            safeParseConfig(env, 'sdl-config --cflags --libs')
             env.Append(CPPDEFINES = ['USE_SDL'])
             if build('a'):
                 return True
@@ -232,7 +259,7 @@ def checkSDL(context):
         try:
             libs = env['LIBS']
             env.Replace(LIBS = [])
-            env.ParseConfig('sdl-config --cflags --libs')
+            safeParseConfig(env, 'sdl-config --cflags --libs')
             env.Append(LIBS = libs)
             env.Append(CPPDEFINES = ['USE_SDL'])
             m = build('b')
@@ -289,7 +316,7 @@ def checkStaticSDL(context):
     env = context.env
 
     try:
-        env.ParseConfig('sdl-config --static-libs --cflags')
+        safeParseConfig(env, 'sdl-config --static-libs --cflags')
         env.Append(CPPDEFINES = ['USE_SDL'])
     except Exception:
         context.Result(colorResult(0))
@@ -298,7 +325,7 @@ def checkStaticSDL(context):
     if False:
         sdl = env.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
         env.Append(LIBS = [sdl])
-        env.ParseConfig('sdl-config --cflags')
+        safeParseConfig(env, 'sdl-config --cflags')
         env.Append(CPPDEFINES = ['USE_SDL'])
         if isOSX() or isOSX104():
             def framework(x):
@@ -327,9 +354,9 @@ def checkAllegro(context):
     ok = 1
     try:
         def enableAllegro(env2):
-            env2.ParseConfig('allegro-config --cflags --libs')
+            safeParseConfig(env2, 'allegro-config --cflags --libs')
             env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
-        env.ParseConfig('allegro-config --cflags --libs')
+        safeParseConfig(env, 'allegro-config --cflags --libs')
         env['paintown_enableAllegro'] = enableAllegro
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         ok = context.TryLink("""
@@ -383,7 +410,7 @@ def checkNativeOgg(context):
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         try:
-            env.ParseConfig('pkg-config vorbisfile --libs --cflags')
+            safeParseConfig(env, 'pkg-config vorbisfile --libs --cflags')
         except OSError:
             context.sconf.env = tmp
             context.Result(colorResult(0))
@@ -415,7 +442,7 @@ def checkMpg123(context):
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         try:
-            env.ParseConfig('pkg-config libmpg123 --libs --cflags')
+            safeParseConfig(env,'pkg-config libmpg123 --libs --cflags') 
         except OSError:
             context.sconf.env = tmp
             context.Result(colorResult(0))
@@ -448,7 +475,7 @@ def checkMad(context):
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         try:
-            env.ParseConfig('pkg-config mad --libs --cflags')
+            safeParseConfig(env, 'pkg-config mad --libs --cflags') 
         except OSError:
             context.sconf.env = tmp
             context.Result(colorResult(0))
@@ -944,7 +971,7 @@ pspnet_inet
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         # FIXME: try to use sdl-config to find these paths
         # instead of hard coding them
-        env.ParseConfig(bin_path + '/freetype-config --cflags --libs')
+        safeParseConfig(env, bin_path + '/freetype-config --cflags --libs')
 
         # FIXME: it uses -lc-glue-ppu which I can't find maybe I missed something in the setup for now I'll put it down below
         #env.ParseConfig(bin_path +'sdl-config --cflags --libs') 
@@ -1400,7 +1427,8 @@ def display_build_properties():
     if useIntel():
         properties.append(colorize("Intel", color))
     type = ' '.join(properties)
-    print "Build type: %s" % type
+    if not isQuiet():
+        print "Build type: %s" % type
 
 display_build_properties()
 
@@ -1506,12 +1534,12 @@ else:
             #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
             #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
 
-        config.env.ParseConfig( 'freetype-config --libs --cflags' )
-        config.env.ParseConfig( 'libpng-config --libs --cflags' )
+        safeParseConfig(config.env, 'freetype-config --libs --cflags')
+        safeParseConfig(config.env, 'libpng-config --libs --cflags')
         
         # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
-        staticEnv.ParseConfig( 'freetype-config --cflags' )
-        staticEnv.ParseConfig( 'libpng-config --cflags' )
+        safeParseConfig(staticEnv, 'freetype-config --cflags')
+        safeParseConfig(staticEnv, 'libpng-config --cflags')
     except OSError:
         pass
 
@@ -1522,7 +1550,7 @@ else:
         png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
         staticEnv.Append(LIBS = [png])
     else:
-        staticEnv.ParseConfig('freetype-config --libs')
+        safeParseConfig(staticEnv, 'freetype-config --libs')
 
     #if useSDL():
     #    sdl = staticEnv.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
@@ -1657,3 +1685,6 @@ for i in shared:
 for i in static:
     installed = staticEnv.InstallAs(i[0].name + '-static', i)
     Alias('static', installed)
+
+#if isQuiet():
+#    Progress(['-\r', '\\\r', '|\r', '/\r'], interval=5)

@@ -802,9 +802,9 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
         void run(const Graphics::Bitmap & screen_buffer, const GameState & state){
             Graphics::RestoreState graphicsState;
-            Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
             /* FIXME: replace these constants */
-            Graphics::StretchedBitmap work(320, 240, screen);
+            Graphics::StretchedBitmap work(320, 240, screen_buffer);
+            Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
             updateFrames();
 
             work.start();
