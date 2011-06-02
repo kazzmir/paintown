@@ -1,7 +1,9 @@
-Paintown
+Paintown (http://paintown.sf.net)
 Version 3.5.0
 Jon Rafkind
-?/??/2010
+?/??/2011
+
+Readme last updated on 6/1/2011
 
 Topics:
   Get Source
@@ -15,7 +17,6 @@ Topics:
   Scripting
   Requirements to build
   Thanks
-
 
 * Get Source:
 
@@ -52,7 +53,20 @@ Topics:
 
   * Linux
 
+    $ make
+     or
     $ scons
+
+    Will build SDL by default. Set an environment variable to get different backends.
+    $ export ALLEGRO=1 # to use Allegro4 (software renderer)
+    $ export ALLEGRO5=1 # to use Allegro5 (hardware renderer)
+
+    Cmake also works.
+
+    $ mkdir b
+    $ cd b
+    $ cmake ..
+    $ make
 
   * Windows
 	
@@ -127,17 +141,23 @@ Topics:
            * python - http://www.python.org
     Or
            * cmake - http://www.cmake.org
-    * Allegro - 4.1 or higher. http://alleg.sf.net
     * zlib - http://www.zlib.net/
     * libpng - http://www.libpng.org/pub/png/libpng.html
     * pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
     * freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
     * Python headers, usually this comes with python
+    
+    One of:
+      * Allegro 4.x - 4.1 or higher. http://alleg.sf.net
+      * Allegro 5.x - http://alleg.sf.net
+      * SDL 1.2.x - http://libsdl.org
 
-  * Quick instructions for ubuntu
+  * Quick instructions for ubuntu (also see easy-compile-ubuntu)
     $ sudo apt-get install python-dev libfreetype6-dev liballegro4.2 zlib1g-dev
 
   * Detailed windows instructions
+    *Note* it may be easier to get the gcc4.5 environment from svn:
+      https://paintown.svn.sourceforge.net/svnroot/paintown/build-environments/gcc4.5
     Get unxutils for things like mv, rm, cp - http://www.sf.net/projects/unxutils
       Find the .zip. It unzips as usr\local\wbin, so put that in your path or just
       copy all the files in usr\local\wbin to your c:\mingw\bin directory.
@@ -165,5 +185,3 @@ Topics:
   Rain sound - by inchadney. http://freesound.iua.upf.edu/usersViewSingle.php?id=28867	
   DUMB - http://dumb.sf.net
   loadpng - http://tjaden.strangesoft.net/loadpng/
-
-
