@@ -153,6 +153,10 @@
                         fill="GridBagConstraints.BOTH"
                         />
 
+                    <hbox>
+                        <checkbox name="onion-skinning" />
+                        <label text="Onion skinning" />
+                    </hbox>
                     <label text="Events" />
                     <glue />
                     <scrollpane>
