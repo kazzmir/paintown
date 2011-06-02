@@ -103,6 +103,14 @@ endif(DEBUG)
 add_definitions(-DHAVE_NETWORKING)
 
 option(USE_SDL "Compile paintown with SDL instead of Allegro?" ON)
+option(USE_ALLEGRO5 "Compile paintown with ALLEGRO 5 instead of SDL or Allegro 4.x?" OFF)
+
+if($ENV{ALLEGRO5})
+    set(USE_ALLEGRO5 ON)
+    set(USE_SDL OFF)
+elseif(NOT $ENV{ALLEGRO5})
+    set(USE_ALLEGRO5 OFF)
+endif($ENV{ALLEGRO5})
 
 if($ENV{SDL})
     set(USE_SDL ON)
@@ -139,6 +147,13 @@ if(USE_SDL)
     if (APPLE)
 	add_definitions(-DUSE_SDL_MAIN)
     endif(APPLE)
+elseif(USE_ALLEGRO5)
+    find_package(ALLEGRO5)
+    if(NOT ALLEGRO_FOUND)
+	message(FATAL_ERROR "Couldn't find Allegro 5 and/or a required Allegro 5 module")
+    endif(NOT ALLEGRO_FOUND)
+    set(GRAPHICS_LIBRARIES sfl_module ${ALLEGRO_LIBRARIES})
+    set(GRAPHICS_INCLUDES ${ALLEGRO_INCLUDE_DIR})
 else(USE_SDL)
     #packages
     find_package(ALLEGRO) 
@@ -276,6 +291,9 @@ if (USE_SDL)
     add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
     # Mixer
     add_library(mixer_module src/util/sdl/mixer/music.c src/util/sdl/mixer/mixer.c src/util/sdl/mixer/music_ogg.c src/util/sdl/mixer/music_flac.c src/util/sdl/mixer/music_mad.c src/util/sdl/mixer/dynamic_ogg.c src/util/sdl/mixer/effect_position.c src/util/sdl/mixer/effects_internal.c src/util/sdl/mixer/effect_stereoreverse.c src/util/sdl/mixer/load_voc.c src/util/sdl/mixer/load_aiff.c src/util/sdl/mixer/wavestream.c src/util/sdl/mixer/load_ogg.c)
+elseif (USE_ALLEGRO5)
+    # SFL
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sfl)
 endif (USE_SDL)
 
 #paintown executable
