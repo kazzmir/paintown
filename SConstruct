@@ -1514,9 +1514,11 @@ else:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
         if useAllegro() and not config.CheckAllegro():
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
+            Exit(1)
 
         if useAllegro5() and not config.CheckAllegro5():
             print "Allegro5 not found"
+            Exit(1)
 
         config.CheckPthreads()
 
@@ -1525,7 +1527,9 @@ else:
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
         if useSDL() and not useMinpspw() and not usePs3() and not useNDS():
-            config.CheckSDL()
+            if not config.CheckSDL():
+                print "Install libsdl 1.2"
+                Exit(1)
             config.CheckSDLMain()
         elif useMinpspw() or usePs3() or useNDS():
             env.Append(CPPDEFINES = ['USE_SDL'])
