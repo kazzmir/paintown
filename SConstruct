@@ -70,12 +70,15 @@ def safeParseConfig(environment, config):
     # redirects stderr, not super safe
     def version1():
         out = open('fail.log', 'w')
+        old_stderr = sys.stderr
         try:
             sys.stderr = out
             environment.ParseConfig(config)
             out.close()
+            sys.stderr = old_stderr
         except Exception, e:
             out.close()
+            sys.stderr = old_stderr
             raise e
     # use the subprocess module to pass the output of stdout directly
     # to mergeflags and trash stderr
