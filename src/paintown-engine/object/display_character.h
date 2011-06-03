@@ -30,7 +30,7 @@ protected:
         const std::string path;
 private:
         bool loaded;
-        Util::Thread::Lock load_lock;
+        Util::Thread::LockObject load_lock;
 };
 
 /* loads display characters asynchronously */
@@ -56,7 +56,7 @@ protected:
     DisplayCharacter * nextCharacter();
 
     std::vector<DisplayCharacter*> characters;
-    Util::Thread::Lock data_lock;
+    Util::Thread::LockObject data_lock;
     bool forceQuit;
 };
 

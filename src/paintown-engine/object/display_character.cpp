@@ -25,7 +25,7 @@ path(path),
 loaded(false){
     setName(Filesystem::removeExtension(Filesystem::stripDir(path)));
     /* throws load-exception if the file can't be read */
-    Util::Thread::initializeLock(&load_lock);
+    // Util::Thread::initializeLock(&load_lock);
     // TokenReader reader(path);
 }
 
@@ -100,16 +100,14 @@ void DisplayCharacter::load(){
 }
 
 void DisplayCharacter::loadDone(){
-    Util::Thread::acquireLock(&load_lock);
+    Util::Thread::ScopedLock locked(load_lock);
     loaded = true;
-    Util::Thread::releaseLock(&load_lock);
 }
 
 bool DisplayCharacter::isLoaded(){
+    Util::Thread::ScopedLock locked(load_lock);
     bool ok = false;
-    Util::Thread::acquireLock(&load_lock);
     ok = loaded;
-    Util::Thread::releaseLock(&load_lock);
     return ok;
 }
 
@@ -119,7 +117,6 @@ DisplayCharacter::~DisplayCharacter(){
 DisplayCharacterLoader::DisplayCharacterLoader(const vector<DisplayCharacter*> & characters):
 forceQuit(false){
     this->characters = characters;
-    Util::Thread::initializeLock(&data_lock);
 }
 
 void DisplayCharacterLoader::load(){
@@ -137,31 +134,28 @@ void DisplayCharacterLoader::load(){
 }
 
 bool DisplayCharacterLoader::done(){
+    Util::Thread::ScopedLock locked(data_lock);
     bool result = false;
-    Util::Thread::acquireLock(&data_lock);
     result = forceQuit || (characters.size() == 0);
-    Util::Thread::releaseLock(&data_lock);
     return result;
 }
 
 void DisplayCharacterLoader::stop(){
-    Util::Thread::acquireLock(&data_lock);
+    Util::Thread::ScopedLock locked(data_lock);
     forceQuit = true;
-    Util::Thread::releaseLock(&data_lock);
 }
 
 DisplayCharacter * DisplayCharacterLoader::nextCharacter(){
+    Util::Thread::ScopedLock locked(data_lock);
     DisplayCharacter * result = NULL;
-    Util::Thread::acquireLock(&data_lock);
     result = characters.front();
     characters.erase(characters.begin());
-    Util::Thread::releaseLock(&data_lock);
     return result;
 }
 
 /* put the character in the front of the list if it has yet to be loaded */
 void DisplayCharacterLoader::update(DisplayCharacter* character){
-    Util::Thread::acquireLock(&data_lock);
+    Util::Thread::ScopedLock locked(data_lock);
     bool found = false;
     for (vector<DisplayCharacter*>::iterator it = characters.begin(); it != characters.end(); ){
         DisplayCharacter * who = *it;
@@ -176,7 +170,6 @@ void DisplayCharacterLoader::update(DisplayCharacter* character){
     if (found){
         characters.insert(characters.begin(), character);
     }
-    Util::Thread::releaseLock(&data_lock);
 }
 
 DisplayCharacterLoader::~DisplayCharacterLoader(){
