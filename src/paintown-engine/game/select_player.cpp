@@ -375,23 +375,25 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 // preview.fill( 0 );
                 // reflection.fill( 0 );
 
-                copy.draw(&preview, 0, 0 );
-                preview.drawVFlip( 0, 0, reflection );
+                copy.draw(&preview, 0, 0);
+                preview.drawVFlip(0, 0, reflection);
 
-                Graphics::Bitmap::transBlender( 0, 0, 0, 255 );
-
+                int reflection_y = preview.getHeight() - stand - stand;
+                /* draw a black solid color version of the character */
+                Graphics::Bitmap::transBlender(0, 0, 0, 255);
                 Graphics::LitBitmap s2(reflection);
-                s2.draw(0, preview.getHeight() - stand - stand, preview);
+                s2.draw(0, reflection_y, preview);
 
-                Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
+                /* then draw the original character translucently over the black */
+                Graphics::Bitmap::transBlender(0, 0, 0, 128);
                 /* TODO: implement a fading reflection. compute the alpha for each y line.
                  * start out with alpha of 128 then slowly move towards 64 at the middle
                  * of the sprite and then fade to 0 soon after, like after another 10
                  * pixels.
                  * alpha(y) = y < height/2 : 128 * y/height/2 * 100 ? alpha(64) * log(y)
                  */
-                reflection.translucent().draw( 0, preview.getHeight() - stand - stand, preview );
-                copy.draw( &preview, 0, 0 );
+                reflection.translucent().draw(0, reflection_y, preview);
+                copy.draw(&preview, 0, 0);
 
                 // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
                 // preview.floodfill( 0, 0, Bitmap::MaskColor );
