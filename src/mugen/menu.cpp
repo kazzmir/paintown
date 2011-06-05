@@ -1051,33 +1051,34 @@ void MugenMenu::renderText(Graphics::Bitmap *bmp){
     // Pretty accurate tested with 5 different screen packs and different settings
     const int bottom = position.y + ((windowVisibleItems-1) * fontSpacing.y) + windowMargin.y;
 
+    const Graphics::Bitmap area(*bmp, 0, top, bmp->getWidth(), bottom - top);
     /* FIXME: avoid using clip rect */
-    bmp->setClipRect(0, top, bmp->getWidth(), bottom);
+    // bmp->setClipRect(0, top, bmp->getWidth(), bottom);
     // bmp->rectangle(0, top, bmp->getWidth() - 1, bottom - 1, Bitmap::makeColor(255,255,255));
     
     int xplacement = position.x;
     
     // Displace by the offset
-    int yplacement = currentMenuPosition;
+    int yplacement = currentMenuPosition - top;
     
     bool alternate = false;
     
-    for( std::vector <Mugen::ItemOption *>::iterator i = options.begin(); i != options.end(); ++i){
+    for (std::vector <Mugen::ItemOption *>::iterator i = options.begin(); i != options.end(); ++i){
 	
 	Mugen::ItemOption *option = *i;
 	
 	// Render
 	if (moveText){
 	    if (!alternate){
-		option->render(movePosition.x, yplacement, fontCursor, fonts, *bmp);
+		option->render(movePosition.x, yplacement, fontCursor, fonts, area);
 	    } else {
-		option->render(movePosition.y, yplacement, fontCursor, fonts, *bmp);
+		option->render(movePosition.y, yplacement, fontCursor, fonts, area);
 	    }
 	    // Displacement
 	    movePosition.x += fontSpacing.x;
 	    movePosition.y += fontSpacing.x;
 	} else {
-	    option->render(xplacement, yplacement, fontCursor, fonts, *bmp);
+	    option->render(xplacement, yplacement, fontCursor, fonts, area);
 	}
 	// Displacement
 	xplacement += fontSpacing.x;
@@ -1108,7 +1109,7 @@ void MugenMenu::renderText(Graphics::Bitmap *bmp){
 	}
     }
     
-    bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
+    // bmp->setClipRect(0,0,bmp->getWidth(),bmp->getHeight());
 }
 
 namespace Mugen{
