@@ -131,12 +131,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     Music::pause();
     Music::play();
 
-    double runCounter = 0;
-
-    unsigned int second_counter = Global::second_counter;
-    int frames = 0;
-    double fps = Global::TICS_PER_SECOND;
-    bool show_fps = true;
+    bool show_fps = false;
 
     struct GameState{
         GameState():
@@ -148,10 +143,11 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(GameState & state, Mugen::Stage * stage):
+        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps):
         state(state),
         gameSpeed(1.0),
-        stage(stage){
+        stage(stage),
+        show_fps(show_fps){
             /* FIXME: use an enum here */
             gameInput.set(Keyboard::Key_F1, 10, false, 0);
             gameInput.set(Keyboard::Key_F2, 10, false, 1);
@@ -160,12 +156,14 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             gameInput.set(Keyboard::Key_ESC, 0, true, 4);
             gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, 4);
             gameInput.set(Keyboard::Key_F5, 10, true, 5);
+            gameInput.set(Keyboard::Key_F9, 10, true, 6);
         }
 
         InputMap<int> gameInput;
         GameState & state;
         double gameSpeed;
         Mugen::Stage * stage;
+        bool & show_fps;
 
         void doInput(){
             std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput);
@@ -197,6 +195,9 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 if (event[5]){
                     stage->setPlayerHealth(1);
                 }
+                if (event[6]){
+                    show_fps = ! show_fps;
+                }
             }
 
             if (gameSpeed < 0.1){
@@ -223,18 +224,28 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(Mugen::Stage * stage):
-            stage(stage){
+        Draw(Mugen::Stage * stage, bool & show_fps):
+            stage(stage),
+            show(true),
+            show_fps(show_fps){
             }
 
         Mugen::Stage * stage;
+        bool show;
+        bool & show_fps;
     
         virtual void draw(const Graphics::Bitmap & screen){
-            /*
-            if (Global::second_counter % 2 == 0){
-                Global::debug(0) << "FPS: " << getFps() << std::endl;
+            if (show_fps){
+                if (Global::second_counter % 2 == 0){
+                    if (show){
+                        Global::debug(0) << "FPS: " << getFps() << std::endl;
+                        show = false;
+                    }
+                } else {
+                    show = true;
+                }
             }
-            */
+
             Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
             work.start();
             stage->render(&work);
@@ -245,8 +256,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     };
 
     GameState state;
-    Logic logic(state, stage);
-    Draw draw(stage);
+    Logic logic(state, stage, show_fps);
+    Draw draw(stage, show_fps);
 
     PaintownUtil::standardLoop(logic, draw);
 

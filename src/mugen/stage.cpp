@@ -178,7 +178,7 @@ reflectionIntensity(0),
 musicVolume(0),
 //sffFile(""),
 //debugbg(false),
-board(0),
+// board(0),
 xaxis(0),
 yaxis(0),
 camerax(0),
@@ -597,11 +597,11 @@ void Mugen::Stage::load(){
     background = new Mugen::Background(ourDefFile, "BG");
     
     // Setup board our worksurface to the proper size of the entire stage 320x240 :P
-    Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
+    // Global::debug(1) << "Creating level size of Width: " << abs(boundleft) + boundright << " and Height: " << abs(boundhigh) + boundlow << endl;
     //board = new Bitmap( DEFAULT_WIDTH, DEFAULT_HEIGHT );
     // Nope we need it to be the size of the entire board... we then pan the blit so our characters will stay put without fiddling with their x coordinates
     // board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
-    board = new Graphics::Bitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    // board = new Graphics::Bitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     camerax = startx;
     cameray = starty;
     // xaxis = (abs(boundleft) + boundright + DEFAULT_WIDTH)/2;//abs(boundleft);
@@ -1258,20 +1258,20 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     // background->renderBackground(camerax, cameray, xaxis, yaxis, board);
     if (paletteEffects.time > 0){
-        drawBackgroundWithEffects((int) camerax, (int) cameray, *board);
+        drawBackgroundWithEffects((int) camerax, (int) cameray, *work);
     } else {
-        background->renderBackground((int) camerax, (int) cameray, *board);
+        background->renderBackground((int) camerax, (int) cameray, *work);
     }
     
     /* darken the background */
     if (superPause.time > 0){
         /* FIXME: this should be faded I think */
         Graphics::Bitmap::transBlender(0, 0, 0, 128);
-        board->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
+        work->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
     }
 
     //! Render layer 0 HUD
-    gameHUD->render(Mugen::Element::Background, *board);
+    gameHUD->render(Mugen::Element::Background, *work);
     
     // Players go in here
     for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -1279,34 +1279,34 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 	/* Reflection */
         /* FIXME: reflection and shade need camerax/y */
 	if (reflectionIntensity > 0){
-            obj->drawReflection(board, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
+            obj->drawReflection(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
         }
 
 	/* Shadow */
-	obj->drawShade(board, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+	obj->drawShade(work, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
         /* draw the player */
-        obj->draw(board, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
+        obj->draw(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
         Mugen::Effect * spark = *it;
-        spark->draw(*board, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
+        spark->draw(*work, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
     //! Render layer 1 HUD
-    gameHUD->render(Mugen::Element::Foreground, *board);
+    gameHUD->render(Mugen::Element::Foreground, *work);
 
     // Foreground
     // background->renderForeground( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     if (paletteEffects.time > 0){
-        drawForegroundWithEffects((int) camerax, (int) cameray, *board);
+        drawForegroundWithEffects((int) camerax, (int) cameray, *work);
     } else {
-        background->renderForeground((int) camerax, (int) cameray, *board);
+        background->renderForeground((int) camerax, (int) cameray, *work);
     }
     
     //! Render layer 2 HUD
-    gameHUD->render(Mugen::Element::Top, *board);
+    gameHUD->render(Mugen::Element::Top, *work);
 
     // Player debug
     for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -1315,19 +1315,21 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
-		board->vLine( 150, (int)character->getX(), (int)character->getZ(), Graphics::makeColor( 255, 0, 0));
+		work->vLine( 150, (int)character->getX(), (int)character->getZ(), Graphics::makeColor( 255, 0, 0));
 	    }
 	}
     }
     
     // Debug crap for board coordinates
     if (debugMode){
-	board->hLine( 0, abs(boundhigh) + currentZOffset(), board->getWidth(), Graphics::makeColor( 0,255,0 ));
-	board->vLine( 0, xaxis, board->getHeight(), Graphics::makeColor(255,0,0));
+	work->hLine( 0, abs(boundhigh) + currentZOffset(), work->getWidth(), Graphics::makeColor( 0,255,0 ));
+	work->vLine( 0, xaxis, work->getHeight(), Graphics::makeColor(255,0,0));
     }
     
     // board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
-    board->Blit((int)(quake_time > 0 ? PaintownUtil::rnd( 9 ) - 4 : 0), (int)(quake_time > 0 ? PaintownUtil::rnd( 9 ) - 4 : 0), *work);
+
+    /* FIXME: add quake back in */
+    // board->Blit((int)(quake_time > 0 ? PaintownUtil::rnd( 9 ) - 4 : 0), (int)(quake_time > 0 ? PaintownUtil::rnd( 9 ) - 4 : 0), *work);
     
     // Debug crap for screen coordinates
     if (debugMode){
@@ -1618,10 +1620,12 @@ void Mugen::Stage::cleanup(){
 	    background = 0;
 	}
 	
+        /*
 	if (board){
 	    delete board;
 	    board = 0;
 	}
+        */
 	
 	if (console){
 	    delete console;

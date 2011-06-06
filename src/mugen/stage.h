@@ -545,7 +545,7 @@ protected:
     /* Commands, Triggers or whatever else we come up with */
 
     // Our working bitmap
-    Graphics::Bitmap *board;
+    // Graphics::Bitmap *board;
 
     // Our real axis givin that we have to use negatives
     int xaxis;
