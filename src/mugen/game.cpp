@@ -230,6 +230,11 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         Mugen::Stage * stage;
     
         virtual void draw(const Graphics::Bitmap & screen){
+            /*
+            if (Global::second_counter % 2 == 0){
+                Global::debug(0) << "FPS: " << getFps() << std::endl;
+            }
+            */
             Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
             work.start();
             stage->render(&work);
@@ -243,7 +248,6 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     Logic logic(state, stage);
     Draw draw(stage);
 
-    /* TODO: handle fps count */
     PaintownUtil::standardLoop(logic, draw);
 
 #if 0

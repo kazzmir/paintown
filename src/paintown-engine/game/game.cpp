@@ -762,39 +762,12 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         Draw(Console::Console & console, World & world, GameState & state):
         console(console),
         world(world),
-        state(state),
-        /* the game graphics are meant for 320x240 and will be stretched
-         * to fit the screen
-         */
-        frames(0),
-        second_counter(Global::second_counter),
-        fps(Global::TICS_PER_SECOND){
+        state(state){
         }
 
         Console::Console & console;
         World & world;
         GameState & state;
-        int frames;
-        unsigned int second_counter;
-        double fps;
-
-        void updateFrames(){
-            if (second_counter != Global::second_counter){
-                int difference = Global::second_counter - second_counter;
-                double alpha = 0.2;
-                /* unlikely, but just in case */
-                if (difference == 0){
-                    difference = 1;
-                }
-                fps = (alpha * fps) + ((1 - alpha) * (double) frames / difference);
-                // fps[fps_index] = (double) frames / (double) difference;
-                // fps_index = (fps_index+1) % max_fps_index;
-                second_counter = Global::second_counter;
-                frames = 0;
-            }
-
-            frames += 1;
-        }
 
         void draw(const Graphics::Bitmap & screen_buffer){
             run(screen_buffer, state);
@@ -805,7 +778,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             /* FIXME: replace these constants */
             Graphics::StretchedBitmap work(320, 240, screen_buffer);
             Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
-            updateFrames();
+            // updateFrames();
 
             work.start();
             work.clear();
@@ -827,7 +800,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
 
             if (state.show_fps){
-                font.printf(screen.getWidth() - 120, 10, Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, fps);
+                font.printf(screen.getWidth() - 120, 10, Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, getFps());
             }
             console.draw(screen);
 
