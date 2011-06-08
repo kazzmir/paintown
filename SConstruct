@@ -1635,8 +1635,9 @@ static = SConscript('src/SConscript', variant_dir = buildDirStatic, exports = ['
 
 scripts = Split("""
 src/paintown-engine/script/modules/paintown.py
-src/paintown-engine/script/modules/paintown.rb
 """);
+# Don't care about ruby for now
+# src/paintown-engine/script/modules/paintown.rb
 
 Default(Install('data/scripts', scripts))
 

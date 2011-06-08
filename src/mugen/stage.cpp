@@ -1253,7 +1253,7 @@ void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitma
 }
 
 void Mugen::Stage::render(Graphics::Bitmap *work){
-    
+
     // Background
     // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
     // background->renderBackground(camerax, cameray, xaxis, yaxis, board);
@@ -1262,7 +1262,7 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     } else {
         background->renderBackground((int) camerax, (int) cameray, *work);
     }
-    
+
     /* darken the background */
     if (superPause.time > 0){
         /* FIXME: this should be faded I think */
@@ -1272,7 +1272,7 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 
     //! Render layer 0 HUD
     gameHUD->render(Mugen::Element::Background, *work);
-    
+
     // Players go in here
     for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
         Paintown::Object *obj = *it;

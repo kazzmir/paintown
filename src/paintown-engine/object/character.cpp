@@ -1749,8 +1749,7 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
 
         if (drawShadow()){
             Graphics::Bitmap const * shadow = Shadow::getShadow(getShadow());
-            // set_multiply_blender( 0, 0, 0, 164 );
-            Graphics::Bitmap::multiplyBlender( 0, 0, 0, 164 );
+            Graphics::Bitmap::multiplyBlender(0, 0, 0, 164);
             shadow->translucent().draw( getRX() - shadow->getWidth() / 2 - rel_x + getShadowX(), (int) Object::getZ() - shadow->getHeight() / 2 + getShadowY(), *work );
         }
 

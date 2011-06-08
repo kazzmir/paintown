@@ -2010,10 +2010,13 @@ void GameInfo::render(const Element::Layer & layer, const Graphics::Bitmap &bmp)
 
     player1PowerBar.render(layer, bmp);
     player2PowerBar.render(layer, bmp);
+
     player1Face.render(layer, bmp);
     player2Face.render(layer, bmp);
+
     player1Name.render(layer, bmp);
     player2Name.render(layer, bmp);
+
     timer.render(layer, bmp);
     combo.render(layer, bmp);
     roundControl.render(layer, bmp);
