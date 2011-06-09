@@ -215,6 +215,7 @@ def checkAllegro5(context):
                          make('allegro_acodec')]
             safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
             env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+            context.Message('found version %s' % version)
             return True
         except Exception:
             return False
@@ -260,7 +261,11 @@ def checkSDL(context):
         tmp = context.env.Clone()
         env = context.env
         try:
-            libs = env['LIBS']
+            libs = []
+            try:
+                libs = env['LIBS']
+            except KeyError:
+                pass
             env.Replace(LIBS = [])
             safeParseConfig(env, 'sdl-config --cflags --libs')
             env.Append(LIBS = libs)
@@ -271,7 +276,7 @@ def checkSDL(context):
             else:
                 raise Exception("Couldn't build it")
         except Exception, e:
-            print "Moving libraries failed! because '%s'" % e
+            # print "Moving libraries failed! because '%s'" % e
             context.sconf.env = tmp
             return False
 
@@ -1257,7 +1262,7 @@ if useSDL():
 elif useAllegro():
     env['PAINTOWN_BACKEND'] = 'allegro'
 elif useAllegro5():
-    env['PAINTOWN_BACKEND'] = 'allegror5'
+    env['PAINTOWN_BACKEND'] = 'allegro5'
 else:
     env['PAINTOWN_BACKEND'] = 'unknown'
 
