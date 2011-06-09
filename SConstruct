@@ -221,7 +221,8 @@ def checkAllegro5(context):
             return False
     try:
         ok = 0
-        if find(5.1) or find(5.0):
+        # if find(5.1) or find(5.0):
+        if find(5.1):
             ok = 1
         context.Result(colorResult(ok))
         return ok
