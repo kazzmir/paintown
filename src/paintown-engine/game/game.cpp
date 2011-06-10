@@ -483,7 +483,15 @@ static bool doMenu(const Token * data, Paintown::Player * player){
     Menu::Menu menu(data, optionFactory);
     Menu::Context context;
     /* use the current screen as the background */
-    context.addBackground(Graphics::Bitmap(screen_buffer, true));
+    /* in SDL/Allegro4 the screen buffer is always GFX_X, GFX_Y because it is
+     * an intermediate buffer before scaling to the screen.
+     * in Allegro5 the screen buffer is the actual screen so it may be larger
+     * than GFX_X, GFX_Y.
+     * Here we do a hack to rescale the screen buffer to the appropriate size.
+     * The width/height of screen_buffer in Allegro5 will be GFX_X, GFX_Y because
+     * thats what it was created with.
+     */
+    context.addBackground(Graphics::Bitmap(screen_buffer, true).scaleTo(screen_buffer.getWidth(), screen_buffer.getHeight()));
     try{
         menu.run(context);
         /* im pretty sure there is no way to get the menu to return normally,

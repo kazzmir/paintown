@@ -1540,14 +1540,11 @@ void Menu::Menu::run(const Context & parentContext){
         public:
             Draw(Menu & menu, Context & localContext):
             menu(menu),
-            localContext(localContext)
-            // work(Menu::Width, Menu::Height)
-            {
+            localContext(localContext){
             }
 
             Menu & menu;
             Context & localContext;
-            // Graphics::Bitmap work;
 
             void draw(const Graphics::Bitmap & work){
                 Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
