@@ -202,15 +202,15 @@ public class Animation implements Runnable {
 	}
 
 	public void addChangeUpdate( Lambda1 update ){
-		listeners.add( update );
+		listeners.add(update);
 	}
 
 	public void removeChangeUpdate( Lambda1 update ){
-		listeners.remove( update );
+		listeners.remove(update);
 	}
 
 	private void updateAll(){
-		for ( Iterator it = listeners.iterator(); it.hasNext(); ){
+		for (Iterator it = listeners.iterator(); it.hasNext();){
 			Lambda1 update = (Lambda1) it.next();
 			update.invoke_( this );
 		}
@@ -221,8 +221,8 @@ public class Animation implements Runnable {
 	 * for things like updating the current frame or the attack box
 	 */
 	private void updateDrawables(){
-		synchronized( drawables ){
-			for ( Iterator it = drawables.iterator(); it.hasNext(); ){
+		synchronized (drawables){
+			for (Iterator it = drawables.iterator(); it.hasNext();){
 				JComponent draw = (JComponent) it.next();	
 				draw.repaint();
 			}
@@ -389,15 +389,15 @@ public class Animation implements Runnable {
         return this.offsetY;
     }
 
-	public void addDrawable( JComponent draw ){
-		synchronized( drawables ){
-			drawables.add( draw );
+	public void addDrawable(JComponent draw){
+		synchronized (drawables){
+			drawables.add(draw);
 		}
 	}
 	
-	public void removeDrawable( JComponent draw ){
-		synchronized( drawables ){
-			drawables.remove( draw );
+	public void removeDrawable(JComponent draw){
+		synchronized (drawables){
+			drawables.remove(draw);
 		}
 	}
 
@@ -470,7 +470,7 @@ public class Animation implements Runnable {
     }
 
     public void nextEvent( AnimationEvent event ){
-        synchronized( events ){
+        synchronized (events){
             checkIndex();
             if (events.contains(event)){
                 while ((AnimationEvent) events.get(eventIndex) != event){

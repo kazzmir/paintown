@@ -137,7 +137,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
                 // System.out.println("Maybe file " + up + "/" + name);
                 return !dir.getName().equals(".svn") &&
                 (new File(dir, name).isDirectory() ||
-                  name.equals(up + ".txt"));
+                  name.endsWith(".txt"));
               }
             };
             

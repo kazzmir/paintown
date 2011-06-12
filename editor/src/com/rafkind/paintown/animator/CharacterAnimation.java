@@ -226,7 +226,8 @@ public class CharacterAnimation extends JPanel {
                 final JCheckBox onionSkinning = (JCheckBox) contextEditor.find("onion-skinning");
                 onionSkinning.addActionListener(new AbstractAction(){
                     public void actionPerformed(ActionEvent event){
-                        animation.setOnionSkinning(onionSkinning.isEnabled());
+                        animation.setOnionSkinning(onionSkinning.isSelected());
+                        animation.forceRedraw();
                     }
                 });
 
@@ -955,7 +956,7 @@ public class CharacterAnimation extends JPanel {
                     }
                 });
 
-                area.animate( animation );
+                area.animate(animation);
 
                 JPanel other = (JPanel) animEditor.find( "other" );
                 

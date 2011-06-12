@@ -201,12 +201,12 @@ public final class DrawArea extends JComponent {
     public void animate( Animation animation ){
         unanimate();
         currentAnimation = animation;
-        currentAnimation.addDrawable( this );
+        currentAnimation.addDrawable(this);
     }
 
     public void unanimate(){
         if ( currentAnimation != null ){
-            currentAnimation.removeDrawable( this );
+            currentAnimation.removeDrawable(this);
         }
     }
 
