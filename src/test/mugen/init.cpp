@@ -3,4 +3,5 @@ namespace Global{
     volatile int second_counter;
     int TICS_PER_SECOND;
     double LOGIC_MULTIPLIER;
+    int rateLimit;
 }

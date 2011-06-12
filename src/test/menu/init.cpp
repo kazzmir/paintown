@@ -5,4 +5,5 @@ namespace Global{
     int LOGIC_MULTIPLIER;
     int WINDOWED;
     int FULLSCREEN;
+    int rateLimit;
 }

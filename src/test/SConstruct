@@ -9,6 +9,9 @@ if use['PAINTOWN_BUILD_TESTS']:
             result = tests[name]
             if result != 0:
                 print "Test %s failed" % colorize(name, 'light-red')
+        from SCons.Script import GetBuildFailures
+        for failure in GetBuildFailures():
+            print "%s failed: %s" % (colorize(failure.node, 'light-red'), failure.errstr)
     def run_it(target, source, env):
         print "Running %s" % target[0].path
         tests[target[0].path] = env.Execute(target[0].path)

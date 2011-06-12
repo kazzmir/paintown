@@ -9,7 +9,7 @@ semaphores.cpp
 """)
 
 x = []
-test = use.Program('semaphore', source)
-x.append(test)
-use.AddPostAction(test, use['PAINTOWN_TEST'])
+#test = use.Program('semaphore', source)
+#x.append(test)
+#use.AddPostAction(test, use['PAINTOWN_TEST'])
 Return('x')
