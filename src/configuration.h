@@ -119,6 +119,10 @@ public:
     static void setStringProperty(const std::string & path, const std::string & value);
     static std::string getStringProperty(const std::string & path, const std::string & defaultValue);
 
+    static void disableSave();
+    static void setSave(bool what);
+    static bool getSave();
+
 protected:
     Configuration();
     Configuration( const Configuration & config );
@@ -136,6 +140,7 @@ protected:
 
     static void setProperty(std::string name, std::string value);
     void setKey(int * key, int value);
+    void setJoystickKey(JoystickInput & key, const JoystickInput & what);
 
 private:
     /* keyboard */
@@ -163,6 +168,9 @@ private:
     JoystickInput joystick_quit;
 
 private:
+    /* whether to save the configuration or not */
+    static bool save;
+
     //! Game speed
     static double gamespeed;
 

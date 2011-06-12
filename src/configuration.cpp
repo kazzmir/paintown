@@ -25,6 +25,8 @@ static const std::string INPUT_TYPE = "Allegro";
 static const std::string INPUT_TYPE = "Allegro5";
 #endif
 
+bool Configuration::save = true;
+
 /* text that appears in the config file */
 #define define_config(n,str) static const char * config_##n = str
 define_config(attack1, "attack1");
@@ -70,7 +72,23 @@ using namespace std;
 static const int InvalidKey = 0;
 static const Configuration::JoystickInput InvalidJoystick = Joystick::Invalid;
 
+/* don't save the configuration while loading it */
+class Disable{
+public:
+    Disable(){
+        last = Configuration::getSave();
+        Configuration::disableSave();
+    }
+
+    ~Disable(){
+        Configuration::setSave(last);
+    }
+
+    bool last;
+};
+
 Configuration Configuration::defaultPlayer1Keys(){
+    Disable disable;
     Configuration config;
     config.setRight(Keyboard::Key_RIGHT);
     config.setLeft(Keyboard::Key_LEFT);
@@ -101,6 +119,7 @@ Configuration Configuration::defaultPlayer1Keys(){
 }
 
 Configuration Configuration::defaultPlayer2Keys(){
+    Disable disable;
     Configuration config;
     config.setRight(Keyboard::Key_L);
     config.setLeft(Keyboard::Key_J);
@@ -200,6 +219,7 @@ jump( jump ){
 */
 	
 Configuration & Configuration::operator=(const Configuration & config){
+    Disable disable;
     setRight(config.getRight());
     setLeft(config.getLeft());
     setUp(config.getUp());
@@ -288,10 +308,12 @@ bool Configuration::hasMenuFont(){
 
 void Configuration::setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & info){
     menuFont = info;
+    saveConfiguration();
 }
 
 void Configuration::setMenuFontWidth(int x){
     menuFontWidth = x;
+    saveConfiguration();
 }
 
 int Configuration::getMenuFontWidth(){
@@ -300,6 +322,7 @@ int Configuration::getMenuFontWidth(){
 
 void Configuration::setMenuFontHeight(int x){
     menuFontHeight = x;
+    saveConfiguration();
 }
 
 int Configuration::getMenuFontHeight(){
@@ -401,58 +424,47 @@ int Configuration::getJump() const {
     return jump;
 }
 
-void Configuration::setJoystickRight(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_right = i;
+void Configuration::setJoystickKey(JoystickInput & key, const JoystickInput & what){
+    if (what != Joystick::Invalid){
+        key = what;
+        saveConfiguration();
     }
 }
 
-void Configuration::setJoystickLeft(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_left = i;
-    }
+void Configuration::setJoystickRight(Configuration::JoystickInput i){
+    setJoystickKey(joystick_right, i);
 }
 
-void Configuration::setJoystickUp(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_up = i;
-    }
+void Configuration::setJoystickLeft(Configuration::JoystickInput i){
+    setJoystickKey(joystick_left, i);
 }
 
-void Configuration::setJoystickDown(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_down = i;
-    }
+void Configuration::setJoystickUp(Configuration::JoystickInput i){
+    setJoystickKey(joystick_up, i);
 }
 
-void Configuration::setJoystickAttack1(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_attack1 = i;
-    }
+void Configuration::setJoystickDown(Configuration::JoystickInput i){
+    setJoystickKey(joystick_down, i);
 }
 
-void Configuration::setJoystickAttack2(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_attack2 = i;
-    }
+void Configuration::setJoystickAttack1(Configuration::JoystickInput i){
+    setJoystickKey(joystick_attack1, i);
 }
 
-void Configuration::setJoystickAttack3(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_attack3 = i;
-    }
+void Configuration::setJoystickAttack2(Configuration::JoystickInput i){
+    setJoystickKey(joystick_attack2, i);
 }
 
-void Configuration::setJoystickJump(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_jump = i;
-    }
+void Configuration::setJoystickAttack3(Configuration::JoystickInput i){
+    setJoystickKey(joystick_attack3, i);
 }
 
-void Configuration::setJoystickQuit(Configuration::JoystickInput i ){
-    if (i != Joystick::Invalid){
-        joystick_quit = i;
-    }
+void Configuration::setJoystickJump(Configuration::JoystickInput i){
+    setJoystickKey(joystick_jump, i);
+}
+
+void Configuration::setJoystickQuit(Configuration::JoystickInput i){
+    setJoystickKey(joystick_quit, i);
 }
 
 Configuration::JoystickInput Configuration::getJoystickRight() const {
@@ -516,7 +528,21 @@ static Configuration::JoystickInput intToJoystick(int a){
     return Joystick::Invalid;
 }
 
+void Configuration::disableSave(){
+    save = false;
+}
+
+void Configuration::setSave(bool what){
+    save = what;
+}
+
+bool Configuration::getSave(){
+    return save;
+}
+
 void Configuration::loadConfigurations(){
+    Disable disable;
+
     try{
         Filesystem::AbsolutePath file = Filesystem::configFile();
         TokenReader tr(file.path());
@@ -740,6 +766,7 @@ std::string Configuration::getMugenMotif(){
 
 void Configuration::setMugenMotif(const std::string & motif){
     mugenMotif = motif;
+    saveConfiguration();
 }
 
 /* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
@@ -808,6 +835,10 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
 }
 
 void Configuration::saveConfiguration(){
+
+    if (!save){
+        return;
+    }
 
     /* head will delete all these tokens in its destructor */
     Token head;
@@ -943,6 +974,7 @@ std::string Configuration::mugenMotif = "default";
 
 void Configuration::setProperty(string name, string value){
     properties[name] = value;
+    saveConfiguration();
 }
 
 void Configuration::setStringProperty(const std::string & path, const std::string & value){
@@ -957,48 +989,48 @@ std::string Configuration::getStringProperty(const std::string & path, const std
 }
 
 double Configuration::getGameSpeed(){
-	return gamespeed;
+    return gamespeed;
 }
 
 void Configuration::setGameSpeed(double s){
-	gamespeed = s;
-	saveConfiguration();
+    gamespeed = s;
+    saveConfiguration();
 }
 
 bool Configuration::getInvincible(){
-	return invincible;
+    return invincible;
 }
 
 void Configuration::setInvincible(bool i){
-	invincible = i;
-	saveConfiguration();
+    invincible = i;
+    saveConfiguration();
 }
 
 bool Configuration::getFullscreen(){
-	return fullscreen;
+    return fullscreen;
 }
 
 void Configuration::setFullscreen(bool f){
-	fullscreen = f;
-	saveConfiguration();
+    fullscreen = f;
+    saveConfiguration();
 }
 
 int Configuration::getLives(){
-	return lives;
+    return lives;
 }
 
 void Configuration::setLives(int l){
-	lives = l;
-	saveConfiguration();
+    lives = l;
+    saveConfiguration();
 }
 	
 int Configuration::getNpcBuddies(){
-	return npc_buddies;
+    return npc_buddies;
 }
 
 void Configuration::setNpcBuddies( int i ){
-	npc_buddies = i;
-	saveConfiguration();
+    npc_buddies = i;
+    saveConfiguration();
 }
         
 Configuration::PlayMode Configuration::getPlayMode(){
@@ -1007,6 +1039,7 @@ Configuration::PlayMode Configuration::getPlayMode(){
 
 void Configuration::setPlayMode(Configuration::PlayMode mode){
     play_mode = mode;
+    saveConfiguration();
 }
     
 std::string Configuration::getLanguage(){
@@ -1015,10 +1048,12 @@ std::string Configuration::getLanguage(){
 
 void Configuration::setLanguage(const std::string & str){
     language = str;
+    saveConfiguration();
 }
 
 void Configuration::setScreenWidth(int i){
     screen_width = i;
+    saveConfiguration();
 }
 
 int Configuration::getScreenWidth(){
@@ -1027,6 +1062,7 @@ int Configuration::getScreenWidth(){
 
 void Configuration::setScreenHeight(int i){
     screen_height = i;
+    saveConfiguration();
 }
 
 int Configuration::getScreenHeight(){
@@ -1039,6 +1075,7 @@ int Configuration::getSoundVolume(){
 
 void Configuration::setSoundVolume(int volume){
     soundVolume = volume;
+    saveConfiguration();
 }
 
 int Configuration::getMusicVolume(){
@@ -1047,6 +1084,7 @@ int Configuration::getMusicVolume(){
 
 void Configuration::setMusicVolume(int volume){
     musicVolume = volume;
+    saveConfiguration();
 }
 
 bool Configuration::isJoystickEnabled(){
@@ -1055,4 +1093,5 @@ bool Configuration::isJoystickEnabled(){
     
 void Configuration::setJoystickEnabled(bool enabled){
     joystickEnabled = enabled;
+    saveConfiguration();
 }
