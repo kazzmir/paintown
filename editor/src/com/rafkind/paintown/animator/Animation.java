@@ -16,6 +16,8 @@ import java.awt.image.*;
 import java.awt.Color;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.AlphaComposite;
 import javax.swing.JComponent;
 
 public class Animation implements Runnable {
@@ -318,10 +320,13 @@ public class Animation implements Runnable {
     private void drawOnionSkins(Graphics graphics, int x, int y){
         Animation clone = new Animation();
         clone.setBaseDirectory(getBaseDirectory());
+        Graphics2D translucent = (Graphics2D) graphics.create();
         synchronized (events){
             for (int event = 0; event < eventIndex; event++){
+                AlphaComposite newComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - (float) event / (float) eventIndex);
+                translucent.setComposite(newComposite);
                 clone.updateEvent((AnimationEvent) events.get(event));
-                clone.draw(graphics, x, y);
+                clone.draw(translucent, x, y);
             }
         }
     }
