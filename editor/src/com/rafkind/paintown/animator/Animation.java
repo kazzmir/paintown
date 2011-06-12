@@ -43,6 +43,7 @@ public class Animation implements Runnable {
 	private double animationSpeed;
 	/* when something is changed in the animation 'listeners' are notified */
 	private List listeners;
+    private boolean onionSkinning = false;
 	
 	private Vector keys;
 	private HashMap remapData;
@@ -89,6 +90,14 @@ public class Animation implements Runnable {
 	public String getType(){
 		return type;
 	}
+
+    public void setOnionSkinning(boolean what){
+        this.onionSkinning = what;
+    }
+
+    public boolean isOnionSkinned(){
+        return this.onionSkinning;
+    }
 	
 	public int getHeight(){
 		if ( image != null ){
@@ -306,26 +315,40 @@ public class Animation implements Runnable {
 		return animationSpeed;
 	}
 
-	public synchronized void draw( Graphics g, int x, int y ){
+    private void drawOnionSkins(Graphics graphics, int x, int y){
+        Animation clone = new Animation();
+        clone.setBaseDirectory(getBaseDirectory());
+        synchronized (events){
+            for (int event = 0; event < eventIndex; event++){
+                clone.updateEvent((AnimationEvent) events.get(event));
+                clone.draw(graphics, x, y);
+            }
+        }
+    }
+
+	public synchronized void draw(Graphics g, int x, int y){
 		int trueX = x + this.x + this.offsetX - getWidth() / 2;
 		int trueY = y + this.y + this.offsetY;
-		if ( currentImage() != null ){
-			g.drawImage( currentImage(), trueX, trueY, null );
+        if (isOnionSkinned()){
+            drawOnionSkins(g, x, y);
+        }
+		if (currentImage() != null){
+			g.drawImage(currentImage(), trueX, trueY, null);
 		}
 
-		if ( getRange() != 0 ){
+		if (getRange() != 0){
 			Color old = g.getColor();
-			g.setColor( new Color( 255, 255, 255 ) );
-			g.fillRect( trueX - offsetX + getWidth() / 2, trueY + getHeight(), getRange(), 5 );
-			g.setColor( old );
+			g.setColor(new Color(255, 255, 255));
+			g.fillRect(trueX - offsetX + getWidth() / 2, trueY + getHeight(), getRange(), 5);
+			g.setColor(old);
 		}
 
-		if ( ! attackArea.empty() ){
-			attackArea.render( g, trueX, trueY, new Color(236, 30, 30));
+		if (! attackArea.empty()){
+			attackArea.render(g, trueX, trueY, new Color(236, 30, 30));
 		}
 		
-        if ( ! defenseArea.empty() ){
-			defenseArea.render( g, trueX, trueY, new Color(51, 133, 243));
+        if (! defenseArea.empty()){
+			defenseArea.render(g, trueX, trueY, new Color(51, 133, 243));
 		}
 	}
 
@@ -349,17 +372,17 @@ public class Animation implements Runnable {
 		this.offsetX = x;
 	}
 
-        public synchronized int getOffsetX(){
-            return this.offsetX;
-        }
+    public synchronized int getOffsetX(){
+        return this.offsetX;
+    }
 	
 	public synchronized void setOffsetY( int y ){
 		this.offsetY = y;
 	}
         
-        public synchronized int getOffsetY(){
-            return this.offsetY;
-        }
+    public synchronized int getOffsetY(){
+        return this.offsetY;
+    }
 
 	public void addDrawable( JComponent draw ){
 		synchronized( drawables ){
@@ -396,11 +419,11 @@ public class Animation implements Runnable {
 		return next;
 	}
 
-	private void updateEvent( AnimationEvent event ){
-		event.interact( this );
-		for ( Iterator it = notifiers.iterator(); it.hasNext(); ){
+	private void updateEvent(AnimationEvent event){
+		event.interact(this);
+		for (Iterator it = notifiers.iterator(); it.hasNext();){
 			Lambda1 lambda = (Lambda1) it.next();
-			lambda.invoke_( event );
+			lambda.invoke_(event);
 		}
 	}
 
@@ -432,31 +455,31 @@ public class Animation implements Runnable {
 		}
 	}
 
-        private void checkIndex(){
-            if (eventIndex < 0){
-                eventIndex = 0;
-            }
-            if (eventIndex >= events.size()){
-                eventIndex = events.size() - 1;
-            }
+    private void checkIndex(){
+        if (eventIndex < 0){
+            eventIndex = 0;
         }
+        if (eventIndex >= events.size()){
+            eventIndex = events.size() - 1;
+        }
+    }
 
-        public void nextEvent( AnimationEvent event ){
-            synchronized( events ){
-                checkIndex();
-                if (events.contains(event)){
-                    while ((AnimationEvent) events.get(eventIndex) != event){
-                        nextEvent();
-                    }
+    public void nextEvent( AnimationEvent event ){
+        synchronized( events ){
+            checkIndex();
+            if (events.contains(event)){
+                while ((AnimationEvent) events.get(eventIndex) != event){
+                    nextEvent();
                 }
             }
         }
+    }
 
-	public void setDelay( int delay ){
-		this.delay = delay;
-	}
+    public void setDelay( int delay ){
+        this.delay = delay;
+    }
 
-	public int getDelay(){
+    public int getDelay(){
 		return delay;
 	}
 

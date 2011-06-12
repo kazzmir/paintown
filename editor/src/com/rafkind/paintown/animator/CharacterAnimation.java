@@ -97,7 +97,7 @@ public class CharacterAnimation extends JPanel {
                     private Object obj;
                 }
 
-                final SwingEngine animEditor = new SwingEngine( "animator/animation.xml" );
+                final SwingEngine animEditor = new SwingEngine("animator/animation.xml");
                 CharacterAnimation.this.add((JPanel) animEditor.getRootComponent(), animConstraints);
 
                 final JButton hide = (JButton) animEditor.find("hide");
@@ -220,6 +220,13 @@ public class CharacterAnimation extends JPanel {
                     public void removeUpdate(DocumentEvent e){
                         animation.setName(nameField.getText());
                         changeName.invoke_(self, nameField.getText());
+                    }
+                });
+
+                final JCheckBox onionSkinning = (JCheckBox) contextEditor.find("onion-skinning");
+                onionSkinning.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        animation.setOnionSkinning(onionSkinning.isEnabled());
                     }
                 });
 

@@ -17,16 +17,16 @@ public abstract class AnimatedObject extends BasicObject {
 	private List updates;
 
 	public AnimatedObject( String name ){
-		super( name );
+		super(name);
 		updates = new ArrayList();
 	}
 
 	public void addAnimationUpdate( Lambda1 update ){
-		updates.add( update );
+		updates.add(update);
 	}
 	
 	public void removeAnimationUpdate( Lambda1 update ){
-		updates.remove( update );
+		updates.remove(update);
 	}
 
 	public void removeAnimation( int index ){

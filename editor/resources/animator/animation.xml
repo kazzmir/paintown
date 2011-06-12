@@ -154,7 +154,7 @@
                         />
 
                     <hbox>
-                        <checkbox name="onion-skinning" />
+                        <checkbox id="onion-skinning" />
                         <label text="Onion skinning" />
                     </hbox>
                     <label text="Events" />
