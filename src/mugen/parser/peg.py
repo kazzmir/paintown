@@ -1279,12 +1279,17 @@ class Peg:
             if match:
                 self.error_size = int(match.group(1))
 
+        if self.getRule(self.start) == None:
+            raise Exception("No start rule with the name '%s'" % self.start)
+
         for rule in self.rules:
             rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
 
         # convert some rules to inline if they can be
         for rule in self.rules:
             rule.doInline()
+
+        self.getRule(self.start).inline = False
 
     def getRule(self, name):
         for rule in self.rules:
