@@ -85,7 +85,7 @@ Animation::Animation(const Token * tok, Character * const owner ):
 parent( owner ),
 current_frame( NULL ),
 attack_collide( NULL ),
-delay( 1 ),
+delay(1),
 minZDistance( 10 ),
 bbox_x1( 0 ),
 bbox_y1( 0 ),
@@ -355,9 +355,9 @@ contact( NULL ){
                 current.view() >> r;
                 setRange(r);
             } else if ( current == "delay" ){
-                int delay = 0;
+                double delay = 0;
                 current.view() >> delay;
-                AnimationEvent * ani = new AnimationEventDelay( delay );
+                AnimationEvent * ani = new AnimationEventDelay(delay);
                 events.push_back( ani );
             } else if ( current == "frame" ){
                 string path;
@@ -545,8 +545,8 @@ void Animation::upperCase( string & who ){
 			who[q] = (char)(who[q] - 'a' + 'A');
 }
 	
-void Animation::setDelay( int _delay ){
-	delay = _delay;
+void Animation::setDelay(double delay){
+    this->delay = delay;
 }
 	
 void Animation::addDecommision( const string & s ){
@@ -568,7 +568,7 @@ void Animation::setTrails(const int produce, const int life){
 }
 
 void Animation::Delay(){
-	delay_counter = delay;
+    delay_counter = delay;
 }
 	
 void Animation::playSound( const string & path ){

@@ -55,12 +55,12 @@ protected:
 
 class AnimationEventDelay: public AnimationEvent{
 public:
-	AnimationEventDelay( int _delay );
+	AnimationEventDelay( double _delay );
 
 	virtual void Interact( Animation * animation );
 
 protected:
-	int delay;
+	double delay;
 };
 
 class AnimationEventFace: public AnimationEvent{

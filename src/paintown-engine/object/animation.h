@@ -255,7 +255,7 @@ public:
 	void DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );
 	void DrawLit( int x, int y, Remap * remap, Graphics::Bitmap * work );
 	void DrawLitFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );
-	void setDelay( int _delay );
+	void setDelay(double delay);
 	void setStatus( const int status );
 	void setFrame( const std::string & path );
 	void setFrame( const int fr );
@@ -293,8 +293,8 @@ protected:
         Graphics::Bitmap * current_frame;
 	ECollide * current_collide;
 	ECollide * attack_collide;
-	int delay;
-	int delay_counter;
+	double delay;
+	double delay_counter;
 
 	double minZDistance;
 

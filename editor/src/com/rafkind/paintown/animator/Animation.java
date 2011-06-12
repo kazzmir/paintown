@@ -33,7 +33,7 @@ public class Animation implements Runnable {
 	private BoundingBox attackArea;
 	private BoundingBox defenseArea;
 	private int eventIndex;
-	private int delay;
+	private double delay;
 	private int delayTime;
 	private int x;
 	private int y;
@@ -480,11 +480,11 @@ public class Animation implements Runnable {
         }
     }
 
-    public void setDelay( int delay ){
+    public void setDelay(double delay){
         this.delay = delay;
     }
 
-    public int getDelay(){
+    public double getDelay(){
 		return delay;
 	}
 
@@ -492,7 +492,7 @@ public class Animation implements Runnable {
 		return delayTime;
 	}
 
-	public void setDelayTime( int i ){
+	public void setDelayTime(int i){
 		delayTime = i;
 	}
 

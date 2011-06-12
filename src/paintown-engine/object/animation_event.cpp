@@ -64,19 +64,17 @@ void AnimationEventCoords::Interact( Animation * animation ){
 		animation->setZ( z );
 }
 
-AnimationEventDelay::AnimationEventDelay( int _delay ):
+AnimationEventDelay::AnimationEventDelay( double _delay ):
 AnimationEvent(),
-delay( _delay ){
+delay(_delay){
 }
 
 void AnimationEventDelay::Interact( Animation * animation ){
-
-	animation->setDelay( delay );
-
+    animation->setDelay(delay);
 }
 
 AnimationEventFace::AnimationEventFace( int direction ):
-direction( direction ){
+direction(direction){
 }
 
 void AnimationEventFace::Interact( Animation * animation ){
