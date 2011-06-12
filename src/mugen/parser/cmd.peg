@@ -648,8 +648,8 @@ rules:
     float = sign? left:digit* "." right:digit+ {{ value = makeNumber($1, Value(parseDouble(left,right))); }}
           | sign? left:digit+ "." {{ value = makeNumber($1, Value(parseDouble(left))); }}
     string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = makeString(contents); }}
-    inline sign = "-"
-                | "+"
+    sign = "-"
+         | "+"
     # [,] is inclusive
     # (,) is exclusive
     range = "[" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::AllInclusive, low, high); }}
@@ -657,10 +657,10 @@ rules:
           | "(" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::LeftExclusiveRightInclusive, low, high); }}
           | "[" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::LeftInclusiveRightExclusive, low, high); }}
     name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
-    inline letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
-    alpha_digit = letter
-                | digit
-    inline digit = [0123456789]
+    letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
+    inline alpha_digit = letter
+                       | digit
+    digit = [0123456789]
     
     valuelist = first:expr_c rest:(s "," s expr_c)+ {{ value = makeValueList(first, rest); }}
               | s "," s first:expr_c rest:(s "," s expr_c)* {{ value = makeValueList(first, rest); }}
@@ -727,9 +727,9 @@ rules:
                       | <void> {{ value = left; }}
     expr12_rest(left) = s "**" s right:expr13 new_left:{{ value = makeExpressionPower(left, right); }} expr12_rest(new_left)
                       | <void> {{ value = left; }}
-    unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
-          | "-" !digit {{ value = (void*) Ast::ExpressionUnary::Minus; }}
-          | "~" {{ value = (void*) Ast::ExpressionUnary::Negation; }}
+    inline unary = "!" {{ value = (void*) Ast::ExpressionUnary::Not; }}
+                 | "-" !digit {{ value = (void*) Ast::ExpressionUnary::Minus; }}
+                 | "~" {{ value = (void*) Ast::ExpressionUnary::Negation; }}
           # | "~" !key !digit {{ value = (void*) Ast::ExpressionUnary::Negation; }}
     expr13_real = helper
                 | function
@@ -888,13 +888,13 @@ rules:
 
     # FIXME: return proper hitflag
     hitflag = hitflag_char+ hitflag_modifier? !"." {{ value = makeSimpleIdentifier("A"); }}
-    inline hitflag_char = "A"
-                        | "M"
-                        | "F"
-                        | "D"
+    hitflag_char = "A"
+                 | "M"
+                 | "F"
+                 | "D"
 
-    inline hitflag_modifier = "+"
-                            | "-"
+    hitflag_modifier = "+"
+                     | "-"
 
     keyword = keyword_real !alpha_digit {{ value = $1; }}
     keyword_real = "vel"{case} s1 "y"{case} {{ value = makeKeyword("vel y"); }}

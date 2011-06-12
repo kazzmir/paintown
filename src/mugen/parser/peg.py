@@ -216,6 +216,9 @@ class PatternEnsure(Pattern):
             return []
         return me() + self.next.find(proc)
 
+    def isFixed(self):
+        return self.next.isFixed()
+
     def generate_bnf(self):
         return "&" + self.next.generate_bnf()
 
@@ -250,6 +253,9 @@ class PatternNot(Pattern):
                 return [self]
             return []
         return me() + self.next.find(proc)
+
+    def isFixed(self):
+        return self.next.isFixed()
 
     def canBeEmpty(self, peg):
         return True
@@ -292,6 +298,9 @@ class PatternRule(Pattern):
         if proc(self):
             return [self]
         return []
+
+    def isFixed(self):
+        return False
 
     def generate_v2(self, generator, peg):
         return generator.generate_rule(self, peg)
@@ -337,6 +346,9 @@ class PatternVoid(Pattern):
     def canBeEmpty(self, peg):
         return True
 
+    def isFixed(self):
+        return True
+
     def generate_bnf(self):
         return "<void>"
 
@@ -373,6 +385,9 @@ class PatternEof(Pattern):
     def generate_bnf(self):
         return "<eof>"
 
+    def isFixed(self):
+        return True
+
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_eof(self, result, previous_result, stream, failure)
 
@@ -398,6 +413,9 @@ class PatternSequence(Pattern):
 
     def tailRecursive(self, rule):
         return self.patterns[-1].tailRecursive(rule)
+
+    def isFixed(self):
+        return reduce(lambda ok, pattern: ok and pattern.isFixed(), self.patterns, True)
 
     def canBeEmpty(self, peg):
         for pattern in self.patterns:
@@ -448,6 +466,9 @@ class PatternCallRule(Pattern):
         if proc(self):
             return [self]
         return []
+
+    def isFixed(self):
+        return False
     
     def generate_bnf(self):
         rules = ""
@@ -482,6 +503,9 @@ class PatternRepeatOnce(Pattern):
             return []
         return me() + self.next.find(proc)
 
+    def isFixed(self):
+        return self.next.isFixed()
+
     def canBeEmpty(self, peg):
         return False
 
@@ -515,6 +539,9 @@ class PatternCode(Pattern):
         if proc(self):
             return [self]
         return []
+
+    def isFixed(self):
+        return True
 
     def canBeEmpty(self, peg):
         return True
@@ -555,6 +582,9 @@ class PatternRepeatMany(Pattern):
             return []
         return me() + self.next.find(proc)
 
+    def isFixed(self):
+        return self.next.isFixed()
+
     def canBeEmpty(self, peg):
         return True
     
@@ -591,6 +621,9 @@ class PatternAny(Pattern):
     def ensureRules(self, find):
         pass
 
+    def isFixed(self):
+        return True
+
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_any(self, result, previous_result, stream, failure)
 
@@ -613,6 +646,9 @@ class PatternMaybe(Pattern):
 
     def ensureRules(self, find):
         self.pattern.ensureRules(find)
+
+    def isFixed(self):
+        return self.pattern.isFixed()
 
     def find(self, proc):
         def me():
@@ -654,6 +690,9 @@ class PatternOr(Pattern):
         for pattern in self.patterns:
             pattern.ensureRules(find)
 
+    def isFixed(self):
+        return reduce(lambda ok, pattern: ok and pattern.isFixed(), self.patterns, True)
+
     def generate_bnf(self):
         return "or"
 
@@ -674,6 +713,9 @@ class PatternBind(Pattern):
 
     def ensureRules(self, find):
         self.pattern.ensureRules(find)
+
+    def isFixed(self):
+        return self.pattern.isFixed()
 
     def find(self, proc):
         def me():
@@ -722,6 +764,9 @@ class PatternRange(Pattern):
     def ensureRules(self, find):
         pass
 
+    def isFixed(self):
+        return True
+
     def canBeEmpty(self, peg):
         return False
 
@@ -757,6 +802,9 @@ class PatternLine(Pattern):
     
     def contains(self):
         return 1
+
+    def isFixed(self):
+        return True
 
     def isLineInfo(self):
         return True
@@ -796,6 +844,9 @@ class PatternPredicate(Pattern):
             return [self]
         return []
 
+    def isFixed(self):
+        return False
+
     def canBeEmpty(self, peg):
         return True
 
@@ -829,6 +880,9 @@ class PatternVerbatim(Pattern):
 
     def ensureRules(self, find):
         pass
+
+    def isFixed(self):
+        return True
 
     def find(self, proc):
         if proc(self):
@@ -870,6 +924,15 @@ class Rule:
 
     def isInline(self):
         return self.inline
+
+    def doInline(self):
+        if not self.inline and self.parameters == None:
+            ok = True
+            for pattern in self.patterns:
+                ok = ok and pattern.isFixed()
+            if ok:
+                # print "%s is now inlined" % self.name
+                self.inline = True
 
     def generate_bnf(self):
         data = """
@@ -1033,6 +1096,21 @@ Result rule_%s(Stream & stream, int position, Value ** arguments){
 """ % (extra, self.name, indent(patterns), self.name, indent(hasChunk(True)), self.name, indent(indent(indent(updateChunk('out', columnVar, True)))))
         return data
 
+    # find all declared variables by a rule including all declared variables
+    # declared by inline rules this rule calls
+    # FIXME: if their is a duplicate variable name in an inlined rule things
+    # might break
+    def findVars(self, peg):
+        def isBind(pattern):
+            return isinstance(pattern, PatternBind)
+        def isInlined(pattern):
+            return isinstance(pattern, PatternRule) and peg.getRule(pattern.rule).isInline()
+        inlined = [peg.getRule(rule.rule) for rule in flatten([p.find(isInlined) for p in self.patterns])]
+        bind_patterns = flatten([p.find(isBind) for p in self.patterns])
+        mine = [p.variable for p in bind_patterns]
+        others = flatten([rule.findVars(peg) for rule in inlined])
+        return unique(mine + others)
+
     def generate_cpp(self, peg, chunk_accessor):
         resetGensym()
         rule_number = "RULE_%s" % self.name
@@ -1128,16 +1206,10 @@ return %s;
         if self.parameters != None:
             parameters = ", " + ", ".join(["Value %s" % p for p in self.parameters])
 
-        def findVars():
-            def isBind(pattern):
-                return isinstance(pattern, PatternBind)
-            bind_patterns = flatten([p.find(isBind) for p in self.patterns])
-            return unique([p.variable for p in bind_patterns])
-
         def declareVar(var):
             return "Value %s;" % var
 
-        vars = "\n".join([declareVar(v) for v in findVars()])
+        vars = "\n".join([declareVar(v) for v in self.findVars(peg)])
         my_position = "myposition"
 
         fail_code = ""
@@ -1209,6 +1281,10 @@ class Peg:
 
         for rule in self.rules:
             rule.ensureRules(lambda r: r in [r2.name for r2 in self.rules])
+
+        # convert some rules to inline if they can be
+        for rule in self.rules:
+            rule.doInline()
 
     def getRule(self, name):
         for rule in self.rules:

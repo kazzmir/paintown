@@ -107,6 +107,10 @@ public:
         value.reset();
     }
 
+    void setPosition(int position){
+        this->position = position;
+    }
+
     inline int getPosition() const {
         return position;
     }
@@ -497,6 +501,7 @@ public:
 private:
     char * temp;
     const char * buffer;
+    /* an array is faster and uses less memory than std::map */
     Column ** memo;
     int memo_size;
     int max;
@@ -631,6 +636,7 @@ if (%s.error()){
                 raise Exception("Do not combine inlined rules that use tail recursion")
             def newPattern(pattern, stream, result, success):
                 my_result = newResult()
+                previous_position = gensym('position')
                 out = [False]
                 def label(n):
                     if n != False:
@@ -640,9 +646,10 @@ if (%s.error()){
                 def fail():
                     if out[0] == False:
                         out[0] = newOut()
-                    return "goto %s;" % out[0]
+                    return "%s.setPosition(%s);\ngoto %s;" % (result, previous_position, out[0])
                 pattern_result = pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip()
-                data = """
+
+                old_data = """
 {
 Result %s(%s.getPosition());
 %s
@@ -654,11 +661,12 @@ Result %s(%s.getPosition());
 
                 data = """
 {
+    int %s = %s.getPosition();
     %s
 }
 %s
 %s
-""" % (indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)), success, label(out[0]))
+""" % (previous_position, result, indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)), success, label(out[0]))
                 return data
 
             success_out = gensym('success')

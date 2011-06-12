@@ -13,3 +13,4 @@ all.append(use.Peg('cmd.peg'))
 
 for x in all:
     use.Depends(x, 'peg.py')
+    use.Depends(x, 'cpp_generator.py')
