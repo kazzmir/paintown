@@ -156,6 +156,7 @@
                     <hbox>
                         <checkbox id="onion-skinning" />
                         <label text="Onion skinning" />
+                        <glue />
                     </hbox>
                     <label text="Events" />
                     <glue />
