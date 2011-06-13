@@ -8,13 +8,22 @@ if use['PAINTOWN_BUILD_TESTS']:
         for name in tests.keys():
             result = tests[name]
             if result != 0:
+                import shutil
                 print "Test %s failed" % colorize(name, 'light-red')
+                shutil.move(name, '%s.failed' % name) 
+                # Move(name, '%s.failed' % name)
         from SCons.Script import GetBuildFailures
         for failure in GetBuildFailures():
             print "%s failed: %s" % (colorize(failure.node, 'light-red'), failure.errstr)
     def run_it(target, source, env):
         print "Running %s" % target[0].path
         tests[target[0].path] = env.Execute(target[0].path)
+        #if tests[target[0].path] != 0:
+        #    Execute(Move(target[0].path, '%s.failed' % target[0].path))
+        #if tests[target[0].path] != 0:
+        #    Touch(target[0].path)
+        #    print "Deleting %s" % source[0].path
+        #    Delete(source[0].path)
     use['PAINTOWN_TEST'] = Action(run_it, 'Test')
     all = []
     all.extend(SConscript('token/SConstruct', exports = ['use']))

@@ -4,8 +4,14 @@
 #ifdef USE_SDL
 #include <SDL/SDL.h>
 #endif
+#ifdef USE_ALLEGRO5
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#endif
 
 #include <iostream>
+#include "util/message-queue.h"
 #include "util/file-system.h"
 #include "mugen/character.h"
 #include "mugen/exception.h"
@@ -72,10 +78,16 @@ int main(int argc, char ** argv){
 #elif USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
     Graphics::Bitmap::setFakeGraphicsMode(640, 480);
+#elif USE_ALLEGRO5
+    al_init();
+    al_init_image_addon();
+    al_init_primitives_addon();
 #endif
 
     Global::setDebug(1);
     Mugen::ParseCache cache;
+    Util::Thread::initializeLock(&Global::messageLock);
+    Filesystem::initialize();
 
     int die = 0;
     if (argc < 2){
