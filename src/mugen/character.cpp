@@ -1295,6 +1295,7 @@ static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & b
         
 void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path){
     Filesystem::AbsolutePath full = findStateFile(base, path);
+    Global::info("Reading " + Filesystem::cleanse(full).path());
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
     Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));

@@ -387,14 +387,14 @@ public:
             Global::debug(0) << "Ignoring error... " << endl;
         }
 
-        map<uint8_t, int> palette = readPalette(sprite.palette);
+        map<uint8_t, Graphics::Color> palette = readPalette(sprite.palette);
         Graphics::Bitmap out(sprite.width, sprite.height);
         writePixels(out, pixels, palette);
         delete[] pixels;
         return out;
     }
 
-    map<uint8_t, int> readPalette(unsigned int index){
+    map<uint8_t, Graphics::Color> readPalette(unsigned int index){
         for (vector<PaletteHeader>::iterator it = palettes.begin(); it != palettes.end(); it++){
             const PaletteHeader & palette = *it;
             if (palette.index == index){
@@ -409,11 +409,11 @@ public:
         throw exception();
     }
 
-    map<uint8_t, int> readPalette(const PaletteHeader & palette){
+    map<uint8_t, Graphics::Color> readPalette(const PaletteHeader & palette){
         sffStream.seekg(palette.offset + ldataOffset, ios::beg);
         uint8_t * data = new uint8_t[palette.length];
         sffStream.read((char*) data, palette.length);
-        map<uint8_t, int> out;
+        map<uint8_t, Graphics::Color> out;
         for (int color = 0; color < palette.colors; color++){
             /* Palette data is stored in 4 byte chunks per color.
              * The first 3 bytes correspond to 8-bit values for RGB color, and
@@ -429,7 +429,7 @@ public:
     }
 
     /* pixels are an index into a palette */
-    void writePixels(Graphics::Bitmap & out, char * pixels, map<uint8_t, int> & palette){
+    void writePixels(Graphics::Bitmap & out, char * pixels, map<uint8_t, Graphics::Color> & palette){
         for (int y = 0; y < out.getHeight(); y++){
             for (int x = 0; x < out.getWidth(); x++){
                 uint8_t pixel = pixels[x + y * out.getWidth()];
@@ -769,7 +769,7 @@ Graphics::Bitmap getSff(const char * path, int index){
     SprNode * node = file.GetSprNode(in, index);
     uint8_t * pixels = file.GetSprite(in, node);
     Graphics::Bitmap out(node->GetWidth(), node->GetHeight());
-    map<uint8_t, int> palette;
+    map<uint8_t, Graphics::Color> palette;
     PalNode * paletteNode = file.GetPalNode(in, node->GetPalInd());
     for (int y = 0; y < node->GetHeight(); y++){
         for (int x = 0; x < node->GetWidth(); x++){
