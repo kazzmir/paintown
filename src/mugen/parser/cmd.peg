@@ -584,9 +584,8 @@ Ast::Value * makeProjectileExpression(const Value & line, const Value & name, co
 
 rules:
     start = current:{{ value = makeSectionList(); }} whitespace newline* (sn line(current) whitespace line_end?)* sn <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
-    line(current) = s comment &line_end
-                  | s section {{ addSection(current, $2); }}
-                  | s newline
+    line(current) = s section {{ addSection(current, $2); }}
+                  | (!newline .)* newline
     line_end = newline+
              | &<eof> <void>
     inline newline = "\n"
@@ -605,10 +604,12 @@ rules:
             | "=" (!newline .)*
             | "-" "-" (!newline .)*
             | ":" ":" (!newline .)*
-    section = section_title ast:{{ value = makeSection($1); }} whitespace (sn section_item(ast) whitespace line_end)* {{ value = ast; }}
+    section = section_title ast:{{ value = makeSection($1); }} whitespace (sn section_item(ast))* {{ value = ast; }}
 
-    section_item(ast) = s comment
-                      | s data:assignment {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
+    section_item(ast) = s data:assignment whitespace line_end {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
+                      | line:<line> name:identifier s "=" fail:(!newline .)* line_end {{
+                        std::cout << "Warning: invalid line at " << getCurrentLine(line) << " '" << as<Ast::Identifier*>(name)->toString() << " =" << *toString(fail) << "'" << std::endl; }}
+                      | !(s section_title) (!newline .)+ line_end
     section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
     assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
                | line:<line> "guardsound"{case} s "=" s own:"s"{case}? item:expr_c s "," s group:expr_c {{
