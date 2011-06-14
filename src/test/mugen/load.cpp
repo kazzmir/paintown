@@ -11,6 +11,7 @@
 #endif
 
 #include <iostream>
+#include "util/thread.h"
 #include "util/message-queue.h"
 #include "util/file-system.h"
 #include "mugen/character.h"

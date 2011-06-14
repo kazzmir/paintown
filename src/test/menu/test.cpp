@@ -4,6 +4,11 @@
 #ifdef USE_SDL
 #include <SDL/SDL.h>
 #endif
+#ifdef USE_ALLEGRO5
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#endif
 #include <iostream>
 #include "util/token_exception.h"
 #include "util/file-system.h"
@@ -40,6 +45,7 @@ void load(const char * path){
 
 int paintown_main(int argc, char ** argv){
     Collector collector;
+    Filesystem::initialize();
     try{
         load("menu/main.txt");
         cout << "Success" << endl;
@@ -61,6 +67,10 @@ int main(int argc, char ** argv){
 #elif USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
     Graphics::Bitmap::setFakeGraphicsMode(640, 480);
+#elif USE_ALLEGRO5
+    al_init();
+    al_init_image_addon();
+    al_init_primitives_addon();
 #endif
     return paintown_main(argc, argv);
 }

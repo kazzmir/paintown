@@ -3,7 +3,14 @@
 #elif USE_SDL
 #include <SDL/SDL.h>
 #endif
+#ifdef USE_ALLEGRO5
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#endif
 
+#include "util/message-queue.h"
+#include "util/thread.h"
 #include "util/bitmap.h"
 #include "util/file-system.h"
 #include "mugen/stage.h"
@@ -22,13 +29,18 @@ int paintown_main(int argc, char ** argv){
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
-#endif
-#ifdef USE_SDL
+#elif USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
+#elif USE_ALLEGRO5
+    al_init();
+    al_init_image_addon();
+    al_init_primitives_addon();
 #endif
     Collector janitor;
     Graphics::Bitmap::setFakeGraphicsMode(640, 480);
     InputManager input;
+    Util::Thread::initializeLock(&Global::messageLock);
+    Filesystem::initialize();
 
     // for (int i = 0; i < 3; i++){
         try{
