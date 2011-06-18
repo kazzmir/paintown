@@ -710,6 +710,8 @@ class PatternBind(Pattern):
         Pattern.__init__(self)
         self.variable = variable
         self.pattern = pattern
+        if self.variable == 'value':
+            raise Exception("Cannot bind a pattern with the name 'value' because it is a reserved variable name used in the implementation of the peg")
 
     def ensureRules(self, find):
         self.pattern.ensureRules(find)

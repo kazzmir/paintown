@@ -593,7 +593,7 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
             if (first_it != sprites.end()){
                 std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
                 if (it != first_it->second.end()){
-                    Global::debug(0) << "Warning: replacing sprite " << sprite->getGroupNumber() << ", " << sprite->getImageNumber() << endl;
+                    Global::debug(0) << "Warning: replacing sprite in " << Filesystem::cleanse(filename).path() << " group " << sprite->getGroupNumber() << " item " << sprite->getImageNumber() << endl;
                     unused.push_back(it->second);
                 }
             }

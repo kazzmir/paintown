@@ -341,6 +341,12 @@ Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Valu
     return range;
 }
 
+Ast::Identifier * makeIdentifier(int line, int column, const char * name){
+    Ast::Identifier * object = new Ast::SimpleIdentifier(line, column, std::string(name));
+    GC::save(object);
+    return object;
+}
+
 Ast::Identifier * makeIdentifier(int line, int column, const Value & front, const Value & rest){
     std::list<std::string> ids;
     ids.push_back(*as<std::string*>(front));
@@ -744,10 +750,14 @@ rules:
              | name:"teammode"{case} s "!=" s arg1:identifier {{
                  value = makeFunction1(std::string("teammode!="), arg1); 
              }}
-             | line:<line> "animelem"{case} s "=" s arg1:integer s "," s comparison:all_compare s arg2:integer {{
+             # FIXME: animelem is only supposed to allow '=' immediately after
+             # 'animelem' but some scripts use >= for some reason
+             # We just treat any comparison as if it had used = since thats the only
+             # one with a semantic meaning
+             | line:<line> "animelem"{case} s all_compare s arg1:integer s "," s comparison:all_compare s arg2:integer {{
                 value = makeAnimElem(line, arg1, comparison, arg2);
              }}
-             | line:<line> "animelem"{case} s "=" s arg1:integer {{
+             | line:<line> "animelem"{case} s all_compare s arg1:integer {{
                 value = makeAnimElem(line, arg1);
              }}
              #| name:"animelem"{case} s "=" s arg1:integer function_rest {{
@@ -758,6 +768,14 @@ rules:
              #   /* FIXME: handle function rest */
              #   value = makeFunction1("animelem<=", arg1);
              #}}
+             # FIXME: timemod always compares the last value with equality but some
+             # scripts write '= 5' explicitly as in
+             # trigger1 = TimeMod = 3, = 0
+             | line:<line> "timemod"{case} s compare:all_compare s mod:integer s "," s all_compare? s to:integer {{
+                 value = makeExpressionEquals(Value(makeExpressionModulo(Value(makeIdentifier(getCurrentLine(line), getCurrentColumn(line), "time")),
+                                                                   mod)),
+                                              to);
+             }}
              # FIXME: can any integer follow the = or just positive integers?
              | line:<line> name:projectile_trigger id:integer? s "=" s arg1:integer (s "," s compare:all_compare s ticks:value)? {{
                 value = Value(makeProjectileExpression(line, name, id, arg1, compare, ticks));

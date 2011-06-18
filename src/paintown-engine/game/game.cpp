@@ -49,7 +49,7 @@
 
 using namespace std;
 
-template <class Value> vector<Value> Util::Parameter<Value>::stack;
+template <class Value> typename Util::Parameter<Value>::container Util::Parameter<Value>::stacks;
 
 // static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
@@ -472,7 +472,7 @@ public:
 };
 
 static const Graphics::Bitmap & getScreen(){
-    return *Util::Parameter<Graphics::Bitmap*>::current();
+    return *Util::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter);
 }
 
 /* in-game menu */
@@ -859,7 +859,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     Token * menuData = reader.readToken(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")).path());
 
     /* set the current player, mainly so the move list option can work */
-    Util::Parameter<Paintown::Player*> currentPlayer((Paintown::Player*) players[0]);
+    // Util::Parameter<Paintown::Player*> currentPlayer((Paintown::Player*) players[0]);
 
     bool finish = true;
     GameState state;

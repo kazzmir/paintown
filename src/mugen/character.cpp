@@ -18,6 +18,7 @@
 
 #include "util/funcs.h"
 #include "util/font.h"
+#include "util/parameter.h"
 #include "util/file-system.h"
 #include "util/debug.h"
 #include "factory/font_render.h"
@@ -53,6 +54,8 @@ using namespace std;
 static const int REGENERATE_TIME = 40;
 
 namespace Mugen{
+
+const std::string stateFileParameter = "state-file";
 
 namespace StateType{
 
@@ -105,7 +108,9 @@ changePower(false),
 powerAdd(NULL),
 moveType(Move::Idle),
 juggle(0),
-hitDefPersist(false){
+hitDefPersist(false),
+layer(0),
+changeLayer(false){
 }
     
 State * State::deepCopy() const {
@@ -123,6 +128,8 @@ State * State::deepCopy() const {
     state->moveType = this->moveType;
     state->juggle = Compiler::copy(this->juggle);
     state->hitDefPersist = this->hitDefPersist;
+    state->layer = this->layer;
+    state->changeLayer = this->changeLayer;
     for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
         StateController * controller = *it;
         state->addController(controller->deepCopy());
@@ -189,7 +196,14 @@ void State::setPhysics(Physics::Type p){
     physics = p;
 }
 
+void State::setLayer(int layer){
+    this->layer = layer;
+    changeLayer = true;
+}
+
 void State::transitionTo(const Mugen::Stage & stage, Character & who){
+    /* TODO: handle layer */
+
     if (animation != NULL){
         who.setAnimation((int) animation->evaluate(FullEnvironment(stage, who)).toNumber());
     }
@@ -1053,7 +1067,7 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
             const Filesystem::AbsolutePath & path;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                if (simple == "type"){
+                if (simple == "type" || simple == "statetype"){
                     string type;
                     simple >> type;
                     type = PaintownUtil::lowerCaseAll(type);
@@ -1110,11 +1124,15 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                     bool what;
                     simple >> what;
                     definition->setHitDefPersist(what);
+                } else if (simple == "layerno"){
+                    int layer;
+                    simple >> layer;
+                    definition->setLayer(layer);
                 } else if (simple == "movehitpersist"){
                 } else if (simple == "hitcountpersist"){
                 } else if (simple == "sprpriority"){
                 } else {
-                    Global::debug(0) << "Unhandled statedef attribute: " << simple.toString() << " " << sourceLocation(simple, path) << endl;
+                    Global::debug(0) << "Unhandled attribute in Statedef " << definition->getState() << ": " << simple.toString() << " " << sourceLocation(simple, path) << endl;
                 }
             }
     };
@@ -1296,6 +1314,7 @@ static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & b
 void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path){
     Filesystem::AbsolutePath full = findStateFile(base, path);
     Global::info("Reading " + Filesystem::cleanse(full).path());
+    PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(Filesystem::cleanse(full), stateFileParameter);
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
     Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
@@ -2950,6 +2969,11 @@ void Character::resetPlayer(){
 bool Character::isBlocking(const HitDefinition & hit){
     /* FIXME: can only block if in the proper state relative to the hit def */
     return hasControl() && blocking;
+}
+        
+void Character::resetHitFlag(){
+    /* FIXME: not sure if this is right */
+    guarding = false;
 }
 
 bool Character::isGuarding() const {

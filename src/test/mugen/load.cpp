@@ -85,7 +85,7 @@ int main(int argc, char ** argv){
     al_init_primitives_addon();
 #endif
 
-    Global::setDebug(1);
+    Global::setDebug(0);
     Mugen::ParseCache cache;
     Util::Thread::initializeLock(&Global::messageLock);
     Filesystem::initialize();

@@ -1,6 +1,7 @@
 #include "util/bitmap.h"
 #include "ast/all.h"
 #include "state-controller.h"
+#include "util/parameter.h"
 #include "character.h"
 #include "helper.h"
 #include "stage.h"
@@ -14,6 +15,8 @@ using namespace std;
 /* TODO: go through each trigger and write how far done it is, 50% or 100%
  * TODO: Remove Compiler::Value* and replace it with Value
  */
+
+template <class Value> typename Util::Parameter<Value>::container Util::Parameter<Value>::stacks;
 
 namespace Mugen{
         
@@ -1702,7 +1705,7 @@ public:
                 return out.str();
             }
 
-            AttackType::Animation parseAnimationType(string type){
+            AttackType::Animation parseAnimationType(string type, const Ast::AttributeSimple & simple){
                 type = Util::fixCase(type);
                 if (type == "light"){
                     return AttackType::Light;
@@ -1717,7 +1720,7 @@ public:
                 } else if (type == "diagup"){
                     return AttackType::DiagonalUp;
                 } else {
-                    Global::debug(0) << "Unknown hitdef animation type " << type << endl;
+                    Global::debug(0) << "Unknown hitdef animation type '" << type << "' in file " << PaintownUtil::Parameter<Filesystem::RelativePath>::current(stateFileParameter).path() << " at line " << simple.getLine() << " column " << simple.getColumn() << endl;
                 }
                 return AttackType::NoAnimation;
             }
@@ -1769,17 +1772,17 @@ public:
                 } else if (simple == "animtype"){
                     string anim;
                     simple >> anim;
-                    hit.animationType = parseAnimationType(anim);
+                    hit.animationType = parseAnimationType(anim, simple);
                 } else if (simple == "air.animtype"){
                     string anim;
                     simple >> anim;
-                    hit.animationTypeAir = parseAnimationType(anim);
+                    hit.animationTypeAir = parseAnimationType(anim, simple);
                 } else if (simple == "debug"){
                     // setDebug(true);
                 } else if (simple == "fall.animtype"){
                     string anim;
                     simple >> anim;
-                    hit.animationTypeFall = parseAnimationType(anim);
+                    hit.animationTypeFall = parseAnimationType(anim, simple);
                 } else if (simple == "priority"){
                     const Ast::Value * hit;
                     simple >> hit;
@@ -6391,6 +6394,25 @@ public:
     }
 };
 
+class ControllerMoveHitReset: public StateController {
+public:
+    ControllerMoveHitReset(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    ControllerMoveHitReset(const ControllerMoveHitReset & you):
+    StateController(you){
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerMoveHitReset(*this);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        guy.resetHitFlag();
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -6565,9 +6587,9 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Trans : return new ControllerTrans(section, name, state);
         case StateController::AppendToClipboard : return new ControllerAppendToClipboard(section, name, state);
         case StateController::ClearClipboard : return new ControllerClearClipboard(section, name, state);
+        case StateController::MoveHitReset : return new ControllerMoveHitReset(section, name, state);
         case StateController::BindToRoot :
         case StateController::BindToTarget :
-        case StateController::MoveHitReset :
         case StateController::ParentVarAdd :
         case StateController::SndPan :
         case StateController::TargetDrop :

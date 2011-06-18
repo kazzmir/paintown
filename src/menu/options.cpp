@@ -196,7 +196,7 @@ void OptionCredits::run(const Menu::Context & context){
     }
 
     // const Font & vFont = Configuration::getMenuFont()->get(context.getFont()->get());
-    const Font & vFont = Util::Parameter<Util::ReferenceCount<Menu::FontInfo> >::current()->get();
+    const Font & vFont = Util::Parameter<Util::ReferenceCount<Menu::FontInfo> >::current(Menu::menuFontParameter)->get();
 
     // bool quit = false;
 

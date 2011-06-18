@@ -385,7 +385,7 @@ int paintown_main(int argc, char ** argv){
     Global::debug(0) << diff.printTime("Init took") << endl;
 
     Graphics::Bitmap screen(Graphics::getScreenBuffer());
-    Util::Parameter<Graphics::Bitmap*> use(&screen);
+    Util::Parameter<Graphics::Bitmap*> use(&screen, Graphics::screenParameter);
 
     try{
         Paintown::Mod::loadPaintownMod(Configuration::getCurrentGame());
@@ -399,7 +399,7 @@ int paintown_main(int argc, char ** argv){
     InputManager input;
     Music music(music_on);
 
-    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()), Menu::menuFontParameter);
 
     while (true){
         bool normal_quit = false;

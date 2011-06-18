@@ -38,6 +38,8 @@ class TokenView;
 
 namespace Menu{
 
+extern const std::string menuFontParameter;
+
 Effects::Gradient standardGradient();
 
 class OptionFactory;

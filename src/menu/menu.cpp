@@ -36,13 +36,15 @@
 using namespace std;
 using namespace Gui;
 
-template <class Value> vector<Value> Util::Parameter<Value>::stack;
+template <class Value> typename Util::Parameter<Value>::container Util::Parameter<Value>::stacks;
+
+const string Menu::menuFontParameter = "menu-font";
 
 /* the current font is a property of the dynamic execution. so it will
  * be modified by various functions that call Parameter::push
  */
 static const Font & currentFont(){
-    return Util::Parameter<Util::ReferenceCount<Menu::FontInfo> >::current()->get();
+    return Util::Parameter<Util::ReferenceCount<Menu::FontInfo> >::current(Menu::menuFontParameter)->get();
 }
 
 static std::string sharedFont = "fonts/arial.ttf";
@@ -1444,7 +1446,7 @@ void Menu::Menu::run(const Context & parentContext){
     try{
         // Setup context from parent and this menu and initialize
         Context localContext(parentContext, context);
-        Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+        Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont(menuFontParameter);
         if (context.hasFont()){
             currentFont.push(context.getFontInfo());
         }
@@ -1547,7 +1549,7 @@ void Menu::Menu::run(const Context & parentContext){
             Context & localContext;
 
             void draw(const Graphics::Bitmap & work){
-                Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+                Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont(menuFontParameter);
                 if (Configuration::hasMenuFont()){
                     currentFont.push(Configuration::getMenuFont());
                 }
@@ -1664,7 +1666,7 @@ void Menu::Menu::act(Context & ourContext){
     }
             
     if (renderer){
-        Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
+        Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont(menuFontParameter);
         if (Configuration::hasMenuFont()){
             currentFont.push(Configuration::getMenuFont());
         }

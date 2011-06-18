@@ -134,7 +134,7 @@ static int getServerPort(){
     bool draw = true;
     Logic logic(input, draw);
     Draw drawer(background, input, drawY, draw);
-    drawer.draw(*Util::Parameter<Graphics::Bitmap*>::current());
+    drawer.draw(*Util::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter));
 
     Util::standardLoop(logic, drawer);
 

@@ -45,6 +45,8 @@ class MugenAnimation;
 
 namespace Mugen{
 
+extern const std::string stateFileParameter;
+
 class Behavior;
 class Stage;
 
@@ -481,6 +483,7 @@ public:
     }
 
     virtual void setMoveType(const std::string & type);
+    virtual void setLayer(int layer);
                     
     virtual inline void setHitDefPersist(bool what){
         hitDefPersist = what;
@@ -517,6 +520,8 @@ protected:
     std::string moveType;
     Compiler::Value * juggle;
     bool hitDefPersist;
+    int layer;
+    bool changeLayer;
 };
 
 class Command;
@@ -932,6 +937,12 @@ public:
         bool isBlocking(const HitDefinition & hit);
         /* true if the player was attacked and blocked it */
         bool isGuarding() const;
+
+        /* Resets the movehit flag to 0. That is, after executing MoveHitReset,
+         * the triggers MoveContact, MoveGuarded, and MoveHit will all return
+         * 0.
+         */
+        void resetHitFlag();
 
         virtual const HitState & getHitState() const {
             return hitState;

@@ -384,7 +384,7 @@ static bool handlePortInput( string & str, const vector< int > & keys ){
 */
 
 static void popup(const Font & font, const string & message ){
-    const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current();
+    const Graphics::Bitmap & work = *Util::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter);
     int length = font.textLength( message.c_str() ) + 20; 
     // Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
     Graphics::Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
@@ -695,7 +695,7 @@ void networkClient(){
     Logic logic(focus, state, nameInput, portInput, hostInput, bundle);
     Draw draw(state, focus, nameInput, portInput, hostInput);
 
-    draw.draw(*Util::Parameter<Graphics::Bitmap*>::current());
+    draw.draw(*Util::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter));
     Util::standardLoop(logic, draw);
 
 #if 0
