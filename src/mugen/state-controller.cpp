@@ -16,8 +16,6 @@ using namespace std;
  * TODO: Remove Compiler::Value* and replace it with Value
  */
 
-template <class Value> typename Util::Parameter<Value>::container Util::Parameter<Value>::stacks;
-
 namespace Mugen{
         
 typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
@@ -1720,7 +1718,7 @@ public:
                 } else if (type == "diagup"){
                     return AttackType::DiagonalUp;
                 } else {
-                    Global::debug(0) << "Unknown hitdef animation type '" << type << "' in file " << PaintownUtil::Parameter<Filesystem::RelativePath>::current(stateFileParameter).path() << " at line " << simple.getLine() << " column " << simple.getColumn() << endl;
+                    Global::debug(0) << "Unknown hitdef animation type '" << type << "' in file " << stateFileParameter.current().path() << " at line " << simple.getLine() << " column " << simple.getColumn() << endl;
                 }
                 return AttackType::NoAnimation;
             }

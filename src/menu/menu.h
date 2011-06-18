@@ -8,6 +8,7 @@
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "util/pointer.h"
+#include "util/parameter.h"
 #include "util/input/input-map.h"
 #include "util/gradient.h"
 #include "font-info.h"
@@ -38,7 +39,7 @@ class TokenView;
 
 namespace Menu{
 
-extern const std::string menuFontParameter;
+extern Util::Parameter<Util::ReferenceCount<FontInfo> > menuFontParameter;
 
 Effects::Gradient standardGradient();
 

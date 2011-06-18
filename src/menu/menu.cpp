@@ -36,16 +36,14 @@
 using namespace std;
 using namespace Gui;
 
-template <class Value> typename Util::Parameter<Value>::container Util::Parameter<Value>::stacks;
-
-const string Menu::menuFontParameter = "menu-font";
-
 /* the current font is a property of the dynamic execution. so it will
  * be modified by various functions that call Parameter::push
  */
 static const Font & currentFont(){
-    return Util::Parameter<Util::ReferenceCount<Menu::FontInfo> >::current(Menu::menuFontParameter)->get();
+    return Menu::menuFontParameter.current()->get();
 }
+
+Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > Menu::menuFontParameter;
 
 static std::string sharedFont = "fonts/arial.ttf";
 static int sharedFontWidth = 24;

@@ -301,11 +301,11 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         reflection(GFX_X / 2, GFX_Y / 2),
         boxSize(80),
         boxesPerLine(boxesPerLine),
-        boxesPerColumn((Util::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter)->getHeight() - startY) / (boxSize + 10)),
+        boxesPerColumn((Graphics::screenParameter.current()->getHeight() - startY) / (boxSize + 10)),
         startX(GFX_X / 2 - 20),
         startY(20),
         top(0){
-            boxesPerLine = (Util::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter)->getWidth() - startX) / (boxSize + 10);
+            boxesPerLine = (Graphics::screenParameter.current()->getWidth() - startX) / (boxSize + 10);
             Graphics::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
 
             Graphics::blend_palette( selectedGradient, MAXCOLOR / 2, Graphics::makeColor( 0, 128, 0 ), Graphics::makeColor( 0, 255, 0 ) );

@@ -14,7 +14,8 @@ if use['PAINTOWN_BUILD_TESTS']:
                 # Move(name, '%s.failed' % name)
         from SCons.Script import GetBuildFailures
         for failure in GetBuildFailures():
-            print "%s failed: %s" % (colorize(failure.node, 'light-red'), failure.errstr)
+            if 'test' in str(failure.node):
+                print "%s failed: %s" % (colorize(failure.node, 'light-red'), failure.errstr)
     def run_it(target, source, env):
         print "Running %s" % target[0].path
         tests[target[0].path] = env.Execute(target[0].path)

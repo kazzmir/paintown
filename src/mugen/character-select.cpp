@@ -1023,7 +1023,7 @@ VersusScreen::~VersusScreen(){
 }
 
 static const Graphics::Bitmap & getScreen(){
-    return *PaintownUtil::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter);
+    return *Graphics::screenParameter.current();
 }
 
 void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage){

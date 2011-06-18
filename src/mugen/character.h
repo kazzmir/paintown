@@ -45,7 +45,7 @@ class MugenAnimation;
 
 namespace Mugen{
 
-extern const std::string stateFileParameter;
+extern PaintownUtil::Parameter<Filesystem::RelativePath> stateFileParameter;
 
 class Behavior;
 class Stage;

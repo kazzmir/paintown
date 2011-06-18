@@ -49,8 +49,6 @@
 
 using namespace std;
 
-template <class Value> typename Util::Parameter<Value>::container Util::Parameter<Value>::stacks;
-
 // static int LAZY_KEY_DELAY = 300;
 static bool show_loading_screen = true;
 
@@ -472,7 +470,7 @@ public:
 };
 
 static const Graphics::Bitmap & getScreen(){
-    return *Util::Parameter<Graphics::Bitmap*>::current(Graphics::screenParameter);
+    return *Graphics::screenParameter.current();
 }
 
 /* in-game menu */
