@@ -278,7 +278,7 @@ public:
     void showMoveList(Paintown::Player * player, const Menu::Context & context){
         class Logic: public Util::Logic {
         public:
-            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::ScrollList & list, const Menu::Context & context):
+            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::NormalList & list, const Menu::Context & context):
             playerCopy(playerCopy),
             area(area),
             list(list),
@@ -302,7 +302,7 @@ public:
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             InputMap<MoveListInput> input;
-            Gui::ScrollList & list;
+            Gui::NormalList & list;
             const Menu::Context & context;
             Effects::Gradient gradient;
 
@@ -382,7 +382,7 @@ public:
 
         class Draw: public Util::Draw {
         public:
-            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, const Gui::ScrollList & list):
+            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, const Gui::NormalList & list):
                 background(GFX_X, GFX_Y),
                 playerCopy(playerCopy),
                 area(area),
@@ -395,7 +395,7 @@ public:
             Graphics::Bitmap background;
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
-            const Gui::ScrollList & list;
+            const Gui::NormalList & list;
 
             void draw(const Graphics::Bitmap & buffer){
                 background.Blit(buffer);
@@ -424,8 +424,8 @@ public:
             return;
         }
 
-        Gui::ScrollList list;
-        list.setJustification(Gui::ScrollList::LeftJustify);
+        Gui::NormalList list;
+        list.setJustification(Gui::LeftJustify);
 
         Util::ReferenceCount<Paintown::Character> playerCopy = new Paintown::Character(*player);
         Gui::PopupBox area;

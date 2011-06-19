@@ -5,13 +5,18 @@ if use['PAINTOWN_BUILD_TESTS']:
     tests = {}
     def show_tests():
         colorize = use['PAINTOWN_COLORIZE']
+        count = 0
         for name in tests.keys():
             result = tests[name]
             if result != 0:
                 import shutil
+                count += 1
                 print "Test %s failed" % colorize(name, 'light-red')
                 shutil.move(name, '%s.failed' % name) 
                 # Move(name, '%s.failed' % name)
+        if len(tests.keys()) > 0 and count == 0:
+            print colorize("All tests passed", 'light-green')
+
         from SCons.Script import GetBuildFailures
         for failure in GetBuildFailures():
             if 'test' in str(failure.node):
