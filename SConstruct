@@ -125,6 +125,7 @@ useNDS = makeUseEnvironment('nds', False)
 useDingoo = makeUseEnvironment('dingoo', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
+useNacl = makeUseEnvironment('nacl', False)
 nativeCompile = makeUseEnvironment('native', False)
 enableProfiled = makeUseEnvironment('PROFILE', False)
 showTiming = makeUseEnvironment('timing', False)
@@ -1063,6 +1064,56 @@ rsx
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', ogc_bin_path)
         return env
+    def nacl(env):
+        # Sets up the environment for Googles Native Client
+        # check for architecture
+        print "Environment is for Google Native Client"
+        import platform
+        arch = platform.architecture()[0]
+        try:
+	    if os.environ['nacl_32']:
+		arch_override = '32bit'
+	    elif os.environ['nacl_64']:
+		arch_override = '64bit'
+	except KeyError:
+	    arch_override = ''
+        
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        
+        path = '/opt/nacl_sdk'
+        bin_path = setup(path, '/toolchain/linux_x86/bin')
+        usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
+        
+        if arch == '64bit' or arch_override == '64bit':
+	    prefix = 'nacl64-'
+	    flags = ['-m32']
+	    libs = ['']
+	elif arch == '32bit' or arch_override == '32bit':
+	    prefix = 'nacl-'
+	    flags = ['-m64']
+	    libs = ['']
+	    
+        def set_prefix(x):
+            return '%s%s' % (prefix, x)
+        env['CC'] = set_prefix('gcc')
+        env['LD'] = set_prefix('ld')
+        env['CXX'] = set_prefix('g++')
+        env['AS'] = set_prefix('as')
+        env['AR'] = set_prefix('ar')
+        env['OBJCOPY'] = set_prefix('objcopy')
+        
+        safeParseConfig(env, usr_path + '/bin/libpng-config --cflags --libs')
+        safeParseConfig(env, usr_path + '/bin/freetype-config --cflags --libs')
+        safeParseConfig(env, usr_path + '/bin/sdl-config --cflags --libs')
+        
+        env.Append(CPPDEFINES = ['NACL'])
+        env.Append(CPPPATH = setup(usr_path,'/include'))
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env.Append(LINKFLAGS = flags)
+        env.Append(LIBS = libs)
+        return env
     def llvm(env):
         #env['CC'] = 'llvm-gcc'
         #env['CXX'] = 'llvm-g++'
@@ -1131,6 +1182,8 @@ rsx
                 return minpspw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif usePs3():
                 return ps3(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
+            elif useNacl():
+                return nacl(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useLLVM():
                 return llvm(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             else:
@@ -1296,7 +1349,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo():
+if not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useNacl():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1379,6 +1432,8 @@ def buildType(dir):
             properties.append('psp')
     if usePs3():
         properties.append('ps3')
+    if useNacl():
+	properties.append('nacl')
     if useNDS():
         properties.append('NDS')
     if useWii():
@@ -1437,6 +1492,8 @@ def display_build_properties():
         properties.append(colorize("PSP", color))
     if usePs3():
         properties.append(colorize("PS3", color))
+    if useNacl():
+	properties.append(colorize("NACL", color))
     if useLLVM():
         properties.append(colorize("LLVM", color))
     if useIntel():
@@ -1520,7 +1577,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo():
+    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useNacl():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
@@ -1541,12 +1598,12 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw() and not usePs3() and not useNDS():
+        if useSDL() and not useMinpspw() and not usePs3() and not useNDS() and not useNacl():
             if not config.CheckSDL():
                 print "Install libsdl 1.2"
                 Exit(1)
             config.CheckSDLMain()
-        elif useMinpspw() or usePs3() or useNDS():
+        elif useMinpspw() or usePs3() or useNDS() or useNacl():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             config.CheckSDLMain()

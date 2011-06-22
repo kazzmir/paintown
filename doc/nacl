@@ -1,0 +1,31 @@
+* How to build for Google's Native Client:
+*  This assumes you are on linux (you can modify it for windows as necessary)
+*  You can go to http://code.google.com/chrome/nativeclient/docs/download.html and download the appropriate bin for your OS
+*  
+*  - To install naclports you need a patch version higher than 2.6 - grab it here: ftp://ftp.gnu.org/gnu/patch
+
+  1. Download and setup the Native Client toolchain:
+      - wget http://commondatastorage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/naclsdk_linux.tgz
+      - tar xvf naclsdk_linux.tgz
+      - mv native_client_sdk_* /opt/nacl_sdk
+      - export PATH=/opt/nacl_sdk/toolchain/linux_x86/bin:"$PATH"
+  
+  2. Setup chrome depot tools and nacl ports
+      - export NACL_SDK_ROOT=/opt/nacl_sdk
+      - svn co http://src.chromium.org/svn/trunk/tools/depot_tools
+      - mv depot_tools /opt/nacl_sdk
+      - mkdir /opt/nacl_sdk/naclports
+      - cd /opt/nacl_sdk/naclports
+      - gclient config http://naclports.googlecode.com/svn/trunk/src
+      - gclient sync
+      - cd src/packages
+      - ./nacl-install-all.sh (if you get an error look at the note at the top regarding 2.6)
+      
+  
+  3. Set the build type environment variable to 'nacl' and build paintown
+    export SDL=1
+    export nacl=1
+    cd /path/to/paintown
+    make
+  
+  
