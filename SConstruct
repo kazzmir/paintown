@@ -1674,10 +1674,10 @@ def ps3_pkg(target, source, env):
     env.Execute('cp %s %s.elf' % (file, file))
     env.Execute('mkdir -p pkg/USRDIR')
     env.Execute('cp data/psp/icon0.png pkg/')
-    env.Execute('python fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
+    env.Execute('python /opt/ps3dev/bin/fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
     #FIXME get the path from the environment for the sfoxml
-    env.Execute('python sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/bin/sfo.xml pkg/PARAM.SFO')
-    env.Execute('python pkg.py --contentid UP0001-Paintown_00-0000000000000000 pkg/ %s.pkg' % file)
+    env.Execute('python /opt/ps3dev/bin/sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/bin/sfo.xml pkg/PARAM.SFO')
+    env.Execute('python /opt/ps3dev/bin/pkg.py --contentid UP0001-Paintown_00-0000000000000000 pkg/ %s.pkg' % file)
     print "Sign pkg with tools from geohot or something (http://www.geohot.com)..."
     return 0
 
