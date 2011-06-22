@@ -20,6 +20,14 @@ class AttackEvent extends AnimationEvent {
   var onDestroy = () => { }
   var attacks:List[Attack] = List[Attack]()
 
+  def toScalaList[T](list:java.util.List[T]):List[T] = {
+    var out:List[T] = List[T]()
+    for (item <- scala.collection.JavaConversions.asScalaBuffer(list)){
+      out = out :+ item
+    }
+    out
+  }
+
   class Attack(){
     var x1:Int = 0
     var y1:Int = 0
@@ -28,133 +36,91 @@ class AttackEvent extends AnimationEvent {
     var damage:Int = 0
     var forceX:Double = DEFAULT_FORCE_X
     var forceY:Double = DEFAULT_FORCE_Y
+
+    def isEmpty():Boolean = {
+      x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0
+    }
   }
 
   override def destroy() = {
     onDestroy()
   }
 
+  def parseAttacks(token:Token):List[Attack] = {
+    (parse(token) :: toScalaList(token.findTokens("box")).map(parse)).filter(x => x.isEmpty())
+  }
+
   override def loadToken(token:Token){
-    this.attacks = List[Attack]()
-        
-    val attack = parse(token);
-
-        /*
-        Attack attack = new Attack();
-
-        Token x1_token = token.findToken("x1");
-        if (x1_token != null){
-            attack.x1 = x1_token.readInt(0);
-        }
-
-        Token y1_token = token.findToken("y1");
-        if (y1_token != null){
-            attack.y1 = y1_token.readInt(0);
-        }
-
-        Token x2_token = token.findToken("x2");
-        if (x2_token != null){
-            attack.x2 = x2_token.readInt(0);
-        }
-
-        Token y2_token = token.findToken("y2");
-        if (y2_token != null){
-            attack.y2 = y2_token.readInt(0);
-        }
-
-        Token damage_token = token.findToken("damage");
-        if (damage_token != null){
-            attack.damage = damage_token.readInt(0);
-        }
-
-        Token force_token = token.findToken("force");
-        if (force_token != null){
-            attack.force = force_token.readInt(0);
-        }
-        */
-
-        if (attack.x1 != 0 || attack.y1 != 0 ||
-            attack.x2 != 0 || attack.y2 != 0 ||
-            attack.damage != 0){
-            attacks = attack :: attacks;
-        }
-
-        /* FIXME
-        for (box <- token.findTokens("box")){
-            attacks = attacks ++ parse(box);
-        }
-        */
-    }
+    this.attacks = parseAttacks(token)
+  }
 
   def parse(token:Token):Attack = {
-        val attack = new Attack();
+    val attack = new Attack();
 
-        val x1_token = token.findToken("x1");
-        if (x1_token != null){
-            attack.x1 = x1_token.readInt(0);
-        }
-
-        val y1_token = token.findToken("y1");
-        if (y1_token != null){
-            attack.y1 = y1_token.readInt(0);
-        }
-
-        val x2_token = token.findToken("x2");
-        if (x2_token != null){
-            attack.x2 = x2_token.readInt(0);
-        }
-
-        val y2_token = token.findToken("y2");
-        if (y2_token != null){
-            attack.y2 = y2_token.readInt(0);
-        }
-
-        val damage_token = token.findToken("damage");
-        if (damage_token != null){
-            attack.damage = damage_token.readInt(0);
-        }
-
-        val force_token = token.findToken("force");
-        if (force_token != null){
-            /*
-            attack.force = force_token.readInt(0);
-            */
-            try{
-                val x = force_token.readDouble(0);
-                val y = force_token.readDouble(1);
-                attack.forceX = x;
-                attack.forceY = y;
-            } catch {
-              case fail:NoSuchElementException => {
-              }
-            }
-        }
-
-        return attack;
+    val x1_token = token.findToken("x1");
+    if (x1_token != null){
+      attack.x1 = x1_token.readInt(0);
     }
 
-  override def getToken():Token = {
-        val temp = new Token();
-        /*
-        temp.addToken(new Token("attack"));
-        for (Attack attack : attacks){
-            if (attack.x1 == 0 && attack.y1 == 0 && attack.x2 == 0 && attack.y2 == 0 && attack.damage == 0) {
-                // temp.addToken(new Token("box"));
-            } else {
-                Token box = new Token();
-                temp.addToken(box);
-                box.addToken(new Token("box"));
-                box.addToken(new String[]{"x1",Integer.toString(attack.x1)});
-                box.addToken(new String[]{"y1",Integer.toString(attack.y1)});
-                box.addToken(new String[]{"x2",Integer.toString(attack.x2)});
-                box.addToken(new String[]{"y2",Integer.toString(attack.y2)});
-                box.addToken(new String[]{"force", Double.toString(attack.forceX), Double.toString(attack.forceY)});
-                box.addToken(new String[]{"damage",Integer.toString(attack.damage)});
-            }
-        }
-        */
+    val y1_token = token.findToken("y1");
+    if (y1_token != null){
+      attack.y1 = y1_token.readInt(0);
+    }
 
-        temp
+    val x2_token = token.findToken("x2");
+    if (x2_token != null){
+      attack.x2 = x2_token.readInt(0);
+    }
+
+    val y2_token = token.findToken("y2");
+    if (y2_token != null){
+      attack.y2 = y2_token.readInt(0);
+    }
+
+    val damage_token = token.findToken("damage");
+    if (damage_token != null){
+      attack.damage = damage_token.readInt(0);
+    }
+
+    val force_token = token.findToken("force");
+    if (force_token != null){
+      /*
+      attack.force = force_token.readInt(0);
+       */
+      try{
+        val x = force_token.readDouble(0);
+        val y = force_token.readDouble(1);
+        attack.forceX = x;
+        attack.forceY = y;
+      } catch {
+        case fail:NoSuchElementException => {
+        }
+      }
+    }
+
+    attack
+  }
+
+  override def getToken():Token = {
+    val temp = new Token();
+    temp.addToken(new Token("attack"));
+    for (attack <- attacks){
+      if (attack.isEmpty()){
+        // temp.addToken(new Token("box"));
+      } else {
+        val box = new Token();
+        temp.addToken(box);
+        box.addToken(new Token("box"));
+        box.addToken(("x1" :: attack.x1.toString() :: List[String]()).toArray)
+        box.addToken(("y1" :: attack.y1.toString() :: List[String]()).toArray)
+        box.addToken(("x2" :: attack.x2.toString() :: List[String]()).toArray)
+        box.addToken(("y2" :: attack.y2.toString() :: List[String]()).toArray)
+        box.addToken(("force" :: attack.forceX.toString() :: attack.forceY.toString() :: List[String]()).toArray)
+        box.addToken(("damage" :: attack.damage.toString() :: List[String]()).toArray)
+        }
+      }
+
+      temp
     }
 
 
@@ -163,28 +129,26 @@ class AttackEvent extends AnimationEvent {
     }
 
     override def getEditor(animation:Animation, area:DrawArea):JPanel = {
-        /*
-        if (attacks.isEmpty()){
-            attacks.add(new Attack());
-            return getEditor(animation, area, attacks.get(0));
-        } else {
-            return getEditor(animation, area, attacks.get(0));
-        }
-        */
-       null
+      if (attacks.isEmpty){
+        attacks = List[Attack](new Attack())
+        getEditor(animation, area, attacks.head)
+      } else {
+        getEditor(animation, area, attacks.head)
+      }
     }
 
     override def interact(animation:Animation){
-      /*
-        if (attacks.isEmpty()){
+        if (attacks.isEmpty){
             animation.setAttack(new BoundingBox(0, 0, 0, 0));
         } else {
-            Attack attack = attacks.get(0);
-            animation.setAttack(new BoundingBox(attack.x1, attack.y1, attack.x2, attack.y2));
+            val attack = attacks.head
+            animation.setAttack(new BoundingBox(attack.x1, attack.y1, attack.x2, attack.y2))
         }
-        */
     }
 
+    def getEditor(animation:Animation, area:DrawArea, attack:Attack):JPanel = {
+      null
+    }
 /*
     private JPanel getEditor(final Animation animation, final DrawArea area, final Attack attack){
         SwingEngine engine = new SwingEngine("animator/eventattack.xml");

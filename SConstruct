@@ -1071,12 +1071,12 @@ rsx
         import platform
         arch = platform.architecture()[0]
         try:
-	    if os.environ['nacl_32']:
-		arch_override = '32bit'
-	    elif os.environ['nacl_64']:
-		arch_override = '64bit'
-	except KeyError:
-	    arch_override = ''
+            if os.environ['nacl_32']:
+                arch_override = '32bit'
+            elif os.environ['nacl_64']:
+                arch_override = '64bit'
+        except KeyError:
+            arch_override = ''
         
         def setup(pre, x):
             return '%s%s' % (pre, x)
@@ -1084,16 +1084,18 @@ rsx
         path = '/opt/nacl_sdk'
         bin_path = setup(path, '/toolchain/linux_x86/bin')
         usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
+        env.PrependENVPath('PATH', bin_path)
+        env.PrependENVPath('PATH', usr_path)
         
         if arch == '64bit' or arch_override == '64bit':
-	    prefix = 'nacl64-'
-	    flags = ['-m32']
-	    libs = ['']
-	elif arch == '32bit' or arch_override == '32bit':
-	    prefix = 'nacl-'
-	    flags = ['-m64']
-	    libs = ['']
-	    
+            prefix = 'nacl64-'
+            flags = ['-m32']
+            libs = ['']
+        elif arch == '32bit' or arch_override == '32bit':
+            prefix = 'nacl-'
+            flags = ['-m64']
+            libs = ['']
+            
         def set_prefix(x):
             return '%s%s' % (prefix, x)
         env['CC'] = set_prefix('gcc')
