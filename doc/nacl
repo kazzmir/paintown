@@ -14,6 +14,7 @@
       - export NACL_SDK_ROOT=/opt/nacl_sdk
       - svn co http://src.chromium.org/svn/trunk/tools/depot_tools
       - mv depot_tools /opt/nacl_sdk
+      - export PATH=/opt/nacl_sdk/depot_tools:"$PATH"
       - mkdir /opt/nacl_sdk/naclports
       - cd /opt/nacl_sdk/naclports
       - gclient config http://naclports.googlecode.com/svn/trunk/src
