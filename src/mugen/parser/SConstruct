@@ -2,9 +2,15 @@ Import('use')
 Import('addObjects')
 
 all = []
-all.append(use.Peg('def.peg'))
-all.append(use.Peg('air.peg'))
-all.append(use.Peg('cmd.peg'))
+def_peg = use.Peg('def.peg')
+air_peg = use.Peg('air.peg')
+cmd_peg = use.Peg('cmd.peg')
+# Serialize peg creation to avoid some race condition
+use.Depends(air_peg, def_peg)
+use.Depends(cmd_peg, air_peg)
+all.append(def_peg)
+all.append(air_peg)
+all.append(cmd_peg)
 # The cmake/FileList.cmake file already lists cmd.cpp so we don't need
 # to add it twice
 #more = use.PegMulti('cmd.peg')

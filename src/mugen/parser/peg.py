@@ -937,9 +937,12 @@ class Rule:
                 self.inline = True
 
     def generate_bnf(self):
+        total_length = len(self.name)
+        if self.inline:
+            total_length += len('inline ')
         data = """
 %s = %s
-""" % (self.name, (('\n%s | ') % (' ' * len(self.name))).join([p.generate_bnf() for p in self.patterns]))
+""" % (self.name, (('\n%s | ') % (' ' * total_length)).join([p.generate_bnf() for p in self.patterns]))
         if self.inline:
             return "inline " + data.strip() + "\n"
         return data.strip() + "\n"
