@@ -959,16 +959,16 @@ pspnet_inet
         # Needs these environment variables
         # export PS3DEV=/opt/ps3dev
         # export PATH=$PATH:$PS3DEV/bin
-        # export PATH=$PATH:$PS3DEV/host/ppu/bin
-        # export PATH=$PATH:$PS3DEV/host/spu/bin
+        # export PATH=$PATH:$PS3DEV/ppu/bin
+        # export PATH=$PATH:$PS3DEV/spu/bin
         # export PSL1GHT=$PS3DEV/psl1ght
-        # export PATH=$PATH:$PSL1GHT/host/bin
+        # export PATH=$PATH:$PSL1GHT/bin
         path = '/opt/ps3dev'
         try:
             path = os.environ['PS3DIR']
         except KeyError:
             pass
-        bin_path = path + '/host/ppu/bin/'
+        bin_path = path + '/ppu/bin/'
         prefix = 'ppu-'
         def setup(pre, x):
             return '%s%s' % (pre, x)
@@ -980,25 +980,32 @@ pspnet_inet
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         # FIXME: try to use sdl-config to find these paths
         # instead of hard coding them
-        safeParseConfig(env, bin_path + '/freetype-config --cflags --libs')
+        safeParseConfig(env, path + '/portlibs/ppu/bin/freetype-config --cflags --libs')
+        safeParseConfig(env, path + '/portlibs/ppu/bin/libpng-config --cflags --libs')
 
         # FIXME: it uses -lc-glue-ppu which I can't find maybe I missed something in the setup for now I'll put it down below
         #env.ParseConfig(bin_path +'sdl-config --cflags --libs') 
         
-        env.Append(CPPPATH = [setup(path, "/host/ppu/include"),
-                              setup(path, "/psl1ght/target/include/SDL"),
-                              setup(path, "/host/ppu/include/vorbis"),
-                              setup(path, "/host/ppu/include/ogg"),
-                              setup(path, "/psl1ght/target/include")])
+        env.Append(CPPPATH = [setup(path, "/ppu/include"),
+		              setup(path, "/spu/include"),
+		              setup(path, "/portlibs/ppu/include"),
+                              setup(path, "/portlibs/ppu/include/SDL"),
+                              setup(path, "/portlibs/ppu/include/vorbis"),
+                              setup(path, "/portlibs/ppu/include/ogg"),
+                              setup(path, "/psl1ght/ppu/include"),
+                              setup(path, "/psl1ght/spu/include")])
         env.Append(CPPDEFINES = ['PS3'])
-        env.Append(LIBPATH = [setup(path, '/host/ppu/lib'),
-                              setup(path, '/psl1ght/lib'),
-                              setup(path, '/psl1ght/target/lib')])
+        env.Append(LIBPATH = [setup(path, '/ppu/lib'),
+                              setup(path, '/spu/lib'),
+                              setup(path, '/portlibs/ppu/lib'),
+                              setup(path, '/psl1ght/ppu/lib'),
+                              setup(path, '/psl1ght/spu/lib')])
         flags = ['-G0', '-fexceptions']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LINKFLAGS = flags)
+        # Removed reality and psl1ght
         all = Split("""
 SDL
 ogg
@@ -1006,17 +1013,16 @@ vorbis
 vorbisfile
 stdc++
 m
-reality
 gcm_sys
 sysutil
 lv2
-psl1ght
 io
 audio
 png
 z
 jpeg
 c
+rsx
 """)
         env.Append(LIBS = all)
         env.PrependENVPath('PATH', bin_path)
@@ -1547,12 +1553,13 @@ else:
             #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
             #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
 
-        safeParseConfig(config.env, 'freetype-config --libs --cflags')
-        safeParseConfig(config.env, 'libpng-config --libs --cflags')
+	if not usePs3():
+	    safeParseConfig(config.env, 'freetype-config --libs --cflags')
+	    safeParseConfig(config.env, 'libpng-config --libs --cflags')
         
-        # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
-        safeParseConfig(staticEnv, 'freetype-config --cflags')
-        safeParseConfig(staticEnv, 'libpng-config --cflags')
+	    # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
+	    safeParseConfig(staticEnv, 'freetype-config --cflags')
+	    safeParseConfig(staticEnv, 'libpng-config --cflags')
     except OSError:
         pass
 
@@ -1669,7 +1676,7 @@ def ps3_pkg(target, source, env):
     env.Execute('cp data/psp/icon0.png pkg/')
     env.Execute('python fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
     #FIXME get the path from the environment for the sfoxml
-    env.Execute('python sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/psl1ght/host/bin/sfo.xml pkg/PARAM.SFO')
+    env.Execute('python sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/bin/sfo.xml pkg/PARAM.SFO')
     env.Execute('python pkg.py --contentid UP0001-Paintown_00-0000000000000000 pkg/ %s.pkg' % file)
     print "Sign pkg with tools from geohot or something (http://www.geohot.com)..."
     return 0
