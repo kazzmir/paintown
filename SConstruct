@@ -1730,14 +1730,19 @@ def psp_eboot(target, source, env):
 
 def ps3_pkg(target, source, env):
     file = source[0].name
+    app = 'UP0001-Paintown_00-0000000000000000'
     print "Creating PKG for %s" % file
-    env.Execute('cp %s %s.elf' % (file, file))
+    env.Execute('ppu-strip %s -o %s.elf' % (file, file))
+    env.Execute('/opt/ps3dev/bin/sprxlinker %s.elf' % file)
+    env.Execute('python /opt/ps3dev/bin/fself.py %s.elf %s.self' % (file, file))
     env.Execute('mkdir -p pkg/USRDIR')
+    env.Execute('/opt/ps3dev/bin/make_self_npdrm %s.elf pkg/USRDIR/EBOOT.BIN %s' % (file, app))
+    # env.Execute('cp %s %s.elf' % (file, file))
     env.Execute('cp data/psp/icon0.png pkg/')
-    env.Execute('python /opt/ps3dev/bin/fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
+    # env.Execute('python /opt/ps3dev/bin/fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
     #FIXME get the path from the environment for the sfoxml
     env.Execute('python /opt/ps3dev/bin/sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/bin/sfo.xml pkg/PARAM.SFO')
-    env.Execute('python /opt/ps3dev/bin/pkg.py --contentid UP0001-Paintown_00-0000000000000000 pkg/ %s.pkg' % file)
+    env.Execute('python /opt/ps3dev/bin/pkg.py --contentid %s pkg/ %s.pkg' % (app, file))
     print "Sign pkg with tools from geohot or something (http://www.geohot.com)..."
     return 0
 
