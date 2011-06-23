@@ -1620,7 +1620,7 @@ else:
             #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
             #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
         
-        if not usePs3():
+        if not usePs3() and not useNacl():
             safeParseConfig(config.env, 'freetype-config --libs --cflags')
             safeParseConfig(config.env, 'libpng-config --libs --cflags')
         
