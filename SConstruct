@@ -1072,8 +1072,10 @@ rsx
         arch = platform.architecture()[0]
         try:
             if os.environ['nacl_32']:
+		print "Forcing 32bit compile"
                 arch_override = '32bit'
             elif os.environ['nacl_64']:
+		print "Forcing 64bit compile"
                 arch_override = '64bit'
         except KeyError:
             arch_override = ''
@@ -1087,14 +1089,19 @@ rsx
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', usr_path)
         
-        if arch == '64bit' or arch_override == '64bit':
+        paths = [setup(usr_path,'/include')]
+	libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime']
+        
+        if arch == '64bit' and not arch_override == '32bit' or arch_override == '64bit':
             prefix = 'nacl64-'
             flags = ['-m64']
-            libs = ['']
+            libs.append('')
+            paths.append([setup(path, '/toolchain/linux_x86/nacl64/include/')])
         elif arch == '32bit' or arch_override == '32bit':
             prefix = 'nacl-'
             flags = ['-m32']
-            libs = ['']
+            libs.append('')
+            paths.append([setup(path, '/toolchain/linux_x86/nacl/include')])
             
         def set_prefix(x):
             return '%s%s' % (prefix, x)
@@ -1110,7 +1117,7 @@ rsx
         safeParseConfig(env, usr_path + '/bin/sdl-config --cflags --libs')
         
         env.Append(CPPDEFINES = ['NACL'])
-        env.Append(CPPPATH = setup(usr_path,'/include'))
+        env.Append(CPPPATH = paths)
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
