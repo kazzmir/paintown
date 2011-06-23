@@ -25,6 +25,37 @@ PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 PSP_HEAP_SIZE_MAX();
 #endif
 
+#ifdef NACL
+#include "ppapi/cpp/instance.h"
+#include "ppapi/cpp/module.h"
+#include "ppapi/cpp/var.h"
+namespace pp{
+    class PaintownInstance : public pp::Instance {
+    public:
+        explicit PaintownInstance(PP_Instance instance) : pp::Instance(instance) {}
+        virtual ~PaintownInstance() {}
+
+        virtual void HandleMessage(const pp::Var& var_message){
+            /* do something here */
+        }
+    };
+
+    class PaintownModule : public pp::Module {
+    public:
+        PaintownModule() : pp::Module() {}
+        virtual ~PaintownModule() {}
+
+        virtual pp::Instance* CreateInstance(PP_Instance instance) {
+            return new PaintownInstance(instance);
+        }
+    };
+
+    Module * CreateModule(){
+        return new PaintownModule();
+    }
+}
+#endif
+
 #ifdef USE_SDL
 #ifdef USE_SDL_MAIN
 extern "C" int SDL_main(int argc, char ** argv){

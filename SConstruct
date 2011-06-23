@@ -1088,18 +1088,19 @@ rsx
         usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', usr_path)
+        flags = []
         
         paths = [setup(usr_path,'/include')]
         libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime']
         
         if arch == '64bit' and not arch_override == '32bit' or arch_override == '64bit':
             prefix = 'nacl64-'
-            flags = ['-m64']
+            flags += ['-m64']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/nacl64/include/')])
         elif arch == '32bit' or arch_override == '32bit':
             prefix = 'nacl-'
-            flags = ['-m32']
+            flags += ['-m32']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/nacl/include')])
             
@@ -1115,13 +1116,14 @@ rsx
         safeParseConfig(env, usr_path + '/bin/libpng-config --cflags --libs')
         safeParseConfig(env, usr_path + '/bin/freetype-config --cflags --libs')
         safeParseConfig(env, usr_path + '/bin/sdl-config --cflags --libs')
-        
+
+        compile_flags = ['-fno-builtin', '-fno-stack-protector', '-fdiagnostics-show-option']
         env.Append(CPPDEFINES = ['NACL'])
         env.Append(CPPPATH = paths)
-        env.Append(CCFLAGS = flags)
-        env.Append(CXXFLAGS = flags)
+        env.Append(CCFLAGS = flags + compile_flags)
+        env.Append(CXXFLAGS = flags + compile_flags)
         env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
-        env.Append(LINKFLAGS = flags)
+        env.Append(LINKFLAGS = flags + ['-melf_nacl'])
         env.Append(LIBS = libs)
         return env
     def llvm(env):
