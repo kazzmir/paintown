@@ -1072,10 +1072,10 @@ rsx
         arch = platform.architecture()[0]
         try:
             if os.environ['nacl_32']:
-		print "Forcing 32bit compile"
+                print "Forcing 32bit compile"
                 arch_override = '32bit'
             elif os.environ['nacl_64']:
-		print "Forcing 64bit compile"
+                print "Forcing 64bit compile"
                 arch_override = '64bit'
         except KeyError:
             arch_override = ''
@@ -1090,7 +1090,7 @@ rsx
         env.PrependENVPath('PATH', usr_path)
         
         paths = [setup(usr_path,'/include')]
-	libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime']
+        libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime']
         
         if arch == '64bit' and not arch_override == '32bit' or arch_override == '64bit':
             prefix = 'nacl64-'
@@ -1443,7 +1443,7 @@ def buildType(dir):
     if usePs3():
         properties.append('ps3')
     if useNacl():
-	properties.append('nacl')
+        properties.append('nacl')
     if useNDS():
         properties.append('NDS')
     if useWii():
@@ -1503,7 +1503,7 @@ def display_build_properties():
     if usePs3():
         properties.append(colorize("PS3", color))
     if useNacl():
-	properties.append(colorize("NACL", color))
+        properties.append(colorize("NACL", color))
     if useLLVM():
         properties.append(colorize("LLVM", color))
     if useIntel():
@@ -1619,14 +1619,14 @@ else:
             config.CheckSDLMain()
             #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
             #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
-
-	if not usePs3():
-	    safeParseConfig(config.env, 'freetype-config --libs --cflags')
-	    safeParseConfig(config.env, 'libpng-config --libs --cflags')
         
-	    # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
-	    safeParseConfig(staticEnv, 'freetype-config --cflags')
-	    safeParseConfig(staticEnv, 'libpng-config --cflags')
+        if not usePs3():
+            safeParseConfig(config.env, 'freetype-config --libs --cflags')
+            safeParseConfig(config.env, 'libpng-config --libs --cflags')
+        
+            # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
+            safeParseConfig(staticEnv, 'freetype-config --cflags')
+            safeParseConfig(staticEnv, 'libpng-config --cflags')
     except OSError:
         pass
 
