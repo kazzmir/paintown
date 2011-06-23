@@ -988,8 +988,8 @@ pspnet_inet
         #env.ParseConfig(bin_path +'sdl-config --cflags --libs') 
         
         env.Append(CPPPATH = [setup(path, "/ppu/include"),
-		              setup(path, "/spu/include"),
-		              setup(path, "/portlibs/ppu/include"),
+                              setup(path, "/spu/include"),
+                              setup(path, "/portlibs/ppu/include"),
                               setup(path, "/portlibs/ppu/include/SDL"),
                               setup(path, "/portlibs/ppu/include/vorbis"),
                               setup(path, "/portlibs/ppu/include/ogg"),
@@ -1001,7 +1001,7 @@ pspnet_inet
                               setup(path, '/portlibs/ppu/lib'),
                               setup(path, '/psl1ght/ppu/lib'),
                               setup(path, '/psl1ght/spu/lib')])
-        flags = ['-G0', '-fexceptions']
+        flags = ['-mcpu=cell', '-mhard-float', '-fmodulo-sched', '-ffunction-sections', '-fdata-sections', '-maltivec']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
@@ -1089,11 +1089,11 @@ rsx
         
         if arch == '64bit' or arch_override == '64bit':
             prefix = 'nacl64-'
-            flags = ['-m32']
+            flags = ['-m64']
             libs = ['']
         elif arch == '32bit' or arch_override == '32bit':
             prefix = 'nacl-'
-            flags = ['-m64']
+            flags = ['-m32']
             libs = ['']
             
         def set_prefix(x):
@@ -1113,6 +1113,7 @@ rsx
         env.Append(CPPPATH = setup(usr_path,'/include'))
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
+        env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
         env.Append(LINKFLAGS = flags)
         env.Append(LIBS = libs)
         return env
