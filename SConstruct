@@ -1071,10 +1071,10 @@ rsx
         import platform
         arch = platform.architecture()[0]
         try:
-            if os.environ['nacl_32']:
+            if os.environ['nacl_32'] == '1':
                 print "Forcing 32bit compile"
                 arch_override = '32bit'
-            elif os.environ['nacl_64']:
+            elif os.environ['nacl_64'] == '1':
                 print "Forcing 64bit compile"
                 arch_override = '64bit'
         except KeyError:
