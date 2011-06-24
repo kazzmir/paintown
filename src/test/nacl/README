@@ -1,0 +1,9 @@
+First build paintown in nacl mode (read doc/nacl)
+
+$ ln -s ../../../paintown paintown-32.nexe
+# or name it paintown-64.nexe if you are on a 64-bit machine
+$ ./httpd.py
+# navigate your browser to http://localhost:5103/paintown.html
+
+You should see the word 'Paintown!' next to a button labeled 'Run'. Wait for
+a second while the nacl application is loaded and then click 'Run'.
