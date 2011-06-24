@@ -1085,12 +1085,10 @@ rsx
         
         path = '/opt/nacl_sdk'
         bin_path = setup(path, '/toolchain/linux_x86/bin')
-        usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
         env.PrependENVPath('PATH', bin_path)
-        env.PrependENVPath('PATH', usr_path)
         flags = []
+        paths = []
         
-        paths = [setup(usr_path,'/include')]
         libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime']
         
         if arch == '64bit' and not arch_override == '32bit' or arch_override == '64bit':
@@ -1098,12 +1096,18 @@ rsx
             flags += ['-m64']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/nacl64/include/')])
+            usr_path = setup(path, '/toolchain/linux_x86/nacl64/usr')
         elif arch == '32bit' or arch_override == '32bit':
             prefix = 'nacl-'
             flags += ['-m32']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/nacl/include')])
-            
+            usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
+        
+        
+        env.PrependENVPath('PATH', usr_path)
+        paths.append([setup(usr_path,'/include')])
+        
         def set_prefix(x):
             return '%s%s' % (prefix, x)
         env['CC'] = set_prefix('gcc')
