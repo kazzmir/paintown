@@ -1,0 +1,6 @@
+{
+  "nexes": {
+    "x86-64": "paintown-64.nexe",
+    "x86-32": "paintown-32.nexe"
+  }
+}

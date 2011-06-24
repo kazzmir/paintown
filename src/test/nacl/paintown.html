@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Paintown!</title>
+  <script>
+      paintownModule = null;
+
+      function moduleDidLoad() {
+          paintownModule = document.getElementById('paintown');
+      }
+
+      function dorun(){
+          paintownModule.postMessage('run');
+      }
+
+  </script>
+
+  <style>
+      body{
+          background: #222;
+      }
+      span{
+          color: #fff;
+      }
+  </style>
+</head>
+<body>
+    <span>Paintown!</span>
+    <button onclick="dorun()">Run</button>
+    <div id='listener'>
+        <script type="text/javascript">
+        document.getElementById('listener')
+        .addEventListener('load', moduleDidLoad, true);
+        </script>
+
+        <embed name="nacl_module"
+               id="paintown"
+               width=640 height=480
+               src="paintown.nmf"
+               type="application/x-nacl" />
+
+   </div>
+</body>
+</html>
