@@ -186,7 +186,7 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::Absolu
 
 /* this is basename() */
 const std::string Mugen::Util::stripDir( const std::string &str ){ 
-    return Storage::stripDir(str);
+    return Path::stripDir(str);
 }
 
 /* this is dirname() */

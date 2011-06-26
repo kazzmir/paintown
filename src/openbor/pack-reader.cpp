@@ -39,7 +39,7 @@ static string lowercase(string in){
 }
 
 static string sanitizePath(const string & path){
-    return Storage::sanitize(Storage::invertSlashes(lowercase(path)));
+    return Path::sanitize(Path::invertSlashes(lowercase(path)));
 }
 
 PackReader::PackReader(const Filesystem::AbsolutePath & filename):
