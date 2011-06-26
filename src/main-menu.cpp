@@ -286,6 +286,16 @@ int paintown_main(int argc, char ** argv){
 #endif
 #undef ADD_ARGS
 
+#ifdef PS3
+    /* find the directory that contains the binary and set the data path
+     * to that directory + our data path
+     */
+    if (argc > 0){
+        Path::AbsolutePath self(argv[0]);
+        Util::setDataPath(self.getDirectory().join(Path::RelativePath(Util::getDataPath2().path())).path());
+    }
+#endif
+
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
      */
