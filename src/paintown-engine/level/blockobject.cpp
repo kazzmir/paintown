@@ -86,7 +86,7 @@ stimulationValue( 0 ){
             } else if ( *current == "path" ){
                 string n;
                 current->view() >> n;
-                setPath(Filesystem::find(Filesystem::RelativePath(n)));
+                setPath(Storage::instance().find(Filesystem::RelativePath(n)));
             } else if ( *current == "aggression" ){
                 int a;
                 current->view() >> a;

@@ -131,7 +131,7 @@ thunder(NULL),
 lightning(false),
 thunderPause(-1){
 
-    lamp = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/lamp.png")).path());
+    lamp = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("sprites/lamp.png")).path());
     thunder = Resource::getSound(Filesystem::RelativePath("sounds/thunder.wav"));
     /*
     addLight(500, 30, 50, 30, Graphics::Bitmap::makeColor(32,32,0), 0);
@@ -318,7 +318,7 @@ RainAtmosphere::RainAtmosphere():
 Atmosphere(),
 playing( false ){
 
-    rain_sound = Sound(Filesystem::find(Filesystem::RelativePath("sounds/rain.wav")).path());
+    rain_sound = Sound(Storage::instance().find(Filesystem::RelativePath("sounds/rain.wav")).path());
 
     Graphics::Color colors[ 2 ];
     colors[0] = Graphics::makeColor( 0x22, 0x66, 0x66 );

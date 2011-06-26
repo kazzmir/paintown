@@ -119,9 +119,9 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     Filesystem::AbsolutePath file;
     try{
         if (musicOverride.empty()){
-            Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + stage->getMusic())).path());
+            Music::loadSong(Storage::instance().find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + stage->getMusic())).path());
         } else {
-            Music::loadSong( Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + musicOverride)).path());
+            Music::loadSong(Storage::instance().find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + musicOverride)).path());
         }
     } catch (const Filesystem::NotFound & fail){
         Global::debug(0) << "Could not load music because " << fail.getTrace() << std::endl;
@@ -411,7 +411,7 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
         }
         throw MugenException("No characters left to choose from!");
     } else {
-        Filesystem::AbsolutePath path = Filesystem::findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
+        Filesystem::AbsolutePath path = Storage::instance().findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
         return doLoad(path);
     }
 }
@@ -421,7 +421,7 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
      * by Game::run()
      */
     ParseCache cache;
-    std::vector<Filesystem::AbsolutePath> allCharacters = Filesystem::getFilesRecursive(Filesystem::find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
     bool random2 = player2Name == "_";
@@ -454,7 +454,7 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     player1->setBehavior(&player1Behavior);
     player2->setBehavior(&dummyBehavior);
 
-    Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
         TimeDifference timer;
         std::ostream & out = Global::debug(0);
@@ -476,7 +476,7 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
      * by Game::run()
      */
     ParseCache cache;
-    std::vector<Filesystem::AbsolutePath> allCharacters = Filesystem::getFilesRecursive(Filesystem::find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
     bool random2 = player2Name == "_";
@@ -508,7 +508,7 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
     player1->setBehavior(&player1Behavior);
     player2->setBehavior(&player2Behavior);
 
-    Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
         TimeDifference timer;
         std::ostream & out = Global::debug(0);
@@ -622,7 +622,7 @@ void Game::doArcade(){
     }
     Filesystem::AbsolutePath baseDir = file.getDirectory();
     try{
-        intro = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "intro.storyboard")));
+        intro = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "intro.storyboard")));
     } catch (const MugenException & fail){
         Global::debug(0) << "Failed to get intro from " << file.path() << " " << fail.getReason() << std::endl;
     } catch (const Filesystem::NotFound & fail){
@@ -630,7 +630,7 @@ void Game::doArcade(){
     }
 
     try{
-        ending = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "ending.storyboard")));
+        ending = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "ending.storyboard")));
     } catch (const MugenException & fail){
         Global::debug(0) << "Failed to get ending from " << file.path() << " " << fail.getReason() << std::endl;
     } catch (const Filesystem::NotFound & fail){

@@ -1009,7 +1009,7 @@ menuInfoLocation(0,.95){
         sounds = child.sounds;
     }
 
-    if (Filesystem::exists(child.music)){
+    if (Storage::instance().exists(child.music)){
         music = child.music;
     }
 
@@ -1150,7 +1150,7 @@ void Menu::Context::finish(){
 
 void Menu::Context::playSound(const Actions & sound) const {
     map<Actions, Filesystem::RelativePath>::const_iterator find = sounds.find(sound);
-    if (find != sounds.end() && Filesystem::exists(find->second)){
+    if (find != sounds.end() && Storage::instance().exists(find->second)){
         tryPlaySound(find->second);
     }
 }
@@ -1160,8 +1160,8 @@ void Menu::Context::addSound(const Actions & sound, const Filesystem::RelativePa
 }
 
 void Menu::Context::playMusic(){
-    if (Filesystem::exists(music)){
-        if (Music::loadSong(Filesystem::find(music).path())){
+    if (Storage::instance().exists(music)){
+        if (Music::loadSong(Storage::instance().find(music).path())){
             Music::pause();
             Music::play();
         }

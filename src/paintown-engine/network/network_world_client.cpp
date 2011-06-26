@@ -173,7 +173,7 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
     int alliance = 0;
     Paintown::Object::networkid_t id = 0;
     int map = 0;
-    Filesystem::AbsolutePath path = Filesystem::find(Filesystem::RelativePath(message.path));
+    Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
     message >> alliance >> id >> map;
     if (uniqueObject(id)){
         bool found = false;
@@ -226,7 +226,7 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
     Paintown::Object::networkid_t id;
     message >> id;
     if ( uniqueObject( id ) ){
-        Filesystem::AbsolutePath path = Filesystem::find(Filesystem::RelativePath(message.path));
+        Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
         BlockObject block;
         block.setType( ObjectFactory::CatType );
         block.setPath( path );
@@ -268,7 +268,7 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
         int x, z;
         int value;
         message >> x >> z >> value;
-        Filesystem::AbsolutePath path = Filesystem::find(Filesystem::RelativePath(message.path));
+        Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
         BlockObject block;
         block.setType(ObjectFactory::ItemType);
         block.setPath(path);

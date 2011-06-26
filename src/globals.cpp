@@ -56,7 +56,7 @@ void Global::showTitleScreen(){
 }
 
 const Filesystem::AbsolutePath Global::titleScreen(){
-    return Filesystem::find(Filesystem::RelativePath("menu/paintown.png"));
+    return Storage::instance().find(Filesystem::RelativePath("menu/paintown.png"));
 }
 
 namespace Global{

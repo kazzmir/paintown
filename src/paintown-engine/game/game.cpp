@@ -821,7 +821,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
         void showScreenshots(const Graphics::Bitmap & screen_buffer){
             screen_buffer.clear();
-            Sound snapshot(Filesystem::find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
+            Sound snapshot(Storage::instance().find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
             Graphics::StretchedBitmap work(320, 240, screen_buffer);
             for (deque<Graphics::Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
                 Graphics::Bitmap * shot = *it;
@@ -854,7 +854,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     };
     
     TokenReader reader;
-    Token * menuData = reader.readToken(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")).path());
+    Token * menuData = reader.readToken(Storage::instance().find(Filesystem::RelativePath("menu/in-game.txt")).path());
 
     /* set the current player, mainly so the move list option can work */
     // Util::Parameter<Paintown::Player*> currentPlayer((Paintown::Player*) players[0]);
@@ -982,7 +982,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
                     Util::Future<Paintown::Object*> * future = *fit;
                     players.push_back(future->get());
                 }
-                data = new GameData(players, Filesystem::find(path));
+                data = new GameData(players, Storage::instance().find(path));
             } catch (const LoadException & exception){
                 failed = new LoadException(exception);
             }

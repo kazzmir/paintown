@@ -179,7 +179,7 @@ void OptionCredits::logic(){
 
 void OptionCredits::run(const Menu::Context & context){
     // Keyboard key;
-    Graphics::Bitmap backgroundImage(Filesystem::find(background).path());
+    Graphics::Bitmap backgroundImage(Storage::instance().find(background).path());
 
     const int maxCredits = credits.size();
 
@@ -189,7 +189,7 @@ void OptionCredits::run(const Menu::Context & context){
     // Bitmap fireWork(GFX_X, GFX_Y);
     if (! music.empty()){
         //MenuGlobals::setMusic(music);
-        if (Music::loadSong(Filesystem::find(Filesystem::RelativePath(music)).path())){
+        if (Music::loadSong(Storage::instance().find(Filesystem::RelativePath(music)).path())){
 	    Music::pause();
 	    Music::play();
 	}
@@ -1002,7 +1002,7 @@ menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         token->view() >> temp;
-        menu = new Menu::Menu(Filesystem::find(Filesystem::RelativePath(temp)));
+        menu = new Menu::Menu(Storage::instance().find(Filesystem::RelativePath(temp)));
     } else {
         menu = new Menu::Menu(token);
     }
@@ -1510,15 +1510,15 @@ static vector<Filesystem::AbsolutePath> findSystemFonts(){
     if (isWindows()){
         const char * windows = getenv("windir");
         if (windows != NULL){
-            return Filesystem::getFilesRecursive(Filesystem::AbsolutePath(string(windows) + "/fonts"), "*.ttf");
+            return Storage::instance().getFilesRecursive(Filesystem::AbsolutePath(string(windows) + "/fonts"), "*.ttf");
         }
         return vector<Filesystem::AbsolutePath>();
     } else if (isOSX()){
-        return Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/Library/Fonts"), "*.ttf");
+        return Storage::instance().getFilesRecursive(Filesystem::AbsolutePath("/Library/Fonts"), "*.ttf");
     } else {
         /* assume unix/linux conventions */
-        return Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/usr/share/fonts/truetype"), "*.ttf") + 
-               Filesystem::getFilesRecursive(Filesystem::AbsolutePath("/usr/local/share/fonts/truetype"), "*.ttf");
+        return Storage::instance().getFilesRecursive(Filesystem::AbsolutePath("/usr/share/fonts/truetype"), "*.ttf") + 
+               Storage::instance().getFilesRecursive(Filesystem::AbsolutePath("/usr/local/share/fonts/truetype"), "*.ttf");
 
     }
 }
@@ -1526,19 +1526,19 @@ static vector<Filesystem::AbsolutePath> findSystemFonts(){
 static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
     vector<Util::ReferenceCount<Menu::FontInfo> > fonts;
     try{
-        Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
+        Filesystem::AbsolutePath fontsDirectory = Storage::instance().find(Filesystem::RelativePath("fonts"));
         Global::debug(1, "fonts") << "Font directory " << fontsDirectory.path() << endl;
-        vector<Filesystem::AbsolutePath> ttfFonts = Filesystem::getFiles(fontsDirectory, "*.ttf");
+        vector<Filesystem::AbsolutePath> ttfFonts = Storage::instance().getFiles(fontsDirectory, "*.ttf");
         Global::debug(1, "fonts") << "Found ttf fonts " << joinPaths(ttfFonts, ", ") << endl;
-        vector<Filesystem::AbsolutePath> otfFonts = Filesystem::getFiles(fontsDirectory, "*.otf");
+        vector<Filesystem::AbsolutePath> otfFonts = Storage::instance().getFiles(fontsDirectory, "*.otf");
         Global::debug(1, "fonts") << "Found otf fonts " << joinPaths(otfFonts, ", ") << endl;
 
         for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
-            fonts.push_back(new Menu::RelativeFontInfo(Filesystem::cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+            fonts.push_back(new Menu::RelativeFontInfo(Storage::instance().cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
 
         for (vector<Filesystem::AbsolutePath>::iterator it = otfFonts.begin(); it != otfFonts.end(); it++){
-            fonts.push_back(new Menu::RelativeFontInfo(Filesystem::cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+            fonts.push_back(new Menu::RelativeFontInfo(Storage::instance().cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
         }
         
         /* linux specific fonts */
@@ -1851,7 +1851,7 @@ menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         token->view() >> temp;
-        menu = new Menu::Menu(Filesystem::find(Filesystem::RelativePath(temp)), Menu::Menu::Tabbed);
+        menu = new Menu::Menu(Storage::instance().find(Filesystem::RelativePath(temp)), Menu::Menu::Tabbed);
     } else {
         menu = new Menu::Menu(token, Menu::Menu::Tabbed);
     }
@@ -2106,8 +2106,8 @@ static bool isMugenMotif(const Filesystem::AbsolutePath & path){
 }
 
 static vector<Filesystem::AbsolutePath> listMotifs(){
-    Filesystem::AbsolutePath data = Filesystem::find(Filesystem::RelativePath("mugen/data"));
-    vector<Filesystem::AbsolutePath> defs = Filesystem::getFilesRecursive(data, "system.def");
+    Filesystem::AbsolutePath data = Storage::instance().find(Filesystem::RelativePath("mugen/data"));
+    vector<Filesystem::AbsolutePath> defs = Storage::instance().getFilesRecursive(data, "system.def");
     vector<Filesystem::AbsolutePath> good;
     for (vector<Filesystem::AbsolutePath>::iterator it = defs.begin(); it != defs.end(); it++){
         const Filesystem::AbsolutePath & file = *it;
@@ -2133,7 +2133,7 @@ void OptionMugenMotif::run(const Menu::Context & context){
             for (unsigned int i = 0; i < paths.size(); i++){
                 OptionLevel *option = new OptionLevel(box, 0, &index, i);
                 option->setText(Mugen::Util::probeDef(paths[i], "info", "name"));
-                option->setInfoText(Filesystem::cleanse(paths[i]).path());
+                option->setInfoText(Storage::instance().cleanse(paths[i]).path());
                 menu.addOption(option);
             }
         }
@@ -2159,7 +2159,7 @@ void OptionMugenMotif::run(const Menu::Context & context){
     }
         
     if (state.index != -1){
-        Filesystem::RelativePath motif = Filesystem::cleanse(state.paths[state.index]).removeFirstDirectory();
+        Filesystem::RelativePath motif = Storage::instance().cleanse(state.paths[state.index]).removeFirstDirectory();
         Global::debug(1) << "Set muge motif to " << motif.path() << endl;
         Configuration::setMugenMotif(motif.path());
         Mugen::Data::getInstance().setMotif(motif);

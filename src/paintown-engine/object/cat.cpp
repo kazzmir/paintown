@@ -48,7 +48,7 @@ state( IDLE1 ){
         }
 	current_animation = animations[ "idle1" ];
 
-	meow = Sound(Filesystem::find(Filesystem::RelativePath("misc/cat/meow.wav")).path());
+	meow = Sound(Storage::instance().find(Filesystem::RelativePath("misc/cat/meow.wav")).path());
 }
 
 Cat::Cat( const Cat & cat ):
@@ -242,7 +242,7 @@ Network::Message Cat::getCreateMessage(){
 	message << World::CREATE_CAT;
 	message << getId();
 
-        Filesystem::RelativePath mypath = Filesystem::cleanse(path);
+        Filesystem::RelativePath mypath = Storage::instance().cleanse(path);
         message << mypath.path();
         /*
 	mypath.erase( 0, Util::getDataPath().length() );

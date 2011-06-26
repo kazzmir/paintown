@@ -23,7 +23,7 @@ DisplayCharacter::DisplayCharacter(const string & path):
 Character(ALLIANCE_NONE),
 path(path),
 loaded(false){
-    setName(Filesystem::removeExtension(Filesystem::stripDir(path)));
+    setName(Storage::removeExtension(Storage::stripDir(path)));
     /* throws load-exception if the file can't be read */
     // Util::Thread::initializeLock(&load_lock);
     // TokenReader reader(path);

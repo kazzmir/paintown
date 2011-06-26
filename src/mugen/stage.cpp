@@ -1584,7 +1584,7 @@ void Mugen::Stage::changePause(){
 
 const std::string Mugen::Stage::getStageName(const std::string &filename) throw (MugenException){
     // Lets look for our def since some people think that all file systems are case insensitive
-    Filesystem::AbsolutePath dir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
+    Filesystem::AbsolutePath dir = Storage::instance().find(Filesystem::RelativePath("mugen/stages/"));
     Global::debug(1) << dir.path() << endl;
     string fullname = filename;
     if ( fullname.find(".def") == std::string::npos){

@@ -1113,13 +1113,14 @@ PlayerFuture::~PlayerFuture(){
 }
 
 void PlayerFuture::compute(){
-    Global::info("Loading " + Filesystem::cleanse(path).path());
+    string look = Storage::instance().cleanse(path).path();
+    Global::info("Loading " + look);
     Player * player = new Player(path);
     player->setInvincible(invincible);
     player->setMap(remap);
     player->setObjectId(-1);
     player->setLives(lives);
-    Global::info("..loaded");
+    Global::info("Loaded " + look);
     set(player);
 }
 

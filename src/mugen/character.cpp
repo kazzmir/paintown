@@ -535,8 +535,8 @@ void Character::loadSelectData(){
 	this->sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
         /* FIXME: replace 9000 with some readable constant */
-	this->sprites[9000][0] = Mugen::Util::probeSff(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 0, true);
-	this->sprites[9000][1] = Mugen::Util::probeSff(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 1, true);
+	this->sprites[9000][0] = Mugen::Util::probeSff(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 0, true);
+	this->sprites[9000][1] = Mugen::Util::probeSff(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 1, true);
 	
     } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't grab details for character!" << endl;
@@ -556,7 +556,7 @@ void Character::setAnimation(int animation){
 }
 
 void Character::loadCmdFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Filesystem::lookupInsensitive(baseDir, path);
+    Filesystem::AbsolutePath full = Storage::instance().lookupInsensitive(baseDir, path);
     try{
         int defaultTime = 15;
         int defaultBufferTime = 1;
@@ -797,7 +797,7 @@ void Character::changeOwnState(Mugen::Stage & stage, int state, const std::vecto
 }
 
 void Character::loadCnsFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Filesystem::findInsensitive(Filesystem::cleanse(baseDir).join(path));
+    Filesystem::AbsolutePath full = Storage::instance().findInsensitive(Storage::instance().cleanse(baseDir).join(path));
     try{
         /* cns can use the Cmd parser */
         Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
@@ -1285,9 +1285,9 @@ StateController * Character::parseState(Ast::Section * section){
 
 static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & base, const string & path){
     try{
-        return Filesystem::findInsensitive(Filesystem::cleanse(base).join(Filesystem::RelativePath(path)));
+        return Storage::instance().findInsensitive(Storage::instance().cleanse(base).join(Filesystem::RelativePath(path)));
     } catch (const Filesystem::NotFound & fail){
-        return Filesystem::findInsensitive(Filesystem::RelativePath("mugen/data/" + path));
+        return Storage::instance().findInsensitive(Filesystem::RelativePath("mugen/data/" + path));
     }
         /*
     if (PaintownUtil::exists(base.join(Filesystem::RelativePath(path)).path())){
@@ -1313,8 +1313,8 @@ static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & b
         
 void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path){
     Filesystem::AbsolutePath full = findStateFile(base, path);
-    Global::info("Reading " + Filesystem::cleanse(full).path());
-    PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(stateFileParameter, Filesystem::cleanse(full));
+    Global::info("Reading " + Storage::instance().cleanse(full).path());
+    PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(stateFileParameter, Storage::instance().cleanse(full));
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
     Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
@@ -1662,17 +1662,17 @@ void Character::load(int useAct){
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
     Filesystem::AbsolutePath finalPalette;
     try{
-        finalPalette = Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(paletteFile));
+        finalPalette = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(paletteFile));
     } catch (const Filesystem::Exception & fail){
         Global::debug(0) << "Couldn't find palette for '" << paletteFile << "' because " << fail.getTrace() << endl;
         /* ignore palette */
     }
-    Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(sffFile)), finalPalette, sprites, true);
+    Util::readSprites(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(sffFile)), finalPalette, sprites, true);
     destroyRaw(sprites);
     Global::debug(2) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
-    animations = Util::loadAnimations(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(airFile)), sprites, true);
+    animations = Util::loadAnimations(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(airFile)), sprites, true);
 
     fixAssumptions();
 

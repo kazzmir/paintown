@@ -291,7 +291,7 @@ void MugenFont::load(){
     uint32_t txtlocation;
     uint32_t txtsize;
 
-    Filesystem::LittleEndianReader byteReader(ifile);
+    Storage::LittleEndianReader byteReader(ifile);
     pcxlocation = byteReader.readByte4();
     pcxsize = byteReader.readByte4();
     txtlocation = byteReader.readByte4();

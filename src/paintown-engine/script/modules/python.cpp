@@ -65,7 +65,7 @@ namespace PaintownLevel{
             string spath(path);
             BlockObject block;
             block.setType(ObjectFactory::EnemyType);
-            block.setPath(Filesystem::find(Filesystem::RelativePath(spath)));
+            block.setPath(Storage::instance().find(Filesystem::RelativePath(spath)));
             Paintown::Enemy * enemy = (Paintown::Enemy*) ObjectFactory::createObject(&block);
             delete enemy;
         }
@@ -90,7 +90,7 @@ namespace PaintownLevel{
             string spath(path);
             string sname(name);
             BlockObject block;
-            block.setPath(Filesystem::find(Filesystem::RelativePath(spath)));
+            block.setPath(Storage::instance().find(Filesystem::RelativePath(spath)));
             block.setName(sname);
             block.setAlias(sname);
             block.setMap(map);
@@ -344,7 +344,7 @@ path(path){
      * PyString_FromStringAndSize() and PyList_Append()
      */
     ostringstream python_string;
-    python_string << "x = \"" << Filesystem::find(path).path() << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('" << Filesystem::find(Filesystem::RelativePath("scripts")).path() << "');";
+    python_string << "x = \"" << Storage::instance().find(path).path() << "\"; import sys; sys.path.append(x[0:x.rfind('/')]); sys.path.append('" << Storage::instance().find(Filesystem::RelativePath("scripts")).path() << "');";
     Global::debug(1) << "Executing '" << python_string.str() << "'" << endl;
     Global::debug(1) << "Python: " << PyRun_SimpleString(python_string.str().c_str()) << endl;
     int from = path.path().rfind("/")+1;

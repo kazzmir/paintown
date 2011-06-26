@@ -263,7 +263,7 @@ void BuddyFuture::compute(){
     Character * player = (Character*) playerFuture->get();
     Object * buddy = new BuddyPlayer(player, *base);
     buddy->setObjectId(id);
-    Global::info("Loaded buddy " + Filesystem::cleanse(path).path());
+    Global::info("Loaded buddy " + Storage::instance().cleanse(path).path());
     set(buddy);
 }
 

@@ -104,7 +104,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
             player = new Paintown::Player(playerPath);
             player->setMap(remap);
             player->ignoreLives();
-            Filesystem::RelativePath cleanPath = Filesystem::cleanse(playerPath);
+            Filesystem::RelativePath cleanPath = Storage::instance().cleanse(playerPath);
 
             Global::info("Notify server");
             /* send the path of the chosen player */
@@ -192,7 +192,7 @@ static void playGame(Socket socket){
                     if (uniqueId(players, id)){
                         Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
                         Global::info("Create character " + next.path);
-                        Paintown::Character * c = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(next.path)), alliance);
+                        Paintown::Character * c = new Paintown::NetworkPlayer(Storage::instance().find(Filesystem::RelativePath(next.path)), alliance);
                         c->setId(id);
                         ((Paintown::NetworkCharacter *)c)->alwaysShowName();
                         players.push_back(c);
@@ -209,7 +209,7 @@ static void playGame(Socket socket){
                 }
 
                 void loadLevel(Message & next){
-                    Filesystem::AbsolutePath level = Filesystem::find(Filesystem::RelativePath(next.path));
+                    Filesystem::AbsolutePath level = Storage::instance().find(Filesystem::RelativePath(next.path));
                     /* TODO: handle LoadException here */
                     this->world = new NetworkWorldClient(socket, players, level, player->getId(), clientNames);
                     Music::changeSong();

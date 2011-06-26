@@ -4,7 +4,7 @@
 #include "character.h"
 #include "util/load_exception.h"
 
-namespace Filesystem{
+namespace Storage{
     class AbsolutePath;
 }
 

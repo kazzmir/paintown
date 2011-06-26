@@ -79,15 +79,15 @@ std:string getHeadDir( const std::string & dir ){
 
 static const Filesystem::AbsolutePath findCharacterDefMotif(const string & name){
     /* maybe pass in the motif directory instead of just magically getting it here? */
-    Filesystem::AbsolutePath chars = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("chars")));
-    Filesystem::AbsolutePath base = Filesystem::lookupInsensitive(chars, Filesystem::RelativePath(name));
-    return Filesystem::lookupInsensitive(base, Filesystem::RelativePath(name + ".def"));
+    Filesystem::AbsolutePath chars = Storage::instance().findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("chars")));
+    Filesystem::AbsolutePath base = Storage::instance().lookupInsensitive(chars, Filesystem::RelativePath(name));
+    return Storage::instance().lookupInsensitive(base, Filesystem::RelativePath(name + ".def"));
 }
 
 static const Filesystem::AbsolutePath findCharacterDefNormal(const string & name){
-    Filesystem::AbsolutePath chars = Filesystem::findInsensitive(Mugen::Data::getInstance().getCharDirectory());
-    Filesystem::AbsolutePath base = Filesystem::lookupInsensitive(chars, Filesystem::RelativePath(name));
-    return Filesystem::lookupInsensitive(base, Filesystem::RelativePath(name + ".def"));
+    Filesystem::AbsolutePath chars = Storage::instance().findInsensitive(Mugen::Data::getInstance().getCharDirectory());
+    Filesystem::AbsolutePath base = Storage::instance().lookupInsensitive(chars, Filesystem::RelativePath(name));
+    return Storage::instance().lookupInsensitive(base, Filesystem::RelativePath(name + ".def"));
 }
 
 const Filesystem::AbsolutePath Mugen::Util::findCharacterDef(const string & name){
@@ -121,19 +121,19 @@ const Filesystem::AbsolutePath Mugen::Util::findStageDef(const Filesystem::Relat
 /* search in <motif> and then <motif>/.. */
 static const Filesystem::AbsolutePath findFileMotif(const Filesystem::RelativePath & path){
     try{
-        return Filesystem::lookupInsensitive(Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory()), path);
+        return Storage::instance().lookupInsensitive(Storage::instance().findInsensitive(Mugen::Data::getInstance().getMotifDirectory()), path);
     } catch (const Filesystem::NotFound & fail){
-        Filesystem::AbsolutePath top = Filesystem::findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
-        return Filesystem::lookupInsensitive(top, path);
+        Filesystem::AbsolutePath top = Storage::instance().findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
+        return Storage::instance().lookupInsensitive(top, path);
     }
 }
 
 /* search in mugen/data and mugen/ */
 static const Filesystem::AbsolutePath findFileNormal(const Filesystem::RelativePath & path){
     try{
-        return Filesystem::findInsensitive(Mugen::Data::getInstance().getDataDirectory().join(path));
+        return Storage::instance().findInsensitive(Mugen::Data::getInstance().getDataDirectory().join(path));
     } catch (const Filesystem::NotFound & fail){
-        return Filesystem::findInsensitive(Mugen::Data::getInstance().getDirectory().join(path));
+        return Storage::instance().findInsensitive(Mugen::Data::getInstance().getDirectory().join(path));
     }
 }
 
@@ -150,7 +150,7 @@ const Filesystem::AbsolutePath Mugen::Util::findFile(const Filesystem::RelativeP
  */
 const Filesystem::AbsolutePath Mugen::Util::findFile(const Filesystem::AbsolutePath & base, const Filesystem::RelativePath & path){
     try{
-        return Filesystem::lookupInsensitive(base, path);
+        return Storage::instance().lookupInsensitive(base, path);
     } catch (const Filesystem::NotFound & fail){
         return findFile(path);
     }
@@ -167,7 +167,7 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::Absolu
     if (::Util::exists(dir.path() + str) == false){
 	Global::debug(2) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
-	std::vector<Filesystem::AbsolutePath> files = Filesystem::getFiles(dir, "*");
+	std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(dir, "*");
 	Global::debug(2) << "Correcting file: " << str << ", in directory: "<< dir.path() <<".\nGot " << files.size() << " files." << endl;
         for (vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++){
             Filesystem::AbsolutePath & path = *it;
@@ -186,7 +186,7 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::Absolu
 
 /* this is basename() */
 const std::string Mugen::Util::stripDir( const std::string &str ){ 
-    return Filesystem::stripDir(str);
+    return Storage::stripDir(str);
 }
 
 /* this is dirname() */
@@ -441,7 +441,7 @@ public:
         uint32_t subhead = 0;
         uint32_t sharedPal = 0;
 
-        Filesystem::LittleEndianReader reader(sffStream);
+        Storage::LittleEndianReader reader(sffStream);
 
         totalGroups = reader.readByte4();
         totalImages = reader.readByte4();
@@ -593,7 +593,7 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
             if (first_it != sprites.end()){
                 std::map< unsigned int, MugenSprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
                 if (it != first_it->second.end()){
-                    Global::debug(0) << "Warning: replacing sprite in " << Filesystem::cleanse(filename).path() << " group " << sprite->getGroupNumber() << " item " << sprite->getImageNumber() << endl;
+                    Global::debug(0) << "Warning: replacing sprite in " << Storage::instance().cleanse(filename).path() << " group " << sprite->getGroupNumber() << " item " << sprite->getImageNumber() << endl;
                     unused.push_back(it->second);
                 }
             }
@@ -623,7 +623,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
     ifile.seekg(location, ios::beg);
     int totalSounds;
     
-    Filesystem::LittleEndianReader reader(ifile);
+    Storage::LittleEndianReader reader(ifile);
     totalSounds = reader.readByte4();
     location = reader.readByte4();
     

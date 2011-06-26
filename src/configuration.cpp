@@ -544,11 +544,11 @@ void Configuration::loadConfigurations(){
     Disable disable;
 
     try{
-        Filesystem::AbsolutePath file = Filesystem::configFile();
+        Filesystem::AbsolutePath file = Storage::instance().configFile();
         TokenReader tr(file.path());
         Token * head = tr.readToken();
         if (*head != config_configuration){
-            throw LoadException(__FILE__, __LINE__, string("Config file ") + Filesystem::configFile().path() + " does not use the configuration format" );
+            throw LoadException(__FILE__, __LINE__, string("Config file ") + Storage::instance().configFile().path() + " does not use the configuration format" );
         }
         TokenView view = head->view();
         while (view.hasMore()){
@@ -605,7 +605,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
+                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Storage::instance().configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
                 }
 
                 if (input == INPUT_TYPE){
@@ -671,7 +671,7 @@ void Configuration::loadConfigurations(){
                 }
                 if ( number == -1 ){
                     /* should use config_number here */
-                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Filesystem::configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
+                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Storage::instance().configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
                 }
 
                 if (input == INPUT_TYPE){
@@ -753,9 +753,9 @@ void Configuration::loadConfigurations(){
             }
         }
     } catch ( const LoadException & le ){
-        Global::debug( 0 ) << "Notice: Could not load configuration file " << Filesystem::configFile().path() << ": " << le.getTrace() << endl;
+        Global::debug( 0 ) << "Notice: Could not load configuration file " << Storage::instance().configFile().path() << ": " << le.getTrace() << endl;
     } catch ( const TokenException & t ){
-        Global::debug( 0 ) << "Notice: could not open configuration file '" << Filesystem::configFile().path() << "': " << t.getTrace() << endl;
+        Global::debug( 0 ) << "Notice: could not open configuration file '" << Storage::instance().configFile().path() << "': " << t.getTrace() << endl;
     }
 }
 
@@ -935,7 +935,7 @@ void Configuration::saveConfiguration(){
         head.addToken(property);
     }
 
-    ofstream out(Filesystem::configFile().path().c_str(), ios::trunc | ios::out );
+    ofstream out(Storage::instance().configFile().path().c_str(), ios::trunc | ios::out );
     if (! out.bad()){
         head.toString( out, string("") );
         out << endl;

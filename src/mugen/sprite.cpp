@@ -145,7 +145,7 @@ void MugenSprite::read(std::ifstream & ifile, const int loc){
     // set the sprite location
     this->location = loc;
 
-    Filesystem::LittleEndianReader reader(ifile);
+    Storage::LittleEndianReader reader(ifile);
     
     next = reader.readByte4();
     length = reader.readByte4();

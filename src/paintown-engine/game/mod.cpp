@@ -40,7 +40,7 @@ Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
 }
     
 Graphics::Bitmap * Mod::createBitmap(const Filesystem::RelativePath & path){
-    return new Graphics::Bitmap(Filesystem::find(path).path());
+    return new Graphics::Bitmap(Storage::instance().find(path).path());
 }
 
 Graphics::Bitmap Mod::makeBitmap(const Filesystem::RelativePath & path){
@@ -81,7 +81,7 @@ void Mod::loadOpenborMod(const Filesystem::AbsolutePath & path){
 
 void Mod::loadPaintownMod(const string & name){
    string path = name + "/" + name + ".txt"; 
-   setMod(new Mod(Filesystem::find(Filesystem::RelativePath(path))));
+   setMod(new Mod(Storage::instance().find(Filesystem::RelativePath(path))));
 }
 
 Mod * Mod::getCurrentMod(){

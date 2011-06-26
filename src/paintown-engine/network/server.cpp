@@ -345,7 +345,7 @@ static void createClients(const vector<Client*> & clients, vector<Network::Socke
         if (type == World::CREATE_CHARACTER){
             int alliance = playerAlliance();
             Global::info(" creating " + message.path);
-            Paintown::Character * client_character = new Paintown::NetworkPlayer(Filesystem::find(Filesystem::RelativePath(message.path)), alliance);
+            Paintown::Character * client_character = new Paintown::NetworkPlayer(Storage::instance().find(Filesystem::RelativePath(message.path)), alliance);
             characterToSocket[client_character] = socket;
             /* FIXME: Don't need this line now that NetworkPlayer exists.
              * take it out at some point.
@@ -440,7 +440,7 @@ static void playGame(vector<Client*> & clients){
                 /* send all created characters to all clients */
                 for (vector<Paintown::Object *>::iterator it = players.begin(); it != players.end(); it++){
                     Paintown::Character * c = (Paintown::Character *) *it;
-                    Filesystem::RelativePath path = Filesystem::cleanse(c->getPath());
+                    Filesystem::RelativePath path = Storage::instance().cleanse(c->getPath());
                     // path.erase( 0, Util::getDataPath().length() );
                     Message add;
                     add << World::CREATE_CHARACTER;
@@ -492,7 +492,7 @@ static void playGame(vector<Client*> & clients){
                 virtual void load(){
                     debug(1) << "Create network world" << endl;
                     /* TODO: handle LoadException here */
-                    world = new NetworkWorld(sockets, players, characterToSocket, Filesystem::find(Filesystem::RelativePath(level)), clientNames);
+                    world = new NetworkWorld(sockets, players, characterToSocket, Storage::instance().find(Filesystem::RelativePath(level)), clientNames);
 
                     debug(1) << "Load music" << endl;
 

@@ -200,7 +200,7 @@ character2(0){
 
         // just a precaution
         // spriteFile = Util::removeSpaces(spriteFile);
-        Filesystem::AbsolutePath realSpriteFile = Filesystem::findInsensitive(Filesystem::cleanse(baseDirectory).join(spriteFile));
+        Filesystem::AbsolutePath realSpriteFile = Storage::instance().findInsensitive(Storage::instance().cleanse(baseDirectory).join(spriteFile));
 
         /* pull out the icon and the portrait from the sff */
         Util::getIconAndPortrait(realSpriteFile, baseDirectory.join(actCollection[0]), &icon, &portrait);
@@ -2262,7 +2262,7 @@ bool CharacterSelect::isUniqueCharacter(CharacterInfo * character){
 
 static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::RelativePath & path){
     try{
-        vector<Filesystem::AbsolutePath> more = Filesystem::getFilesRecursive(Filesystem::find(path), "*.def");
+        vector<Filesystem::AbsolutePath> more = Storage::instance().getFilesRecursive(Storage::instance().find(path), "*.def");
         where.insert(where.end(), more.begin(), more.end());
     } catch (const Filesystem::NotFound & fail){
     }
@@ -2604,7 +2604,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 static void startMusic(const Filesystem::AbsolutePath & systemFile, const string & which){
     try {
 	string music = Mugen::Util::probeDef(systemFile, "music", which);
-	Music::loadSong(Filesystem::find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
+	Music::loadSong(Storage::instance().find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
 	Music::pause();
 	Music::play();
     } catch (const MugenException & ex){

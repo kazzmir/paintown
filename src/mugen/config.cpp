@@ -98,7 +98,7 @@ Data::~Data(){
 Data & Data::getInstance(){
     if (!data){
         // Grab mugen.cfg
-	data = new Data(Filesystem::find(Filesystem::RelativePath("mugen/data/mugen.cfg"))); 
+	data = new Data(Storage::instance().find(Filesystem::RelativePath("mugen/data/mugen.cfg"))); 
     }
     return *data;
 }
@@ -142,9 +142,9 @@ Filesystem::RelativePath Data::getStageDirectory(){
 
 Filesystem::AbsolutePath Data::getFileFromMotif(const Filesystem::RelativePath & file){
     try{
-        return Filesystem::find(getMotifDirectory().join(file.getFilename()));
+        return Storage::instance().find(getMotifDirectory().join(file.getFilename()));
     } catch (const Filesystem::NotFound & nf){
-	return Filesystem::find(getDataDirectory().join(file.getFilename()));
+	return Storage::instance().find(getDataDirectory().join(file.getFilename()));
     }
 }
 

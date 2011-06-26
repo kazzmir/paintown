@@ -36,10 +36,10 @@ static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::Abso
 static list<Ast::Section*> * loadCached(const string & path){
     string converted = path;
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
-    if (!Filesystem::exists(Filesystem::AbsolutePath(path))){
+    if (!Storage::instance().exists(Filesystem::AbsolutePath(path))){
         throw MugenException("Original file does not exist");
     }
-    Filesystem::AbsolutePath fullPath = Filesystem::userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE)).join(Filesystem::RelativePath(converted));
+    Filesystem::AbsolutePath fullPath = Storage::instance().userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE)).join(Filesystem::RelativePath(converted));
     if (!newer(fullPath, Filesystem::AbsolutePath(path))){
         throw MugenException("File is old");
     }
@@ -60,7 +60,7 @@ static void saveParse(const Filesystem::AbsolutePath & path, list<Ast::Section*>
 static void saveCached(list<Ast::Section*> * parse, const string & path){
     string converted = path;
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
-    Filesystem::AbsolutePath cache = Filesystem::userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE));
+    Filesystem::AbsolutePath cache = Storage::instance().userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE));
 
     if (!System::isDirectory(cache.path())){
         /* like mkdir -p */

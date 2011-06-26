@@ -51,7 +51,7 @@ struct playerInfo{
 typedef vector<playerInfo> PlayerVector;
 static PlayerVector loadPlayers(const string & path){
     PlayerVector players;
-    vector<Filesystem::AbsolutePath> files = Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath(path + "/")), "*" );
+    vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(Storage::instance().find(Filesystem::RelativePath(path + "/")), "*" );
     std::sort(files.begin(), files.end());
     for ( vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++ ){
         string path = (*it).path();
@@ -137,7 +137,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         boxesPerLine(boxesPerLine),
         players(players),
         loader(loader),
-        beep(Filesystem::find(Filesystem::RelativePath("sounds/beep1.wav")).path()){
+        beep(Storage::instance().find(Filesystem::RelativePath("sounds/beep1.wav")).path()){
             input.set(Configuration::config( 0 ).getRight(), 300, false, Select::Right);
             input.set(Configuration::config( 0 ).getUp(), 300, false, Select::Up);
             input.set(Configuration::config( 0 ).getDown(), 300, false, Select::Down);

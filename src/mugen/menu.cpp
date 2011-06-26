@@ -238,7 +238,7 @@ moveText(true){
 }
 
 void MugenMenu::loadData(){
-    Filesystem::AbsolutePath baseDir = Filesystem::find(Mugen::Data::getInstance().getDirectory().join(location.getDirectory()));
+    Filesystem::AbsolutePath baseDir = Storage::instance().find(Mugen::Data::getInstance().getDirectory().join(location.getDirectory()));
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, location.getFilename().path());
     // get real basedir
     //baseDir = Mugen::Util::getFileDir( ourDefFile );

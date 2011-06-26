@@ -11,7 +11,7 @@ class Bitmap;
 }
 class Animation;
 
-namespace Filesystem{
+namespace Storage{
     class AbsolutePath;
 }
 

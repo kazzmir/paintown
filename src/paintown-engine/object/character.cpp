@@ -306,7 +306,7 @@ Network::Message Character::getCreateMessage(){
     message << getCurrentMap();
     Global::debug( 1 ) << "Character create id " << getId() << endl;
     Global::debug( 1 ) << "Character create path: '" << getPath().path() << "'" << endl;
-    Filesystem::RelativePath path = Filesystem::cleanse(getPath());
+    Filesystem::RelativePath path = Storage::instance().cleanse(getPath());
     /*
        path.erase( 0, Util::getDataPath().length() );
        */
@@ -381,15 +381,15 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
             } else if ( *n == "hit-sound" ){
                 string _snd;
                 n->view() >> _snd;
-                setHit(Sound(Filesystem::find(Filesystem::RelativePath(_snd)).path()));
+                setHit(Sound(Storage::instance().find(Filesystem::RelativePath(_snd)).path()));
             } else if ( *n == "die-sound" ){
                 string _snd;
                 n->view() >> _snd;
-                die_sound = new Sound(Filesystem::find(Filesystem::RelativePath(_snd)).path());
+                die_sound = new Sound(Storage::instance().find(Filesystem::RelativePath(_snd)).path());
             } else if ( *n == "landed" ){
                 string st;
                 n->view() >> st;
-                landed_sound = new Sound(Filesystem::find(Filesystem::RelativePath(st)).path());
+                landed_sound = new Sound(Storage::instance().find(Filesystem::RelativePath(st)).path());
             } else if ( *n == "speed" ){
                 n->view() >> speed;
             } else if ( *n == "type" ){
@@ -402,7 +402,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
                 string icon_path;
                 n->view() >> icon_path;
                 // cout<<"Loading icon "<<icon_path<<endl;
-                icon = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(icon_path)).path());
+                icon = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(icon_path)).path());
             } else if ( *n == "remap" ){
                 string first;
                 string second;
@@ -418,7 +418,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
 
         }
 
-        squish_sound = new Sound(Filesystem::find(Filesystem::RelativePath("sounds/squish.wav")).path());
+        squish_sound = new Sound(Storage::instance().find(Filesystem::RelativePath("sounds/squish.wav")).path());
 
         if ( getMovement( "idle" ) == NULL ){
             throw LoadException(__FILE__, __LINE__, "No 'idle' movement");
@@ -583,7 +583,7 @@ vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> anima
     };
 
     for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i += Util::rnd(3) + 1){
-        replacePart(parts, new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(more[i])).path()));	
+        replacePart(parts, new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(more[i])).path()));	
     }
 
     return parts;

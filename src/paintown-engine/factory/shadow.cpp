@@ -40,7 +40,7 @@ Shadow::Shadow(){
         string s = "sprites/shadow/shadow";
         s += (char)(x+'0');
         s += ".png";
-        shadows.push_back(new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(s)).path()));
+        shadows.push_back(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(s)).path()));
     }
 }
 

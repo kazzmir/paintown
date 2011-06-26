@@ -40,11 +40,11 @@ stimulation( stimulation ){
                 if (*next == "frame"){
                     string file;
                     next->view() >> file;
-                    picture.load(Filesystem::find(Filesystem::RelativePath(file)).path());
+                    picture.load(Storage::instance().find(Filesystem::RelativePath(file)).path());
                 } else if (*next == "sound"){
                     string path;
                     next->view() >> path;
-                    sound = Sound(Filesystem::find(Filesystem::RelativePath(path)).path());
+                    sound = Sound(Storage::instance().find(Filesystem::RelativePath(path)).path());
                 }
             }
         } catch (const TokenException & ex){
@@ -144,7 +144,7 @@ Network::Message Item::getCreateMessage(){
 	message << (int) getZ();
 	this->stimulation->createMessage( message );
 
-        Filesystem::RelativePath mypath = Filesystem::cleanse(path);
+        Filesystem::RelativePath mypath = Storage::instance().cleanse(path);
         Global::debug(2) << "Create item id " << getId() << " path " << mypath.path() << endl;
         message << mypath.path();
         /*

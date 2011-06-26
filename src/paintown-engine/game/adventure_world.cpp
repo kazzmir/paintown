@@ -216,7 +216,7 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	}
 	scene = s;
 	
-        Filesystem::AbsolutePath bang_path(Filesystem::find(Filesystem::RelativePath("misc/flash/flash.txt")));
+        Filesystem::AbsolutePath bang_path(Storage::instance().find(Filesystem::RelativePath("misc/flash/flash.txt")));
         Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
 		delete bang;

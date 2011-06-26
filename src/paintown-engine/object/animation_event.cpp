@@ -157,7 +157,7 @@ life( 0 ){
         } else if ( *current == "path" ){
             string path;
             current->view() >> path;
-            Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(path));
+            Filesystem::AbsolutePath full = Storage::instance().find(Filesystem::RelativePath(path));
             TokenReader reader(full.path());
             try{
                 projectile = new Projectile(reader.readToken());

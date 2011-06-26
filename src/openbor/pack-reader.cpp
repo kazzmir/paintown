@@ -39,7 +39,7 @@ static string lowercase(string in){
 }
 
 static string sanitizePath(const string & path){
-    return Filesystem::sanitize(Filesystem::invertSlashes(lowercase(path)));
+    return Storage::sanitize(Storage::invertSlashes(lowercase(path)));
 }
 
 PackReader::PackReader(const Filesystem::AbsolutePath & filename):
@@ -47,7 +47,7 @@ filename(filename){
     ifstream stream;
     Global::debug(0) << "Reading pak file " << filename.path() << endl;
     stream.open(filename.path().c_str(), std::ios::in | std::ios::binary);
-    Filesystem::LittleEndianReader reader(stream);
+    Storage::LittleEndianReader reader(stream);
     uint32_t magic = reader.readByte4();
     if (magic != MAGIC){
         ostringstream error;
@@ -86,7 +86,7 @@ filename(filename){
             // reader.seek(current + length);
             done |= stream.eof();
         }
-    } catch (const Filesystem::Eof & eof){
+    } catch (const Storage::Eof & eof){
     }
     stream.close();
 

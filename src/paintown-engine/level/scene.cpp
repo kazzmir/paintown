@@ -76,7 +76,7 @@ frontBuffer(NULL){
             } else if ( *tok == "background" ){
                 string n;
                 tok->view() >> n;
-                background = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(n)).path());
+                background = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(n)).path());
             } else if ( *tok == "background-parallax" ){
                 double d;
                 tok->view() >> d;
@@ -126,7 +126,7 @@ frontBuffer(NULL){
                 Graphics::Bitmap * x_neon = NULL;
                 Graphics::Bitmap * x_screen = NULL;
                 if ( normal != "none" ){
-                    x_normal = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(normal)).path());
+                    x_normal = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(normal)).path());
                 }
                 x_neon = new Graphics::Bitmap();
                 x_screen = new Graphics::Bitmap();
@@ -150,7 +150,7 @@ frontBuffer(NULL){
             } else if ( *tok == "frontpanel" ){
                 string file;
                 tok->view() >> file;
-                Graphics::Bitmap * front = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath(file)).path());
+                Graphics::Bitmap * front = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(file)).path());
                 front_panels.push_back( front );
             } else if ( *tok == "order" ){
                 // *tok >> order;
@@ -180,7 +180,7 @@ frontBuffer(NULL){
     current_block = level_blocks.front();
     level_blocks.pop_front();
 
-    arrow = new Graphics::Bitmap(Filesystem::find(Filesystem::RelativePath("sprites/arrow.png")).path());
+    arrow = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("sprites/arrow.png")).path());
     arrow_blink = 0;
 
     // delete current;

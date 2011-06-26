@@ -64,7 +64,7 @@ Font * FontFactory::getRealFont(const Filesystem::RelativePath & path, const int
     Util::Thread::ScopedLock locked(lock);
     try{
         if (font_mapper.find(path.path()) == font_mapper.end()){
-            font_mapper[path.path()] = new FreeTypeFont(Filesystem::find(path));
+            font_mapper[path.path()] = new FreeTypeFont(Storage::instance().find(path));
         }
 
         Font * f = font_mapper[path.path()];

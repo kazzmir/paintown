@@ -141,7 +141,7 @@ static void setMugenMotif(const Filesystem::AbsolutePath & path){
 
 static Filesystem::AbsolutePath mainMenuPath(){
     string menu = Paintown::Mod::getCurrentMod()->getMenu();
-    return Filesystem::find(Filesystem::RelativePath(menu));
+    return Storage::instance().find(Filesystem::RelativePath(menu));
 }
 
 /*

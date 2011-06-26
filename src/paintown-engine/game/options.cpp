@@ -249,16 +249,16 @@ public:
     static vector<ModType> findMods(){
         vector<ModType> mods;
 
-        vector<Filesystem::AbsolutePath> directories = Filesystem::findDirectories(Filesystem::RelativePath("."));
+        vector<Filesystem::AbsolutePath> directories = Storage::instance().findDirectories(Filesystem::RelativePath("."));
         for (vector<Filesystem::AbsolutePath>::iterator dir = directories.begin(); dir != directories.end(); dir++){
-            string file = (*dir).path() + "/" + Filesystem::cleanse(*dir).path() + ".txt";
+            string file = (*dir).path() + "/" + Storage::instance().cleanse(*dir).path() + ".txt";
             if (isModFile(file)){
                 mods.push_back(ModType(Filesystem::AbsolutePath(file), ModType::Paintown));
             }
         }
 
         try{
-            vector<Filesystem::AbsolutePath> pakFiles = Filesystem::getFiles(Filesystem::find(Filesystem::RelativePath("paks")), "*", true);
+            vector<Filesystem::AbsolutePath> pakFiles = Storage::instance().getFiles(Storage::instance().find(Filesystem::RelativePath("paks")), "*", true);
             for (vector<Filesystem::AbsolutePath>::iterator it = pakFiles.begin(); it != pakFiles.end(); it++){
                 const Filesystem::AbsolutePath & path = *it;
                 if (isOpenBorPackfile(path)){
@@ -283,14 +283,14 @@ public:
                 name_token->view() >> name;
                 return name;
             }
-            return Filesystem::cleanse(path).path();
+            return Storage::instance().cleanse(path).path();
         } catch (const TokenException & e){
-            return Filesystem::cleanse(path).path();
+            return Storage::instance().cleanse(path).path();
         }
     }
 
     static string modNameOpenbor(const Filesystem::AbsolutePath & path){
-        return "OpenBor " + Filesystem::cleanse(path).path();
+        return "OpenBor " + Storage::instance().cleanse(path).path();
     }
 
     static string modName(const ModType & mod){
