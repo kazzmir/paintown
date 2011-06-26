@@ -1001,7 +1001,10 @@ pspnet_inet
                               setup(path, '/portlibs/ppu/lib'),
                               setup(path, '/psl1ght/ppu/lib'),
                               setup(path, '/psl1ght/spu/lib')])
-        flags = ['-mcpu=cell', '-mhard-float', '-fmodulo-sched', '-ffunction-sections', '-fdata-sections', '-maltivec']
+        # -mminimal-toc puts less stuff in the table of contents "TOC".
+        # I don't know why this is important for the ps3 compiler but apparently
+        # paintown was overflowing the TOC causing it to crash on startup.
+        flags = ['-mcpu=cell', '-mhard-float', '-fmodulo-sched', '-ffunction-sections', '-fdata-sections', '-maltivec', '-mminimal-toc']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
