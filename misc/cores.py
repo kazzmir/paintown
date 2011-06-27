@@ -30,6 +30,6 @@ def usingIcecream():
 
 # if using the icecc distributed compiler stuff just set cores to 5
 if usingIcecream():
-    print "5"
+    print("5")
 else:
-    print detectCPUs()
+    print(detectCPUs())
