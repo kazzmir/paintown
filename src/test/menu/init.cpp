@@ -6,4 +6,7 @@ namespace Global{
     int WINDOWED;
     int FULLSCREEN;
     int rateLimit;
+
+    void close(){
+    }
 }

@@ -14,8 +14,8 @@ using namespace std;
 void run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/kfm/kfm.def"){
     Mugen::ParseCache cache;
     string stagePath = "mugen/stages/kfm.def";
-    Mugen::Character kfm1(Filesystem::find(Filesystem::RelativePath(path1)));
-    Mugen::Character kfm2(Filesystem::find(Filesystem::RelativePath(path2)));
+    Mugen::Character kfm1(Storage::instance().find(Filesystem::RelativePath(path1)));
+    Mugen::Character kfm2(Storage::instance().find(Filesystem::RelativePath(path2)));
     Global::debug(0) << "Loading player 1 " << path1 << endl;
     kfm1.load();
     Global::debug(0) << "Loading player 2 " << path2 << endl;
@@ -24,7 +24,7 @@ void run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/k
     Mugen::LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
     kfm1.setBehavior(&player1AIBehavior);
     kfm2.setBehavior(&player2AIBehavior);
-    Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath(stagePath)));
+    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath(stagePath)));
     stage.addPlayer1(&kfm1);
     stage.addPlayer2(&kfm2);
     stage.load();

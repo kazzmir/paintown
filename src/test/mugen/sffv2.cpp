@@ -218,7 +218,7 @@ public:
         uint32_t subpalette = 0;
         uint32_t totalPalettes = 0;
 
-        Filesystem::LittleEndianReader reader(sffStream);
+        Storage::LittleEndianReader reader(sffStream);
         string signature = reader.readString2(12);
         if (signature != "ElecbyteSpr"){
             Global::debug(0) << "Invalid signature. Got '" << signature << "'" << endl;
@@ -344,7 +344,7 @@ public:
     }
 
     Graphics::Bitmap readSprite(int group, int item){
-        Filesystem::LittleEndianReader reader(sffStream);
+        Storage::LittleEndianReader reader(sffStream);
         for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
             const SpriteHeader & sprite = *it;
             if (sprite.group == group && sprite.item == item){
@@ -368,7 +368,7 @@ public:
         throw exception();
     }
 
-    Graphics::Bitmap read(const SpriteHeader & sprite, Filesystem::LittleEndianReader & reader, uint32_t offset, uint32_t length){
+    Graphics::Bitmap read(const SpriteHeader & sprite, Storage::LittleEndianReader & reader, uint32_t offset, uint32_t length){
         Global::debug(0) << "Read sprite " << sprite.group << ", " << sprite.item << " dimensions " << sprite.width << "x" << sprite.height << endl;
         char * pixels = new char[sprite.width * sprite.height];
         memset(pixels, 0, sprite.width * sprite.height);
@@ -438,7 +438,7 @@ public:
         }
     }
 
-    void readRLE8(Filesystem::LittleEndianReader & reader, uint32_t length, char * pixels, int pixelLength){
+    void readRLE8(Storage::LittleEndianReader & reader, uint32_t length, char * pixels, int pixelLength){
         char * output = pixels;
         while (length > 0){
             uint8_t rle = reader.readByte1();
@@ -458,7 +458,7 @@ public:
         }
     }
 
-    void readRLE5(Filesystem::LittleEndianReader & reader, uint32_t length, char * pixels, int pixelLength){
+    void readRLE5(Storage::LittleEndianReader & reader, uint32_t length, char * pixels, int pixelLength){
             /*
 RLE5packet = read(2 bytes)
 if RLE5packet.color_bit is 1, then
@@ -530,7 +530,7 @@ output(color)
     };
 
     /* get the stream of packets */
-    vector<LZ5Packet> readLZ5Packets(Filesystem::LittleEndianReader & reader, uint32_t length){
+    vector<LZ5Packet> readLZ5Packets(Storage::LittleEndianReader & reader, uint32_t length){
         vector<LZ5Packet> packets;
         uint8_t * compressed = new uint8_t[length];
         reader.readBytes(compressed, length);
@@ -618,7 +618,7 @@ output(color)
         return packets;
     }
 
-    void readLZ5(Filesystem::LittleEndianReader & reader, uint32_t length, char * pixels, int maxPixelLength){
+    void readLZ5(Storage::LittleEndianReader & reader, uint32_t length, char * pixels, int maxPixelLength){
         vector<LZ5Packet> packets = readLZ5Packets(reader, length);
         char * dest = pixels;
         int maxLength = 0;

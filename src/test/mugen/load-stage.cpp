@@ -40,13 +40,12 @@ int paintown_main(int argc, char ** argv){
     Graphics::Bitmap::setFakeGraphicsMode(640, 480);
     InputManager input;
     Util::Thread::initializeLock(&Global::messageLock);
-    Filesystem::initialize();
 
     // for (int i = 0; i < 3; i++){
         try{
             const char * file = "mugen/stages/kfm.def";
             Global::debug(0, "test") << "Loading " << file << endl;
-            Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath(file)));
+            Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath(file)));
             stage.load();
             Global::debug(0, "test") << "Success" << endl;
         } catch (const MugenException & e){

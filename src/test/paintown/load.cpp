@@ -50,7 +50,7 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Paintown::Player player(Filesystem::find(Filesystem::RelativePath(path)));
+            Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(path)));
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
         } catch (const Filesystem::NotFound & e){
@@ -78,7 +78,6 @@ int paintown_main(int argc, char ** argv){
     Collector janitor;
     Sound::initialize();
     Util::Thread::initializeLock(&Global::messageLock);
-    Filesystem::initialize();
 
     Paintown::Mod::loadDefaultMod();
     Global::setDebug(1);

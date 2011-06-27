@@ -39,13 +39,12 @@ public:
 void load(const char * path){
     for (int i = 0; i < 1; i++){
         MainMenuOptionFactory factory;
-        Menu::Menu menu(Filesystem::find(Filesystem::RelativePath(path)), factory);
+        Menu::Menu menu(Storage::instance().find(Filesystem::RelativePath(path)), factory);
     }
 }
 
 int paintown_main(int argc, char ** argv){
     Collector collector;
-    Filesystem::initialize();
     try{
         load("menu/main.txt");
         cout << "Success" << endl;

@@ -53,13 +53,13 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Mugen::Character kfm1(Filesystem::find(Filesystem::RelativePath(path)));
+            Mugen::Character kfm1(Storage::instance().find(Filesystem::RelativePath(path)));
             kfm1.load();
-            Mugen::Character kfm2(Filesystem::find(Filesystem::RelativePath(path)));
+            Mugen::Character kfm2(Storage::instance().find(Filesystem::RelativePath(path)));
             kfm2.load();
             const char * file = "mugen/stages/kfm.def";
             Global::debug(0, "test") << "Loading " << file << endl;
-            Mugen::Stage stage(Filesystem::find(Filesystem::RelativePath(file)));
+            Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath(file)));
             stage.load();
 
             diff.endTime();
@@ -96,7 +96,7 @@ int paintown_main(int argc, char ** argv){
     Collector janitor;
     InputManager input;
     Util::Thread::initializeLock(&Global::messageLock);
-    Filesystem::initialize();
+    // Filesystem::initialize();
 
     Global::setDebug(0);
     Mugen::ParseCache cache;

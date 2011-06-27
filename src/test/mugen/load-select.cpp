@@ -50,7 +50,7 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Mugen::CharacterSelect select(Filesystem::find(Filesystem::RelativePath(path)), Mugen::Player1, Mugen::Arcade);
+            Mugen::CharacterSelect select(Storage::instance().find(Filesystem::RelativePath(path)), Mugen::Player1, Mugen::Arcade);
             select.load();
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
@@ -87,7 +87,6 @@ int main(int argc, char ** argv){
     Global::setDebug(1);
     Mugen::ParseCache cache;
     Util::Thread::initializeLock(&Global::messageLock);
-    Filesystem::initialize();
 
     int die = 0;
     if (argc < 2){

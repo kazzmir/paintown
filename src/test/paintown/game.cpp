@@ -56,10 +56,10 @@ static int load(const char * path){
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
             {
-                Paintown::Player player(Filesystem::find(Filesystem::RelativePath(playerPath)));
+                Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(playerPath)));
                 vector<Paintown::Object*> players;
                 players.push_back(&player);
-                AdventureWorld world(players, Filesystem::find(Filesystem::RelativePath(path)));
+                AdventureWorld world(players, Storage::instance().find(Filesystem::RelativePath(path)));
             }
 
             ObjectFactory::destroy();
@@ -93,7 +93,6 @@ int paintown_main(int argc, char ** argv){
     Sound::initialize();
     InputManager manager;
     Util::Thread::initializeLock(&Global::messageLock);
-    Filesystem::initialize();
 
     Paintown::Mod::loadDefaultMod();
     Global::setDebug(1);

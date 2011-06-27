@@ -4,4 +4,6 @@ namespace Global{
     int TICS_PER_SECOND;
     double LOGIC_MULTIPLIER;
     int rateLimit;
+    void close(){
+    }
 }
