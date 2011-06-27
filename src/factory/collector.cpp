@@ -8,6 +8,7 @@
 #include "util/resource.h"
 #include "mugen/config.h"
 #include "util/sound.h"
+#include "util/init.h"
 #include <iostream>
 
 using namespace std;
@@ -33,4 +34,5 @@ Collector::~Collector(){
     Mugen::Data::destroy();
     Sound::uninitialize();
     delete resource;
+    Global::close();
 }
