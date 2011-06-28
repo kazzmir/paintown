@@ -204,6 +204,7 @@ def checkAllegro5(context):
     tmp = context.env.Clone()
     env = context.env
     def find(version):
+        context.Message(str(version))
         try:
             def make(name):
                 return '%s-%s' % (name, version)
