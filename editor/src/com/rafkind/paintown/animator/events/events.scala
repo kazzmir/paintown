@@ -147,88 +147,90 @@ class AttackEvent extends AnimationEvent {
     }
 
     def getEditor(animation:Animation, area:DrawArea, attack:Attack):JPanel = {
-      null
-    }
-/*
-    private JPanel getEditor(final Animation animation, final DrawArea area, final Attack attack){
-        SwingEngine engine = new SwingEngine("animator/eventattack.xml");
+        val engine = new SwingEngine("animator/eventattack.xml")
         // ((JPanel)engine.getRootComponent()).setSize(200,150);
 
-        final JSpinner x1spin = (JSpinner) engine.find( "x1" );
+        val x1spin = engine.find("x1").asInstanceOf[JSpinner]
         x1spin.setValue(new Integer(attack.x1));
-        x1spin.addChangeListener( new ChangeListener(){
-            public void stateChanged(ChangeEvent changeEvent){
-                attack.x1 = ((Integer)x1spin.getValue()).intValue();
+        x1spin.addChangeListener(new ChangeListener(){
+            def stateChanged(changeEvent:ChangeEvent){
+                attack.x1 = x1spin.getValue().asInstanceOf[Integer].intValue()
                 interact(animation);
                 animation.forceRedraw();
             }
         });
-        final JSpinner y1spin = (JSpinner) engine.find( "y1" );
+
+        val y1spin = engine.find( "y1" ).asInstanceOf[JSpinner];
         y1spin.setValue(new Integer(attack.y1));
-        y1spin.addChangeListener( new ChangeListener() {
-            public void stateChanged(ChangeEvent changeEvent){
-                attack.y1 = ((Integer)y1spin.getValue()).intValue();
-                interact( animation );
+        y1spin.addChangeListener(new ChangeListener() {
+          def stateChanged(changeEvent:ChangeEvent){
+                attack.y1 = y1spin.getValue().asInstanceOf[Integer].intValue();
+                interact(animation);
                 animation.forceRedraw();
             }
         });
-        final JSpinner x2spin = (JSpinner) engine.find( "x2" );
+        
+        val x2spin = engine.find("x2").asInstanceOf[JSpinner];
         x2spin.setValue(new Integer(attack.x2));
-        x2spin.addChangeListener( new ChangeListener(){
-            public void stateChanged(ChangeEvent changeEvent){
-                attack.x2 = ((Integer)x2spin.getValue()).intValue();
-                interact( animation );
+        x2spin.addChangeListener(new ChangeListener(){
+            def stateChanged(changeEvent:ChangeEvent){
+                attack.x2 = x2spin.getValue().asInstanceOf[Integer].intValue();
+                interact(animation);
                 animation.forceRedraw();
             }
         });
-        final JSpinner y2spin = (JSpinner) engine.find( "y2" );
+
+        val y2spin = engine.find("y2").asInstanceOf[JSpinner];
         y2spin.setValue(new Integer(attack.y2));
-        y2spin.addChangeListener( new ChangeListener(){
-            public void stateChanged(ChangeEvent changeEvent){
-                attack.y2 = ((Integer)y2spin.getValue()).intValue();
-                interact( animation );
+        y2spin.addChangeListener(new ChangeListener(){
+            def stateChanged(changeEvent:ChangeEvent){
+                attack.y2 = y2spin.getValue().asInstanceOf[Integer].intValue();
+                interact(animation);
                 animation.forceRedraw();
             }
         });
-        final JSpinner forcespinX = (JSpinner) engine.find("forceX");
+
+        val forcespinX = engine.find("forceX").asInstanceOf[JSpinner];
         forcespinX.setModel(new SpinnerNumberModel(attack.forceX, 0, 1000, 0.1));
         forcespinX.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent changeEvent){
-                attack.forceX = ((Double)forcespinX.getValue()).doubleValue();
+            def stateChanged(changeEvent:ChangeEvent){
+                attack.forceX = forcespinX.getValue().asInstanceOf[Double].doubleValue();
             }
         });
-        final JSpinner forcespinY = (JSpinner) engine.find("forceY");
+        
+        val forcespinY = engine.find("forceY").asInstanceOf[JSpinner];
         forcespinY.setModel(new SpinnerNumberModel(attack.forceY, 0, 1000, 0.1));
         forcespinY.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent changeEvent){
-                attack.forceY = ((Double)forcespinY.getValue()).doubleValue();
+          def stateChanged(changeEvent:ChangeEvent){
+                attack.forceY = forcespinY.getValue().asInstanceOf[Double].doubleValue();
             }
         });
 
-        final JSpinner damagespin = (JSpinner) engine.find( "damage" );
+        val damagespin = engine.find("damage").asInstanceOf[JSpinner];
         damagespin.setValue(new Integer(attack.damage));
-        damagespin.addChangeListener( new ChangeListener(){
-            public void stateChanged(ChangeEvent changeEvent){
-                attack.damage = ((Integer)damagespin.getValue()).intValue();
+        damagespin.addChangeListener(new ChangeListener(){
+            def stateChanged(changeEvent:ChangeEvent){
+                attack.damage = damagespin.getValue().asInstanceOf[Integer].intValue();
             }
         });
 
-        final JButton toggle = (JButton) engine.find("toggle");
+        val toggle = engine.find("toggle").asInstanceOf[JButton];
         toggle.addActionListener(new AbstractAction(){
-            boolean toggled = false;
-            MouseInputAdapter listener = new MouseInputAdapter(){
-                public void mousePressed(MouseEvent e){
-                    attack.x1 = (int)(e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX());
-                    attack.y1 = (int)(e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY());
+            var toggled:Boolean = false;
+            val listener = new MouseInputAdapter(){
+                override def mousePressed(e:MouseEvent){
+                    attack.x1 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX()).toInt
+                    attack.y1 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
                     x1spin.setValue(new Integer(attack.x1));
                     y1spin.setValue(new Integer(attack.y1));
                     interact(animation);
                     animation.forceRedraw();
                 }
 
-                public void mouseDragged(MouseEvent e){
-                    attack.x2 = (int)(e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX());
-                    attack.y2 = (int)(e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY());
+                override def mouseDragged(e:MouseEvent){
+                    attack.x2 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 -
+                    animation.getOffsetX()).toInt
+                    attack.y2 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
                     x2spin.setValue(new Integer(attack.x2));
                     y2spin.setValue(new Integer(attack.y2));
                     interact(animation);
@@ -236,38 +238,29 @@ class AttackEvent extends AnimationEvent {
                 }
             };
 
-            public void actionPerformed(ActionEvent event){
+            def actionPerformed(event:ActionEvent){
                 if (toggled){
                     toggle.setText("Draw attack box");
                     area.enableMovement();
                     area.removeMouseListener(listener);
                     area.removeMouseMotionListener(listener);
-                    onDestroy = new Lambda0(){
-                        public Object invoke(){
-                            return null;
-                        }
-                    };
+                    onDestroy = () => {}
                 } else {
                     toggle.setText("Stop drawing");
                     area.disableMovement();
                     area.addMouseListener(listener);
                     area.addMouseMotionListener(listener);
-                    onDestroy = new Lambda0(){
-                        public Object invoke(){
-                            area.removeMouseListener(listener);
-                            area.removeMouseMotionListener(listener);
-                            area.enableMovement();
-                            return null;
-                        }
-                    };
+                    onDestroy = () => {
+                      area.removeMouseListener(listener);
+                      area.removeMouseMotionListener(listener);
+                      area.enableMovement();
+                    }
                 }
 
                 toggled = ! toggled;
             }
         });
 
-        return (JPanel)engine.getRootComponent();
-
+        engine.getRootComponent().asInstanceOf[JPanel];
     }
-    */
 }
