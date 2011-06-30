@@ -564,6 +564,12 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
   }
 }
 
+object NewAnimator{
+  def dataPath(f:File):File = {
+    new File(Data.getDataPath().getPath() + "/" + f.getPath());
+  }
+}
+
 object Animator2{
   def main(args: Array[String]):Unit = {
     val editor = new NewAnimator();

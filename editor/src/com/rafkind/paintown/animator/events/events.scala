@@ -1,8 +1,13 @@
 package com.rafkind.paintown.animator.events.scala
 
 // import java.util._;
-import java.awt
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.GridBagConstraints
 import java.awt.event._;
+import java.awt.image._
 import javax.swing._;
 import javax.swing.event._;
 import com.rafkind.paintown.animator.Animation;
@@ -11,7 +16,12 @@ import com.rafkind.paintown.animator.BoundingBox;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.animator.events.AnimationEvent;
+import com.rafkind.paintown.animator.NewAnimator
 import org.swixml.SwingEngine;
+
+import java.io.File
+import com.rafkind.paintown.Data;
+import com.rafkind.paintown.MaskedImage;
 
 class AttackEvent extends AnimationEvent {
   val DEFAULT_FORCE_X = 1.7
@@ -262,5 +272,143 @@ class AttackEvent extends AnimationEvent {
         });
 
         engine.getRootComponent().asInstanceOf[JPanel];
+    }
+}
+
+class FrameEvent extends AnimationEvent {
+    var frame:String = ""
+
+    def loadToken(token:Token){
+        frame = token.readString(0)
+    }
+
+    def interact(animation:Animation){
+        val path = Data.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame
+        try{
+            /*
+               animation.setImage( MaskedImage.load( path ) );
+               */
+            if (animation.getMap() != null){
+                animation.setImage(MaskedImage.load(path, animation.getMap()));
+            } else {
+                animation.setImage(MaskedImage.load(path));
+            }
+            animation.delay();
+        } catch {
+          case e:Exception => {
+            e.printStackTrace();
+            System.out.println("Could not load " + path);
+          }
+        }
+    }
+
+    def getName():String = {
+        getToken().toString()
+    }
+
+    def getEditor(animation:Animation, area2:DrawArea):JPanel = {
+        val engine = new SwingEngine("animator/eventframe.xml");
+        // ((JPanel)engine.getRootComponent()).setSize(350,270);
+        // JPanel canvas = (JPanel)engine.find("canvas");
+        val canvas = engine.getRootComponent().asInstanceOf[JPanel]
+
+        class drawArea extends JComponent {
+            var img:BufferedImage  = null;
+            override def paint(g:Graphics){
+                g.setColor(new Color(0, 0, 0));
+                // g.fillRect( 0, 0, 640, 480 );
+                g.fillRect(1, 1, getWidth() - 1, getHeight() - 1);
+                if (img != null){
+                    // g.drawImage( img, 125 - (img.getTileWidth()/2), 100 - (img.getTileHeight()/2), null );
+                    val g2d = g.asInstanceOf[Graphics2D];
+                    val scale = Math.min((getWidth() - 5.0) / img.getTileWidth(), (getHeight() - 5.0) / img.getTileHeight());
+                    g2d.scale(scale, scale);
+                    // g.drawImage(img, (int)(getWidth() / 2 - (img.getTileWidth()*scale/2)), (int)(getHeight() / 2 - img.getTileHeight()*scale/2), null);
+                    // g.drawImage(img, (int)(getWidth() / 2 - (img.getTileWidth()*scale/2)), (int)(getHeight() / 2 - img.getTileHeight()*scale/2), null);
+                    g.drawImage(img, (getWidth() / 2 - (img.getWidth(null)*scale/2)).toInt, (getHeight() / 2 - img.getHeight(null)*scale/2).toInt, null);
+                    // g.drawImage(img, (int) ((getWidth() / 2 - (img.getTileWidth()/2)) * scale), (int)((getHeight() / 2 - (img.getTileHeight()/2)) * scale), null);
+                }
+            }
+
+            def setImage(i:BufferedImage){
+                img = i;
+            }
+        };
+
+        val area = new drawArea();
+
+        /*
+           area.setSize(350,200);
+           area.setPreferredSize( new Dimension( 350,200 ) );
+           */
+        area.setPreferredSize(new Dimension(100,100));
+
+        val constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        canvas.add(area, constraints);
+
+        // canvas.add(area);
+
+        val framebox = engine.find("frame").asInstanceOf[JComboBox]
+        var index = 0;
+        var count = -1;
+        for (name <- getFiles(animation.getBaseDirectory())){
+            count += 1
+            framebox.addItem(name);
+            if (name.endsWith(frame)){
+                index = count;
+            }
+        }
+
+        framebox.addActionListener(new ActionListener(){
+            override def actionPerformed(event:ActionEvent){
+                frame = framebox.getSelectedItem().asInstanceOf[String]
+                try{
+                    area.setImage(MaskedImage.load(Data.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame));
+                    area.repaint();
+                } catch {
+                  case e:Exception => {
+                    System.out.println("Couldn't load file: " + frame);
+                    e.printStackTrace();
+                  }
+                }
+            }
+        });
+
+        framebox.setSelectedIndex(index);
+
+        engine.getRootComponent().asInstanceOf[JPanel]
+    }
+
+    def getFiles(path:String):List[String] = {
+        val dir = NewAnimator.dataPath(new File(path));
+        var files = List[String]()
+        /* use a FileFilter here */
+        if (dir.isDirectory()){
+            val all = dir.listFiles()
+            for (file <- all){
+                if (file.getName().endsWith(".png") ||
+                    file.getName().endsWith(".tga") ||
+                    file.getName().endsWith(".bmp")){
+                      files = files :+ file.getName()
+                }
+            }
+        }
+        files
+    }
+
+    def getToken():Token = {
+        val temp = new Token("frame");
+        temp.addToken(new Token("frame"));
+        temp.addToken(new Token(frame));
+        temp;
+    }
+
+    def destroy(){
     }
 }
