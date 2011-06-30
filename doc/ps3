@@ -23,8 +23,8 @@
 * On debian/ubuntu you can just do this: 
 * 	sudo apt-get install autoconf automake bison flex texinfo libncurses5-dev gcc make wget libelf-dev python2.6-dev zlib1g-dev libtool git-core libgmp3-dev libssl-dev pkg-config
 
-  1. Setup the ps3 toolchain and psl1ght
-    git clone https://github.com/ooPo/ps3toolchain.git
+  1. Setup the ps3 toolchain
+    git clone https://github.com/ps3dev/ps3toolchain.git
     cd ps3toolchain
   
   2. Set up the build environment for ps3toolchain
