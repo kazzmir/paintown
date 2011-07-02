@@ -9,21 +9,28 @@
 
 namespace Paintown{
 
-Gib::Gib( const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image ):
-ObjectNonAttack( x, z ),
+Gib::Gib(const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image):
+ObjectNonAttack(x, z),
 dx(dx),
 dy(dy),
 dz(dz),
-angle( 0 ),
-fade( 0 ),
-image( image ){
-    setY( y );
-    setMaxHealth( 1 );
-    setHealth( 1 );
+angle(0),
+fade(0),
+image(image){
+    setY(y);
+    setMaxHealth(1);
+    setHealth(1);
+
+    Graphics::RestoreState graphicsState;
+    bloodImage = new Graphics::Bitmap(2, 2);
+    bloodImage->clearToMask();
+    bloodImage->circleFill(bloodImage->getWidth() / 2, bloodImage->getHeight() / 2, 1, Graphics::makeColor(255, 0, 0));
 }
 
-Gib::Gib( const Gib & g ):
-ObjectNonAttack(g){
+Gib::Gib(const Gib & g):
+ObjectNonAttack(g),
+image(g.image),
+bloodImage(g.bloodImage){
 }
 
 void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
@@ -32,14 +39,21 @@ void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
         Graphics::Bitmap::transBlender(0, 0, 0, 255 - fade);
         image->translucent().draw(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work);
     } else {
-        Graphics::Bitmap::transBlender( 0, 0, 0, 200);
+        Graphics::Bitmap::transBlender(0, 0, 0, 200);
+        work->startDrawing();
         for (std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++){
             const Point & p = *it;
+
+            bloodImage->translucent().draw(p.x - rel_x, p.y, *work);
+            // bloodImage->draw(p.x - rel_x, p.y, *work);
+            /*
             int l = 200 + p.life * 15;
             Graphics::Color red = Graphics::makeColor(l > 255 ? 255 : l, 0, 0);
             work->translucent().circleFill(p.x - rel_x, p.y, 1, red);
+            */
             // work->putPixel( p.x - rel_x, p.y, red );
         }
+        work->endDrawing();
         // image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
         image->drawRotate(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, angle, *work);
     }
