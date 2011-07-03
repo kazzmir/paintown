@@ -557,10 +557,11 @@ vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> anima
     }
 
     const int gib_size = 12;
-    for ( int x = 0; x < bitmap->getWidth(); x += gib_size ){
-        for ( int y = 0; y < bitmap->getHeight(); y += gib_size ){
+    for ( int x = 0; x < bitmap->getWidth() - gib_size; x += gib_size ){
+        for ( int y = 0; y < bitmap->getHeight() - gib_size; y += gib_size ){
             // Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
             Graphics::Bitmap * sub = new Graphics::Bitmap(gib_size, gib_size);
+            sub->fill(Graphics::MaskColor());
             bitmap->Blit(x, y, 0, 0, *sub);
 
             for (int num = 0; num < 2; num++){
