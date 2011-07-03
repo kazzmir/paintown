@@ -294,6 +294,8 @@ trail_life(chr.trail_life){
     animation_current = getMovement("idle");
 
     setMap(chr.getCurrentMap());
+
+    gibBloodImage = chr.gibBloodImage;
 }
 	
 Network::Message Character::getCreateMessage(){
@@ -486,6 +488,11 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
     addEffect(new DrawNormalEffect(this));
 
     path = filename;
+
+    Graphics::RestoreState graphicsState;
+    gibBloodImage = new Graphics::Bitmap(2, 2);
+    gibBloodImage->clearToMask();
+    gibBloodImage->circleFill(gibBloodImage->getWidth() / 2, gibBloodImage->getHeight() / 2, 1, Graphics::makeColor(255, 0, 0));
 }
 
 void Character::addRemap(Remap * remap){
@@ -921,7 +928,7 @@ void Character::died( vector< Object * > & objects ){
             double dx = (double)(Util::rnd(11) - 5) / 4.2;
             double dy = (double)(Util::rnd(10) + 4) / 3.5;
             double dz = (double)(Util::rnd(11) - 5) / 5.0;
-            objects.push_back(new Gib(x, y, (int) getZ(), dx, dy, dz, part.image));
+            objects.push_back(new Gib(x, y, (int) getZ(), dx, dy, dz, part.image, gibBloodImage));
         }
 
         if ( squish_sound != NULL ){

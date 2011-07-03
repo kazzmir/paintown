@@ -547,6 +547,7 @@ protected:
     int trail_life;
 
     std::vector<DrawEffect*> effects;
+    Util::ReferenceCount<Graphics::Bitmap> gibBloodImage;
 };
 
 }

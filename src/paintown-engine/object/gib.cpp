@@ -9,22 +9,19 @@
 
 namespace Paintown{
 
-Gib::Gib(const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image):
+Gib::Gib(const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image, const Util::ReferenceCount<Graphics::Bitmap> & bloodImage):
 ObjectNonAttack(x, z),
 dx(dx),
 dy(dy),
 dz(dz),
 angle(0),
 fade(0),
-image(image){
+image(image),
+bloodImage(bloodImage){
     setY(y);
     setMaxHealth(1);
     setHealth(1);
 
-    Graphics::RestoreState graphicsState;
-    bloodImage = new Graphics::Bitmap(2, 2);
-    bloodImage->clearToMask();
-    bloodImage->circleFill(bloodImage->getWidth() / 2, bloodImage->getHeight() / 2, 1, Graphics::makeColor(255, 0, 0));
 }
 
 Gib::Gib(const Gib & g):
@@ -40,6 +37,8 @@ void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
         image->translucent().draw(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work);
     } else {
         Graphics::Bitmap::transBlender(0, 0, 0, 200);
+        /* hack to make sure bloodImage gets converted to a video bitmap */
+        bloodImage->draw(-999999, 999999, *work);
         work->startDrawing();
         for (std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++){
             const Point & p = *it;
