@@ -33,6 +33,7 @@ src/paintown-engine/level/utils.cpp)
 
 set(NETWORK_SRC
 src/util/network/network.cpp
+src/util/network/network-system.cpp
 src/paintown-engine/network/cacher.cpp
 src/paintown-engine/network/client.cpp
 src/paintown-engine/network/chat_client.cpp
@@ -122,6 +123,7 @@ src/util/load_exception.cpp
 src/util/windows/funcs.cpp
 src/util/windows/system.cpp
 src/util/nacl/module.cpp
+src/util/nacl/network-system.cpp
 src/exceptions/exception.cpp
 src/openbor/pack-reader.cpp
 src/openbor/animation.cpp
