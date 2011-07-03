@@ -130,6 +130,12 @@ nativeCompile = makeUseEnvironment('native', False)
 enableProfiled = makeUseEnvironment('PROFILE', False)
 showTiming = makeUseEnvironment('timing', False)
 
+def ps3devPath():
+    try:
+        return os.environ['PS3DEV']
+    except KeyError:
+        return '/opt/ps3dev'
+
 def checkLex(context):
     context.Message("Checking for flex... ")
     out = context.TryAction("flex -V")
@@ -965,11 +971,7 @@ pspnet_inet
         # export PATH=$PATH:$PS3DEV/spu/bin
         # export PSL1GHT=$PS3DEV/psl1ght
         # export PATH=$PATH:$PSL1GHT/bin
-        path = '/opt/ps3dev'
-        try:
-            path = os.environ['PS3DIR']
-        except KeyError:
-            pass
+        path = ps3devPath()
         bin_path = path + '/ppu/bin/'
         prefix = 'ppu-'
         def setup(pre, x):
@@ -1750,16 +1752,16 @@ def ps3_pkg(target, source, env):
     app = 'UP0001-Paintown_00-0000000000000000'
     print "Creating PKG for %s" % file
     env.Execute('ppu-strip %s -o %s.elf' % (file, file))
-    env.Execute('/opt/ps3dev/bin/sprxlinker %s.elf' % file)
-    env.Execute('python /opt/ps3dev/bin/fself.py %s.elf %s.self' % (file, file))
+    env.Execute('%s/bin/sprxlinker %s.elf' % (ps3devPath(), file))
+    env.Execute('python %s/bin/fself.py %s.elf %s.self' % (ps3devPath(), file, file))
     env.Execute('mkdir -p pkg/USRDIR')
-    env.Execute('/opt/ps3dev/bin/make_self_npdrm %s.elf pkg/USRDIR/EBOOT.BIN %s' % (file, app))
+    env.Execute('%s/bin/make_self_npdrm %s.elf pkg/USRDIR/EBOOT.BIN %s' % (ps3devPath(), file, app))
     # env.Execute('cp %s %s.elf' % (file, file))
     env.Execute('cp data/psp/icon0.png pkg/')
     # env.Execute('python /opt/ps3dev/bin/fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
     #FIXME get the path from the environment for the sfoxml
-    env.Execute('python /opt/ps3dev/bin/sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/bin/sfo.xml pkg/PARAM.SFO')
-    env.Execute('python /opt/ps3dev/bin/pkg.py --contentid %s pkg/ %s.pkg' % (app, file))
+    env.Execute('python %s/bin/sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/bin/sfo.xml pkg/PARAM.SFO' % ps3devPath())
+    env.Execute('python %s/bin/pkg.py --contentid %s pkg/ %s.pkg' % (ps3devPath(), app, file))
     print "Sign pkg with tools from geohot or something (http://www.geohot.com)..."
     return 0
 
