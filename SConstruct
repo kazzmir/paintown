@@ -1371,7 +1371,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useNacl():
+if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not usePs3():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1751,7 +1751,12 @@ def ps3_pkg(target, source, env):
     file = source[0].name
     app = 'UP0001-Paintown_00-0000000000000000'
     print "Creating PKG for %s" % file
-    env.Execute('ppu-strip %s -o %s.elf' % (file, file))
+    if getDebug():
+        if env.Execute(Copy('%s.elf' % file, file)):
+            print("Could not copy %s to %s.elf" % (file, file))
+            return
+    else:
+        env.Execute('ppu-strip %s -o %s.elf' % (file, file))
     env.Execute('%s/bin/sprxlinker %s.elf' % (ps3devPath(), file))
     env.Execute('python %s/bin/fself.py %s.elf %s.self' % (ps3devPath(), file, file))
     env.Execute('mkdir -p pkg/USRDIR')
@@ -1759,9 +1764,10 @@ def ps3_pkg(target, source, env):
     # env.Execute('cp %s %s.elf' % (file, file))
     env.Execute('cp data/psp/icon0.png pkg/')
     # env.Execute('python /opt/ps3dev/bin/fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
-    #FIXME get the path from the environment for the sfoxml
-    env.Execute('python %s/bin/sfo.py --title "Paintown" --appid "PAINTOWN" -f /opt/ps3dev/bin/sfo.xml pkg/PARAM.SFO' % ps3devPath())
+    env.Execute('python %s/bin/sfo.py --title "Paintown" --appid "PAINTOWN" -f %s/bin/sfo.xml pkg/PARAM.SFO' % (ps3devPath(), ps3devPath()))
     env.Execute('python %s/bin/pkg.py --contentid %s pkg/ %s.pkg' % (ps3devPath(), app, file))
+    env.Execute('python %s/bin/pkg.py --contentid %s pkg/ %s.retail.pkg' % (ps3devPath(), app, file))
+    env.Execute('%s/bin/package_finalize %s.retail.pkg' % (ps3devPath(), file));
     print "Sign pkg with tools from geohot or something (http://www.geohot.com)..."
     return 0
 
