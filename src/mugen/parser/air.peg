@@ -147,10 +147,12 @@ rules:
 	              | s action {{ addSection(current, $2); }}
     action = action_start ast:{{value = makeSection($1); }} whitespace newline+ (action_line(ast) whitespace line_end)* {{ value = ast; }}
     action_line(section) = s comment
-	            | s data:collision_default {{ as<Ast::Section*>(section)->addAttribute(as<Ast::Attribute*>(data)); }}
-	            | s data:collision {{ as<Ast::Section*>(section)->addAttribute(as<Ast::Attribute*>(data)); }}
-	            | s data:valuelist {{ as<Ast::Section*>(section)->addValue(as<Ast::Value*>(data)); }}
-	            | s data:loopstart {{ as<Ast::Section*>(section)->addAttribute(as<Ast::Attribute*>(data)); }}
+     
+	                     | s data:collision_default {{ as<Ast::Section*>(section)->addAttribute(as<Ast::Attribute*>(data)); }}
+	                     | s data:collision {{ as<Ast::Section*>(section)->addAttribute(as<Ast::Attribute*>(data)); }}
+                         | s data:valuelist {{ as<Ast::Section*>(section)->addValue(as<Ast::Value*>(data)); }}
+                         | s data:loopstart {{ as<Ast::Section*>(section)->addAttribute(as<Ast::Attribute*>(data)); }}
+                         | space s
 	              # | space+
 	line_end = newline+
 	         | &<eof> <void>
@@ -176,18 +178,20 @@ rules:
 	collision = name:"Clsn2"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}
 	          | name:"Clsn1"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}
 
-	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s "]" {{ value = makeHeader(begin, action, num); }}
+	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s (!"]" .)* "]" {{ value = makeHeader(begin, action, num); }}
 	inline digit = [0123456789]
 	integer = sign? digit+ {{ value = parseDouble($2); value = makeNumber($1,value); }}
 	inline sign = "-"
 	            | "+"
 	valuelist = value (s "," s value?)* {{ value = makeValueList($1,$2); }}
 
+    # FIXME: handle the integer values
 	value = integer
           # Are all these things part of .air files?
 	      | "as"{case} integer "d"{case} integer {{ value = makeKeyword($1); }}
 	      | "a"{case} integer {{ value = makeKeyword($1); }}
 	      | "a"{case} {{ value = makeKeyword($1); }}
+	      | "s"{case} integer {{ value = makeKeyword($1); }}
 	      | "s"{case} {{ value = makeKeyword($1); }}
 	      | "vh"{case} {{ value = makeKeyword($1); }}
 	      | "hv"{case} {{ value = makeKeyword($1); }}
