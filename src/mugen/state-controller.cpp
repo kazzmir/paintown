@@ -3836,58 +3836,62 @@ public:
                 if (simple == "time"){
                     controller.time = Compiler::compile(simple.getValue());
                 } else if (simple == "value" || simple == "value2"){
-                    if (simple == "value"){
-                        controller.slot = 0;
-                    } else if (simple == "value2"){
-                        controller.slot = 1;
-                    }
-                    string type;
-                    vector<string> moreTypes;
-                    if (! simple.getValue()->hasMultiple()){
+                    try{
+                        if (simple == "value"){
+                            controller.slot = 0;
+                        } else if (simple == "value2"){
+                            controller.slot = 1;
+                        }
                         string type;
-                        simple >> type;
-                        type = PaintownUtil::lowerCaseAll(type);
-                    } else {
-                        simple >> type;
-                        try{
-                            while (true){
-                                string what;
-                                simple >> what;
-                                what = PaintownUtil::lowerCaseAll(what);
-                                moreTypes.push_back(what);
+                        vector<string> moreTypes;
+                        if (simple.getValue() != NULL && ! simple.getValue()->hasMultiple()){
+                            string type;
+                            simple >> type;
+                            type = PaintownUtil::lowerCaseAll(type);
+                        } else {
+                            simple >> type;
+                            try{
+                                while (true){
+                                    string what;
+                                    simple >> what;
+                                    what = PaintownUtil::lowerCaseAll(what);
+                                    moreTypes.push_back(what);
+                                }
+                            } catch (const Ast::Exception & e){
                             }
-                        } catch (const Ast::Exception & e){
                         }
-                    }
 
-                    if (type.find('s') != string::npos){
-                        controller.standing = true;
-                    }
-
-                    if (type.find('c') != string::npos){
-                        controller.crouching = true;
-                    }
-
-                    if (type.find('a') != string::npos){
-                        controller.aerial = true;
-                    }
-
-                    map<string, AttackType::Attribute> attributes;
-                    attributes["na"] = AttackType::NormalAttack;
-                    attributes["nt"] = AttackType::NormalThrow;
-                    attributes["np"] = AttackType::NormalProjectile;
-                    attributes["sa"] = AttackType::SpecialAttack;
-                    attributes["st"] = AttackType::SpecialThrow;
-                    attributes["sp"] = AttackType::SpecialProjectile;
-                    attributes["ha"] = AttackType::HyperAttack;
-                    attributes["ht"] = AttackType::HyperThrow;
-                    attributes["hp"] = AttackType::HyperProjectile;
-
-                    for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
-                        string what = *it;
-                        if (attributes.find(what) != attributes.end()){
-                            controller.attributes.push_back(attributes[what]);
+                        if (type.find('s') != string::npos){
+                            controller.standing = true;
                         }
+
+                        if (type.find('c') != string::npos){
+                            controller.crouching = true;
+                        }
+
+                        if (type.find('a') != string::npos){
+                            controller.aerial = true;
+                        }
+
+                        map<string, AttackType::Attribute> attributes;
+                        attributes["na"] = AttackType::NormalAttack;
+                        attributes["nt"] = AttackType::NormalThrow;
+                        attributes["np"] = AttackType::NormalProjectile;
+                        attributes["sa"] = AttackType::SpecialAttack;
+                        attributes["st"] = AttackType::SpecialThrow;
+                        attributes["sp"] = AttackType::SpecialProjectile;
+                        attributes["ha"] = AttackType::HyperAttack;
+                        attributes["ht"] = AttackType::HyperThrow;
+                        attributes["hp"] = AttackType::HyperProjectile;
+
+                        for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
+                            string what = *it;
+                            if (attributes.find(what) != attributes.end()){
+                                controller.attributes.push_back(attributes[what]);
+                            }
+                        }
+                    } catch (const Ast::Exception & fail){
+                        Global::debug(1) << "Could not get values " << fail.getReason() << endl;
                     }
                 }
             }
@@ -4457,12 +4461,6 @@ public:
     ControllerPalFX(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
     time(0),
-    addRed(0),
-    addGreen(0),
-    addBlue(0),
-    multiplyRed(256),
-    multiplyGreen(256),
-    multiplyBlue(256),
     sinRed(0),
     sinGreen(0),
     sinBlue(0),
@@ -4475,12 +4473,12 @@ public:
     ControllerPalFX(const ControllerPalFX & you):
     StateController(you),
     time(you.time),
-    addRed(you.addRed),
-    addGreen(you.addGreen),
-    addBlue(you.addBlue),
-    multiplyRed(you.multiplyRed),
-    multiplyGreen(you.multiplyGreen),
-    multiplyBlue(you.multiplyBlue),
+    addRed(copy(you.addRed)),
+    addGreen(copy(you.addGreen)),
+    addBlue(copy(you.addBlue)),
+    multiplyRed(copy(you.multiplyRed)),
+    multiplyGreen(copy(you.multiplyGreen)),
+    multiplyBlue(copy(you.multiplyBlue)),
     sinRed(you.sinRed),
     sinGreen(you.sinGreen),
     sinBlue(you.sinBlue),
@@ -4490,13 +4488,13 @@ public:
     }
 
     int time;
-    int addRed;
-    int addGreen;
-    int addBlue;
+    Value addRed;
+    Value addGreen;
+    Value addBlue;
 
-    int multiplyRed;
-    int multiplyGreen;
-    int multiplyBlue;
+    Value multiplyRed;
+    Value multiplyGreen;
+    Value multiplyBlue;
 
     int sinRed;
     int sinGreen;
@@ -4519,9 +4517,22 @@ public:
                 if (simple == "time"){
                     simple >> controller.time;
                 } else if (simple == "add"){
-                    simple >> controller.addRed >> controller.addGreen >> controller.addBlue;
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    controller.addRed = Compiler::compile(red);
+                    controller.addGreen = Compiler::compile(green);
+                    controller.addBlue = Compiler::compile(blue);
+
                 } else if (simple == "mul"){
-                    simple >> controller.multiplyRed >> controller.multiplyGreen >> controller.multiplyBlue;
+                    const Ast::Value * red;
+                    const Ast::Value * green;
+                    const Ast::Value * blue;
+                    simple >> red >> green >> blue;
+                    controller.multiplyRed = Compiler::compile(red);
+                    controller.multiplyGreen = Compiler::compile(green);
+                    controller.multiplyBlue = Compiler::compile(blue);
                 } else if (simple == "sinadd"){
                     try{
                         simple >> controller.sinRed;
@@ -4583,7 +4594,18 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        guy.setPaletteEffects(time, addRed, addGreen, addBlue, multiplyRed, multiplyGreen, multiplyBlue, sinRed, sinGreen, sinBlue, period, invert, color);
+        FullEnvironment environment(stage, guy, commands);
+        int addRed = (int) evaluateNumber(this->addRed, environment, 0);
+        int addGreen = (int) evaluateNumber(this->addGreen, environment, 0);
+        int addBlue = (int) evaluateNumber(this->addBlue, environment, 0);
+        
+        int multiplyRed = (int) evaluateNumber(this->multiplyRed, environment, 256);
+        int multiplyGreen = (int) evaluateNumber(this->multiplyGreen, environment, 256);
+        int multiplyBlue = (int) evaluateNumber(this->multiplyBlue, environment, 256);
+
+        guy.setPaletteEffects(time, addRed, addGreen, addBlue,
+                              multiplyRed, multiplyGreen, multiplyBlue,
+                              sinRed, sinGreen, sinBlue, period, invert, color);
     }
 
     StateController * deepCopy() const {
@@ -4602,7 +4624,18 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        stage.setPaletteEffects(time, addRed, addGreen, addBlue, multiplyRed, multiplyGreen, multiplyBlue, sinRed, sinGreen, sinBlue, period, invert, color);
+        FullEnvironment environment(stage, guy, commands);
+        int addRed = (int) evaluateNumber(this->addRed, environment, 0);
+        int addGreen = (int) evaluateNumber(this->addGreen, environment, 0);
+        int addBlue = (int) evaluateNumber(this->addBlue, environment, 0);
+
+        int multiplyRed = (int) evaluateNumber(this->multiplyRed, environment, 256);
+        int multiplyGreen = (int) evaluateNumber(this->multiplyGreen, environment, 256);
+        int multiplyBlue = (int) evaluateNumber(this->multiplyBlue, environment, 256);
+
+        stage.setPaletteEffects(time, addRed, addGreen, addBlue,
+                                multiplyRed, multiplyGreen, multiplyBlue,
+                                sinRed, sinGreen, sinBlue, period, invert, color);
     }
 
     StateController * deepCopy() const {
