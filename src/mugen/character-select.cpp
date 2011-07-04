@@ -1522,6 +1522,10 @@ searchingCheck(quitSearching, searchingLock){
 }
 
 CharacterSelect::~CharacterSelect(){
+    searchingCheck.set(true);
+    PaintownUtil::Thread::joinThread(characterSearchThread);
+    // PaintownUtil::Thread::destroyLock(&characterAddInfoLock);
+
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin(); i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -1552,9 +1556,6 @@ CharacterSelect::~CharacterSelect(){
 	delete currentStage;
     }
 
-    searchingCheck.set(true);
-    PaintownUtil::Thread::joinThread(characterSearchThread);
-    // PaintownUtil::Thread::destroyLock(&characterAddInfoLock);
     PaintownUtil::Thread::destroyLock(&searchingLock);
 }
 
