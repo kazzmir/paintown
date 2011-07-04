@@ -5,5 +5,8 @@ $ ln -s ../../../paintown paintown-32.nexe
 $ ./httpd.py
 # navigate your browser to http://localhost:5103/paintown.html
 
-You should see the word 'Paintown!' next to a button labeled 'Run'. Wait for
-a second while the nacl application is loaded and then click 'Run'.
+You should see the word 'Paintown!'. Wait for a second while the executable loads
+and then a 'Run' button should appear. Click that to run Paintown.
+
+paintown.nmf is for chrome 13
+paintown.nmf.14 is for chrome 14

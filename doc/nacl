@@ -35,5 +35,5 @@
   4. (* Optional) If you need to build for a specific architecture then you can override the architecture by setting one of the two items below
       - For 32-bit override: export nacl_32=1
       - For 64-bit override: export nacl_64=1
-  
-  
+
+  5. Test it with the stuff in src/test/nacl

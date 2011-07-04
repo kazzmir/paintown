@@ -7,6 +7,8 @@
 
       function moduleDidLoad() {
           paintownModule = document.getElementById('paintown');
+          run = document.getElementById('run');
+          run.style.display = 'inline';
       }
 
       function dorun(){
@@ -26,11 +28,10 @@
 </head>
 <body>
     <span>Paintown!</span>
-    <button onclick="dorun()">Run</button>
+    <button id='run' onclick="dorun()" style="display:none">Run</button>
     <div id='listener'>
         <script type="text/javascript">
-        document.getElementById('listener')
-        .addEventListener('load', moduleDidLoad, true);
+        document.getElementById('listener').addEventListener('load', moduleDidLoad, true);
         </script>
 
         <embed name="nacl_module"
@@ -38,7 +39,6 @@
                width=640 height=480
                src="paintown.nmf"
                type="application/x-nacl" />
-
    </div>
 </body>
 </html>
