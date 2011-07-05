@@ -384,6 +384,10 @@ public:
         public:
             Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, const Gui::NormalList & list):
                 background(GFX_X, GFX_Y),
+                up(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/up.png")).path()),
+                down(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/down.png")).path()),
+                left(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/left.png")).path()),
+                right(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/right.png")).path()),
                 playerCopy(playerCopy),
                 area(area),
                 // selected(selected),
@@ -393,9 +397,32 @@ public:
                 }
 
             Graphics::Bitmap background;
+
+            Graphics::Bitmap up;
+            Graphics::Bitmap down;
+            Graphics::Bitmap left;
+            Graphics::Bitmap right;
+
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             const Gui::NormalList & list;
+
+            void drawKeys(const Util::ReferenceCount<Paintown::Animation> & movement, int x, int y, const Graphics::Bitmap & where){
+                const vector<Paintown::KeyPress> & keys = movement->getKeys();
+                for (vector<Paintown::KeyPress>::const_iterator it = keys.begin(); it != keys.end(); it++){
+                    const Paintown::KeyPress & key = *it;
+                    if (key.combo.size() > 0){
+                        Input::PaintownInput press = key.combo[0];
+                        switch (press){
+                            case Input::Forward: right.draw(x, y, where); x += right.getWidth() + 5; break;
+                            case Input::Back: left.draw(x, y, where); x += right.getWidth() + 5; break;
+                            case Input::Up: up.draw(x, y, where); x += right.getWidth() + 5; break;
+                            case Input::Down: down.draw(x, y, where); x += right.getWidth() + 5; break;
+                            default: break;
+                        }
+                    }
+                }
+            }
 
             void draw(const Graphics::Bitmap & buffer){
                 background.Blit(buffer);
@@ -413,6 +440,17 @@ public:
                 list.render(space, font);
                 // listMovements(space, selected);
                 playerCopy->draw(&space, 0, 0);
+
+                int x = playerCopy->getX();
+                int y = space.getHeight() - 50;
+                drawKeys(playerCopy->getCurrentMovement(), x, y, space);
+                /*
+                up.draw(x, y, space);
+                down.draw(x + 50, y, space);
+                left.draw(x, y + 50, space);
+                right.draw(x + 50, y + 50, space);
+                */
+
                 // space.border(0, 2, Graphics::makeColor(128, 128, 128));
                 buffer.BlitToScreen();
             }
