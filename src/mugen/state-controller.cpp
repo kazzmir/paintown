@@ -58,8 +58,7 @@ spritePriority(0){
             } else if (simple == "debug"){
                 controller.debug = true;
             } else if (simple == "sprpriority"){
-                simple >> controller.spritePriority;
-                /* TODO */
+                controller.spritePriority = Compiler::compile(simple.getValue());
             }
         }
     };

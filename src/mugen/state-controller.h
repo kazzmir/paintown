@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "util/pointer.h"
 
 namespace Ast{
     class Section;
@@ -193,7 +194,7 @@ protected:
     /* state number */
     int state;
 
-    int spritePriority;
+    ::Util::ClassPointer<Compiler::Value> spritePriority;
 };
 
 }
