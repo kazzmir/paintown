@@ -20,14 +20,20 @@ namespace Mugen{
         
 typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
 
+Value copy(const Value & value){
+    if (value != NULL){
+        return Value(value->copy());
+    }
+    return Value(NULL);
+}
+
 StateController::StateController(const string & name, int state):
 type(Unknown),
 name(name),
 debug(false),
 persistent(1),
 currentPersistent(1),
-state(state),
-spritePriority(0){
+state(state){
 }
 
 StateController::StateController(const string & name, int state, Ast::Section * section):
@@ -73,7 +79,7 @@ debug(you.debug),
 persistent(you.persistent),
 currentPersistent(you.currentPersistent),
 state(you.state),
-spritePriority(you.spritePriority){
+spritePriority(copy(you.spritePriority)){
     for (map<int, vector<Compiler::Value*> >::const_iterator it = you.triggers.begin(); it != you.triggers.end(); it++){
         int number = it->first;
         const vector<Compiler::Value*> & all = it->second;
@@ -129,13 +135,7 @@ bool evaluateBool(const Value & value, const Environment & env, double default_)
     return default_;
 }
 
-Value copy(const Value & value){
-    if (value != NULL){
-        return Value(value->copy());
-    }
-    return Value(NULL);
-}
-    
+   
 void StateController::resetPersistent(){
     currentPersistent = persistent;
 }
