@@ -293,6 +293,8 @@ int paintown_main(int argc, char ** argv){
     if (argc > 0){
         Path::AbsolutePath self(argv[0]);
         Util::setDataPath(self.getDirectory().join(Path::RelativePath(Util::getDataPath2().path())).path());
+        /* set the home directory to wherever we started up from */
+        setenv("HOME", argv[0], 1);
     }
 #endif
 
