@@ -18,6 +18,7 @@
                 destdir="classes"
                 target="jvm-1.5">
                 <classpath>
+                    <pathelement path="classes" />
                     <pathelement path="lib/jdom.jar" />
                     <pathelement location="${scala-library.jar}" />
                 </classpath>

@@ -23,13 +23,7 @@ import java.io.File
 import com.rafkind.paintown.Data;
 import com.rafkind.paintown.MaskedImage;
 
-class AttackEvent extends AnimationEvent {
-  val DEFAULT_FORCE_X = 1.7
-  val DEFAULT_FORCE_Y = 4.4
-
-  var onDestroy = () => { }
-  var attacks:List[Attack] = List[Attack]()
-
+object Utils{
   def toScalaList[T](list:java.util.List[T]):List[T] = {
     var out:List[T] = List[T]()
     for (item <- scala.collection.JavaConversions.asScalaBuffer(list)){
@@ -37,6 +31,14 @@ class AttackEvent extends AnimationEvent {
     }
     out
   }
+}
+
+class AttackEvent extends AnimationEvent {
+  val DEFAULT_FORCE_X = 1.7
+  val DEFAULT_FORCE_Y = 4.4
+
+  var onDestroy = () => { }
+  var attacks:List[Attack] = List[Attack]()
 
   class Attack(){
     var x1:Int = 0
@@ -57,7 +59,7 @@ class AttackEvent extends AnimationEvent {
   }
 
   def parseAttacks(token:Token):List[Attack] = {
-    (parse(token) :: toScalaList(token.findTokens("box")).map(parse)).filter(x => x.isEmpty())
+    (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(x => x.isEmpty())
   }
 
   override def loadToken(token:Token){
@@ -473,4 +475,183 @@ class MoveEvent extends AnimationEvent {
 
     override def destroy(){
     }
+}
+
+class DefenseEvent extends AnimationEvent {
+  case class Defense(var x1:Int, var y1:Int, var x2:Int, var y2:Int){
+  }
+
+  var boxes:List[Defense] = List[Defense]()
+
+  var onDestroy = () => null
+
+  def destroy(){
+    onDestroy()
+  }
+    
+  def getToken():Token = {
+    val temp = new Token()
+    temp.addToken(new Token("defense"));
+    for (defense <- boxes.filter(isEmpty)){
+      val box = new Token();
+      temp.addToken(box);
+      box.addToken(new Token("box"));
+      box.addToken(("x1" :: defense.x1.toString() :: List[String]()).toArray)
+      box.addToken(("y1" :: defense.y1.toString() :: List[String]()).toArray)
+      box.addToken(("x2" :: defense.x2.toString() :: List[String]()).toArray)
+      box.addToken(("y2" :: defense.y2.toString() :: List[String]()).toArray)
+    }
+    temp
+  }
+    
+  def getName():String = getToken().toString()
+    
+  def parse(token:Token):Defense = {
+    val x1_token = token.findToken("x1");
+    var x1 = 0
+    var y1 = 0
+    var x2 = 0
+    var y2 = 0
+    if (x1_token != null){
+      x1 = x1_token.readInt(0);
+    }
+
+    val y1_token = token.findToken("y1");
+    if (y1_token != null){
+      y1 = y1_token.readInt(0);
+    }
+
+    val x2_token = token.findToken("x2");
+    if (x2_token != null){
+      x2 = x2_token.readInt(0);
+    }
+
+    val y2_token = token.findToken("y2");
+    if (y2_token != null){
+      y2 = y2_token.readInt(0);
+    }
+
+    Defense(x1, y1, x2, y2)
+  }
+
+  def isEmpty(defense:Defense):Boolean = {
+    defense match {
+      case Defense(x1, y1, x2, y2) => x1 != 0 || x2 != 0 || y1 != 0 || y2 != 0
+    }
+  }
+
+  def loadToken(token:Token){
+    this.boxes = (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(isEmpty)
+  }
+
+  def interact(animation:Animation){
+    if (boxes.isEmpty){
+      animation.setDefense(new BoundingBox(0, 0, 0, 0));
+    } else {
+      boxes.head match {
+        case Defense(x1, y1, x2, y2) => animation.setDefense(new BoundingBox(x1, y1, x2, y2))
+      }
+    }
+  }
+
+  def getEditor(animation:Animation, area:DrawArea):JPanel = {
+    if (boxes.isEmpty){
+      boxes = boxes :+ new Defense(0, 0, 0, 0)
+    }
+
+    getEditor(animation, area, boxes.head)
+  }
+ 
+  def getEditor(animation:Animation, area:DrawArea, defense:Defense):JPanel = {
+    val engine = new SwingEngine("animator/event-defense.xml");
+        // ((JPanel)engine.getRootComponent()).setSize(200,150);
+
+    val x1spin = engine.find("x1").asInstanceOf[JSpinner]
+    x1spin.setValue(new Integer(defense.x1));
+    x1spin.addChangeListener(new ChangeListener(){
+      def stateChanged(changeEvent:ChangeEvent){
+        defense.x1 = x1spin.getValue().asInstanceOf[Integer].intValue()
+        interact(animation);
+        animation.forceRedraw();
+      }
+    });
+
+    val y1spin = engine.find("y1").asInstanceOf[JSpinner]
+    y1spin.setValue(new Integer(defense.y1));
+    y1spin.addChangeListener( new ChangeListener() {
+      def stateChanged(changeEvent:ChangeEvent){
+        defense.y1 = y1spin.getValue().asInstanceOf[Integer].intValue()
+        interact(animation);
+        animation.forceRedraw();
+      }
+    });
+
+    val x2spin = engine.find("x2").asInstanceOf[JSpinner]
+    x2spin.setValue(new Integer(defense.x2));
+    x2spin.addChangeListener(new ChangeListener(){
+      def stateChanged(changeEvent:ChangeEvent){
+        defense.x2 = x2spin.getValue().asInstanceOf[Integer].intValue()
+        interact(animation);
+        animation.forceRedraw();
+      }
+    });
+
+    val y2spin = engine.find("y2").asInstanceOf[JSpinner]
+    y2spin.setValue(new Integer(defense.y2));
+    y2spin.addChangeListener(new ChangeListener(){
+      def stateChanged(changeEvent:ChangeEvent){
+        defense.y2 = y2spin.getValue().asInstanceOf[Integer].intValue()
+        interact(animation);
+        animation.forceRedraw();
+      }
+    });
+
+    val toggle =  engine.find("toggle").asInstanceOf[JButton]
+    toggle.addActionListener(new AbstractAction(){
+      var toggled = false
+      val listener = new MouseInputAdapter(){
+        override def mousePressed(e:MouseEvent){
+          defense.x1 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX()).toInt
+          defense.y1 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
+          x1spin.setValue(new Integer(defense.x1));
+          y1spin.setValue(new Integer(defense.y1));
+          interact(animation);
+          animation.forceRedraw();
+        }
+
+        override def mouseDragged(e:MouseEvent){
+          defense.x2 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX()).toInt
+          defense.y2 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
+          x2spin.setValue(new Integer(defense.x2));
+          y2spin.setValue(new Integer(defense.y2));
+          interact(animation);
+          animation.forceRedraw();
+        }
+      };
+
+      def actionPerformed(event:ActionEvent){
+        if (toggled){
+          toggle.setText("Draw defense box")
+          area.enableMovement()
+          area.removeMouseListener(listener)
+          area.removeMouseMotionListener(listener)
+          onDestroy = () => null
+        } else {
+          toggle.setText("Stop drawing")
+          area.disableMovement()
+          area.addMouseListener(listener)
+          area.addMouseMotionListener(listener)
+          onDestroy = () => {
+            area.removeMouseListener(listener)
+            area.removeMouseMotionListener(listener)
+            area.enableMovement()
+            null;
+           }
+        }
+        toggled = ! toggled
+      }
+     });
+
+      engine.getRootComponent().asInstanceOf[JPanel]
+  }
 }
