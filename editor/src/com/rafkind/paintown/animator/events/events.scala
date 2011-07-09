@@ -412,3 +412,65 @@ class FrameEvent extends AnimationEvent {
     def destroy(){
     }
 }
+
+class MoveEvent extends AnimationEvent {
+	var x:Int = 0
+	var y:Int = 0
+	var z:Int = 0
+	
+	def loadToken(token:Token){
+		x = token.readInt(0)
+		y = token.readInt(1)
+		z = token.readInt(2)
+	}
+	
+	def interact(animation:Animation){
+		animation.moveX(x);
+		animation.moveY(y);
+	}
+	
+	def getName():String = {
+		getToken().toString();
+	}
+	
+	def getEditor(animation:Animation, area:DrawArea):JPanel = {
+		val engine = new SwingEngine("animator/eventmove.xml")
+		engine.getRootComponent().asInstanceOf[JPanel].setSize(200,150)
+		
+		val xspin = engine.find("x").asInstanceOf[JSpinner];
+		xspin.setValue(new Integer(x));
+		xspin.addChangeListener(new ChangeListener(){
+			def stateChanged(changeEvent:ChangeEvent){
+				x = xspin.getValue().asInstanceOf[Integer].intValue()
+			}
+		});
+		val yspin = engine.find("y").asInstanceOf[JSpinner];
+		yspin.setValue(new Integer(y));
+		yspin.addChangeListener(new ChangeListener(){
+			def stateChanged(changeEvent:ChangeEvent){
+				y = yspin.getValue().asInstanceOf[Integer].intValue();
+			}
+		});
+		val zspin = engine.find("z").asInstanceOf[JSpinner];
+		zspin.setValue(new Integer(z));
+		zspin.addChangeListener(new ChangeListener(){
+			def stateChanged(changeEvent:ChangeEvent){
+				z = zspin.getValue().asInstanceOf[Integer].intValue()
+			}
+		});
+
+		engine.getRootComponent().asInstanceOf[JPanel];
+	}
+	
+    override def getToken():Token = {
+		val temp = new Token("move")
+		temp.addToken(new Token("move"))
+		temp.addToken(new Token(x.toString()))
+		temp.addToken(new Token(y.toString()))
+		temp.addToken(new Token(z.toString()))
+		temp
+	}
+
+    override def destroy(){
+    }
+}
