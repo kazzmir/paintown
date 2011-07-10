@@ -76,7 +76,7 @@ public class CharacterAnimation extends JPanel {
         super.paint(g);
     }
 
-    private void showOnionOptions(Point location){
+    private void showOnionOptions(Point location, final Animation animation){
         JDialog dialog = new JDialog();
         dialog.setSize(new Dimension(200, 200));
         /*
@@ -85,8 +85,27 @@ public class CharacterAnimation extends JPanel {
         here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
         dialog.setLocation(here);
         */
-
+                
         final SwingEngine optionsEngine = new SwingEngine("animator/onion-options.xml");
+        final JSlider front = (JSlider) optionsEngine.find("front");
+        final JSlider back = (JSlider) optionsEngine.find("back");
+        front.setValue(animation.getOnionFrontSkins());
+        back.setValue(animation.getOnionBackSkins());
+
+        front.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent change){
+                animation.setOnionFrontSkins(front.getValue());
+                animation.forceRedraw();
+            }
+        });
+
+        back.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent change){
+                animation.setOnionBackSkins(back.getValue());
+                animation.forceRedraw();
+            }
+        });
+
         dialog.getContentPane().add((JPanel) optionsEngine.getRootComponent());
         dialog.show();
     }
@@ -249,7 +268,7 @@ public class CharacterAnimation extends JPanel {
                 final JButton onionOptions = (JButton) contextEditor.find("onion-options");
                 onionOptions.addActionListener(new AbstractAction(){
                     public void actionPerformed(ActionEvent event){
-                        showOnionOptions(onionOptions.getLocation());
+                        showOnionOptions(onionOptions.getLocation(), animation);
                     }
                 });
 

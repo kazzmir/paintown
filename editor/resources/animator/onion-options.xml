@@ -3,11 +3,11 @@
     <vbox>
         <hbox>
             <label text="Front animations" />
-            <slider id="front" />
+            <slider id="front" min="0" max="20" />
         </hbox>
         <hbox>
             <label text="Back animations" />
-            <slider id="back" />
+            <slider id="back" min="0" max="20" />
         </hbox>
     </vbox>
 </panel>

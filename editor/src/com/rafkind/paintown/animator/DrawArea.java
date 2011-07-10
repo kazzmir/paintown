@@ -169,8 +169,8 @@ public final class DrawArea extends JComponent {
         g.drawLine( 0, y, getWidth(), y );
         g.drawLine( x, 0, x, getHeight() );
 
-        if ( currentAnimation != null ){
-            currentAnimation.draw( g, x, y - currentAnimation.getHeight() );
+        if (currentAnimation != null){
+            currentAnimation.draw(g, x, y);
         }
     }
 

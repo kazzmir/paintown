@@ -46,6 +46,8 @@ public class Animation implements Runnable {
 	/* when something is changed in the animation 'listeners' are notified */
 	private List listeners;
     private boolean onionSkinning = false;
+    private int onionFrontSkins = 3;
+    private int onionBackSkins = 0;
 	
 	private Vector keys;
 	private HashMap remapData;
@@ -99,6 +101,22 @@ public class Animation implements Runnable {
 
     public boolean isOnionSkinned(){
         return this.onionSkinning;
+    }
+
+    public int getOnionFrontSkins(){
+        return onionFrontSkins;
+    }
+    
+    public int getOnionBackSkins(){
+        return onionBackSkins;
+    }
+
+    public void setOnionFrontSkins(int skins){
+        onionFrontSkins = skins;
+    }
+    
+    public void setOnionBackSkins(int skins){
+        onionBackSkins = skins;
     }
 	
 	public int getHeight(){
@@ -317,29 +335,54 @@ public class Animation implements Runnable {
 		return animationSpeed;
 	}
 
-    private void drawOnionSkins(Graphics graphics, int x, int y){
+    /* draws a skin of the animation upto the given event */
+    private void drawSkin(Graphics graphics, int x, int y, int event){
         Animation clone = new Animation();
         clone.setBaseDirectory(getBaseDirectory());
+        for (int use = 0; use <= event; use++){
+            clone.updateEvent((AnimationEvent) events.get(use));
+        }
+        clone.draw(graphics, x, y);
+    }
+
+    private void drawOnionSkinsBack(Graphics graphics, int x, int y, int skins){
         Graphics2D translucent = (Graphics2D) graphics.create();
         synchronized (events){
-            for (int event = 0; event < eventIndex; event++){
-                AlphaComposite newComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - (float) event / (float) eventIndex);
+            int here = previous(eventIndex, events.size());
+            int skinsLeft = skins;
+            while (skinsLeft > 0 && here != eventIndex){
+                AlphaComposite newComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) skinsLeft / (float) skins * (float) 0.5);
                 translucent.setComposite(newComposite);
-                clone.updateEvent((AnimationEvent) events.get(event));
-                clone.draw(translucent, x, y);
+
+                AnimationEvent event = (AnimationEvent) events.get(here);
+                /* sort of a hack to use instanceof */
+                if (event instanceof com.rafkind.paintown.animator.events.scala.FrameEvent){
+                    skinsLeft -= 1;
+                    drawSkin(translucent, x, y, here);
+                }
+                here = previous(here, events.size());
             }
         }
     }
 
+    private void drawOnionSkinsFront(Graphics graphics, int x, int y, int skins){
+    }
+
 	public synchronized void draw(Graphics g, int x, int y){
 		int trueX = x + this.x + this.offsetX - getWidth() / 2;
-		int trueY = y + this.y + this.offsetY;
+		int trueY = y + this.y + this.offsetY - getHeight();
+
         if (isOnionSkinned()){
-            drawOnionSkins(g, x, y);
+            drawOnionSkinsBack(g, x, y, getOnionBackSkins());
         }
+
 		if (currentImage() != null){
 			g.drawImage(currentImage(), trueX, trueY, null);
 		}
+        
+        if (isOnionSkinned()){
+            drawOnionSkinsFront(g, x, y, getOnionFrontSkins());
+        }
 
 		if (getRange() != 0){
 			Color old = g.getColor();
@@ -434,14 +477,14 @@ public class Animation implements Runnable {
 
 	/* can be called to step backward through the animation */
 	public void previousEvent(){
-		synchronized( events ){
-			if ( ! events.isEmpty() ){
-				eventIndex = previous( eventIndex, events.size() );
-				if ( eventIndex == 0 ){
-					setImageX( 0 );
-					setImageY( 0 );
+		synchronized (events){
+			if (! events.isEmpty()){
+				eventIndex = previous(eventIndex, events.size());
+				if (eventIndex == 0){
+					setImageX(0);
+					setImageY(0);
 				}
-				updateEvent( (AnimationEvent) events.get( eventIndex ) );
+				updateEvent((AnimationEvent) events.get(eventIndex));
 			}
 		}
 	}
