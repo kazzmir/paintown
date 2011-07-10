@@ -3,6 +3,7 @@
 #include "util/stretch-bitmap.h"
 
 #include "game.h"
+#include "mod.h"
 #include "util/music.h"
 #include "util/funcs.h"
 #include "util/font.h"
@@ -892,10 +893,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     };
     
     TokenReader reader;
-    Token * menuData = reader.readToken(Storage::instance().find(Filesystem::RelativePath("menu/in-game.txt")).path());
-
-    /* set the current player, mainly so the move list option can work */
-    // Util::Parameter<Paintown::Player*> currentPlayer((Paintown::Player*) players[0]);
+    Token * menuData = reader.readToken(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("menu/in-game.txt")).path());
 
     bool finish = true;
     GameState state;
@@ -913,35 +911,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         fadeOut(getScreen(), "You lose");
         finish = false;
     }
-
-#if 0
-    try{
-        /* Main Loop! */
-        while (!state.done && !state.force_quit){
-            bool draw = false;
-            draw = logic.run(state);
-
-            if (draw){
-                drawer.run(screen_buffer, state);
-            }
-
-            if (state.force_quit){
-                state.force_quit = doMenu(screen_buffer, menuData);
-            }
-
-            while (Global::speed_counter < 1){
-                logic.rest();
-            }
-        }
-
-        if (!state.force_quit){
-            drawer.showScreenshots(screen_buffer);
-        }
-    } catch (const LoseException & lose){
-        fadeOut(screen_buffer, "You lose");
-        finish = false;
-    }
-#endif
 
     world.getEngine()->destroyWorld(world);
 

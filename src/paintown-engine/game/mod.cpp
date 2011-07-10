@@ -15,7 +15,8 @@ using namespace std;
 namespace Paintown{
 
 Mod * Mod::currentMod = NULL;
-Mod::Mod(const Filesystem::AbsolutePath & path) throw (LoadException){
+Mod::Mod(const string & name, const Filesystem::AbsolutePath & path):
+name(name){
     try{
         TokenReader reader(path.path());
         Token * head = reader.readToken();
@@ -81,7 +82,27 @@ void Mod::loadOpenborMod(const Filesystem::AbsolutePath & path){
 
 void Mod::loadPaintownMod(const string & name){
    string path = name + "/" + name + ".txt"; 
-   setMod(new Mod(Storage::instance().find(Filesystem::RelativePath(path))));
+   setMod(new Mod(name, Storage::instance().find(Filesystem::RelativePath(path))));
+}
+    
+Filesystem::AbsolutePath Mod::find(const Filesystem::RelativePath & path){
+    Storage::System & filesystem = Storage::instance();
+    string totalFailure;
+    /* first search in the mod directory */
+    try{
+        return filesystem.find(Filesystem::RelativePath(name).join(path));
+    } catch (const Filesystem::NotFound & fail){
+        totalFailure = fail.getTrace();
+    }
+
+    /* then search in the regular place */
+    try{
+        return filesystem.find(path);
+    } catch (const Filesystem::NotFound & fail){
+        /* if a file can't be found then combine the errors */
+        totalFailure += fail.getTrace();
+        throw Filesystem::NotFound(__FILE__, __LINE__, fail, totalFailure);
+    }
 }
 
 Mod * Mod::getCurrentMod(){
