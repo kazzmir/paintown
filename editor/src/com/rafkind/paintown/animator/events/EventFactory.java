@@ -1,8 +1,6 @@
 package com.rafkind.paintown.animator.events;
 
 import java.util.*;
-import com.rafkind.paintown.animator.events.AnimationEvent;
-import com.rafkind.paintown.animator.events.*;
 import com.rafkind.paintown.Lambda0;
 
 // Must populate when an event is added
@@ -16,15 +14,15 @@ public class EventFactory{
     }
 
     public static void init(){
-        events.put( "attack", new Lambda0(){public Object invoke(){return new AttackEvent();}});
+        events.put( "attack", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.AttackEvent();}});
         events.put( "bbox", new Lambda0(){public Object invoke(){return new BBoxEvent();}});
         events.put( "coords", new Lambda0(){public Object invoke(){return new CoordsEvent();}});
         events.put( "delay", new Lambda0(){public Object invoke(){return new DelayEvent();}});
-        events.put( "defense", new Lambda0(){public Object invoke(){return new DefenseEvent();}});
+        events.put( "defense", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.DefenseEvent();}});
         events.put( "face", new Lambda0(){public Object invoke(){return new FaceEvent();}});
-        events.put( "frame", new Lambda0(){public Object invoke(){return new FrameEvent();}});
+        events.put( "frame", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.FrameEvent();}});
         events.put( "jump", new Lambda0(){public Object invoke(){return new JumpEvent();}});
-        events.put( "move", new Lambda0(){public Object invoke(){return new MoveEvent();}});
+        events.put( "move", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.MoveEvent();}});
         events.put( "nop", new Lambda0(){public Object invoke(){return new NopEvent();}});
         events.put( "next-ticket", new Lambda0(){public Object invoke(){return new TicketEvent();}});
         events.put( "offset", new Lambda0(){public Object invoke(){return new OffsetEvent();}});
