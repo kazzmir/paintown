@@ -156,11 +156,12 @@
                     <hbox>
                         <checkbox id="onion-skinning" />
                         <label text="Onion skinning" />
+                        <button text="Options" id="onion-options" />
                         <glue />
                     </hbox>
                     <label text="Events" />
                     <glue />
-                    <scrollpane>
+                    <scrollpane id="event-scroll">
                         <list id="events" />
                     </scrollpane>
                     <combobox id="event-select" />

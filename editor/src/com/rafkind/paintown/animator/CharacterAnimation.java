@@ -76,6 +76,21 @@ public class CharacterAnimation extends JPanel {
         super.paint(g);
     }
 
+    private void showOnionOptions(Point location){
+        JDialog dialog = new JDialog();
+        dialog.setSize(new Dimension(200, 200));
+        /*
+        Point here = animEditor.getRootComponent().getLocation();
+        SwingUtilities.convertPointToScreen(here, animEditor.getRootComponent());
+        here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
+        dialog.setLocation(here);
+        */
+
+        final SwingEngine optionsEngine = new SwingEngine("animator/onion-options.xml");
+        dialog.getContentPane().add((JPanel) optionsEngine.getRootComponent());
+        dialog.show();
+    }
+
     public CharacterAnimation(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
         this.loader = new Lambda0(){
             public Object invoke() throws Exception {
@@ -228,6 +243,13 @@ public class CharacterAnimation extends JPanel {
                     public void actionPerformed(ActionEvent event){
                         animation.setOnionSkinning(onionSkinning.isSelected());
                         animation.forceRedraw();
+                    }
+                });
+
+                final JButton onionOptions = (JButton) contextEditor.find("onion-options");
+                onionOptions.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        showOnionOptions(onionOptions.getLocation());
                     }
                 });
 
@@ -470,6 +492,9 @@ public class CharacterAnimation extends JPanel {
                         }
                     }
                 });
+
+                final JScrollPane eventScroll = (JScrollPane) contextEditor.find("event-scroll");
+                // eventScroll.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
                 final JList eventList = (JList) contextEditor.find( "events");
                 eventList.setDragEnabled(true);

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+    <vbox>
+        <hbox>
+            <label text="Front animations" />
+            <slider id="front" />
+        </hbox>
+        <hbox>
+            <label text="Back animations" />
+            <slider id="back" />
+        </hbox>
+    </vbox>
+</panel>
