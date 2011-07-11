@@ -32,6 +32,10 @@
                     />
                 <vbox>
                     <hbox>
+                        <button id="black-background" text="Black background" />
+                        <button id="white-background" text="White background" />
+                    </hbox>
+                    <hbox>
                         <label id="speed-num" />
                         <glue />
                     </hbox>

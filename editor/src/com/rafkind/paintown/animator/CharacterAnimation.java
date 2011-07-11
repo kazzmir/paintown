@@ -975,6 +975,22 @@ public class CharacterAnimation extends JPanel {
                     }
                 });
 
+                final JButton blackBackground = (JButton) contextEditor.find("black-background");
+                final JButton whiteBackground = (JButton) contextEditor.find("white-background");
+                blackBackground.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        area.setBackgroundColor(new Color(0, 0, 0));
+                        animation.forceRedraw();
+                    }
+                });
+
+                whiteBackground.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        area.setBackgroundColor(new Color(255, 255, 255));
+                        animation.forceRedraw();
+                    }
+                });
+
                 final JLabel animationSpeed = (JLabel) contextEditor.find( "speed-num" );
                 animationSpeed.setText( "Animation speed: " + animation.getAnimationSpeed() );
                 final JSlider speed = (JSlider) contextEditor.find( "speed" );

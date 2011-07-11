@@ -21,6 +21,8 @@ public final class DrawArea extends JComponent {
     private int y = 50;
     private double scale;
     private boolean canMove = true;
+    /* start background as black */
+    private Color backgroundColor = new Color(0, 0, 0);
 
     private AnimationEvent currentEvent;
     private Animation currentAnimation;
@@ -158,16 +160,24 @@ public final class DrawArea extends JComponent {
        }
        */
 
+    public void setBackgroundColor(Color color){
+        backgroundColor = color;
+    }
+
+    private Color backgroundColor(){
+        return backgroundColor;
+    }
+
     public void paintComponent(Graphics g){
 
         Graphics2D g2d = (Graphics2D) g;
-        g2d.scale( getScale(), getScale() );
+        g2d.scale(getScale(), getScale());
 
-        g.setColor( new Color( 0, 0, 0 ) );
-        g.fillRect( 0, 0, getWidth(), getHeight() );
-        g.setColor( new Color( 255, 255, 0 ) );
-        g.drawLine( 0, y, getWidth(), y );
-        g.drawLine( x, 0, x, getHeight() );
+        g.setColor(backgroundColor());
+        g.fillRect(0, 0, getWidth(), getHeight());
+        g.setColor(new Color(255, 255, 0));
+        g.drawLine(0, y, getWidth(), y);
+        g.drawLine(x, 0, x, getHeight());
 
         if (currentAnimation != null){
             currentAnimation.draw(g, x, y);
