@@ -15,8 +15,7 @@
 	<target name="compile" depends="init">
 		<mkdir dir="classes" />
         <scalac srcdir="src"
-                destdir="classes"
-                target="jvm-1.5">
+                destdir="classes">
                 <classpath>
                     <pathelement path="classes" />
                     <pathelement path="lib/jdom.jar" />
@@ -26,8 +25,6 @@
 
 		<javac srcdir="src"
 		       destdir="classes"
-		       target="1.5"
-		       source="1.5"
 		       includeAntruntime="false"
 		       debug="true"
 		       fork="true">

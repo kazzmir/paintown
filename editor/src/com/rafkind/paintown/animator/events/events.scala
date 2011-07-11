@@ -59,7 +59,7 @@ class AttackEvent extends AnimationEvent {
   }
 
   def parseAttacks(token:Token):List[Attack] = {
-    (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(x => x.isEmpty())
+    (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(x => ! x.isEmpty())
   }
 
   override def loadToken(token:Token){
@@ -492,7 +492,7 @@ class DefenseEvent extends AnimationEvent {
   def getToken():Token = {
     val temp = new Token()
     temp.addToken(new Token("defense"));
-    for (defense <- boxes.filter(isEmpty)){
+    for (defense <- boxes.filter(!isEmpty(_))){
       val box = new Token();
       temp.addToken(box);
       box.addToken(new Token("box"));
@@ -541,7 +541,7 @@ class DefenseEvent extends AnimationEvent {
   }
 
   def loadToken(token:Token){
-    this.boxes = (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(isEmpty)
+    this.boxes = (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(!isEmpty(_))
   }
 
   def interact(animation:Animation){
