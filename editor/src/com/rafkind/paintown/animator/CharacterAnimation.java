@@ -76,8 +76,10 @@ public class CharacterAnimation extends JPanel {
         super.paint(g);
     }
 
+    /* FIXME: deal with the location */
     private void showOnionOptions(Point location, final Animation animation){
         JDialog dialog = new JDialog();
+        dialog.setTitle("Onion skinning options");
         dialog.setSize(new Dimension(200, 200));
         /*
         Point here = animEditor.getRootComponent().getLocation();
@@ -953,6 +955,23 @@ public class CharacterAnimation extends JPanel {
                 playAnim.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
                         animation.startRunning();
+                    }
+                });
+
+                JButton previousFrame = (JButton) animEditor.find("previous-frame");
+                JButton nextFrame = (JButton) animEditor.find("next-frame");
+
+                previousFrame.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        animation.previousFrame();
+                        animation.forceRedraw();
+                    }
+                });
+
+                nextFrame.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        animation.nextFrame();
+                        animation.forceRedraw();
                     }
                 });
 

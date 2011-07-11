@@ -52,10 +52,13 @@
                     </hbox>
                     <glue size="1" />
                     <hbox>
+                        <button id="previous-frame" text="Previous Frame" />
                         <glue size="1" />
                         <button id="play" text="Play" />
                         <glue size="1" />
                         <button id="stop" text="Stop" />
+                        <glue size="1" />
+                        <button id="next-frame" text="Next Frame" />
                         <glue />
                     </hbox>
                 </vbox>

@@ -345,6 +345,11 @@ public class Animation implements Runnable {
         clone.draw(graphics, x, y);
     }
 
+    private boolean isFrameEvent(AnimationEvent event){
+        /* sort of a hack to use instanceof */
+        return event instanceof com.rafkind.paintown.animator.events.scala.FrameEvent;
+    }
+
     private void drawOnionSkins(Graphics graphics, int x, int y, int skins){
         Graphics2D translucent = (Graphics2D) graphics.create();
         int direction = -1;
@@ -365,13 +370,20 @@ public class Animation implements Runnable {
 
                 AnimationEvent event = (AnimationEvent) events.get(here);
                 /* sort of a hack to use instanceof */
-                if (event instanceof com.rafkind.paintown.animator.events.scala.FrameEvent){
+                if (isFrameEvent(event)){
                     skinsLeft += direction;
                     drawSkin(translucent, x, y, here);
                 }
                 here = (here + direction + events.size()) % events.size();
             }
         }
+    }
+
+    private void resetPosition(){
+        this.x = 0;
+        this.y = 0;
+        this.offsetX = 0;
+        this.offsetY = 0;
     }
 
 	public synchronized void draw(Graphics g, int x, int y){
@@ -457,9 +469,33 @@ public class Animation implements Runnable {
 		}
 	}
 
-	private int previous( int index, int max ){
+    private void findNextFrame(int direction){
+        int last = eventIndex;
+        synchronized (events){
+            eventIndex = (eventIndex + direction + events.size()) % events.size();
+            while (eventIndex != last && !isFrameEvent((AnimationEvent) events.get(eventIndex))){
+                eventIndex = (eventIndex + direction + events.size()) % events.size();
+            }
+
+            resetPosition();
+            for (int event = 0; event <= eventIndex; event++){
+                AnimationEvent use = (AnimationEvent) events.get(event);
+                updateEvent(use);
+            }
+        }
+    }
+
+    public void previousFrame(){
+        findNextFrame(-1);
+    }
+
+    public void nextFrame(){
+        findNextFrame(1);
+    }
+
+	private int previous(int index, int max){
 		int last = index - 1;
-		if ( last < 0 ){
+		if (last < 0){
 			last = max - 1;
 		}
 		return last;
@@ -467,7 +503,7 @@ public class Animation implements Runnable {
 
 	private int next( int index, int max ){
 		int next = index + 1;
-		if ( next >= max ){
+		if (next >= max){
 			next = 0;
 		}
 		return next;
@@ -518,7 +554,7 @@ public class Animation implements Runnable {
         }
     }
 
-    public void nextEvent( AnimationEvent event ){
+    public void nextEvent(AnimationEvent event){
         synchronized (events){
             checkIndex();
             if (events.contains(event)){
@@ -553,13 +589,13 @@ public class Animation implements Runnable {
 	 * thread will just chew up cpu time
 	 */
 	public void run(){
-		while ( isAlive() ){
-			if ( isRunning() && ! events.isEmpty() ){
+		while (isAlive()){
+			if (isRunning() && ! events.isEmpty()){
 				nextEvent();
-				if ( getDelayTime() != 0 ){
-					rest( (int)(getDelayTime() * 1000.0 / 90.0) );
+				if (getDelayTime() != 0){
+					rest((int)(getDelayTime() * 1000.0 / 90.0));
 				}
-				setDelayTime( 0 );
+				setDelayTime(0);
 			} else {
 				rest(200);
 			}
