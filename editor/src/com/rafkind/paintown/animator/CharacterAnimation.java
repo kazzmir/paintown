@@ -87,24 +87,35 @@ public class CharacterAnimation extends JPanel {
         */
                 
         final SwingEngine optionsEngine = new SwingEngine("animator/onion-options.xml");
-        final JSlider front = (JSlider) optionsEngine.find("front");
-        final JSlider back = (JSlider) optionsEngine.find("back");
-        front.setValue(animation.getOnionFrontSkins());
-        back.setValue(animation.getOnionBackSkins());
+        final JSlider skins = (JSlider) optionsEngine.find("skins");
+        skins.setValue(animation.getOnionSkins());
 
-        front.addChangeListener(new ChangeListener(){
+        skins.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent change){
-                animation.setOnionFrontSkins(front.getValue());
+                animation.setOnionSkins(skins.getValue());
                 animation.forceRedraw();
             }
         });
 
-        back.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent change){
-                animation.setOnionBackSkins(back.getValue());
+        final JRadioButton front = (JRadioButton) optionsEngine.find("front");
+        final JRadioButton back = (JRadioButton) optionsEngine.find("back");
+        front.setActionCommand("front");
+        back.setActionCommand("back");
+
+        AbstractAction change = new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (event.getActionCommand().equals("front")){
+                    animation.setOnionSkinFront(true);
+                } else {
+                    animation.setOnionSkinFront(false);
+                }
+                
                 animation.forceRedraw();
             }
-        });
+        };
+
+        front.addActionListener(change);
+        back.addActionListener(change);
 
         dialog.getContentPane().add((JPanel) optionsEngine.getRootComponent());
         dialog.show();

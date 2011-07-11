@@ -46,8 +46,8 @@ public class Animation implements Runnable {
 	/* when something is changed in the animation 'listeners' are notified */
 	private List listeners;
     private boolean onionSkinning = false;
-    private int onionFrontSkins = 3;
-    private int onionBackSkins = 0;
+    private int onionSkins = 1;
+    private boolean onionSkinFront = true;
 	
 	private Vector keys;
 	private HashMap remapData;
@@ -103,20 +103,20 @@ public class Animation implements Runnable {
         return this.onionSkinning;
     }
 
-    public int getOnionFrontSkins(){
-        return onionFrontSkins;
+    public int getOnionSkins(){
+        return onionSkins;
     }
     
-    public int getOnionBackSkins(){
-        return onionBackSkins;
+    public void setOnionSkins(int skins){
+        onionSkins = skins;
     }
 
-    public void setOnionFrontSkins(int skins){
-        onionFrontSkins = skins;
+    public boolean getOnionSkinFront(){
+        return onionSkinFront;
     }
-    
-    public void setOnionBackSkins(int skins){
-        onionBackSkins = skins;
+
+    public void setOnionSkinFront(boolean what){
+        onionSkinFront = what;
     }
 	
 	public int getHeight(){
@@ -345,43 +345,49 @@ public class Animation implements Runnable {
         clone.draw(graphics, x, y);
     }
 
-    private void drawOnionSkinsBack(Graphics graphics, int x, int y, int skins){
+    private void drawOnionSkins(Graphics graphics, int x, int y, int skins){
         Graphics2D translucent = (Graphics2D) graphics.create();
+        int direction = -1;
+        if (skins < 0){
+            direction = 1;
+        }
+
         synchronized (events){
-            int here = previous(eventIndex, events.size());
+            if (events.isEmpty()){
+                return;
+            }
+
+            int here = (eventIndex + direction + events.size()) % events.size();
             int skinsLeft = skins;
-            while (skinsLeft > 0 && here != eventIndex){
+            while (skinsLeft != 0 && here != eventIndex){
                 AlphaComposite newComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) skinsLeft / (float) skins * (float) 0.5);
                 translucent.setComposite(newComposite);
 
                 AnimationEvent event = (AnimationEvent) events.get(here);
                 /* sort of a hack to use instanceof */
                 if (event instanceof com.rafkind.paintown.animator.events.scala.FrameEvent){
-                    skinsLeft -= 1;
+                    skinsLeft += direction;
                     drawSkin(translucent, x, y, here);
                 }
-                here = previous(here, events.size());
+                here = (here + direction + events.size()) % events.size();
             }
         }
-    }
-
-    private void drawOnionSkinsFront(Graphics graphics, int x, int y, int skins){
     }
 
 	public synchronized void draw(Graphics g, int x, int y){
 		int trueX = x + this.x + this.offsetX - getWidth() / 2;
 		int trueY = y + this.y + this.offsetY - getHeight();
 
-        if (isOnionSkinned()){
-            drawOnionSkinsBack(g, x, y, getOnionBackSkins());
+        if (isOnionSkinned() && !getOnionSkinFront()){
+            drawOnionSkins(g, x, y, getOnionSkins());
         }
 
 		if (currentImage() != null){
 			g.drawImage(currentImage(), trueX, trueY, null);
 		}
         
-        if (isOnionSkinned()){
-            drawOnionSkinsFront(g, x, y, getOnionFrontSkins());
+        if (isOnionSkinned() && getOnionSkinFront()){
+            drawOnionSkins(g, x, y, getOnionSkins());
         }
 
 		if (getRange() != 0){
