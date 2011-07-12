@@ -1339,6 +1339,12 @@ sys.path.append('src/mugen/parser')
 import peg
 
 env = getEnvironment(getDebug())
+
+#sys.path.append('scons')
+#import unix
+#env = unix.getEnvironment()
+#unix.configure(env)
+
 if useSDL():
     env['PAINTOWN_BACKEND'] = 'sdl'
 elif useAllegro():
