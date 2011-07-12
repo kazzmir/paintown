@@ -519,6 +519,9 @@ static bool doMenu(const Token * data, Paintown::Player * player){
     GameOptionFactory optionFactory(player);
     Menu::Menu menu(data, optionFactory);
     Menu::Context context;
+
+    player->resetInput();
+
     /* use the current screen as the background */
     /* in SDL/Allegro4 the screen buffer is always GFX_X, GFX_Y because it is
      * an intermediate buffer before scaling to the screen.
@@ -946,6 +949,7 @@ static void initializePlayers(const vector<Paintown::Object*> & players){
         playerX->setMoving(true);
 
         playerX->setStatus(Paintown::Status_Falling);
+        playerX->resetInput();
     }
 }
 

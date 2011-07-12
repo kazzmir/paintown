@@ -141,6 +141,10 @@ void Player::debugDumpKeyCache(int level){
     }
 }
 
+void Player::resetInput(){
+    keyHold = Held();
+}
+
 vector<Input::PaintownInput> Player::fillKeyCache(){
     /*
     acts += 1;

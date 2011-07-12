@@ -81,6 +81,8 @@ public:
     virtual inline bool ignoringLives() const {
         return ignore_lives;
     }
+    
+    void resetInput();
 
     virtual ~Player();
 
