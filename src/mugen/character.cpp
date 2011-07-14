@@ -934,6 +934,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                         } else if (simple == "guard.sparkno"){
                             string spark;
                             simple >> spark;
+                            spark = PaintownUtil::lowerCaseAll(spark);
                             if (PaintownUtil::matchRegex(spark, "s[0-9]+")){
                                 /* FIXME: handle S */
                             } else {
@@ -1448,8 +1449,8 @@ void Character::load(int useAct){
                                 simple >> file;
                                 /* just loads the constants */
                                 self.loadCnsFile(Filesystem::RelativePath(file));
-                            } else if (PaintownUtil::matchRegex(simple.idString(), "st[0-9]+")){
-                                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "st([0-9]+)", 0).c_str());
+                            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "st[0-9]+")){
+                                int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "st([0-9]+)", 0).c_str());
                                 if (num >= 0 && num <= 12){
                                     string path;
                                     simple >> path;
