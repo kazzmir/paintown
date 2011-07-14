@@ -835,14 +835,15 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             MugenArea area;
             array >> area.x1 >> area.y1 >> area.x2 >> area.y2;
             Global::debug(2) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
+            string source = "some file";
             if (array == "clsn1"){
                 if (expected == clsn2){
-                    Global::debug(0) << "Expected clsn2 but read clsn1: " << array.toString() << endl;
+                    Global::debug(0) << "Warning: Expected clsn2 but read clsn1: " << array.toString() << " at " << source << endl;
                 }
                 clsn1Holder.push_back(area);
             } else if (array == "clsn2"){
                 if (expected == clsn1){
-                    Global::debug(0) << "Expected clsn1 but read clsn2: " << array.toString() << endl;
+                    Global::debug(0) << "Warning: Expected clsn1 but read clsn2: " << array.toString() << " at " << source << endl;
                 }
                 clsn2Holder.push_back(area);
             }

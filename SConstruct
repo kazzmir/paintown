@@ -1128,12 +1128,16 @@ rsx
         safeParseConfig(env, usr_path + '/bin/sdl-config --cflags --libs')
 
         compile_flags = ['-fno-builtin', '-fno-stack-protector', '-fdiagnostics-show-option']
+
+        wrapped_symbols = ['open']
+        def wrap(symbol):
+            return '-Wl,--wrap=%s' % symbol
         env.Append(CPPDEFINES = ['NACL'])
         env.Append(CPPPATH = paths)
         env.Append(CCFLAGS = flags + compile_flags)
         env.Append(CXXFLAGS = flags + compile_flags)
         env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
-        env.Append(LINKFLAGS = flags + ['-melf_nacl'])
+        env.Append(LINKFLAGS = flags + ['-melf_nacl'] + map(wrap, wrapped_symbols))
         env.Append(LIBS = libs)
         return env
     def llvm(env):

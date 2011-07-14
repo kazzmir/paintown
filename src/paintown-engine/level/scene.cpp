@@ -289,16 +289,16 @@ void Scene::doTriggers(){
 void Scene::act( int min_x, int max_x, vector< Paintown::Object * > * objects ){
     clearHearts();
 
-    if ( canContinue( min_x ) ){
-        advanceBlocks( blockNumber + 1 );
-        Global::debug( 3 ) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
+    if (canContinue(min_x)){
+        advanceBlocks(blockNumber + 1);
+        Global::debug(3) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
     }
 
     doTriggers();
 
     if (objects != 0){
         // Global::debug(0) << "Creating new objects" << endl;
-        vector< Heart * > new_hearts = current_block->createObjects( block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects );
+        vector<Heart *> new_hearts = current_block->createObjects(block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects);
         hearts.insert( hearts.end(), new_hearts.begin(), new_hearts.end() );
         objects->insert(objects->end(), added_objects.begin(), added_objects.end());
         added_objects.clear();

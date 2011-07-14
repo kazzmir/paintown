@@ -67,7 +67,7 @@ namespace Util{
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)
     MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
-    MugenAnimation *getAnimation( Ast::Section *section, const Mugen::SpriteMap &sprites, bool mask);
+    MugenAnimation *getAnimation(Ast::Section *section, const Mugen::SpriteMap &sprites, bool mask);
     /* pull a sprite out of a const sprite map */
     MugenSprite * getSprite(const Mugen::SpriteMap & sprites, int group, int item);
 
