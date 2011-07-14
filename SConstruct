@@ -1129,7 +1129,7 @@ rsx
 
         compile_flags = ['-fno-builtin', '-fno-stack-protector', '-fdiagnostics-show-option']
 
-        wrapped_symbols = ['open', 'read']
+        wrapped_symbols = ['open', 'read', 'close']
         def wrap(symbol):
             return '-Wl,--wrap=%s' % symbol
         env.Append(CPPDEFINES = ['NACL'])
