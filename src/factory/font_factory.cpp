@@ -11,6 +11,8 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "exceptions/exception.h"
+#include "util/load_exception.h"
+#include "util/ftalleg.h"
 
 // #include "fonts.h"
 
@@ -49,7 +51,12 @@ void FontFactory::clear(){
 Font * FontFactory::getRealFont(const Filesystem::AbsolutePath & path, int x, int y){
     Util::Thread::ScopedLock locked(lock);
     if (font_mapper.find(path.path()) == font_mapper.end()){
-        font_mapper[path.path()] = new FreeTypeFont(path);
+        try{
+            FreeTypeFont * font = new FreeTypeFont(path);
+            font_mapper[path.path()] = font;
+        } catch (const ftalleg::Exception & failure){
+            throw LoadException(__FILE__, __LINE__, failure.getReason());
+        }
     }
     Font * font = font_mapper[path.path()];
     if (font == NULL){
