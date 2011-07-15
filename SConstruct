@@ -1114,7 +1114,7 @@ rsx
             flags += ['-m64']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/nacl64/include/')])
-            usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
+            usr_path = setup(path, '/toolchain/linux_x86/nacl64/usr')
             env['PAINTOWN_NACL_ARCH'] = '64'
         elif arch == '32bit' or arch_override == '32bit':
             prefix = 'nacl-'
