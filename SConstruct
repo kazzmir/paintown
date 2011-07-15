@@ -1076,15 +1076,25 @@ rsx
         print "Environment is for Google Native Client"
         import platform
         arch = platform.architecture()[0]
-        try:
-            if os.environ['nacl_32'] == '1':
-                print "Forcing 32bit compile"
-                arch_override = '32bit'
-            elif os.environ['nacl_64'] == '1':
-                print "Forcing 64bit compile"
-                arch_override = '64bit'
-        except KeyError:
-            arch_override = ''
+        def nacl32():
+            try:
+                return os.environ['nacl_32'] == '1'
+            except KeyError:
+                return False
+
+        def nacl64():
+            try:
+                return os.environ['nacl_64'] == '1'
+            except KeyError:
+                return False
+
+        arch_override = ''
+        if nacl32():
+            arch_override = '32bit'
+            print "Forcing 32bit compile"
+        elif nacl64():
+            print "Forcing 64bit compile"
+            arch_override = '64bit'
         
         def setup(pre, x):
             return '%s%s' % (pre, x)
@@ -1096,20 +1106,22 @@ rsx
         paths = []
         
         libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime']
+
+        env['PAINTOWN_NACL_ARCH'] = '32'
         
         if arch == '64bit' and not arch_override == '32bit' or arch_override == '64bit':
             prefix = 'nacl64-'
             flags += ['-m64']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/nacl64/include/')])
-            usr_path = setup(path, '/toolchain/linux_x86/nacl64/usr')
+            usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
+            env['PAINTOWN_NACL_ARCH'] = '64'
         elif arch == '32bit' or arch_override == '32bit':
             prefix = 'nacl-'
             flags += ['-m32']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/nacl/include')])
             usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
-        
         
         env.PrependENVPath('PATH', usr_path)
         paths.append([setup(usr_path,'/include')])
@@ -1452,7 +1464,7 @@ def configEnvironment(env):
 
 # allegroEnvironment = configEnvironment(getEnvironment(debug))
 
-def buildType(dir):
+def buildType(dir, env):
     properties = [dir]
     # Problem with command line too long under windows
     if isWindows() and useMinpspw():
@@ -1465,7 +1477,7 @@ def buildType(dir):
     if usePs3():
         properties.append('ps3')
     if useNacl():
-        properties.append('nacl')
+        properties.append('nacl%s' % env['PAINTOWN_NACL_ARCH'])
     if useNDS():
         properties.append('NDS')
     if useWii():
@@ -1480,8 +1492,8 @@ def buildType(dir):
         properties.append('debug')
     return '-'.join(properties)
 
-buildDir = buildType('build')
-buildDirStatic = buildType('build-static')
+buildDir = buildType('build', env)
+buildDirStatic = buildType('build-static', env)
 
 #if getDebug():
 #    env.Append(LIBS = ['gcov'])
@@ -1503,7 +1515,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckMpg123" : checkMpg123,
                 "CheckMad" : checkMad}
 
-def display_build_properties():
+def display_build_properties(env):
     color = 'light-green'
     properties = []
     if useAllegro():
@@ -1525,7 +1537,7 @@ def display_build_properties():
     if usePs3():
         properties.append(colorize("PS3", color))
     if useNacl():
-        properties.append(colorize("NACL", color))
+        properties.append(colorize("NACL%s" % env['PAINTOWN_NACL_ARCH'], color))
     if useLLVM():
         properties.append(colorize("LLVM", color))
     if useIntel():
@@ -1534,7 +1546,7 @@ def display_build_properties():
     if not isQuiet():
         print "Build type: %s" % type
 
-display_build_properties()
+display_build_properties(env)
 
 env['PAINTOWN_TESTS'] = custom_tests
 env['PAINTOWN_COLORIZE'] = colorize
