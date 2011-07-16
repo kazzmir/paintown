@@ -1064,6 +1064,8 @@ MenuOption(parent, token){
                     }
                 } catch (const Filesystem::NotFound & fail){
                     throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
+                } catch (const MugenException & fail){
+                    throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
                 }
             } else {
                 Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
