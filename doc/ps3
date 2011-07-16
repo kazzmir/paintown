@@ -43,9 +43,8 @@
     ln -s /path/to/ps3dev /opt/ps3dev
 
   5. Set the build type environment variable to 'ps3' and build paintown
-    export SDL=1
     export ps3=1
     cd /path/to/paintown
     make
-  
-  
+
+  The pkg currently does not contain the data directory. Once the pkg is installed, copy the data directory to the install directory/USRDIR. Use the ftp program or something to transfer data to the ps3.
