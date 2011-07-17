@@ -36,4 +36,9 @@
       - For 32-bit override: export nacl_32=1
       - For 64-bit override: export nacl_64=1
 
-  5. Test it with the stuff in src/test/nacl
+  5. Make directory listings for each directory that might be searched by paintown (like data/players).
+    $ ls > directory.txt
+
+    Make sure there are no extra classifier characters. Maybe use \ls if its aliased.
+
+  6. Test it with the stuff in src/test/nacl
