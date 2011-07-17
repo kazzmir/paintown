@@ -455,51 +455,28 @@ void Storyboard::run(bool repeat){
         }
 
         void run(){
-            InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
+            vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(input);
+            for (vector<InputMap<Keys>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
+                InputMap<Keys>::InputEvent event = *it;
 
-            if (out[Up]){
-            }
-            if (out[Down]){
-            }
-            if (out[Left]){
-            }
-            if (out[Right]){
-            }
-            if (out[A]){
-                quit = true;
-                return;
-            }
-            if (out[B]){
-                quit = true;
-                return;
-            }
-            if (out[C]){
-                quit = true;
-                return;
-            }
-            if (out[X]){
-                quit = true;
-                return;
-            }
-            if (out[Y]){
-                quit = true;
-                return;
-            }
-            if (out[Z]){
-                quit = true;
-                return;
-            }
-            if (out[Start]){
-                quit = true;
-                return;
-            }	
-            if (out[Esc]){
-                quit = true;
-                return;
-            }
-            if (out[Enter]){
-                quit = true;
-                return;
+                if (!event.enabled){
+                    continue;
+                }
+
+                switch (event.out){
+                    case A:
+                    case B:
+                    case C:
+                    case X:
+                    case Y:
+                    case Z:
+                    case Start:
+                    case Esc:
+                    case Enter: {
+                        quit = true;
+                        return;
+                    }
+                }
             }
 
             scene = *sceneIterator;
