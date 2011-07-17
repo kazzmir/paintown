@@ -476,6 +476,7 @@ void Storyboard::run(bool repeat){
                         quit = true;
                         return;
                     }
+                    default: break;
                 }
             }
 
@@ -526,100 +527,4 @@ void Storyboard::run(bool repeat){
     Logic logic(input, scenes, startscene, repeat, scene);
     Draw draw(scene);
     PaintownUtil::standardLoop(logic, draw);
-    
-#if 0
-    while (!quit){
-        bool draw = false;
-
-        Scene *scene = *sceneIterator;
-        if (Global::speed_counter > 0){
-
-            // runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;//(double) 90 / (double) 60;
-            runCounter += Util::gameTicks(Global::speed_counter);
-            Global::speed_counter = 0;
-            while (runCounter > 1){
-                runCounter -= 1;
-                draw = true;
-                // Key handler
-                InputManager::poll();
-
-                InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
-
-                if (out[Up]){
-	        }
-	        if (out[Down]){
-	        }
-	        if (out[Left]){
-	        }
-	        if (out[Right]){
-	        }
-	        if (out[A]){
-                    quit = true;
-                    return;
-	        }
-	        if (out[B]){
-                    quit = true;
-                    return;
-	        }
-	        if (out[C]){
-                    quit = true;
-                    return;
-	        }
-	        if (out[X]){
-                    quit = true;
-                    return;
-	        }
-	        if (out[Y]){
-                    quit = true;
-                    return;
-	        }
-	        if (out[Z]){
-                    quit = true;
-                    return;
-	        }
-	        if (out[Start]){
-                    quit = true;
-                    return;
-	        }	
-		if (out[Esc]){
-		    quit = true;
-		    return;
-		}
-		if (out[Enter]){
-		    quit = true;
-		    return;
-		}
-		
-                scene->act();
-                
-                if (scene->isDone()){
-                    sceneIterator++;
-                    if (sceneIterator == scenes.end()){
-                        if (repeat){
-                            sceneIterator = scenes.begin();
-                        } else {
-                            return;
-                        }
-                    }
-                    scene = *sceneIterator;
-                    scene->reset();
-                    scene->startMusic();
-                }
-            }
-        }
-
-        if (draw){
-            scene->render(work);
-            work.Stretch(bmp);
-            if (Global::getDebug() > 0){
-                Font::getDefaultFont().printf( 15, 310, Graphics::makeColor(0,255,128), bmp, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->getTicker(),scene->getEndTime(),scene->getFadeTool().getFadeInTime(),scene->getFadeTool().getFadeOutTime() );
-            }
-            bmp.BlitToScreen();
-        }
-
-        while (Global::speed_counter == 0){
-            PaintownUtil::rest(1);
-        }
-    }
-#endif
 }
