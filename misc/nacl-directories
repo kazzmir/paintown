@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for directory in $(find . -type d  ! -regex '.*.svn.*')
+do
+        \ls "$directory" > "$directory/directory.txt"
+done
