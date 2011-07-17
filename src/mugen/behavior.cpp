@@ -47,14 +47,40 @@ InputMap<Keys> & HumanBehavior::getInput(bool facingRight){
     return left;
 }
 
+Mugen::Input HumanBehavior::updateInput(InputMap<Keys> & keys, Mugen::Input old){
+    vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(keys);
+    for (vector<InputMap<Keys>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
+        InputMap<Keys>::InputEvent event = *it;
+
+        switch (event.out){
+            /* the keys map already sets up left/right to be forward/backward */
+            case Mugen::Right: old.forward = event.enabled; break;
+            case Mugen::Left: old.back = event.enabled; break;
+            case Mugen::Up: old.up = event.enabled; break;
+            case Mugen::Down: old.down = event.enabled; break;
+            case Mugen::A: old.a = event.enabled; break;
+            case Mugen::B: old.b = event.enabled; break;
+            case Mugen::C: old.c = event.enabled; break;
+            case Mugen::X: old.x = event.enabled; break;
+            case Mugen::Y: old.y = event.enabled; break;
+            case Mugen::Z: old.z = event.enabled; break;
+            case Mugen::Start: old.start = event.enabled; break;
+            default: break;
+        }
+    }
+
+    return old;
+}
+
 vector<string> HumanBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
     vector<string> out;
     
-    InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput(reversed));
+    // InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput(reversed));
+    input = updateInput(getInput(reversed), input);
 
     for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
         Command * command = *it;
-        if (command->handle(output)){
+        if (command->handle(input)){
             Global::debug(2) << "command: " << command->getName() << endl;
             out.push_back(command->getName());
         }

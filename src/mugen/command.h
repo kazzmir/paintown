@@ -11,12 +11,42 @@ namespace Ast{
 
 namespace Mugen{
 
+struct Input{
+    Input():
+        a(false), b(false), c(false),
+        x(false), y(false), z(false),
+        back(false), forward(false),
+        up(false), down(false),
+        start(false){
+        }
+
+    bool operator==(const Input & him) const {
+        return a == him.a &&
+               b == him.b &&
+               c == him.c &&
+               x == him.x &&
+               y == him.y &&
+               z == him.z &&
+               back == him.back &&
+               forward == him.forward &&
+               up == him.up &&
+               down == him.down &&
+               start == him.start;
+    }
+
+    bool a, b, c;
+    bool x, y, z;
+    bool back, forward;
+    bool up, down;
+    bool start;
+};
+
 class CompiledKeySingle;
 class CompiledKey{
 public:
     CompiledKey();
 
-    virtual bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const = 0;
+    virtual bool pressed(const Input & keys, const Input & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const = 0;
 
     virtual std::string toString() const = 0;
 
@@ -50,13 +80,13 @@ public:
         return name;
     }
 
-    virtual bool handle(InputMap<Mugen::Keys>::Output keys);
+    virtual bool handle(Input keys);
 
     virtual ~Command();
 
 protected:
 
-    bool interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease);
+    bool interpret(const Ast::Key * key, const Input & keys, const Input & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease);
 
 protected:
     std::string name;
@@ -67,7 +97,7 @@ protected:
     int ticks;
     int holdKey;
     std::vector<CompiledKey*>::const_iterator current;
-    InputMap<Mugen::Keys>::Output oldKeys;
+    Input oldKeys;
     const CompiledKey * holder;
     int successTime;
     const CompiledKey * needRelease;

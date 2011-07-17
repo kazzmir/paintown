@@ -93,28 +93,28 @@ public:
         return Start;
     }
 
-    bool pressedKey(InputMap<Mugen::Keys>::Output & keys) const {
+    bool pressedKey(const Input & keys) const {
         switch (key){
-            case A: return keys[Mugen::A];
-            case B: return keys[Mugen::B];
-            case C: return keys[Mugen::C];
-            case X: return keys[Mugen::X];
-            case Y: return keys[Mugen::Y];
-            case Z: return keys[Mugen::Z];
-            case Back: return keys[Mugen::Left];
-            case Forward: return keys[Mugen::Right];
-            case Down: return keys[Mugen::Down];
-            case Up: return keys[Mugen::Up];
-            case DownBack: return keys[Mugen::Down] && keys[Mugen::Left];
-            case UpBack: return keys[Mugen::Up] && keys[Mugen::Left];
-            case DownForward: return keys[Mugen::Down] && keys[Mugen::Right];
-            case UpForward: return keys[Mugen::Up] && keys[Mugen::Down];
-            case Start: return keys[Mugen::Start];
+            case A: return keys.a;
+            case B: return keys.b;
+            case C: return keys.c;
+            case X: return keys.x;
+            case Y: return keys.y;
+            case Z: return keys.z;
+            case Back: return keys.back;
+            case Forward: return keys.forward;
+            case Down: return keys.down;
+            case Up: return keys.up;
+            case DownBack: return keys.down && keys.back;
+            case UpBack: return keys.up && keys.back;
+            case DownForward: return keys.down && keys.forward;
+            case UpForward: return keys.up && keys.forward;
+            case Start: return keys.start;
             default: return false;
         }
     }
     
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
+    bool pressed(const Input & keys, const Input & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (pressedKey(keys)){
             needRelease = this;
             return true;
@@ -144,7 +144,7 @@ public:
         return key.same(*this);
     }
 
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
+    bool pressed(const Input & keys, const Input & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         int fake = -1;
         bool ok = key1->pressed(keys, oldKeys, fake, holder, needRelease) &&
                   key2->pressed(keys, oldKeys, fake, holder, needRelease);
@@ -176,7 +176,7 @@ public:
         return out.str();
     }
     
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
+    bool pressed(const Input & keys, const Input & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (key->pressed(keys, oldKeys, holdKey, holder, needRelease)){
             needRelease = NULL;
             holder = key;
@@ -224,7 +224,7 @@ public:
         return out.str();
     }
     
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
+    bool pressed(const Input & keys, const Input & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (holdKey > 0){
             int fake = -1;
             const CompiledKey * fakeKey;
@@ -305,7 +305,7 @@ public:
         return out.str();
     }
 
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
+    bool pressed(const Input & keys, const Input & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         return false;
     }
 
@@ -323,7 +323,7 @@ public:
     key(key){
     }
         
-    bool sameKeys(const InputMap<Mugen::Keys>::Output & map1, const InputMap<Mugen::Keys>::Output & map2 ) const {
+    bool sameKeys(const Input & map1, const Input & map2 ) const {
         return map1 == map2;
     }
     
@@ -337,7 +337,7 @@ public:
         return key.same(*this);
     }
 
-    bool pressed(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
+    bool pressed(const Input & keys, const Input & oldKeys, int & holdKey, const CompiledKey *& holder, const CompiledKey*& needRelease) const {
         if (!key->pressed(keys, oldKeys, holdKey, holder, needRelease)){
             if (!sameKeys(keys, oldKeys)){
                 throw Command::Exception();
@@ -435,10 +435,10 @@ needRelease(NULL){
 /* AST walking way, purely interpreted
  * Not used anymore.
  */
-bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease){
+bool Command::interpret(const Ast::Key * key, const Input & keys, const Input & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease){
     class KeyWalker: public Ast::Walker{
     public:
-        KeyWalker(InputMap<Mugen::Keys>::Output & keys, const InputMap<Mugen::Keys>::Output & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease):
+        KeyWalker(const Input & keys, const Input & oldKeys, int & holdKey, const Ast::Key *& holder, const Ast::Key *& needRelease):
         ok(false),
         holdKey(holdKey),
         keys(keys),
@@ -449,49 +449,49 @@ bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & ke
         
         bool ok;
         int & holdKey;
-        InputMap<Mugen::Keys>::Output & keys;
-        const InputMap<Mugen::Keys>::Output & oldKeys;
+        const Input & keys;
+        const Input & oldKeys;
         const Ast::Key *& holder;
         const Ast::Key *& needRelease;
 
         virtual void onKeySingle(const Ast::KeySingle & key){
             if (key == "a"){
-                ok = keys[Mugen::A];
+                ok = keys.a;
             } else if (key == "b"){
-                ok = keys[Mugen::B];
+                ok = keys.b;
             } else if (key == "c"){
-                ok = keys[Mugen::C];
+                ok = keys.c;
             } else if (key == "x"){
-                ok = keys[Mugen::X];
+                ok = keys.x;
             } else if (key == "y"){
-                ok = keys[Mugen::Y];
+                ok = keys.y;
             } else if (key == "z"){
-                ok = keys[Mugen::Z];
+                ok = keys.z;
             } else if (key == "B"){
-                ok = keys[Mugen::Left];
+                ok = keys.back;
             } else if (key == "DB"){
-                ok = keys[Mugen::Left] && keys[Mugen::Down];
+                ok = keys.back && keys.down;
             } else if (key == "D"){
-                ok = keys[Mugen::Down];
+                ok = keys.down;
             } else if (key == "DF"){
-                ok = keys[Mugen::Right] && keys[Mugen::Down];
+                ok = keys.forward && keys.down;
             } else if (key == "F"){
-                ok = keys[Mugen::Right];
+                ok = keys.forward;
             } else if (key == "UF"){
-                ok = keys[Mugen::Right] && keys[Mugen::Up];
+                ok = keys.forward && keys.up;
             } else if (key == "U"){
-                ok = keys[Mugen::Up];
+                ok = keys.up;
             } else if (key == "UB"){
-                ok = keys[Mugen::Left] && keys[Mugen::Up];
+                ok = keys.back && keys.up;
             } else if (key == "start"){
-                ok = keys[Mugen::Start];
+                ok = keys.start;
             }
             if (ok){
                 needRelease = &key;
             }
         }
 
-        bool sameKeys(const InputMap<Mugen::Keys>::Output & map1, const InputMap<Mugen::Keys>::Output & map2 ){
+        bool sameKeys(const Input & map1, const Input & map2 ){
             return map1 == map2;
         }
 
@@ -574,7 +574,7 @@ bool Command::interpret(const Ast::Key * key, InputMap<Mugen::Keys>::Output & ke
     return walker.ok;
 }
 
-bool Command::handle(InputMap<Mugen::Keys>::Output keys){
+bool Command::handle(Input keys){
 
     if (compiledKeys.size() == 0){
         return false;

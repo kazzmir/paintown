@@ -5,6 +5,7 @@
 #include <string>
 #include "util.h"
 #include "util/input/input-map.h"
+#include "command.h"
 
 namespace Mugen{
 
@@ -36,10 +37,12 @@ public:
 
 protected:
     InputMap<Keys> & getInput(bool facing);
+    Mugen::Input updateInput(InputMap<Keys> & keys, Mugen::Input old);
 
 protected:
     InputMap<Keys> right;
     InputMap<Keys> left;
+    Mugen::Input input;
 };
 
 /* dummy does absolutely nothing */
