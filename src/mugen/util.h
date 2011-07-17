@@ -258,8 +258,10 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     /* FIXME: add more joystick buttons to the configuration */
     input.set(Joystick::Button1, delay, false, Mugen::A);
     input.set(Joystick::Button2, delay, false, Mugen::B);
-    input.set(Joystick::Button3, delay, false, Mugen::X);
-    input.set(Joystick::Button4, delay, false, Mugen::Y);
+    input.set(Joystick::Button3, delay, false, Mugen::C);
+    input.set(Joystick::Button4, delay, false, Mugen::X);
+    input.set(Joystick::Button5, delay, false, Mugen::Y);
+    input.set(Joystick::Button6, delay, false, Mugen::Z);
     input.set(Joystick::Quit, delay, false, Mugen::Esc);
     return input;
 }
