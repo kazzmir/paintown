@@ -2,11 +2,15 @@ First build paintown in nacl mode (read doc/nacl)
 
 $ ln -s ../../../paintown paintown-32.nexe
 # or name it paintown-64.nexe if you are on a 64-bit machine
+$ ln -s ../../../data .
 $ ./httpd.py
 # navigate your browser to http://localhost:5103/paintown.html
 
 You should see the word 'Paintown!'. Wait for a second while the executable loads
 and then a 'Run' button should appear. Click that to run Paintown.
+
+Make sure the data/ directory has 'directory.txt' in each of its subdirectories. Use
+misc/nacl-directories to produce 'directory.txt' for all subdirectories.
 
 paintown.nmf is for chrome 13
 paintown.nmf.14 is for chrome 14
