@@ -5,36 +5,35 @@
 *  - To install naclports you need a version of the 'patch' program at least 2.6.1 - grab it here: ftp://ftp.gnu.org/gnu/patch
 
   1. Download and setup the Native Client toolchain:
-      - wget http://commondatastorage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/naclsdk_linux.tgz
-      - tar xvf naclsdk_linux.tgz
-      - mv native_client_sdk_* /opt/nacl_sdk
-      - export PATH=/opt/nacl_sdk/toolchain/linux_x86/bin:"$PATH"
+      $ wget http://commondatastorage.googleapis.com/nativeclient-mirror/nacl/nacl_sdk/naclsdk_linux.tgz
+      $ tar xvf naclsdk_linux.tgz
+      $ mv native_client_sdk_* /opt/nacl_sdk
+      $ export PATH=/opt/nacl_sdk/toolchain/linux_x86/bin:"$PATH"
   
   2. Setup chrome depot tools and nacl ports. Building the ports can take a while.
-      - export NACL_SDK_ROOT=/opt/nacl_sdk
-      - svn co http://src.chromium.org/svn/trunk/tools/depot_tools
-      - mv depot_tools /opt/nacl_sdk
-      - export PATH=/opt/nacl_sdk/depot_tools:"$PATH"
-      - mkdir /opt/nacl_sdk/naclports
-      - cd /opt/nacl_sdk/naclports
-      - gclient config http://naclports.googlecode.com/svn/trunk/src
-      - gclient sync
-      - cd src/packages
-      - ./nacl-install-all.sh (if you get an error before it starts look at the note at the top regarding 2.6)
+      $ export NACL_SDK_ROOT=/opt/nacl_sdk
+      $ svn co http://src.chromium.org/svn/trunk/tools/depot_tools
+      $ mv depot_tools /opt/nacl_sdk
+      $ export PATH=/opt/nacl_sdk/depot_tools:"$PATH"
+      $ mkdir /opt/nacl_sdk/naclports
+      $ cd /opt/nacl_sdk/naclports
+      $ gclient config http://naclports.googlecode.com/svn/trunk/src
+      $ gclient sync
+      $ cd src/packages
+      $ ./nacl-install-all.sh (if you get an error before it starts look at the note at the top regarding 2.6)
                 - *NOTE If you get errors building expat, fontconfig and/or cairo then it won't build the 64-bit libs so you need to do it manually:
-                - ./nacl-install-all-bitsize.sh 64
+                - $ ./nacl-install-all-bitsize.sh 64
                 - Likewise if you wanted to do 32-bit just in case do: ./nacl-install-all-bitsize.sh 32
       
   
   3. Set the build type environment variable to 'nacl' and build paintown by default it will detect whether your system is 32-bit or 64-bit
-      - export SDL=1
-      - export nacl=1
-      - cd /path/to/paintown
-      - make
+      $ export nacl=1
+      $ cd /path/to/paintown
+      $ make
       
   4. (* Optional) If you need to build for a specific architecture then you can override the architecture by setting one of the two items below
-      - For 32-bit override: export nacl_32=1
-      - For 64-bit override: export nacl_64=1
+      - For 32-bit override: $ export nacl_32=1
+      - For 64-bit override: $ export nacl_64=1
 
   5. Make directory listings for each directory that might be searched by paintown (like data/players).
     $ ls > directory.txt
