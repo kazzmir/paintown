@@ -37,12 +37,39 @@
           height: 480px;
           background: #6D99C5;
       }
+
+      div.information{
+          margin-right: auto;
+          margin-left: auto;
+      }
+
+      div.instructions{
+          float: right;
+          width: 200px;
+      }
   </style>
 </head>
 <body>
     <span>Paintown!</span>
-    <img id='loader' src="loader.gif" />
+    &nbsp;
+    <div id='loader'>
+        <span>Loading</span>
+        <img src="loader.gif" />
+    </div>
     <button id='run' onclick="dorun()" style="display:none">Run</button>
+    <div class='instructions'>
+        Wait for the binary to completely download. Once it has downloaded a button labeled <b>Run</b> will appear. Click that and wait for the game to start. It may seem that the game is hanging at times but just be patient, loading resources over the network can be quite slow. Loading times will be improved in the future.
+        <br /><br />
+        Keys in game: <br/><br />
+        <b>A</b> Attack 1<br />
+        <b>S</b> Attack 2<br />
+        <b>D</b> Attack 3<br />
+        <b>Space</b> Jump<br />
+        <b>Up</b> Up<br />
+        <b>Down</b> Down<br />
+        <b>Left</b> Left<br />
+        <b>Right</b> Right<br />
+    </div>
     <div class='main' id='listener'>
         <script type="text/javascript">
             document.getElementById('listener').addEventListener('load', moduleDidLoad, true);
@@ -53,6 +80,13 @@
                width=640 height=480
                src="paintown.nmf"
                type="application/x-nacl" />
+   </div>
+   <br />
+   <div class='information'>
+       <span>This is a demo of Paintown running inside <a href="http://code.google.com/p/nativeclient/">Google's Native Client</a>.</span>
+       
+       <br />
+       <span>You need chrome 13 to run the demo. You can get it from <a href="http://www.google.com/landing/chrome/beta/">the beta download page</a> or I have a link to a <a href="http://www.cs.utah.edu/~rafkind/tmp/paintown/chrome-13.tar.lzma">tar of chrome 13 for linux</a>.</span>
    </div>
 </body>
 </html>
