@@ -1109,7 +1109,14 @@ Result rule_%s(Stream & stream, int position, Value ** arguments){
         def isBind(pattern):
             return isinstance(pattern, PatternBind)
         def isInlined(pattern):
-            return isinstance(pattern, PatternRule) and peg.getRule(pattern.rule).isInline()
+            ok = isinstance(pattern, PatternRule)
+            if ok:
+                if peg.getRule(pattern.rule) == None:
+                    closest = peg.findClosestRuleName(pattern.rule)
+                    raise Exception("No rule found '%s'. Closest match is '%s'" % (pattern.rule, closest))
+                return peg.getRule(pattern.rule).isInline()
+            else:
+                return False
         inlined = [peg.getRule(rule.rule) for rule in flatten([p.find(isInlined) for p in self.patterns])]
         bind_patterns = flatten([p.find(isBind) for p in self.patterns])
         mine = [p.variable for p in bind_patterns]
@@ -1301,6 +1308,9 @@ class Peg:
             if rule.name == name:
                 return rule
         return None
+
+    def findClosestRuleName(self, name):
+        return 'not done yet'
     
     def generate_test(self):
         # return self.getRule(self.start).generate_test(TestGenerator(), self)
