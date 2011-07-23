@@ -946,7 +946,11 @@ void Configuration::saveConfiguration(){
 /* Defaults for all configuration options */
 double Configuration::gamespeed = 1.0;
 bool Configuration::invincible = false;
+#ifdef PS3
+bool Configuration::fullscreen = true;
+#else
 bool Configuration::fullscreen = false;
+#endif
 int Configuration::lives = 4;
 int Configuration::npc_buddies = 1;
 Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
