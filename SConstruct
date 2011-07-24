@@ -1785,6 +1785,7 @@ def ps3_pkg(target, source, env):
     env.Execute('%s/bin/make_self_npdrm %s.elf pkg/USRDIR/EBOOT.BIN %s' % (ps3devPath(), file, app))
     # env.Execute('cp %s %s.elf' % (file, file))
     env.Execute('cp data/ps3/icon0.png pkg/ICON0.PNG')
+    env.Execute('cp data/ps3/SND0.AT3 pkg/')
     env.Execute('cp data/ps3/pic1.png pkg/PIC1.PNG')
     # env.Execute('python /opt/ps3dev/bin/fself.py -n %s.elf pkg/USRDIR/EBOOT.BIN' % file)
     env.Execute('python %s/bin/sfo.py --title "Paintown" --appid "PAINTOWN" -f %s/bin/sfo.xml pkg/PARAM.SFO' % (ps3devPath(), ps3devPath()))
