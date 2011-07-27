@@ -2998,7 +2998,18 @@ public:
             } else if (var == "fall.time"){
                 /* TODO */
             } else if (var == "fall.recovertime"){
-                /* TODO */
+                class HitVarFallRecoverTime: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).fall.recoverTime);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarFallRecoverTime();
+                    }
+                };
+
+                return new HitVarFallRecoverTime();
             }
 
             throw MugenException("Unknown gethitvar variable " + var);

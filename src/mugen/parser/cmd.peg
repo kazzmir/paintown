@@ -786,6 +786,11 @@ rules:
                  Ast::Value * compare_attribute = as<compare_func>(comparison)(Value(makeSimpleIdentifier("hitdefattr:attribute")), attributes);
                  value = makeExpressionAnd(Value(compare_state), Value(compare_attribute));
              }}
+             | line:<line> "hitdefattr"{case} {{
+                   std::ostringstream error;
+                   error << "Invalid hitdefattr on line " << getCurrentLine(line) << " column " << getCurrentColumn(line);
+                   throw ParseException(error.str());
+               }}
              # FIXME: handle hitdefattr with no attack-attributes listed
     
     projectile_trigger = "projhit"{case}

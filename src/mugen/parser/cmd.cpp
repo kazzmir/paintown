@@ -11977,7 +11977,7 @@ Result rule_function(Stream & stream, const int position){
         return column_peg_1.chunk8->chunk_function;
     }
     
-    RuleTrace trace_peg_803(stream, "function");
+    RuleTrace trace_peg_808(stream, "function");
     int myposition = position;
     
     
@@ -14708,6 +14708,46 @@ Result rule_function(Stream & stream, const int position){
         
         return result_peg_697;
         out_peg_699:
+        Result result_peg_803(myposition);
+        
+        {
+        
+            Stream::LineInfo line_info_peg_805 = stream.getLineInfo(result_peg_803.getPosition());
+                line = &line_info_peg_805;
+            
+            
+            
+            result_peg_803.setValue(Value((void*) "hitdefattr"));
+                for (int i = 0; i < 10; i++){
+                    if (compareCharCase("hitdefattr"[i], stream.get(result_peg_803.getPosition()))){
+                        result_peg_803.nextPosition();
+                    } else {
+                        goto out_peg_807;
+                    }
+                }
+            
+            
+            
+            {
+                    Value value((void*) 0);
+                    std::ostringstream error;
+                                       error << "Invalid hitdefattr on line " << getCurrentLine(line) << " column " << getCurrentColumn(line);
+                                       throw ParseException(error.str());
+                    result_peg_803.setValue(value);
+                }
+            
+            
+        }
+        
+        if (column_peg_1.chunk8 == 0){
+            column_peg_1.chunk8 = new Chunk8();
+        }
+        column_peg_1.chunk8->chunk_function = result_peg_803;
+        stream.update(result_peg_803.getPosition());
+        
+        
+        return result_peg_803;
+        out_peg_807:
     
         if (column_peg_1.chunk8 == 0){
             column_peg_1.chunk8 = new Chunk8();
