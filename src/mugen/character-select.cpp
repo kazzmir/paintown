@@ -2261,10 +2261,17 @@ bool CharacterSelect::isUniqueCharacter(CharacterInfo * character){
     return grid.isUniqueCharacter(character);
 }
 
+static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::AbsolutePath & path){
+    try{
+        vector<Filesystem::AbsolutePath> more = Storage::instance().getFilesRecursive(path, "*.def");
+        where.insert(where.end(), more.begin(), more.end());
+    } catch (const Filesystem::NotFound & fail){
+    }
+}
+
 static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::RelativePath & path){
     try{
-        vector<Filesystem::AbsolutePath> more = Storage::instance().getFilesRecursive(Storage::instance().find(path), "*.def");
-        where.insert(where.end(), more.begin(), more.end());
+        addFiles(where, Storage::instance().find(path));
     } catch (const Filesystem::NotFound & fail){
     }
 }
@@ -2279,6 +2286,9 @@ void * CharacterSelect::searchForCharacters(void * arg){
 
         /* search in the mugen/chars directory */
         addFiles(candidates, Data::getInstance().getCharDirectory());
+
+        /* search in the <user>/mugen directory */
+        addFiles(candidates, Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
 
         bool ok = true;
         for (vector<Filesystem::AbsolutePath>::iterator it = candidates.begin(); ok && !select->searchingCheck.get() && it != candidates.end(); it++){
