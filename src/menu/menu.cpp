@@ -19,6 +19,8 @@
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 
+#include "mugen/menu.h"
+
 #include "optionfactory.h"
 #include "actionfactory.h"
 
@@ -1307,7 +1309,22 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
         // Get version
         // const Token * tok;
         // token->view() >> tok;
-        const Token *ourToken = token->findToken("_/type");
+        
+	// Do any overrides that may take place before the menu
+	const Token *ourToken = token->findToken("_/override");
+	if (ourToken != NULL){
+	    // Handle any overrides of menu or otherwise
+		std::string name;
+		try {
+		    ourToken->view() >> name;
+		} catch (const TokenException & ex){
+		}
+		if (handleOverride(ourToken)){
+		    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
+		}
+	}
+	
+        ourToken = token->findToken("_/type");
         if (ourToken != NULL){
             try {
                 std::string menuType;
@@ -1344,6 +1361,90 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
     }
 
 }
+
+#if 0
+ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
+    // Check tokens for "override" and "menu" tags
+    TokenView view = token->view();
+    while (view.hasMore()){
+	try{
+	    const Token * tok;
+	    view >> tok;
+	    tok->print(" ");
+	    if (*tok == "override"){
+		// Handle any overrides of menu or otherwise
+		std::string name;
+		try {
+		    tok->view() >> name;
+		} catch (const TokenException & ex){
+		}
+		if (handleOverride(tok)){
+		    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
+		}
+	    } else if (*tok == "menu"){
+		// Commence menu sequence
+		// version info;
+		int major=0, minor=0, micro=0;
+		if (!tok->hasTokens()){
+		    throw LoadException(__FILE__, __LINE__, "Empty Menu");
+		} else {
+		    // Get version
+		    // const Token * tok;
+		    // token->view() >> tok;
+		    const Token *ourToken = tok->findToken("_/type");
+		    if (ourToken != NULL){
+			try {
+			    std::string menuType;
+			    ourToken->view() >> menuType;
+			    if (menuType == "default"){
+				type = Default;
+			    } else if (menuType == "tabbed"){
+				type = Tabbed;
+			    }
+			} catch (const TokenException & ex){
+			}
+		    }
+		    ourToken = token->findToken("_/version");
+		    if (ourToken != NULL){
+			try {
+			    ourToken->view() >> major >> minor >> micro;
+			} catch (const TokenException & ex){
+			}
+		    } else {
+			Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
+			major = 3;
+			minor = 3;
+			micro = 1;
+		    }
+		}
+
+		setRenderer(type);
+
+		if (Global::getVersion(major, minor, micro) != Global::getVersion()){
+		    // Do compatible translations if necessary
+		    handleCompatibility(tok, Global::getVersion(major, minor, micro), factory);
+		} else {
+		    handleCurrentVersion(tok);
+		}
+	    } else {
+		Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+		if (Global::getDebug() >= 3){
+		    tok->print(" ");
+		}
+	    }
+	} catch ( const TokenException & ex ) {
+	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+	} catch (const LoadException & ex){
+	    throw ex;
+	} catch (const Filesystem::NotFound & ex){
+	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+	}
+    }
+    
+    // Assuming no menu tag was found
+    throw LoadException(__FILE__, __LINE__, "No \"menu\" tag was found.");
+}
+#endif
 
 typedef Menu::Menu MenuClass;
 class LanguageMenu: public Menu::Menu {
@@ -1710,6 +1811,42 @@ void Menu::Menu::addData(ValueHolder * item){
         Global::debug(0,"menu") << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
         data[item->getName()] = item;
     }
+}
+
+bool Menu::Menu::handleOverride(const Token * token){
+    TokenView view = token->view();
+    while (view.hasMore()){
+	try{
+	    const Token * tok;
+	    view >> tok;
+	    if (*tok == "mugen"){
+		try{
+		    Mugen::run();
+		} catch (const LoadException & le){
+		    ostringstream out;
+		    out << "Press ENTER to continue\n";
+		    out << "\n";
+		    out << "We are very sorry but an error has occured while trying to load MUGEN.";
+		    Util::showError(le, out.str());
+		    InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+		}
+		return true;
+	    } else {
+		Global::debug(0,"menu") <<"Unhandled override: " <<endl;
+		if (Global::getDebug() >= 3){
+		    tok->print(" ");
+		}
+	    }
+	} catch ( const TokenException & ex ) {
+	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+	} catch (const LoadException & ex){
+	    throw ex;
+	} catch (const Filesystem::NotFound & ex){
+	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+	}
+    }
+    
+    return false;
 }
 
 void Menu::Menu::handleCurrentVersion(const Token * token){

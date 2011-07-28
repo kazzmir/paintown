@@ -512,6 +512,13 @@ class Menu{
         /*! load token */
         void load(const Token * token, const OptionFactory & factory);
 	
+	/*! Handle Override 
+	 *  There can only be one decleration of an override per file/token 
+	 *  The first one found will be the one executed.
+	 *  If found it will return true so that the menu can handle it and avoid going to everything else
+	 */
+	virtual bool handleOverride(const Token *);
+	
 	/*! Do current version */
 	virtual void handleCurrentVersion(const Token *);
 	
