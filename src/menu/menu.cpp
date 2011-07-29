@@ -143,7 +143,7 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
             vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp, str, 0 );
         }
         sy += vFont.getHeight();
-	padding_index++;
+        padding_index++;
     }
     bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
@@ -476,8 +476,8 @@ vector<Util::ReferenceCount<MenuOption> > Menu::DefaultRenderer::getOptions() co
 
 void Menu::DefaultRenderer::invokeOverride(const Context & context){
     if (hasOverride){
-	options[overrideIndex]->run(context);
-	throw Exception::Return(__FILE__, __LINE__);
+        options[overrideIndex]->run(context);
+        throw Exception::Return(__FILE__, __LINE__);
     }
 }
 
@@ -497,14 +497,14 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
             MenuOption * temp = factory.getOption(menu, token);
             if (temp){
                 options.push_back(temp);
-		if (!hasOverride){
-		const Token * tok;
-		token->view() >> tok;
-		    if (tok->findToken("_/override") != NULL){
-			overrideIndex = options.size()-1;
-			hasOverride = true;
-		    }
-		}
+                if (!hasOverride){
+                const Token * tok;
+                token->view() >> tok;
+                    if (tok->findToken("_/override") != NULL){
+                        overrideIndex = options.size()-1;
+                        hasOverride = true;
+                    }
+                }
             }
         } catch (const LoadException & le){
             Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
@@ -538,10 +538,10 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
 /*
 void Menu::DefaultRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
     if (!font->empty()){
-	menu.setFont(Configuration::getMenuFont()->getFont(*font),
+        menu.setFont(Configuration::getMenuFont()->getFont(*font),
                      Configuration::getMenuFont()->getWidth(*font),
                      Configuration::getMenuFont()->getHeight(*font));
-	menuInfo.setFont(font);
+        menuInfo.setFont(font);
     }
 }
 */
@@ -664,14 +664,14 @@ void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
             break;
         case Left:
             if (options[menu.getCurrentIndex()]->leftKey()){
-		// setFont(context.getFont());
+                // setFont(context.getFont());
                 context.playSound(Left);
             }
             break;
         case Right:
             if (options[menu.getCurrentIndex()]->rightKey()){
                 // setFont(context.getFont());
-		context.playSound(Right);
+                context.playSound(Right);
             }
             break;
         case Select: {
@@ -746,8 +746,8 @@ vector<Util::ReferenceCount<MenuOption> > Menu::TabRenderer::getOptions() const 
 /* FIXME need to implement override for tabs */
 void Menu::TabRenderer::invokeOverride(const Context & context){
     if (hasOverride){
-	//options[overrideIndex]->run(context);
-	throw Exception::Return(__FILE__, __LINE__);
+        //options[overrideIndex]->run(context);
+        throw Exception::Return(__FILE__, __LINE__);
     }
 }
 
@@ -856,10 +856,10 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
 /*
 void Menu::TabRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
     if (!font->empty()){
-	menu.setFont(Configuration::getMenuFont()->getFont(*font),
+        menu.setFont(Configuration::getMenuFont()->getFont(*font),
                      Configuration::getMenuFont()->getWidth(*font),
                      Configuration::getMenuFont()->getHeight(*font));
-	menuInfo.setFont(font);
+        menuInfo.setFont(font);
     }
 }
 */
@@ -958,38 +958,38 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
         case Left:
             menu.left(font);
             // setFont(context.getFont());
-	    context.playSound(Up);
+            context.playSound(Up);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Right:
             menu.right(font);
             // setFont(context.getFont());
-	    context.playSound(Down);
+            context.playSound(Down);
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
             break;
         case Select:
             try{
-		if (!menu.isInTab()){
-		    menu.toggleTabSelect();
-		} else {
-		    tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->run(context);
-		}
+                if (!menu.isInTab()){
+                    menu.toggleTabSelect();
+                } else {
+                    tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->run(context);
+                }
                 context.playSound(Select);
             } catch (const Exception::Return & ex){
                 //menu.open();
                 menuInfo.open();
             }
-	    // setFont(context.getFont());
+            // setFont(context.getFont());
             context.playMusic();
             addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
             break;
         case Cancel:
             context.playSound(Cancel);
-	    if (menu.isInTab()){
-		menu.toggleTabSelect();
-	    } else {
-		throw Exception::Return(__FILE__, __LINE__);
-	    }
+            if (menu.isInTab()){
+                menu.toggleTabSelect();
+            } else {
+                throw Exception::Return(__FILE__, __LINE__);
+            }
             break;
         default:
             break;
@@ -1320,7 +1320,7 @@ void Menu::Menu::setFont(const Util::ReferenceCount<FontInfo> & font){
     context.setFont(font);
     /*
     if (renderer){
-	renderer->setFont(font);
+        renderer->setFont(font);
     }
     */
 }
@@ -1335,19 +1335,19 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
         // const Token * tok;
         // token->view() >> tok;
 #if 0
-	// Do any overrides that may take place before the menu
-	const Token *ourToken = token->findToken("_/override");
-	if (ourToken != NULL){
-	    // Handle any overrides of menu or otherwise
-		std::string name;
-		try {
-		    ourToken->view() >> name;
-		} catch (const TokenException & ex){
-		}
-		if (handleOverride(ourToken)){
-		    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
-		}
-	}
+        // Do any overrides that may take place before the menu
+        const Token *ourToken = token->findToken("_/override");
+        if (ourToken != NULL){
+            // Handle any overrides of menu or otherwise
+                std::string name;
+                try {
+                    ourToken->view() >> name;
+                } catch (const TokenException & ex){
+                }
+                if (handleOverride(ourToken)){
+                    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
+                }
+        }
 #endif
         const Token *ourToken = token->findToken("_/type");
         if (ourToken != NULL){
@@ -1392,78 +1392,78 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
     // Check tokens for "override" and "menu" tags
     TokenView view = token->view();
     while (view.hasMore()){
-	try{
-	    const Token * tok;
-	    view >> tok;
-	    tok->print(" ");
-	    if (*tok == "override"){
-		// Handle any overrides of menu or otherwise
-		std::string name;
-		try {
-		    tok->view() >> name;
-		} catch (const TokenException & ex){
-		}
-		if (handleOverride(tok)){
-		    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
-		}
-	    } else if (*tok == "menu"){
-		// Commence menu sequence
-		// version info;
-		int major=0, minor=0, micro=0;
-		if (!tok->hasTokens()){
-		    throw LoadException(__FILE__, __LINE__, "Empty Menu");
-		} else {
-		    // Get version
-		    // const Token * tok;
-		    // token->view() >> tok;
-		    const Token *ourToken = tok->findToken("_/type");
-		    if (ourToken != NULL){
-			try {
-			    std::string menuType;
-			    ourToken->view() >> menuType;
-			    if (menuType == "default"){
-				type = Default;
-			    } else if (menuType == "tabbed"){
-				type = Tabbed;
-			    }
-			} catch (const TokenException & ex){
-			}
-		    }
-		    ourToken = token->findToken("_/version");
-		    if (ourToken != NULL){
-			try {
-			    ourToken->view() >> major >> minor >> micro;
-			} catch (const TokenException & ex){
-			}
-		    } else {
-			Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
-			major = 3;
-			minor = 3;
-			micro = 1;
-		    }
-		}
+        try{
+            const Token * tok;
+            view >> tok;
+            tok->print(" ");
+            if (*tok == "override"){
+                // Handle any overrides of menu or otherwise
+                std::string name;
+                try {
+                    tok->view() >> name;
+                } catch (const TokenException & ex){
+                }
+                if (handleOverride(tok)){
+                    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
+                }
+            } else if (*tok == "menu"){
+                // Commence menu sequence
+                // version info;
+                int major=0, minor=0, micro=0;
+                if (!tok->hasTokens()){
+                    throw LoadException(__FILE__, __LINE__, "Empty Menu");
+                } else {
+                    // Get version
+                    // const Token * tok;
+                    // token->view() >> tok;
+                    const Token *ourToken = tok->findToken("_/type");
+                    if (ourToken != NULL){
+                        try {
+                            std::string menuType;
+                            ourToken->view() >> menuType;
+                            if (menuType == "default"){
+                                type = Default;
+                            } else if (menuType == "tabbed"){
+                                type = Tabbed;
+                            }
+                        } catch (const TokenException & ex){
+                        }
+                    }
+                    ourToken = token->findToken("_/version");
+                    if (ourToken != NULL){
+                        try {
+                            ourToken->view() >> major >> minor >> micro;
+                        } catch (const TokenException & ex){
+                        }
+                    } else {
+                        Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
+                        major = 3;
+                        minor = 3;
+                        micro = 1;
+                    }
+                }
 
-		setRenderer(type);
+                setRenderer(type);
 
-		if (Global::getVersion(major, minor, micro) != Global::getVersion()){
-		    // Do compatible translations if necessary
-		    handleCompatibility(tok, Global::getVersion(major, minor, micro), factory);
-		} else {
-		    handleCurrentVersion(tok);
-		}
-	    } else {
-		Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
-		if (Global::getDebug() >= 3){
-		    tok->print(" ");
-		}
-	    }
-	} catch ( const TokenException & ex ) {
-	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-	} catch (const LoadException & ex){
-	    throw ex;
-	} catch (const Filesystem::NotFound & ex){
-	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-	}
+                if (Global::getVersion(major, minor, micro) != Global::getVersion()){
+                    // Do compatible translations if necessary
+                    handleCompatibility(tok, Global::getVersion(major, minor, micro), factory);
+                } else {
+                    handleCurrentVersion(tok);
+                }
+            } else {
+                Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+        } catch (const LoadException & ex){
+            throw ex;
+        } catch (const Filesystem::NotFound & ex){
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+        }
     }
     
     // Assuming no menu tag was found
@@ -1579,9 +1579,9 @@ void Menu::Menu::run(const Context & parentContext){
         // Setup menu fonts etc
         if (renderer){        
             renderer->initialize(localContext);
-	    
-	    // Invoke Override if available
-	    renderer->invokeOverride(localContext);
+            
+            // Invoke Override if available
+            renderer->invokeOverride(localContext);
         }
         
         //Play music
@@ -1845,34 +1845,34 @@ void Menu::Menu::addData(ValueHolder * item){
 bool Menu::Menu::handleOverride(const Token * token){
     TokenView view = token->view();
     while (view.hasMore()){
-	try{
-	    const Token * tok;
-	    view >> tok;
-	    if (*tok == "mugen"){
-		try{
-		    Mugen::run();
-		} catch (const LoadException & le){
-		    ostringstream out;
-		    out << "Press ENTER to continue\n";
-		    out << "\n";
-		    out << "We are very sorry but an error has occured while trying to load MUGEN.";
-		    Util::showError(le, out.str());
-		    InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
-		}
-		return true;
-	    } else {
-		Global::debug(0,"menu") <<"Unhandled override: " <<endl;
-		if (Global::getDebug() >= 3){
-		    tok->print(" ");
-		}
-	    }
-	} catch ( const TokenException & ex ) {
-	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-	} catch (const LoadException & ex){
-	    throw ex;
-	} catch (const Filesystem::NotFound & ex){
-	    throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-	}
+        try{
+            const Token * tok;
+            view >> tok;
+            if (*tok == "mugen"){
+                try{
+                    Mugen::run();
+                } catch (const LoadException & le){
+                    ostringstream out;
+                    out << "Press ENTER to continue\n";
+                    out << "\n";
+                    out << "We are very sorry but an error has occured while trying to load MUGEN.";
+                    Util::showError(le, out.str());
+                    InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+                }
+                return true;
+            } else {
+                Global::debug(0,"menu") <<"Unhandled override: " <<endl;
+                if (Global::getDebug() >= 3){
+                    tok->print(" ");
+                }
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+        } catch (const LoadException & ex){
+            throw ex;
+        } catch (const Filesystem::NotFound & ex){
+            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
+        }
     }
     
     return false;
@@ -2062,14 +2062,14 @@ void Menu::Menu::setRenderer(const Type & type){
 
 Menu::Renderer * Menu::Menu::rendererType(const Type & type){
     switch (type){
-	case Tabbed: {
-	    return new TabRenderer();
-	    break;
+        case Tabbed: {
+            return new TabRenderer();
+            break;
         }
-	case Default:
-	default: {
-	    return new DefaultRenderer();
-	    break;
+        case Default:
+        default: {
+            return new DefaultRenderer();
+            break;
         }
     }
 }

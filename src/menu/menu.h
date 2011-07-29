@@ -92,8 +92,8 @@ class InfoBox: public Gui::Widget {
         int fadeAlpha;
         
         std::vector<std::string> text;
-	
-	std::vector<int> padding;
+        
+        std::vector<int> padding;
 };
 
 class MenuException : public Exception::Base{
@@ -207,9 +207,9 @@ class Renderer{
         
         virtual void act(const Context &)=0;
         virtual void render(const Graphics::Bitmap &, const Font & font)=0;
-	
-	// Set font if applicable
-	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
+        
+        // Set font if applicable
+        // virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         
         //! Compatibility for now, remove later
         virtual void addOption(MenuOption *)=0;
@@ -218,9 +218,9 @@ class Renderer{
         /*! Handle action, with access to context
         */
         virtual void doAction(const Actions &, Context &)=0;
-	
-	/*! Invoke override */
-	virtual void invokeOverride(const Context &)=0;
+        
+        /*! Invoke override */
+        virtual void invokeOverride(const Context &)=0;
         
     protected:
         /*! Info boxes */
@@ -245,7 +245,7 @@ class DefaultRenderer : public Renderer {
         DefaultRenderer();
         virtual ~DefaultRenderer();
         
-	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
+        // virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         virtual bool readToken(const Token *, const OptionFactory &);
         virtual void initialize(Context &);
         virtual void finish();
@@ -255,7 +255,7 @@ class DefaultRenderer : public Renderer {
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
-	virtual void invokeOverride(const Context &);
+        virtual void invokeOverride(const Context &);
 
         virtual const Gui::ContextBox & getBox() const {
             return menu;
@@ -268,12 +268,12 @@ class DefaultRenderer : public Renderer {
         
         /*! Context Box */
         Gui::ContextBox menu;
-	
-	/*! Override */
-	bool hasOverride;
-	
-	/*! Override index */
-	unsigned int overrideIndex;
+        
+        /*! Override */
+        bool hasOverride;
+        
+        /*! Override index */
+        unsigned int overrideIndex;
 };
 
 /*! Tabbed Menu */
@@ -296,7 +296,7 @@ class TabRenderer : public Renderer {
         TabRenderer();
         virtual ~TabRenderer();
         
-	// virtual void setFont(const Util::ReferenceCount<FontInfo> &);
+        // virtual void setFont(const Util::ReferenceCount<FontInfo> &);
         virtual bool readToken(const Token *, const OptionFactory &);
         virtual void initialize(Context &);
         virtual void finish();
@@ -306,7 +306,7 @@ class TabRenderer : public Renderer {
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
-	virtual void invokeOverride(const Context &);
+        virtual void invokeOverride(const Context &);
         
     private:
 
@@ -316,11 +316,11 @@ class TabRenderer : public Renderer {
         /*! Tabbed Box */
         Gui::TabbedBox menu;
         
-	/*! Override */
-	bool hasOverride;
-	
-	/*! Override index */
-	unsigned int overrideIndex;
+        /*! Override */
+        bool hasOverride;
+        
+        /*! Override index */
+        unsigned int overrideIndex;
 };
 
 /*! Menu contexts
@@ -469,10 +469,10 @@ class Context{
 /*! New Menu class */
 class Menu{
     public:
-	enum Type{
-	    Default,
-	    Tabbed,
-	};
+        enum Type{
+            Default,
+            Tabbed,
+        };
         Menu(const Type & type = Default);
         Menu(const Filesystem::AbsolutePath &, const Type & type = Default);
         Menu(const Filesystem::AbsolutePath &, const OptionFactory & factory, const Type & type = Default);
@@ -508,9 +508,9 @@ class Menu{
             return renderer;
         }
         
-	static const int Width = 640;
-	static const int Height = 480;
-	
+        static const int Width = 640;
+        static const int Height = 480;
+        
     protected:
         void setupDefaultLanguage(const Context & context, const Menu & parent);
         virtual void openOptions();
@@ -528,16 +528,16 @@ class Menu{
         /*! load token */
         void load(const Token * token, const OptionFactory & factory);
 #if 0
-	/*! Handle Override 
-	 *  There can only be one decleration of an override per file/token 
-	 *  The first one found will be the one executed.
-	 *  If found it will return true so that the menu can handle it and avoid going to everything else
-	 */
-	virtual bool handleOverride(const Token *);
+        /*! Handle Override 
+         *  There can only be one decleration of an override per file/token 
+         *  The first one found will be the one executed.
+         *  If found it will return true so that the menu can handle it and avoid going to everything else
+         */
+        virtual bool handleOverride(const Token *);
 #endif 
-	/*! Do current version */
-	virtual void handleCurrentVersion(const Token *);
-	
+        /*! Do current version */
+        virtual void handleCurrentVersion(const Token *);
+        
         /*! Prior token compatibility based on version Global::getVersion() */
         virtual void handleCompatibility(const Token *, int version, const OptionFactory & factory);
         
@@ -546,12 +546,12 @@ class Menu{
         
         /*! Keys */
         InputMap<Actions> input;
-	
-	/*! Type */
-	Type type;
-	
-	/*! Check type */
-	virtual Renderer * rendererType(const Type &);
+        
+        /*! Type */
+        Type type;
+        
+        /*! Check type */
+        virtual Renderer * rendererType(const Type &);
 };
 
 }
