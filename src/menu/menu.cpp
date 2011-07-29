@@ -19,8 +19,6 @@
 #include "exceptions/shutdown_exception.h"
 #include "exceptions/exception.h"
 
-#include "mugen/menu.h"
-
 #include "optionfactory.h"
 #include "actionfactory.h"
 
@@ -460,7 +458,9 @@ void Menu::Renderer::renderInfo(const Graphics::Bitmap & work, const Font & font
     }
 }
 
-Menu::DefaultRenderer::DefaultRenderer(){
+Menu::DefaultRenderer::DefaultRenderer():
+hasOverride(false),
+overrideIndex(0){
     // Default the menu to a certain size and details
     menu.transforms.setRadius(15);
     menu.location.set(-.6, -.3, .6, .8);
@@ -472,6 +472,13 @@ Menu::DefaultRenderer::DefaultRenderer(){
         
 vector<Util::ReferenceCount<MenuOption> > Menu::DefaultRenderer::getOptions() const {
     return options;
+}
+
+void Menu::DefaultRenderer::invokeOverride(const Context & context){
+    if (hasOverride){
+	options[overrideIndex]->run(context);
+	throw Exception::Return(__FILE__, __LINE__);
+    }
 }
 
 Menu::DefaultRenderer::~DefaultRenderer(){
@@ -490,6 +497,14 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
             MenuOption * temp = factory.getOption(menu, token);
             if (temp){
                 options.push_back(temp);
+		if (!hasOverride){
+		const Token * tok;
+		token->view() >> tok;
+		    if (tok->findToken("_/override") != NULL){
+			overrideIndex = options.size()-1;
+			hasOverride = true;
+		    }
+		}
             }
         } catch (const LoadException & le){
             Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
@@ -707,7 +722,9 @@ void Menu::TabInfo::act(){
     }
 }
 
-Menu::TabRenderer::TabRenderer(){
+Menu::TabRenderer::TabRenderer():
+hasOverride(false),
+overrideIndex(0){
     
     // Default the menu to a certain size and details
     //menu.transforms.setRadius(15);
@@ -724,6 +741,14 @@ vector<Util::ReferenceCount<MenuOption> > Menu::TabRenderer::getOptions() const 
         options.insert(options.end(), (*it)->options.begin(), (*it)->options.end());
     }
     return options;
+}
+
+/* FIXME need to implement override for tabs */
+void Menu::TabRenderer::invokeOverride(const Context & context){
+    if (hasOverride){
+	//options[overrideIndex]->run(context);
+	throw Exception::Return(__FILE__, __LINE__);
+    }
 }
 
 Menu::TabRenderer::~TabRenderer(){
@@ -1309,7 +1334,7 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
         // Get version
         // const Token * tok;
         // token->view() >> tok;
-        
+#if 0
 	// Do any overrides that may take place before the menu
 	const Token *ourToken = token->findToken("_/override");
 	if (ourToken != NULL){
@@ -1323,8 +1348,8 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
 		    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
 		}
 	}
-	
-        ourToken = token->findToken("_/type");
+#endif
+        const Token *ourToken = token->findToken("_/type");
         if (ourToken != NULL){
             try {
                 std::string menuType;
@@ -1554,6 +1579,9 @@ void Menu::Menu::run(const Context & parentContext){
         // Setup menu fonts etc
         if (renderer){        
             renderer->initialize(localContext);
+	    
+	    // Invoke Override if available
+	    renderer->invokeOverride(localContext);
         }
         
         //Play music
@@ -1813,6 +1841,7 @@ void Menu::Menu::addData(ValueHolder * item){
     }
 }
 
+#if 0
 bool Menu::Menu::handleOverride(const Token * token){
     TokenView view = token->view();
     while (view.hasMore()){
@@ -1848,6 +1877,7 @@ bool Menu::Menu::handleOverride(const Token * token){
     
     return false;
 }
+#endif
 
 void Menu::Menu::handleCurrentVersion(const Token * token){
     TokenView view = token->view();

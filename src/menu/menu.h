@@ -218,6 +218,9 @@ class Renderer{
         /*! Handle action, with access to context
         */
         virtual void doAction(const Actions &, Context &)=0;
+	
+	/*! Invoke override */
+	virtual void invokeOverride(const Context &)=0;
         
     protected:
         /*! Info boxes */
@@ -252,6 +255,7 @@ class DefaultRenderer : public Renderer {
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
+	virtual void invokeOverride(const Context &);
 
         virtual const Gui::ContextBox & getBox() const {
             return menu;
@@ -264,6 +268,12 @@ class DefaultRenderer : public Renderer {
         
         /*! Context Box */
         Gui::ContextBox menu;
+	
+	/*! Override */
+	bool hasOverride;
+	
+	/*! Override index */
+	unsigned int overrideIndex;
 };
 
 /*! Tabbed Menu */
@@ -296,6 +306,7 @@ class TabRenderer : public Renderer {
         virtual void addOption(MenuOption *);
         virtual void doAction(const Actions &, Context &);
         virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
+	virtual void invokeOverride(const Context &);
         
     private:
 
@@ -305,6 +316,11 @@ class TabRenderer : public Renderer {
         /*! Tabbed Box */
         Gui::TabbedBox menu;
         
+	/*! Override */
+	bool hasOverride;
+	
+	/*! Override index */
+	unsigned int overrideIndex;
 };
 
 /*! Menu contexts
@@ -511,14 +527,14 @@ class Menu{
         
         /*! load token */
         void load(const Token * token, const OptionFactory & factory);
-	
+#if 0
 	/*! Handle Override 
 	 *  There can only be one decleration of an override per file/token 
 	 *  The first one found will be the one executed.
 	 *  If found it will return true so that the menu can handle it and avoid going to everything else
 	 */
 	virtual bool handleOverride(const Token *);
-	
+#endif 
 	/*! Do current version */
 	virtual void handleCurrentVersion(const Token *);
 	
