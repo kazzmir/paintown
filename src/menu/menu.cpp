@@ -498,8 +498,8 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
             if (temp){
                 options.push_back(temp);
                 if (!hasOverride){
-                const Token * tok;
-                token->view() >> tok;
+                    const Token * tok;
+                    token->view() >> tok;
                     if (tok->findToken("_/override") != NULL){
                         overrideIndex = options.size()-1;
                         hasOverride = true;
