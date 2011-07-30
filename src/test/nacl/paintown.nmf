@@ -1,6 +1,6 @@
 {
-  "nexes": {
-    "x86-64": "paintown-64.nexe",
-    "x86-32": "paintown-32.nexe"
+  "program": {
+    "x86-64": {"url": "paintown-64.nexe"},
+    "x86-32": {"url": "paintown-32.nexe"}
   }
 }

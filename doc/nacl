@@ -20,11 +20,7 @@
       $ gclient config http://naclports.googlecode.com/svn/trunk/src
       $ gclient sync
       $ cd src/packages
-      $ ./nacl-install-all.sh (if you get an error before it starts look at the note at the top regarding 2.6)
-                - *NOTE If you get errors building expat, fontconfig and/or cairo then it won't build the 64-bit libs so you need to do it manually:
-                - $ ./nacl-install-all-bitsize.sh 64
-                - Likewise if you wanted to do 32-bit just in case do: ./nacl-install-all-bitsize.sh 32
-      
+      $ make
   
   3. Set the build type environment variable to 'nacl' and build paintown by default it will detect whether your system is 32-bit or 64-bit
       $ export nacl=1
