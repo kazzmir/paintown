@@ -1798,7 +1798,7 @@ def ps3_pkg(target, source, env):
 def wii_elf2dol(target, source, env):
     file = source[0].name
     print "Running elf2dol to create %s.dol for you" % file
-    env.Execute('elf2dol %s %s.dol' % (file, file))
+    env.Execute('elf2dol %s boot.dol' % (file))
     print "Rename %s to %s.elf if you want to run in dolphin with debugging" % (file, file)
     return 0
 
