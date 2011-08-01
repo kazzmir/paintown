@@ -8,11 +8,11 @@ def peg_to_cpp(target, source, env):
     import sys
     sys.path.append("../../src/mugen/parser")
     sys.path.append(".")
-    import peg, re
+    import peg, re, cpp_generator
     name = source[0].name
     parser = peg.make_peg_parser(re.sub('\..*', '', name))
     fout = open(target[0].path, 'w')
-    fout.write(parser(source[0].path).generate_cpp())
+    fout.write(cpp_generator.generate(parser(source[0].path)))
     fout.write('\n')
     fout.close()
 
