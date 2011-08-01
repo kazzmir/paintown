@@ -183,8 +183,7 @@ enum Actions{
     Back,
     Cancel,
     Modify,
-    Pause,
-    Fullscreen
+    Pause
 };
 
 class Context;
