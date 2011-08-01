@@ -1,3 +1,31 @@
+* Compiling the psp version of paintown (as of 8/1/2011)
+
+ 1. Install readline and usb development libraries
+   $ sudo apt-get install libreadline-dev libusb-dev
+
+ 2. Get minpspw from svn
+   $ svn co https://minpspw.svn.sourceforge.net/svnroot/minpspw/trunk minpspw
+
+ 3. Change the svn urls in toolchain.sh and in a bunch of the devpaks
+  old: svn://svn.psp2dev.org/
+  new: http://psp.jim.sh/svn/
+
+ 4. Build minpspw, it will download and compile all the dependancies
+   # First build the main tools
+   $ ./toolchain.sh
+   # Then build all the extra libraries
+   $ BUILD_ONLY_DEVPAKS=1 ./toolchain.sh
+
+   The result will be installed to ../pspsdk from wherever the minpspw directory is.
+
+ 5. Symlink the toolchain
+   $ ln -s /opt/pspsdk /path/to/minpspw/../pspsdk
+
+ 6. Build paintown
+   $ cd /path/to/paintown
+   $ export minpspw=1
+   $ make
+
 * How to build and install on psp (*NOTE you will need a CFW [custom firmware] or system that can boot unsigned applications with compatibility for version 1.50):
   1. Get the minpspw build environment:
     svn co https://paintown.svn.sourceforge.net/svnroot/paintown/build-environments/linux-pspsdk
