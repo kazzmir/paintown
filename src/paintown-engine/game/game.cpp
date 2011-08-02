@@ -279,18 +279,21 @@ public:
     void showMoveList(Paintown::Player * player, const Menu::Context & context){
         class Logic: public Util::Logic {
         public:
-            Logic(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::NormalList & list, const Menu::Context & context):
+            Logic(int config, Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::NormalList & list, const Menu::Context & context):
             playerCopy(playerCopy),
             area(area),
             list(list),
             context(context),
-            gradient(Menu::standardGradient()){
+            gradient(Menu::standardGradient()),
+            idleWait(0),
+            nextAnimation("idle"){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
-                input.set(Configuration::config(0).getUp(), 0, true, Up);
-                input.set(Configuration::config(0).getDown(), 0, true, Down);
-                input.set(Configuration::config(0).getJoystickUp(), 0, true, Up);
-                input.set(Configuration::config(0).getJoystickDown(), 0, true, Down);
+                Configuration & configuration = Configuration::config(config);
+                input.set(configuration.getUp(), 0, true, Up);
+                input.set(configuration.getDown(), 0, true, Down);
+                input.set(configuration.getJoystickUp(), 0, true, Up);
+                input.set(configuration.getJoystickDown(), 0, true, Down);
 
                 const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
                 for (map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find = movements.begin(); find != movements.end(); find++){
@@ -306,15 +309,31 @@ public:
             Gui::NormalList & list;
             const Menu::Context & context;
             Effects::Gradient gradient;
+            int idleWait;
+            string nextAnimation;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
             }
 
             void run(){
-                if (playerCopy->testAnimation()){
-                    playerCopy->testReset();
-                    playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
+                int limit = 30;
+                /* idle for X frames and then do the move */
+                if (idleWait < limit){
+                    idleWait += 1;
+                    if (playerCopy->testAnimation()){
+                        playerCopy->testReset();
+                    }
+                    if (idleWait >= limit){
+                        playerCopy->testAnimation(nextAnimation);
+                        playerCopy->testReset();
+                    }
+                } else {
+                    if (playerCopy->testAnimation()){
+                        idleWait = 0;
+                        playerCopy->testAnimation("idle");
+                        playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
+                    }
                 }
 
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
@@ -355,10 +374,17 @@ public:
                 const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
                 map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find;
                 for (find = movements.begin(); count != animation && find != movements.end(); find++, count += 1){ /**/ }
+
                 if (find != movements.end()){
+                    nextAnimation = find->first;
+                    idleWait = 0;
+                    playerCopy->testAnimation("idle");
+                    playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
+                    /*
                     string name = find->first;
                     playerCopy->testAnimation(name);
                     playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
+                    */
                 }
             }
 
@@ -383,7 +409,7 @@ public:
 
         class Draw: public Util::Draw {
         public:
-            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, const Gui::NormalList & list):
+            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, const Gui::NormalList & list, Logic & logic):
                 background(GFX_X, GFX_Y),
                 up(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/up.png")).path()),
                 down(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/down.png")).path()),
@@ -392,7 +418,8 @@ public:
                 playerCopy(playerCopy),
                 area(area),
                 // selected(selected),
-                list(list){
+                list(list),
+                logic(logic){
                     background.BlitFromScreen(0, 0);
                     playerCopy->testAnimation("idle");
                 }
@@ -407,6 +434,7 @@ public:
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             const Gui::NormalList & list;
+            Logic & logic;
 
             void drawKeys(const Util::ReferenceCount<Paintown::Animation> & movement, int x, int y, const Graphics::Bitmap & where){
                 const vector<Paintown::KeyPress> & keys = movement->getKeys();
@@ -444,7 +472,7 @@ public:
 
                 int x = playerCopy->getX();
                 int y = space.getHeight() - 50;
-                drawKeys(playerCopy->getCurrentMovement(), x, y, space);
+                drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
                 /*
                 up.draw(x, y, space);
                 down.draw(x + 50, y, space);
@@ -478,8 +506,8 @@ public:
         area.colors.borderAlpha = 200;
 
         area.open();
-        Logic logic(playerCopy, area, list, context);
-        Draw draw(playerCopy, area, list);
+        Logic logic(player->getConfig(), playerCopy, area, list, context);
+        Draw draw(playerCopy, area, list, logic);
 
         Util::standardLoop(logic, draw);
     }
