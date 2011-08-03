@@ -489,15 +489,23 @@ def checkMad(context):
     env = context.env
     env['HAVE_MP3_MAD'] = True
     env.Append(CPPDEFINES = ['HAVE_MP3_MAD'])
-    (ok, stuff) = context.TryAction(Action("pkg-config --version"))
-    if ok:
-        try:
-            safeParseConfig(env, 'pkg-config mad --libs --cflags') 
-        except OSError:
-            context.sconf.env = tmp
-            context.Result(colorResult(0))
-            return 0
-            
+    def tryPkgConfig():
+        (ok, stuff) = context.TryAction(Action("pkg-config --version"))
+        if ok:
+            try:
+                safeParseConfig(env, 'pkg-config mad --libs --cflags') 
+                return True
+            except OSError:
+                # context.sconf.env = tmp
+                # context.Result(colorResult(0))
+                return False
+        return False
+
+    def tryLib():
+        env.Append(LIBS = ['mad'])
+
+    tryPkgConfig() or tryLib()
+                
     ret = context.TryLink("""
         #include <mad.h>
         int main(int argc, char ** argv){
