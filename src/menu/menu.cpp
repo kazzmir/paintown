@@ -1614,7 +1614,9 @@ void Menu::Menu::run(const Context & parentContext){
         input.set(Configuration::config(0).getJoystickRight(), 0, true, Right);
         /*! FIXME this should be changed to Select/Cancel buttons, all other buttons should be Select */
         input.set(Configuration::config(0).getJoystickAttack1(), 0, true, Select);
-        input.set(Configuration::config(0).getJoystickAttack2(), 0, true, Cancel);
+        input.set(Configuration::config(0).getJoystickAttack2(), 0, true, Select);
+        input.set(Configuration::config(0).getJoystickAttack3(), 0, true, Select);
+        input.set(Configuration::config(0).getJoystickJump(), 0, true, Select);
         input.set(Configuration::config(0).getJoystickQuit(), 0, true, Cancel);
        
         /*

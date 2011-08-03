@@ -138,18 +138,19 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         players(players),
         loader(loader),
         beep(Storage::instance().find(Filesystem::RelativePath("sounds/beep1.wav")).path()){
-            input.set(Configuration::config( 0 ).getRight(), 300, false, Select::Right);
-            input.set(Configuration::config( 0 ).getUp(), 300, false, Select::Up);
-            input.set(Configuration::config( 0 ).getDown(), 300, false, Select::Down);
-            input.set(Configuration::config( 0 ).getLeft(), 300, false, Select::Left);
+            input.set(Configuration::config(0).getRight(), 300, false, Select::Right);
+            input.set(Configuration::config(0).getUp(), 300, false, Select::Up);
+            input.set(Configuration::config(0).getDown(), 300, false, Select::Down);
+            input.set(Configuration::config(0).getLeft(), 300, false, Select::Left);
             input.set(Keyboard::Key_ESC, 0, true, Select::Quit);
             input.set(Joystick::Up, 300, false, Select::Up);
             input.set(Joystick::Down, 300, false, Select::Down);
             input.set(Joystick::Left, 300, false, Select::Left);
             input.set(Joystick::Right, 300, false, Select::Right);
             input.set(Joystick::Button1, 0, false, Select::Choose);
-            input.set(Joystick::Button2, 0, true, Select::Quit);
+            input.set(Joystick::Button2, 0, false, Select::Choose);
             input.set(Joystick::Button3, 300, false, Select::Remap);
+            input.set(Joystick::Quit, 300, false, Select::Quit);
 
             input.set(Keyboard::Key_TAB, 200, false, Select::Remap);
             input.set(Keyboard::Key_ENTER, 0, false, Select::Choose);
