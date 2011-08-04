@@ -16,9 +16,9 @@ namespace Def{
 
     class ParseException: std::exception {
     public:
-	ParseException();
-	virtual ~ParseException() throw();
-	std::string getReason() const;
+        ParseException();
+        virtual ~ParseException() throw();
+        std::string getReason() const;
     };
 }
 
@@ -28,9 +28,9 @@ namespace Cmd{
 
     class ParseException: std::exception {
     public:
-	ParseException();
-	virtual ~ParseException() throw();
-	std::string getReason() const;
+        ParseException();
+        virtual ~ParseException() throw();
+        std::string getReason() const;
     };
 }  
 
@@ -40,9 +40,9 @@ namespace Air{
 
     class ParseException: std::exception {
     public:
-	ParseException();
-	virtual ~ParseException() throw();
-	std::string getReason() const;
+        ParseException();
+        virtual ~ParseException() throw();
+        std::string getReason() const;
     };
 }
 
