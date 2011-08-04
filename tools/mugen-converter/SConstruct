@@ -23,6 +23,8 @@ env.Append(BUILDERS = {'Peg' : peg_builder})
 
 source = Split("""
 build/converter/main.cpp
+build/converter/tools.cpp
+build/converter/example.cpp
 build/paintown/mugen/ast/ast.cpp
 build/paintown/mugen/exception.cpp
 build/paintown/util/token.cpp
