@@ -1711,8 +1711,14 @@ else:
     config.CheckRTTI()
     # config.CheckPython()
     config.CheckOgg()
-    if (useSDL() and not config.CheckMad()) or not useSDL():
-        config.CheckMpg123()
+
+    #if (useSDL() and not config.CheckMpg123()) or not useSDL():
+    #    config.CheckMad()
+    #    config.CheckMpg123()
+    # Prefer mpg123 over mad because mpg123 can stream from the disk and
+    # libmad is not so great at this
+    if not config.CheckMpg123():
+        config.CheckMad()
 
     #if config.HasRuby():
     #    config.CheckRuby()
