@@ -1510,12 +1510,11 @@ currentStage(0),
 playerType(playerType),
 characterSearchThread(PaintownUtil::Thread::uninitializedValue),
 quitSearching(false),
-searchingCheck(quitSearching, searchingLock){
+searchingCheck(quitSearching, searchingLock.getLock()){
 
     grid.setGameType(gameType);
 
     // PaintownUtil::Thread::initializeLock(&characterAddInfoLock);
-    PaintownUtil::Thread::initializeLock(&searchingLock);
     
     // Set defaults
     reset();
@@ -1523,7 +1522,15 @@ searchingCheck(quitSearching, searchingLock){
 
 CharacterSelect::~CharacterSelect(){
     searchingCheck.set(true);
+
+    /* signal the add thread in case its waiting */
+    addCharacterLock.acquire();
+    addCharacterLock.signal();
+    addCharacterLock.release();
+    // addCharacterLock.lockAndSignal(addCharacterSignal, true);
+
     PaintownUtil::Thread::joinThread(characterSearchThread);
+    PaintownUtil::Thread::joinThread(characterAddThread);
     // PaintownUtil::Thread::destroyLock(&characterAddInfoLock);
 
     // Get rid of sprites
@@ -1555,8 +1562,6 @@ CharacterSelect::~CharacterSelect(){
     if (currentStage){
 	delete currentStage;
     }
-
-    PaintownUtil::Thread::destroyLock(&searchingLock);
 }
 
 void CharacterSelect::load(){
@@ -2261,54 +2266,122 @@ bool CharacterSelect::isUniqueCharacter(CharacterInfo * character){
     return grid.isUniqueCharacter(character);
 }
 
-static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::AbsolutePath & path){
+static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::AbsolutePath & path){
     try{
-        vector<Filesystem::AbsolutePath> more = Storage::instance().getFilesRecursive(path, "*.def");
-        where.insert(where.end(), more.begin(), more.end());
+        return Storage::instance().getFilesRecursive(path, "*.def");
     } catch (const Filesystem::NotFound & fail){
+        return vector<Filesystem::AbsolutePath>();
     }
 }
 
-static void addFiles(vector<Filesystem::AbsolutePath> & where, const Filesystem::RelativePath & path){
+static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath & path){
     try{
-        addFiles(where, Storage::instance().find(path));
+        return findFiles(Storage::instance().find(path));
     } catch (const Filesystem::NotFound & fail){
+        return vector<Filesystem::AbsolutePath>();
     }
+}
+
+bool CharacterSelect::maybeAddCharacter(const Filesystem::AbsolutePath & path){
+    Global::debug(1) << "Checking character " << path.path() << endl;
+    try{
+        CharacterInfo * info = new CharacterInfo(path);
+        Global::debug(1) << path.path() << " is good" << endl;
+        if (isUniqueCharacter(info)){
+            return addInfo(info);
+        }
+        return true;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
+    } catch (const Filesystem::Exception & fail){
+        Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
+    } catch (const Exception::Base & fail){
+        Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
+    } catch (...){
+        Global::debug(1) << "Failed to load " << path.path() << " for an unknown reason" << endl;
+    }
+
+    return true;
+}
+
+void * CharacterSelect::doAddCharacters(void * arg){
+    CharacterSelect * select = (CharacterSelect*) arg;
+    while (!select->searchingCheck.get()){
+        select->addCharacterLock.acquire();
+        /* if we have no more characters to process then wait for a signal */
+        if (select->addCharacters.size() == 0){
+            select->addCharacterLock.wait();
+            // select->addCharacterLock.wait(select->addCharacterSignal);
+            // select->addCharacterSignal = false;
+        }
+        Filesystem::AbsolutePath path;
+        bool got = false;
+        /* we might have been signaled because the character select screen is over
+         * even though there are no more characters to process.
+         */
+        if (select->addCharacters.size() > 0){
+            path = select->addCharacters[0];
+            select->addCharacters.pop_front();
+            got = true;
+        }
+        select->addCharacterLock.release();
+
+        if (got){
+            if (!select->maybeAddCharacter(path)){
+                /* couldn't add any more characters, so just quit */
+                break;
+            }
+        }
+    }
+
+    return NULL;
+}
+
+void CharacterSelect::addFiles(const vector<Filesystem::AbsolutePath> & files){
+    /* Add all the found files in one swoop */
+    addCharacterLock.acquire();
+    addCharacterLock.signal();
+    // select->addCharacterSignal = true;
+    for (vector<Filesystem::AbsolutePath>::const_iterator it = files.begin(); it != files.end(); it++){
+        const Filesystem::AbsolutePath & path = *it;
+        addCharacters.push_back(path);
+    }
+    addCharacterLock.release();
 }
 
 void * CharacterSelect::searchForCharacters(void * arg){
     try{
         CharacterSelect * select = (CharacterSelect*) arg;
-        vector<Filesystem::AbsolutePath> candidates;
+        // vector<Filesystem::AbsolutePath> candidates;
+
+        /* TODO: use a callback to add new characters to be processed instead
+         * of processing all files after they have been found.
+         */
+
+        /* break out early if we can */
+        if (select->searchingCheck.get()){
+            return NULL;
+        }
 
         /* search in the <motif>/chars directory */
-        addFiles(candidates, Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars")));
+        select->addFiles(findFiles(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars"))));
+        
+        if (select->searchingCheck.get()){
+            return NULL;
+        }
 
         /* search in the mugen/chars directory */
-        addFiles(candidates, Data::getInstance().getCharDirectory());
+        select->addFiles(findFiles(Data::getInstance().getCharDirectory()));
+
+        if (select->searchingCheck.get()){
+            return NULL;
+        }
 
         /* search in the <user>/mugen directory */
-        addFiles(candidates, Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
+        select->addFiles(findFiles(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen"))));
 
-        bool ok = true;
-        for (vector<Filesystem::AbsolutePath>::iterator it = candidates.begin(); ok && !select->searchingCheck.get() && it != candidates.end(); it++){
-            const Filesystem::AbsolutePath & path = *it;
-            Global::debug(1) << "Checking character " << path.path() << endl;
-            try{
-                CharacterInfo * info = new CharacterInfo(path);
-                Global::debug(1) << path.path() << " is good" << endl;
-                if (select->isUniqueCharacter(info)){
-                    ok = select->addInfo(info);
-                }
-            } catch (const Filesystem::NotFound & fail){
-                Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
-            } catch (const Filesystem::Exception & fail){
-                Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
-            } catch (const Exception::Base & fail){
-                Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
-            } catch (...){
-                Global::debug(1) << "Failed to load " << path.path() << " for an unknown reason" << endl;
-            }
+        if (select->searchingCheck.get()){
+            return NULL;
         }
         Global::debug(1) << "Done searching for characters" << endl;
     } catch (...){
@@ -2318,6 +2391,11 @@ void * CharacterSelect::searchForCharacters(void * arg){
 }
 
 void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
+    characterAddThread = PaintownUtil::Thread::uninitializedValue;
+    if (!PaintownUtil::Thread::createThread(&characterAddThread, NULL, (PaintownUtil::Thread::ThreadFunction) doAddCharacters, this)){
+        Global::debug(0) << "Could not create character add thread" << endl;
+    }
+
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
     
     TimeDifference diff;

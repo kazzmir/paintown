@@ -2,6 +2,7 @@
 #define _mugen_character_select_h
 
 #include <vector>
+#include <deque>
 #include <map>
 #include <queue>
 
@@ -1036,7 +1037,15 @@ class CharacterSelect {
         virtual MugenFont * getFont(int index) const;
 	
     private:
+        /* searches the filesystem for more characters: arg is this */
         static void * searchForCharacters(void * arg);
+        /* loads character info data and adds them to the grid: arg is this */
+        static void * doAddCharacters(void * arg);
+        /* returns false if no more characters can be added */
+        bool maybeAddCharacter(const Filesystem::AbsolutePath & path);
+
+        /* add all the files to the character add list */
+        void addFiles(const std::vector<Filesystem::AbsolutePath> & files);
 
         bool addInfo(CharacterInfo * info);
         bool isUniqueCharacter(CharacterInfo * character);
@@ -1118,9 +1127,14 @@ class CharacterSelect {
 	Mugen::PlayerType playerType;
 
         PaintownUtil::Thread::Id characterSearchThread;
-        PaintownUtil::Thread::Lock searchingLock;
+        PaintownUtil::Thread::LockObject searchingLock;
         volatile bool quitSearching;
         PaintownUtil::ThreadBoolean searchingCheck;
+
+        PaintownUtil::Thread::Id characterAddThread;
+        PaintownUtil::Thread::LockObject addCharacterLock;
+        // volatile bool addCharacterSignal;
+        std::deque<Filesystem::AbsolutePath> addCharacters;
 };
 
 }

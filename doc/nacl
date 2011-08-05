@@ -21,6 +21,8 @@
       $ gclient sync
       $ cd src/packages
       $ make
+      # Build 64-bit packages as well (or change to 32 if needed)
+      $ NACL_PACKAGES_BITSIZE=64 make
   
   3. Set the build type environment variable to 'nacl' and build paintown by default it will detect whether your system is 32-bit or 64-bit
       $ export nacl=1
