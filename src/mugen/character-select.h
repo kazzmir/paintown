@@ -597,6 +597,8 @@ class Grid{
 	virtual inline void setPlayer2Start(int x, int y){
 	    this->player2Start.set(x, y);
 	}
+        
+        std::vector<CharacterInfo *> getCharacters() const;
 
         /* lock for safety. grab this if any changes will be made to the grid
          * itself or any cells.
@@ -675,7 +677,7 @@ class Grid{
 	Mugen::Point player2Start;
 
         /* traffic jam! */
-        PaintownUtil::Thread::Lock gridLock;
+        PaintownUtil::Thread::LockObject gridLock;
 };
 
 /*! Handles Team Menu */
@@ -1094,7 +1096,7 @@ class CharacterSelect {
 	FontHandler titleFont;
 	
 	//! Characters
-	std::vector< CharacterInfo *> characters;
+	std::vector<CharacterInfo *> characters;
 	
 	//! Sprites
 	Mugen::SpriteMap sprites;

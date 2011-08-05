@@ -428,7 +428,6 @@ randomSwitchTimeTicker(0),
 portraitScaleX(1),
 portraitScaleY(1),
 type(Mugen::Arcade){
-    PaintownUtil::Thread::initializeLock(&gridLock);
 }
 
 Grid::~Grid(){
@@ -443,15 +442,20 @@ Grid::~Grid(){
         }
     }
 
-    PaintownUtil::Thread::destroyLock(&gridLock);
 }
 
 void Grid::lock(){
-    PaintownUtil::Thread::acquireLock(&gridLock);
+    gridLock.acquire();
 }
 
 void Grid::unlock(){
-    PaintownUtil::Thread::releaseLock(&gridLock);
+    gridLock.release();
+}
+        
+std::vector<CharacterInfo *> Grid::getCharacters() const {
+    PaintownUtil::Thread::ScopedLock scoped(gridLock);
+    /* a copy of characters will be returned */
+    return characters;
 }
 
 void Grid::initialize(){
@@ -608,6 +612,7 @@ bool Grid::addInfo(CharacterInfo * character){
         cell->setCharacter(character);
         character->setRandomStage(true);
         character->setReferenceCell(cell);
+        characters.push_back(character);
         success = true;
     } else {
         /* failed to find an empty cell */
@@ -2571,6 +2576,16 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 	CharacterCollect & character = *i;
         const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
         addFile(def);
+        stageNames.push_back(character.stage);
+    }
+
+    if (stageNames.size() == 0){
+        throw MugenException("No stages listed");
+    }
+
+    // Prepare stages
+    for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
+	grid.getStageHandler().addStage((*i));
     }
     
     /* FIXME: implement this stuff again */
@@ -3059,6 +3074,28 @@ void CharacterSelect::renderVersusScreen(){
 }
 
 bool CharacterSelect::setNextArcadeMatch(){
+    vector<CharacterInfo*> characters = grid.getCharacters();
+    if (characters.size() == 0){
+        return false;
+    }
+    std::random_shuffle(characters.begin(), characters.end());
+
+    if (playerType == Player1){
+	// tempPlayer = currentPlayer2 = characters.front();
+        currentPlayer2 = characters.front();
+        currentPlayer2->setPlayer2Act(PaintownUtil::rnd(1, 12));
+    } else if (playerType == Player2){
+	// tempPlayer = currentPlayer1 = characters.front();
+	currentPlayer1 = characters.front();
+        currentPlayer1->setPlayer1Act(PaintownUtil::rnd(1, 12));
+    }
+        
+    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
+    
+    return true;
+
+    /* FIXME: redo the arcade stuff */
+    /*
     if (arcadeMatches.empty()){
 	return false;
     }
@@ -3089,6 +3126,7 @@ bool CharacterSelect::setNextArcadeMatch(){
         currentStage = new Mugen::Stage(Util::findFile(currentPlayer2->getStage()));
     }
     return true;
+    */
 }
 
 bool CharacterSelect::setNextTeamMatch(){
