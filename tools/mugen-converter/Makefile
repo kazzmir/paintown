@@ -1,2 +1,2 @@
 all:
-	make
+	scons
