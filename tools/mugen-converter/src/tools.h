@@ -3,6 +3,9 @@
 
 #include <list>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 namespace Ast{
     class Section;
@@ -53,6 +56,50 @@ std::list<Ast::Section*> * parseAir(const std::string &);
 std::list<Ast::Section*> * parseCmd(const std::string &);
 
 std::list<Ast::Section*> * parseDef(const std::string &);
+
+/* equivalent of std::endl */
+class StreamEnd{
+private:
+    friend class PythonStream;
+    StreamEnd(){
+    }
+};
+
+class PythonStream{
+    public: 
+        enum IndentType{
+            indent,
+            unindent,
+        };
+        
+        PythonStream();
+        ~PythonStream();
+        
+        template <typename T> PythonStream & operator<<(const T & var){
+            stringHolder << var;
+            return *this;
+        }
+        
+        const PythonStream & operator<<(const IndentType &);
+        
+        // endl
+        const PythonStream & operator<<(const StreamEnd &);
+        
+        void open(const std::string &);
+        void close();
+        void clear();
+        
+        inline void clearIndents(){
+            indentAmount = 0;
+        }
+        
+        static StreamEnd endl;
+        
+    private:
+        std::ofstream stream;
+        std::stringstream stringHolder;
+        unsigned indentAmount;
+};
 
 }
 

@@ -10,7 +10,7 @@ class CharacterGenerator{
     public:
         //! Pass in definition file
         CharacterGenerator(const std::string &);
-        ~CharacterGenerator();
+        virtual ~CharacterGenerator();
         
         //! Pass in python output filename
         void output(const std::string &);

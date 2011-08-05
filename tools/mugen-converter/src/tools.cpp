@@ -3,6 +3,16 @@
 
 using namespace std;
 
+Mugen::StreamEnd Mugen::PythonStream::endl;
+
+const std::string addTab(int total = 1){
+    std::string tabAmount;
+    for(int i = 0; i < total; ++i){
+        tabAmount += "    ";
+    }
+    return tabAmount;
+}
+
 string Util::trim(const std::string & str){
     string s;
     size_t startpos = str.find_first_not_of(" \t");
@@ -34,4 +44,42 @@ list<Ast::Section*> * Mugen::parseCmd(const string & file){
 
 list<Ast::Section*> * Mugen::parseDef(const string & file){
     return (std::list<Ast::Section*>*) Mugen::Def::parse(file);
+}
+
+Mugen::PythonStream::PythonStream():
+indentAmount(0){   
+}
+
+Mugen::PythonStream::~PythonStream(){
+}
+
+void Mugen::PythonStream::open(const std::string & file){
+    stream.open(file.c_str());
+}
+
+void Mugen::PythonStream::close(){
+    stream.close();
+}
+
+const Mugen::PythonStream & Mugen::PythonStream::operator<<(const IndentType & type){
+    switch (type){
+        case indent:
+            indentAmount++;
+            break;
+        case unindent:
+            if (indentAmount > 0){
+                indentAmount--;
+            }
+            break;
+        default:
+            break;
+    }
+    
+    return *this;
+}
+
+const Mugen::PythonStream & Mugen::PythonStream::operator<<(const StreamEnd & end){
+    stream << addTab(indentAmount) << stringHolder.str() << std::endl;
+    // Clear string holder and start a new
+    stringHolder.str(std::string());
 }

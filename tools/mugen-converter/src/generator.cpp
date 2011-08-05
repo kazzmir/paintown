@@ -5,14 +5,6 @@
 
 using namespace Mugen;
 
-const std::string addTab(int total = 1){
-    std::string tabAmount;
-    for(int i = 0; i < total; ++i){
-        tabAmount += "    ";
-    }
-    return tabAmount;
-}
-
 CharacterGenerator::CharacterGenerator(const std::string & filename):
 filename(filename){
 }
@@ -21,11 +13,16 @@ CharacterGenerator::~CharacterGenerator(){
 }
 
 void CharacterGenerator::output(const std::string & file){
-    std::ofstream out;
-    out.open(file.c_str());
-    out << "import mugen" << std::endl;
-    out <<  "class TestCharacter(mugen.Character):" << std::endl;
-    out << addTab() << "def __init__(self):" << std::endl;
-    out << addTab(2) << "self.setName('TestCharacter')" << std::endl;
+    Mugen::PythonStream out;
+    out.open(file);
+    out << "import mugen" << PythonStream::endl;
+    out <<  "class TestCharacter(mugen.Character):" << PythonStream::endl;
+    out << PythonStream::indent;
+    out << "def __init__(self):" << PythonStream::endl;
+    out << PythonStream::indent;
+    out << "self.setName('TestCharacter')" << PythonStream::endl;
+    out.clearIndents();
+    out << "char = TestCharacter()" << PythonStream::endl;
+    out << "print char.name" << PythonStream::endl;
     out.close();
 }
