@@ -17,10 +17,10 @@ void CharacterGenerator::output(const std::string & file){
     out.open(file);
     out << "import mugen" << PythonStream::endl;
     out <<  "class TestCharacter(mugen.Character):" << PythonStream::endl;
-    out << PythonStream::indent;
-    out << "def __init__(self):" << PythonStream::endl;
-    out << PythonStream::indent;
-    out << "self.setName('TestCharacter')" << PythonStream::endl;
+        out << PythonStream::indent;
+        out << "def __init__(self):" << PythonStream::endl;
+            out << PythonStream::indent;
+            out << "self.setName('TestCharacter')" << PythonStream::endl;
     out.clearIndents();
     out << "char = TestCharacter()" << PythonStream::endl;
     out << "print char.name" << PythonStream::endl;
