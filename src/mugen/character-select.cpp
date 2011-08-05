@@ -2337,11 +2337,18 @@ void * CharacterSelect::doAddCharacters(void * arg){
     return NULL;
 }
 
+/* add a single character */
+void CharacterSelect::addFile(const Filesystem::AbsolutePath & file){
+    addCharacterLock.acquire();
+    addCharacterLock.signal();
+    addCharacters.push_back(file);
+    addCharacterLock.release();
+}
+
 void CharacterSelect::addFiles(const vector<Filesystem::AbsolutePath> & files){
     /* Add all the found files in one swoop */
     addCharacterLock.acquire();
     addCharacterLock.signal();
-    // select->addCharacterSignal = true;
     for (vector<Filesystem::AbsolutePath>::const_iterator it = files.begin(); it != files.end(); it++){
         const Filesystem::AbsolutePath & path = *it;
         addCharacters.push_back(path);
@@ -2560,6 +2567,14 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 	}
     }
     
+    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
+	CharacterCollect & character = *i;
+        const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
+        addFile(def);
+    }
+    
+    /* FIXME: implement this stuff again */
+#if 0
     // Set up our characters along the grid (excluding random select)
     // Offset for stage placement
     int stageOffset = 0;
@@ -2681,6 +2696,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 	}
 	order++;
     }
+#endif
 
     // PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
 

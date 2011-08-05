@@ -1046,6 +1046,7 @@ class CharacterSelect {
 
         /* add all the files to the character add list */
         void addFiles(const std::vector<Filesystem::AbsolutePath> & files);
+        void addFile(const Filesystem::AbsolutePath & file);
 
         bool addInfo(CharacterInfo * info);
         bool isUniqueCharacter(CharacterInfo * character);

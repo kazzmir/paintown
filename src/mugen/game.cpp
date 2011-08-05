@@ -720,7 +720,9 @@ void Game::doArcade(){
     bool displayGameOver = false;
 
     // Set initial oponent
-    select.setNextArcadeMatch();
+    if (!select.setNextArcadeMatch()){
+        throw MugenException("Could not set up arcade match");
+    }
     
     try{
         while (!quit){
