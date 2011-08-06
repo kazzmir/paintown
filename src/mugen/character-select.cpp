@@ -2318,8 +2318,6 @@ void * CharacterSelect::doAddCharacters(void * arg){
         /* if we have no more characters to process then wait for a signal */
         if (select->addCharacters.size() == 0){
             select->addCharacterLock.wait();
-            // select->addCharacterLock.wait(select->addCharacterSignal);
-            // select->addCharacterSignal = false;
         }
         Filesystem::AbsolutePath path;
         bool got = false;
@@ -2346,10 +2344,9 @@ void * CharacterSelect::doAddCharacters(void * arg){
 
 /* add a single character */
 void CharacterSelect::addFile(const Filesystem::AbsolutePath & file){
-    addCharacterLock.acquire();
-    addCharacterLock.signal();
-    addCharacters.push_back(file);
-    addCharacterLock.release();
+    vector<Filesystem::AbsolutePath> one;
+    one.push_back(file);
+    addFiles(one);
 }
 
 void CharacterSelect::addFiles(const vector<Filesystem::AbsolutePath> & files){
@@ -2366,37 +2363,30 @@ void CharacterSelect::addFiles(const vector<Filesystem::AbsolutePath> & files){
 void * CharacterSelect::searchForCharacters(void * arg){
     try{
         CharacterSelect * select = (CharacterSelect*) arg;
-        // vector<Filesystem::AbsolutePath> candidates;
+        vector<Filesystem::AbsolutePath> searchPaths;
+        try{
+            searchPaths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars"))));
+        } catch (const Filesystem::NotFound & fail){
+        }
+
+        try{
+            searchPaths.push_back(Storage::instance().find(Data::getInstance().getCharDirectory()));
+        } catch (const Filesystem::NotFound & fail){
+        }
+
+        try{
+            searchPaths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
+        } catch (const Filesystem::NotFound & fail){
+        }
 
         /* TODO: use a callback to add new characters to be processed instead
          * of processing all files after they have been found.
          */
-
-        /* break out early if we can */
-        if (select->searchingCheck.get()){
-            return NULL;
+        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !select->searchingCheck.get(); it++){
+            Filesystem::AbsolutePath path = *it;
+            select->addFiles(findFiles(path));
         }
 
-        /* search in the <motif>/chars directory */
-        select->addFiles(findFiles(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars"))));
-        
-        if (select->searchingCheck.get()){
-            return NULL;
-        }
-
-        /* search in the mugen/chars directory */
-        select->addFiles(findFiles(Data::getInstance().getCharDirectory()));
-
-        if (select->searchingCheck.get()){
-            return NULL;
-        }
-
-        /* search in the <user>/mugen directory */
-        select->addFiles(findFiles(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen"))));
-
-        if (select->searchingCheck.get()){
-            return NULL;
-        }
         Global::debug(1) << "Done searching for characters" << endl;
     } catch (...){
         Global::debug(0) << "Search thread died for some reason" << endl;
