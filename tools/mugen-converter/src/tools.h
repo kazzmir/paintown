@@ -57,6 +57,15 @@ std::list<Ast::Section*> * parseCmd(const std::string &);
 
 std::list<Ast::Section*> * parseDef(const std::string &);
 
+/* basename, just get the filename and remove the directory part */
+std::string stripDir(const std::string & str);
+
+/* dirname, just get the directory and remove the filename part */
+std::string stripFilename(const std::string & str);
+
+/* strips out the extension of the file */
+std::string stripExtension(const std::string & str);
+
 /* equivalent of std::endl */
 class StreamEnd{
 private:

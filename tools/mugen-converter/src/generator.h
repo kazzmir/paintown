@@ -3,6 +3,8 @@
 
 #include "tools.h"
 
+#include <vector>
+
 namespace Mugen{
     
 /*! Reads in the characters definition file and prepares the files for conversion */
@@ -15,6 +17,7 @@ class CharacterGenerator{
         //! Pass in python output filename
         void output(const std::string &);
     protected:
+        //! Filename of the character definition file
         std::string filename;
 };
     

@@ -46,6 +46,44 @@ list<Ast::Section*> * Mugen::parseDef(const string & file){
     return (std::list<Ast::Section*>*) Mugen::Def::parse(file);
 }
 
+/* d.bla -> d */
+std::string Mugen::stripExtension(const std::string & str){
+    size_t pos = str.find_last_of(".");
+    return str.substr(0,pos);
+}
+
+/* a/b/c/d -> d */
+std::string Mugen::stripDir(const std::string & str){
+    if (str.find("/") != std::string::npos || str.find( "\\") != std::string::npos){
+        std::string temp = str;
+        size_t rem = temp.find_last_of( "/" );
+        if (rem != std::string::npos){
+            return str.substr(rem+1,str.size());
+        }
+        rem = temp.find_last_of( "\\" );
+        if( rem != std::string::npos ){
+            return str.substr(rem+1,str.size());
+        }
+    }
+    return str; 
+}
+
+/* a/b/c/d -> a/b/c/ */
+std::string Mugen::stripFilename(const std::string & str){
+    std::string temp = str;
+    if( str.find( "/") != std::string::npos || str.find( "\\") != std::string::npos ){
+        size_t rem = temp.find_last_of( "/" );
+        if( rem != std::string::npos ){
+            return str.substr(0,rem+1);
+        }
+        rem = temp.find_last_of( "\\" );
+        if( rem != std::string::npos ){
+            return str.substr(0,rem+1);
+        }
+    }
+    return "";
+}
+
 Mugen::PythonStream::PythonStream():
 indentAmount(0){   
 }
