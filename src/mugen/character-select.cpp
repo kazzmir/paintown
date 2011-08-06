@@ -763,7 +763,7 @@ void Grid::selectStage(){
     }
 }
 
-Cell *Grid::getCell(int row, int column) throw (MugenException){
+Cell * Grid::getCell(int row, int column){
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
 	std::vector< Cell *> &rowIterator = (*i);
 	for (std::vector< Cell *>::iterator columnIterator = rowIterator.begin(); columnIterator != rowIterator.end(); ++columnIterator){
@@ -774,7 +774,9 @@ Cell *Grid::getCell(int row, int column) throw (MugenException){
 	}
     }
     
-    throw MugenException("Could not find cell.");
+    std::ostringstream out;
+    out << "Could not find cell for row " << row << " and column " << column << std::endl;
+    throw MugenException(out.str());
 }
 
 Cursor::Cursor():
@@ -2402,11 +2404,15 @@ void * CharacterSelect::searchForCharacters(void * arg){
     return NULL;
 }
 
-void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
+void CharacterSelect::startAddThread(){
     characterAddThread = PaintownUtil::Thread::uninitializedValue;
     if (!PaintownUtil::Thread::createThread(&characterAddThread, NULL, (PaintownUtil::Thread::ThreadFunction) doAddCharacters, this)){
         Global::debug(0) << "Could not create character add thread" << endl;
     }
+}
+
+void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
+    startAddThread();
 
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
     
@@ -2419,9 +2425,9 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     // PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
     
     // Characters
-    std::vector< CharacterCollect > characterCollection;
+    std::vector<CharacterCollect> characterCollection;
     // Stages
-    std::vector< std::string > stageNames;
+    std::vector<std::string> stageNames;
     
     // Arcade max matches
     std::vector<int> arcadeMaxMatches;
@@ -2573,10 +2579,14 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     }
     
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
-	CharacterCollect & character = *i;
-        const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
-        addFile(def);
-        stageNames.push_back(character.stage);
+        try{
+            CharacterCollect & character = *i;
+            const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
+            addFile(def);
+            stageNames.push_back(character.stage);
+        } catch (const Filesystem::NotFound & fail){
+            Global::debug(0) << "Error loading mugen character: " << fail.getTrace() << std::endl;
+        }
     }
 
     if (stageNames.size() == 0){

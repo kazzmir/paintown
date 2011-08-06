@@ -613,7 +613,7 @@ class Grid{
     
     private:
 	
-	Cell *getCell(int row, int column) throw (MugenException);
+	Cell *getCell(int row, int column);
 	
 	//! Total rows
 	int rows;
@@ -1045,6 +1045,9 @@ class CharacterSelect {
         static void * doAddCharacters(void * arg);
         /* returns false if no more characters can be added */
         bool maybeAddCharacter(const Filesystem::AbsolutePath & path);
+
+        /* helper */
+        void startAddThread();
 
         /* add all the files to the character add list */
         void addFiles(const std::vector<Filesystem::AbsolutePath> & files);
