@@ -14,12 +14,11 @@ class Character():
         self.paletteDefaults = []
         self.cmdFile = None
         self.cnsFile = None
-        self.stFile = None
-        self.stcommonFile = None
+        self.stateFiles = []
         self.spriteFile = None
         self.animFile = None
         self.soundFile = None
-        self.palFiles = []
+        self.paletteFiles = []
         self.introStoryboard = None
         self.endingStoryboard = None
 

@@ -100,6 +100,56 @@ class CharacterDefWalker: public Ast::Walker {
                         count++;
                     }
                     stream << "]" << endl;
+            } else if (simple == "cmd"){
+                try{
+                    stream << "self.cmdFile = '" << simple.valueAsString() << "'" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple == "cns"){
+                try{
+                    stream << "self.cnsFile = '" << simple.valueAsString() << "'" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple == "st"){
+                try{
+                    stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple == "stcommon"){
+                try{
+                    stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple.idString().find("st") != std::string::npos){
+                // FIXME replace this with regex
+                std::cout << "Found additional st file: " << simple.idString() << std::endl;
+                try{
+                    stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple == "sprite"){
+                try{
+                    stream << "self.spriteFile = '" << simple.valueAsString() << "'" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple == "anim"){
+                try{
+                    stream << "self.animFile = '" << simple.valueAsString() << "'" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple == "sound"){
+                try{
+                    stream << "self.soundFile = '" << simple.valueAsString() << "'" << endl;
+                } catch (const Ast::Exception & fail){
+                }
+            } else if (simple.idString().find("pal") != std::string::npos){
+                // FIXME replace this with regex
+                std::string id = simple.idString();
+                std::cout << "Found pallete file: " << id << std::endl;
+                try{
+                    stream << "self.palleteFiles[" << id.substr(3).c_str() << "] = '" << simple.valueAsString() << "'" << endl;
+                } catch (const Ast::Exception & fail){
+                }
             } else {
                 std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
             }
