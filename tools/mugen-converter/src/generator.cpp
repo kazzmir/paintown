@@ -68,7 +68,7 @@ void CharacterGenerator::output(const std::string & file){
                     out << indent;
                     // Base definitions, files, etc (usually charactername.def)
                     handleBaseDef(out);
-        
+                    handleConstants(out);
         out.close();
     } catch (const Mugen::Cmd::ParseException & fail){
         std::cout << "Failed to parse " << file << " because " << fail.getReason() << std::endl;
@@ -236,6 +236,99 @@ void CharacterGenerator::handleBaseDef(Mugen::PythonStream & stream){
         Ast::Section * section = *it;
         section->walk(walker);
         std::list<Ast::Attribute*>  attributes = section->getAttributes();
+    }
+    destroy(sections);
+}
+
+void CharacterGenerator::handleConstants(Mugen::PythonStream & stream){
+    
+    // For re-use
+    std::list<Ast::Section*> * sections;
+    
+    class CnsWalker: public Ast::Walker {
+        public:
+            CnsWalker(CharacterGenerator & character, PythonStream & stream ):
+            character(character),
+            stream(stream){
+                
+            }
+            
+            CharacterGenerator & character;
+            PythonStream & stream;
+            std::string sectionName;
+            
+            virtual void onSection(const Ast::Section & section){
+                sectionName = section.getName();
+                stream << endl;
+                stream << "# [" << Mugen::stripDir(character.filename) << "] Section - " << sectionName << endl;
+                std::cout << "Parsing Section: " << sectionName << std::endl;
+            }
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "command.time"){
+                    try{
+                        stream << "self.commandTime = '" << simple.valueAsString() << "'" << endl;
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "command.buffer.time"){
+                    try{
+                        stream << "self.commandBufferTime = '" << simple.valueAsString() << "'" << endl;
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else {
+                    std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
+                }
+            }
+            
+            virtual void onAttributeKeyword (const Ast::AttributeKeyword &simple){
+                std::cout << "Attribute keyword: " << simple.toString() << std::endl;
+            }
+            
+            virtual void onAttributeArray (const Ast::AttributeArray &simple){
+                std::cout << "Attribute array: " << simple.toString() << std::endl;
+            }
+
+            virtual void onNumber (const Ast::Number &simple){
+                std::cout << "number: " << simple.toString() << std::endl;
+            }
+    };
+    
+    // Command Walker
+    CnsWalker cmd(*this, stream);
+    sections = parseCmd(directory + commandFile);
+    for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); it++){
+        Ast::Section * section = *it;
+        if (section->getName() == "Defaults"){
+            section->walk(cmd);
+            std::list<Ast::Attribute*>  attributes = section->getAttributes();
+            break;
+        }
+    }
+    destroy(sections);
+    
+    CnsWalker cns(*this, stream);
+    sections = parseCmd(directory + constantsFile);
+    bool found[4] = { false, false, false, false };
+    for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); it++){
+        Ast::Section * section = *it;
+        if (section->getName() == "Data"){
+            section->walk(cns);
+            std::list<Ast::Attribute*>  attributes = section->getAttributes();
+            found[0] = true;
+        } else if (section->getName() == "Size"){
+            section->walk(cns);
+            std::list<Ast::Attribute*>  attributes = section->getAttributes();
+            found[1] = true;
+        } else if (section->getName() == "Velocity"){
+            section->walk(cns);
+            std::list<Ast::Attribute*>  attributes = section->getAttributes();
+            found[2] = true;
+        } else if (section->getName() == "Movement"){
+            section->walk(cns);
+            std::list<Ast::Attribute*>  attributes = section->getAttributes();
+            found[3] = true;
+        } else if (found[0] == true && found[1] == true && found[2] == true && found[3] == true) {
+            break;
+        }
     }
     destroy(sections);
 }

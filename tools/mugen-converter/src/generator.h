@@ -18,10 +18,10 @@ class CharacterGenerator{
         void output(const std::string &);
     
         //! Filename of the character definition file
-        const std::string & filename;
+        const std::string filename;
         
         //! Directory of character definition file
-        const std::string & directory;
+        const std::string directory;
         
         //! Command File
         std::string commandFile;
@@ -39,7 +39,8 @@ class CharacterGenerator{
         //! Handle base definition file
         void handleBaseDef(Mugen::PythonStream & stream);
         
-        
+        //! Handle general constants
+        void handleConstants(Mugen::PythonStream & stream);
 };
     
 }

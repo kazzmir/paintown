@@ -1,5 +1,11 @@
 import os
 
+def getDebug():
+    try:
+        return int(os.environ[ 'DEBUG' ])
+    except KeyError:
+        return 0
+
 def pcreLibrary(env):
     pcreEnv = env.Clone()
     env = pcreEnv
@@ -9,6 +15,10 @@ env = Environment(ENV = os.environ)
 env.VariantDir('build/converter', 'src')
 env.VariantDir('build/paintown', '../../src')
 env.Append(CPPPATH = ['../../src/mugen', '../../src'])
+
+if getDebug():
+    env.Prepend(CPPFLAGS = ['-g3','-ggdb', '-Wfatal-errors'])
+
 def peg_to_cpp(target, source, env):
     import sys
     sys.path.append("../../src/mugen/parser")
