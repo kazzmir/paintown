@@ -16,9 +16,30 @@ class CharacterGenerator{
         
         //! Pass in python output filename
         void output(const std::string &);
-    protected:
+    
         //! Filename of the character definition file
-        std::string filename;
+        const std::string & filename;
+        
+        //! Directory of character definition file
+        const std::string & directory;
+        
+        //! Command File
+        std::string commandFile;
+        
+        //! Constants File
+        std::string constantsFile;
+        
+        //! State files
+        std::vector<std::string> stateFiles;
+        
+        //! Air file
+        std::string airFile;
+        
+    protected:    
+        //! Handle base definition file
+        void handleBaseDef(Mugen::PythonStream & stream);
+        
+        
 };
     
 }
