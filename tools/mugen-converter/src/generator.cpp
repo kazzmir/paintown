@@ -42,6 +42,100 @@ PythonStream::IndentType indent = PythonStream::indent;
 PythonStream::IndentType unindent = PythonStream::unindent;
 StreamEnd endl = PythonStream::endl;
 
+// Content
+Content::Content():
+totalLines(0){
+}
+Content::Content(unsigned int level, const std::string & str):
+totalLines(1){
+    indentLevel.push_back(level);
+    content.push_back(str);
+}
+
+Content::Content(const Content & copy):
+totalLines(0){
+    totalLines = copy.totalLines;
+    indentLevel = copy.indentLevel;
+    content = copy.content;
+}
+Content::~Content(){
+}
+
+const Content & Content::operator=(const Content & copy){
+    totalLines = copy.totalLines;
+    indentLevel = copy.indentLevel;
+    content = copy.content;
+    
+    return *this;
+}
+
+void Content::addLine(unsigned int level, const std::string & str){
+    indentLevel.push_back(level);
+    content.push_back(str);
+    totalLines++;
+}
+
+void Content::output(PythonStream & stream, unsigned int indentStart){
+    for (unsigned int i = 0; i < totalLines; ++i){
+        stream.setIndentLevel(indentStart + indentLevel[i]);
+        stream << content[i] << endl;
+    }
+}
+
+const unsigned int Content::getIndentLevel() const{
+    if (totalLines!=0){
+        return indentLevel[0];
+    }
+    return 0;
+}
+
+
+// Python definition
+PythonDefinition::PythonDefinition(const Content & content):
+defLine(content){
+}
+PythonDefinition::PythonDefinition(const PythonDefinition & copy){
+    defLine = copy.defLine;
+    content = copy.content;
+}
+PythonDefinition::~PythonDefinition(){
+}
+const PythonDefinition & PythonDefinition::operator=(const PythonDefinition & copy){
+    defLine = copy.defLine;
+    content = copy.content;
+    return *this;
+}
+void PythonDefinition::addContent(const Content & cont){
+    content.push_back(cont);
+}
+void PythonDefinition::output(PythonStream & stream, unsigned int indentStart){
+    stream.setIndentLevel(indentStart + defLine.getIndentLevel());
+    for (std::vector<Content>::iterator i = content.begin(); i != content.end(); ++i){
+        Content & cont = *i;
+        cont.output(stream, indentStart + defLine.getIndentLevel());
+    }
+}
+
+// Python class
+PythonClass::PythonClass(const Content & content):
+classLine(content),
+init(Content(1,"def __init__(self):")){
+}
+PythonClass::~PythonClass(){
+}
+void PythonClass::add(const PythonDefinition & def){
+    definitions.push_back(def);
+}
+void PythonClass::output(PythonStream & stream, unsigned int indentStart){
+    stream.setIndentLevel(indentStart + classLine.getIndentLevel());
+    init.output(stream, indentStart + classLine.getIndentLevel());
+    for (std::vector<PythonDefinition>::iterator i = definitions.begin(); i != definitions.end(); ++i){
+        PythonDefinition & def = *i;
+        def.output(stream, indentStart + classLine.getIndentLevel());
+    }
+}
+
+
 CharacterGenerator::CharacterGenerator(const std::string & filename):
 filename(filename),
 directory(Mugen::stripFilename(filename)){

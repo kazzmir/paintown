@@ -99,7 +99,15 @@ class PythonStream{
         void clear();
         
         inline void clearIndents(){
-            indentAmount = 0;
+            this->indentAmount = 0;
+        }
+        
+        inline void setIndentLevel(unsigned int level){
+            this->indentAmount = level;
+        }
+        
+        inline const unsigned int getIndentLevel() const{
+            return this->indentAmount;
         }
         
         static StreamEnd endl;
@@ -107,7 +115,7 @@ class PythonStream{
     private:
         std::ofstream stream;
         std::stringstream stringHolder;
-        unsigned indentAmount;
+        unsigned int indentAmount;
 };
 
 }
