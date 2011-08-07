@@ -265,7 +265,7 @@ display(false),
 selecting(true),
 moveSound(0),
 selectSound(0){
-    stages.push_back(Filesystem::RelativePath()); // "Random"
+    stages.push_back(Filesystem::AbsolutePath()); // "Random"
     stageNames.push_back("Stage: Random");
 }
 
@@ -273,17 +273,20 @@ StageHandler::~StageHandler(){
 }
 
 void StageHandler::act(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     font.act();
 }
 
 void StageHandler::render(const Graphics::Bitmap &bmp){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (display){
 	font.render(stageNames[currentStage],bmp);
     }
 }
 	
 //! Get current selected stage
-const Filesystem::RelativePath & StageHandler::getStage(){
+const Filesystem::AbsolutePath & StageHandler::getStage(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     // check if random first;
     if (currentStage == 0){
 	return getRandomStage();
@@ -292,12 +295,14 @@ const Filesystem::RelativePath & StageHandler::getStage(){
 }
 
 //! Get random stage
-const Filesystem::RelativePath & StageHandler::getRandomStage(){
+const Filesystem::AbsolutePath & StageHandler::getRandomStage(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     return stages[PaintownUtil::rnd(1,stages.size())];
 }
 
 //! Set Next Stage
 void StageHandler::next(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (!selecting){
 	return;
     }
@@ -315,6 +320,7 @@ void StageHandler::next(){
 
 //! Set Prev Stage
 void StageHandler::prev(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (!selecting){
 	return;
     }
@@ -331,6 +337,7 @@ void StageHandler::prev(){
 }
 
 void StageHandler::toggleSelecting(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     selecting = !selecting;
     if (!selecting) {
 	font.setState(font.Done);
@@ -340,20 +347,27 @@ void StageHandler::toggleSelecting(){
     }
 }
 
-//! Add stage to list
-void StageHandler::addStage(const std::string & stage){
-    try {
-	// *FIXME not a good solution to get file
-        Filesystem::RelativePath ourDefFile = Filesystem::RelativePath(stage);
-        // If stage is already stored, ignore it
-        if (std::find(stages.begin(), stages.end(), ourDefFile) == stages.end()){
+void StageHandler::addStage(const Filesystem::AbsolutePath & stage){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
+    try{
+        if (std::find(stages.begin(), stages.end(), stage) == stages.end()){
             stringstream temp;
-            temp << "Stage " << stages.size() << ": " << Util::probeDef(Util::findFile(ourDefFile), "info", "name");
-	    stageNames.push_back(temp.str());
-	    stages.push_back(ourDefFile);
+            temp << "Stage " << stages.size() << ": " << Util::probeDef(stage, "info", "name");
+            stageNames.push_back(temp.str());
+            stages.push_back(stage);
         }
     } catch (const MugenException &ex){
 	Global::debug(0) << "Problem adding stage. Reason: " << ex.getReason() << endl;
+    }
+}
+
+//! Add stage to list
+void StageHandler::addStage(const std::string & stage){
+    try {
+	/* FIXME not a good solution to get file.
+         * 8/7/2011: why not? seems ok to me..
+         */
+        addStage(Util::findFile(Filesystem::RelativePath(stage)));
     } catch (const Filesystem::NotFound & ex){
 	Global::debug(0) << "Problem adding stage. Reason: " << ex.getTrace() << endl;
     }
@@ -1521,8 +1535,6 @@ searchingCheck(quitSearching, searchingLock.getLock()){
 
     grid.setGameType(gameType);
 
-    // PaintownUtil::Thread::initializeLock(&characterAddInfoLock);
-    
     // Set defaults
     reset();
 }
@@ -1534,11 +1546,10 @@ CharacterSelect::~CharacterSelect(){
     addCharacterLock.acquire();
     addCharacterLock.signal();
     addCharacterLock.release();
-    // addCharacterLock.lockAndSignal(addCharacterSignal, true);
 
     PaintownUtil::Thread::joinThread(characterSearchThread);
     PaintownUtil::Thread::joinThread(characterAddThread);
-    // PaintownUtil::Thread::destroyLock(&characterAddInfoLock);
+    PaintownUtil::Thread::joinThread(stageSearchThread);
 
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin(); i != sprites.end() ; ++i ){
@@ -2394,6 +2405,52 @@ void * CharacterSelect::searchForCharacters(void * arg){
     return NULL;
 }
 
+void * CharacterSelect::searchStages(void * arg){
+    try{
+        CharacterSelect * select = (CharacterSelect*) arg;
+        vector<Filesystem::AbsolutePath> searchPaths;
+        try{
+            searchPaths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("stages"))));
+        } catch (const Filesystem::NotFound & fail){
+        }
+
+        try{
+            searchPaths.push_back(Storage::instance().find(Data::getInstance().getStageDirectory()));
+        } catch (const Filesystem::NotFound & fail){
+        }
+
+        try{
+            searchPaths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
+        } catch (const Filesystem::NotFound & fail){
+        }
+
+        /* TODO: use a callback to add new characters to be processed instead
+         * of processing all files after they have been found.
+         */
+        /*
+        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !select->searchingCheck.get(); it++){
+            Filesystem::AbsolutePath path = *it;
+            select->addFiles(findFiles(path));
+        }
+        */
+        
+        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !select->searchingCheck.get(); it++){
+            vector<Filesystem::AbsolutePath> files = findFiles(*it);
+            for (vector<Filesystem::AbsolutePath>::iterator fit = files.begin(); fit != files.end(); fit++){
+                Filesystem::AbsolutePath path = *fit;
+                Global::debug(1) << "Found stage " << path.path() << std::endl;
+                select->grid.getStageHandler().addStage(path);
+            }
+        }
+
+        Global::debug(1) << "Done searching for stages" << endl;
+    } catch (...){
+        Global::debug(0) << "Stage search thread died for some reason" << endl;
+    }
+
+    return NULL;
+}
+
 void CharacterSelect::startAddThread(){
     characterAddThread = PaintownUtil::Thread::uninitializedValue;
     if (!PaintownUtil::Thread::createThread(&characterAddThread, NULL, (PaintownUtil::Thread::ThreadFunction) doAddCharacters, this)){
@@ -2401,8 +2458,16 @@ void CharacterSelect::startAddThread(){
     }
 }
 
+void CharacterSelect::startStageSearchThread(){
+    stageSearchThread = PaintownUtil::Thread::uninitializedValue;
+    if (!PaintownUtil::Thread::createThread(&stageSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchStages, this)){
+        Global::debug(0) << "Could not create stage search" << endl;
+    }
+}
+
 void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     startAddThread();
+    startStageSearchThread();
 
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
     
@@ -2411,8 +2476,6 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     Ast::AstParse parsed(Util::parseDef(file.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
-    
-    // PaintownUtil::Thread::acquireLock(&characterAddInfoLock);
     
     // Characters
     std::vector<CharacterCollect> characterCollection;
@@ -2713,8 +2776,6 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     }
 #endif
 
-    // PaintownUtil::Thread::releaseLock(&characterAddInfoLock);
-
     characterSearchThread = PaintownUtil::Thread::uninitializedValue;
     if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
         Global::debug(0) << "Could not create character search thread" << endl;
@@ -2994,7 +3055,7 @@ void CharacterSelect::reset(){
                 if (currentStage){
                     delete currentStage;
                     if (currentPlayer2->hasRandomStage()){
-                        currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
+                        currentStage = new Mugen::Stage(grid.getStageHandler().getRandomStage());
                     } else {
                         currentStage = new Mugen::Stage(Util::findFile(currentPlayer2->getStage()));
                     }
@@ -3005,7 +3066,7 @@ void CharacterSelect::reset(){
                 if (currentStage){
                     delete currentStage;
                     if (currentPlayer1->hasRandomStage()){
-                        currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
+                        currentStage = new Mugen::Stage(grid.getStageHandler().getRandomStage());
                     } else {
                         currentStage = new Mugen::Stage(Util::findFile(currentPlayer1->getStage()));
                     }
@@ -3090,7 +3151,7 @@ bool CharacterSelect::setNextArcadeMatch(){
         currentPlayer1->setPlayer1Act(PaintownUtil::rnd(1, 12));
     }
         
-    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
+    currentStage = new Mugen::Stage(grid.getStageHandler().getRandomStage());
     
     return true;
 
@@ -3160,7 +3221,7 @@ bool CharacterSelect::checkPlayerData(){
 		if (currentStage){
 		    delete currentStage;
 		}
-		currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
+		currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
 		return true;
 	    }
 	    break;
@@ -3197,7 +3258,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
 		    return true;
 		}
 	    } else if (playerType == Player2){
@@ -3216,7 +3277,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
 		    return true;
 		}
 	    }
@@ -3238,7 +3299,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player1Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
 		    return true;
 		}
 	    } else if (playerType == Player2){
@@ -3257,7 +3318,7 @@ bool CharacterSelect::checkPlayerData(){
 		    return false;
 		} else if (player2Cursor.getState() == Cursor::Done){
 		    // Finish up
-		    currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getStage()));
+		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
 		    return true;
 		}
 	    }

@@ -261,10 +261,10 @@ class StageHandler{
 	virtual void render(const Graphics::Bitmap &);
 	
 	//! Get current selected stage
-	virtual const Filesystem::RelativePath &getStage();
+	virtual const Filesystem::AbsolutePath &getStage();
 	
 	//! Get random stage
-	virtual const Filesystem::RelativePath &getRandomStage();
+	virtual const Filesystem::AbsolutePath &getRandomStage();
 	
 	//! Set Next Stage
 	virtual void next();
@@ -274,6 +274,7 @@ class StageHandler{
 	
 	//! Add stage to list
 	virtual void addStage(const std::string &stage);
+        virtual void addStage(const Filesystem::AbsolutePath & stage);
 	
 	//! Get font handler
 	virtual inline FontHandler & getFontHandler() {
@@ -310,10 +311,10 @@ class StageHandler{
 	unsigned int currentStage;
 	
 	//! Stage list First stage is reserved for random
-	std::vector<Filesystem::RelativePath> stages;
+	std::vector<Filesystem::AbsolutePath> stages;
 	
 	//! Actual Stage names first is reserved for random
-	std::vector< std::string > stageNames;
+	std::vector<std::string> stageNames;
 	
 	//! Display
 	bool display;
@@ -326,6 +327,9 @@ class StageHandler{
 
         //! Select Sound
         MugenSound *selectSound;
+
+        /* only allow a single thread in at a time */
+        PaintownUtil::Thread::LockObject lock;
 };
 
 /* Handle an individual cell which contains the data required to render itself */
@@ -1032,7 +1036,7 @@ class CharacterSelect {
 	
 	/*! **FIXME These are temporary until a method is 
 	    figured to handling teams and multiple players elegantly */
-	virtual inline const Filesystem::RelativePath &getStageOld(){
+	virtual inline const Filesystem::AbsolutePath &getStageOld(){
 	    return grid.getStageHandler().getStage();
 	}
 
@@ -1046,8 +1050,11 @@ class CharacterSelect {
         /* returns false if no more characters can be added */
         bool maybeAddCharacter(const Filesystem::AbsolutePath & path);
 
+        static void * searchStages(void * arg);
+
         /* helper */
         void startAddThread();
+        void startStageSearchThread();
 
         /* add all the files to the character add list */
         void addFiles(const std::vector<Filesystem::AbsolutePath> & files);
@@ -1136,6 +1143,8 @@ class CharacterSelect {
         PaintownUtil::Thread::LockObject searchingLock;
         volatile bool quitSearching;
         PaintownUtil::ThreadBoolean searchingCheck;
+        
+        PaintownUtil::Thread::Id stageSearchThread;
 
         PaintownUtil::Thread::Id characterAddThread;
         PaintownUtil::Thread::LockObject addCharacterLock;
