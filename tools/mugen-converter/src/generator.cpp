@@ -1,6 +1,7 @@
 #include "generator.h"
 
 #include "ast/all.h"
+#include "util/regex.h"
 
 #include <list>
 
@@ -120,9 +121,8 @@ class CharacterDefWalker: public Ast::Walker {
                     stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
                 } catch (const Ast::Exception & fail){
                 }
-            } else if (simple.idString().find("st") != std::string::npos){
-                // FIXME replace this with regex
-                std::cout << "Found additional st file: " << simple.idString() << std::endl;
+            } else if (Util::matchRegex(simple.idString(), "st[0-9]+")){
+                // std::cout << "Found additional st file: " << simple.idString() << std::endl;
                 try{
                     stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
                 } catch (const Ast::Exception & fail){
@@ -142,10 +142,9 @@ class CharacterDefWalker: public Ast::Walker {
                     stream << "self.soundFile = '" << simple.valueAsString() << "'" << endl;
                 } catch (const Ast::Exception & fail){
                 }
-            } else if (simple.idString().find("pal") != std::string::npos){
-                // FIXME replace this with regex
+            } else if (Util::matchRegex(simple.idString(), "pal[0-9]+")){
+                // std::cout << "Found pallete file: " << id << std::endl;
                 std::string id = simple.idString();
-                std::cout << "Found pallete file: " << id << std::endl;
                 try{
                     stream << "self.palleteFiles[" << id.substr(3).c_str() << "] = '" << simple.valueAsString() << "'" << endl;
                 } catch (const Ast::Exception & fail){

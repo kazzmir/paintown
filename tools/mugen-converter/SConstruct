@@ -1,5 +1,10 @@
 import os
 
+def pcreLibrary(env):
+    pcreEnv = env.Clone()
+    env = pcreEnv
+    return env.SConscript('../../src/util/pcre/SConstruct', exports = ['env'])
+
 env = Environment(ENV = os.environ)
 env.VariantDir('build/converter', 'src')
 env.VariantDir('build/paintown', '../../src')
@@ -28,6 +33,7 @@ build/converter/main.cpp
 build/converter/tools.cpp
 build/paintown/mugen/ast/ast.cpp
 build/paintown/mugen/exception.cpp
+build/paintown/util/regex.cpp
 build/paintown/util/token.cpp
 build/paintown/util/token_exception.cpp
 build/paintown/exceptions/exception.cpp
@@ -35,4 +41,8 @@ build/paintown/exceptions/exception.cpp
 source.append(env.Peg('build/paintown/mugen/parser/cmd.peg'))
 source.append(env.Peg('build/paintown/mugen/parser/air.peg'))
 source.append(env.Peg('build/paintown/mugen/parser/def.peg'))
+
+# PCRE
+env.Prepend(LIBS = pcreLibrary(env))
+
 env.Program('converter', source)
