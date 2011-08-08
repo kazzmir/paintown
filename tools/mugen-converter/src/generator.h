@@ -82,6 +82,9 @@ class CharacterGenerator{
         //! Command File
         std::string commandFile;
         
+        //! Add a state file
+        void addStateFile(const std::string &);
+        
         //! State files
         std::vector<std::string> stateFiles;
         
@@ -95,8 +98,11 @@ class CharacterGenerator{
         //! Handle general constants
         //void handleConstants(Mugen::PythonStream & stream);
         
-        //! Handle command filen
+        //! Handle command file
         void handleCmdFile(PythonClass &);
+        
+        //! Handle state files
+        void handleStateFiles(PythonClass &);
 };
     
 }

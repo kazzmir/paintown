@@ -74,9 +74,17 @@ class Character():
         self.airjumpNum = None
         self.airjumpHeight = None
         self.yaccel = None
-        self.stand.friction = None
-        self.crouch.friction = None
+        self.standFriction = None
+        self.crouchFriction = None
 
     def setName(self, name):
         self.name = name
         
+    def addStateFile(self, stateFile):
+        for f in self.stateFiles:
+            if f == stateFile:
+                return
+        self.stateFiles.append(stateFile)
+
+    def addCommand(self, name, command, time=None, bufferTime=None):
+        pass
