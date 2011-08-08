@@ -1,7 +1,13 @@
 # Mugen Classes
 
 # TODO Add state and controller classes
+class State():
+    def __init__(self):
+        pass
 
+class Controller():
+    def __init__(self):
+        pass
 
 # Character Class
 class Character():
@@ -54,11 +60,11 @@ class Character():
         self.headPos = []
         self.midPos = []
         self.shadowoffset = None
-        self.drawOffset = None
+        self.drawOffset = []
 
         # Velocity (constants)
-        self.walkFwd = None
-        self.walkBack = None
+        self.walkFwd = []
+        self.walkBack = []
         self.runFwd = []
         self.runBack = []
         self.jumpNeu = []
