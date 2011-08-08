@@ -194,7 +194,7 @@ void CharacterGenerator::output(const std::string & file){
         character.output(out, 0);
         out.close();
     } catch (const Mugen::Cmd::ParseException & fail){
-        std::cout << "Failed to parse " << file << " because " << fail.getReason() << std::endl;
+        std::cout << "Failed to parse " << filename << " because " << fail.getReason() << std::endl;
     } catch (...){
         std::cout << "Unknown Exception Caught!\nAborting..." << std::endl;
     }
@@ -212,22 +212,23 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
             CharacterGenerator & generator;
             PythonClass & character;
             std::string sectionName;
+            Content content;
             
             virtual void onSection(const Ast::Section & section){
                 sectionName = section.getName();
-                character.getInit().addSpace();
-                character.getInit().addContent(Content(1,"# [" + Mugen::stripDir(generator.filename) + "] Section - " + sectionName));
                 std::cout << "Parsing Section: " << sectionName << std::endl;
             }
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "name"){
                     try{
-                        character.getInit().addContent(Content(1,"self.name = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.name = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "displayname"){
                     try{
-                        character.getInit().addContent(Content(1,"self.displayName = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.displayName = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "versiondate"){
@@ -242,7 +243,8 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                             count++;
                         }
                         out << "]";
-                        character.getInit().addContent(Content(1,out.str()));
+                        addComment(simple.getLine());
+                        content.addLine(1,out.str());
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "mugenversion"){
@@ -257,12 +259,14 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                             count++;
                         }
                         out << "]";
-                        character.getInit().addContent(Content(1, out.str()));
+                        addComment(simple.getLine());
+                        content.addLine(1, out.str());
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "author"){
                     try{
-                        character.getInit().addContent(Content(1,"self.author = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.author = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "pal.defaults"){
@@ -276,67 +280,79 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                             count++;
                         }
                         out << "]";
-                        character.getInit().addContent(Content(1,out.str()));
+                        addComment(simple.getLine());
+                        content.addLine(1,out.str());
                 } else if (simple == "cmd"){
                     try{
                         simple >> generator.commandFile;
-                        character.getInit().addContent(Content(1,"self.cmdFile = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.cmdFile = '" + generator.commandFile + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "cns"){
                     try{
                         simple >> generator.constantsFile;
-                        character.getInit().addContent(Content(1,"self.cnsFile = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.cnsFile = '" + generator.constantsFile + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "st"){
                     try{
                         generator.stateFiles.push_back(simple.valueAsString());
-                        character.getInit().addContent(Content(1,"self.stateFiles.append('" + simple.valueAsString() + "')"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.stateFiles.append('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "stcommon"){
                     try{
                         generator.stateFiles.push_back(simple.valueAsString());
-                        character.getInit().addContent(Content(1,"self.stateFiles.append('" + simple.valueAsString() + "')"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.stateFiles.append('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (Util::matchRegex(simple.idString(), "st[0-9]+")){
                     try{
                         generator.stateFiles.push_back(simple.valueAsString());
-                        character.getInit().addContent(Content(1,"self.stateFiles.append('" + simple.valueAsString() + "')"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.stateFiles.append('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "sprite"){
                     try{
-                        character.getInit().addContent(Content(1,"self.spriteFile = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.spriteFile = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "anim"){
                     try{
                         simple >> generator.airFile;
-                        character.getInit().addContent(Content(1,"self.animFile = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.animFile = '" + generator.airFile + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "sound"){
                     try{
-                        character.getInit().addContent(Content(1,"self.soundFile = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.soundFile = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (Util::matchRegex(simple.idString(), "pal[0-9]+")){
                     std::string id = simple.idString();
                     try{
-                        character.getInit().addContent(Content(1,"self.palleteFiles[" + id.substr(3) + "] = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.palleteFiles[" + id.substr(3) + "] = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "intro.storyboard"){
                     try{
-                        character.getInit().addContent(Content(1,"self.introStoryboard = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.introStoryboard = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "ending.storyboard"){
                     try{
-                        character.getInit().addContent(Content(1,"self.endingStoryboard = '" + simple.valueAsString() + "'"));
+                        addComment(simple.getLine());
+                        content.addLine(1,"self.endingStoryboard = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else {
@@ -355,6 +371,18 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
             virtual void onNumber (const Ast::Number &simple){
                 std::cout << "number: " << simple.toString() << std::endl;
             }
+            
+            virtual void complete (){
+                // Add content
+                character.getInit().addContent(content);
+            }
+            
+            virtual void addComment (int line){
+                std::stringstream out;
+                out << line;
+                content.addSpace();
+                content.addLine(1,"# [" + Mugen::stripDir(generator.filename) + "] Section - " + sectionName + " on line " + out.str());
+            }
     };
     
     BaseWalker walker(*this, character);
@@ -365,6 +393,7 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
         std::list<Ast::Attribute*>  attributes = section->getAttributes();
     }
     destroy(sections);
+    walker.complete();
 }
 #if 0
 void CharacterGenerator::handleConstants(Mugen::PythonStream & stream){
@@ -482,15 +511,11 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             CmdWalker(CharacterGenerator & generator, PythonClass & character ):
             generator(generator),
             character(character),
-            currentContent(NULL),
             currentCommand(NULL){
                 
             }
             
             ~CmdWalker(){
-                if (currentContent != NULL){
-                    delete currentContent;
-                }
                 if (currentCommand != NULL){
                     delete currentCommand;
                 }
@@ -499,34 +524,26 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             CharacterGenerator & generator;
             PythonClass & character;
             std::string sectionName;
-            Content * currentContent;
+            
+            Content constantsContent;
+            
             Command * currentCommand;
+            Content commandContent;
             
             virtual void onSection(const Ast::Section & section){
-                sectionName = lowercase(section.getName());
-                if (currentContent == NULL){
-                    currentContent = new Content();
-                } else if (currentContent != NULL){
-                    // Add last content
-                    character.getInit().addContent(*currentContent);
-                    delete currentContent;
-                    currentContent = new Content();
-                } 
-                currentContent->addSpace();
-                currentContent->addLine(1,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + section.getName());
+                sectionName = section.getName();
                 
-                if (sectionName == "command"){
+                if (lowercase(sectionName) == "command"){
                     // Create new command class to put away and store the previous one
-                    std::cout << "Found command" << std::endl;
                     if (currentCommand == NULL){
                         currentCommand = new Command();
                     } else if (currentCommand != NULL){
                         // Add command
-                        currentContent->addLine(1,currentCommand->get());
+                        commandContent.addLine(1,currentCommand->get());
                         delete currentCommand;
                         currentCommand = new Command();
                     }
-                } else if (Util::matchRegex(sectionName, "state")){
+                } else if (Util::matchRegex(lowercase(sectionName), "state")){
                     // Create state handler
                 }
                 std::cout << "Parsing Section: " << section.getName() << std::endl;   
@@ -534,16 +551,19 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "command.time"){
                     try{
-                        currentContent->addLine(1,"self.commandTime('" + simple.valueAsString() + "')");
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.commandTime('" + simple.valueAsString() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "command.buffer.time"){
                     try{
-                        currentContent->addLine(1,"self.commandBufferTime('" + simple.valueAsString() + "')");
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.commandBufferTime('" + simple.valueAsString() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "name"){
                     if (currentCommand != NULL){
+                        addCommandComment(simple.getLine());
                         currentCommand->name = simple.valueAsString();
                     }
                 } else if (simple == "command"){
@@ -592,16 +612,34 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                 std::cout << "number: " << simple.toString() << std::endl;
             }
             
+            virtual void addConstantsComment (int line){
+                std::stringstream out;
+                out << line;
+                constantsContent.addSpace();
+                constantsContent.addLine(1,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + sectionName + " on line " + out.str());
+            }
+            
+            virtual void addCommandComment (int line){
+                std::stringstream out;
+                out << line;
+                commandContent.addSpace();
+                commandContent.addLine(1,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + sectionName + " on line " + out.str());
+            }
+            
             virtual void complete (){
-                // Add last content
-                character.getInit().addContent(*currentContent);
+                // Add constants content
+                character.getInit().addContent(constantsContent);
+                
+                // Add command content
+                commandContent.addLine(1,currentCommand->get());
+                character.getInit().addContent(commandContent);
             }
     };
     
     // Command Walker
     CmdWalker cmd(*this, character);
     std::list<Ast::Section*> * sections = parseCmd(directory + commandFile);
-    for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); it++){
+    for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); ++it){
         Ast::Section * section = *it;
         section->walk(cmd);
         std::list<Ast::Attribute*>  attributes = section->getAttributes();
