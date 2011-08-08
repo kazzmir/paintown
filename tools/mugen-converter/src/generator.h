@@ -82,9 +82,6 @@ class CharacterGenerator{
         //! Command File
         std::string commandFile;
         
-        //! Constants File
-        std::string constantsFile;
-        
         //! State files
         std::vector<std::string> stateFiles;
         

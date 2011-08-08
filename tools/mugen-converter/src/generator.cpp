@@ -291,9 +291,9 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                     }
                 } else if (simple == "cns"){
                     try{
-                        simple >> generator.constantsFile;
+                        generator.stateFiles.push_back(simple.valueAsString());
                         addComment(simple.getLine());
-                        content.addLine(1,"self.cnsFile = '" + generator.constantsFile + "'");
+                        content.addLine(1,"self.stateFiles.append('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "st"){

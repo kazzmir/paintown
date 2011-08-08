@@ -14,7 +14,6 @@ class Character():
         self.author = None
         self.paletteDefaults = []
         self.cmdFile = None
-        self.cnsFile = None
         self.stateFiles = []
         self.spriteFile = None
         self.animFile = None
