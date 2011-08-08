@@ -43,7 +43,10 @@ class PythonDefinition{
 class PythonClass{
     public:
         PythonClass(const Content &);
+        PythonClass(const PythonClass &);
         virtual ~PythonClass();
+        
+        const PythonClass & operator=(const PythonClass &);
         
         void add(const PythonDefinition &);
         void output(PythonStream &, unsigned int indentStart = 0);

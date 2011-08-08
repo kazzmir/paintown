@@ -109,6 +109,7 @@ void PythonDefinition::addContent(const Content & cont){
     content.push_back(cont);
 }
 void PythonDefinition::output(PythonStream & stream, unsigned int indentStart){
+    defLine.output(stream, indentStart);
     stream.setIndentLevel(indentStart + defLine.getIndentLevel());
     for (std::vector<Content>::iterator i = content.begin(); i != content.end(); ++i){
         Content & cont = *i;
@@ -121,12 +122,25 @@ PythonClass::PythonClass(const Content & content):
 classLine(content),
 init(Content(1,"def __init__(self):")){
 }
+PythonClass::PythonClass(const PythonClass & copy):
+init(Content(1,"def __init__(self):")){
+    classLine = copy.classLine;
+    init = copy.init;
+    definitions = definitions;
+}
 PythonClass::~PythonClass(){
+}
+const PythonClass & PythonClass::operator=(const PythonClass & copy){
+    classLine = copy.classLine;
+    init = copy.init;
+    definitions = definitions;
+    return *this;
 }
 void PythonClass::add(const PythonDefinition & def){
     definitions.push_back(def);
 }
 void PythonClass::output(PythonStream & stream, unsigned int indentStart){
+    classLine.output(stream, indentStart);
     stream.setIndentLevel(indentStart + classLine.getIndentLevel());
     init.output(stream, indentStart + classLine.getIndentLevel());
     for (std::vector<PythonDefinition>::iterator i = definitions.begin(); i != definitions.end(); ++i){
@@ -156,9 +170,11 @@ void CharacterGenerator::output(const std::string & file){
         
         out << "import mugen" << endl;
         out << endl;
-        out <<  "class " << Mugen::stripExtension(file) << "(mugen.Character):" << endl;
-                out << indent;
-                out << "def __init__(self):" << endl;
+        PythonClass character(Content(0, "class " + Mugen::stripExtension(file) + "(mugen.Character):"));
+        //out <<  "class " << Mugen::stripExtension(file) << "(mugen.Character):" << endl;
+                //out << indent;
+                //out << "def __init__(self):" << endl;
+        character.output(out, 0);
                     out << indent;
                     // Base definitions, files, etc (usually charactername.def)
                     handleBaseDef(out);
