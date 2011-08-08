@@ -83,6 +83,12 @@ void Content::addLine(unsigned int level, const std::string & str){
     totalLines++;
 }
 
+void Content::addSpace(){
+    indentLevel.push_back(0);
+    content.push_back("");
+    totalLines++;
+}
+
 void Content::output(PythonStream & stream, unsigned int indentStart){
     for (unsigned int i = 0; i < totalLines; ++i){
         stream.setIndentLevel(indentStart + indentLevel[i]);
@@ -476,11 +482,15 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             CmdWalker(CharacterGenerator & generator, PythonClass & character ):
             generator(generator),
             character(character),
+            currentContent(NULL),
             currentCommand(NULL){
                 
             }
             
             ~CmdWalker(){
+                if (currentContent != NULL){
+                    delete currentContent;
+                }
                 if (currentCommand != NULL){
                     delete currentCommand;
                 }
@@ -489,12 +499,22 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             CharacterGenerator & generator;
             PythonClass & character;
             std::string sectionName;
+            Content * currentContent;
             Command * currentCommand;
             
             virtual void onSection(const Ast::Section & section){
                 sectionName = lowercase(section.getName());
-                character.getInit().addSpace();
-                character.getInit().addContent(Content(1,"# [" + Mugen::stripDir(generator.filename) + "] Section - " + section.getName()));
+                if (currentContent == NULL){
+                    currentContent = new Content();
+                } else if (currentContent != NULL){
+                    // Add last content
+                    character.getInit().addContent(*currentContent);
+                    delete currentContent;
+                    currentContent = new Content();
+                } 
+                currentContent->addSpace();
+                currentContent->addLine(1,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + section.getName());
+                
                 if (sectionName == "command"){
                     // Create new command class to put away and store the previous one
                     std::cout << "Found command" << std::endl;
@@ -502,7 +522,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                         currentCommand = new Command();
                     } else if (currentCommand != NULL){
                         // Add command
-                        character.getInit().addContent(Content(1,currentCommand->get()));
+                        currentContent->addLine(1,currentCommand->get());
                         delete currentCommand;
                         currentCommand = new Command();
                     }
@@ -514,12 +534,12 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "command.time"){
                     try{
-                        character.getInit().addContent(Content(1,"self.commandTime('" + simple.valueAsString() + "')"));
+                        currentContent->addLine(1,"self.commandTime('" + simple.valueAsString() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "command.buffer.time"){
                     try{
-                        character.getInit().addContent(Content(1,"self.commandBufferTime('" + simple.valueAsString() + "')"));
+                        currentContent->addLine(1,"self.commandBufferTime('" + simple.valueAsString() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "name"){
@@ -573,11 +593,8 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             }
             
             virtual void complete (){
-                // Add last command and state to character
-                if (currentCommand != NULL){
-                    character.getInit().addContent(Content(1,currentCommand->get()));
-                }
-                // TODO add state
+                // Add last content
+                character.getInit().addContent(*currentContent);
             }
     };
     

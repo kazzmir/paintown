@@ -17,6 +17,7 @@ class Content{
         
         const Content & operator=(const Content &);
         void addLine(unsigned int level, const std::string &);
+        void addSpace();
         void output(PythonStream &, unsigned int indentStart = 0);
         const unsigned int getIndentLevel() const;
     protected:
