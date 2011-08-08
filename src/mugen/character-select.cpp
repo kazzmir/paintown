@@ -1529,10 +1529,9 @@ currentPlayer1(0),
 currentPlayer2(0),
 currentStage(0),
 playerType(playerType),
-characterSearchThread(PaintownUtil::Thread::uninitializedValue),
 quitSearching(false),
 searchingCheck(quitSearching, searchingLock.getLock()),
-stageSearchThread(PaintownUtil::Thread::uninitializedValue),
+characterAddThread(PaintownUtil::Thread::uninitializedValue),
 subscription(*this){
 
     search.start();
@@ -1553,9 +1552,7 @@ CharacterSelect::~CharacterSelect(){
     addCharacterLock.signal();
     addCharacterLock.release();
 
-    PaintownUtil::Thread::joinThread(characterSearchThread);
     PaintownUtil::Thread::joinThread(characterAddThread);
-    PaintownUtil::Thread::joinThread(stageSearchThread);
 
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin(); i != sprites.end() ; ++i ){
@@ -2379,86 +2376,6 @@ void CharacterSelect::addFiles(const vector<Filesystem::AbsolutePath> & files){
     addCharacterLock.release();
 }
 
-void * CharacterSelect::searchForCharacters(void * arg){
-    try{
-        CharacterSelect * select = (CharacterSelect*) arg;
-        vector<Filesystem::AbsolutePath> searchPaths;
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars"))));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getCharDirectory()));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        /* TODO: use a callback to add new characters to be processed instead
-         * of processing all files after they have been found.
-         */
-        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !select->searchingCheck.get(); it++){
-            Filesystem::AbsolutePath path = *it;
-            select->addFiles(findFiles(path));
-        }
-
-        Global::debug(1) << "Done searching for characters" << endl;
-    } catch (...){
-        Global::debug(0) << "Search thread died for some reason" << endl;
-    }
-    return NULL;
-}
-
-void * CharacterSelect::searchStages(void * arg){
-    try{
-        CharacterSelect * select = (CharacterSelect*) arg;
-        vector<Filesystem::AbsolutePath> searchPaths;
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("stages"))));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getStageDirectory()));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        /* TODO: use a callback to add new characters to be processed instead
-         * of processing all files after they have been found.
-         */
-        /*
-        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !select->searchingCheck.get(); it++){
-            Filesystem::AbsolutePath path = *it;
-            select->addFiles(findFiles(path));
-        }
-        */
-        
-        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !select->searchingCheck.get(); it++){
-            vector<Filesystem::AbsolutePath> files = findFiles(*it);
-            for (vector<Filesystem::AbsolutePath>::iterator fit = files.begin(); fit != files.end(); fit++){
-                Filesystem::AbsolutePath path = *fit;
-                Global::debug(1) << "Found stage " << path.path() << std::endl;
-                select->grid.getStageHandler().addStage(path);
-            }
-        }
-
-        Global::debug(1) << "Done searching for stages" << endl;
-    } catch (...){
-        Global::debug(0) << "Stage search thread died for some reason" << endl;
-    }
-
-    return NULL;
-}
-
 void CharacterSelect::startAddThread(){
     characterAddThread = PaintownUtil::Thread::uninitializedValue;
     if (!PaintownUtil::Thread::createThread(&characterAddThread, NULL, (PaintownUtil::Thread::ThreadFunction) doAddCharacters, this)){
@@ -2466,16 +2383,8 @@ void CharacterSelect::startAddThread(){
     }
 }
 
-void CharacterSelect::startStageSearchThread(){
-    stageSearchThread = PaintownUtil::Thread::uninitializedValue;
-    if (!PaintownUtil::Thread::createThread(&stageSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchStages, this)){
-        Global::debug(0) << "Could not create stage search" << endl;
-    }
-}
-
 void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     startAddThread();
-    // startStageSearchThread();
 
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
     
@@ -2783,12 +2692,6 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 	order++;
     }
 #endif
-
-    /*
-    if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
-        Global::debug(0) << "Could not create character search thread" << endl;
-    }
-    */
 }
 
 static void startMusic(const Filesystem::AbsolutePath & systemFile, const string & which){

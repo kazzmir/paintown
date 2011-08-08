@@ -1055,7 +1055,6 @@ class CharacterSelect {
 
         /* helper */
         void startAddThread();
-        void startStageSearchThread();
 
         /* add all the files to the character add list */
         void addFiles(const std::vector<Filesystem::AbsolutePath> & files);
@@ -1140,16 +1139,12 @@ class CharacterSelect {
 	//! PlayerType
 	Mugen::PlayerType playerType;
 
-        PaintownUtil::Thread::Id characterSearchThread;
         PaintownUtil::Thread::LockObject searchingLock;
         volatile bool quitSearching;
         PaintownUtil::ThreadBoolean searchingCheck;
-        
-        PaintownUtil::Thread::Id stageSearchThread;
 
         PaintownUtil::Thread::Id characterAddThread;
         PaintownUtil::Thread::LockObject addCharacterLock;
-        // volatile bool addCharacterSignal;
         std::deque<Filesystem::AbsolutePath> addCharacters;
 
         class Subscriber: public Searcher::Subscriber {
