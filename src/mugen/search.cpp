@@ -11,6 +11,12 @@ using std::endl;
 using std::vector;
 
 namespace Mugen{
+        
+Searcher::Subscriber::Subscriber(){
+}
+
+Searcher::Subscriber::~Subscriber(){
+}
 
 Searcher::Searcher():
 characterSearchThread(PaintownUtil::Thread::uninitializedValue),
@@ -20,13 +26,7 @@ searchingCheck(quitSearching, searchingLock.getLock()){
 }
 
 Searcher::~Searcher(){
-    if (characterSearchThread != PaintownUtil::Thread::uninitializedValue){
-        PaintownUtil::Thread::joinThread(characterSearchThread);
-    }
-    
-    if (stageSearchThread != PaintownUtil::Thread::uninitializedValue){
-        PaintownUtil::Thread::joinThread(stageSearchThread);
-    }
+    pause();
 }
     
 void Searcher::start(){

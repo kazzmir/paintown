@@ -1531,7 +1531,11 @@ currentStage(0),
 playerType(playerType),
 characterSearchThread(PaintownUtil::Thread::uninitializedValue),
 quitSearching(false),
-searchingCheck(quitSearching, searchingLock.getLock()){
+searchingCheck(quitSearching, searchingLock.getLock()),
+stageSearchThread(PaintownUtil::Thread::uninitializedValue),
+subscription(*this){
+
+    search.start();
 
     grid.setGameType(gameType);
 
@@ -1540,6 +1544,8 @@ searchingCheck(quitSearching, searchingLock.getLock()){
 }
 
 CharacterSelect::~CharacterSelect(){
+    search.unsubscribe(&subscription);
+
     searchingCheck.set(true);
 
     /* signal the add thread in case its waiting */
@@ -2469,7 +2475,7 @@ void CharacterSelect::startStageSearchThread(){
 
 void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     startAddThread();
-    startStageSearchThread();
+    // startStageSearchThread();
 
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
     
@@ -2778,10 +2784,11 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     }
 #endif
 
-    characterSearchThread = PaintownUtil::Thread::uninitializedValue;
+    /*
     if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
         Global::debug(0) << "Could not create character search thread" << endl;
     }
+    */
 }
 
 static void startMusic(const Filesystem::AbsolutePath & systemFile, const string & which){
@@ -2798,6 +2805,8 @@ static void startMusic(const Filesystem::AbsolutePath & systemFile, const string
 
 void CharacterSelect::run(const std::string & title){
     bool escaped = false;
+
+    search.subscribe(&subscription);
     
     Gui::FadeTool fader;
     // Set the fade state
@@ -3340,5 +3349,23 @@ MugenFont * CharacterSelect::getFont(int index) const {
         ostringstream out;
         out << "No font for index " << index;
         throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+}
+
+CharacterSelect::Subscriber::Subscriber(CharacterSelect & owner):
+owner(owner){
+}
+
+CharacterSelect::Subscriber::~Subscriber(){
+}
+        
+void CharacterSelect::Subscriber::receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths){
+    owner.addFiles(paths);
+}
+
+void CharacterSelect::Subscriber::receiveStages(const std::vector<Filesystem::AbsolutePath> & paths){
+    for (vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
+        const Filesystem::AbsolutePath & path = *it;
+        owner.grid.getStageHandler().addStage(path);
     }
 }

@@ -17,6 +17,7 @@
 #include "util.h"
 
 #include "ast/all.h"
+#include "search.h"
 
 namespace PaintownUtil = ::Util;
 
@@ -1150,6 +1151,21 @@ class CharacterSelect {
         PaintownUtil::Thread::LockObject addCharacterLock;
         // volatile bool addCharacterSignal;
         std::deque<Filesystem::AbsolutePath> addCharacters;
+
+        class Subscriber: public Searcher::Subscriber {
+        public:
+            Subscriber(CharacterSelect & owner);
+            virtual ~Subscriber();
+        
+            virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths);
+
+            virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths);
+
+            CharacterSelect & owner;
+        };
+
+        Subscriber subscription;
+        Searcher search;
 };
 
 }

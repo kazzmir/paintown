@@ -12,22 +12,22 @@ namespace PaintownUtil = ::Util;
 
 namespace Mugen{
 
-/* gets updates from the searcher */
-class Subscriber{
-public:
-    Subscriber();
-    virtual ~Subscriber();
-
-    /* receive data from the searcher */
-    virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths) = 0;
-
-    virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths) = 0;
-};
-
 class Searcher{
 public:
     Searcher();
     virtual ~Searcher();
+
+    /* gets updates from the searcher */
+    class Subscriber{
+    public:
+        Subscriber();
+        virtual ~Subscriber();
+
+        /* receive data from the searcher */
+        virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths) = 0;
+
+        virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths) = 0;
+    };
 
     /* either start searching or unpause */
     void start();
