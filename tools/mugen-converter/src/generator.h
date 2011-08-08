@@ -33,6 +33,7 @@ class PythonDefinition{
         virtual ~PythonDefinition();
         const PythonDefinition & operator=(const PythonDefinition &);
         void addContent(const Content &);
+        void addSpace();
         void output(PythonStream &, unsigned int indentStart = 0);
     protected:
         Content defLine;
@@ -91,10 +92,13 @@ class CharacterGenerator{
         
     protected:    
         //! Handle base definition file
-        void handleBaseDef(Mugen::PythonStream & stream);
+        void handleBaseDef(PythonClass &);
         
         //! Handle general constants
-        void handleConstants(Mugen::PythonStream & stream);
+        //void handleConstants(Mugen::PythonStream & stream);
+        
+        //! Handle command filen
+        void handleCmdFile(PythonClass &);
 };
     
 }

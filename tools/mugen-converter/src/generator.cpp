@@ -21,6 +21,14 @@ std::string getCurrentDate(){
     return std::string(buffer);
 }
 
+static int toLower( int c ){ return tolower( c );}
+
+const std::string lowercase( const std::string &str ){
+    std::string tempStr = str;
+    transform( tempStr.begin(), tempStr.end(), tempStr.begin(), toLower );
+    return tempStr;
+}
+
 /* Example on how to use the PythonStream */
 void testStream(const std::string & file){
     Mugen::PythonStream out;
@@ -108,6 +116,9 @@ const PythonDefinition & PythonDefinition::operator=(const PythonDefinition & co
 void PythonDefinition::addContent(const Content & cont){
     content.push_back(cont);
 }
+void PythonDefinition::addSpace(){
+    content.push_back(Content(0,""));
+}
 void PythonDefinition::output(PythonStream & stream, unsigned int indentStart){
     defLine.output(stream, indentStart);
     stream.setIndentLevel(indentStart + defLine.getIndentLevel());
@@ -170,15 +181,11 @@ void CharacterGenerator::output(const std::string & file){
         
         out << "import mugen" << endl;
         out << endl;
+        // Create character class
         PythonClass character(Content(0, "class " + Mugen::stripExtension(file) + "(mugen.Character):"));
-        //out <<  "class " << Mugen::stripExtension(file) << "(mugen.Character):" << endl;
-                //out << indent;
-                //out << "def __init__(self):" << endl;
+        handleBaseDef(character);
+        handleCmdFile(character);
         character.output(out, 0);
-                    out << indent;
-                    // Base definitions, files, etc (usually charactername.def)
-                    handleBaseDef(out);
-                    handleConstants(out);
         out.close();
     } catch (const Mugen::Cmd::ParseException & fail){
         std::cout << "Failed to parse " << file << " because " << fail.getReason() << std::endl;
@@ -187,139 +194,143 @@ void CharacterGenerator::output(const std::string & file){
     }
 }
 
-void CharacterGenerator::handleBaseDef(Mugen::PythonStream & stream){
+void CharacterGenerator::handleBaseDef(PythonClass & character){
     class BaseWalker: public Ast::Walker {
         public:
-            BaseWalker(CharacterGenerator & character, PythonStream & stream ):
-            character(character),
-            stream(stream){
+            BaseWalker(CharacterGenerator & generator, PythonClass & character):
+            generator(generator),
+            character(character){
                 
             }
             
-            CharacterGenerator & character;
-            PythonStream & stream;
+            CharacterGenerator & generator;
+            PythonClass & character;
             std::string sectionName;
             
             virtual void onSection(const Ast::Section & section){
                 sectionName = section.getName();
-                stream << endl;
-                stream << "# [" << Mugen::stripDir(character.filename) << "] Section - " << sectionName << endl;
+                character.getInit().addSpace();
+                character.getInit().addContent(Content(1,"# [" + Mugen::stripDir(generator.filename) + "] Section - " + sectionName));
                 std::cout << "Parsing Section: " << sectionName << std::endl;
             }
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "name"){
                     try{
-                        stream << "self.name = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.name = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "displayname"){
                     try{
-                        stream << "self.displayName = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.displayName = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "versiondate"){
                     try{
-                    std::vector<int> numbers;
+                        std::vector<int> numbers;
                         simple >> numbers;
-                        stream << "self.versionDate = [";
+                        std::stringstream out;
+                        out << "self.versionDate = [";
                         unsigned int count = 0;
                         for (std::vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
-                            stream << *it << (count != numbers.size()-1 ? "," : "");
+                            out << *it << (count != numbers.size()-1 ? "," : "");
                             count++;
                         }
-                        stream << "]" << endl;
+                        out << "]";
+                        character.getInit().addContent(Content(1,out.str()));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "mugenversion"){
                     try{
                         std::vector<int> numbers;
                         simple >> numbers;
-                        stream << "self.mugenVersion = [";
+                        std::stringstream out;
+                        out << "self.mugenVersion = [";
                         unsigned int count = 0;
                         for (std::vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
-                            stream << *it << (count != numbers.size()-1 ? "," : "");
+                            out << *it << (count != numbers.size()-1 ? "," : "");
                             count++;
                         }
-                        stream << "]" << endl;
+                        out << "]";
+                        character.getInit().addContent(Content(1, out.str()));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "author"){
                     try{
-                        stream << "self.author = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.author = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "pal.defaults"){
-                    std::vector<int> numbers;
+                        std::vector<int> numbers;
                         simple >> numbers;
-                        stream << "self.paletteDefaults = [";
+                        std::stringstream out;
+                        out << "self.paletteDefaults = [";
                         unsigned int count = 0;
                         for (std::vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
-                            stream << *it << (count != numbers.size()-1 ? "," : "");
+                            out << *it << (count != numbers.size()-1 ? "," : "");
                             count++;
                         }
-                        stream << "]" << endl;
+                        out << "]";
+                        character.getInit().addContent(Content(1,out.str()));
                 } else if (simple == "cmd"){
                     try{
-                        simple >> character.commandFile;
-                        stream << "self.cmdFile = '" << simple.valueAsString() << "'" << endl;
+                        simple >> generator.commandFile;
+                        character.getInit().addContent(Content(1,"self.cmdFile = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "cns"){
                     try{
-                        simple >> character.constantsFile;
-                        stream << "self.cnsFile = '" << simple.valueAsString() << "'" << endl;
+                        simple >> generator.constantsFile;
+                        character.getInit().addContent(Content(1,"self.cnsFile = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "st"){
                     try{
-                        character.stateFiles.push_back(simple.valueAsString());
-                        stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
+                        generator.stateFiles.push_back(simple.valueAsString());
+                        character.getInit().addContent(Content(1,"self.stateFiles.append('" + simple.valueAsString() + "')"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "stcommon"){
                     try{
-                        character.stateFiles.push_back(simple.valueAsString());
-                        stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
+                        generator.stateFiles.push_back(simple.valueAsString());
+                        character.getInit().addContent(Content(1,"self.stateFiles.append('" + simple.valueAsString() + "')"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (Util::matchRegex(simple.idString(), "st[0-9]+")){
-                    // std::cout << "Found additional st file: " << simple.idString() << std::endl;
                     try{
-                        character.stateFiles.push_back(simple.valueAsString());
-                        stream << "self.stateFiles.append('" << simple.valueAsString() << "')" << endl;
+                        generator.stateFiles.push_back(simple.valueAsString());
+                        character.getInit().addContent(Content(1,"self.stateFiles.append('" + simple.valueAsString() + "')"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "sprite"){
                     try{
-                        stream << "self.spriteFile = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.spriteFile = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "anim"){
                     try{
-                        simple >> character.airFile;
-                        stream << "self.animFile = '" << simple.valueAsString() << "'" << endl;
+                        simple >> generator.airFile;
+                        character.getInit().addContent(Content(1,"self.animFile = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "sound"){
                     try{
-                        stream << "self.soundFile = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.soundFile = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (Util::matchRegex(simple.idString(), "pal[0-9]+")){
-                    // std::cout << "Found pallete file: " << id << std::endl;
                     std::string id = simple.idString();
                     try{
-                        stream << "self.palleteFiles[" << id.substr(3).c_str() << "] = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.palleteFiles[" + id.substr(3) + "] = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "intro.storyboard"){
                     try{
-                        stream << "self.introStoryboard = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.introStoryboard = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "ending.storyboard"){
                     try{
-                        stream << "self.endingStoryboard = '" << simple.valueAsString() << "'" << endl;
+                        character.getInit().addContent(Content(1,"self.endingStoryboard = '" + simple.valueAsString() + "'"));
                     } catch (const Ast::Exception & fail){
                     }
                 } else {
@@ -340,7 +351,7 @@ void CharacterGenerator::handleBaseDef(Mugen::PythonStream & stream){
             }
     };
     
-    BaseWalker walker(*this, stream);
+    BaseWalker walker(*this, character);
     std::list<Ast::Section*> * sections = parseDef(filename);
     for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); it++){
         Ast::Section * section = *it;
@@ -349,7 +360,7 @@ void CharacterGenerator::handleBaseDef(Mugen::PythonStream & stream){
     }
     destroy(sections);
 }
-
+#if 0
 void CharacterGenerator::handleConstants(Mugen::PythonStream & stream){
     
     // For re-use
@@ -441,4 +452,143 @@ void CharacterGenerator::handleConstants(Mugen::PythonStream & stream){
         }
     }
     destroy(sections);
+}
+#endif
+
+void CharacterGenerator::handleCmdFile(PythonClass & character){
+    
+    class Command{
+        public:
+            Command(){
+            }
+            std::string name;
+            std::string command;
+            std::string time;
+            std::string bufferTime;
+            
+            std::string get(){
+                return "self.addCommand('" + name + "', '" + command + "', '" + time + "', '" + bufferTime + "')";
+            }
+    };
+        
+    class CmdWalker: public Ast::Walker {
+        public:
+            CmdWalker(CharacterGenerator & generator, PythonClass & character ):
+            generator(generator),
+            character(character),
+            currentCommand(NULL){
+                
+            }
+            
+            ~CmdWalker(){
+                if (currentCommand != NULL){
+                    delete currentCommand;
+                }
+            }
+            
+            CharacterGenerator & generator;
+            PythonClass & character;
+            std::string sectionName;
+            Command * currentCommand;
+            
+            virtual void onSection(const Ast::Section & section){
+                sectionName = lowercase(section.getName());
+                character.getInit().addSpace();
+                character.getInit().addContent(Content(1,"# [" + Mugen::stripDir(generator.filename) + "] Section - " + section.getName()));
+                if (sectionName == "command"){
+                    // Create new command class to put away and store the previous one
+                    std::cout << "Found command" << std::endl;
+                    if (currentCommand == NULL){
+                        currentCommand = new Command();
+                    } else if (currentCommand != NULL){
+                        // Add command
+                        character.getInit().addContent(Content(1,currentCommand->get()));
+                        delete currentCommand;
+                        currentCommand = new Command();
+                    }
+                } else if (Util::matchRegex(sectionName, "state")){
+                    // Create state handler
+                }
+                std::cout << "Parsing Section: " << section.getName() << std::endl;   
+            }
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "command.time"){
+                    try{
+                        character.getInit().addContent(Content(1,"self.commandTime('" + simple.valueAsString() + "')"));
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "command.buffer.time"){
+                    try{
+                        character.getInit().addContent(Content(1,"self.commandBufferTime('" + simple.valueAsString() + "')"));
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "name"){
+                    if (currentCommand != NULL){
+                        currentCommand->name = simple.valueAsString();
+                    }
+                } else if (simple == "command"){
+                    if (currentCommand != NULL){
+                        std::string command;
+                        try {
+                            std::string cmd;
+                            simple >> cmd;
+                            command += cmd + ",";
+                        } catch (Ast::Exception &ex){
+                        }
+                        currentCommand->command = command.substr(0,command.size()-1);
+                    }
+                } else if (simple == "time"){
+                    if (currentCommand != NULL){
+                        currentCommand->time = simple.valueAsString();
+                    }
+                } else if (simple == "buffer.time"){
+                    if (currentCommand != NULL){
+                        currentCommand->bufferTime = simple.valueAsString();
+                    }
+                } else if (simple == "type"){
+                    // TODO add to state
+                } else if (simple == "value"){
+                    // TODO add to state
+                } else if (simple == "triggerall"){
+                    // TODO add to state
+                } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
+                    // TODO add to state
+                } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
+                    // TODO add to state
+                } else {
+                    std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
+                }
+            }
+            
+            virtual void onAttributeKeyword (const Ast::AttributeKeyword &simple){
+                std::cout << "Attribute keyword: " << simple.toString() << std::endl;
+            }
+            
+            virtual void onAttributeArray (const Ast::AttributeArray &simple){
+                std::cout << "Attribute array: " << simple.toString() << std::endl;
+            }
+
+            virtual void onNumber (const Ast::Number &simple){
+                std::cout << "number: " << simple.toString() << std::endl;
+            }
+            
+            virtual void complete (){
+                // Add last command and state to character
+                if (currentCommand != NULL){
+                    character.getInit().addContent(Content(1,currentCommand->get()));
+                }
+                // TODO add state
+            }
+    };
+    
+    // Command Walker
+    CmdWalker cmd(*this, character);
+    std::list<Ast::Section*> * sections = parseCmd(directory + commandFile);
+    for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); it++){
+        Ast::Section * section = *it;
+        section->walk(cmd);
+        std::list<Ast::Attribute*>  attributes = section->getAttributes();
+    }
+    destroy(sections);
+    cmd.complete();
 }
