@@ -2307,6 +2307,8 @@ bool CharacterSelect::maybeAddCharacter(const Filesystem::AbsolutePath & path){
         Global::debug(1) << path.path() << " is good" << endl;
         if (isUniqueCharacter(info)){
             return addInfo(info);
+        } else {
+            delete info;
         }
         return true;
     } catch (const Filesystem::NotFound & fail){
