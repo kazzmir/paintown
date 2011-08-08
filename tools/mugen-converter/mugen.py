@@ -18,7 +18,7 @@ class Character():
         self.spriteFile = None
         self.animFile = None
         self.soundFile = None
-        self.paletteFiles = []
+        self.paletteFiles = {}
         self.introStoryboard = None
         self.endingStoryboard = None
         
@@ -51,24 +51,24 @@ class Character():
         self.attackDist = None
         self.projAttackDist = None
         self.projDoscale = None
-        self.headPos = None
-        self.midPos = None
+        self.headPos = []
+        self.midPos = []
         self.shadowoffset = None
         self.drawOffset = None
 
         # Velocity (constants)
         self.walkFwd = None
         self.walkBack = None
-        self.runFwd = None
-        self.runBack = None
-        self.jumpNeu = None
-        self.jumpBack = None
-        self.jumpFwd = None
-        self.runjumpBack = None
-        self.runjumpFwd = None
-        self.airjumpNeu = None
-        self.airjumpBack = None
-        self.airjumpFwd = None
+        self.runFwd = []
+        self.runBack = []
+        self.jumpNeu = []
+        self.jumpBack = []
+        self.jumpFwd = []
+        self.runjumpBack = []
+        self.runjumpFwd = []
+        self.airjumpNeu = []
+        self.airjumpBack = []
+        self.airjumpFwd = []
 
         # Movement (constants)
         self.airjumpNum = None

@@ -138,7 +138,9 @@ void PythonDefinition::output(PythonStream & stream, unsigned int indentStart){
 PythonClass::PythonClass(const Content & content):
 classLine(content),
 init(Content(1,"def __init__(self):")){
-    init.addContent(Content(1,"mugen.Character().__init__()"));
+    init.addSpace();
+    init.addContent(Content(1,"# Initialize"));
+    init.addContent(Content(1,"mugen.Character.__init__(self)"));
 }
 PythonClass::PythonClass(const PythonClass & copy):
 init(Content(1,"def __init__(self):")){
@@ -353,7 +355,7 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                     std::string id = simple.idString();
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.palleteFiles[" + id.substr(3) + "] = '" + simple.valueAsString() + "'");
+                        content.addLine(1,"self.paletteFiles[" + id.substr(3) + "] = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "intro.storyboard"){
@@ -408,100 +410,6 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
     destroy(sections);
     walker.complete();
 }
-#if 0
-void CharacterGenerator::handleConstants(Mugen::PythonStream & stream){
-    
-    // For re-use
-    std::list<Ast::Section*> * sections;
-    
-    class CnsWalker: public Ast::Walker {
-        public:
-            CnsWalker(CharacterGenerator & character, PythonStream & stream ):
-            character(character),
-            stream(stream){
-                
-            }
-            
-            CharacterGenerator & character;
-            PythonStream & stream;
-            std::string sectionName;
-            
-            virtual void onSection(const Ast::Section & section){
-                sectionName = section.getName();
-                stream << endl;
-                stream << "# [" << Mugen::stripDir(character.filename) << "] Section - " << sectionName << endl;
-                std::cout << "Parsing Section: " << sectionName << std::endl;
-            }
-            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                if (simple == "command.time"){
-                    try{
-                        stream << "self.commandTime = '" << simple.valueAsString() << "'" << endl;
-                    } catch (const Ast::Exception & fail){
-                    }
-                } else if (simple == "command.buffer.time"){
-                    try{
-                        stream << "self.commandBufferTime = '" << simple.valueAsString() << "'" << endl;
-                    } catch (const Ast::Exception & fail){
-                    }
-                } else {
-                    std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
-                }
-            }
-            
-            virtual void onAttributeKeyword (const Ast::AttributeKeyword &simple){
-                std::cout << "Attribute keyword: " << simple.toString() << std::endl;
-            }
-            
-            virtual void onAttributeArray (const Ast::AttributeArray &simple){
-                std::cout << "Attribute array: " << simple.toString() << std::endl;
-            }
-
-            virtual void onNumber (const Ast::Number &simple){
-                std::cout << "number: " << simple.toString() << std::endl;
-            }
-    };
-    
-    // Command Walker
-    CnsWalker cmd(*this, stream);
-    sections = parseCmd(directory + commandFile);
-    for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); it++){
-        Ast::Section * section = *it;
-        if (section->getName() == "Defaults"){
-            section->walk(cmd);
-            std::list<Ast::Attribute*>  attributes = section->getAttributes();
-            break;
-        }
-    }
-    destroy(sections);
-    
-    CnsWalker cns(*this, stream);
-    sections = parseCmd(directory + constantsFile);
-    bool found[4] = { false, false, false, false };
-    for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); it++){
-        Ast::Section * section = *it;
-        if (section->getName() == "Data"){
-            section->walk(cns);
-            std::list<Ast::Attribute*>  attributes = section->getAttributes();
-            found[0] = true;
-        } else if (section->getName() == "Size"){
-            section->walk(cns);
-            std::list<Ast::Attribute*>  attributes = section->getAttributes();
-            found[1] = true;
-        } else if (section->getName() == "Velocity"){
-            section->walk(cns);
-            std::list<Ast::Attribute*>  attributes = section->getAttributes();
-            found[2] = true;
-        } else if (section->getName() == "Movement"){
-            section->walk(cns);
-            std::list<Ast::Attribute*>  attributes = section->getAttributes();
-            found[3] = true;
-        } else if (found[0] == true && found[1] == true && found[2] == true && found[3] == true) {
-            break;
-        }
-    }
-    destroy(sections);
-}
-#endif
 
 void CharacterGenerator::handleCmdFile(PythonClass & character){
     
@@ -557,7 +465,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                         currentCommand = new Command();
                     }
                 } else if (Util::matchRegex(lowercase(sectionName), "state")){
-                    // Create state handler
+                    // TODO Create state handler
                 }
                 std::cout << "Parsing Section: " << section.getName() << std::endl;   
             }
@@ -695,6 +603,166 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                     try{
                         addConstantsComment(simple.getLine());
                         constantsContent.addLine(1,"self.attack = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "defence"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.defence = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "fall.defence_up"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.fallDefenceUp = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "liedown.time"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.liedownTime = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "airjuggle"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.airjuggle = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "sparkno" && !Util::matchRegex(sectionName, "State")){
+                    // Do not include state
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.sparkno = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "guard.sparkno"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.guardSparkno = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "KO.echo"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.koEcho = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "volume" && !Util::matchRegex(sectionName, "State")){
+                    // Do not include state
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.volume = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "IntPersistIndex"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.intPersistIndex = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "FloatPersistIndex"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.floatPersistIndex = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "xscale"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.xscale = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "yscale"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.yscale = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "ground.back"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.groundBack = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "ground.front"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.groundFront = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "air.back"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.airBack = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "air.front"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.airFront = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "height"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.height = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "attack.dist"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.attackDist = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "proj.attack.dist"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.projAttackDist = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "proj.doscale"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.projDoscale = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "head.pos"){
+                    int x=0, y=0;
+                    try{
+                        simple >> x >> y;
+                    } catch (const Ast::Exception & fail){
+                    }
+                    std::stringstream out;
+                    addConstantsComment(simple.getLine());
+                    out << "self.headPos.append('" << x << "')";
+                    constantsContent.addLine(1,out.str());
+                    out.str("");
+                    out << "self.headPos.append('" << y << "')";
+                    constantsContent.addLine(1,out.str());
+                } else if (simple == "mid.pos"){
+                    int x=0, y=0;
+                    try{
+                        simple >> x >> y;
+                    } catch (const Ast::Exception & fail){
+                    }
+                    std::stringstream out;
+                    addConstantsComment(simple.getLine());
+                    out << "self.midPos.append('" << x << "')";
+                    constantsContent.addLine(1,out.str());
+                    out.str("");
+                    out << "self.midPos.append('" << y << "')";
+                    constantsContent.addLine(1,out.str());
+                } else if (simple == "shadowoffset"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.shadowoffset = '" + simple.valueAsString() + "'");
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else if (simple == "draw.offset"){
+                    try{
+                        addConstantsComment(simple.getLine());
+                        constantsContent.addLine(1,"self.drawOffset = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else {

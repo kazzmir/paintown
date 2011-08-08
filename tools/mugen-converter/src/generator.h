@@ -95,9 +95,6 @@ class CharacterGenerator{
         //! Handle base definition file
         void handleBaseDef(PythonClass &);
         
-        //! Handle general constants
-        //void handleConstants(Mugen::PythonStream & stream);
-        
         //! Handle command file
         void handleCmdFile(PythonClass &);
         
