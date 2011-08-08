@@ -26,6 +26,9 @@ void Behavior::hit(Object * enemy){
 
 DummyBehavior::DummyBehavior(){
 }
+    
+void DummyBehavior::flip(){
+}
 
 vector<string> DummyBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
     vector<string> out;
@@ -45,6 +48,13 @@ InputMap<Keys> & HumanBehavior::getInput(bool facingRight){
         return right;
     }
     return left;
+}
+
+/* turned around so we have to swap forward/backward */
+void HumanBehavior::flip(){
+    bool forward = input.forward;
+    input.forward = input.back;
+    input.back = forward;
 }
 
 Mugen::Input HumanBehavior::updateInput(InputMap<Keys> & keys, Mugen::Input old){
@@ -94,6 +104,9 @@ HumanBehavior::~HumanBehavior(){
 }
 
 RandomAIBehavior::RandomAIBehavior(){
+}
+    
+void RandomAIBehavior::flip(){
 }
 
 static string randomCommand(const vector<Command*> & commands){
@@ -186,6 +199,9 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
     currentMove->consecutive += 1;
 
     return what;
+}
+    
+void LearningAIBehavior::flip(){
 }
 
 static LearningAIBehavior::Direction randomDirection(){

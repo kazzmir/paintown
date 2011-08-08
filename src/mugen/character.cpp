@@ -2831,6 +2831,9 @@ void Character::doTurn(Mugen::Stage & stage){
     } else {
         changeState(stage, Mugen::CrouchTurning, active);
     }
+    if (behavior != NULL){
+        behavior->flip();
+    }
     reverseFacing();
 }
 

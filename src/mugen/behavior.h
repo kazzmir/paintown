@@ -21,6 +21,8 @@ public:
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed) = 0;
 
+    virtual void flip() = 0;
+
     /* hit someone */
     virtual void hit(Object * enemy);
 
@@ -32,6 +34,8 @@ public:
     HumanBehavior(InputMap<Keys> left, InputMap<Keys> right);
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    
+    virtual void flip();
 
     virtual ~HumanBehavior();
 
@@ -51,6 +55,7 @@ public:
     DummyBehavior();
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual void flip();
 
     virtual ~DummyBehavior();
 };
@@ -60,6 +65,7 @@ public:
     RandomAIBehavior();
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual void flip();
 
     virtual ~RandomAIBehavior();
 };
@@ -70,6 +76,7 @@ public:
     LearningAIBehavior(int difficult);
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual void flip();
     
     virtual void hit(Object * enemy);
 
