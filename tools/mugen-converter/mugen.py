@@ -1,10 +1,18 @@
 # Mugen Classes
 
-# TODO Add state and controller classes
-class State():
-    def __init__(self):
-        pass
+# StateDef holds it's parameters declared in statedef and it's relative procedure states
+class StateDef():
+    def __init__(self, func, params):
+        self.parameters = {params}
+        self.function = func
+        
+    def getParamater(self, name):
+        try:
+            return parameters[name]
+        except KeyError:
+            return ""
 
+# TODO Controller class
 class Controller():
     def __init__(self):
         pass
@@ -82,6 +90,9 @@ class Character():
         self.yaccel = None
         self.standFriction = None
         self.crouchFriction = None
+        
+        # State holders
+        self.states = {}
 
     def setName(self, name):
         self.name = name
@@ -94,3 +105,6 @@ class Character():
 
     def addCommand(self, name, command, time=None, bufferTime=None):
         pass
+    
+    def addState(self, number, state):
+        self.states[number] = state

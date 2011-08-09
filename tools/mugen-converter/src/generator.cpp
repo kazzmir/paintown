@@ -4,6 +4,7 @@
 #include "util/regex.h"
 
 #include <ctime>
+#include <exception>
 #include <list>
 
 using namespace Mugen;
@@ -411,26 +412,104 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
     walker.complete();
 }
 
+class StateException : public std::exception{
+    virtual const char* what() const throw()
+    {
+        return "";
+    }
+};
+
 class StateHandler{
     public:
-        StateHandler(){
+        StateHandler(const std::string & section):
+        inDef(true){
+            if (Util::matchRegex(lowercase(section), "statedef")){
+                sectionName = section;
+                std::string func = "state";
+                if (sectionName[10] == '-'){
+                    // Found negative, it's either -3, -2 or -1 (but check and store anyways)
+                    std::string num = Util::captureRegex(lowercase(sectionName), "statedef -([0-9]+)", 0);
+                    stateNumber = "-" + num;
+                    func += "neg" + num;
+                } else {
+                    std::string num = Util::captureRegex(lowercase(sectionName), "statedef ([0-9]+)", 0);
+                    stateNumber = num;
+                    func += num;
+                }
+                
+                function = func;
+                definition = "def " + function + "():";
+            } else throw StateException();
         }
         ~StateHandler(){
         }
         
+        std::string sectionName;
         std::string definition;
+        std::string function;
+        std::string stateNumber;
+        std::string statedefParameters;
+        std::string initComment;
+        bool inDef;
         
-        void grabDefinition(const std::string & sectionName){
-            if (Util::matchRegex(lowercase(sectionName), "statedef")){
-                std::string name = "def state";
-                if (sectionName[10] == '-'){
-                    // Found negative, it's either -3, -2 or -1 (but check and store anyways)
-                    name += "neg" + Util::captureRegex(lowercase(sectionName), "statedef -([0-9]+)", 0);
+        void toggleSection(){
+            inDef = !inDef;
+        }
+        
+        void parseSection(const std::string & filename, const Ast::AttributeSimple & simple){
+            // In Statedef
+            if (inDef){
+                /*  type
+                    movetype
+                    physics
+                    anim
+                    velset
+                    ctrl
+                    poweradd
+                    juggle
+                    facep2
+                    hitdefpersist
+                    movehitpersist
+                    hitcountpersist
+                    sprpriority */
+                if (simple == "type"){
+                } else if (simple == "movetype"){
+                } else if (simple == "physics"){
+                } else if (simple == "anim"){
+                } else if (simple == "velset"){
+                } else if (simple == "ctrl"){
+                } else if (simple == "poweradd"){
+                } else if (simple == "juggle"){
+                } else if (simple == "facep2"){
+                } else if (simple == "hitdefpersist"){
+                } else if (simple == "movehitpersist"){
+                } else if (simple == "hitcounterpersist"){
+                } else if (simple == "sprpriority"){
                 } else {
-                    name += Util::captureRegex(lowercase(sectionName), "statedef ([0-9]+)", 0);
+                    std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
                 }
-                name+= "():";
+            } else {
+                if (simple == "triggerall"){
+                } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
+                } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
+                } else {
+                    std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
+                }
             }
+        }
+        
+        void makeInitComment(const std::string & file, int line){
+                std::stringstream out;
+                out << line;
+                initComment = "# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str();
+        }
+        
+        const Content getInitEntry(){
+            Content content;
+            content.addSpace();
+            content.addLine(1, initComment);
+            content.addLine(1, "self.addState(" + stateNumber + ", mugen.StateDef(" + function + ", " + statedefParameters + "))");
+            return content;
         }
 };
 
@@ -473,6 +552,8 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             
             Command * currentCommand;
             Content commandContent;
+            
+            std::vector<StateHandler *> states;
             
             virtual void onSection(const Ast::Section & section){
                 sectionName = section.getName();
