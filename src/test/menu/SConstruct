@@ -158,6 +158,7 @@ test/mugen/behavior.cpp
 test/mugen/storyboard.cpp
 test/util/gui/fadetool.cpp
 test/mugen/character-select.cpp
+test/mugen/search.cpp
 test/mugen/character.cpp
 test/mugen/helper.cpp
 test/mugen/evaluator.cpp

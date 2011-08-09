@@ -192,6 +192,7 @@ load-select.cpp
 init.cpp
 test/paintown-engine/object/object_nonattack.cpp
 test/mugen/character-select.cpp
+test/mugen/search.cpp
 test/util/music.cpp
 test/util/music-player.cpp
 test/util/messages.cpp
