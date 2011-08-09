@@ -459,7 +459,14 @@ class StateHandler{
         void parseSection(const std::string & filename, const Ast::AttributeSimple & simple){
             // In Statedef
             if (inDef){
-                /*  type
+                handleDef(filename, simple);
+            } else {
+                handleState(filename, simple);
+            }
+        }
+        
+        void handleDef(const std::string & filename, const Ast::AttributeSimple & simple){
+            /*  type
                     movetype
                     physics
                     anim
@@ -472,29 +479,31 @@ class StateHandler{
                     movehitpersist
                     hitcountpersist
                     sprpriority */
-                if (simple == "type"){
-                } else if (simple == "movetype"){
-                } else if (simple == "physics"){
-                } else if (simple == "anim"){
-                } else if (simple == "velset"){
-                } else if (simple == "ctrl"){
-                } else if (simple == "poweradd"){
-                } else if (simple == "juggle"){
-                } else if (simple == "facep2"){
-                } else if (simple == "hitdefpersist"){
-                } else if (simple == "movehitpersist"){
-                } else if (simple == "hitcounterpersist"){
-                } else if (simple == "sprpriority"){
-                } else {
-                    std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
-                }
+            if (simple == "type"){
+            } else if (simple == "movetype"){
+            } else if (simple == "physics"){
+            } else if (simple == "anim"){
+            } else if (simple == "velset"){
+            } else if (simple == "ctrl"){
+            } else if (simple == "poweradd"){
+            } else if (simple == "juggle"){
+            } else if (simple == "facep2"){
+            } else if (simple == "hitdefpersist"){
+            } else if (simple == "movehitpersist"){
+            } else if (simple == "hitcounterpersist"){
+            } else if (simple == "sprpriority"){
             } else {
-                if (simple == "triggerall"){
-                } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
-                } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
-                } else {
-                    std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
-                }
+                std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
+            }
+        }
+        
+        void handleState(const std::string & filename, const Ast::AttributeSimple & simple){
+            if (simple == "triggerall"){
+            } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
+            } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
+            } if (simple == "persistent"){
+            } else {
+                std::cout << "Unhandled option in " << sectionName << " Section: " << simple.toString() << std::endl;
             }
         }
         
