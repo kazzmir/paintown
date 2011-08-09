@@ -411,6 +411,29 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
     walker.complete();
 }
 
+class StateHandler{
+    public:
+        StateHandler(){
+        }
+        ~StateHandler(){
+        }
+        
+        std::string definition;
+        
+        void grabDefinition(const std::string & sectionName){
+            if (Util::matchRegex(lowercase(sectionName), "statedef")){
+                std::string name = "def state";
+                if (sectionName[10] == '-'){
+                    // Found negative, it's either -3, -2 or -1 (but check and store anyways)
+                    name += "neg" + Util::captureRegex(lowercase(sectionName), "statedef -([0-9]+)", 0);
+                } else {
+                    name += Util::captureRegex(lowercase(sectionName), "statedef ([0-9]+)", 0);
+                }
+                name+= "():";
+            }
+        }
+};
+
 void CharacterGenerator::handleCmdFile(PythonClass & character){
     
     class Command{
