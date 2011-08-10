@@ -29,8 +29,8 @@ void addSection(const Value & section_list_value, const Value & section_value){
   sections->push_back(section);
 }
 
-Ast::Section * makeSection(const Value & str){
-    Ast::Section * object = new Ast::Section(as<std::string*>(str));
+Ast::Section * makeSection(const Value & str, int line, int column){
+    Ast::Section * object = new Ast::Section(as<std::string*>(str), line, column);
     GC::save(object);
     return object;
 }
@@ -243,7 +243,7 @@ rules:
 	inline comment = ";" (!"\n" .)*
 	               | "=" (!"\n" .)*
 		           | "-" "-"+
-	section = section_start ast:{{value = makeSection($1); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
+	section = line:<line> name:section_start ast:{{value = makeSection(name, getCurrentLine(line), getCurrentColumn(line)); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
                           | s data:loopstart {{ asSection(section)->addValue(asValue(data)); }}

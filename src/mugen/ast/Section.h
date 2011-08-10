@@ -25,10 +25,20 @@ public:
     static std::string SERIAL_SECTION_VALUE;
 
     Section(const std::string * name):
-    name(name){
+    name(name),
+    line(-1),
+    column(-1){
         if (name == 0){
-            std::cerr << "[" << __FILE__ << ": " << __LINE__ << "] Cannot create a section with an empty name" << std::endl;
-            exit(-1);
+            throw Exception("Cannot create a section with an empty name");
+        }
+    }
+
+    Section(const std::string * name, int line, int column):
+    name(name),
+    line(line),
+    column(column){
+        if (name == 0){
+            throw Exception("Cannot create a section with an empty name");
         }
     }
 
@@ -83,6 +93,14 @@ public:
         return *name;
     }
 
+    int getLine() const {
+        return line;
+    }
+
+    int getColumn() const {
+        return column;
+    }
+
     void addAttribute(Attribute * attribute){
         attributes.push_back(attribute);
         walkList.push_back(WalkAttribute);
@@ -119,7 +137,7 @@ public:
     }
     
     virtual Element * copy() const {
-        Section * out = new Section(new std::string(getName()));
+        Section * out = new Section(new std::string(getName()), line, column);
         out->walkList = walkList;
         for (std::list<Attribute*>::const_iterator attribute_it = attributes.begin(); attribute_it != attributes.end(); attribute_it++){
             out->attributes.push_back((Attribute*) (*attribute_it)->copy());
@@ -143,7 +161,7 @@ public:
 
     virtual Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_SECTION_LIST << getName();
+        *token << SERIAL_SECTION_LIST << getName() << getLine() << getColumn();
         std::list<Attribute*>::const_iterator attribute_it = attributes.begin();
         std::list<Value*>::const_iterator value_it = values.begin();
         for (std::list<WalkList>::const_iterator it = walkList.begin(); it != walkList.end(); it++){
@@ -172,9 +190,10 @@ public:
     static Section * deserialize(const Token * token){
         const Token * next;
         std::string name;
+        int line, column;
         TokenView view = token->view();
-        view >> name;
-        Section * section = new Section(new std::string(name));
+        view >> name >> line >> column;
+        Section * section = new Section(new std::string(name), line, column);
         while (view.hasMore()){
             view >> next;
             if (*next == SERIAL_SECTION_ATTRIBUTE){
@@ -302,6 +321,8 @@ public:
 
 private:
     const std::string * name;
+    int line;
+    int column;
     std::list<Attribute *> attributes;
     std::list<Value *> values;
     std::list<WalkList> walkList;

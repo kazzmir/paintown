@@ -473,8 +473,8 @@ Ast::Value * copyValue(const Value & value){
     return copied;
 }
 
-Ast::Section * makeSection(const Value & str){
-    Ast::Section * object = new Ast::Section(as<std::string*>(str));
+Ast::Section * makeSection(const Value & str, int line, int column){
+    Ast::Section * object = new Ast::Section(as<std::string*>(str), line, column);
     GC::save(object);
     return object;
 }
@@ -610,7 +610,7 @@ rules:
             | "=" (!newline .)*
             | "-" "-" (!newline .)*
             | ":" ":" (!newline .)*
-    section = section_title ast:{{ value = makeSection($1); }} whitespace (sn section_item(ast))* {{ value = ast; }}
+    section = line:<line> name:section_title ast:{{ value = makeSection(name, getCurrentLine(line), getCurrentColumn(line)); }} whitespace (sn section_item(ast))* {{ value = ast; }}
 
     section_item(ast) = s data:assignment whitespace line_end {{ as<Ast::Section*>(ast)->addAttribute(as<Ast::Attribute*>(data)); }}
                       | line:<line> name:identifier s "=" fail:(!newline .)* line_end {{
