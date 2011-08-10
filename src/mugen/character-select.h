@@ -986,7 +986,7 @@ class CharacterSelect {
 	
 	virtual void load();
 	
-	virtual void run(const std::string & title);
+	virtual void run(const std::string & title, Searcher & search);
 
         virtual void reset();
 	
@@ -1160,7 +1160,6 @@ class CharacterSelect {
         };
 
         Subscriber subscription;
-        Searcher search;
 };
 
 }

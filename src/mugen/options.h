@@ -11,26 +11,29 @@ class MugenFont;
 
 namespace Mugen {
 
+class Searcher;
 class Character;
 
 class OptionArcade: public ItemOption {
 public:
-    OptionArcade(const std::string &name);
+    OptionArcade(const std::string &name, Searcher & searcher);
     virtual ~OptionArcade();
     
     void executeOption(const Mugen::PlayerType &, bool & endGame);
 
 private:
+    Searcher & searcher;
 };
 
 /*! Handles key reconfiguration */
 class OptionVersus: public Mugen::ItemOption {
 public:
-    OptionVersus(const std::string &name);
+    OptionVersus(const std::string &name, Searcher & searcher);
     virtual ~OptionVersus();
     void executeOption(const Mugen::PlayerType &, bool & endGame);
     
 private:
+    Searcher & searcher;
 };
 
 class Option{

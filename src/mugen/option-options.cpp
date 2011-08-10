@@ -11,6 +11,7 @@
 #include "sound.h"
 #include "background.h"
 #include "parse-cache.h"
+#include "search.h"
 
 #include <ostream>
 #include <vector>
@@ -761,7 +762,8 @@ void OptionOptions::doOptions(MugenFont & font, int x, int y, const Graphics::Bi
 }
 */
 
-OptionArcade::OptionArcade(const string & name){
+OptionArcade::OptionArcade(const string & name, Searcher & searcher):
+searcher(searcher){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to versus");
     }
@@ -773,9 +775,9 @@ OptionArcade::~OptionArcade(){
 	// Nothing
 }
 
-static void runGame(const PlayerType & player, GameType kind){
+static void runGame(const PlayerType & player, GameType kind, Searcher & searcher){
     Game versus(player, kind, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
-    versus.run();
+    versus.run(searcher);
 }
 
 void OptionArcade::executeOption(const Mugen::PlayerType & player, bool &endGame){
@@ -784,10 +786,11 @@ void OptionArcade::executeOption(const Mugen::PlayerType & player, bool &endGame
     Game versus(player, Arcade, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
     versus.run();
     */
-    runGame(player, Arcade);
+    runGame(player, Arcade, searcher);
 }
 
-OptionVersus::OptionVersus( const std::string &name ){
+OptionVersus::OptionVersus(const std::string &name, Searcher & searcher):
+searcher(searcher){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to versus");
     }
@@ -805,7 +808,7 @@ void OptionVersus::executeOption(const Mugen::PlayerType & player, bool &endGame
     versus.run();
     */
 
-    runGame(player, Versus);
+    runGame(player, Versus, searcher);
 }
 
 }

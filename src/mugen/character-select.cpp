@@ -1533,9 +1533,6 @@ quitSearching(false),
 searchingCheck(quitSearching, searchingLock.getLock()),
 characterAddThread(PaintownUtil::Thread::uninitializedValue),
 subscription(*this){
-
-    search.start();
-
     grid.setGameType(gameType);
 
     // Set defaults
@@ -1543,8 +1540,6 @@ subscription(*this){
 }
 
 CharacterSelect::~CharacterSelect(){
-    search.unsubscribe(&subscription);
-
     searchingCheck.set(true);
 
     /* signal the add thread in case its waiting */
@@ -2706,11 +2701,27 @@ static void startMusic(const Filesystem::AbsolutePath & systemFile, const string
     }
 }
 
-void CharacterSelect::run(const std::string & title){
+void CharacterSelect::run(const std::string & title, Searcher & search){
     bool escaped = false;
 
-    search.subscribe(&subscription);
-    
+    class WithSubscription{
+    public:
+        WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
+        search(search),
+        subscription(subscription){
+            search.subscribe(&subscription);
+        }
+
+        Searcher & search;
+        Searcher::Subscriber & subscription;
+
+        ~WithSubscription(){
+            search.unsubscribe(&subscription);
+        }
+    };
+
+    WithSubscription(search, subscription);
+
     Gui::FadeTool fader;
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);

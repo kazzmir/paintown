@@ -17,6 +17,7 @@
 #include "util/events.h"
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
+#include "search.h"
 #include "exceptions/exception.h"
 #include "util/loading.h"
 
@@ -49,18 +50,18 @@ motifDirectory(systemFile.getDirectory()){
 Game::~Game(){
 }
 
-void Game::run(){
+void Game::run(Searcher & searcher){
     ParseCache cache;
 
     try{
         switch (gameType){
             default:
             case Arcade: {
-                doArcade();
+                doArcade(searcher);
                 break;
             }
             case Versus: {
-                doVersus();
+                doVersus(searcher);
                 break;
             }
             case TeamArcade: {
@@ -84,11 +85,11 @@ void Game::run(){
                 break;
             }
             case Training: {
-                doTraining();
+                doTraining(searcher);
                 break;
             }
             case Watch: {
-                doWatch();
+                doWatch(searcher);
                 break;
             }
         }
@@ -525,7 +526,7 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
     runMatch(&stage);
 }
 
-void Game::doTraining(){
+void Game::doTraining(Searcher & searcher){
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);
     try{
@@ -536,7 +537,7 @@ void Game::doTraining(){
             select.load();
             try{
                 {
-                    select.run("Training Mode");
+                    select.run("Training Mode", searcher);
                     select.renderVersusScreen();
                 }
                 HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
@@ -563,7 +564,7 @@ void Game::doTraining(){
     Mugen::Data::getInstance().setTime(time);
 }
 
-void Game::doWatch(){
+void Game::doWatch(Searcher & searcher){
     /* Do watch screen */
     bool quit = false;
     while (!quit){
@@ -573,7 +574,7 @@ void Game::doWatch(){
 	select.load();
         try{
             {
-                select.run("Watch Mode");
+                select.run("Watch Mode", searcher);
                 select.renderVersusScreen();
             }
             LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
@@ -593,7 +594,7 @@ void Game::doWatch(){
 /* is there a reason why doArcade and doVersus don't share the main loop?
  * answer: jon moved the main loop to runMatch(). versus should use this eventually
  */
-void Game::doArcade(){
+void Game::doArcade(Searcher & searcher){
     /* FIXME: there isn't really a need to have this bitmap exist forever.
      * a temporary bitmap can be created when its needed.
      */
@@ -601,7 +602,7 @@ void Game::doArcade(){
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
     select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
     select.load();
-    select.run("Arcade");
+    select.run("Arcade", searcher);
     Filesystem::AbsolutePath intro;
     Filesystem::AbsolutePath ending;
     bool displayWinScreen = false;
@@ -809,7 +810,7 @@ void Game::doArcade(){
                     select.reset();
                     select.getPlayer1()->resetPlayer();
                     select.getPlayer2()->resetPlayer();
-                    select.run("Arcade");
+                    select.run("Arcade", searcher);
                 } else {
                     quit = displayGameOver = true;
                 }
@@ -828,14 +829,14 @@ void Game::doArcade(){
     }
 }
 
-void Game::doVersus(){
+void Game::doVersus(Searcher & searcher){
     bool quit = false;
     while (!quit){
         Mugen::CharacterSelect select(systemFile, playerType, gameType);
         select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
         select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
         select.load();
-        select.run("Versus Mode");
+        select.run("Versus Mode", searcher);
         select.renderVersusScreen();
 
         HumanBehavior player1Input(getPlayer1Keys(), getPlayer1InputLeft());

@@ -7,6 +7,7 @@
 #include "exception.h"
 #include "util/gui/fadetool.h"
 #include "util/language-string.h"
+#include "search.h"
 
 /*
 #include "menu/menu.h"
@@ -290,6 +291,8 @@ class MugenMenu {
 	std::vector<Mugen::ItemOption *> options;
 	
 	std::vector<Mugen::ItemOption *>::iterator currentOption;
+
+        Mugen::Searcher searcher;
 };
 
 namespace Mugen{

@@ -9,6 +9,7 @@ class Bitmap;
 
 namespace Mugen{
 
+class Searcher;
 class CharacterSelect;
 class Stage;
     
@@ -19,17 +20,17 @@ class Game {
         virtual ~Game();
 
         //! Runs everything
-        virtual void run();
+        virtual void run(Searcher & searcher);
 
         /* just start a training match */
         static void startTraining(const std::string & player1, const std::string & player2, const std::string & stage);
         /* start a watch match */
         static void startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName);
     private:
-        void doArcade();
-        void doTraining();
-        void doVersus();
-        void doWatch();
+        void doArcade(Searcher & searcher);
+        void doTraining(Searcher & searcher);
+        void doVersus(Searcher & searcher);
+        void doWatch(Searcher & searcher);
 
         //! Player type
         PlayerType playerType;

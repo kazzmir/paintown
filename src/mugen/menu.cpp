@@ -185,31 +185,37 @@ class DummyOption : public ItemOption {
 
 class WatchOption: public ItemOption {
 public:
-    WatchOption(const std::string & name){
+    WatchOption(const std::string & name, Searcher & searcher):
+    searcher(searcher){
         this->setText(name);
     }
+
+    Searcher & searcher;
 
     virtual ~WatchOption(){
     }
 
     void executeOption(const Mugen::PlayerType & player, bool & endGame){
         Mugen::Game watch(player, Mugen::Watch, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));
-        watch.run();
+        watch.run(searcher);
     }
 };
 
 class TrainingOption: public ItemOption {
 public:
-    TrainingOption(const std::string & name){
+    TrainingOption(const std::string & name, Searcher & searcher):
+    searcher(searcher){
         this->setText(name);
     }
+
+    Searcher & searcher;
 
     virtual ~TrainingOption(){
     }
 
     void executeOption(const Mugen::PlayerType & player, bool & endGame){
         Mugen::Game game(player, Mugen::Training, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
-        game.run();
+        game.run(searcher);
     }
 };
 
@@ -462,12 +468,12 @@ void MugenMenu::loadData(){
                             }
                         } else if (simple == "menu.itemname.arcade"){
                             try{
-                                menu.addMenuOption(new Mugen::OptionArcade(simple.valueAsString()));
+                                menu.addMenuOption(new Mugen::OptionArcade(simple.valueAsString(), menu.searcher));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "menu.itemname.versus"){
                             try{
-                                menu.addMenuOption(new Mugen::OptionVersus(simple.valueAsString()));
+                                menu.addMenuOption(new Mugen::OptionVersus(simple.valueAsString(), menu.searcher));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "menu.itemname.teamarcade"){
@@ -497,12 +503,12 @@ void MugenMenu::loadData(){
                             }
                         } else if (simple == "menu.itemname.training"){
                             try{
-                                menu.addMenuOption(new Mugen::TrainingOption(simple.valueAsString()));
+                                menu.addMenuOption(new Mugen::TrainingOption(simple.valueAsString(), menu.searcher));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "menu.itemname.watch"){
                             try{
-                                menu.addMenuOption(new Mugen::WatchOption(simple.valueAsString()));
+                                menu.addMenuOption(new Mugen::WatchOption(simple.valueAsString(), menu.searcher));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "menu.itemname.options"){
@@ -668,6 +674,22 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
 void MugenMenu::run(){
     bool done = false;
     bool endGame = false;
+
+    class StartStop{
+    public:
+        StartStop(Mugen::Searcher & searcher):
+        searcher(searcher){
+            searcher.start();
+        }
+
+        Mugen::Searcher & searcher;
+
+        ~StartStop(){
+            searcher.pause();
+        }
+    };
+
+    StartStop check(searcher);
     
     if (options.empty()){
         return;
