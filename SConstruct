@@ -365,31 +365,60 @@ OpenGL
 
 def checkAllegro(context):
     context.Message("Checking for Allegro... ")
-    tmp = context.env.Clone()
-    env = context.env
 
-    ok = 1
-    try:
-        def enableAllegro(env2):
-            safeParseConfig(env2, 'allegro-config --cflags --libs')
-            env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
-        safeParseConfig(env, 'allegro-config --cflags --libs')
-        env['paintown_enableAllegro'] = enableAllegro
-        env.Append(CPPDEFINES = ['USE_ALLEGRO'])
-        ok = context.TryLink("""
-        #include <allegro.h>
-        int main(int argc, char ** argv){
-          install_allegro(0, NULL, NULL);
-          return 0;
-        }
-        END_OF_MAIN()
-    """, ".c")
+    def testAllegro(context):
+        return context.TryLink("""
+            #include <allegro.h>
+            int main(int argc, char ** argv){
+              install_allegro(0, NULL, NULL);
+              return 0;
+            }
+            END_OF_MAIN()
+        """, ".c")
 
-    except OSError:
-        ok = 0 
+    # use pkg-config
+    def allegro44(context):
+        tmp = context.env.Clone()
+        env = context.env
+        ok = 1
+        try:
+            safeParseConfig(env, 'pkg-config allegro --cflags --libs')
+            env.Append(CPPDEFINES = ['USE_ALLEGRO'])
+            ok = testAllegro(context)
+        except OSError:
+            ok = 0 
 
-    if not ok:
-        context.sconf.env = tmp
+        if not ok:
+            context.sconf.env = tmp
+        else:
+            context.Message('found 4.4')
+
+        return ok
+
+    # use allegro-config
+    def allegro42(context):
+        tmp = context.env.Clone()
+        env = context.env
+        ok = 1
+        try:
+            def enableAllegro(env2):
+                safeParseConfig(env2, 'allegro-config --cflags --libs')
+                env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
+            safeParseConfig(env, 'allegro-config --cflags --libs')
+            env['paintown_enableAllegro'] = enableAllegro
+            env.Append(CPPDEFINES = ['USE_ALLEGRO'])
+            ok = testAllegro(context)
+        except OSError:
+            ok = 0 
+
+        if not ok:
+            context.sconf.env = tmp
+        else:
+            context.Message('found 4.2')
+
+        return ok
+
+    ok = allegro44(context) or allegro42(context)
 
     context.Result(colorResult(ok))
     return ok
