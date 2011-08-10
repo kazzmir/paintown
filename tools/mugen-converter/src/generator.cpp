@@ -1181,7 +1181,7 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                     }
                 } else {
                     try {
-                        states.parseState(generator.commandFile, simple, sectionName);
+                        states.parseState(currentFile, simple, sectionName);
                     } catch (const StateException & fail){
                         std::cout << "Ignoring option in [" << sectionName << "] Section: " << simple.toString() << std::endl;
                     }
