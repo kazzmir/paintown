@@ -3,7 +3,7 @@
 # StateDef holds it's parameters declared in statedef and it's relative procedure states
 class StateDef():
     def __init__(self, func, params):
-        self.parameters = {params}
+        self.parameters = params
         self.function = func
         
     def getParamater(self, name):
