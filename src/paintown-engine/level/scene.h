@@ -36,33 +36,35 @@ struct Panel{
 
 class Scene{
 public:
-	Scene(const char * filename, const Level::Cacher & cacher);
+    Scene(const char * filename, const Level::Cacher & cacher);
 
-	// void Draw( int x, Bitmap * work );
-	void drawFront( int x, Graphics::Bitmap * work );
-	void drawBack( int x, Graphics::Bitmap * work );
+    // void Draw( int x, Bitmap * work );
+    void drawFront( int x, Graphics::Bitmap * work );
+    void drawBack( int x, Graphics::Bitmap * work );
 
-	int getFinished() const;
+    int getFinished() const;
 
-        inline std::string getDescription() const {
-            return description;
-        }
+    inline std::string getDescription() const {
+        return description;
+    }
 
-	inline int getMinimumZ() const {
-		return minimum_z;
-	}
+    inline int getMinimumZ() const {
+        return minimum_z;
+    }
 
-	inline int getMaximumZ() const {
-		return maximum_z;
-	}
+    inline int getMaximumZ() const {
+        return maximum_z;
+    }
 
-	inline int getBlock() const {
-		return blockNumber;
-	}
+    inline int getBlock() const {
+        return blockNumber;
+    }
 
     inline Block * currentBlock() const {
         return current_block;
     }
+
+    void startMusic();
 
     void addEnemy(Paintown::Enemy * const obj);
 
@@ -74,51 +76,49 @@ public:
 
     int totalLength() const;
 
-	int getLimit();
-	void act( int min_x, int max_x, std::vector< Paintown::Object * > * objects );
+    int getLimit();
+    void act( int min_x, int max_x, std::vector< Paintown::Object * > * objects );
 
-	virtual ~Scene();
+    virtual ~Scene();
 
 protected:
 
-	/* true if the scene the next block is ready */
-	bool canContinue( int x );
+    /* true if the scene the next block is ready */
+    bool canContinue( int x );
 
-	inline double getBackgroundParallax() const {
-		return backgroundParallax;
-	}
+    inline double getBackgroundParallax() const {
+        return backgroundParallax;
+    }
 
-	inline void setBackgroundParallax( double b ){
-		backgroundParallax = b;
-	}
+    inline void setBackgroundParallax( double b ){
+        backgroundParallax = b;
+    }
 
-	inline double getForegroundParallax() const {
-		return foregroundParallax;
-	}
+    inline double getForegroundParallax() const {
+        return foregroundParallax;
+    }
 
-	inline void setForegroundParallax( double b ){
-		foregroundParallax = b;
-	}
+    inline void setForegroundParallax( double b ){
+        foregroundParallax = b;
+    }
 
-	inline void setMinimumZ( const int z ){
-		minimum_z = z;
-	}
+    inline void setMinimumZ( const int z ){
+        minimum_z = z;
+    }
 
-	inline void setMaximumZ( const int z ){
-		maximum_z = z;
-	}
+    inline void setMaximumZ( const int z ){
+        maximum_z = z;
+    }
 
-	void calculateLength();
+    void calculateLength();
 
-	/* erase dead hearts */
-	void clearHearts();
+    /* erase dead hearts */
+    void clearHearts();
 
     /* try to execute the triggers */
     void doTriggers();
 
 protected:
-
-    std::string music;
     Graphics::Bitmap * background;
     Graphics::Bitmap * arrow;
     int arrow_blink;
@@ -154,6 +154,8 @@ protected:
 
     std::vector<Atmosphere*> atmospheres;
     std::vector<Trigger*> triggers;
+    std::vector<std::string> music;
+    bool hasMusic;
     std::string description;
 };
 

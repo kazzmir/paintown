@@ -32,7 +32,12 @@ public:
 	World();
 	virtual ~World();
 
-	virtual void Quake( int q );
+	virtual void Quake(int q);
+
+        /* called right before the world is used to play a game.
+         * initialize anything extra here or start music.
+         */
+        virtual void begin() = 0;
 
 	inline int getQuake() const {
 		return quake_time;

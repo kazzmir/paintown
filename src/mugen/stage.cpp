@@ -1554,6 +1554,8 @@ int Mugen::Stage::getMinimumZ(){ return zoffset; }
 
 void Mugen::Stage::drawMiniMaps( bool b ){ /* Not likely */ }
 bool Mugen::Stage::shouldDrawMiniMaps(){ return false; }
+void Mugen::Stage::begin(){
+}
 void Mugen::Stage::killAllHumans( Paintown::Object * player ){ 
     for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
         Paintown::Object * o = *it;

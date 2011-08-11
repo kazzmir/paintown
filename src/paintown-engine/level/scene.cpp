@@ -15,6 +15,7 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "util/file-system.h"
+#include "util/music.h"
 #include "../environment/atmosphere.h"
 #include "../script/script.h"
 #include "../trigger/trigger.h"
@@ -44,7 +45,8 @@ current_block(NULL),
 blockNumber(1),
 backgroundParallax(5),
 foregroundParallax(1.2),
-frontBuffer(NULL){
+frontBuffer(NULL),
+hasMusic(false){
 
     TokenReader tr(filename);
 
@@ -71,8 +73,17 @@ frontBuffer(NULL){
 
             const Token * tok;
             view >> tok;
-            if ( *tok == "music" ){
-                tok->view() >> music;
+            if (*tok == "music"){
+                hasMusic = true;
+                try{
+                    TokenView view = tok->view();
+                    while (true){
+                        string name;
+                        view >> name;
+                        music.push_back(name);
+                    }
+                } catch (const TokenException & fail){
+                }
             } else if ( *tok == "background" ){
                 string n;
                 tok->view() >> n;
@@ -416,6 +427,23 @@ void Scene::Draw( int x, Bitmap * work ){
 	}
 }
 */
+    
+void Scene::startMusic(){
+    if (hasMusic){
+        Music::pause();
+        vector<Filesystem::AbsolutePath> songs;
+        for (vector<string>::iterator it = music.begin(); it != music.end(); it++){
+            try{
+                songs.push_back(Storage::instance().find(Filesystem::RelativePath("music").join(Filesystem::RelativePath(*it))));
+            } catch (const Filesystem::NotFound & fail){
+            }
+        }
+        Music::loadSong(songs);
+    } else {
+        /* choose a song randomly */
+        Music::changeSong();
+    }
+}
 
 Scene::~Scene(){
     delete current_block;

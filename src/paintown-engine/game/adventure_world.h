@@ -46,6 +46,8 @@ public:
 	inline int getQuake() const {
 		return quake_time;
 	}
+        
+        virtual void begin();
 
 	virtual void act();
 	virtual void draw( Graphics::Bitmap * work );

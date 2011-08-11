@@ -120,6 +120,8 @@ public:
 	return this->musicVolume;
     }
 
+    virtual void begin();
+
     inline double getCameraX() const { return camerax; }
     inline double getCameraY() const { return cameray; }
     inline int getTension() const { return tension; }

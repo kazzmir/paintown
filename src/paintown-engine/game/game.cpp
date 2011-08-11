@@ -932,6 +932,8 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     Draw drawer(console, world, state);
     // state.helpTime = helpTime;
 
+    world.begin();
+
     try{
         /* run the game */
         Util::standardLoop(logic, drawer);
@@ -1059,7 +1061,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
 
         Keyboard::pushRepeatState(false);
 
-        Music::changeSong();
+        // Music::changeSong();
 
         initializePlayers(context.getPlayers());
 

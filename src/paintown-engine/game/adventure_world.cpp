@@ -137,6 +137,10 @@ Script::Engine * AdventureWorld::getEngine() const {
     */
 }
 
+void AdventureWorld::begin(){
+    scene->startMusic();
+}
+
 void AdventureWorld::reloadLevel(){
     for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
         it->min_x = 0;
