@@ -93,13 +93,6 @@ static vector<Paintown::DisplayCharacter*> getCharacters(PlayerVector players){
     return characters;
 }
 
-/* run the loader in a separate thread */
-static void * characterLoader(void * arg){
-    Paintown::DisplayCharacterLoader * loader = (Paintown::DisplayCharacterLoader*) arg;
-    loader->load();
-    return NULL;
-}
-
 namespace Select{
     enum Input{
         Up, Down, Left,
@@ -342,89 +335,64 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
         Graphics::Color gradient[MAXGRADIENT];	
 
-        void draw(const Graphics::Bitmap & work){
-            Paintown::DisplayCharacter * character = players[current].guy;
-
-            if (backgroundX < - work.getWidth()){
-                backgroundX += work.getWidth();
-            }
-
-            while (current < top){
-                top -= boxesPerLine;
-            }
-
-            while (current >= top + boxesPerLine * boxesPerColumn){
-                top += boxesPerLine;
-            }
-
-            // background.Stretch( work );
-            background.Blit(backgroundX, 0, work);
-            background.Blit(work.getWidth() + backgroundX, 0, work);
+        void drawCharacter(Paintown::DisplayCharacter * character, const Graphics::Bitmap & work){
             const Font & font = Font::getFont(Global::DEFAULT_FONT);
+            const int stand = 100;
+            character->setFacing(Paintown::Object::FACING_RIGHT);
+            Paintown::Character copy(*character);
+            copy.setDrawShadow(false);
+            copy.setX(preview.getWidth() / 2);
+            copy.setY(0);
+            // copy.setZ( preview.getHeight() - stand );
+            copy.setZ(preview.getHeight() - stand);
+            preview.fill(Graphics::MaskColor());
+            reflection.fill(Graphics::MaskColor());
+            // preview.fill( 0 );
+            // reflection.fill( 0 );
 
-            if (character->isLoaded()){
-                const int stand = 100;
-                character->setFacing(Paintown::Object::FACING_RIGHT);
-                Paintown::Character copy(*character);
-                copy.setDrawShadow(false);
-                copy.setX(preview.getWidth() / 2);
-                copy.setY(0);
-                // copy.setZ( preview.getHeight() - stand );
-                copy.setZ(preview.getHeight() - stand);
-                preview.fill(Graphics::MaskColor());
-                reflection.fill(Graphics::MaskColor());
-                // preview.fill( 0 );
-                // reflection.fill( 0 );
+            copy.draw(&preview, 0, 0);
+            preview.drawVFlip(0, 0, reflection);
 
-                copy.draw(&preview, 0, 0);
-                preview.drawVFlip(0, 0, reflection);
+            int reflection_y = preview.getHeight() - stand - stand;
+            /* draw a black solid color version of the character */
+            Graphics::Bitmap::transBlender(0, 0, 0, 255);
+            Graphics::LitBitmap s2(reflection);
+            s2.draw(0, reflection_y, preview);
 
-                int reflection_y = preview.getHeight() - stand - stand;
-                /* draw a black solid color version of the character */
-                Graphics::Bitmap::transBlender(0, 0, 0, 255);
-                Graphics::LitBitmap s2(reflection);
-                s2.draw(0, reflection_y, preview);
+            /* then draw the original character translucently over the black */
+            Graphics::Bitmap::transBlender(0, 0, 0, 128);
+            /* TODO: implement a fading reflection. compute the alpha for each y line.
+             * start out with alpha of 128 then slowly move towards 64 at the middle
+             * of the sprite and then fade to 0 soon after, like after another 10
+             * pixels.
+             * alpha(y) = y < height/2 : 128 * y/height/2 * 100 ? alpha(64) * log(y)
+             */
+            reflection.translucent().draw(0, reflection_y, preview);
+            copy.draw(&preview, 0, 0);
 
-                /* then draw the original character translucently over the black */
-                Graphics::Bitmap::transBlender(0, 0, 0, 128);
-                /* TODO: implement a fading reflection. compute the alpha for each y line.
-                 * start out with alpha of 128 then slowly move towards 64 at the middle
-                 * of the sprite and then fade to 0 soon after, like after another 10
-                 * pixels.
-                 * alpha(y) = y < height/2 : 128 * y/height/2 * 100 ? alpha(64) * log(y)
-                 */
-                reflection.translucent().draw(0, reflection_y, preview);
-                copy.draw(&preview, 0, 0);
+            // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
+            // preview.floodfill( 0, 0, Bitmap::MaskColor );
+            // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
 
-                // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
-                // preview.floodfill( 0, 0, Bitmap::MaskColor );
-                // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
+            // preview.draw( 60, 0, work );
 
-                // preview.draw( 60, 0, work );
+            preview.drawStretched(-GFX_X / 2 + startX / 2, -70 + stand, GFX_X, GFX_Y, work);
+            // preview.drawStretched(-320, 0, GFX_X, GFX_Y, work);
 
-                preview.drawStretched(-GFX_X / 2 + startX / 2, -70 + stand, GFX_X, GFX_Y, work);
-                // preview.drawStretched(-320, 0, GFX_X, GFX_Y, work);
+            // preview.draw( 60, 0, work );
 
-                // preview.draw( 60, 0, work );
-
-                for (int c = 1; c >= 0; c--){
-                    int color = 255 - c * 190;
-                    int x = 10 + 5 * c;
-                    int y = font.getHeight() + 5 + c * 5;
-                    font.printf( x, y, Graphics::makeColor(color, color, color ), work, copy.getName(), 0 );
-                }
+            for (int c = 1; c >= 0; c--){
+                int color = 255 - c * 190;
+                int x = 10 + 5 * c;
+                int y = font.getHeight() + 5 + c * 5;
+                font.printf( x, y, Graphics::makeColor(color, color, color ), work, copy.getName(), 0 );
             }
+        }
 
-            font.printf( 10, 10, Graphics::makeColor( 255, 255, 255 ), work, message, 0 );
-
-            if (!loader.done()){
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10 );
-                font.printf(1, 1, Graphics::makeColor(200,0,0), work, "Loading...", 0);
-            }
-
+        void drawBoxes(const Graphics::Bitmap & work){
             int x = startX, y = startY;
             unsigned int i;
-            for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
+            for (i = top; i < players.size() && y + boxSize < GFX_Y; i++){
                 Graphics::Bitmap box(work, x, y, boxSize, boxSize);
                 Paintown::DisplayCharacter * displayed = players[i].guy;
                 box.clear();
@@ -485,7 +453,40 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 int x2 = 140;
                 work.triangle(startX + x1, GFX_Y - 8, startX + x2, GFX_Y - 8, startX + (x1 + x2) / 2, GFX_Y - 3, gradient[clock % MAXGRADIENT]);
             }
+        }
 
+        void draw(const Graphics::Bitmap & work){
+            Paintown::DisplayCharacter * character = players[current].guy;
+
+            if (backgroundX < - work.getWidth()){
+                backgroundX += work.getWidth();
+            }
+
+            while (current < top){
+                top -= boxesPerLine;
+            }
+
+            while (current >= top + boxesPerLine * boxesPerColumn){
+                top += boxesPerLine;
+            }
+
+            // background.Stretch( work );
+            background.Blit(backgroundX, 0, work);
+            background.Blit(work.getWidth() + backgroundX, 0, work);
+            const Font & font = Font::getFont(Global::DEFAULT_FONT);
+
+            if (character->isLoaded()){
+                drawCharacter(character, work);
+            }
+
+            font.printf( 10, 10, Graphics::makeColor( 255, 255, 255 ), work, message, 0 );
+
+            if (!loader.done()){
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10 );
+                font.printf(1, 1, Graphics::makeColor(200,0,0), work, "Loading...", 0);
+            }
+
+            drawBoxes(work);
             work.BlitToScreen();
         }
     };
@@ -493,7 +494,35 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     Paintown::DisplayCharacterLoader loader(getCharacters(players));
     Util::Thread::Id loadingThread;
 
+    class DisplayThread: public Util::Thread::ThreadObject {
+    public:
+        DisplayThread(Paintown::DisplayCharacterLoader & loader):
+        ThreadObject(&loader, characterLoader),
+        loader(loader){
+        }
+
+        Paintown::DisplayCharacterLoader & loader;
+
+        /* run the loader in a separate thread */
+        static void * characterLoader(void * arg){
+            Paintown::DisplayCharacterLoader * loader = (Paintown::DisplayCharacterLoader*) arg;
+            loader->load();
+            return NULL;
+        }
+
+        virtual ~DisplayThread(){
+            loader.stop();
+        }
+    };
+
+    DisplayThread loading(loader);
+
+    /*
     if (!Util::Thread::createThread(&loadingThread, NULL, (Util::Thread::ThreadFunction) characterLoader, &loader)){
+        throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
+    }
+    */
+    if (!loading.start()){
         throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
 
@@ -504,6 +533,9 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     Logic logic(players, current, loader, backgroundX, boxesPerLine, clock);
     Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock);
 
+    Util::standardLoop(logic, draw);
+
+    /*
     try{
         Util::standardLoop(logic, draw);
     } catch (const Exception::Return & fail){
@@ -514,344 +546,9 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     loader.stop();
     Util::Thread::joinThread(loadingThread);
+    */
 
     return logic.getCurrent();
-
-
-#if 0
-    try{
-        while (! done){
-            /* FIXME: bad variable name */
-            Paintown::DisplayCharacter * ch = players[current].guy;
-
-            if (Global::speed_counter2 > 0){
-                // double think = Global::speed_counter;
-                runCounter += Global::speed_counter2 * gameSpeed * Global::LOGIC_MULTIPLIER;
-                Global::speed_counter2 = 0;
-                while (runCounter >= 1.0){
-                    int old = current;
-                    runCounter -= 1;
-                    clock += 1;
-                    InputManager::poll();
-
-                    if (Global::shutdown()){
-                        loader.stop();
-                        Util::Thread::joinThread(loadingThread);
-                        throw ShutdownException();
-                    }
-                    
-                    // InputMap<Select::Input>::Output inputState = InputManager::getMap(input);
-                    if (clock % 5 == 0){
-                        backgroundX -= 1;
-                        if (backgroundX < - work.getWidth()){
-                            backgroundX = 0;
-                        }
-                    }
-                    
-                    bool choose = false;
-                    class Handler: public InputHandler<Select::Input> {
-                    public:
-                        Handler(bool & choose,
-                                Paintown::DisplayCharacter * character,
-                                Paintown::DisplayCharacterLoader & loader,
-                                Sound & beep,
-                                int & current,
-                                const int boxesPerLine,
-                                Util::Thread::Id & loadingThread,
-                                InputMap<Select::Input> & input):
-                        choose(choose),
-                        character(character),
-                        loader(loader),
-                        beep(beep),
-                        current(current),
-                        boxesPerLine(boxesPerLine),
-                        loadingThread(loadingThread),
-                        input(input){
-                        }
-
-                        bool & choose;
-                        Paintown::DisplayCharacter * character;
-                        Paintown::DisplayCharacterLoader & loader;
-                        Sound & beep;
-                        int & current;
-                        const int boxesPerLine;
-                        Util::Thread::Id & loadingThread;
-                        InputMap<Select::Input> & input;
-                        
-                        virtual void release(const Select::Input & what, Keyboard::unicode_t unicode){
-                        }
-
-                        virtual void press(const Select::Input & what, Keyboard::unicode_t unicode){
-                            switch (what){
-                                case Select::Left: {
-                                    current = current - 1;
-                                    beep.play();
-                                    break;
-                                }
-                                case Select::Right: {
-                                    current = current + 1;
-                                    beep.play();
-                                    break;
-                                }
-                                case Select::Up: {
-                                    current = current - boxesPerLine;
-                                    beep.play();
-                                    break;
-                                }
-                                case Select::Down: {
-                                    current = current + boxesPerLine;
-                                    beep.play();
-                                    break;
-                                }
-                                case Select::Quit: {
-                                    loader.stop();
-                                    Util::Thread::joinThread(loadingThread);
-                                    InputManager::waitForRelease(input, Select::Quit);
-                                    throw Exception::Return(__FILE__, __LINE__);
-                                }
-                                case Select::Choose: {
-                                    choose = true;
-                                    break;
-                                }
-                                case Select::Remap: {
-                                    if (character->isLoaded()){
-                                        character->nextMap();
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    };
-
-                    Handler handler(choose, ch, loader, beep, current, boxesPerLine, loadingThread, input);
-                    InputManager::handleEvents(input, handler);
-
-                    /*
-                    vector<InputMap<Select::Input>::InputEvent> events = InputManager::getEvents(input);
-
-                    bool choose = false;
-                    for (vector<InputMap<Select::Input>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
-                        const InputMap<Select::Input>::InputEvent & event = *it;
-                        if (!event.enabled){
-                            continue;
-                        }
-                        switch (event.out){
-                            case Select::Left: {
-                                current = current - 1;
-                                beep.play();
-                                break;
-                            }
-                            case Select::Right: {
-                                current = current + 1;
-                                beep.play();
-                                break;
-                            }
-                            case Select::Up: {
-                                current = current - boxesPerLine;
-                                beep.play();
-                                break;
-                            }
-                            case Select::Down: {
-                                current = current + boxesPerLine;
-                                beep.play();
-                                break;
-                            }
-                            case Select::Quit: {
-                                loader.stop();
-                                Util::Thread::joinThread(loadingThread);
-                                InputManager::waitForRelease(input, Select::Quit);
-                                throw Exception::Return(__FILE__, __LINE__);
-                            }
-                            case Select::Choose: {
-                                choose = true;
-                                break;
-                            }
-                            case Select::Remap: {
-                                if (ch->isLoaded()){
-                                    ch->nextMap();
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    */
-
-                    if (current < 0){
-                        current = 0;
-                    }
-
-                    if (current >= (signed) players.size()){
-                        current = players.size() - 1;
-                    }
-
-                    if (ch->isLoaded()){
-                        if (ch->testAnimation()){
-                            ch->testReset();
-                        }
-                    }
-
-                    while (current < top){
-                        top -= boxesPerLine;
-                    }
-
-                    while (current >= top + boxesPerLine * boxesPerColumn){
-                        top += boxesPerLine;
-                    }
-
-                    if (current != old){
-                        loader.update(players[current].guy);
-                    }
-
-                    done |= choose && ch->isLoaded();
-
-                    // think--;
-                }
-
-                draw = true;
-            }
-
-            if (draw){
-
-                // background.Stretch( work );
-                background.Blit( backgroundX, 0, work );
-                background.Blit( work.getWidth() + backgroundX, 0, work );
-                const Font & font = Font::getFont(Global::DEFAULT_FONT);
-
-                if (ch->isLoaded()){
-                    const int stand = 100;
-                    ch->setFacing( Paintown::Object::FACING_RIGHT );
-                    Paintown::Character copy(*ch);
-                    copy.setDrawShadow( false );
-                    copy.setX( preview.getWidth() / 2 );
-                    copy.setY( 0 );
-                    // copy.setZ( preview.getHeight() - stand );
-                    copy.setZ(preview.getHeight() - stand);
-                    preview.fill(Graphics::MaskColor());
-                    reflection.fill(Graphics::MaskColor());
-                    // preview.fill( 0 );
-                    // reflection.fill( 0 );
-
-                    copy.draw( &preview, 0, 0 );
-                    preview.drawVFlip( 0, 0, reflection );
-
-                    Graphics::Bitmap::transBlender( 0, 0, 0, 255 );
-
-                    Graphics::LitBitmap s2(reflection);
-                    s2.draw( 0, preview.getHeight() - stand - stand, preview );
-
-                    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
-                    /* TODO: implement a fading reflection. compute the alpha for each y line.
-                     * start out with alpha of 128 then slowly move towards 64 at the middle
-                     * of the sprite and then fade to 0 soon after, like after another 10
-                     * pixels.
-                     * alpha(y) = y < height/2 : 128 * y/height/2 * 100 ? alpha(64) * log(y)
-                     */
-                    reflection.translucent().draw( 0, preview.getHeight() - stand - stand, preview );
-                    copy.draw( &preview, 0, 0 );
-
-                    // reflection.drawCharacter( 0, preview.getHeight() - stand - stand, 0, -1, preview );
-                    // preview.floodfill( 0, 0, Bitmap::MaskColor );
-                    // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
-
-                    // preview.draw( 60, 0, work );
-                    
-                    preview.drawStretched(-GFX_X / 2 + startX / 2, -70 + stand, GFX_X, GFX_Y, work);
-                    // preview.drawStretched(-320, 0, GFX_X, GFX_Y, work);
-                    
-                    // preview.draw( 60, 0, work );
-
-                    for (int c = 1; c >= 0; c--){
-                        int color = 255 - c * 190;
-                        int x = 10 + 5 * c;
-                        int y = font.getHeight() + 5 + c * 5;
-                        font.printf( x, y, Graphics::makeColor(color, color, color ), work, copy.getName(), 0 );
-                    }
-                }
-
-                font.printf( 10, 10, Graphics::makeColor( 255, 255, 255 ), work, message, 0 );
-
-                if (!loader.done()){
-
-                    const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10 );
-                    font.printf(1, 1, Graphics::makeColor(200,0,0), work, "Loading...", 0);
-                }
-
-                int x = startX, y = startY;
-                unsigned int i;
-                for ( i = top; i < players.size() && y + boxSize < GFX_Y; i++ ){
-                    Graphics::Bitmap box(work, x, y, boxSize, boxSize);
-                    Paintown::DisplayCharacter * displayed = players[i].guy;
-                    box.clear();
-                    // int color = unselectedColor;
-                    // int * color = i == (unsigned int) current ? selectedGradient : unselectedGradient;
-                    if (displayed->isLoaded()){
-                        temp.clear();
-                        Paintown::Character smaller(*displayed);
-
-                        /* draw a border */
-                        // box.border( 0, 3, color[ clock % maxColor ] );
-
-                        smaller.setX( temp.getWidth() / 2 );
-                        smaller.setY( 0 );
-                        smaller.setZ( temp.getHeight() );
-                        smaller.draw( &temp, 0, 0 );
-                        temp.drawStretched(0, 0, box.getWidth(), box.getHeight(), box);
-                    } else {
-                        /* FIXME: center the text */
-
-                        const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
-                        font.printf(box.getWidth() / 2 - font.textLength(displayed->getName().c_str()) / 2, box.getHeight() / 2 - font.getHeight() / 2, Graphics::makeColor(255, 255, 255), box, displayed->getName(), 0);
-                    }
-
-                    if (i == (unsigned int) current){
-                        box.border(0, 3, selectedGradient[clock % maxColor]);
-                    } else {
-                        for (int border = 0; border < 3; border++){
-                            box.border(border, border + 1, unselectedGradient[border]);
-                        }
-
-                        /*
-                        if (i % 2 == 0){
-                            for (int border = 0; border < 3; border++){
-                                box.border(border, border + 1, unselectedGradient[border]);
-                            }
-                            // box.border(0, 3, unselectedGradient[0]);
-                        } else {
-                            box.border(0, 3, unselectedGradient[2]);
-                        }
-                        */
-                    }
-                    x += boxSize + 10;
-                    if ( x + boxSize + 10 > work.getWidth() ){
-                        x = startX;
-                        y += (boxSize + 10);
-                    }
-                }
-
-                if (top > 0){
-                    int x1 = 80;
-                    int x2 = 140;
-                    work.triangle(startX + x1, 8, startX + x2, 8, startX + (x1 + x2) / 2, 3, gradient[clock % maxGradient]);
-                }
-
-                if (i < players.size()){
-                    int x1 = 80;
-                    int x2 = 140;
-                    work.triangle(startX + x1, GFX_Y - 8, startX + x2, GFX_Y - 8, startX + (x1 + x2) / 2, GFX_Y - 3, gradient[clock % maxGradient]);
-                }
-
-                work.BlitToScreen();
-                draw = false;
-            }
-
-            while ( Global::speed_counter2 == 0 ){
-                Util::rest(1);
-            }
-        }
-    } catch (const Filesystem::NotFound & ex){
-        Global::debug(0, DEBUG_CONTEXT) << "Error during select player screen: " << ex.getTrace() << endl;
-    }
-#endif
 }
 
 static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, const string & message, const Level::LevelInfo & info, int & remap){

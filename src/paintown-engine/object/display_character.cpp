@@ -129,6 +129,8 @@ void DisplayCharacterLoader::load(){
         } catch (const LoadException & le){
             Global::debug(0) << "Problem loading character: " << le.getTrace() << endl;
         }
+        /* yield the timeslice for slow systems */
+        Util::rest(0);
     }
     Global::debug(1) << "Character display loader done" << endl;
 }
