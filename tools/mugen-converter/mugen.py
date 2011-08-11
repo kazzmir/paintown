@@ -12,7 +12,7 @@ class StateDef():
         except KeyError:
             return ""
 
-# TODO Controller class
+# TODO Controller classes
 class Controller():
     def __init__(self):
         pass

@@ -37,6 +37,7 @@ peg_builder = Builder(action = Action(peg_to_cpp, 'Building a peg'),
 env.Append(BUILDERS = {'Peg' : peg_builder})
 
 source = Split("""
+build/converter/controllers.cpp
 build/converter/example.cpp
 build/converter/generator.cpp
 build/converter/main.cpp
