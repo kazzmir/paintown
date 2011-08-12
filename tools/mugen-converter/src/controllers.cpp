@@ -2,98 +2,123 @@
 
 #include "ast/all.h"
 
+#include <map>
+#include "util/pcre/pcre.h"
+
 using namespace Mugen;
 
+static std::map<std::string, pcre*> cachedPatterns;
+
+/* http://www.gnu.org/s/libc/manual/html_node/Regular-Expressions.html */
+bool match(const std::string & str, const std::string & pattern){
+    pcre * regex;
+    const char * error;
+    int errorOffset;
+    int count;
+    regex = cachedPatterns[pattern];
+    if (regex == NULL){
+        regex = pcre_compile(pattern.c_str(), PCRE_CASELESS, &error, &errorOffset, NULL);
+        if (regex == NULL){
+            return false;
+        }
+        cachedPatterns[pattern] = regex;
+    }
+
+    count = pcre_exec(regex, NULL, str.c_str(), str.size(), 0, 0, NULL, 0);
+    // pcre_free(regex);
+    return count >= 0;
+}
+
 Content getController(const std::string & type){
-    if (type == "AfterImage"){
-    } else if (type == "AfterImageTime"){
-    } else if (type == "AllPalFX"){
-    } else if (type == "AngleAdd"){
-    } else if (type == "AngleDraw"){
-    } else if (type == "AngleMul"){
-    } else if (type == "AngleSet"){
-    } else if (type == "AppendToClipboard"){
-    } else if (type == "AssertSpecial"){
-    } else if (type == "AttackDist"){
-    } else if (type == "AttackMulSet"){
-    } else if (type == "BGPalFX"){
-    } else if (type == "BindToParent"){
-    } else if (type == "BindToRoot"){
-    } else if (type == "BindToTarget"){
-    } else if (type == "ChangeAnim"){
-    } else if (type == "ChangeAnim2"){
-    } else if (type == "ChangeState"){
-    } else if (type == "ClearClipboard"){
-    } else if (type == "CtrlSet"){
-    } else if (type == "DefenceMulSet"){
-    } else if (type == "DestroySelf"){
-    } else if (type == "DisplayToClipboard"){
-    } else if (type == "EnvColor"){
-    } else if (type == "EnvShake"){
-    } else if (type == "Explod"){
-    } else if (type == "ExplodBindTime"){
-    } else if (type == "FallEnvShake"){
-    } else if (type == "ForceFeedback"){
-    } else if (type == "GameMakeAnim"){
-    } else if (type == "Gravity"){
-    } else if (type == "Helper"){
-    } else if (type == "HitAdd"){
-    } else if (type == "HitBy"){
-    } else if (type == "HitDef"){
-    } else if (type == "HitFallDamage"){
-    } else if (type == "HitFallSet"){
-    } else if (type == "HitFallVel"){
-    } else if (type == "HitOverride"){
-    } else if (type == "HitVelSet"){
-    } else if (type == "LifeAdd"){
-    } else if (type == "LifeSet"){
-    } else if (type == "MakeDust"){
-    } else if (type == "ModifyExplod"){
-    } else if (type == "MoveHitReset"){
-    } else if (type == "NotHitBy"){
-    } else if (type == "Null"){
-    } else if (type == "Offset"){
-    } else if (type == "PalFX"){
-    } else if (type == "ParentVarAdd"){
-    } else if (type == "ParentVarSet"){
-    } else if (type == "Pause"){
-    } else if (type == "PlaySnd"){
-    } else if (type == "PlayerPush"){
-    } else if (type == "PosAdd"){
-    } else if (type == "PosFreeze"){
-    } else if (type == "PosSet"){
-    } else if (type == "PowerAdd"){
-    } else if (type == "PowerSet"){
-    } else if (type == "Projectile"){
-    } else if (type == "RemapPal"){
-    } else if (type == "RemoveExplod"){
-    } else if (type == "ReversalDef"){
-    } else if (type == "ScreenBound"){
-    } else if (type == "SelfState"){
-    } else if (type == "SndPan"){
-    } else if (type == "SprPriority"){
-    } else if (type == "StateTypeSet"){
-    } else if (type == "StopSnd"){
-    } else if (type == "SuperPause"){
-    } else if (type == "TargetBind"){
-    } else if (type == "TargetDrop"){
-    } else if (type == "TargetFacing"){
-    } else if (type == "TargetLifeAdd"){
-    } else if (type == "TargetPowerAdd"){
-    } else if (type == "TargetState"){
-    } else if (type == "TargetVelAdd"){
-    } else if (type == "TargetVelSet"){
-    } else if (type == "Trans"){
-    } else if (type == "Turn"){
-    } else if (type == "VarAdd"){
-    } else if (type == "VarRandom"){
-    } else if (type == "VarRangeSet"){
-    } else if (type == "VarSet"){
-    } else if (type == "VelAdd"){
-    } else if (type == "VelMul"){
-    } else if (type == "VelSet"){
-    } else if (type == "VictoryQuote"){
-    } else if (type == "Width"){
+    if (match(type, "AfterImage")){
+    } else if (match(type, "AfterImageTime")){
+    } else if (match(type, "AllPalFX")){
+    } else if (match(type, "AngleAdd")){
+    } else if (match(type, "AngleDraw")){
+    } else if (match(type, "AngleMul")){
+    } else if (match(type, "AngleSet")){
+    } else if (match(type, "AppendToClipboard")){
+    } else if (match(type, "AssertSpecial")){
+    } else if (match(type, "AttackDist")){
+    } else if (match(type, "AttackMulSet")){
+    } else if (match(type, "BGPalFX")){
+    } else if (match(type, "BindToParent")){
+    } else if (match(type, "BindToRoot")){
+    } else if (match(type, "BindToTarget")){
+    } else if (match(type, "ChangeAnim")){
+    } else if (match(type, "ChangeAnim2")){
+    } else if (match(type, "ChangeState")){
+    } else if (match(type, "ClearClipboard")){
+    } else if (match(type, "CtrlSet")){
+    } else if (match(type, "DefenceMulSet")){
+    } else if (match(type, "DestroySelf")){
+    } else if (match(type, "DisplayToClipboard")){
+    } else if (match(type, "EnvColor")){
+    } else if (match(type, "EnvShake")){
+    } else if (match(type, "Explod")){
+    } else if (match(type, "ExplodBindTime")){
+    } else if (match(type, "FallEnvShake")){
+    } else if (match(type, "ForceFeedback")){
+    } else if (match(type, "GameMakeAnim")){
+    } else if (match(type, "Gravity")){
+    } else if (match(type, "Helper")){
+    } else if (match(type, "HitAdd")){
+    } else if (match(type, "HitBy")){
+    } else if (match(type, "HitDef")){
+    } else if (match(type, "HitFallDamage")){
+    } else if (match(type, "HitFallSet")){
+    } else if (match(type, "HitFallVel")){
+    } else if (match(type, "HitOverride")){
+    } else if (match(type, "HitVelSet")){
+    } else if (match(type, "LifeAdd")){
+    } else if (match(type, "LifeSet")){
+    } else if (match(type, "MakeDust")){
+    } else if (match(type, "ModifyExplod")){
+    } else if (match(type, "MoveHitReset")){
+    } else if (match(type, "NotHitBy")){
+    } else if (match(type, "Null")){
+    } else if (match(type, "Offset")){
+    } else if (match(type, "PalFX")){
+    } else if (match(type, "ParentVarAdd")){
+    } else if (match(type, "ParentVarSet")){
+    } else if (match(type, "Pause")){
+    } else if (match(type, "PlaySnd")){
+    } else if (match(type, "PlayerPush")){
+    } else if (match(type, "PosAdd")){
+    } else if (match(type, "PosFreeze")){
+    } else if (match(type, "PosSet")){
+    } else if (match(type, "PowerAdd")){
+    } else if (match(type, "PowerSet")){
+    } else if (match(type, "Projectile")){
+    } else if (match(type, "RemapPal")){
+    } else if (match(type, "RemoveExplod")){
+    } else if (match(type, "ReversalDef")){
+    } else if (match(type, "ScreenBound")){
+    } else if (match(type, "SelfState")){
+    } else if (match(type, "SndPan")){
+    } else if (match(type, "SprPriority")){
+    } else if (match(type, "StateTypeSet")){
+    } else if (match(type, "StopSnd")){
+    } else if (match(type, "SuperPause")){
+    } else if (match(type, "TargetBind")){
+    } else if (match(type, "TargetDrop")){
+    } else if (match(type, "TargetFacing")){
+    } else if (match(type, "TargetLifeAdd")){
+    } else if (match(type, "TargetPowerAdd")){
+    } else if (match(type, "TargetState")){
+    } else if (match(type, "TargetVelAdd")){
+    } else if (match(type, "TargetVelSet")){
+    } else if (match(type, "Trans")){
+    } else if (match(type, "Turn")){
+    } else if (match(type, "VarAdd")){
+    } else if (match(type, "VarRandom")){
+    } else if (match(type, "VarRangeSet")){
+    } else if (match(type, "VarSet")){
+    } else if (match(type, "VelAdd")){
+    } else if (match(type, "VelMul")){
+    } else if (match(type, "VelSet")){
+    } else if (match(type, "VictoryQuote")){
+    } else if (match(type, "Width")){
     } else {
         std::cout << "Unhandled Controller Type: " << type << std::endl;
     }
