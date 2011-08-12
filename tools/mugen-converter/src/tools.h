@@ -67,6 +67,9 @@ std::string stripFilename(const std::string & str);
 /* strips out the extension of the file */
 std::string stripExtension(const std::string & str);
 
+/* Returns a string in lowercase */
+const std::string lowercase(const std::string &);
+
 /* equivalent of std::endl */
 class StreamEnd{
 private:

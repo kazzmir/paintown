@@ -84,6 +84,14 @@ std::string Mugen::stripFilename(const std::string & str){
     return "";
 }
 
+static int toLower( int c ){ return tolower( c );}
+
+const std::string Mugen::lowercase( const std::string &str ){
+    std::string tempStr = str;
+    transform( tempStr.begin(), tempStr.end(), tempStr.begin(), toLower );
+    return tempStr;
+}
+
 Mugen::PythonStream::PythonStream():
 indentAmount(0){   
 }

@@ -24,14 +24,6 @@ std::string getCurrentDate(){
     return std::string(buffer);
 }
 
-static int toLower( int c ){ return tolower( c );}
-
-const std::string lowercase( const std::string &str ){
-    std::string tempStr = str;
-    transform( tempStr.begin(), tempStr.end(), tempStr.begin(), toLower );
-    return tempStr;
-}
-
 /* Example on how to use the PythonStream */
 void testStream(const std::string & file){
     Mugen::PythonStream out;
@@ -307,16 +299,16 @@ class StateHandler{
         inDef(true),
         requireInitComment(true),
         stateDefinition(Content(1,"")){
-            if (Util::matchRegex(lowercase(section), "statedef")){
+            if (Util::matchRegex(Mugen::lowercase(section), "statedef")){
                 sectionName = section;
                 std::string func = "state";
-                if (Util::matchRegex(lowercase(section), "-[0-9]+")){
+                if (Util::matchRegex(Mugen::lowercase(section), "-[0-9]+")){
                     // Found negative, it's either -3, -2 or -1 (but check and store anyways)
-                    std::string num = Util::captureRegex(lowercase(sectionName), "statedef -([0-9]+)", 0);
+                    std::string num = Util::captureRegex(Mugen::lowercase(sectionName), "statedef -([0-9]+)", 0);
                     stateNumber = "-" + num;
                     func += "neg" + num;
                 } else {
-                    std::string num = Util::captureRegex(lowercase(sectionName), "statedef ([0-9]+)", 0);
+                    std::string num = Util::captureRegex(Mugen::lowercase(sectionName), "statedef ([0-9]+)", 0);
                     stateNumber = num;
                     func += num;
                 }
@@ -458,7 +450,7 @@ class StateCollection{
             }
         }
         void add(const Ast::Section & section){
-            if (Util::matchRegex(lowercase(section.getName()), "statedef")){
+            if (Util::matchRegex(Mugen::lowercase(section.getName()), "statedef")){
                 // Create state handler
                 try {
                     StateHandler * state = new StateHandler(section.getName());
@@ -466,7 +458,7 @@ class StateCollection{
                     stateDefDeclared[state->stateNumber] = true;
                 } catch (const StateException & fail){
                 }
-            } else if (Util::matchRegex(lowercase(section.getName()), "state ")){
+            } else if (Util::matchRegex(Mugen::lowercase(section.getName()), "state ")){
                 if (states.empty() || !(stateDefDeclared.find(states.back()->stateNumber) != stateDefDeclared.end())){
                     throw StateException();
                 }
@@ -549,7 +541,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             virtual void onSection(const Ast::Section & section){
                 sectionName = section.getName();
                 
-                if (lowercase(sectionName) == "command"){
+                if (Mugen::lowercase(sectionName) == "command"){
                     // Create new command class to put away and store the previous one
                     if (currentCommand == NULL){
                         currentCommand = new Command();
@@ -569,7 +561,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                 std::cout << "Parsing Section: " << section.getName() << std::endl;   
             }
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                if (!Util::matchRegex(lowercase(sectionName), "state")){
+                if (!Util::matchRegex(Mugen::lowercase(sectionName), "state")){
                     if (simple == "command.time"){
                         try{
                             addConstantsComment(simple.getLine());
@@ -701,7 +693,7 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                 std::cout << "Parsing Section: " << section.getName() << std::endl;   
             }
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                if (!Util::matchRegex(lowercase(sectionName), "state")){
+                if (!Util::matchRegex(Mugen::lowercase(sectionName), "state")){
                     if (simple == "life"){
                         try{
                             addConstantsComment(simple.getLine());

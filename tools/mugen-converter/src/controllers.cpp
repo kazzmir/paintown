@@ -2,31 +2,11 @@
 
 #include "ast/all.h"
 
-#include <map>
-#include "util/pcre/pcre.h"
-
 using namespace Mugen;
 
-static std::map<std::string, pcre*> cachedPatterns;
-
 /* http://www.gnu.org/s/libc/manual/html_node/Regular-Expressions.html */
-bool match(const std::string & str, const std::string & pattern){
-    pcre * regex;
-    const char * error;
-    int errorOffset;
-    int count;
-    regex = cachedPatterns[pattern];
-    if (regex == NULL){
-        regex = pcre_compile(pattern.c_str(), PCRE_CASELESS, &error, &errorOffset, NULL);
-        if (regex == NULL){
-            return false;
-        }
-        cachedPatterns[pattern] = regex;
-    }
-
-    count = pcre_exec(regex, NULL, str.c_str(), str.size(), 0, 0, NULL, 0);
-    // pcre_free(regex);
-    return count >= 0;
+bool match(const std::string & str1, const std::string & str2){
+    return (Mugen::lowercase(str1) == Mugen::lowercase(str2));
 }
 
 Content getController(const std::string & type){
