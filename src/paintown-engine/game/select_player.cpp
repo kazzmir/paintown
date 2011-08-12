@@ -104,14 +104,7 @@ namespace Select{
 /* TODO: refactor */
 static unsigned int choosePlayer(const PlayerVector & players, const string & message){
 
-    // Bitmap work( GFX_X / 2, GFX_Y / 2 );
-
     /* TODO: the background should be configurable */
-
-    /* preview box for each character */
-                    
-    // const int unselectedColor = Bitmap::makeColor( 255, 0, 0 );
-    // const int selectedColor = Bitmap::makeColor( 0, 255, 0 );
 
     /* use stupid defines becuase const member variables cannot be initialized
      * inside the class outside of the constructor
@@ -189,6 +182,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                         Sound & beep,
                         unsigned int & current,
                         const int boxesPerLine,
+                        const int maximum,
                         InputMap<Select::Input> & input):
                     choose(choose),
                     character(character),
@@ -196,6 +190,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                     beep(beep),
                     current(current),
                     boxesPerLine(boxesPerLine),
+                    maximum(maximum),
                     input(input){
                     }
 
@@ -205,6 +200,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 Sound & beep;
                 unsigned int & current;
                 const int boxesPerLine;
+                const int maximum;
                 InputMap<Select::Input> & input;
 
                 virtual void release(const Select::Input & what, Keyboard::unicode_t unicode){
@@ -213,7 +209,9 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 virtual void press(const Select::Input & what, Keyboard::unicode_t unicode){
                     switch (what){
                         case Select::Left: {
-                            current = current - 1;
+                            if (current > 0){
+                                current = current - 1;
+                            }
                             beep.play();
                             break;
                         }
@@ -223,12 +221,16 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                             break;
                         }
                         case Select::Up: {
-                            current = current - boxesPerLine;
+                            if (current > boxesPerLine){
+                                current = current - boxesPerLine;
+                            }
                             beep.play();
                             break;
                         }
                         case Select::Down: {
-                            current = current + boxesPerLine;
+                            if (current < maximum - boxesPerLine){
+                                current = current + boxesPerLine;
+                            }
                             beep.play();
                             break;
                         }
@@ -250,7 +252,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 }
             };
 
-            Handler handler(choose, character, loader, beep, current, boxesPerLine, input);
+            Handler handler(choose, character, loader, beep, current, boxesPerLine, players.size(), input);
             InputManager::handleEvents(input, handler);
 
             if (current >= players.size()){
@@ -293,11 +295,11 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         temp(120, 120),
         preview(GFX_X / 2, GFX_Y / 2),
         reflection(GFX_X / 2, GFX_Y / 2),
+        startX(GFX_X / 2 - 20),
+        startY(20),
         boxSize(80),
         boxesPerLine(boxesPerLine),
         boxesPerColumn((Graphics::screenParameter.current()->getHeight() - startY) / (boxSize + 10)),
-        startX(GFX_X / 2 - 20),
-        startY(20),
         top(0){
             boxesPerLine = (Graphics::screenParameter.current()->getWidth() - startX) / (boxSize + 10);
             Graphics::blend_palette(unselectedGradient, 3, Graphics::makeColor(0, 0, 0), Graphics::makeColor(255, 0, 0));
@@ -323,12 +325,12 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         Graphics::Bitmap preview;
         Graphics::Bitmap reflection;
 
+        const int startX;
+        const int startY;
         const int boxSize;
         int & boxesPerLine;
         const int boxesPerColumn;
-        const int startX;
-        const int startY;
-        int top;
+        unsigned int top;
 
         Graphics::Color selectedGradient[MAXCOLOR];
         Graphics::Color unselectedGradient[3];
