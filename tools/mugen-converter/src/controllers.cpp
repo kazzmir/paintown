@@ -45,6 +45,16 @@ StateParameterMap & StateControllerStore::getCurrentController(){
 
 void StateControllerStore::addToDefinition(PythonDefinition & definition){
     
+    // TODO Go through current parameters and create new classes based on 'type' and add to definition
+    for (std::vector<StateParameterMap>::iterator i = controllerParameters.begin(); i != controllerParameters.end(); ++i){
+        std::vector<Ast::AttributeSimple *> * type = (*i).find("type");
+        if (type != NULL){
+            definition.addContent(Content(1, "# Found controller type: " + type->back()->valueAsString()));
+        }
+    }
+    // FIXME Remove this line when the state function has been populated
+    definition.addContent(Content(1, "pass"));
+    
 }
     
 StateController::StateController(const StateParameterMap & parameters):

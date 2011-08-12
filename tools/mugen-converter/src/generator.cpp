@@ -1,4 +1,5 @@
 #include "generator.h"
+#include "controllers.h"
 
 #include "ast/all.h"
 #include "util/regex.h"
@@ -324,8 +325,7 @@ class StateHandler{
                 definition = "def " + function + "():";
                 stateDefinition.addContent(Content(0, "# State File function for " + section));
                 stateDefinition.addContent(Content(0, definition));
-                // FIXME Remove this line when the state function has been populated
-                stateDefinition.addContent(Content(1, "pass"));
+                
             } else throw StateException();
         }
         ~StateHandler(){
@@ -340,8 +340,7 @@ class StateHandler{
         std::string initComment;
         bool inDef;
         bool requireInitComment;
-        
-        PythonDefinition stateDefinition;
+        StateControllerStore stateControllers;
         
         void toggleSection(){
             inDef = !inDef;
@@ -371,7 +370,16 @@ class StateHandler{
             return content;
         }
         
+        PythonDefinition & getDefinition(){
+            
+            stateControllers.addToDefinition(stateDefinition);
+            
+            return stateDefinition;
+        }
+        
     protected:
+        
+        PythonDefinition stateDefinition;
         
         void makeInitComment(const std::string & file, int line){
                 std::stringstream out;
@@ -422,7 +430,7 @@ class StateHandler{
         }
         
         void handleState(const std::string & filename, const Ast::AttributeSimple & simple){
-            if (simple == "type"){
+            /*if (simple == "type"){
             } else if (simple == "triggerall"){
             } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
             } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
@@ -432,7 +440,9 @@ class StateHandler{
             } else if (simple == "y"){
             } else {
                 std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
-            }
+            }*/
+            std::string id = simple.idString();
+            stateControllers.getCurrentController().add(id, (Ast::AttributeSimple *)simple.copy());
         }
 };
 
@@ -463,6 +473,8 @@ class StateCollection{
                 if (states.back()->inDef){
                     states.back()->toggleSection();
                 }
+                // Create new controller
+                states.back()->stateControllers.newController();
             }
         }
         
@@ -481,7 +493,7 @@ class StateCollection{
                     cl.getInit().addContent((*i)->getInitEntry());
                     
                     // Add state definition
-                    cl.add((*i)->stateDefinition);
+                    cl.add((*i)->getDefinition());
                 }
             }
         }

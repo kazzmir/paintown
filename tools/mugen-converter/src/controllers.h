@@ -12,7 +12,7 @@ namespace Ast{
 
 namespace Mugen{
     
-/* State Parameter Map */
+/*! State Parameter Map */
 class StateParameterMap{
     public:
         StateParameterMap();
@@ -50,6 +50,8 @@ class StateController{
     public:
         StateController(const StateParameterMap &);
         virtual ~StateController();
+        
+        virtual Content getContent() = 0;
         
     protected:    
         StateParameterMap parameters;
