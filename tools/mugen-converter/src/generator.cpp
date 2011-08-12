@@ -314,7 +314,7 @@ class StateHandler{
                 }
                 
                 function = func;
-                definition = "def " + function + "():";
+                definition = "def " + function + "(self, world):";
                 stateDefinition.addContent(Content(0, "# State File function for " + section));
                 stateDefinition.addContent(Content(0, definition));
                 

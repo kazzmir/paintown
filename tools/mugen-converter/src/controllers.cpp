@@ -4,7 +4,6 @@
 
 using namespace Mugen;
 
-/* http://www.gnu.org/s/libc/manual/html_node/Regular-Expressions.html */
 bool match(const std::string & str1, const std::string & str2){
     return (Mugen::lowercase(str1) == Mugen::lowercase(str2));
 }
@@ -57,6 +56,9 @@ Content getController(const std::string & type){
     } else if (match(type, "MoveHitReset")){
     } else if (match(type, "NotHitBy")){
     } else if (match(type, "Null")){
+        Content null(1,"# Disabled or invalid controller.");
+        null.addLine(1, "pass");
+        return null;
     } else if (match(type, "Offset")){
     } else if (match(type, "PalFX")){
     } else if (match(type, "ParentVarAdd")){

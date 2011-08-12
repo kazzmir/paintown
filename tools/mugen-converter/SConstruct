@@ -57,3 +57,54 @@ source.append(env.Peg('build/paintown/mugen/parser/def.peg'))
 env.Prepend(LIBS = pcreLibrary(env))
 
 env.Program('converter', source)
+
+
+
+# Test application for python
+def havePython(env):
+    import distutils.sysconfig
+    include_path = distutils.sysconfig.get_config_var('INCLUDEPY')
+    link_stuff = distutils.sysconfig.get_config_var('LINKFORSHARED')
+    libs = distutils.sysconfig.get_config_var('LIBRARY')
+    lib_path = distutils.sysconfig.get_config_var('LIBP')
+    
+    new_env = env
+    
+    if include_path != None:
+        new_env.Append(CPPPATH = [include_path])
+    if link_stuff != None:
+        new_env.Append(LINKFLAGS = link_stuff.split(' '))
+    if lib_path != None:
+        new_env.Append(LIBPATH = [lib_path])
+    new_libs = []
+    if libs != None:
+        new_libs = libs
+    
+    new_env.Replace(LIBS = new_libs)
+    
+    print 'Configuration: Checking if python is available in the environment.'
+    ret = new_env.Configure().TryLink("""
+        #include <Python.h>
+        int main(int argc, char *argv[]) {
+            Py_Initialize();
+            return 0;
+        }
+    """, ".c");
+    
+    if ret:
+        print 'Configuration: Python found.'
+        env = new_env
+        return 1
+    else:
+        print 'Configuration: Python cannot be found in the environment.'
+        return 0
+
+testEnv = Environment(ENV = os.environ)
+    
+if havePython(testEnv):
+    if getDebug():
+        testEnv.Prepend(CPPFLAGS = ['-g3','-ggdb', '-Wfatal-errors'])
+    source = Split("""
+build/converter/test/main.cpp
+""")
+    testEnv.Program('test', source)
