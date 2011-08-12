@@ -49,7 +49,9 @@ void StateControllerStore::addToDefinition(PythonDefinition & definition){
     for (std::vector<StateParameterMap>::iterator i = controllerParameters.begin(); i != controllerParameters.end(); ++i){
         std::vector<Ast::AttributeSimple *> * type = (*i).find("type");
         if (type != NULL){
-            definition.addContent(Content(1, "# Found controller type: " + type->back()->valueAsString()));
+            std::stringstream line;
+            line << "# Found controller type '" << type->back()->valueAsString() << "' on line " << type->back()->getLine();
+            definition.addContent(Content(1, line.str()));
         }
     }
     // FIXME Remove this line when the state function has been populated
