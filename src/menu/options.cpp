@@ -602,19 +602,22 @@ static Configuration::JoystickInput readJoystick(){
 
     while (true){
         InputManager::poll();
-        InputMap<Joystick::Key>::Output output = InputManager::getMap(input);
-        for (vector<Joystick::Key>::iterator it = keys.begin(); it != keys.end(); it++){
-            Joystick::Key key = *it;
-            if (output[key]){
-                return key;
+        vector<InputMap<Joystick::Key>::InputEvent> out = InputManager::getEvents(input);
+        for (vector<InputMap<Joystick::Key>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Joystick::Key>::InputEvent & event = *it;
+            if (event.enabled){
+                Global::debug(1) << "Press: " << event.out << std::endl;
+                if (event.out == Joystick::Invalid){
+                    InputManager::waitForRelease(input, Joystick::Invalid);
+                    throw Exception::Return(__FILE__, __LINE__);
+                }
+                return event.out;
             }
-        }
-        if (output[Joystick::Invalid]){
-            InputManager::waitForRelease(input, Joystick::Invalid);
-            throw Exception::Return(__FILE__, __LINE__);
         }
         Util::rest(1);
     }
+
+    /* control probably shouldn't get here.. */
     return Joystick::Up;
 }
 
@@ -683,6 +686,7 @@ void OptionJoystick::logic(){
 }
 
 void OptionJoystick::run(const Menu::Context & context){
+    /*
     //int x, y, width, height;
     const Font & vFont = Menu::menuFontParameter.current()->get();
     const char * message = "Press a joystick button!";
@@ -707,6 +711,52 @@ void OptionJoystick::run(const Menu::Context & context){
     
     setKey(player, type, readJoystick());
 
+    ostringstream out;
+    out << name << ": " << Joystick::keyToName(getKey(player, type));
+    setText(out.str());
+    */
+
+    Graphics::Bitmap temp(Menu::Menu::Width, Menu::Menu::Height);
+    // Menu::Context tempContext = context;
+    Menu::Context tempContext(context);
+    tempContext.initialize();
+    Menu::InfoBox keyDialog;
+    // keyDialog.setFont(tempContext.getFont());
+    //keyDialog.location.set(-1,-1,1,1);
+    const int width = temp.getWidth();
+    const int height = temp.getHeight();
+    const Font & font = Menu::menuFontParameter.current()->get();
+    const int radius = 15;
+    keyDialog.setText("Press a joystick button!");
+    keyDialog.initialize(font);
+    keyDialog.location.setDimensions(font.textLength("Press a joystick button!") + radius, font.getHeight() + radius);
+    keyDialog.location.setCenterPosition(Gui::RelativePoint(0, 0));
+    // keyDialog.location.setPosition(Gui::AbsolutePoint((width/2)-(keyDialog.location.getWidth()/2), (height/2)-(keyDialog.location.getHeight()/2)));
+    // keyDialog.location.setPosition2(Gui::AbsolutePoint((
+    keyDialog.transforms.setRadius(radius);
+    keyDialog.colors.body = Graphics::makeColor(0,0,0);
+    keyDialog.colors.bodyAlpha = 180;
+    keyDialog.colors.border = Graphics::makeColor(255,255,255);
+    keyDialog.colors.borderAlpha = 255;
+    keyDialog.open();
+    InputManager::waitForClear();
+    while (!InputManager::anyInput() && keyDialog.isActive()){
+        InputManager::poll();
+	keyDialog.act(font);
+        /*
+	if (keyDialog.isActive()){
+            InputManager::poll();
+	}
+        */
+	tempContext.act();
+	tempContext.render(0, temp);
+	keyDialog.render(temp, font);
+	temp.BlitToScreen();
+    }
+    tempContext.finish();
+    setKey(player, type, readJoystick());
+    InputManager::waitForClear();
+    
     ostringstream out;
     out << name << ": " << Joystick::keyToName(getKey(player, type));
     setText(out.str());
