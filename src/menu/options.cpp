@@ -684,7 +684,7 @@ void OptionJoystick::logic(){
 
 void OptionJoystick::run(const Menu::Context & context){
     //int x, y, width, height;
-    const Font & vFont = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & vFont = Menu::menuFontParameter.current()->get();
     const char * message = "Press a joystick button!";
     const int width = vFont.textLength(message) + 10;
     const int height = vFont.getHeight() + 10;
@@ -895,9 +895,10 @@ void OptionKey::run(const Menu::Context & context){
     //keyDialog.location.set(-1,-1,1,1);
     const int width = temp.getWidth();
     const int height = temp.getHeight();
-    const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
+    const Font & font = Menu::menuFontParameter.current()->get();
     const int radius = 15;
     keyDialog.setText("Press a Key!");
+    keyDialog.initialize(font);
     keyDialog.location.setDimensions(font.textLength("Press a Key!") + radius, font.getHeight() + radius);
     keyDialog.location.setCenterPosition(Gui::RelativePoint(0, 0));
     // keyDialog.location.setPosition(Gui::AbsolutePoint((width/2)-(keyDialog.location.getWidth()/2), (height/2)-(keyDialog.location.getHeight()/2)));

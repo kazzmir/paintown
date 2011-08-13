@@ -136,9 +136,7 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
         string & str = *it;
         if (fadeAlpha < 255){
             Graphics::Bitmap::transBlender(0, 0, 0, fadeAlpha);
-            // Bitmap::drawingMode( Bitmap::MODE_TRANS );
             vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp.translucent(), str, 0 );
-            // Bitmap::drawingMode(Bitmap::MODE_SOLID);
         } else {
             vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp, str, 0 );
         }
