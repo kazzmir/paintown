@@ -2347,6 +2347,8 @@ void * CharacterSelect::doAddCharacters(void * arg){
                 /* couldn't add any more characters, so just quit */
                 break;
             }
+            /* yield the thread */
+            PaintownUtil::rest(0);
         }
     }
 
