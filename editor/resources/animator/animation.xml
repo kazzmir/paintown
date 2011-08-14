@@ -120,9 +120,9 @@
                         </scrollpane>
                         <combobox id="key-select" />
                         <hbox>
-                            <button text="Add" id="add-key" />
+                            <button icon="animator/plus.png" id="add-key" />
                             <glue size="1" />
-                            <button text="Remove" id="remove-key" />
+                            <button icon="animator/minus.png" id="remove-key" />
                             <glue size="1" />
                             <button text="Move-Up" id="up-key" />
                             <glue size="1" />
@@ -173,11 +173,12 @@
                     </scrollpane>
                     <combobox id="event-select" />
                     <hbox>
-                        <button text="Add" id="add-event" />
+                        <button icon="animator/plus.png" id="add-event" />
                         <glue size="1" />
                         <button text="Edit" id="edit-event" />
                         <glue size="1" />
-                        <button text="Remove" id="remove-event" />
+                        <button icon="animator/minus.png" id="remove-event" />
+                        <glue size="1" />
                     </hbox>
                     <hbox>
                         <button text="Move-Up" id="up-event" />
@@ -185,6 +186,8 @@
                         <button text="Move-Down" id="down-event" />
                         <glue size="1" />
                         <button text="View All" id="view-events" />
+                        <glue size="1" />
+                        <button text="Add frames" id="add-frames" />
                         <glue size="1" />
                     </hbox>
                     <panel id="event-work"

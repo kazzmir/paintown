@@ -568,6 +568,24 @@ object NewAnimator{
   def dataPath(f:File):File = {
     new File(Data.getDataPath().getPath() + "/" + f.getPath());
   }
+
+  def getFiles(path:String):List[String] = {
+      val dir = dataPath(new File(path));
+      var files = List[String]()
+      /* use a FileFilter here */
+      if (dir.isDirectory()){
+          val all = dir.listFiles()
+          for (file <- all){
+              if (file.getName().endsWith(".png") ||
+                  file.getName().endsWith(".tga") ||
+                  file.getName().endsWith(".bmp")){
+                    files = files :+ file.getName()
+              }
+          }
+      }
+      files.sort((path1, path2) => (path1 compareTo path2) < 0)
+  }
+
 }
 
 object Animator2{

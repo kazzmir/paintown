@@ -7,6 +7,8 @@ import javax.swing.event.*;
 import javax.swing.Timer;
 import java.io.*;
 
+import scala.collection.JavaConversions;
+
 import org.swixml.SwingEngine;
 
 import com.rafkind.paintown.Lambda0;
@@ -795,10 +797,23 @@ public class CharacterAnimation extends JPanel {
                 // Need to add events to this combobox from event factory
                 // EventFactory.init();
                 final JComboBox eventSelect = (JComboBox) contextEditor.find( "event-select" );
-                for ( Iterator it = EventFactory.getNames().iterator(); it.hasNext(); ){
+                for (Iterator it = EventFactory.getNames().iterator(); it.hasNext();){
                     String event = (String) it.next();
-                    eventSelect.addItem( event );
+                    eventSelect.addItem(event);
                 }
+
+                JButton addAllFrames = (JButton) contextEditor.find("add-frames");
+                addAllFrames.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        for (String path: JavaConversions.asJavaCollection(NewAnimator.getFiles(animation.getBaseDirectory()))){
+                            com.rafkind.paintown.animator.events.scala.FrameEvent frame = new com.rafkind.paintown.animator.events.scala.FrameEvent();
+                            frame.setFrame(path);
+                            doEvent.invoke_(frame);
+                            animation.addEvent(frame);
+                        }
+                        eventList.setListData(animation.getEvents());
+                    }
+                });
 
                 JButton eventView = (JButton) contextEditor.find("view-events");
                 eventView.addActionListener(new AbstractAction(){
@@ -870,13 +885,13 @@ public class CharacterAnimation extends JPanel {
                         AnimationEvent temp = EventFactory.getEvent((String)eventSelect.getSelectedItem());
                         doEvent.invoke_(temp);
                         int index = 0;
-                        if ( eventList.getSelectedIndex() != -1 ){
-                            index = animation.addEvent( temp, eventList.getSelectedIndex() + 1 );
+                        if (eventList.getSelectedIndex() != -1){
+                            index = animation.addEvent(temp, eventList.getSelectedIndex() + 1);
                         } else {
-                            index = animation.addEvent( temp );
+                            index = animation.addEvent(temp);
                         }
-                        eventList.setListData( animation.getEvents() );
-                        eventList.setSelectedIndex( index );
+                        eventList.setListData(animation.getEvents());
+                        eventList.setSelectedIndex(index);
                     }
                 });
 

@@ -359,7 +359,7 @@ class FrameEvent extends AnimationEvent {
         val framebox = engine.find("frame").asInstanceOf[JComboBox]
         var index = 0;
         var count = -1;
-        for (name <- getFiles(animation.getBaseDirectory())){
+        for (name <- NewAnimator.getFiles(animation.getBaseDirectory())){
             count += 1
             framebox.addItem(name);
             if (name.endsWith(frame)){
@@ -387,21 +387,8 @@ class FrameEvent extends AnimationEvent {
         engine.getRootComponent().asInstanceOf[JPanel]
     }
 
-    def getFiles(path:String):List[String] = {
-        val dir = NewAnimator.dataPath(new File(path));
-        var files = List[String]()
-        /* use a FileFilter here */
-        if (dir.isDirectory()){
-            val all = dir.listFiles()
-            for (file <- all){
-                if (file.getName().endsWith(".png") ||
-                    file.getName().endsWith(".tga") ||
-                    file.getName().endsWith(".bmp")){
-                      files = files :+ file.getName()
-                }
-            }
-        }
-        files
+    def setFrame(frame:String){
+      this.frame = frame
     }
 
     def getToken():Token = {
