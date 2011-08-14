@@ -415,6 +415,10 @@ public:
                 down(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/down.png")).path()),
                 left(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/left.png")).path()),
                 right(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/right.png")).path()),
+                attack1(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-1.png")).path()),
+                attack2(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-2.png")).path()),
+                attack3(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-3.png")).path()),
+                jump(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/jump.png")).path()),
                 playerCopy(playerCopy),
                 area(area),
                 // selected(selected),
@@ -430,11 +434,19 @@ public:
             Graphics::Bitmap down;
             Graphics::Bitmap left;
             Graphics::Bitmap right;
+            
+            Graphics::Bitmap attack1, attack2, attack3;
+            Graphics::Bitmap jump;
 
             Util::ReferenceCount<Paintown::Character> & playerCopy;
             Gui::PopupBox & area;
             const Gui::NormalList & list;
             Logic & logic;
+
+            int doDraw(const Graphics::Bitmap & what, int x, int y, const Graphics::Bitmap & where){
+                what.draw(x, y, where);
+                return x + what.getWidth() + 5;
+            }
 
             void drawKeys(const Util::ReferenceCount<Paintown::Animation> & movement, int x, int y, const Graphics::Bitmap & where){
                 const vector<Paintown::KeyPress> & keys = movement->getKeys();
@@ -443,10 +455,14 @@ public:
                     if (key.combo.size() > 0){
                         Input::PaintownInput press = key.combo[0];
                         switch (press){
-                            case Input::Forward: right.draw(x, y, where); x += right.getWidth() + 5; break;
-                            case Input::Back: left.draw(x, y, where); x += right.getWidth() + 5; break;
-                            case Input::Up: up.draw(x, y, where); x += right.getWidth() + 5; break;
-                            case Input::Down: down.draw(x, y, where); x += right.getWidth() + 5; break;
+                            case Input::Forward: x = doDraw(right, x, y, where); break;
+                            case Input::Back: x = doDraw(left, x, y, where); break;
+                            case Input::Up: x = doDraw(up, x, y, where); break;
+                            case Input::Down: x = doDraw(down, x, y, where); break;
+                            case Input::Attack1: doDraw(attack1, x, y, where); break;
+                            case Input::Attack2: doDraw(attack2, x, y, where); break;
+                            case Input::Attack3: doDraw(attack3, x, y, where); break;
+                            case Input::Jump: doDraw(jump, x, y, where); break;
                             default: break;
                         }
                     }
