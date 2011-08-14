@@ -1070,6 +1070,7 @@ rsx
 """)
         env.Append(LIBS = all)
         env.PrependENVPath('PATH', bin_path)
+        env.PrependENVPath('PKG_CONFIG_PATH', path + '/portlibs/ppu/lib/pkgconfig')
         return env
         
     # use the devkitpro stuff for wii/gamecube
