@@ -58,9 +58,9 @@
                     <hbox>
                         <button id="previous-frame" text="Previous Frame" />
                         <glue size="1" />
-                        <button id="play" text="Play" />
+                        <button id="play" icon="animator/play.png" />
                         <glue size="1" />
-                        <button id="stop" text="Stop" />
+                        <button id="stop" icon="animator/stop.png" />
                         <glue size="1" />
                         <button id="next-frame" text="Next Frame" />
                         <glue />
