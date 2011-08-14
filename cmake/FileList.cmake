@@ -117,6 +117,7 @@ src/util/input/psp/joystick.cpp
 src/util/input/wii/joystick.cpp
 src/util/system.cpp
 src/util/compress.cpp
+src/util/audio.cpp
 src/util/message-queue.cpp
 src/util/input/linux_joystick.cpp
 src/util/load_exception.cpp

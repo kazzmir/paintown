@@ -116,6 +116,10 @@ def sflLibrary(env):
     use = env
     return SConscript('util/sfl/SConscript', exports = ['use'])
 
+def soxLibrary(env):
+    use = env
+    return SConscript('util/sox/SConscript', exports = ['use'])
+
 def gmeLibrary(env):
     gmeEnv = env.Clone()
     # These things are defined by gme_types.h
@@ -266,7 +270,7 @@ use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
 
-use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
+use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), soxLibrary(use), pcreLibrary(use)])
 if not useSDL():
     use.Prepend(LIBS = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():
