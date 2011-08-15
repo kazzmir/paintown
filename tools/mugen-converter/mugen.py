@@ -1,5 +1,13 @@
 # Mugen Classes
 
+# Command class
+class Command():
+    def __init__(self):
+        self.state = None
+        self.keys = []
+        self.time = None
+        self.bufferTime = None
+
 # StateDef holds it's parameters declared in statedef and it's relative procedure states
 class StateDef():
     def __init__(self, func, params):
@@ -91,6 +99,9 @@ class Character():
         self.standFriction = None
         self.crouchFriction = None
         
+        # Command Holders
+        self.commands = []
+        
         # State holders
         self.states = {}
 
@@ -103,8 +114,16 @@ class Character():
                 return
         self.stateFiles.append(stateFile)
 
-    def addCommand(self, name, command, time=None, bufferTime=None):
-        pass
-    
+    def addCommand(self, state, keys, time=None, bufferTime=None):
+        cmd = Command()
+        cmd.state = state
+        cmd.keys = keys
+        if time:
+            cmd.time = time
+        if bufferTime:
+            cmd.bufferTime = bufferTime
+        
+        self.commands.append(cmd)
+        
     def addState(self, number, state):
         self.states[number] = state

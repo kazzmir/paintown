@@ -508,7 +508,8 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
             std::string bufferTime;
             
             std::string get(){
-                return "self.addCommand('" + name + "', '" + command + "', " + (time.empty() ? "0" : time) + ", " + (bufferTime.empty() ? "0" : bufferTime) + ")";
+                return "self.addCommand('" + name + "', " + (command.empty() ? "''" : "[" + command + "]") + ", " 
+                                            + (time.empty() ? "0" : time) + ", " + (bufferTime.empty() ? "0" : bufferTime) + ")";
             }
     };
         
@@ -583,9 +584,24 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                         if (currentCommand != NULL){
                             std::string command;
                             try {
-                                std::string cmd;
-                                simple >> cmd;
-                                command += cmd + ",";
+                                class KeyWalker : public Ast::Walker{
+                                public:
+                                    KeyWalker(std::string & command):
+                                    command(command){
+                                    }
+                                    std::string & command;
+                                    virtual void onKeySingle(const Ast::KeySingle & key){
+                                        command+= "'" + key.toString() + "',";
+                                        //std::cout << "FOUND KEY: " << key.toString() << std::endl;
+                                    }
+                                };
+                                KeyWalker walker(command);
+                                Ast::KeyList * key = (Ast::KeyList*) simple.getValue()->copy();
+                                const std::vector<Ast::Key*> & keys = key->getKeys();
+                                for (std::vector<Ast::Key*>::const_iterator it = keys.begin(); it != keys.end(); ++it){
+                                    Ast::Key * ourKey = *it;
+                                    ourKey->walk(walker);
+                                }
                             } catch (Ast::Exception &ex){
                             }
                             currentCommand->command = command.substr(0,command.size()-1);
