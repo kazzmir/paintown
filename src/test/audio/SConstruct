@@ -2,7 +2,28 @@ import os
 
 env = Environment(ENV = os.environ)
 
-source = Split("""test.cpp""")
+def gmeLibrary(env):
+    use = env
+    return SConscript('../../util/gme/SConscript', exports = ['use'], variant_dir = 'gme')
+
+def dumbLibrary(env):
+    dumbEnv = env.Clone()
+    env = dumbEnv
+    return SConscript('../../util/dumb/SConscript', exports = ['env'], variant_dir = 'dumb')
+
+def sdlMixerLibrary(env):
+    use = env
+    return SConscript('../../util/sdl/mixer/SConscript', exports = ['use'], variant_dir = 'mixer')
+
+env.VariantDir('build', '../../')
+source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
+build/util/audio.cpp build/exceptions/exception.cpp""")
+
+env.Append(CPPPATH = '../..')
+env.Append(CPPDEFINES = ['USE_SDL'])
+env.ParseConfig('sdl-config --libs --cflags')
+
+env.Append(LIBS = ['mad', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
 
 program = env.Program('test', source)
 Return('program')
