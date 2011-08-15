@@ -1,0 +1,8 @@
+import os
+
+env = Environment(ENV = os.environ)
+
+source = Split("""test.cpp""")
+
+program = env.Program('test', source)
+Return('program')
