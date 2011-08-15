@@ -106,5 +106,6 @@ if havePython(testEnv):
         testEnv.Prepend(CPPFLAGS = ['-g3','-ggdb', '-Wfatal-errors'])
     source = Split("""
 build/converter/test/main.cpp
+build/converter/test/character.cpp
 """)
     testEnv.Program('test', source)

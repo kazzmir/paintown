@@ -1,6 +1,3 @@
-#ifndef mugen_converter_main
-#define mugen_converter_main
-
 #include "generator.h"
 
 using namespace std;
@@ -16,5 +13,3 @@ int main(int argc, char ** argv){
         std::cout << "Usage: ./converter character.def [character.py]\n     - Second parameter is optional, if ommited will default to the original filename" << endl;
     }
 }
-
-#endif
