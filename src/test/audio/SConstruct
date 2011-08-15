@@ -20,7 +20,7 @@ source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
 build/util/audio.cpp build/exceptions/exception.cpp""")
 
 env.Append(CPPPATH = '../..')
-env.Append(CPPDEFINES = ['USE_SDL'])
+env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MAD'])
 env.ParseConfig('sdl-config --libs --cflags')
 
 env.Append(LIBS = ['mad', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
