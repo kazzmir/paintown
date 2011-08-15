@@ -592,7 +592,12 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                                     std::string & command;
                                     virtual void onKeySingle(const Ast::KeySingle & key){
                                         command+= "'" + key.toString() + "',";
-                                        //std::cout << "FOUND KEY: " << key.toString() << std::endl;
+                                    }
+                                    virtual void onKeyModifier(const Ast::KeyModifier & key){
+                                        command+= "'" + key.toString() + "',";
+                                    }
+                                    virtual void onKeyCombined(const Ast::KeyCombined & key){
+                                        command+= "'" + key.toString() + "',";
                                     }
                                 };
                                 KeyWalker walker(command);
