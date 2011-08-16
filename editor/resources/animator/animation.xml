@@ -168,9 +168,14 @@
                     </hbox>
                     <label text="Events" />
                     <glue />
-                    <scrollpane id="event-scroll">
-                        <list id="events" />
-                    </scrollpane>
+                    <hbox>
+                        <scrollpane id="event-scroll">
+                            <list id="events" />
+                        </scrollpane>
+                        <panel id="event-work"
+                            border="MatteBorder(2,2,2,2,667A63)"
+                            layout="GridBagLayout" />
+                    </hbox>
                     <combobox id="event-select" />
                     <hbox>
                         <button icon="animator/plus.png" id="add-event" />
@@ -190,9 +195,6 @@
                         <button text="Add frames" id="add-frames" />
                         <glue size="1" />
                     </hbox>
-                    <panel id="event-work"
-                        border="MatteBorder(2,2,2,2,667A63)"
-                        layout="GridBagLayout" />
                 </vbox>
             </panel>
         </scrollpane>
