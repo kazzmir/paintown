@@ -166,6 +166,10 @@
                         <button text="Options" id="onion-options" />
                         <glue />
                     </hbox>
+                    <hbox>
+                        <button text="Adjust offsets" id="adjust-offsets" />
+                        <glue />
+                    </hbox>
                     <label text="Events" />
                     <glue />
                     <hbox>

@@ -469,6 +469,14 @@ public class Animation implements Runnable {
 		}
 	}
 
+    public void applyEvents(){
+        resetPosition();
+        for (int event = 0; event <= eventIndex; event++){
+            AnimationEvent use = (AnimationEvent) events.get(event);
+            updateEvent(use);
+        }
+    }
+
     private void findNextFrame(int direction){
         int last = eventIndex;
         synchronized (events){
@@ -477,11 +485,7 @@ public class Animation implements Runnable {
                 eventIndex = (eventIndex + direction + events.size()) % events.size();
             }
 
-            resetPosition();
-            for (int event = 0; event <= eventIndex; event++){
-                AnimationEvent use = (AnimationEvent) events.get(event);
-                updateEvent(use);
-            }
+            applyEvents();
         }
     }
 

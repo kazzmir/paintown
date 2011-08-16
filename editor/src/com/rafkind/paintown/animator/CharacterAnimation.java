@@ -24,6 +24,7 @@ import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.events.EventFactory;
 import com.rafkind.paintown.animator.events.FrameEvent;
+import com.rafkind.paintown.animator.events.OffsetEvent;
 
 import java.awt.geom.AffineTransform;
 import java.awt.datatransfer.Transferable;
@@ -31,7 +32,9 @@ import java.awt.datatransfer.DataFlavor;
 import javax.activation.DataHandler;
 
 import java.util.List;
+import java.util.Vector;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 
@@ -292,7 +295,7 @@ public class CharacterAnimation extends JPanel {
                 typeCombo.addItem("attack");
                 typeCombo.addActionListener( new AbstractAction(){
                     public void actionPerformed( ActionEvent event ){
-                        animation.setType( (String) typeCombo.getSelectedItem() );
+                        animation.setType((String) typeCombo.getSelectedItem());
                     }
                 });
                 typeCombo.setSelectedItem( animation.getType() );
@@ -802,6 +805,14 @@ public class CharacterAnimation extends JPanel {
                     eventSelect.addItem(event);
                 }
 
+                JButton adjustOffsets = (JButton) contextEditor.find("adjust-offsets");
+                adjustOffsets.addActionListener(new AbstractAction(){
+                    public void actionPerformed(ActionEvent event){
+                        showAdjustOffsetsDialog(animation, animation.getEvents());
+                        eventList.repaint();
+                    }
+                });
+
                 JButton addAllFrames = (JButton) contextEditor.find("add-frames");
                 addAllFrames.addActionListener(new AbstractAction(){
                     public void actionPerformed(ActionEvent event){
@@ -1071,6 +1082,105 @@ public class CharacterAnimation extends JPanel {
                 return null;
             }
         };
+    }
+                        
+    private void showAdjustOffsetsDialog(final Animation animation, final Vector<AnimationEvent> events){
+        final JDialog dialog = new JDialog();
+        dialog.setTitle("Adjust offsets");
+        dialog.setSize(new Dimension(200, 200));
+                
+        final SwingEngine optionsEngine = new SwingEngine("animator/adjust-offsets.xml");
+
+        final JSpinner x = (JSpinner) optionsEngine.find("x");
+        final JSpinner y = (JSpinner) optionsEngine.find("y");
+
+        ChangeListener change = new ChangeListener(){
+            class Pair{
+                public int x, y;
+                public Pair(int x, int y){
+                    this.x = x;
+                    this.y = y;
+                }
+            }
+
+            public HashMap<OffsetEvent, Pair> save(){
+                HashMap<OffsetEvent, Pair> map = new HashMap<OffsetEvent, Pair>();
+                for (OffsetEvent offset: getOffsets(events)){
+                    map.put(offset, new Pair(offset.getX(), offset.getY()));
+                }
+                return map;
+            }
+
+            HashMap<OffsetEvent, Pair> offsets = save();
+
+            public List<OffsetEvent> getOffsets(Vector<AnimationEvent> events){
+                List<OffsetEvent> offsets = new ArrayList<OffsetEvent>();
+                for (AnimationEvent event: events){
+                    /* instanceof is justified here because we can treat
+                     * events like an ADT
+                     */
+                    if (event instanceof OffsetEvent){
+                        offsets.add((OffsetEvent) event);
+                    }
+                }
+                return offsets;
+            }
+
+            private void updateOffsets(){
+                int xValue = ((Integer) x.getValue()).intValue();
+                int yValue = ((Integer) y.getValue()).intValue();
+                for (OffsetEvent offset: offsets.keySet()){
+                    Pair pair = offsets.get(offset);
+                    offset.setX(pair.x + xValue);
+                    offset.setY(pair.y + yValue);
+                }
+            }
+
+            public void stateChanged(ChangeEvent changeEvent){
+                updateOffsets();
+                animation.applyEvents();
+                animation.forceRedraw();
+            }
+        };
+
+        x.addChangeListener(change);
+        y.addChangeListener(change);
+
+        /*
+        JButton apply = (JButton) optionsEngine.find("apply");
+        JButton cancel = (JButton) optionsEngine.find("apply");
+
+        apply.addActionListener(new AbstractAction(){
+            public List<OffsetEvent> getOffsets(Vector<AnimationEvent> events){
+                List<OffsetEvent> offsets = new ArrayList<OffsetEvent>();
+                for (AnimationEvent event: events){
+                    if (event instanceof OffsetEvent){
+                        offsets.add((OffsetEvent) event);
+                    }
+                }
+                return offsets;
+            }
+
+            public void actionPerformed(ActionEvent event){
+                int xValue = ((Integer) x.getValue()).intValue();
+                int yValue = ((Integer) y.getValue()).intValue();
+                for (OffsetEvent offset: getOffsets(events)){
+                    offset.setX(offset.getX() + xValue);
+                    offset.setY(offset.getY() + yValue);
+                }
+            }
+        });
+
+        cancel.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                dialog.hide();
+            }
+        });
+        */
+
+        dialog.getContentPane().add((JPanel) optionsEngine.getRootComponent());
+        dialog.show();
+
     }
 
     private void adjustSlider(JSlider slider, int much){
