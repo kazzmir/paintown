@@ -3,12 +3,17 @@
 
 #include <string>
 
+namespace Ast{
+    class AttributeSimple;
+}
+
 namespace Mugen{
 
 /*! Trigger Handling converts triggers into python code */
 namespace TriggerHandler{
 
-const std::string convert(const std::string &);
+/* Convert trigger identifier */
+const std::string convert(const Ast::AttributeSimple &);
 
 }
 }

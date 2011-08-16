@@ -1,10 +1,14 @@
 #include "triggers.h"
 
+#include <iostream>
+
+#include "ast/all.h"
+
 using namespace Mugen;
 using namespace TriggerHandler;
 
-const std::string convert(const std::string & expression){
-/*
+const std::string handleKeyWord(const Ast::AttributeSimple & simple){
+    /*
 AILevel
 Abs
 Acos
@@ -137,4 +141,49 @@ Vel
 W
 Win
     */
+}
+
+const std::string TriggerHandler::convert(const Ast::AttributeSimple & simple){
+    class ExpressionWalker : public Ast::Walker{
+    public:
+        ExpressionWalker(){
+        }
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            std::cout << "Found value: " << simple.valueAsString() << std::endl;
+        }
+        virtual void onAttributeKeyword(const Ast::AttributeKeyword & simple){
+            std::cout << "Found keyword: " << simple.valueAsString() << std::endl;
+        }   
+        virtual void onAttributeArray (const Ast::AttributeArray &simple){
+            std::cout << "Found array: " << simple.toString() << std::endl;
+        }
+        virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
+            std::cout << "Found Infix: " <<  expression.toString() << std::endl;
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) expression.getLeft()->copy();
+            /*if (simple != NULL){
+                convert(*simple);
+                delete simple;
+            }
+            simple = (Ast::AttributeSimple*) expression.getRight()->copy();
+            if (simple != NULL){
+                convert(*simple);
+                delete simple;
+            }*/
+        }
+            
+        virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
+            std::cout << "Found Unary: " <<  expression.toString() << std::endl;
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) expression.getExpression()->copy();
+            /*if (simple != NULL){
+                convert(*simple);
+                delete simple;
+            }*/
+        }
+    };
+    ExpressionWalker walker;
+    Ast::Expression * expression = (Ast::Expression*) simple.getValue()->copy();
+    expression->walk(walker);
+    delete expression;
+    
+    return "";
 }

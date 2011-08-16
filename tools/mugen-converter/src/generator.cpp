@@ -1,5 +1,6 @@
 #include "generator.h"
 #include "controllers.h"
+#include "triggers.h"
 
 #include "ast/all.h"
 #include "util/regex.h"
@@ -440,6 +441,8 @@ class StateHandler{
             } else {
                 std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
             }*/
+            
+            TriggerHandler::convert(simple);
             std::string id = simple.idString();
             stateControllers.getCurrentController().add(id, (Ast::AttributeSimple *)simple.copy());
         }
@@ -625,15 +628,18 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                                     Ast::Key * ourKey = *it;
                                     ourKey->walk(walker);
                                 }
+                                delete key;
                             } catch (Ast::Exception &ex){
                             }
                             currentCommand->command = command.substr(0,command.size()-1);
                         }
                     } else if (simple == "time"){
+                        TriggerHandler::convert(simple);
                         if (currentCommand != NULL){
                             currentCommand->time = simple.valueAsString();
                         }
                     } else if (simple == "buffer.time"){
+                        TriggerHandler::convert(simple);
                         if (currentCommand != NULL){
                             currentCommand->bufferTime = simple.valueAsString();
                         }
