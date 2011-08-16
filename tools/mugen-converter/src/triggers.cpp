@@ -159,31 +159,22 @@ const std::string TriggerHandler::convert(const Ast::AttributeSimple & simple){
         }
         virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
             std::cout << "Found Infix: " <<  expression.toString() << std::endl;
-            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) expression.getLeft()->copy();
-            /*if (simple != NULL){
-                convert(*simple);
-                delete simple;
-            }
-            simple = (Ast::AttributeSimple*) expression.getRight()->copy();
-            if (simple != NULL){
-                convert(*simple);
-                delete simple;
-            }*/
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) expression.getLeft();
+            convert(*simple);
+            
+            simple = (Ast::AttributeSimple*) expression.getRight();
+            convert(*simple);
         }
             
         virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
             std::cout << "Found Unary: " <<  expression.toString() << std::endl;
-            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) expression.getExpression()->copy();
-            /*if (simple != NULL){
-                convert(*simple);
-                delete simple;
-            }*/
+            Ast::AttributeSimple * simple = (Ast::AttributeSimple*) expression.getExpression();
+            convert(*simple);
         }
     };
     ExpressionWalker walker;
-    Ast::Expression * expression = (Ast::Expression*) simple.getValue()->copy();
+    Ast::Expression * expression = (Ast::Expression*) simple.getValue();
     expression->walk(walker);
-    delete expression;
     
     return "";
 }
