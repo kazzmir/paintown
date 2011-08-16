@@ -36,6 +36,10 @@ class CharacterGenerator{
         std::string airFile;
         
     protected:    
+        
+        //! State Class Definitions
+        std::vector<PythonClass> stateClasses;
+        
         //! Handle base definition file
         void handleBaseDef(PythonClass &);
         
@@ -44,6 +48,9 @@ class CharacterGenerator{
         
         //! Handle state files
         void handleStateFiles(PythonClass &);
+        
+        //! Output state classes
+        void outputStateClasses(PythonStream &);
 };
     
 }

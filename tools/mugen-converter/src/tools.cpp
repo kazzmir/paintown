@@ -216,25 +216,22 @@ void Mugen::PythonDefinition::output(PythonStream & stream, unsigned int indentS
 }
 
 // Python class
-Mugen::PythonClass::PythonClass(const Mugen::Content & content):
-classLine(content),
-init(Mugen::Content(1,"def __init__(self):")){
-    init.addSpace();
-    init.addContent(Mugen::Content(1,"# Initialize"));
-    init.addContent(Mugen::Content(1,"mugen.Character.__init__(self)"));
+Mugen::PythonClass::PythonClass(const Mugen::Content & classLine, const Mugen::Content & initLine):
+classLine(classLine),
+init(initLine){
 }
 Mugen::PythonClass::PythonClass(const Mugen::PythonClass & copy):
 init(Mugen::Content(1,"def __init__(self):")){
     classLine = copy.classLine;
     init = copy.init;
-    definitions = definitions;
+    definitions = copy.definitions;
 }
 Mugen::PythonClass::~PythonClass(){
 }
 const Mugen::PythonClass & Mugen::PythonClass::operator=(const Mugen::PythonClass & copy){
     classLine = copy.classLine;
     init = copy.init;
-    definitions = definitions;
+    definitions = copy.definitions;
     return *this;
 }
 void Mugen::PythonClass::add(const Mugen::PythonDefinition & def){

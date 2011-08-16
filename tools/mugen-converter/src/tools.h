@@ -159,7 +159,7 @@ class PythonDefinition{
 /*! Python Class and it's members */
 class PythonClass{
     public:
-        PythonClass(const Content &);
+        PythonClass(const Content &, const Content &);
         PythonClass(const PythonClass &);
         virtual ~PythonClass();
         

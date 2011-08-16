@@ -66,11 +66,19 @@ void CharacterGenerator::output(const std::string & file){
         out << "import mugen" << endl;
         out << endl;
         // Create character class
-        PythonClass character(Content(0, "class " + Mugen::stripExtension(file) + "(mugen.Character):"));
+        Mugen::Content classLine(0, "class " + Mugen::stripExtension(file) + "(mugen.Character):");
+        Mugen::Content init(1,"");
+        init.addLine(1,"# Construct");
+        init.addLine(1,"def __init__(self):");
+        init.addSpace();
+        init.addLine(2,"# Initialize mugen.Character");
+        init.addLine(2,"mugen.Character.__init__(self)");
+        PythonClass character(classLine, init);
         handleBaseDef(character);
         handleCmdFile(character);
         handleStateFiles(character);
         character.output(out, 0);
+        outputStateClasses(out);
         out.close();
     } catch (const Mugen::Cmd::ParseException & fail){
         std::cout << "Failed to parse " << filename << " because " << fail.getReason() << std::endl;
@@ -297,6 +305,7 @@ class StateHandler{
     public:
         StateHandler(const std::string & section):
         inDef(true),
+        stateDef(Content(1,""), Content(1, "")),
         stateDefinition(Content(1,"")){
             if (Util::matchRegex(Mugen::lowercase(section), "statedef")){
                 sectionName = section;
@@ -313,12 +322,13 @@ class StateHandler{
                 }
                 
                 function = func;
-                definition = "def " + function + "(self, world):";
+                //definition = "def " + function + "(self, world):";
+                definition = "def evaluate(self, world):";
                 stateDefinition.addContent(Content(0, "# State File function for " + section));
                 stateDefinition.addContent(Content(0, definition));
                 
                 initContent.addSpace();
-                
+                                
             } else throw StateException();
         }
         ~StateHandler(){
@@ -349,34 +359,36 @@ class StateHandler{
         }
         
         const Content getInitEntry(){
-            /*initContent.addLine(1, "self.addState(" + stateNumber + ", mugen.StateDef(self." + function + ", " + 
-                                        (!statedefParameters.empty() ? "{" + statedefParameters.substr(0,statedefParameters.size()-1) + "}" : "None") + 
-                                        "))");*/
-            initContent.addLine(1, "class StateDef" + function.substr(5) + "(mugen.StateDef):");
-                initContent.addLine(2, "def __init__(self, func, world):");
-                    initContent.addLine(3, "mugen.StateDef.__init__(self, func, world)");
-                    /* FIXME fill in parameters of init afterwards */
-                    initContent.addLine(3, "pass");
-            initContent.addSpace();
             initContent.addLine(1, "self.addState(" + stateNumber + ", StateDef" + function.substr(5) + ")");
             return initContent;
         }
         
-        void makeInitComment(const std::string & file, int line){
+        void init(const std::string & file, int line){
                 std::stringstream out;
                 out << line;
                 initContent.addLine(1,"# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str());
+                
+                
+                /* Construct state class */
+                Content stateClassLine(0, "");
+                stateClassLine.addLine(0, "# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str());
+                stateClassLine.addLine(0, "class StateDef" + function.substr(5) + "(mugen.StateDef):");
+                    Content stateInitLine(1, "def __init__(self, world):");
+                        stateInitLine.addLine(2, "mugen.StateDef.__init__(self, world)");
+                        /* FIXME fill in parameters of init afterwards */
+                        stateInitLine.addLine(2, "pass");
+                stateDef = PythonClass(stateClassLine, stateInitLine);
         }
-        
-        PythonDefinition & getDefinition(){
-            
+
+        void addStateClass(std::vector<PythonClass> & classes){
             stateControllers.addToDefinition(stateDefinition);
-            
-            return stateDefinition;
+            stateDef.add(stateDefinition);
+            classes.push_back(stateDef);
         }
         
     protected:
         
+        PythonClass stateDef;
         PythonDefinition stateDefinition;
         
         void handleDef(const Ast::AttributeSimple & simple){
@@ -450,7 +462,7 @@ class StateCollection{
                 // Create state handler
                 try {
                     StateHandler * state = new StateHandler(section.getName());
-                    state->makeInitComment(filename, section.getLine());
+                    state->init(filename, section.getLine());
                     states.push_back(state);
                     stateDefDeclared[state->stateNumber] = true;
                 } catch (const StateException & fail){
@@ -478,11 +490,18 @@ class StateCollection{
         void addToClass(PythonClass & cl){
             for (std::vector<StateHandler *>::iterator i = states.begin(); i != states.end(); ++i){
                 if (*i){
-                    // State defs
+                    // Adding state defs to list
                     cl.getInit().addContent((*i)->getInitEntry());
-                    
-                    // Add state definition
-                    cl.add((*i)->getDefinition());
+                }
+            }
+        }
+        
+        void addStateClasses(std::vector<PythonClass> & classes){
+            // State Classes
+            for (std::vector<StateHandler *>::iterator i = states.begin(); i != states.end(); ++i){
+                if (*i){
+                    // Add state definition class
+                    (*i)->addStateClass(classes);
                 }
             }
         }
@@ -656,7 +675,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                 commandContent.addLine(1,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + sectionName + " on line " + out.str());
             }
             
-            virtual void complete (){
+            virtual void complete (std::vector<PythonClass> & classes){
                 // Add constants content
                 character.getInit().addContent(constantsContent);
                 
@@ -666,6 +685,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                 
                 // Do states
                 states.addToClass(character);
+                states.addStateClasses(classes);
             }
     };
     
@@ -678,7 +698,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
         std::list<Ast::Attribute*>  attributes = section->getAttributes();
     }
     destroy(sections);
-    cmd.complete();
+    cmd.complete(stateClasses);
 }
 
 /* Handle cns files
@@ -1112,12 +1132,13 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                 constantsContent.addLine(1,"# [" + Mugen::stripDir(currentFile) + "] Section - " + sectionName + " on line " + out.str());
             }
             
-            virtual void complete (){
+            virtual void complete (std::vector<PythonClass> & classes){
                 // Add constants content
                 character.getInit().addContent(constantsContent);
                 
                 // Do states
                 states.addToClass(character);
+                states.addStateClasses(classes);
             }
     };
     
@@ -1130,7 +1151,13 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
             std::list<Ast::Attribute*>  attributes = section->getAttributes();
         }
         destroy(sections);
-        state.complete();
+        state.complete(stateClasses);
     }
     
+}
+
+void CharacterGenerator::outputStateClasses(PythonStream & out){
+    for(std::vector<PythonClass>::iterator i = stateClasses.begin(); i != stateClasses.end(); ++i){
+        (*i).output(out);
+    }
 }

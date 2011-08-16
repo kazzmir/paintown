@@ -10,7 +10,7 @@ class Command():
 
 # StateDef holds it's parameters declared in statedef and it's relative procedure states
 class StateDef():
-    def __init__(self, func, world):
+    def __init__(self, world):
         self.stateType = None
         self.moveType = None
         self.physics = None
@@ -24,10 +24,9 @@ class StateDef():
         self.movehitpersist = None
         self.hitcountpersist = None
         self.sprpriority = None
-        self.function = func
-        
+    
     def evaluate(self, world):
-        self.function(self, world)
+        pass
 
 # TODO Controller classes
 class Controller():
