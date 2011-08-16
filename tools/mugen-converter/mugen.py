@@ -10,15 +10,24 @@ class Command():
 
 # StateDef holds it's parameters declared in statedef and it's relative procedure states
 class StateDef():
-    def __init__(self, func, params):
-        self.parameters = params
+    def __init__(self, func, world):
+        self.stateType = None
+        self.moveType = None
+        self.physics = None
+        self.anim = None
+        self.velset = None
+        self.ctrl = None
+        self.poweradd = None
+        self.juggle = None
+        self.facep2 = None
+        self.hitdefpersist = None
+        self.movehitpersist = None
+        self.hitcountpersist = None
+        self.sprpriority = None
         self.function = func
         
-    def getParamater(self, name):
-        try:
-            return parameters[name]
-        except KeyError:
-            return ""
+    def evaluate(self, world):
+        self.function(self, world)
 
 # TODO Controller classes
 class Controller():

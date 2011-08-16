@@ -297,7 +297,6 @@ class StateHandler{
     public:
         StateHandler(const std::string & section):
         inDef(true),
-        requireInitComment(true),
         stateDefinition(Content(1,"")){
             if (Util::matchRegex(Mugen::lowercase(section), "statedef")){
                 sectionName = section;
@@ -318,6 +317,8 @@ class StateHandler{
                 stateDefinition.addContent(Content(0, "# State File function for " + section));
                 stateDefinition.addContent(Content(0, definition));
                 
+                initContent.addSpace();
+                
             } else throw StateException();
         }
         ~StateHandler(){
@@ -329,37 +330,42 @@ class StateHandler{
         std::string function;
         std::string stateNumber;
         std::string statedefParameters;
-        std::string initComment;
+        Content initContent;
         bool inDef;
-        bool requireInitComment;
         StateControllerStore stateControllers;
         
         void toggleSection(){
             inDef = !inDef;
         }
         
-        void parseSection(const std::string & filename, const Ast::AttributeSimple & simple, const std::string & section){
+        void parseSection(const Ast::AttributeSimple & simple, const std::string & section){
             currentSection = section;
             // In Statedef
             if (inDef){
-                handleDef(filename, simple);
+                handleDef(simple);
             } else {
-                handleState(filename, simple);
+                handleState(simple);
             }
         }
         
         const Content getInitEntry(){
-            Content content;
-            content.addSpace();
-            if (!initComment.empty()){
-                content.addLine(1, initComment);
-            } else {
-                content.addLine(1, "# [?] Section - " + currentSection + " (No line information available)");
-            }
-            content.addLine(1, "self.addState(" + stateNumber + ", mugen.StateDef(self." + function + ", " + 
+            /*initContent.addLine(1, "self.addState(" + stateNumber + ", mugen.StateDef(self." + function + ", " + 
                                         (!statedefParameters.empty() ? "{" + statedefParameters.substr(0,statedefParameters.size()-1) + "}" : "None") + 
-                                        "))");
-            return content;
+                                        "))");*/
+            initContent.addLine(1, "class StateDef" + function.substr(5) + "(mugen.StateDef):");
+                initContent.addLine(2, "def __init__(self, func, world):");
+                    initContent.addLine(3, "mugen.StateDef.__init__(self, func, world)");
+                    /* FIXME fill in parameters of init afterwards */
+                    initContent.addLine(3, "pass");
+            initContent.addSpace();
+            initContent.addLine(1, "self.addState(" + stateNumber + ", StateDef" + function.substr(5) + ")");
+            return initContent;
+        }
+        
+        void makeInitComment(const std::string & file, int line){
+                std::stringstream out;
+                out << line;
+                initContent.addLine(1,"# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str());
         }
         
         PythonDefinition & getDefinition(){
@@ -373,18 +379,7 @@ class StateHandler{
         
         PythonDefinition stateDefinition;
         
-        void makeInitComment(const std::string & file, int line){
-                std::stringstream out;
-                out << line;
-                initComment = "# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str();
-        }
-        
-        void handleDef(const std::string & filename, const Ast::AttributeSimple & simple){
-            if (requireInitComment){
-                makeInitComment(filename, simple.getLine());
-                requireInitComment = false;
-            }
-            
+        void handleDef(const Ast::AttributeSimple & simple){
             if (simple == "type"){
                 statedefParameters += "'type' : '" + simple.valueAsString() + "',";
             } else if (simple == "movetype"){
@@ -421,7 +416,7 @@ class StateHandler{
             }
         }
         
-        void handleState(const std::string & filename, const Ast::AttributeSimple & simple){
+        void handleState(const Ast::AttributeSimple & simple){
             /*if (simple == "type"){
             } else if (simple == "triggerall"){
             } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
@@ -440,7 +435,8 @@ class StateHandler{
 
 class StateCollection{
     public:
-        StateCollection(){
+        StateCollection(const std::string & filename):
+        filename(filename){
         }
         ~StateCollection(){
             for (std::vector<StateHandler *>::iterator i = states.begin(); i != states.end(); ++i){
@@ -454,6 +450,7 @@ class StateCollection{
                 // Create state handler
                 try {
                     StateHandler * state = new StateHandler(section.getName());
+                    state->makeInitComment(filename, section.getLine());
                     states.push_back(state);
                     stateDefDeclared[state->stateNumber] = true;
                 } catch (const StateException & fail){
@@ -472,7 +469,7 @@ class StateCollection{
         
         void parseState(const std::string file, const Ast::AttributeSimple & simple, const std::string & section){
             if (!states.empty() && (stateDefDeclared.find(states.back()->stateNumber) != stateDefDeclared.end())){
-                states.back()->parseSection(file, simple, section);
+                states.back()->parseSection(simple, section);
             } else {
                 throw StateException();
             }
@@ -491,6 +488,7 @@ class StateCollection{
         }
         
     private:
+        const std::string & filename;
         std::vector<StateHandler *> states;
         std::map<std::string, bool> stateDefDeclared;
         
@@ -515,10 +513,11 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
         
     class CmdWalker: public Ast::Walker {
         public:
-            CmdWalker(CharacterGenerator & generator, PythonClass & character ):
+            CmdWalker(CharacterGenerator & generator, PythonClass & character, const std::string & filename ):
             generator(generator),
             character(character),
-            currentCommand(NULL){
+            currentCommand(NULL),
+            states(filename){
                 
             }
             
@@ -671,7 +670,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
     };
     
     // Command Walker
-    CmdWalker cmd(*this, character);
+    CmdWalker cmd(*this, character, commandFile);
     std::list<Ast::Section*> * sections = parseCmd(directory + commandFile);
     for (std::list<Ast::Section*>::iterator it = sections->begin(); it != sections->end(); ++it){
         Ast::Section * section = *it;
@@ -690,7 +689,8 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
             StateWalker(CharacterGenerator & generator, PythonClass & character, const std::string & currentFile ):
             generator(generator),
             character(character),
-            currentFile(currentFile){
+            currentFile(currentFile),
+            states(currentFile){
                 
             }
             
