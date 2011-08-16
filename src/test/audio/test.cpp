@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "util/music-player.h"
+#include "util/debug.h"
 
 class Sound{
 public:
@@ -54,11 +55,13 @@ void initialize(int rate){
     Sound::Info.frequency = audio_rate;
     Sound::Info.channels = audio_channels;
     Sound::Info.format = audio_format;
+
+    Global::debug(0) << "Opened audio frequency " << audio_rate << " channels " << audio_channels << " format " << audio_format << endl;
 }
 
 int main(int argc, char ** argv){
     if (argc < 2){
-        cout << "Give an audio file as an argument" << endl;
+        Global::debug(0) << "Give an audio file as an argument" << endl;
         return 0;
     }
     initialize(48000);
