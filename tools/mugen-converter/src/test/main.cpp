@@ -34,7 +34,7 @@ int main(int argc, char ** argv){
         return 0;
     }
     
-    std::cout << "Usage: ./test character.py" << std::endl;
+    std::cout << "Usage: ./test character_module_name" << std::endl;
     
     return 0;
     
