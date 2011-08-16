@@ -42,6 +42,7 @@ build/converter/example.cpp
 build/converter/generator.cpp
 build/converter/main.cpp
 build/converter/tools.cpp
+build/converter/triggers.cpp
 build/paintown/mugen/ast/ast.cpp
 build/paintown/mugen/exception.cpp
 build/paintown/util/regex.cpp
