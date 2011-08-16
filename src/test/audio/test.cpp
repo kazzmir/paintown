@@ -32,6 +32,7 @@ void play(const string & path){
     while (true){
         SDL_Delay(1);
     }
+    // SDL_Delay(8000 * 3);
 }
 
 void initialize(int rate){

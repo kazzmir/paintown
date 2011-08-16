@@ -21,7 +21,9 @@ build/util/audio.cpp build/exceptions/exception.cpp""")
 
 env.Append(CPPPATH = '../..')
 env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MAD'])
-env.Append(CXXFLAGS = ['-g3'])
+env.Append(CCFLAGS = ['-g3'])
+#env.Append(CCFLAGS = ['-O2', '-pg'])
+#env.Append(LINKFLAGS = ['-pg'])
 env.ParseConfig('sdl-config --libs --cflags')
 
 env.Append(LIBS = ['mad', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
