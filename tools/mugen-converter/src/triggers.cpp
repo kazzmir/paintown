@@ -143,13 +143,24 @@ Win
     */
 }
 
-const std::string walk(const Ast::Value & value){
+
+const std::string TriggerHandler::convert(const Ast::Value & value){
     class ExpressionWalker : public Ast::Walker{
     public:
         ExpressionWalker(){
         }
+        virtual void onValueList(const Ast::ValueList & values){
+            for (unsigned int i = 0;;++i){
+                Ast::Value * value = values.get(i);
+                if (value){
+                    convert(*value);
+                } else {
+                    break;
+                }
+            }
+        }
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-            std::cout << "Found value: " << simple.valueAsString() << std::endl;
+            std::cout << "Found simple: " << simple.valueAsString() << std::endl;
         }
         virtual void onAttributeKeyword(const Ast::AttributeKeyword & simple){
             std::cout << "Found keyword: " << simple.valueAsString() << std::endl;
@@ -159,22 +170,40 @@ const std::string walk(const Ast::Value & value){
         }
         virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
             std::cout << "Found Infix: " <<  expression.toString() << std::endl;
-            walk(*expression.getLeft());
-            walk(*expression.getRight());
+            convert(*expression.getLeft());
+            convert(*expression.getRight());
         }
-            
         virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
             std::cout << "Found Unary: " <<  expression.toString() << std::endl;
-            walk(*expression.getExpression());
+            convert(*expression.getExpression());
         }
+        virtual void onIdentifier(const Ast::Identifier & identifier){
+            std::cout << "Found Identifier: " << identifier.toString() << std::endl;
+        }
+        
+        virtual void onHelper(const Ast::Helper & identifier){
+            std::cout << "Found Helper: " << identifier.toString() << std::endl;
+        }
+
+        virtual void onString(const Ast::String & string){
+            std::cout << "Found String: " << string.toString() << std::endl;
+        }
+        
+        virtual void onFunction(const Ast::Function & string){
+            std::cout << "Found Function: " << string.toString() << std::endl;
+        }
+
+        virtual void onKeyword(const Ast::Keyword & keyword){
+            std::cout << "Found Keyword: " << keyword.toString() << std::endl;
+        }
+        
+        virtual void onNumber(const Ast::Number & keyword){
+            std::cout << "Found Number: " << keyword.toString() << std::endl;
+        }
+        
     };
     ExpressionWalker walker;
     value.walk(walker);
     
     return "";
-}
-
-const std::string TriggerHandler::convert(const Ast::AttributeSimple & simple){
-    
-    return walk(*simple.getValue());
 }

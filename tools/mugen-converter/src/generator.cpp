@@ -442,7 +442,7 @@ class StateHandler{
                 std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
             }*/
             
-            TriggerHandler::convert(simple);
+            TriggerHandler::convert(*simple.getValue());
             std::string id = simple.idString();
             stateControllers.getCurrentController().add(id, (Ast::AttributeSimple *)simple.copy());
         }
@@ -634,12 +634,12 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                             currentCommand->command = command.substr(0,command.size()-1);
                         }
                     } else if (simple == "time"){
-                        TriggerHandler::convert(simple);
+                        TriggerHandler::convert(*simple.getValue());
                         if (currentCommand != NULL){
                             currentCommand->time = simple.valueAsString();
                         }
                     } else if (simple == "buffer.time"){
-                        TriggerHandler::convert(simple);
+                        TriggerHandler::convert(*simple.getValue());
                         if (currentCommand != NULL){
                             currentCommand->bufferTime = simple.valueAsString();
                         }

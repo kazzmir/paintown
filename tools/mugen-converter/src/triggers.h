@@ -4,7 +4,7 @@
 #include <string>
 
 namespace Ast{
-    class AttributeSimple;
+    class Value;
 }
 
 namespace Mugen{
@@ -13,7 +13,7 @@ namespace Mugen{
 namespace TriggerHandler{
 
 /* Convert trigger identifier */
-const std::string convert(const Ast::AttributeSimple &);
+const std::string convert(const Ast::Value &);
 
 }
 }
