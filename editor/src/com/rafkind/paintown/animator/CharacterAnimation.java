@@ -1091,27 +1091,12 @@ public class CharacterAnimation extends JPanel {
                 
         final SwingEngine optionsEngine = new SwingEngine("animator/adjust-offsets.xml");
 
-        final JSpinner x = (JSpinner) optionsEngine.find("x");
-        final JSpinner y = (JSpinner) optionsEngine.find("y");
-
-        ChangeListener change = new ChangeListener(){
-            class Pair{
-                public int x, y;
-                public Pair(int x, int y){
-                    this.x = x;
-                    this.y = y;
-                }
+        class OffsetAction extends AbstractAction {
+            public OffsetAction(Lambda1 doOffset){
+                this.doOffset = doOffset;
             }
 
-            public HashMap<OffsetEvent, Pair> save(){
-                HashMap<OffsetEvent, Pair> map = new HashMap<OffsetEvent, Pair>();
-                for (OffsetEvent offset: getOffsets(events)){
-                    map.put(offset, new Pair(offset.getX(), offset.getY()));
-                }
-                return map;
-            }
-
-            HashMap<OffsetEvent, Pair> offsets = save();
+            Lambda1 doOffset;
 
             public List<OffsetEvent> getOffsets(Vector<AnimationEvent> events){
                 List<OffsetEvent> offsets = new ArrayList<OffsetEvent>();
@@ -1127,24 +1112,58 @@ public class CharacterAnimation extends JPanel {
             }
 
             private void updateOffsets(){
-                int xValue = ((Integer) x.getValue()).intValue();
-                int yValue = ((Integer) y.getValue()).intValue();
-                for (OffsetEvent offset: offsets.keySet()){
-                    Pair pair = offsets.get(offset);
-                    offset.setX(pair.x + xValue);
-                    offset.setY(pair.y + yValue);
+                for (OffsetEvent offset: getOffsets(events)){
+                    try{
+                        doOffset.invoke(offset);
+                    } catch (Exception e){
+                        System.out.println(e);
+                    }
                 }
             }
 
-            public void stateChanged(ChangeEvent changeEvent){
+            public void actionPerformed(ActionEvent event){
                 updateOffsets();
                 animation.applyEvents();
                 animation.forceRedraw();
             }
         };
 
-        x.addChangeListener(change);
-        y.addChangeListener(change);
+        JButton left = (JButton) optionsEngine.find("left");
+        JButton right = (JButton) optionsEngine.find("right");
+        JButton up = (JButton) optionsEngine.find("up");
+        JButton down = (JButton) optionsEngine.find("down");
+
+        left.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setX(offset.getX() - 1);
+                return null;
+            }
+        }));
+
+        right.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setX(offset.getX() + 1);
+                return null;
+            }
+        }));
+
+        up.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setY(offset.getY() - 1);
+                return null;
+            }
+        }));
+
+        down.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setY(offset.getY() + 1);
+                return null;
+            }
+        }));
 
         /*
         JButton apply = (JButton) optionsEngine.find("apply");
