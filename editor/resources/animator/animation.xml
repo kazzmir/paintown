@@ -173,7 +173,10 @@
                     -->
 
                     <hbox>
-                        <combobox id="tools" />
+                        <vbox>
+                            <label text="Tools" />
+                            <combobox id="tools" />
+                        </vbox>
                         <panel id="tool-area" layout="GridBagLayout" />
                         <glue />
                     </hbox>
