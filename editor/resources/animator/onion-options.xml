@@ -5,21 +5,34 @@
             gridx="0"
             gridy="0"
             weightx="1"
-            weighty="1"
+            weighty="0.1"
             gridheight="1"
             anchor="GridBagConstraints.NORTHWEST"
             fill="GridBagConstraints.BOTH"
             />
-        <label text="Skins" />
-        <slider id="skins" value="0" minimum="-10" maximum="10" />
+        <checkbox id="onion-skinning" />
+        <label text="Onion Skinning" />
     </hbox>
-
     <vbox>
         <gridbagconstraints
             gridx="0"
             gridy="1"
             weightx="1"
-            weighty="1"
+            weighty="0.1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+        <label text="Showing no frames" id="how-many" />
+        <slider id="skins" value="0" minimum="-10" maximum="10" />
+    </vbox>
+
+    <vbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="2"
+            weightx="1"
+            weighty="0.1"
             gridheight="1"
             anchor="GridBagConstraints.NORTHWEST"
             fill="GridBagConstraints.BOTH"

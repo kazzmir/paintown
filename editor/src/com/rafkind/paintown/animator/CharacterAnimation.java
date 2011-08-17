@@ -275,20 +275,14 @@ public class CharacterAnimation extends JPanel {
                     }
                 });
 
-                final JCheckBox onionSkinning = (JCheckBox) contextEditor.find("onion-skinning");
-                onionSkinning.addActionListener(new AbstractAction(){
-                    public void actionPerformed(ActionEvent event){
-                        animation.setOnionSkinning(onionSkinning.isSelected());
-                        animation.forceRedraw();
-                    }
-                });
-
+                /*
                 final JButton onionOptions = (JButton) contextEditor.find("onion-options");
                 onionOptions.addActionListener(new AbstractAction(){
                     public void actionPerformed(ActionEvent event){
                         showOnionOptions(onionOptions.getLocation(), animation);
                     }
                 });
+                */
 
                 final JComboBox typeCombo = (JComboBox) contextEditor.find( "type" );
                 typeCombo.addItem("none");
@@ -805,6 +799,50 @@ public class CharacterAnimation extends JPanel {
                     eventSelect.addItem(event);
                 }
 
+                final JComboBox tools = (JComboBox) contextEditor.find("tools");
+                final JPanel toolPane = (JPanel) contextEditor.find("tool-area");
+                final String chooseNone = "None";
+                final String chooseOnionSkinning = "Onion Skinning";
+                final String chooseAdjustOffsets = "AdjustOffsets";
+                tools.addItem(chooseNone);
+                tools.addItem(chooseOnionSkinning);
+                tools.addItem(chooseAdjustOffsets);
+
+                final JPanel toolNone = new JPanel();
+                final JPanel toolOnionSkinning = makeOnionSkinningPanel(animation);
+                final JPanel toolAdjustOffsets = makeAdjustOffsetsPanel(animation);
+
+                tools.addActionListener(new AbstractAction(){
+                    private JPanel getTool(String name){
+                        if (name.equals(chooseNone)){
+                            return toolNone;
+                        }
+                        if (name.equals(chooseOnionSkinning)){
+                            return toolOnionSkinning;
+                        }
+                        if (name.equals(chooseAdjustOffsets)){
+                            return toolAdjustOffsets;
+                        }
+
+                        throw new RuntimeException("No such tool with name '" + name + "'");
+                    }
+
+                    public void actionPerformed(ActionEvent event){
+                        toolPane.removeAll();
+                        GridBagConstraints constraints = new GridBagConstraints();
+                        constraints.gridx = 0;
+                        constraints.gridy = 0;
+                        constraints.weightx = 0.1;
+                        constraints.weighty = 1;
+                        constraints.fill = GridBagConstraints.BOTH;
+                        constraints.anchor = GridBagConstraints.NORTHWEST;
+                        toolPane.add(getTool((String) tools.getSelectedItem()), constraints);
+                        toolPane.revalidate();
+
+                    }
+                });
+
+                /*
                 JButton adjustOffsets = (JButton) contextEditor.find("adjust-offsets");
                 adjustOffsets.addActionListener(new AbstractAction(){
                     public void actionPerformed(ActionEvent event){
@@ -812,6 +850,7 @@ public class CharacterAnimation extends JPanel {
                         eventList.repaint();
                     }
                 });
+                */
 
                 JButton addAllFrames = (JButton) contextEditor.find("add-frames");
                 addAllFrames.addActionListener(new AbstractAction(){
@@ -1082,6 +1121,144 @@ public class CharacterAnimation extends JPanel {
                 return null;
             }
         };
+    }
+
+    private JPanel makeOnionSkinningPanel(final Animation animation){
+        final SwingEngine optionsEngine = new SwingEngine("animator/onion-options.xml");
+        final JSlider skins = (JSlider) optionsEngine.find("skins");
+        final JLabel many = (JLabel) optionsEngine.find("how-many");
+        skins.setValue(animation.getOnionSkins());
+
+        skins.addChangeListener(new ChangeListener(){
+            private String descriptive(int what){
+                if (what < 0){
+                    return "Showing " + what + " past frames";
+                }
+                if (what == 0){
+                    return "Showing no frames";
+                }
+                if (what > 0){
+                    return "Showing " + what + " future frames";
+                }
+                return "WTF";
+            }
+
+            public void stateChanged(ChangeEvent change){
+                many.setText(descriptive(skins.getValue()));
+                animation.setOnionSkins(skins.getValue());
+                animation.forceRedraw();
+            }
+        });
+
+        final JCheckBox onionSkinning = (JCheckBox) optionsEngine.find("onion-skinning");
+        onionSkinning.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                animation.setOnionSkinning(onionSkinning.isSelected());
+                animation.forceRedraw();
+            }
+        });
+
+        final JRadioButton front = (JRadioButton) optionsEngine.find("front");
+        final JRadioButton back = (JRadioButton) optionsEngine.find("back");
+        front.setActionCommand("front");
+        back.setActionCommand("back");
+        
+        AbstractAction change = new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (event.getActionCommand().equals("front")){
+                    animation.setOnionSkinFront(true);
+                } else {
+                    animation.setOnionSkinFront(false);
+                }
+                
+                animation.forceRedraw();
+            }
+        };
+
+        front.addActionListener(change);
+        back.addActionListener(change);
+
+        return (JPanel) optionsEngine.getRootComponent();
+    }
+
+    private JPanel makeAdjustOffsetsPanel(final Animation animation){
+        final SwingEngine optionsEngine = new SwingEngine("animator/adjust-offsets.xml");
+
+        class OffsetAction extends AbstractAction {
+            public OffsetAction(Lambda1 doOffset){
+                this.doOffset = doOffset;
+            }
+
+            Lambda1 doOffset;
+
+            public List<OffsetEvent> getOffsets(Vector<AnimationEvent> events){
+                List<OffsetEvent> offsets = new ArrayList<OffsetEvent>();
+                for (AnimationEvent event: events){
+                    /* instanceof is justified here because we can treat
+                     * events like an ADT
+                     */
+                    if (event instanceof OffsetEvent){
+                        offsets.add((OffsetEvent) event);
+                    }
+                }
+                return offsets;
+            }
+
+            private void updateOffsets(){
+                for (OffsetEvent offset: getOffsets(animation.getEvents())){
+                    try{
+                        doOffset.invoke(offset);
+                    } catch (Exception e){
+                        System.out.println(e);
+                    }
+                }
+            }
+
+            public void actionPerformed(ActionEvent event){
+                updateOffsets();
+                animation.applyEvents();
+                animation.forceRedraw();
+            }
+        };
+
+        JButton left = (JButton) optionsEngine.find("left");
+        JButton right = (JButton) optionsEngine.find("right");
+        JButton up = (JButton) optionsEngine.find("up");
+        JButton down = (JButton) optionsEngine.find("down");
+
+        left.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setX(offset.getX() - 1);
+                return null;
+            }
+        }));
+
+        right.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setX(offset.getX() + 1);
+                return null;
+            }
+        }));
+
+        up.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setY(offset.getY() - 1);
+                return null;
+            }
+        }));
+
+        down.addActionListener(new OffsetAction(new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setY(offset.getY() + 1);
+                return null;
+            }
+        }));
+
+        return (JPanel) optionsEngine.getRootComponent();
     }
                         
     private void showAdjustOffsetsDialog(final Animation animation, final Vector<AnimationEvent> events){
