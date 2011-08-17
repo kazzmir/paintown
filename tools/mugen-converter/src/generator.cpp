@@ -441,7 +441,7 @@ class StateHandler{
             } else {
                 std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
             }*/
-            
+            /*
             if (simple == "triggerall"){
                 std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
             } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
@@ -449,9 +449,10 @@ class StateHandler{
             } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
                 std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
             } else {
+                */
                 std::string id = simple.idString();
                 stateControllers.getCurrentController().add(id, (Ast::AttributeSimple *)simple.copy());
-            }
+            //}
         }
 };
 
@@ -641,12 +642,12 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                             currentCommand->command = command.substr(0,command.size()-1);
                         }
                     } else if (simple == "time"){
-                        std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
+                        //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
                         if (currentCommand != NULL){
                             currentCommand->time = simple.valueAsString();
                         }
                     } else if (simple == "buffer.time"){
-                        std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
+                        //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
                         if (currentCommand != NULL){
                             currentCommand->bufferTime = simple.valueAsString();
                         }

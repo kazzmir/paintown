@@ -183,7 +183,7 @@ void Mugen::Content::output(Mugen::PythonStream & stream, unsigned int indentSta
 
 const unsigned int Mugen::Content::getIndentLevel() const{
     if (totalLines!=0){
-        return indentLevel[0];
+        return indentLevel[totalLines-1];
     }
     return 0;
 }

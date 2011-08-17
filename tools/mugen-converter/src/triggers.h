@@ -11,33 +11,31 @@ namespace Ast{
 namespace Mugen{
    
 class Content;
-    
+class PythonDefinition;
+
 class Expression{
     public:
         Expression();
-        Expression(const std::string &, bool constant = false);
-        Expression(const std::string &, const std::vector<std::string> &);
         Expression(const Expression &);
+        Expression(const std::string &);
+        Expression(const std::string &, const std::vector<Expression> &);
         virtual ~Expression();
         
-        const Expression & operator=(const Expression &);
-        
+        virtual const Expression & operator=(const Expression &);
+        virtual void setKeyword(const std::string &, bool constant = false);
+        virtual void addArguments(const Expression &);
         virtual const std::string get();
-        
-        virtual void addArguments(const std::string &);
-        
-        inline virtual void setKeyword(const std::string & keyword, bool constant = false){
-            this->keyword = keyword;
-            this->constant = constant;
+        inline virtual bool isConstant() const {
+            return this->constant;
         }
-        
-        
     protected:
         std::string keyword;
-        std::vector <std::string> arguments;
+        std::vector <Expression> arguments;
         bool constant;
 };
-    
+
+/* Expression Builder houses Expressions and pieces them together for output in python 
+ */
 class ExpressionBuilder{
     public:
         ExpressionBuilder();
@@ -69,7 +67,7 @@ class ExpressionBuilder{
             }
         }
         
-        inline virtual std::vector<Expression> getRight(){
+        inline virtual std::vector<Expression> & getRight(){
             return this->right;
         }
         
@@ -85,7 +83,7 @@ class ExpressionBuilder{
 namespace TriggerHandler{
 
 /* Convert trigger identifier */
-ExpressionBuilder convert(const Ast::Value &);
+void convert(PythonDefinition &, const Ast::Value &);
 
 }
 }
