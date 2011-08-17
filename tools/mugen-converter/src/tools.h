@@ -59,16 +59,19 @@ std::list<Ast::Section*> * parseCmd(const std::string &);
 std::list<Ast::Section*> * parseDef(const std::string &);
 
 /* basename, just get the filename and remove the directory part */
-std::string stripDir(const std::string & str);
+std::string stripDir(const std::string &);
 
 /* dirname, just get the directory and remove the filename part */
-std::string stripFilename(const std::string & str);
+std::string stripFilename(const std::string &);
 
 /* strips out the extension of the file */
-std::string stripExtension(const std::string & str);
+std::string stripExtension(const std::string &);
 
 /* Returns a string in lowercase */
 const std::string lowercase(const std::string &);
+
+/* Compare strings in lowercase */
+bool match(const std::string &, const std::string &);
 
 /* equivalent of std::endl */
 class StreamEnd{

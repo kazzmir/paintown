@@ -4,10 +4,6 @@
 
 using namespace Mugen;
 
-bool match(const std::string & str1, const std::string & str2){
-    return (Mugen::lowercase(str1) == Mugen::lowercase(str2));
-}
-
 Content getController(const std::string & type){
     if (match(type, "AfterImage")){
     } else if (match(type, "AfterImageTime")){

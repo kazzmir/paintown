@@ -92,6 +92,10 @@ const std::string Mugen::lowercase( const std::string &str ){
     return tempStr;
 }
 
+bool Mugen::match(const std::string & str1, const std::string & str2){
+    return (Mugen::lowercase(str1) == Mugen::lowercase(str2));
+}
+
 Mugen::PythonStream::PythonStream():
 indentAmount(0){   
 }
