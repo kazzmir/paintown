@@ -2,59 +2,71 @@
 #include "tools.h"
 
 #include <iostream>
+#include <sstream>
 
 #include "ast/all.h"
 
 using namespace Mugen;
 using namespace TriggerHandler;
 
-const std::string handleKeyWord(const std::string & keyword){
+/* TODO FIXME and all that
+ * Assuming that an object named player and an object named world is going to be passed to States for evaluation
+ * And also assuming that the names of the functions are going to be what they are below (most likely most of it will change)
+ */;
+Expression handleKeyWord(const std::string & keyword){
     if (match("AILevel", keyword)){
     } else if (match("Abs", keyword)){
-        return "math.fabs";
+        return Expression("math.fabs");
     } else if (match("Acos", keyword)){
-        return "math.acos";
+        return Expression("math.acos");
     } else if (match("Alive", keyword)){
+        return Expression("player.isAlive");
     } else if (match("Anim", keyword)){
+        return Expression("player.currentAnimation");
     } else if (match("AnimElem", keyword)){
     } else if (match("AnimElemNo", keyword)){
     } else if (match("AnimElemTime", keyword)){
     } else if (match("AnimExist", keyword)){
     } else if (match("AnimTime", keyword)){
     } else if (match("Asin", keyword)){
-        return "math.asin";
+        return Expression("math.asin");
     } else if (match("Atan", keyword)){
-        return "math.atan";
+        return Expression("math.atan");
     } else if (match("AuthorName", keyword)){
-        //return "paintown";
+        return Expression("player.getAuthor");
     } else if (match("BackEdgeBodyDist", keyword)){
     } else if (match("BackEdgeDist", keyword)){
 
     } else if (match("CanRecover", keyword)){
+        return Expression("player.canRecover");
     } else if (match("Ceil", keyword)){
-        return "math.ceil";
+        return Expression("math.ceil");
     } else if (match("Command", keyword)){
+        return Expression("player.EvaluateCommand");
     } else if (match("Const", keyword)){
     } else if (match("Const240p", keyword)){
     } else if (match("Const480p", keyword)){
     } else if (match("Const720p", keyword)){
     } else if (match("Cos", keyword)){
-        return "math.cos";
+        return Expression("math.cos");
     } else if (match("Ctrl", keyword)){
-    } else if (match("D", keyword)){
+        return Expression("player.hasControl");
     } else if (match("DrawGame", keyword)){
 
     } else if (match("E", keyword)){
+        return Expression("math.e", true);
     } else if (match("Exp", keyword)){
-
+        return Expression("math.exp");
     } else if (match("FVar", keyword)){
     } else if (match("Facing", keyword)){
+        return Expression("player.getFacing");
     } else if (match("Floor", keyword)){
-        return "math.floor";
+        return Expression("math.floor");
     } else if (match("FrontEdgeBodyDist", keyword)){
     } else if (match("FrontEdgeDist", keyword)){
 
     } else if (match("GameTime", keyword)){
+        return Expression("world.getTime");
     } else if (match("GetHitVar", keyword)){
 
     } else if (match("HitCount", keyword)){
@@ -67,6 +79,7 @@ const std::string handleKeyWord(const std::string & keyword){
 
     } else if (match("ID", keyword)){
     } else if (match("IfElse", keyword)){
+        return Expression("mugen.ifelse");
     } else if (match("InGuardDist", keyword)){
     } else if (match("IsHelper", keyword)){
     } else if (match("IsHomeTeam", keyword)){
@@ -74,9 +87,9 @@ const std::string handleKeyWord(const std::string & keyword){
     } else if (match("Life", keyword)){
     } else if (match("LifeMax", keyword)){
     } else if (match("Ln", keyword)){
-        return "math.log";
+        return Expression("mugen.ln");
     } else if (match("Log", keyword)){
-        return "math.log";
+        return Expression("math.log");
     } else if (match("Lose", keyword)){
 
     } else if (match("MatchNo", keyword)){
@@ -109,7 +122,7 @@ const std::string handleKeyWord(const std::string & keyword){
     } else if (match("PalNo", keyword)){
     } else if (match("ParentDist", keyword)){
     } else if (match("Pi", keyword)){
-        return "math.pi";
+        return Expression("math.pi", true);
     } else if (match("PlayerIDExist", keyword)){
     } else if (match("Pos", keyword)){
     } else if (match("Power", keyword)){
@@ -124,23 +137,25 @@ const std::string handleKeyWord(const std::string & keyword){
     } else if (match("ProjHitTime", keyword)){
 
     } else if (match("Random", keyword)){
-        return "random()";
+        return Expression("random");
     } else if (match("RootDist", keyword)){
     } else if (match("RoundNo", keyword)){
+        return Expression("world.currentRound");
     } else if (match("RoundState", keyword)){
+        return Expression("world.roundState");
     } else if (match("RoundsExisted", keyword)){
-
+        return Expression("player.roundsExisted");
     } else if (match("ScreenPos", keyword)){
     } else if (match("SelfAnimExist", keyword)){
     } else if (match("Sin", keyword)){
-        return "math.sin";
+        return Expression("math.sin");
     } else if (match("StateNo", keyword)){
     } else if (match("StateType", keyword)){
     } else if (match("SysFVar", keyword)){
     } else if (match("SysVar", keyword)){
 
     } else if (match("Tan", keyword)){
-        return "math.tan";
+        return Expression("math.tan");
     } else if (match("TeamMode", keyword)){
     } else if (match("TeamSide", keyword)){
     } else if (match("TicksPerSecond", keyword)){
@@ -157,15 +172,129 @@ const std::string handleKeyWord(const std::string & keyword){
         std::cout << "Unhandled keyword: " << keyword << std::endl;
     }
     
+    return Expression();
+}
+
+Expression::Expression():
+constant(false){
+}
+
+Expression::Expression(const std::string & keyword, bool constant):
+keyword(keyword),
+constant(constant){
+}
+
+Expression::Expression(const std::string & keyword, const std::vector<std::string> & arguments):
+keyword(keyword),
+arguments(arguments),
+constant(false){
+}
+
+Expression::Expression(const Expression & copy){
+    keyword = copy.keyword;
+    arguments = copy.arguments;
+    constant = copy.constant;
+}
+
+Expression::~Expression(){
+}
+
+const Expression & Expression::operator=(const Expression & copy){
+    keyword = copy.keyword;
+    arguments = copy.arguments;
+    constant = copy.constant;
+    
+    return *this;
+}
+
+const std::string Expression::get(){
+    if (keyword.empty()){
+        return "";
+    }
+    if (constant){
+        return keyword;
+    }
+    std::string expression = keyword + "(";
+    if (!arguments.empty()){
+        std::string args;
+        for (std::vector<std::string>::iterator i = arguments.begin(); i != arguments.end(); ++i){
+            args += *i + ", ";
+        }
+        expression += args.substr(0,args.size()-2) + ")";
+    } else {
+        expression += ")";
+    }
+    
+    return expression;
+}
+
+void Expression::addArguments(const std::string & argument){
+    arguments.push_back(argument);
+}
+
+ExpressionBuilder::ExpressionBuilder():
+type(Infix){
+}
+ExpressionBuilder::ExpressionBuilder(const ExpressionBuilder & copy):
+type(Infix){
+    left = copy.left;
+    right = copy.right;
+    expressionOperator = copy.expressionOperator;
+    type = copy.type;
+}
+ExpressionBuilder::~ExpressionBuilder(){
+}
+const ExpressionBuilder & ExpressionBuilder::operator=(const ExpressionBuilder & copy){
+    left = copy.left;
+    right = copy.right;
+    expressionOperator = copy.expressionOperator;
+    type = copy.type;
+    return *this;
+}
+void ExpressionBuilder::setLeft(const Expression & expression){
+    left = expression;
+}
+void ExpressionBuilder::addRight(const Expression & expression){
+    right.push_back(expression);
+}
+void ExpressionBuilder::setOperator(const std::string & op){
+    expressionOperator = op;
+}
+
+const std::string ExpressionBuilder::get(){
+    switch (type){
+        case Infix:{
+            if (right.size() == 1){
+                return "(" + left.get() + expressionOperator + right.back().get() + ")";
+            } else if (right.size() > 1){
+                // Range
+                std::string expression;
+                for (std::vector<Expression>::iterator i = right.begin(); i != right.end(); ++i){
+                    expression += "(" + left.get() + expressionOperator + (*i).get() + ") and ";
+                }
+                // Exclude last " and"
+                return expression.substr(0, expression.size()-5);
+            }
+        }
+        case Unary:{
+            return expressionOperator + "(" + left.get() + ")";
+        }
+        default:
+            break;
+    }
     return "";
 }
 
-
-const std::string TriggerHandler::convert(const Ast::Value & value){
+ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
     class ExpressionWalker : public Ast::Walker{
     public:
-        ExpressionWalker(){
+        ExpressionWalker(ExpressionBuilder & exp):
+        exp(exp),
+        left(true){
         }
+        ExpressionBuilder & exp;
+        bool left;
+        
         virtual void onValueList(const Ast::ValueList & values){
             for (unsigned int i = 0;;++i){
                 Ast::Value * value = values.get(i);
@@ -174,6 +303,16 @@ const std::string TriggerHandler::convert(const Ast::Value & value){
                 } else {
                     break;
                 }
+            }
+        }
+        virtual void onRange(const Ast::Range & range){
+            std::cout << "Found range: " << range.toString() << std::endl;
+            double low = atof(range.getLow()->toString().c_str());
+            double high = atof(range.getHigh()->toString().c_str());
+            for (; low != high+1; ++low){
+                std::ostringstream num;
+                num << low;
+                exp.addRight(Expression(num.str(), true));
             }
         }
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
@@ -187,15 +326,34 @@ const std::string TriggerHandler::convert(const Ast::Value & value){
         }
         virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
             std::cout << "Found Infix: " <<  expression.toString() << std::endl;
-            convert(*expression.getLeft());
-            convert(*expression.getRight());
+            ExpressionBuilder expLeft = convert(*expression.getLeft());
+            exp.setLeft(Expression(expLeft.get(), true));
+            left = false;
+            ExpressionBuilder expRight = convert(*expression.getRight());
+            if (!expRight.hasRange()){
+                exp.addRight(Expression(expRight.get(), true));
+            } else {
+                std::vector<Expression> range = expRight.getRight();
+                for (std::vector<Expression>::iterator i = range.begin(); i != range.end(); i++){
+                    exp.addRight((*i));
+                }
+            }
+            
+            exp.setOperator(expression.infixName(expression.getExpressionType()));
         }
         virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
             std::cout << "Found Unary: " <<  expression.toString() << std::endl;
-            convert(*expression.getExpression());
+            exp.setLeft(Expression(convert(*expression.getExpression()).get(), true));
+            exp.setOperator(expression.prefixName(expression.getExpressionType()));
         }
         virtual void onIdentifier(const Ast::Identifier & identifier){
-            std::cout << "Found Identifier: " << identifier.toString() << "' translated as: " << handleKeyWord(identifier.toString()) << std::endl;
+            // Triggers or Constants
+            std::cout << "Found Identifier: " << identifier.toString() << "' translated as: " << handleKeyWord(identifier.toString()).get() << std::endl;
+            if (left){
+                exp.setLeft(handleKeyWord(identifier.toString()));
+            } else {
+                exp.addRight(handleKeyWord(identifier.toString()));
+            }
         }
         
         virtual void onHelper(const Ast::Helper & helper){
@@ -203,25 +361,61 @@ const std::string TriggerHandler::convert(const Ast::Value & value){
         }
 
         virtual void onString(const Ast::String & string){
+            // Commands
             std::cout << "Found String: " << string.toString() << std::endl;
+            if (left){
+                exp.setLeft(Expression(string.toString(), true));
+            } else {
+                exp.addRight(Expression(string.toString(), true));
+            }
         }
         
-        virtual void onFunction(const Ast::Function & string){
-            std::cout << "Found Function: " << string.toString() << std::endl;
+        virtual void onFunction(const Ast::Function & function){
+            // Triggers w/ arguments
+            std::cout << "Found Function: " << function.toString() << std::endl;
+            Expression func = handleKeyWord(function.getName());
+            for (unsigned int i = 0;;++i){
+                const Ast::Value * value = function.getArg(i);
+                if (value){
+                    func.addArguments(convert(*value).get());
+                } else {
+                    break;
+                }
+            }
+            
+            if (left){
+                exp.setLeft(func);
+            } else {
+                exp.addRight(func);
+            }
         }
 
         virtual void onKeyword(const Ast::Keyword & keyword){
-            std::cout << "Found Keyword '" << keyword.toString() << "' translated as: " << handleKeyWord(keyword.toString()) << std::endl;
-            
+            // Triggers or constants
+            std::cout << "Found Keyword: " << keyword.toString() << "' translated as: " << handleKeyWord(keyword.toString()).get() << std::endl;
+            if (left){
+                exp.setLeft(handleKeyWord(keyword.toString()));
+            } else {
+                exp.addRight(handleKeyWord(keyword.toString()));
+            }
         }
         
-        virtual void onNumber(const Ast::Number & keyword){
-            std::cout << "Found Number: " << keyword.toString() << std::endl;
+        virtual void onNumber(const Ast::Number & number){
+            // Numerals
+            std::cout << "Found Number: " << number.toString() << std::endl;
+            if (left){
+                exp.setLeft(Expression(number.toString(), true));
+            } else {
+                exp.addRight(Expression(number.toString(), true));
+            }
         }
         
     };
-    ExpressionWalker walker;
+    
+    ExpressionBuilder expression;
+    
+    ExpressionWalker walker(expression);
     value.walk(walker);
     
-    return "";
+    return expression;
 }

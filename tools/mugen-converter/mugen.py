@@ -108,7 +108,7 @@ class Character():
         self.crouchFriction = None
         
         # Command Holders
-        self.commands = []
+        self.commands = {}
         
         # State holders
         self.states = {}
@@ -131,7 +131,18 @@ class Character():
         if bufferTime:
             cmd.bufferTime = bufferTime
         
-        self.commands.append(cmd)
+        self.commands[state] = cmd
         
     def addState(self, number, state):
         self.states[number] = state
+
+# LN definition
+def ln(number):
+    return math.log(number, math.e)
+    
+# handle mugens ifelse
+def ifelse(result, exp1, exp2):
+    if result:
+        return exp1
+    else:
+        return exp2
