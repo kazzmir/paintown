@@ -441,7 +441,6 @@ class StateHandler{
             } else {
                 std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
             }*/
-            /*
             if (simple == "triggerall"){
                 std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
             } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
@@ -449,10 +448,10 @@ class StateHandler{
             } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
                 std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
             } else {
-                */
+                
                 std::string id = simple.idString();
                 stateControllers.getCurrentController().add(id, (Ast::AttributeSimple *)simple.copy());
-            //}
+            }
         }
 };
 

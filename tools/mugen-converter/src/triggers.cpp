@@ -1,5 +1,4 @@
 #include "triggers.h"
-#include "tools.h"
 
 #include <iostream>
 #include <sstream>
@@ -44,7 +43,7 @@ const Expression & Expression::operator=(const Expression & copy){
 }
 
 const std::string Expression::get(){
-#if 0
+
     if (keyword.empty()){
         return "";
     }
@@ -54,8 +53,8 @@ const std::string Expression::get(){
     std::string expression = keyword + "(";
     if (!arguments.empty()){
         std::string args;
-        for (std::vector<std::string>::iterator i = arguments.begin(); i != arguments.end(); ++i){
-            args += *i + ", ";
+        for (std::vector<Expression>::iterator i = arguments.begin(); i != arguments.end(); ++i){
+            args += (*i).get() + ", ";
         }
         expression += args.substr(0,args.size()-2) + ")";
     } else {
@@ -63,8 +62,6 @@ const std::string Expression::get(){
     }
     
     return expression;
-#endif
-    return "";
 }
 
 void Expression::setKeyword(const std::string & keyword, bool constant){
@@ -243,11 +240,9 @@ std::string handleKeyWord(const std::string & keyword){
 }
 
 ExpressionBuilder::ExpressionBuilder():
-left(NULL),
 type(Infix){
 }
 ExpressionBuilder::ExpressionBuilder(const ExpressionBuilder & copy):
-left(NULL),
 type(Infix){
     left = copy.left;
     right = copy.right;
@@ -266,8 +261,8 @@ const ExpressionBuilder & ExpressionBuilder::operator=(const ExpressionBuilder &
 void ExpressionBuilder::setLeft(const Expression & expression){
     left = expression;
 }
-void ExpressionBuilder::addRight(const Expression & expression){
-    right.push_back(expression);
+void ExpressionBuilder::setRight(const Expression & expression){
+    right = expression;
 }
 void ExpressionBuilder::setOperator(const std::string & op){
     expressionOperator = op;
@@ -276,25 +271,20 @@ void ExpressionBuilder::setOperator(const std::string & op){
 const std::string ExpressionBuilder::get(){
     switch (type){
         case Infix:{
-            if (right.size() == 1){
-                return "(" + left.get() + expressionOperator + right.back().get() + ")";
-            } else if (right.size() > 1){
-                // Range
-                std::string expression;
-                for (std::vector<Expression>::iterator i = right.begin(); i != right.end(); ++i){
-                    expression += "(" + left.get() + expressionOperator + (*i).get() + ") and ";
-                }
-                // Exclude last " and"
-                return expression.substr(0, expression.size()-5);
-            }
+            return "(" + left.get() + expressionOperator + right.get() + ")";
+            
         }
         case Unary:{
-                return expressionOperator + "(" + left.get() + ")";
+            return expressionOperator + "(" + left.get() + ")";
         }
         default:
             break;
     }
     return "";
+}
+
+const Content & ExpressionBuilder::getFunction(){
+    return content;
 }
 
 class Evaluator{
@@ -322,24 +312,23 @@ class Evaluator{
         Content content;
 };
 
-void TriggerHandler::convert(PythonDefinition & definition, const Ast::Value & value){
+ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
     class ExpressionWalker : public Ast::Walker{
     public:
-        ExpressionWalker(std::deque<ExpressionBuilder> & exp):
+        ExpressionWalker(ExpressionBuilder & exp):
         exp(exp),
         left(true){
         }
-        std::deque<ExpressionBuilder> & exp;
-        ExpressionBuilder builder;
+        ExpressionBuilder & exp;
         bool left;
         
         virtual void onValueList(const Ast::ValueList & values){
             for (unsigned int i = 0;;++i){
                 Ast::Value * value = values.get(i);
                 if (value){
-                    //convert(*value);
-                    ExpressionWalker walker(exp);
-                    value->walk(walker);
+                    convert(*value);
+                    /*ExpressionWalker walker(exp);
+                    value->walk(walker);*/
                 } else {
                     break;
                 }
@@ -366,33 +355,26 @@ void TriggerHandler::convert(PythonDefinition & definition, const Ast::Value & v
         }
         virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
             std::cout << "Found Infix: " <<  expression.toString() << std::endl;
-            /*ExpressionBuilder expLeft = convert(*expression.getLeft());
-            exp.setLeft(new Keyword(expLeft.get()));
+            ExpressionBuilder expLeft = convert(*expression.getLeft());
+            exp.setLeft(Expression(expLeft.get()));
             left = false;
             ExpressionBuilder expRight = convert(*expression.getRight());
-            if (!expRight.hasRange()){
-                exp.addRight(new Keyword(expRight.get()));
-            } else {
-                std::vector<Expression *> & range = expRight.getRight();
-                for (std::vector<Expression *>::iterator i = range.begin(); i != range.end(); i++){
-                    //exp.addRight((*i));
-                }
-            }
+            exp.setRight(Expression(expRight.get()));
             
-            exp.setOperator(expression.infixName(expression.getExpressionType()));*/
+            exp.setOperator(expression.infixName(expression.getExpressionType()));
         }
         virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
             std::cout << "Found Unary: " <<  expression.toString() << std::endl;
-            /*exp.setLeft(new Keyword(convert(*expression.getExpression()).get()));
-            exp.setOperator(expression.prefixName(expression.getExpressionType()));*/
+            exp.setLeft(Expression(convert(*expression.getExpression()).get()));
+            exp.setOperator(expression.prefixName(expression.getExpressionType()));
         }
         virtual void onIdentifier(const Ast::Identifier & identifier){
             // Triggers or Constants
             std::cout << "Found Identifier: " << identifier.toString() << std::endl;
             if (left){
-                builder.setLeft(Expression(identifier.toString()));
+                exp.setLeft(Expression(identifier.toString()));
             } else {
-                builder.addRight(Expression(identifier.toString()));
+                exp.setRight(Expression(identifier.toString()));
             }
         }
         
@@ -404,65 +386,62 @@ void TriggerHandler::convert(PythonDefinition & definition, const Ast::Value & v
             // Commands
             std::cout << "Found String: " << string.toString() << std::endl;
             if (left){
-                builder.setLeft(Expression(string.toString()));
+                exp.setLeft(Expression(string.toString()));
             } else {
-                builder.addRight(Expression(string.toString()));
+                exp.setRight(Expression(string.toString()));
             }
         }
         
         virtual void onFunction(const Ast::Function & function){
             // Triggers w/ arguments
             std::cout << "Found Function: " << function.toString() << std::endl;
-            /*Expression * func = handleKeyWord(function.getName());
-            if (func != NULL){
-                for (unsigned int i = 0;;++i){
-                    const Ast::Value * value = function.getArg(i);
-                    if (value){
-                        func->addArguments(new Keyword(convert(*value).get()));
-                    } else {
-                        break;
-                    }
-                }
-                
-                if (left){
-                    exp.setLeft(func);
+            Expression func = Expression(function.getName());//handleKeyWord(function.getName());
+            for (unsigned int i = 0;;++i){
+                const Ast::Value * value = function.getArg(i);
+                if (value){
+                    func.addArguments(Expression(convert(*value).get()));
                 } else {
-                    exp.addRight(func);
+                    break;
                 }
-            }*/
+            }
+            if (left){
+                exp.setLeft(func);
+            } else {
+                exp.setRight(func);
+            }
         }
 
         virtual void onKeyword(const Ast::Keyword & keyword){
             // Triggers or constants
-            //Expression * word = handleKeyWord(keyword.toString());
-            /*if (word != NULL){
-                std::cout << "Found Keyword: " << keyword.toString() << "' translated as: " << word->get() << std::endl;
-                if (left){
-                    exp.setLeft(word);
-                } else {
-                    exp.addRight(word);
-                }
-            }*/
+            Expression word = Expression(keyword.toString());//handleKeyWord(keyword.toString());
+            std::cout << "Found Keyword: " << keyword.toString() << "' translated as: " << word.get() << std::endl;
+            if (left){
+                exp.setLeft(word);
+            } else {
+                exp.setRight(word);
+            }
         }
         
         virtual void onNumber(const Ast::Number & number){
             // Numerals
             std::cout << "Found Number: " << number.toString() << std::endl;
-            /*if (left){
-                exp.setLeft(new Keyword(number.toString()));
+            if (left){
+                exp.setLeft(Expression(number.toString()));
             } else {
-                exp.addRight(new Keyword(number.toString()));
-            }*/
+                exp.setRight(Expression(number.toString()));
+            }
         }
         
         virtual void finish(){
-            exp.push_back(builder);
+            //exp.push_back(builder);
         }
         
     };
     
-    std::deque<ExpressionBuilder> expressions;
+    ExpressionBuilder expression;
     
-    ExpressionWalker walker(expressions);
+    ExpressionWalker walker(expression);
     value.walk(walker);
+    
+    return expression;
 }

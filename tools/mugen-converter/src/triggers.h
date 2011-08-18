@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "tools.h"
+
 namespace Ast{
     class Value;
 }
@@ -45,7 +47,7 @@ class ExpressionBuilder{
         virtual const ExpressionBuilder & operator=(const ExpressionBuilder &);
         
         virtual void setLeft(const Expression &);
-        virtual void addRight(const Expression &);
+        virtual void setRight(const Expression &);
         virtual void setOperator(const std::string &);
         
         enum Type{
@@ -55,35 +57,26 @@ class ExpressionBuilder{
         
         virtual const std::string get();
         
+        virtual const Content & getFunction();
+        
         inline virtual void setType(const Type & type){
             this->type = type;
         }
         
-        inline virtual bool hasRange(){
-            if (this->right.size() > 1){
-                return true;
-            } else {
-                return false;
-            }
-        }
-        
-        inline virtual std::vector<Expression> & getRight(){
-            return this->right;
-        }
-        
     protected:
         Expression left;
-        // To accomodate ranges
-        std::vector<Expression> right;
+        Expression right;
         std::string expressionOperator;
         Type type;
+        std::string expression;
+        Content content;
 };
 
 /*! Trigger Handling converts triggers into python code */
 namespace TriggerHandler{
 
 /* Convert trigger identifier */
-void convert(PythonDefinition &, const Ast::Value &);
+ExpressionBuilder convert(const Ast::Value &);
 
 }
 }
