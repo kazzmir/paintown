@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scrollpane>
+    <panel layout="GridBagLayout">
+        <vbox>
+            <gridbagconstraints
+                gridx="0"
+                gridy="0"
+                weightx="1"
+                weighty="0.5"
+                gridheight="1"
+                gridwidth="2"
+                anchor="GridBagConstraints.NORTHWEST"
+                fill="GridBagConstraints.BOTH"
+                />
+
+            <hbox>
+                <vbox>
+                    <label text="Tools" />
+                    <combobox id="tools" />
+                </vbox>
+                <panel id="tool-area" layout="GridBagLayout" />
+                <glue />
+            </hbox>
+
+            <label text="Events" />
+            <glue />
+            <hbox>
+                <scrollpane id="event-scroll">
+                    <list id="events" />
+                </scrollpane>
+                <panel id="event-work"
+                    border="MatteBorder(2,2,2,2,667A63)"
+                    layout="GridBagLayout" />
+            </hbox>
+            <combobox id="event-select" />
+            <hbox>
+                <button icon="animator/plus.png" id="add-event" />
+                <glue size="1" />
+                <button text="Edit" id="edit-event" />
+                <glue size="1" />
+                <button icon="animator/minus.png" id="remove-event" />
+                <glue size="1" />
+            </hbox>
+            <hbox>
+                <button text="Move-Up" id="up-event" />
+                <glue size="1" />
+                <button text="Move-Down" id="down-event" />
+                <glue size="1" />
+                <button text="View All" id="view-events" />
+                <glue size="1" />
+                <button text="Add frames" id="add-frames" />
+                <glue size="1" />
+            </hbox>
+        </vbox>
+    </panel>
+</scrollpane>

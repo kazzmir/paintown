@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scrollpane>
+    <panel layout="GridBagLayout">
+        <button id="hide" icon="animator/hiding-arrow/right.png">
+            <gridbagconstraints
+                gridx="0"
+                gridy="0"
+                weightx="0"
+                weighty="0"
+                gridheight="1"
+                anchor="GridBagConstraints.NORTHWEST"
+                fill="GridBagConstraints.NONE"
+                />
+
+        </button>
+        <vbox id="upper">
+            <gridbagconstraints
+                gridx="0"
+                gridy="1"
+                weightx="0"
+                weighty="1"
+                gridheight="1"
+                anchor="GridBagConstraints.NORTHWEST"
+                fill="GridBagConstraints.BOTH"
+                />
+
+            <hbox>
+                <label text="Name" />
+                <textfield id="name" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Type" />
+                <combobox id="type" />
+                <glue />
+            </hbox>
+            <glue size="1" />
+            <vbox>
+                <label text="Keys" />
+                <scrollpane>
+                    <list id="keys" />
+                </scrollpane>
+                <combobox id="key-select" />
+                <hbox>
+                    <button icon="animator/plus.png" id="add-key" />
+                    <glue size="1" />
+                    <button icon="animator/minus.png" id="remove-key" />
+                    <glue size="1" />
+                    <button text="Move-Up" id="up-key" />
+                    <glue size="1" />
+                    <button text="Move-Down" id="down-key" />
+                    <glue size="1" />
+                </hbox>
+            </vbox>
+            <glue size="1" />
+            <hbox>
+                <label text="Range" />
+                <spinner id="range" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Base Directory" />
+                <textfield id="basedir" />
+                <button text="Change" id="change-basedir" />
+                <button text="Clear" id="clear-basedir" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Previous sequence" />
+                <combobox id="sequence" />
+            </hbox>
+        </vbox>
+    </panel>
+</scrollpane>
