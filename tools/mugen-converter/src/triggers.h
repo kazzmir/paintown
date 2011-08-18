@@ -79,8 +79,7 @@ class ExpressionBuilder{
         
     protected:
         
-        virtual void crawlLeftComplex(std::string &);
-        virtual void crawlRightComplex(std::string &);
+        virtual const std::string crawlComplex(ExpressionBuilder *);
         Expression expression;
         ExpressionBuilder * leftComplex;
         ExpressionBuilder * rightComplex;

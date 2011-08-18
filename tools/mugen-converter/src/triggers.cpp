@@ -310,15 +310,12 @@ const std::string ExpressionBuilder::get(){
         case ValueList:
             break;
         case Range:
+            return expression.get();
             break;
         case Unary:
             break;
         case Infix:{
-            std::string leftExpression;
-            std::string rightExpression;
-            leftComplex->crawlLeftComplex(leftExpression);
-            rightComplex->crawlRightComplex(rightExpression);
-            return leftExpression + expressionOperator + rightExpression;
+            //return crawlComplex();
             break;
         }
         case Identifier:
@@ -364,27 +361,33 @@ const Content & ExpressionBuilder::getRightFunction(){
     return rightContent;
 }
 void ExpressionBuilder::setType(const Type & type){
-    if (this->type == NotSet){
-        this->type = type;
-    } else if (type == Range){
-        this->type = type;
-    }
+    this->type = type;
 }
 
-void ExpressionBuilder::crawlLeftComplex(std::string & crawl){
-    if (leftComplex != NULL){
-        leftComplex->crawlLeftComplex(crawl);
-    } else {
-        crawl+=expression.get();
+const std::string ExpressionBuilder::crawlComplex(ExpressionBuilder * builder){
+   /* if (builder != NULL){
+        
+        if (builder->leftComplex != NULL && builder->rightComplex != NULL){
+            
+            if (builder->leftComplex != NULL && rightComplex->rightComplex != NULL){
+                
+                return leftComplex->crawlComplex() + leftComplex->expressionOperator + rightComplex->crawlComplex();
+            
+            } else if (leftComplex->leftComplex != NULL && rightComplex->rightComplex == NULL){
+                
+                return leftComplex->crawlComplex() + rightComplex->expressionOperator + rightComplex->get();
+            
+            } else if (leftComplex->leftComplex == NULL && rightComplex->rightComplex != NULL){
+                
+                return leftComplex->get() + leftComplex->expressionOperator + rightComplex->crawlComplex();
+                
+            } else if (leftComplex->leftComplex == NULL && rightComplex->rightComplex == NULL){
+                
+                return leftComplex->get() + leftComplex->expressionOperator + rightComplex->get();
+            } 
+        }
     }
-}
-
-void ExpressionBuilder::crawlRightComplex(std::string & crawl){
-    if (rightComplex != NULL){
-        rightComplex->crawlRightComplex(crawl);
-    } else {
-        crawl+=expression.get();
-    }
+    return "";*/
 }
 
 class Evaluator{
