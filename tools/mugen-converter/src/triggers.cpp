@@ -10,6 +10,18 @@
 using namespace Mugen;
 using namespace TriggerHandler;
 
+/* Used to generate a useable function to handle infix's and unary's */
+static int FUNCTION_NUMBER = 0;
+
+static const std::string getNextFunctionName(){
+    FUNCTION_NUMBER++;
+    std::ostringstream stream;
+    //stream << "def function" << FUNCTION_NUMBER << "(self, player, world):";
+    stream << "function" << FUNCTION_NUMBER;
+    return stream.str();
+}
+
+
 Expression::Expression():
 constant(false){
 }
@@ -44,12 +56,10 @@ const Expression & Expression::operator=(const Expression & copy){
 
 const std::string Expression::get(){
 
-    if (keyword.empty()){
-        return "";
-    }
     if (constant){
         return keyword;
     }
+    
     std::string expression = keyword + "(";
     if (!arguments.empty()){
         std::string args;
@@ -70,6 +80,8 @@ void Expression::setKeyword(const std::string & keyword, bool constant){
 }
 
 void Expression::addArguments(const Expression & argument){
+    /* Adding values disqualifies constant */
+    constant = false;
     arguments.push_back(argument);
 }
 
@@ -77,7 +89,7 @@ void Expression::addArguments(const Expression & argument){
  * Assuming that an object named player and an object named world is going to be passed to States for evaluation
  * And also assuming that the names of the functions are going to be what they are below (most likely most of it will change)
  */;
-std::string handleKeyWord(const std::string & keyword){
+static std::string handleKeyWord(const std::string & keyword){
     if (match("AILevel", keyword)){
     } else if (match("Abs", keyword)){
         //return new Function("math.fabs");
@@ -240,51 +252,139 @@ std::string handleKeyWord(const std::string & keyword){
 }
 
 ExpressionBuilder::ExpressionBuilder():
-type(Infix){
+type(NotSet),
+leftComplex(NULL),
+rightComplex(NULL){
 }
-ExpressionBuilder::ExpressionBuilder(const ExpressionBuilder & copy):
-type(Infix){
-    left = copy.left;
-    right = copy.right;
+ExpressionBuilder::ExpressionBuilder(const ExpressionBuilder & copy){
+    expression = copy.expression;
+    if (copy.leftComplex != NULL){
+        leftComplex = new ExpressionBuilder(*copy.leftComplex);
+    }
+    if (copy.rightComplex != NULL){
+        rightComplex = new ExpressionBuilder(*copy.rightComplex);
+    }
     expressionOperator = copy.expressionOperator;
     type = copy.type;
+    leftContent = copy.leftContent;
+    rightContent = copy.rightContent;
 }
 ExpressionBuilder::~ExpressionBuilder(){
+    if (leftComplex != NULL){
+        delete leftComplex;
+    }
+    if (rightComplex != NULL){
+        delete rightComplex;
+    }
 }
 const ExpressionBuilder & ExpressionBuilder::operator=(const ExpressionBuilder & copy){
-    left = copy.left;
-    right = copy.right;
+    expression = copy.expression;
+    if (copy.leftComplex != NULL){
+        leftComplex = new ExpressionBuilder(*copy.leftComplex);
+    }
+    if (copy.rightComplex != NULL){
+        rightComplex = new ExpressionBuilder(*copy.rightComplex);
+    }
     expressionOperator = copy.expressionOperator;
+    
     type = copy.type;
+    leftContent = copy.leftContent;
+    rightContent = copy.rightContent;
     return *this;
 }
-void ExpressionBuilder::setLeft(const Expression & expression){
-    left = expression;
+void ExpressionBuilder::setExpression(const Expression & expression){
+    this->expression = expression;
 }
-void ExpressionBuilder::setRight(const Expression & expression){
-    right = expression;
+void ExpressionBuilder::setLeft(ExpressionBuilder * builder){
+    leftComplex = builder;;
+}
+void ExpressionBuilder::setRight(ExpressionBuilder * builder){
+    rightComplex = builder;
 }
 void ExpressionBuilder::setOperator(const std::string & op){
     expressionOperator = op;
 }
 
 const std::string ExpressionBuilder::get(){
-    switch (type){
+   switch (type){
+        case ValueList:
+            break;
+        case Range:
+            break;
+        case Unary:
+            break;
         case Infix:{
-            return "(" + left.get() + expressionOperator + right.get() + ")";
-            
+            std::string leftExpression;
+            std::string rightExpression;
+            leftComplex->crawlLeftComplex(leftExpression);
+            rightComplex->crawlRightComplex(rightExpression);
+            return leftExpression + expressionOperator + rightExpression;
+            break;
         }
-        case Unary:{
-            return expressionOperator + "(" + left.get() + ")";
-        }
+        case Identifier:
+            return expression.get();
+            break;
+        case Helper:
+            return expression.get();
+            break;
+        case String:
+            return expression.get();
+            break;
+        case Function:
+            return expression.get();
+            break;
+        case Keyword:
+            return expression.get();
+            break;
+        case Number:
+            return expression.get();
+            break;
+        case NotSet:
         default:
             break;
     }
+    
+    
     return "";
 }
+Expression & ExpressionBuilder::getExpression(){
+    return expression;
+}
+ExpressionBuilder * ExpressionBuilder::getLeftComplex(){
+    return leftComplex;
+}
+ExpressionBuilder * ExpressionBuilder::getRightComplex(){
+    return rightComplex;
+}
+const Content & ExpressionBuilder::getLeftFunction(){
+    return leftContent;
+}
 
-const Content & ExpressionBuilder::getFunction(){
-    return content;
+const Content & ExpressionBuilder::getRightFunction(){
+    return rightContent;
+}
+void ExpressionBuilder::setType(const Type & type){
+    if (this->type == NotSet){
+        this->type = type;
+    } else if (type == Range){
+        this->type = type;
+    }
+}
+
+void ExpressionBuilder::crawlLeftComplex(std::string & crawl){
+    if (leftComplex != NULL){
+        leftComplex->crawlLeftComplex(crawl);
+    } else {
+        crawl+=expression.get();
+    }
+}
+
+void ExpressionBuilder::crawlRightComplex(std::string & crawl){
+    if (rightComplex != NULL){
+        rightComplex->crawlRightComplex(crawl);
+    } else {
+        crawl+=expression.get();
+    }
 }
 
 class Evaluator{
@@ -323,12 +423,17 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         bool left;
         
         virtual void onValueList(const Ast::ValueList & values){
+            std::cout << "Found Value List: " << values.toString() << std::endl;
             for (unsigned int i = 0;;++i){
                 Ast::Value * value = values.get(i);
                 if (value){
-                    convert(*value);
-                    /*ExpressionWalker walker(exp);
-                    value->walk(walker);*/
+                    if (left){
+                        ExpressionBuilder * left = new ExpressionBuilder(convert(*value));
+                        exp.setLeft(left);
+                    } else {
+                        ExpressionBuilder * right = new ExpressionBuilder(convert(*value));
+                        exp.setRight(right);
+                    }
                 } else {
                     break;
                 }
@@ -336,13 +441,9 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         }
         virtual void onRange(const Ast::Range & range){
             std::cout << "Found range: " << range.toString() << std::endl;
-            /*double low = atof(range.getLow()->toString().c_str());
-            double high = atof(range.getHigh()->toString().c_str());
-            for (; low != high+1; ++low){
-                std::ostringstream num;
-                num << low;
-                exp.addRight(new Keyword(num.str()));
-            }*/
+            exp.setType(ExpressionBuilder::Range);
+            exp.getExpression().addArguments(Expression(range.getLow()->toString()));
+            exp.getExpression().addArguments(Expression(range.getHigh()->toString()));
         }
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             std::cout << "Found simple: " << simple.valueAsString() << std::endl;
@@ -355,27 +456,28 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         }
         virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
             std::cout << "Found Infix: " <<  expression.toString() << std::endl;
-            ExpressionBuilder expLeft = convert(*expression.getLeft());
-            exp.setLeft(Expression(expLeft.get()));
+            
+            exp.setType(ExpressionBuilder::Infix);
+            ExpressionBuilder * expLeft = new ExpressionBuilder(convert(*expression.getLeft()));
+            exp.setLeft(expLeft);
+            
             left = false;
-            ExpressionBuilder expRight = convert(*expression.getRight());
-            exp.setRight(Expression(expRight.get()));
+            
+            ExpressionBuilder * expRight = new ExpressionBuilder(convert(*expression.getRight()));
+            exp.setRight(expRight);
             
             exp.setOperator(expression.infixName(expression.getExpressionType()));
         }
         virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
             std::cout << "Found Unary: " <<  expression.toString() << std::endl;
-            exp.setLeft(Expression(convert(*expression.getExpression()).get()));
-            exp.setOperator(expression.prefixName(expression.getExpressionType()));
+            /*exp.setLeft(Expression(convert(*expression.getExpression()).get()));
+            exp.setOperator(expression.prefixName(expression.getExpressionType()));*/
         }
         virtual void onIdentifier(const Ast::Identifier & identifier){
             // Triggers or Constants
             std::cout << "Found Identifier: " << identifier.toString() << std::endl;
-            if (left){
-                exp.setLeft(Expression(identifier.toString()));
-            } else {
-                exp.setRight(Expression(identifier.toString()));
-            }
+            exp.setType(ExpressionBuilder::Identifier);
+            exp.setExpression(Expression(identifier.toString()));
         }
         
         virtual void onHelper(const Ast::Helper & helper){
@@ -385,11 +487,8 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         virtual void onString(const Ast::String & string){
             // Commands
             std::cout << "Found String: " << string.toString() << std::endl;
-            if (left){
-                exp.setLeft(Expression(string.toString()));
-            } else {
-                exp.setRight(Expression(string.toString()));
-            }
+            exp.setType(ExpressionBuilder::String);
+            exp.setExpression(Expression(string.toString()));
         }
         
         virtual void onFunction(const Ast::Function & function){
@@ -404,32 +503,23 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
                     break;
                 }
             }
-            if (left){
-                exp.setLeft(func);
-            } else {
-                exp.setRight(func);
-            }
+            exp.setType(ExpressionBuilder::Function);
+            exp.setExpression(func);
         }
 
         virtual void onKeyword(const Ast::Keyword & keyword){
             // Triggers or constants
             Expression word = Expression(keyword.toString());//handleKeyWord(keyword.toString());
             std::cout << "Found Keyword: " << keyword.toString() << "' translated as: " << word.get() << std::endl;
-            if (left){
-                exp.setLeft(word);
-            } else {
-                exp.setRight(word);
-            }
+            exp.setType(ExpressionBuilder::Keyword);
+            exp.setExpression(word);
         }
         
         virtual void onNumber(const Ast::Number & number){
             // Numerals
-            std::cout << "Found Number: " << number.toString() << std::endl;
-            if (left){
-                exp.setLeft(Expression(number.toString()));
-            } else {
-                exp.setRight(Expression(number.toString()));
-            }
+            std::cout << "Found Number: " << number.toString()  <<  std::endl;
+            exp.setType(ExpressionBuilder::Number);
+            exp.setExpression(Expression(number.toString()));
         }
         
         virtual void finish(){

@@ -46,30 +46,48 @@ class ExpressionBuilder{
         
         virtual const ExpressionBuilder & operator=(const ExpressionBuilder &);
         
-        virtual void setLeft(const Expression &);
-        virtual void setRight(const Expression &);
+        virtual void setExpression(const Expression &);
+        virtual void setLeft(ExpressionBuilder *);
+        virtual void setRight(ExpressionBuilder *);
         virtual void setOperator(const std::string &);
         
         enum Type{
+            NotSet,
+            ValueList,
+            Range,
             Unary,
             Infix,
+            Identifier,
+            Helper,
+            String,
+            Function,
+            Keyword,
+            Number,
         };
         
         virtual const std::string get();
         
-        virtual const Content & getFunction();
-        
-        inline virtual void setType(const Type & type){
-            this->type = type;
+        virtual Expression & getExpression();
+        virtual ExpressionBuilder * getLeftComplex();
+        virtual ExpressionBuilder * getRightComplex();
+        virtual const Content & getLeftFunction();
+        virtual const Content & getRightFunction();
+        virtual void setType(const Type &);
+        inline virtual const Type & getType(){
+            return this->type;
         }
         
     protected:
-        Expression left;
-        Expression right;
+        
+        virtual void crawlLeftComplex(std::string &);
+        virtual void crawlRightComplex(std::string &);
+        Expression expression;
+        ExpressionBuilder * leftComplex;
+        ExpressionBuilder * rightComplex;
         std::string expressionOperator;
         Type type;
-        std::string expression;
-        Content content;
+        Content leftContent;
+        Content rightContent;
 };
 
 /*! Trigger Handling converts triggers into python code */
