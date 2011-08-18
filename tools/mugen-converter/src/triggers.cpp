@@ -315,7 +315,7 @@ const std::string ExpressionBuilder::get(){
         case Unary:
             break;
         case Infix:{
-            //return crawlComplex();
+            return crawlComplex(leftComplex) + expressionOperator + crawlComplex(rightComplex);
             break;
         }
         case Identifier:
@@ -365,29 +365,19 @@ void ExpressionBuilder::setType(const Type & type){
 }
 
 const std::string ExpressionBuilder::crawlComplex(ExpressionBuilder * builder){
-   /* if (builder != NULL){
+    if (builder != NULL){
         
         if (builder->leftComplex != NULL && builder->rightComplex != NULL){
-            
-            if (builder->leftComplex != NULL && rightComplex->rightComplex != NULL){
-                
-                return leftComplex->crawlComplex() + leftComplex->expressionOperator + rightComplex->crawlComplex();
-            
-            } else if (leftComplex->leftComplex != NULL && rightComplex->rightComplex == NULL){
-                
-                return leftComplex->crawlComplex() + rightComplex->expressionOperator + rightComplex->get();
-            
-            } else if (leftComplex->leftComplex == NULL && rightComplex->rightComplex != NULL){
-                
-                return leftComplex->get() + leftComplex->expressionOperator + rightComplex->crawlComplex();
-                
-            } else if (leftComplex->leftComplex == NULL && rightComplex->rightComplex == NULL){
-                
-                return leftComplex->get() + leftComplex->expressionOperator + rightComplex->get();
-            } 
-        }
+            return crawlComplex(builder->leftComplex) + builder->expressionOperator + crawlComplex(builder->rightComplex);
+        } else if (builder->leftComplex != NULL && builder->rightComplex == NULL){
+            return crawlComplex(builder->leftComplex);
+        } else if (builder->leftComplex == NULL && builder->rightComplex != NULL){
+            return crawlComplex(builder->rightComplex);
+        } else if (builder->leftComplex == NULL && builder->rightComplex == NULL){
+            return builder->get();
+        } 
     }
-    return "";*/
+    return "";
 }
 
 class Evaluator{
