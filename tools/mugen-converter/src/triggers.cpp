@@ -409,24 +409,17 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
     class ExpressionWalker : public Ast::Walker{
     public:
         ExpressionWalker(ExpressionBuilder & exp):
-        exp(exp),
-        left(true){
+        exp(exp){
         }
         ExpressionBuilder & exp;
-        bool left;
         
         virtual void onValueList(const Ast::ValueList & values){
             std::cout << "Found Value List: " << values.toString() << std::endl;
             for (unsigned int i = 0;;++i){
                 Ast::Value * value = values.get(i);
                 if (value){
-                    if (left){
-                        ExpressionBuilder * left = new ExpressionBuilder(convert(*value));
-                        exp.setLeft(left);
-                    } else {
-                        ExpressionBuilder * right = new ExpressionBuilder(convert(*value));
-                        exp.setRight(right);
-                    }
+                    /*ExpressionBuilder * right = new ExpressionBuilder(convert(*value));
+                    exp.setRight(right);*/
                 } else {
                     break;
                 }
@@ -453,8 +446,6 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
             exp.setType(ExpressionBuilder::Infix);
             ExpressionBuilder * expLeft = new ExpressionBuilder(convert(*expression.getLeft()));
             exp.setLeft(expLeft);
-            
-            left = false;
             
             ExpressionBuilder * expRight = new ExpressionBuilder(convert(*expression.getRight()));
             exp.setRight(expRight);
