@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+    <button icon="animator/icons/arrow-left.png" id="left">
+        <gridbagconstraints
+            gridx="0"
+            gridy="1"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+    </button>
+
+    <button icon="animator/icons/arrow-right.png" id="right">
+        <gridbagconstraints
+            gridx="2"
+            gridy="1"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+    </button>
+
+    <button icon="animator/icons/arrow-up.png" id="up">
+        <gridbagconstraints
+            gridx="1"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+    </button>
+
+    <button icon="animator/icons/arrow-down.png" id="down">
+        <gridbagconstraints
+            gridx="1"
+            gridy="2"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+            />
+    </button>
+</panel>
