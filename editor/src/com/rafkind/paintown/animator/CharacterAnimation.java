@@ -286,8 +286,9 @@ public class CharacterAnimation extends JPanel {
     private JComponent makeProperties(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
         final SwingEngine animEditor = new SwingEngine("animator/animation-properties.xml");
 
-        final JButton hide = (JButton) animEditor.find("hide");
+        // final JButton hide = (JButton) animEditor.find("hide");
         final Box upper = (Box) animEditor.find("upper");
+        /*
         hide.addActionListener(new AbstractAction(){
             boolean show = true;
             final Icon original = hide.getIcon();
@@ -304,11 +305,11 @@ public class CharacterAnimation extends JPanel {
                     public void paintIcon(Component c, Graphics g, int x, int y){
                         Double d = (Double) rotate.get();
                         Graphics2D g2 = (Graphics2D) g;
-                        /* translate back */
+                        / * translate back * /
                         g2.translate(x + -Math.cos(d.doubleValue()) * getIconWidth() + getIconWidth() / 2, y);
-                        /* rotate */
+                        / * rotate * /
                         g2.rotate(d.doubleValue());
-                        /* translate to origin */
+                        / * translate to origin * /
                         g2.translate(-x, -y);
                         original.paintIcon(c, g, x, y);
                     }
@@ -364,6 +365,7 @@ public class CharacterAnimation extends JPanel {
                 }.start();
             }
         });
+        */
 
         final SwingEngine contextEditor = animEditor;
         final JTextField nameField = (JTextField) contextEditor.find("name");

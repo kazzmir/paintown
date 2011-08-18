@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scrollpane>
     <panel layout="GridBagLayout">
+        <!--
         <button id="hide" icon="animator/hiding-arrow/right.png">
             <gridbagconstraints
                 gridx="0"
@@ -13,10 +14,11 @@
                 />
 
         </button>
+        -->
         <vbox id="upper">
             <gridbagconstraints
                 gridx="0"
-                gridy="1"
+                gridy="0"
                 weightx="0"
                 weighty="1"
                 gridheight="1"
