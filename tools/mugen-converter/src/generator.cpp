@@ -121,13 +121,13 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                 if (simple == "name"){
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.name = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.name = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "displayname"){
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.displayName = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.displayName = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "versiondate"){
@@ -143,7 +143,7 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                         }
                         out << "]";
                         addComment(simple.getLine());
-                        content.addLine(1,out.str());
+                        content.addLine(0,out.str());
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "mugenversion"){
@@ -159,13 +159,13 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                         }
                         out << "]";
                         addComment(simple.getLine());
-                        content.addLine(1, out.str());
+                        content.addLine(0, out.str());
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "author"){
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.author = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.author = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "pal.defaults"){
@@ -180,78 +180,78 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                         }
                         out << "]";
                         addComment(simple.getLine());
-                        content.addLine(1,out.str());
+                        content.addLine(0,out.str());
                 } else if (simple == "cmd"){
                     try{
                         simple >> generator.commandFile;
                         addComment(simple.getLine());
-                        content.addLine(1,"self.cmdFile = '" + generator.commandFile + "'");
+                        content.addLine(0,"self.cmdFile = '" + generator.commandFile + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "cns"){
                     try{
                         generator.addStateFile(simple.valueAsString());
                         addComment(simple.getLine());
-                        content.addLine(1,"self.addStateFile('" + generator.stateFiles.back() + "')");
+                        content.addLine(0,"self.addStateFile('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "st"){
                     try{
                         generator.addStateFile(simple.valueAsString());
                         addComment(simple.getLine());
-                        content.addLine(1,"self.addStateFile('" + generator.stateFiles.back() + "')");
+                        content.addLine(0,"self.addStateFile('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "stcommon"){
                     try{
                         generator.addStateFile(simple.valueAsString());
                         addComment(simple.getLine());
-                        content.addLine(1,"self.addStateFile('" + generator.stateFiles.back() + "')");
+                        content.addLine(0,"self.addStateFile('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (Util::matchRegex(simple.idString(), "st[0-9]+")){
                     try{
                         generator.addStateFile(simple.valueAsString());
                         addComment(simple.getLine());
-                        content.addLine(1,"self.addStateFile('" + generator.stateFiles.back() + "')");
+                        content.addLine(0,"self.addStateFile('" + generator.stateFiles.back() + "')");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "sprite"){
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.spriteFile = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.spriteFile = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "anim"){
                     try{
                         simple >> generator.airFile;
                         addComment(simple.getLine());
-                        content.addLine(1,"self.animFile = '" + generator.airFile + "'");
+                        content.addLine(0,"self.animFile = '" + generator.airFile + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "sound"){
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.soundFile = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.soundFile = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (Util::matchRegex(simple.idString(), "pal[0-9]+")){
                     std::string id = simple.idString();
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.paletteFiles[" + id.substr(3) + "] = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.paletteFiles[" + id.substr(3) + "] = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "intro.storyboard"){
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.introStoryboard = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.introStoryboard = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "ending.storyboard"){
                     try{
                         addComment(simple.getLine());
-                        content.addLine(1,"self.endingStoryboard = '" + simple.valueAsString() + "'");
+                        content.addLine(0,"self.endingStoryboard = '" + simple.valueAsString() + "'");
                     } catch (const Ast::Exception & fail){
                     }
                 } else {
@@ -280,7 +280,7 @@ void CharacterGenerator::handleBaseDef(PythonClass & character){
                 std::stringstream out;
                 out << line;
                 content.addSpace();
-                content.addLine(1,"# [" + Mugen::stripDir(generator.filename) + "] Section - " + sectionName + " on line " + out.str());
+                content.addLine(0,"# [" + Mugen::stripDir(generator.filename) + "] Section - " + sectionName + " on line " + out.str());
             }
     };
     
@@ -360,14 +360,14 @@ class StateHandler{
         }
         
         const Content getInitEntry(){
-            initContent.addLine(1, "self.addState(" + stateNumber + ", StateDef" + function.substr(5) + ")");
+            initContent.addLine(0, "self.addState(" + stateNumber + ", StateDef" + function.substr(5) + ")");
             return initContent;
         }
         
         void init(const std::string & file, int line){
                 std::stringstream out;
                 out << line;
-                initContent.addLine(1,"# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str());
+                initContent.addLine(0,"# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str());
                 
                 
                 /* Construct state class */
@@ -576,7 +576,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                         currentCommand = new Command();
                     } else if (currentCommand != NULL){
                         // Add command
-                        commandContent.addLine(1,currentCommand->get());
+                        commandContent.addLine(0,currentCommand->get());
                         delete currentCommand;
                         currentCommand = new Command();
                     }
@@ -594,13 +594,13 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                     if (simple == "command.time"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.commandTime = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.commandTime = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "command.buffer.time"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.commandBufferTime = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.commandBufferTime = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "name"){
@@ -678,14 +678,14 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                 std::stringstream out;
                 out << line;
                 constantsContent.addSpace();
-                constantsContent.addLine(1,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + sectionName + " on line " + out.str());
+                constantsContent.addLine(0,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + sectionName + " on line " + out.str());
             }
             
             virtual void addCommandComment (int line){
                 std::stringstream out;
                 out << line;
                 commandContent.addSpace();
-                commandContent.addLine(1,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + sectionName + " on line " + out.str());
+                commandContent.addLine(0,"# [" + Mugen::stripDir(generator.commandFile) + "] Section - " + sectionName + " on line " + out.str());
             }
             
             virtual void complete (std::vector<PythonClass> & classes){
@@ -693,7 +693,7 @@ void CharacterGenerator::handleCmdFile(PythonClass & character){
                 character.getInit().addContent(constantsContent);
                 
                 // Add command content
-                commandContent.addLine(1,currentCommand->get());
+                commandContent.addLine(0,currentCommand->get());
                 character.getInit().addContent(commandContent);
                 
                 // Do states
@@ -751,135 +751,135 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                     if (simple == "life"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.life = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.life = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "attack"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.attack = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.attack = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "defence"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.defence = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.defence = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "fall.defence_up"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.fallDefenceUp = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.fallDefenceUp = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "liedown.time"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.liedownTime = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.liedownTime = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "airjuggle"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.airjuggle = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.airjuggle = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "sparkno" && !Util::matchRegex(sectionName, "State")){
                         // Do not include state
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.sparkno = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.sparkno = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "guard.sparkno"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.guardSparkno = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.guardSparkno = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "KO.echo"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.koEcho = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.koEcho = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "volume" && !Util::matchRegex(sectionName, "State")){
                         // Do not include state
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.volume = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.volume = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "IntPersistIndex"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.intPersistIndex = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.intPersistIndex = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "FloatPersistIndex"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.floatPersistIndex = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.floatPersistIndex = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "xscale"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.xscale = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.xscale = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "yscale"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.yscale = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.yscale = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "ground.back"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.groundBack = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.groundBack = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "ground.front"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.groundFront = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.groundFront = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "air.back"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.airBack = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.airBack = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "air.front"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.airFront = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.airFront = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "height"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.height = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.height = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "attack.dist"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.attackDist = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.attackDist = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "proj.attack.dist"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.projAttackDist = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.projAttackDist = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "proj.doscale"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.projDoscale = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.projDoscale = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "head.pos"){
@@ -891,10 +891,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.headPos.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.headPos.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "mid.pos"){
                         int x=0, y=0;
                         try{
@@ -904,14 +904,14 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.midPos.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.midPos.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "shadowoffset"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.shadowoffset = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.shadowoffset = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "draw.offset"){
@@ -923,10 +923,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.drawOffset.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.drawOffset.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "walk.fwd"){
                         int x=0, y=0;
                         try{
@@ -936,10 +936,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.walkFwd.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.walkFwd.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "walk.back"){
                         int x=0, y=0;
                         try{
@@ -949,10 +949,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.walkBack.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.walkBack.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "run.fwd"){
                         int x=0, y=0;
                         try{
@@ -962,10 +962,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.runFwd.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.runFwd.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "run.back"){
                         int x=0, y=0;
                         try{
@@ -975,10 +975,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.runBack.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.runBack.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "jump.neu"){
                         int x=0, y=0;
                         try{
@@ -988,10 +988,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.jumpNeu.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.jumpNeu.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "jump.back"){
                         int x=0, y=0;
                         try{
@@ -1001,10 +1001,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.jumpBack.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.jumpBack.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "jump.fwd"){
                         int x=0, y=0;
                         try{
@@ -1014,10 +1014,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.jumpFwd.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.jumpFwd.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "runjump.back"){
                         int x=0, y=0;
                         try{
@@ -1027,10 +1027,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.runjumpBack.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.runjumpBack.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "runjump.fwd"){
                         int x=0, y=0;
                         try{
@@ -1040,10 +1040,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.runjumpFwd.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.runjumpFwd.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "airjump.neu"){
                         int x=0, y=0;
                         try{
@@ -1053,10 +1053,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.airjumpNeu.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.airjumpNeu.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "airjump.back"){
                         int x=0, y=0;
                         try{
@@ -1066,10 +1066,10 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.airjumpBack.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.airjumpBack.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "airjump.fwd"){
                         int x=0, y=0;
                         try{
@@ -1079,39 +1079,39 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                         std::stringstream out;
                         addConstantsComment(simple.getLine());
                         out << "self.airjumpFwd.append(" << x << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                         out.str("");
                         out << "self.airjumpFwd.append(" << y << ")";
-                        constantsContent.addLine(1,out.str());
+                        constantsContent.addLine(0,out.str());
                     } else if (simple == "airjump.num"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.airjumpNum = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.airjumpNum = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "airjump.height"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.airjumpHeight = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.airjumpHeight = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "yaccel" && !Util::matchRegex(sectionName, "State")){
                         // Do not include state
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.yaccel = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.yaccel = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "stand.friction"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.standFriction = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.standFriction = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else if (simple == "crouch.friction"){
                         try{
                             addConstantsComment(simple.getLine());
-                            constantsContent.addLine(1,"self.crouchFriction = " + simple.valueAsString());
+                            constantsContent.addLine(0,"self.crouchFriction = " + simple.valueAsString());
                         } catch (const Ast::Exception & fail){
                         }
                     } else {
@@ -1142,7 +1142,7 @@ void CharacterGenerator::handleStateFiles(PythonClass & character){
                 std::stringstream out;
                 out << line;
                 constantsContent.addSpace();
-                constantsContent.addLine(1,"# [" + Mugen::stripDir(currentFile) + "] Section - " + sectionName + " on line " + out.str());
+                constantsContent.addLine(0,"# [" + Mugen::stripDir(currentFile) + "] Section - " + sectionName + " on line " + out.str());
             }
             
             virtual void complete (std::vector<PythonClass> & classes){
