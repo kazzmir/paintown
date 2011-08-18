@@ -28,12 +28,12 @@ public class CharacterStats extends AnimatedObject {
 	protected Vector remap = new Vector();
 	
 	public CharacterStats(String name){
-		super( name );
+		super(name);
 	}
 
-	public CharacterStats( String name, File f ) throws LoadException {
+	public CharacterStats(String name, File f) throws LoadException {
 		super(name);
-		loadData( f );
+		loadData(f);
 	}
 	
 	public int getHealth(){

@@ -235,22 +235,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             val file = file_.asInstanceOf[File]
             new Thread(new Runnable(){
               def run(){
-                try{
-                  println("Loading character " + file)
-                  val character = new CharacterStats("", file);
-                  val tempPlayer = new Player(NewAnimator.this, character);
-                  swing.SwingUtilities.invokeLater(new Runnable(){
-                    def run(){
-                      addNewTab(tempPlayer.getEditor(), character.getName());
-                    }
-                  })
-                } catch {
-                  case le:LoadException => {
-                    //showError( "Could not load " + f.getName() );
-                    System.out.println( "Could not load " + file.getName() );
-                    le.printStackTrace();
-                  }
-                }
+                loadPlayer(file)
               }
              }).start();
             }
@@ -435,6 +420,8 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             val returnVal = chooser.showOpenDialog(NewAnimator.this);
             if (returnVal == swing.JFileChooser.APPROVE_OPTION){
               val file = chooser.getSelectedFile();
+              loadPlayer(file)
+              /*
               try{
                 val character = new CharacterStats("New Character", file);
                 val tempPlayer = new Player(NewAnimator.this, character);
@@ -446,6 +433,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
                   fail.printStackTrace();
                 }
               }	
+              */
             }
           }
         });
@@ -503,6 +491,25 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
   }
 
   construct()
+
+  def loadPlayer(file:File) = {
+    try{
+      println("Loading character " + file)
+      val character = new CharacterStats("", file);
+      val tempPlayer = new Player(NewAnimator.this, character);
+      swing.SwingUtilities.invokeLater(new Runnable(){
+        def run(){
+          addNewTab(tempPlayer.getEditor(), character.getName());
+        }
+      })
+     } catch {
+       case le:LoadException => {
+         //showError( "Could not load " + f.getName() );
+         System.out.println("Could not load " + file.getName());
+         le.printStackTrace();
+       }
+     }
+  }
 
   def addNewTab(panel:SpecialPanel, name:String){
     swing.SwingUtilities.invokeLater(new Runnable(){
@@ -592,9 +599,12 @@ object Animator2{
   def main(args: Array[String]):Unit = {
     val editor = new NewAnimator();
     swing.SwingUtilities.invokeLater(new Runnable(){
-        def run(){
-          editor.setVisible(true);
+      def run(){
+        editor.setVisible(true);
+        for (arg <- args){
+          editor.loadPlayer(new File(arg))
         }
-      });
+      }
+    });
   }
 }
