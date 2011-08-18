@@ -32,6 +32,7 @@
 			       <!--
 		       	<pathelement path="lib/ui.jar" />
                 -->
+                <pathelement path="${scala-library.jar}" />
 		       	<pathelement path="lib/jdom.jar" />
 		       </classpath>
 	       </javac>
