@@ -918,7 +918,7 @@ public class CharacterAnimation extends JPanel {
                 GridBagConstraints constraints = new GridBagConstraints();
                 constraints.gridx = 0;
                 constraints.gridy = 0;
-                constraints.weightx = 0.1;
+                constraints.weightx = 1;
                 constraints.weighty = 1;
                 constraints.fill = GridBagConstraints.BOTH;
                 constraints.anchor = GridBagConstraints.NORTHWEST;

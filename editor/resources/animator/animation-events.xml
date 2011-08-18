@@ -8,19 +8,28 @@
                 weightx="1"
                 weighty="0.5"
                 gridheight="1"
-                gridwidth="2"
+                gridwidth="1"
                 anchor="GridBagConstraints.NORTHWEST"
                 fill="GridBagConstraints.BOTH"
                 />
 
-            <hbox>
+            <panel layout="GridBagLayout">
                 <vbox>
+                    <gridbagconstraints
+                    gridx="0"
+                    gridy="0"
+                    weightx="0.1"
+                    weighty="0.1"
+                    gridheight="1"
+                    gridwidth="1"
+                    fill="GridBagConstraints.HORIZONTAL"
+                    anchor="GridBagConstraints.NORTHWEST"
+                    />
                     <label text="Tools" />
                     <combobox id="tools" />
+                    <panel id="tool-area" layout="GridBagLayout" />
                 </vbox>
-                <panel id="tool-area" layout="GridBagLayout" />
-                <glue />
-            </hbox>
+            </panel>
 
             <label text="Events" />
             <glue />
