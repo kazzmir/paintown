@@ -170,7 +170,7 @@ top = "top" bottom
 bottom = "bottom"
 }
 
-The results of a pattern can be stored in a variable by prefix the name of an
+The results of a pattern can be stored in a variable by prefixing the name of an
 identifier followed by @tt{:}.
 
 @verbatim{
@@ -191,6 +191,31 @@ top = "top" bottom "another" {{ use($1); // use "top"
                                 use($2); // use bottom
                                 use($3); // use "another
                              }}
+}
+
+Literal strings can be followed by @bold{{case}}. {case} does a case insensitive
+match on the string.
+@verbatim{
+match_foo = "foo"{case}
+}
+
+Will match "foo", "foO", "FOO", or any other variation on "foo" with upper case
+letters.
+
+Special patterns exist for specific circumstances.
+@itemize{
+  @item{@bold{<eof>} parses when the end of input is reached.}
+  @item{@bold{<ascii #>} parses a character with the given ascii code for when
+  you need to parse a character with an unprintable character (such as any
+  character above 128). Put a number where the # goes, anything from 0 to 255.}
+  @item{@bold{<void>} parses nothing.}
+  @item{@bold{<line>} parses nothing but returns an object that contains
+  information about the current source position. Use the methods
+  @bold{getCurrentLine} and @bold{getCurrentColumn} on this object.
+  @verbatim{
+  stuff = source:<line> "ok" {{ printf("current line %d column %d\n",
+  getCurrentLine(source), getCurrentColumn(source)); }}
+  }}
 }
 
 @section{Sample Output}
