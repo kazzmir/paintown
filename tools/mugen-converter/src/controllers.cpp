@@ -55,8 +55,8 @@ Content getController(const std::string & type){
     } else if (match(type, "MoveHitReset")){
     } else if (match(type, "NotHitBy")){
     } else if (match(type, "Null")){
-        Content null(1,"# Disabled or invalid controller.");
-        null.addLine(1, "pass");
+        Content null(3,"# Disabled or invalid controller.");
+        null.addLine(3, "pass");
         return null;
     } else if (match(type, "Offset")){
     } else if (match(type, "PalFX")){
@@ -105,7 +105,7 @@ Content getController(const std::string & type){
     }
     
     // Set to pass if state controller can't be determined
-    return Content(1, "pass");
+    return Content(3, "pass");
 }
 
 StateParameterMap::StateParameterMap(){
@@ -113,6 +113,9 @@ StateParameterMap::StateParameterMap(){
 
 StateParameterMap::StateParameterMap(const StateParameterMap & copy){
     this->parameters = copy.parameters;
+    this->triggerall = copy.triggerall;
+    this->triggers = copy.triggers;
+    this->vars = copy.vars;
 }
 
 StateParameterMap::~StateParameterMap(){
@@ -120,6 +123,10 @@ StateParameterMap::~StateParameterMap(){
 
 const StateParameterMap & StateParameterMap::operator=(const StateParameterMap & copy){
     this->parameters = copy.parameters;
+    this->triggerall = copy.triggerall;
+    this->triggers = copy.triggers;
+    this->vars = copy.vars;
+    return *this;
 }
 
 void StateParameterMap::addTriggerall(Ast::AttributeSimple * simple){
@@ -145,8 +152,8 @@ std::vector<Ast::AttributeSimple *> * StateParameterMap::find(const std::string 
 }
 
 void StateParameterMap::addToDefinition(PythonDefinition & definition){
-    Content triggerallContent(1, "# Triggerall");
-    triggerallContent.addLine(1, "def triggerall(self):");
+    Content triggerallContent(3, "# Triggerall");
+    triggerallContent.addLine(3, "def triggerall(self):");
     std::string tempString;
     for (std::vector<Ast::AttributeSimple *>::iterator i = triggerall.begin(); i != triggerall.end(); ++i){
         Ast::AttributeSimple * simple = (*i);
@@ -158,19 +165,19 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
         }
         tempString += trigger.getName() + " and ";
     }
-    triggerallContent.addLine(2, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-5) + ")"));
+    triggerallContent.addLine(4, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-5) + ")"));
     definition.addContent(triggerallContent);
     
-    Content allTriggers(1, "# Check all triggers");
-    allTriggers.addLine(1, "def checkAll(self):");
+    Content allTriggers(3, "# Check all triggers");
+    allTriggers.addLine(3, "def checkAll(self):");
     tempString.clear();
     for (int i = 0; ; ++i){
         std::map<int, std::vector<Ast::AttributeSimple *> >::iterator trigger = triggers.find(i);
         if (trigger != triggers.end()){
             std::ostringstream number;
             number << i;
-            Content triggerContent(1, "# Trigger " + number.str());
-            triggerContent.addLine(1, "def trigger" + number.str() +"(self):");
+            Content triggerContent(3, "# Trigger " + number.str());
+            triggerContent.addLine(3, "def trigger" + number.str() +"(self):");
             std::string triggerString;
             for (std::vector<Ast::AttributeSimple *>::iterator i = trigger->second.begin(); i != trigger->second.end(); ++i){
                 Ast::AttributeSimple * simple = (*i);
@@ -182,7 +189,7 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
                 }
                 triggerString += "(triggerall() and " + trigger.getName() + ")" + " and ";
             }
-            triggerContent.addLine(2, (triggerString.empty() ? "return 1" : "return (" + triggerString.substr(0, triggerString.size()-5) + ")"));
+            triggerContent.addLine(4, (triggerString.empty() ? "return 1" : "return (" + triggerString.substr(0, triggerString.size()-5) + ")"));
             definition.addContent(triggerContent);
             
             tempString += "trigger" + number.str() + "() or ";
@@ -192,12 +199,12 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
         }
     }
     // checkAll
-    allTriggers.addLine(2, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-3) + ")"));
+    allTriggers.addLine(4, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-3) + ")"));
     definition.addContent(allTriggers);
     
-    Content allContent(1, "# Check all triggers");
-    allContent.addLine(1, "if checkAll() != 1:");
-    allContent.addLine(2, "return");
+    Content allContent(3, "# Check all triggers");
+    allContent.addLine(3, "if checkAll() != 1:");
+    allContent.addLine(4, "return");
     definition.addContent(allContent);
     
     /* FIXME What to do here? */
@@ -228,16 +235,25 @@ StateParameterMap & StateControllerStore::getCurrentController(){
 void StateControllerStore::addToDefinition(PythonDefinition & definition){
     
     // TODO Go through current parameters and create new classes based on 'type' and add to definition
+    int controller = 0;
     for (std::vector<StateParameterMap>::iterator i = controllerParameters.begin(); i != controllerParameters.end(); ++i){
+        std::ostringstream out;
+        out << controller;
+        definition.addSpace();
+        definition.addContent(Content(1, "class controller" + out.str() + "(self, player, world):"));
+        definition.addContent(Content(2, "def run():"));
         std::vector<Ast::AttributeSimple *> * type = (*i).find("type");
         if (type != NULL){
-            std::stringstream line;
+            std::ostringstream line;
             const std::string & ctrl = type->back()->valueAsString();
             line << "# Found controller type '" << ctrl << "' on line " << type->back()->getLine();
-            definition.addContent(Content(1, line.str()));
+            definition.addContent(Content(3, line.str()));
             definition.addContent(getController(ctrl));
+            (*i).addToDefinition(definition);
         }
-        (*i).addToDefinition(definition);
+        definition.addContent(Content(1, "ctrl" + out.str() + " = controller" + out.str() + "()"));
+        definition.addContent(Content(1, "ctrl" + out.str() + ".run()"));
+        controller++;
     }
 }
     

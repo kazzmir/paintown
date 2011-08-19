@@ -432,8 +432,8 @@ class Evaluator{
         const std::string createRange(const std::string & against, ExpressionBuilder * range){
             std::string function = getNextFunctionName();
             std::vector<Expression> args = range->getExpression().getArguments();
-            Content checker(1, "def " + function + "(self):");
-                checker.addLine(2, "return (" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
+            Content checker(3, "def " + function + "(self):");
+                checker.addLine(4, "return (" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
             functions.push_back(checker);
             return function + "()";
         }
@@ -482,8 +482,8 @@ class Evaluator{
                             rightExpression = handleBuilder(crawl(right));
                         }
                         std::string function = getNextFunctionName();
-                        Content infix(1, "def " + function + "(self):");
-                            infix.addLine(2, "return (" + leftExpression + op + rightExpression + ")");
+                        Content infix(3, "def " + function + "(self):");
+                            infix.addLine(4, "return (" + leftExpression + op + rightExpression + ")");
                         functions.push_back(infix);
                         ExpressionBuilder * newBuilder = new ExpressionBuilder();
                         deletable.push_back(newBuilder);
@@ -498,8 +498,8 @@ class Evaluator{
                         const std::string & leftExpression = handleBuilder(crawl(left));
                         const std::string & op = convertUnaryOperator(builder->getOperator());
                         std::string function = getNextFunctionName();
-                        Content unary(1, "def " + function + "(self):");
-                            unary.addLine(2, "return (" + op + "(" + leftExpression + "))");
+                        Content unary(3, "def " + function + "(self):");
+                            unary.addLine(4, "return (" + op + "(" + leftExpression + "))");
                         functions.push_back(unary);
                         ExpressionBuilder * newBuilder = new ExpressionBuilder();
                         deletable.push_back(newBuilder);
@@ -524,10 +524,10 @@ class Evaluator{
         const std::string handleBuilder(ExpressionBuilder * builder){
             if (builder != NULL){
                 std::string function = getNextFunctionName();
-                Content content(1, "def " + function + "(self):");
+                Content content(3, "def " + function + "(self):");
                     /* TODO FIXME */
-                    content.addLine(2, "# Temporary - " + builder->get());
-                    content.addLine(2, "pass");
+                    content.addLine(4, "# Temporary - " + builder->get());
+                    content.addLine(4, "pass");
                 functions.push_back(content);
                 
                 return function + "()";
