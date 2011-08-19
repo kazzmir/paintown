@@ -30,6 +30,9 @@ class Expression{
         inline virtual bool isConstant() const {
             return this->constant;
         }
+        inline const std::vector<Expression> & getArguments() const{
+            return this->arguments;
+        }
     protected:
         std::string keyword;
         std::vector <Expression> arguments;
@@ -49,6 +52,7 @@ class ExpressionBuilder{
         virtual void setExpression(const Expression &);
         virtual void setLeft(ExpressionBuilder *);
         virtual void setRight(ExpressionBuilder *);
+        virtual void addToList(ExpressionBuilder *);
         virtual void setOperator(const std::string &);
         
         enum Type{
@@ -70,9 +74,11 @@ class ExpressionBuilder{
         virtual Expression & getExpression();
         virtual ExpressionBuilder * getLeftComplex();
         virtual ExpressionBuilder * getRightComplex();
-        virtual const Content & getLeftFunction();
-        virtual const Content & getRightFunction();
+        virtual std::vector<ExpressionBuilder *> & getValueList();
         virtual void setType(const Type &);
+        inline virtual const std::string & getOperator(){
+            return this->expressionOperator;
+        }
         inline virtual const Type & getType(){
             return this->type;
         }
@@ -83,10 +89,26 @@ class ExpressionBuilder{
         Expression expression;
         ExpressionBuilder * leftComplex;
         ExpressionBuilder * rightComplex;
+        std::vector<ExpressionBuilder *> valueList;
         std::string expressionOperator;
         Type type;
-        Content leftContent;
-        Content rightContent;
+};
+
+class Trigger{
+    public:
+        Trigger(ExpressionBuilder &);
+        Trigger(const Trigger &);
+        virtual ~Trigger();
+        
+        virtual const Trigger & operator=(const Trigger &);
+        virtual const std::vector<Content> & getFunctions();
+        virtual const std::string & getName();
+        
+        virtual void addToDefinition(PythonDefinition &);
+    
+    protected:
+        std::vector<Content> functions;
+        std::string name;
 };
 
 /*! Trigger Handling converts triggers into python code */

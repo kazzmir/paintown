@@ -120,6 +120,16 @@ const StateParameterMap & StateParameterMap::operator=(const StateParameterMap &
     this->parameters = copy.parameters;
 }
 
+void StateParameterMap::addTriggerall(Ast::AttributeSimple * simple){
+    triggerall.push_back(simple);
+}
+void StateParameterMap::addTrigger(int number, Ast::AttributeSimple * simple){
+    triggers[number].push_back(simple);
+}
+void StateParameterMap::addVar(Ast::AttributeSimple *simple){
+    vars.push_back(simple);
+}
+
 void StateParameterMap::add(const std::string & param, Ast::AttributeSimple * simple){
     parameters[param].push_back(simple);
 }
@@ -130,6 +140,45 @@ std::vector<Ast::AttributeSimple *> * StateParameterMap::find(const std::string 
         return &(*found).second;
     }
     return NULL;
+}
+
+void StateParameterMap::addToDefinition(PythonDefinition & definition){
+    for (std::vector<Ast::AttributeSimple *>::iterator i = triggerall.begin(); i != triggerall.end(); ++i){
+        Ast::AttributeSimple * simple = (*i);
+        ExpressionBuilder builder = TriggerHandler::convert(*simple->getValue());
+        Trigger trigger = Trigger(builder);
+        const std::vector<Content> & functions = trigger.getFunctions();
+        for (std::vector<Content>::const_iterator j = functions.begin(); j != functions.end(); ++j){
+            definition.addContent(*j);
+        }
+    }
+    
+    for (int i = 0; ; ++i){
+        std::map<int, std::vector<Ast::AttributeSimple *> >::iterator trigger = triggers.find(i);
+        if (trigger != triggers.end()){
+            for (std::vector<Ast::AttributeSimple *>::iterator i = trigger->second.begin(); i != trigger->second.end(); ++i){
+                Ast::AttributeSimple * simple = (*i);
+                ExpressionBuilder builder = TriggerHandler::convert(*simple->getValue());
+                Trigger trigger = Trigger(builder);
+                const std::vector<Content> & functions = trigger.getFunctions();
+                for (std::vector<Content>::const_iterator j = functions.begin(); j != functions.end(); ++j){
+                    definition.addContent(*j);
+                }
+            }
+        } else {
+            break;
+        }
+    }
+    
+    for (std::vector<Ast::AttributeSimple *>::iterator i = vars.begin(); i != vars.end(); ++i){
+        Ast::AttributeSimple * simple = (*i);
+        ExpressionBuilder builder = TriggerHandler::convert(*simple->getValue());
+        Trigger trigger = Trigger(builder);
+        const std::vector<Content> & functions = trigger.getFunctions();
+        for (std::vector<Content>::const_iterator j = functions.begin(); j != functions.end(); ++j){
+            definition.addContent(*j);
+        }
+    }
 }
     
 StateControllerStore::StateControllerStore(){
@@ -157,6 +206,7 @@ void StateControllerStore::addToDefinition(PythonDefinition & definition){
             definition.addContent(Content(1, line.str()));
             definition.addContent(getController(ctrl));
         }
+        (*i).addToDefinition(definition);
     }
 }
     

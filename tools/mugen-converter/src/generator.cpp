@@ -442,11 +442,15 @@ class StateHandler{
                 std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
             }*/
             if (simple == "triggerall"){
-                std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
+                //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
+                stateControllers.getCurrentController().addTriggerall((Ast::AttributeSimple *)simple.copy());
             } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
-                std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
+                //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
+                int number = atoi(Util::captureRegex(simple.idString(), "trigger([0-9]+)",0).c_str());
+                stateControllers.getCurrentController().addTrigger(number, (Ast::AttributeSimple *)simple.copy());
             } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
-                std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
+                //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;stateControllers.getCurrentController().addTriggerall((Ast::AttributeSimple *)simple.copy());
+                stateControllers.getCurrentController().addVar((Ast::AttributeSimple *)simple.copy());
             } else {
                 
                 std::string id = simple.idString();

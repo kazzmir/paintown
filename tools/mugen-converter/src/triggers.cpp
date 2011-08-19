@@ -17,7 +17,7 @@ static const std::string getNextFunctionName(){
     FUNCTION_NUMBER++;
     std::ostringstream stream;
     //stream << "def function" << FUNCTION_NUMBER << "(self, player, world):";
-    stream << "function" << FUNCTION_NUMBER;
+    stream << "evaluator" << FUNCTION_NUMBER;
     return stream.str();
 }
 
@@ -264,10 +264,14 @@ ExpressionBuilder::ExpressionBuilder(const ExpressionBuilder & copy){
     if (copy.rightComplex != NULL){
         rightComplex = new ExpressionBuilder(*copy.rightComplex);
     }
+    for (std::vector<ExpressionBuilder *>::const_iterator i = copy.valueList.begin(); i != copy.valueList.end(); ++i){
+        ExpressionBuilder * builder = *i;
+        if (builder != NULL){
+            valueList.push_back(new ExpressionBuilder(*builder));
+        }
+    }
     expressionOperator = copy.expressionOperator;
     type = copy.type;
-    leftContent = copy.leftContent;
-    rightContent = copy.rightContent;
 }
 ExpressionBuilder::~ExpressionBuilder(){
     if (leftComplex != NULL){
@@ -275,6 +279,11 @@ ExpressionBuilder::~ExpressionBuilder(){
     }
     if (rightComplex != NULL){
         delete rightComplex;
+    }
+    for (std::vector<ExpressionBuilder *>::iterator i = valueList.begin(); i != valueList.end(); ++i){
+        if ((*i) != NULL){
+            delete *i;
+        }
     }
 }
 const ExpressionBuilder & ExpressionBuilder::operator=(const ExpressionBuilder & copy){
@@ -285,11 +294,15 @@ const ExpressionBuilder & ExpressionBuilder::operator=(const ExpressionBuilder &
     if (copy.rightComplex != NULL){
         rightComplex = new ExpressionBuilder(*copy.rightComplex);
     }
+    for (std::vector<ExpressionBuilder *>::const_iterator i = copy.valueList.begin(); i != copy.valueList.end(); ++i){
+        ExpressionBuilder * builder = *i;
+        if (builder != NULL){
+            valueList.push_back(new ExpressionBuilder(*builder));
+        }
+    }
     expressionOperator = copy.expressionOperator;
     
     type = copy.type;
-    leftContent = copy.leftContent;
-    rightContent = copy.rightContent;
     return *this;
 }
 void ExpressionBuilder::setExpression(const Expression & expression){
@@ -300,6 +313,9 @@ void ExpressionBuilder::setLeft(ExpressionBuilder * builder){
 }
 void ExpressionBuilder::setRight(ExpressionBuilder * builder){
     rightComplex = builder;
+}
+void ExpressionBuilder::addToList(ExpressionBuilder * builder){
+    valueList.push_back(builder);
 }
 void ExpressionBuilder::setOperator(const std::string & op){
     expressionOperator = op;
@@ -313,6 +329,7 @@ const std::string ExpressionBuilder::get(){
             return expression.get();
             break;
         case Unary:
+            return expressionOperator + "(" + crawlComplex(leftComplex) + ")";
             break;
         case Infix:{
             return crawlComplex(leftComplex) + expressionOperator + crawlComplex(rightComplex);
@@ -353,12 +370,8 @@ ExpressionBuilder * ExpressionBuilder::getLeftComplex(){
 ExpressionBuilder * ExpressionBuilder::getRightComplex(){
     return rightComplex;
 }
-const Content & ExpressionBuilder::getLeftFunction(){
-    return leftContent;
-}
-
-const Content & ExpressionBuilder::getRightFunction(){
-    return rightContent;
+std::vector<ExpressionBuilder *> & ExpressionBuilder::getValueList(){
+    return valueList;
 }
 void ExpressionBuilder::setType(const Type & type){
     this->type = type;
@@ -382,28 +395,182 @@ const std::string ExpressionBuilder::crawlComplex(ExpressionBuilder * builder){
 
 class Evaluator{
     public:
-        Evaluator(){
-        }
-        virtual ~Evaluator(){
+        Evaluator(ExpressionBuilder & builder, std::vector<Content> & functions):
+        builder(builder),
+        functions(functions){
+            name = getNextFunctionName() + "()";
+            std::string main = handleBuilder(crawl(&builder));
         }
         
-        /* This will be set to statedefnumber_count in TriggerHandler::convert         */
-        void setName(const std::string & name){
-            this->name = name;
+        virtual ~Evaluator(){
+            for (std::vector<ExpressionBuilder *>::iterator i = deletable.begin(); i != deletable.end(); ++i){
+                if (*i != NULL){
+                    delete *i;
+                }
+            }
         }
         
         const std::string & getName(){
             return name;
         }
         
-        Content & get(){
-            return content;
+        const std::string convertInfixOperator(const std::string & op){
+            if (op == "="){
+                return "==";
+            }
+            
+            return op;
+        }
+
+        const std::string convertUnaryOperator(const std::string & op){
+            if (op == "!"){
+                return "not";
+            }
+            
+            return op;
+        }
+        const std::string createRange(const std::string & against, ExpressionBuilder * range){
+            std::string function = getNextFunctionName();
+            std::vector<Expression> args = range->getExpression().getArguments();
+            Content checker(1, "def " + function + "(self):");
+                checker.addLine(2, "return (" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
+            functions.push_back(checker);
+            return function + "()";
         }
         
-    protected:
+        ExpressionBuilder * crawl(ExpressionBuilder * builder){
+            if (builder != NULL){
+                if (builder->getLeftComplex() != NULL && builder->getRightComplex() != NULL){
+                    if (builder->getLeftComplex()->getType() == ExpressionBuilder::Range){
+                        /* Range is on the left side, swap it with the other side */
+                        std::string rightExpression;
+                        ExpressionBuilder * right = crawl(builder->getRightComplex());
+                        if (right != NULL){
+                            rightExpression = handleBuilder(crawl(right));
+                        }
+                        std::string range = createRange(rightExpression, builder->getLeftComplex());
+                        ExpressionBuilder * newBuilder = new ExpressionBuilder();
+                        deletable.push_back(newBuilder);
+                        newBuilder->setType(ExpressionBuilder::String);
+                        newBuilder->setExpression(Expression(range));
+                    } else if (builder->getRightComplex()->getType() == ExpressionBuilder::Range){
+                        /* Handle range  */
+                        std::string leftExpression;
+                        ExpressionBuilder * left = crawl(builder->getLeftComplex());
+                        if (left != NULL){
+                            leftExpression = handleBuilder(crawl(left));
+                        }
+                        std::string range = createRange(leftExpression, builder->getRightComplex());
+                        ExpressionBuilder * newBuilder = new ExpressionBuilder();
+                        deletable.push_back(newBuilder);
+                        newBuilder->setType(ExpressionBuilder::String);
+                        newBuilder->setExpression(Expression(range));
+                    } else if (builder->getRightComplex()->getType() == ExpressionBuilder::ValueList){
+                        /* TODO */
+                    } else {
+                        /* Handle infix */
+                        std::string leftExpression, rightExpression;
+                        ExpressionBuilder * left =  crawl(builder->getLeftComplex());
+                        if (left != NULL){
+                            leftExpression = handleBuilder(crawl(left));
+                        }
+                        const std::string & op = convertInfixOperator(builder->getOperator());
+                        ExpressionBuilder * right = crawl(builder->getRightComplex());
+                        if (right != NULL){
+                            rightExpression = handleBuilder(crawl(right));
+                        }
+                        std::string function = getNextFunctionName();
+                        Content infix(1, "def " + function + "(self):");
+                            infix.addLine(2, "return (" + leftExpression + op + rightExpression + ")");
+                        functions.push_back(infix);
+                        ExpressionBuilder * newBuilder = new ExpressionBuilder();
+                        deletable.push_back(newBuilder);
+                        newBuilder->setType(ExpressionBuilder::String);
+                        newBuilder->setExpression(Expression(function+"()"));
+                    }
+                } else if (builder->getLeftComplex() != NULL && builder->getRightComplex() == NULL){
+                    /* This should be a unary operation */
+                    ExpressionBuilder * left =  crawl(builder->getLeftComplex());
+                    if (left != NULL){
+                        const std::string & leftExpression = handleBuilder(crawl(left));
+                        const std::string & op = convertUnaryOperator(builder->getOperator());
+                        std::string function = getNextFunctionName();
+                        Content unary(1, "def " + function + "(self):");
+                            unary.addLine(2, "return (" + op + "(" + leftExpression + "))");
+                        functions.push_back(unary);
+                        ExpressionBuilder * newBuilder = new ExpressionBuilder();
+                        deletable.push_back(newBuilder);
+                        newBuilder->setType(ExpressionBuilder::String);
+                        newBuilder->setExpression(Expression(function + "()"));
+                    }
+                } else if (builder->getLeftComplex() == NULL && builder->getRightComplex() != NULL){
+                    /* NOTE This shouldn't happen but it is here just so that it can be monitored */
+                    ExpressionBuilder * right = crawl(builder->getRightComplex());
+                    if (right != NULL){
+                        std::cout << "Found a right expression with no left one. Contents: " << handleBuilder(crawl(right));
+                    }
+                } else if (builder->getLeftComplex() == NULL && builder->getRightComplex() == NULL){
+                    return builder;
+                } 
+            }
+            return NULL;
+        }
+        
+        /* Pushes back a function and returns the function name */
+        const std::string handleBuilder(ExpressionBuilder * builder){
+            if (builder != NULL){
+                std::string function = getNextFunctionName();
+                Content content(1, "def " + function + "(self):");
+                    /* TODO FIXME */
+                    content.addLine(2, "# Temporary - " + builder->get());
+                    content.addLine(2, "pass");
+                functions.push_back(content);
+                
+                return function + "()";
+            }
+            return "";
+        }
+        
+        const ExpressionBuilder & builder;
+        std::vector<Content> & functions;
         std::string name;
-        Content content;
+        
+        std::vector<ExpressionBuilder *> deletable;
 };
+
+Trigger::Trigger(ExpressionBuilder & builder){
+    Evaluator eval(builder, functions);
+    name = eval.getName();
+}
+
+Trigger::Trigger(const Trigger & copy){
+    functions = copy.functions;
+    name = copy.name;
+}
+
+Trigger::~Trigger(){
+}
+
+const Trigger & Trigger::operator=(const Trigger & copy){
+    functions = copy.functions;
+    name = copy.name;
+    
+    return *this;
+}
+
+const std::vector<Content> & Trigger::getFunctions(){
+    return functions;
+}
+
+const std::string & Trigger::getName(){
+    return name;
+}
+
+void Trigger::addToDefinition(PythonDefinition & definition){
+    for (std::vector<Content>::iterator i = functions.begin(); i != functions.end(); ++i){
+        definition.addContent((*i));
+    }
+}
 
 ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
     class ExpressionWalker : public Ast::Walker{
@@ -415,11 +582,12 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         
         virtual void onValueList(const Ast::ValueList & values){
             std::cout << "Found Value List: " << values.toString() << std::endl;
+            exp.setType(ExpressionBuilder::ValueList);
             for (unsigned int i = 0;;++i){
                 Ast::Value * value = values.get(i);
                 if (value){
-                    /*ExpressionBuilder * right = new ExpressionBuilder(convert(*value));
-                    exp.setRight(right);*/
+                    ExpressionBuilder * item = new ExpressionBuilder(convert(*value));
+                    exp.addToList(item);
                 } else {
                     break;
                 }
@@ -454,8 +622,10 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         }
         virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
             std::cout << "Found Unary: " <<  expression.toString() << std::endl;
-            /*exp.setLeft(Expression(convert(*expression.getExpression()).get()));
-            exp.setOperator(expression.prefixName(expression.getExpressionType()));*/
+            exp.setType(ExpressionBuilder::Unary);
+            ExpressionBuilder * left = new ExpressionBuilder(convert(*expression.getExpression()));
+            exp.setLeft(left);
+            exp.setOperator(expression.prefixName(expression.getExpressionType()));
         }
         virtual void onIdentifier(const Ast::Identifier & identifier){
             // Triggers or Constants
