@@ -15,17 +15,18 @@ namespace Ast{
 
 class Helper: public Value {
 public:
-    Helper(const std::string & name, Value * original):
-        name(name),
-        original(original){
-        }
+    Helper(int line, int column, const std::string & name, Value * original):
+    Value(line, column),
+    name(name),
+    original(original){
+    }
 
     static int lowerCase( int c ){
         return tolower(c);
     }
     
     virtual Element * copy() const {
-        return new Helper(name, (Value*) original->copy());
+        return new Helper(getLine(), getColumn(), name, (Value*) original->copy());
     }
 
     static std::string downcase(std::string str){
@@ -43,15 +44,16 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_HELPER << name << original->serialize();
+        *token << SERIAL_HELPER << getLine() << getColumn() << name << original->serialize();
         return token;
     }
 
     static Helper * deserialize(const Token * token){
         std::string name;
         const Token * next;
-        token->view() >> name >> next;
-        return new Helper(name, Value::deserialize(next));
+        int line, column;
+        token->view() >> line >> column >> name >> next;
+        return new Helper(line, column, name, Value::deserialize(next));
     }
 
     using Element::operator==;

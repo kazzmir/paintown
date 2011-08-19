@@ -9,7 +9,8 @@ namespace Ast{
 
 class HitDefAttribute: public Value {
 public:
-    HitDefAttribute(const std::string & value):
+    HitDefAttribute(int line, int column, const std::string & value):
+    Value(line, column),
     value(value){
     }
 
@@ -35,18 +36,19 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_HITDEF_ATTRIBUTE << value;
+        *token << SERIAL_HITDEF_ATTRIBUTE << getLine() << getColumn() << value;
         return token;
     }
 
     static HitDefAttribute * deserialize(const Token * token){
         std::string value;
-        token->view() >> value;
-        return new HitDefAttribute(value);
+        int line, column;
+        token->view() >> line >> column >> value;
+        return new HitDefAttribute(line, column, value);
     }
     
     virtual Element * copy() const {
-        return new HitDefAttribute(value);
+        return new HitDefAttribute(getLine(), getColumn(), value);
     }
           
     virtual std::string getType() const {
@@ -66,7 +68,8 @@ protected:
 
 class HitDefAttackAttribute: public Value {
 public:
-    HitDefAttackAttribute(){
+    HitDefAttackAttribute(int line, int column):
+    Value(line, column){
     }
 
     using Value::operator>>;
@@ -91,7 +94,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_HITDEF_ATTACK_ATTRIBUTE;
+        *token << SERIAL_HITDEF_ATTACK_ATTRIBUTE << getLine() << getColumn();
         for (std::vector<std::string>::const_iterator it = values.begin(); it != values.end(); it++){
             *token << *it;
         }
@@ -99,9 +102,12 @@ public:
     }
 
     static HitDefAttackAttribute * deserialize(const Token * token){
-        HitDefAttackAttribute * attribute = new HitDefAttackAttribute();
+        HitDefAttackAttribute * attribute = NULL;
         try{
             TokenView view = token->view();
+            int line, column;
+            view >> line >> column;
+            attribute = new HitDefAttackAttribute(line, column);
             while (true){
                 std::string value;
                 view >> value;
@@ -141,7 +147,7 @@ public:
     }
     
     virtual Element * copy() const {
-        HitDefAttackAttribute * attribute = new HitDefAttackAttribute();
+        HitDefAttackAttribute * attribute = new HitDefAttackAttribute(getLine(), getColumn());
         for (std::vector<std::string>::const_iterator it = values.begin(); it != values.end(); it++){
             attribute->addAttribute(*it);
         }

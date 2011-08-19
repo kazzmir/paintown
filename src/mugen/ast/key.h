@@ -13,7 +13,8 @@ class KeySingle;
 
 class Key: public Value {
 public:
-    Key(){
+    Key(int line, int column):
+    Value(line, column){
     }
 
     virtual std::string getType() const {
@@ -48,10 +49,10 @@ public:
 
 class KeySingle: public Key {
 public:
-    explicit KeySingle(const char * name):
-        Key(),
-        name(name){
-        }
+    explicit KeySingle(int line, int column, const char * name):
+    Key(line, column),
+    name(name){
+    }
     
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
@@ -68,14 +69,15 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_KEY_SINGLE << name;
+        *token << SERIAL_KEY_SINGLE << getLine() << getColumn() << name;
         return token;
     }
 
     static KeySingle * deserialize(const Token * token){
         std::string what;
-        token->view() >> what;
-        return new KeySingle(what.c_str());
+        int line, column;
+        token->view() >> line >> column >> what;
+        return new KeySingle(line, column, what.c_str());
     }
 
     virtual bool operator==(const Key & key) const {
@@ -91,7 +93,7 @@ public:
     }
     
     virtual Element * copy() const {
-        return new KeySingle(name.c_str());
+        return new KeySingle(getLine(), getColumn(), name.c_str());
     }
 
     virtual ~KeySingle(){
@@ -133,12 +135,12 @@ public:
         Only,
     };
 
-    KeyModifier(ModifierType type, const Key * key, int extra = 0):
-        Key(),
-        type(type),
-        key(key),
-        extra(extra){
-        }
+    KeyModifier(int line, int column, ModifierType type, const Key * key, int extra = 0):
+    Key(line, column),
+    type(type),
+    key(key),
+    extra(extra){
+    }
     
     virtual void walk(Walker & walker) const {
         walker.onKeyModifier(*this);
@@ -163,7 +165,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_KEY_MODIFIER << getModifierType() << getExtra() << getKey()->serialize();
+        *token << SERIAL_KEY_MODIFIER << getLine() << getColumn() << getModifierType() << getExtra() << getKey()->serialize();
         return token;
     }
 
@@ -171,8 +173,9 @@ public:
         int type = 0;
         int extra = 0;
         const Token * next;
-        token->view() >> type >> extra >> next;
-        return new KeyModifier(ModifierType(type), (Key*) Value::deserialize(next), extra);
+        int line, column;
+        token->view() >> line >> column >> type >> extra >> next;
+        return new KeyModifier(line, column, ModifierType(type), (Key*) Value::deserialize(next), extra);
     }
 
     using Element::operator==;
@@ -208,7 +211,7 @@ public:
     }
 
     virtual Element * copy() const {
-        return new KeyModifier(type, (Key*) key->copy(), extra);
+        return new KeyModifier(getLine(), getColumn(), type, (Key*) key->copy(), extra);
     }
 
     virtual ~KeyModifier(){
@@ -223,8 +226,8 @@ protected:
 
 class KeyCombined: public Key {
 public:
-    KeyCombined(const Key * key1, const Key * key2):
-    Key(),
+    KeyCombined(int line, int column, const Key * key1, const Key * key2):
+    Key(line, column),
     key1(key1),
     key2(key2){
     }
@@ -260,15 +263,17 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_KEY_COMBINED << key1->serialize() << key2->serialize();
+        *token << SERIAL_KEY_COMBINED << getLine() << getColumn() << key1->serialize() << key2->serialize();
         return token;
     }
 
     static KeyCombined * deserialize(const Token * token){
         const Token * left;
         const Token * right;
-        token->view() >> left >> right;
-        return new KeyCombined((Key*) Value::deserialize(left),
+        int line, column;
+        token->view() >> line >> column >> left >> right;
+        return new KeyCombined(line, column,
+                               (Key*) Value::deserialize(left),
                                (Key*) Value::deserialize(right));
     }
     
@@ -279,7 +284,7 @@ public:
     }
 
     virtual Element * copy() const {
-        return new KeyCombined((Key*) key1->copy(), (Key*) key2->copy());
+        return new KeyCombined(getLine(), getColumn(), (Key*) key1->copy(), (Key*) key2->copy());
     }
 
     virtual ~KeyCombined(){
@@ -294,8 +299,8 @@ protected:
 
 class KeyList: public Key {
 public:
-    KeyList(const std::vector<Key*> & keys):
-        Key(),
+    KeyList(int line, int column, const std::vector<Key*> & keys):
+        Key(line, column),
         keys(keys){
         }
 
@@ -337,7 +342,7 @@ public:
         for (std::vector<Key*>::const_iterator it = keys.begin(); it != keys.end(); it++){
             copied.push_back((Key*) (*it)->copy());
         }
-        return new KeyList(copied);
+        return new KeyList(getLine(), getColumn(), copied);
     }
 
     virtual const std::vector<Key*> & getKeys() const {
@@ -346,7 +351,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_KEY_LIST;
+        *token << SERIAL_KEY_LIST << getLine() << getColumn();
         for (std::vector<Key*>::const_iterator it = keys.begin(); it != keys.end(); it++){
             Key * key = *it;
             *token << key->serialize();
@@ -356,8 +361,10 @@ public:
 
     static KeyList * deserialize(const Token * token){
         std::vector<Key*> keys;
+        int line = -1, column = -1;
         try{
             TokenView view = token->view();
+            view >> line >> column;
             while (true){
                 const Token * next;
                 view >> next;
@@ -365,7 +372,7 @@ public:
             }
         } catch (const TokenException & e){
         }
-        return new KeyList(keys);
+        return new KeyList(line, column, keys);
     }
     
     virtual std::string toString() const {

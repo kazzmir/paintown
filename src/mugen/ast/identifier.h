@@ -16,16 +16,14 @@ namespace Ast{
 class Identifier: public Value {
 public:
     Identifier(int line, int column, const std::list<std::string> & names):
-    names(names),
-    line(line),
-    column(column){
+    Value(line, column),
+    names(names){
         stringed = toStringSlow();
     }
 
     Identifier(const std::list<std::string> & names):
-    names(names),
-    line(-1),
-    column(-1){
+    Value(-1, -1),
+    names(names){
         stringed = toStringSlow();
     }
 
@@ -67,17 +65,9 @@ public:
         return "identifier";
     }
 
-    virtual int getLine() const {
-        return line;
-    }
-
-    virtual int getColumn() const {
-        return column;
-    }
-
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_IDENTIFIER << line << column << toString();
+        *token << SERIAL_IDENTIFIER << getLine() << getColumn() << toString();
         return token;
     }
 

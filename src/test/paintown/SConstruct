@@ -395,6 +395,9 @@ test/util/input/keyboard.cpp
 test/paintown-engine/environment/atmosphere.cpp
 test/paintown-engine/trigger/trigger.cpp
 test/paintown-engine/level/scene.cpp
+test/util/music.cpp
+test/util/music-player.cpp
+test/util/audio.cpp
 test/paintown-engine/level/block.cpp
 test/paintown-engine/level/blockobject.cpp
 test/paintown-engine/level/random-scene.cpp

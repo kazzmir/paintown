@@ -195,6 +195,7 @@ test/mugen/character-select.cpp
 test/mugen/search.cpp
 test/util/music.cpp
 test/util/music-player.cpp
+test/util/audio.cpp
 test/util/messages.cpp
 test/util/gradient.cpp
 test/util/loading.cpp
@@ -314,6 +315,7 @@ test/util/tokenreader.cpp
 test/menu/font-info.cpp
 test/util/load_exception.cpp
 test/util/music-player.cpp
+test/util/audio.cpp
 test/util/sound.cpp
 test/util/input/input-manager.cpp
 test/util/events.cpp
@@ -358,6 +360,7 @@ test/util/input/keyboard.cpp
 test/util/sound.cpp
 test/util/music.cpp
 test/util/music-player.cpp
+test/util/audio.cpp
 test/globals.cpp
 test/mugen/character.cpp
 test/mugen/stage.cpp

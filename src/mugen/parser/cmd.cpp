@@ -903,7 +903,7 @@ std::string * toString(const char * x){
     return object;
 }
 
-Ast::Value * makeInteger(const Value & sign, const Value & digits){
+Ast::Value * makeInteger(int line, int column, const Value & sign, const Value & digits){
     std::istringstream in(*toString(digits));
     double value = 0;
     in >> value;
@@ -912,7 +912,7 @@ Ast::Value * makeInteger(const Value & sign, const Value & digits){
         value = -value;
     }
     
-    Ast::Number * object = new Ast::Number(value);
+    Ast::Number * object = new Ast::Number(line, column, value);
     GC::save(object);
     return object;
 }
@@ -924,7 +924,8 @@ std::string * toString(char front, const Value & input){
 }
 
 Ast::String * makeString(const Value & value){
-    Ast::String * object = new Ast::String(toString(value));
+    /* FIXME: fix line numbers here */
+    Ast::String * object = new Ast::String(-1, -1, toString(value));
     GC::save(object);
     return object;
 }
@@ -944,19 +945,22 @@ Ast::Value * makeExpression(){
 */
 
 Ast::Value * makeHelper(const Value & name, const Value & id){
-    Ast::Value * helper = new Ast::Helper(std::string(as<const char*>(name)), as<Ast::Value*>(id));
+    /* FIXME: fix line numbers here */
+    Ast::Value * helper = new Ast::Helper(-1, -1, std::string(as<const char*>(name)), as<Ast::Value*>(id));
     GC::save(helper);
     return helper;
 }
 
 Ast::Value * makeKeyword(const char * name){
-    Ast::Value * keyword = new Ast::Keyword(name);
+    /* FIXME: fix line numbers here */
+    Ast::Value * keyword = new Ast::Keyword(-1, -1, name);
     GC::save(keyword);
     return keyword;
 }
 
 Ast::Value * makeExpressionInfix(Ast::ExpressionInfix::InfixType type, const Value & left, const Value & right){
-    Ast::Value * object = new Ast::ExpressionInfix(type, as<Ast::Value*>(left), as<Ast::Value*>(right));
+    /* FIXME: fix line numbers here */
+    Ast::Value * object = new Ast::ExpressionInfix(-1, -1, type, as<Ast::Value*>(left), as<Ast::Value*>(right));
     GC::save(object);
     return object;
 }
@@ -1039,7 +1043,8 @@ Ast::Value * makeExpressionPower(const Value & left, const Value & right){
 
 Ast::Value * negateExpression(const Value & exp){
     Ast::Value * expression = as<Ast::Value*>(exp);
-    Ast::Value * negation = new Ast::ExpressionUnary(Ast::ExpressionUnary::Negation, expression);
+    /* FIXME: fix line numbers here */
+    Ast::Value * negation = new Ast::ExpressionUnary(-1, -1, Ast::ExpressionUnary::Negation, expression);
     GC::save(negation);
     return negation;
 }
@@ -1048,7 +1053,8 @@ Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     Ast::Value * expression = as<Ast::Value*>(exp);
     for (Value::iterator it = unaries.getValues().begin(); it != unaries.getValues().end(); it++){
         Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (long) (*it).getValue();
-        expression = new Ast::ExpressionUnary(unary, expression);
+        /* FIXME: fix line numbers here */
+        expression = new Ast::ExpressionUnary(-1, -1, unary, expression);
         GC::save(expression);
     }
     return expression;
@@ -1083,7 +1089,8 @@ Ast::Value * makeValueList2(const Value & first, const Value & second){
 }
 
 Ast::Value * makeFunction(const Value & name, const Value & arg1){
-    Ast::Value * function = new Ast::Function(std::string(as<const char*>(name)), as<Ast::ValueList*>(arg1));
+    /* FIXME! fix line numbers here */
+    Ast::Value * function = new Ast::Function(-1, -1, std::string(as<const char*>(name)), as<Ast::ValueList*>(arg1));
     GC::save(function);
     return function;
 }
@@ -1095,7 +1102,8 @@ Ast::Value * makeFunction(int line, int column, const Value & name, const Value 
 }
 
 Ast::Value * makeFunction(const std::string & name, const Value & arg1){
-    Ast::Value * function = new Ast::Function(name, as<Ast::ValueList*>(arg1));
+    /* FIXME: fix line numbers here */
+    Ast::Value * function = new Ast::Function(-1, -1, name, as<Ast::ValueList*>(arg1));
     GC::save(function);
     return function;
 }
@@ -1138,7 +1146,8 @@ Ast::Value * makeFunction(const Value & name, const Value & arg1, const Value & 
 */
 
 Ast::Value * makeRange(Ast::Range::RangeType type, const Value & low, const Value & high){
-    Ast::Value * range = new Ast::Range(type, as<Ast::Value*>(low), as<Ast::Value*>(high));
+    /* FIXME: fix line numbers here */
+    Ast::Value * range = new Ast::Range(-1, -1, type, as<Ast::Value*>(low), as<Ast::Value*>(high));
     GC::save(range);
     return range;
 }
@@ -1180,7 +1189,8 @@ Ast::Attribute * makeAttribute(const Value & id){
 }
 
 Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, const Value & data){
-    Ast::Attribute * object = new Ast::AttributeArray(as<Ast::Identifier*>(id), as<Ast::Value*>(index), as<Ast::Value*>(data));
+    /* FIXME: fix line numbers here */
+    Ast::Attribute * object = new Ast::AttributeArray(-1, -1, as<Ast::Identifier*>(id), as<Ast::Value*>(index), as<Ast::Value*>(data));
     GC::save(object);
     return object;
 }
@@ -1244,7 +1254,8 @@ Ast::Attribute * makeAttribute(int line, int column, const char * name, const Va
 }
 
 Ast::Value * makeNumber(double value){
-    Ast::Number * object = new Ast::Number(value);
+    /* FIXME: fix line numbers here */
+    Ast::Number * object = new Ast::Number(-1, -1, value);
     GC::save(object);
     return object;
 }
@@ -1255,7 +1266,8 @@ Ast::Value * makeNumber(const Value & sign, const Value & number){
         value = -value;
     }
 
-    Ast::Number * object = new Ast::Number(value);
+    /* FIXME: fix line numbers here */
+    Ast::Number * object = new Ast::Number(-1, -1, value);
     GC::save(object);
     return object;
 }
@@ -1282,13 +1294,15 @@ Ast::Section * makeSection(const Value & str, int line, int column){
 }
 
 Ast::Key * makeKeyModifier(Ast::Key * in, Ast::KeyModifier::ModifierType type, int ticks){
-    Ast::Key * modded = new Ast::KeyModifier(type, in, ticks);
+    /* FIXME: fix line numbers here */
+    Ast::Key * modded = new Ast::KeyModifier(-1, -1, type, in, ticks);
     GC::save(modded);
     return modded;
 }
 
 Ast::Key * makeKeyCombined(const Value & left, const Value & right){
-    Ast::Key * key = new Ast::KeyCombined(as<Ast::Key*>(left), as<Ast::Key*>(right));
+    /* FIXME: fix line numbers here */
+    Ast::Key * key = new Ast::KeyCombined(-1, -1, as<Ast::Key*>(left), as<Ast::Key*>(right));
     GC::save(key);
     return key;
 }
@@ -1296,7 +1310,8 @@ Ast::Key * makeKeyCombined(const Value & left, const Value & right){
 /* for commands with no keys listed */
 Ast::Key * makeEmptyKeyList(){
     std::vector<Ast::Key*> all;
-    Ast::Key * object = new Ast::KeyList(all);
+    /* FIXME: fix line numbers here */
+    Ast::Key * object = new Ast::KeyList(-1, -1, all);
     GC::save(object);
     return object;
 }
@@ -1310,13 +1325,15 @@ Ast::Key * makeKeyList(const Value & first, const Value & rest){
         all.push_back(key);
     }
 
-    Ast::Key * object = new Ast::KeyList(all);
+    /* FIXME: fix line numbers here */
+    Ast::Key * object = new Ast::KeyList(-1, -1, all);
     GC::save(object);
     return object;
 }
 
 Ast::Key * makeKey(const Value & value){
-    Ast::Key * key = new Ast::KeySingle(as<const char *>(value));
+    /* FIXME: fix line numbers here */
+    Ast::Key * key = new Ast::KeySingle(-1, -1, as<const char *>(value));
     GC::save(key);
     return key;
 }
@@ -1331,7 +1348,8 @@ Ast::Key * applyKeyModifiers(const Value & mods, Ast::Key * key){
 }
 
 Ast::HitDefAttackAttribute * makeHitDefAttackAttribute(){
-    Ast::HitDefAttackAttribute * object = new Ast::HitDefAttackAttribute();
+    /* FIXME: fix line numbers here */
+    Ast::HitDefAttackAttribute * object = new Ast::HitDefAttackAttribute(-1, -1);
     GC::save(object);
     return object;
 }
@@ -1341,7 +1359,8 @@ Ast::HitDefAttribute * makeHitDefAttribute(const Value & input){
     for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
         out << (char*) (*it).getValue();
     }
-    Ast::HitDefAttribute * object = new Ast::HitDefAttribute(out.str());
+    /* FIXME: fix line numbers here */
+    Ast::HitDefAttribute * object = new Ast::HitDefAttribute(-1, -1, out.str());
     GC::save(object);
     return object;
 }
@@ -5502,91 +5521,100 @@ Result rule_integer(Stream & stream, const int position){
         return column_peg_1.chunk2->chunk_integer;
     }
     
-    RuleTrace trace_peg_22(stream, "integer");
+    RuleTrace trace_peg_24(stream, "integer");
     int myposition = position;
     
     
-    
+    Value line;
+        Value n1;
+        Value n2;
     Result result_peg_2(myposition);
         
         {
         
-            int save_peg_4 = result_peg_2.getPosition();
+            Stream::LineInfo line_info_peg_4 = stream.getLineInfo(result_peg_2.getPosition());
+                line = &line_info_peg_4;
+            
+            
+            
+            int save_peg_6 = result_peg_2.getPosition();
                 
                 {
-                    int position_peg_7 = result_peg_2.getPosition();
+                    int position_peg_9 = result_peg_2.getPosition();
                     
                     result_peg_2.setValue(Value((void*) "-"));
                     for (int i = 0; i < 1; i++){
                         if (compareChar("-"[i], stream.get(result_peg_2.getPosition()))){
                             result_peg_2.nextPosition();
                         } else {
-                            result_peg_2.setPosition(position_peg_7);
-                            goto out_peg_8;
+                            result_peg_2.setPosition(position_peg_9);
+                            goto out_peg_10;
                         }
                     }
                         
                 }
-                goto success_peg_5;
-                out_peg_8:
+                goto success_peg_7;
+                out_peg_10:
                 {
-                    int position_peg_10 = result_peg_2.getPosition();
+                    int position_peg_12 = result_peg_2.getPosition();
                     
                     result_peg_2.setValue(Value((void*) "+"));
                     for (int i = 0; i < 1; i++){
                         if (compareChar("+"[i], stream.get(result_peg_2.getPosition()))){
                             result_peg_2.nextPosition();
                         } else {
-                            result_peg_2.setPosition(position_peg_10);
-                            goto out_peg_11;
+                            result_peg_2.setPosition(position_peg_12);
+                            goto out_peg_13;
                         }
                     }
                         
                 }
-                goto success_peg_5;
-                out_peg_11:
+                goto success_peg_7;
+                out_peg_13:
                 
-                result_peg_2 = Result(save_peg_4);
+                result_peg_2 = Result(save_peg_6);
                 result_peg_2.setValue(Value((void*) 0));
                 
-                success_peg_5:
+                success_peg_7:
                 ;
+                n1 = result_peg_2.getValues();
             
-            Result result_peg_3 = result_peg_2;
+            
             
             result_peg_2.reset();
                 do{
-                    Result result_peg_14(result_peg_2.getPosition());
+                    Result result_peg_16(result_peg_2.getPosition());
                     {
-                        int position_peg_17 = result_peg_14.getPosition();
+                        int position_peg_19 = result_peg_16.getPosition();
                         
-                        char letter_peg_20 = stream.get(result_peg_14.getPosition());
-                        if (letter_peg_20 != '\0' && strchr("0123456789", letter_peg_20) != NULL){
-                            result_peg_14.nextPosition();
-                            result_peg_14.setValue(Value((void*) (long) letter_peg_20));
+                        char letter_peg_22 = stream.get(result_peg_16.getPosition());
+                        if (letter_peg_22 != '\0' && strchr("0123456789", letter_peg_22) != NULL){
+                            result_peg_16.nextPosition();
+                            result_peg_16.setValue(Value((void*) (long) letter_peg_22));
                         } else {
-                            result_peg_14.setPosition(position_peg_17);
-                            goto out_peg_19;
+                            result_peg_16.setPosition(position_peg_19);
+                            goto out_peg_21;
                         }
                         
                     }
-                    goto success_peg_15;
-                    out_peg_19:
-                    goto loop_peg_13;
-                    success_peg_15:
+                    goto success_peg_17;
+                    out_peg_21:
+                    goto loop_peg_15;
+                    success_peg_17:
                     ;
-                    result_peg_2.addResult(result_peg_14);
+                    result_peg_2.addResult(result_peg_16);
                 } while (true);
-                loop_peg_13:
+                loop_peg_15:
                 if (result_peg_2.matches() == 0){
-                    goto out_peg_21;
+                    goto out_peg_23;
                 }
+                n2 = result_peg_2.getValues();
             
-            Result result_peg_12 = result_peg_2;
+            
             
             {
                     Value value((void*) 0);
-                    value = makeInteger(result_peg_3.getValues(), result_peg_12.getValues());
+                    value = makeInteger(getCurrentLine(line), getCurrentColumn(line), n1, n2);
                     result_peg_2.setValue(value);
                 }
             
@@ -5601,7 +5629,7 @@ Result rule_integer(Stream & stream, const int position){
         
         
         return result_peg_2;
-        out_peg_21:
+        out_peg_23:
     
         if (column_peg_1.chunk2 == 0){
             column_peg_1.chunk2 = new Chunk2();

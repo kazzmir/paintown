@@ -12,14 +12,14 @@ namespace Ast{
 class AttributeKeyword: public Attribute {
 public:
     
-    AttributeKeyword(const Keyword * name, const Value * value):
-    Attribute(KeywordAttribute),
+    AttributeKeyword(int line, int column, const Keyword * name, const Value * value):
+    Attribute(line, column, KeywordAttribute),
     name(name),
     value(value){
     }
     
-    AttributeKeyword(const Keyword * name):
-    Attribute(KeywordAttribute),
+    AttributeKeyword(int line, int column, const Keyword * name):
+    Attribute(line, column, KeywordAttribute),
     name(name),
     value(0){
     }
@@ -30,9 +30,9 @@ public:
     
     virtual Element * copy() const {
         if (value == NULL){
-            return new AttributeKeyword((Keyword*) name->copy());
+            return new AttributeKeyword(getLine(), getColumn(), (Keyword*) name->copy());
         } else {
-            return new AttributeKeyword((Keyword*) name->copy(), (Value*) value->copy());
+            return new AttributeKeyword(getLine(), getColumn(), (Keyword*) name->copy(), (Value*) value->copy());
         }
     }
 
@@ -66,7 +66,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_ATTRIBUTE_KEYWORD << name->serialize();
+        *token << SERIAL_ATTRIBUTE_KEYWORD << getLine() << getColumn() << name->serialize();
         if (value != NULL){
             *token << value->serialize();
         }
@@ -75,14 +75,15 @@ public:
 
     static AttributeKeyword * deserialize(const Token * token){
         const Token * keyword;
+        int line, column;
         TokenView view = token->view();
-        view >> keyword;
+        view >> line >> column >> keyword;
         try{
             const Token * value;
             view >> value;
-            return new AttributeKeyword(Keyword::deserialize(keyword), Value::deserialize(value));
+            return new AttributeKeyword(line, column, Keyword::deserialize(keyword), Value::deserialize(value));
         } catch (const TokenException & e){
-            return new AttributeKeyword(Keyword::deserialize(keyword));
+            return new AttributeKeyword(line, column, Keyword::deserialize(keyword));
         }
     }
 

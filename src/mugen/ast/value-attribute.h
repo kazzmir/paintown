@@ -17,7 +17,8 @@ namespace Ast{
 class ValueAttribute: public Value {
 public:
 
-    ValueAttribute(Attribute * attribute):
+    ValueAttribute(int line, int column, Attribute * attribute):
+    Value(line, column),
     attribute(attribute){
     }
 
@@ -47,9 +48,10 @@ public:
     static ValueAttribute * deserialize(const Token * token){
         TokenView view = token->view();
         const Token * next;
-        view >> next;
+        int line, column;
+        view >> line >> column >> next;
         Attribute * attribute = Attribute::deserialize(next);
-        return new ValueAttribute(attribute);
+        return new ValueAttribute(line, column, attribute);
 
     }
    
@@ -63,13 +65,13 @@ public:
     }
 
     virtual Element * copy() const {
-        return new ValueAttribute((Attribute*) attribute->copy());
+        return new ValueAttribute(getLine(), getColumn(), (Attribute*) attribute->copy());
     }
 
     Token * serialize() const {
         Token * token = new Token();
         *token << SERIAL_VALUE_ATTRIBUTE;
-        *token << attribute->serialize();
+        *token << getLine() << getColumn() << attribute->serialize();
         return token;
     }
 

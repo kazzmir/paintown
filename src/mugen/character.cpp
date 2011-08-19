@@ -1817,12 +1817,12 @@ void Character::fixAssumptions(){
 
             InternalJumpController * controller = new InternalJumpController();
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
                         new Ast::SimpleIdentifier("S"))));
-            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
-                        new Ast::String(new string("holdup")))));
+                        new Ast::String(-1, -1, new string("holdup")))));
             states[-1]->addController(controller);
         }
 
@@ -1830,9 +1830,9 @@ void Character::fixAssumptions(){
         {
             string jumpCommand = "internal:double-jump-command";
             vector<Ast::Key*> keys;
-            keys.push_back(new Ast::KeyModifier(Ast::KeyModifier::Release, new Ast::KeySingle("U")));
-            keys.push_back(new Ast::KeySingle("U"));
-            Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(keys), 5, 0);
+            keys.push_back(new Ast::KeyModifier(-1, -1, Ast::KeyModifier::Release, new Ast::KeySingle(-1, -1, "U")));
+            keys.push_back(new Ast::KeySingle(-1, -1, "U"));
+            Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(-1, -1, keys), 5, 0);
             addCommand(doubleJumpCommand);
 
             setSystemVariable(JumpIndex, RuntimeValue(0));
@@ -1855,20 +1855,20 @@ void Character::fixAssumptions(){
             InternalDoubleJumpController * controller = new InternalDoubleJumpController();
             // controller->setDebug(true);
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
                         new Ast::SimpleIdentifier("A"))));
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::GreaterThan,
-                                                                                          new Ast::ExpressionUnary(Ast::ExpressionUnary::Minus,
-                                                                                                                   new Ast::Keyword("pos y")),
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::GreaterThan,
+                                                                                          new Ast::ExpressionUnary(-1, -1, Ast::ExpressionUnary::Minus,
+                                                                                                                   new Ast::Keyword(-1, -1, "pos y")),
                                                                                           new Ast::SimpleIdentifier("internal:airjump-height"))));
-            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::LessThan,
-                        new Ast::Function("sysvar", new Ast::ValueList(new Ast::Number(JumpIndex))),
+            controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::LessThan,
+                        new Ast::Function(-1, -1, "sysvar", new Ast::ValueList(new Ast::Number(-1, -1, JumpIndex))),
                         new Ast::SimpleIdentifier("internal:extra-jumps"))));
-            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         // new Ast::String(new string("holdup")
-                        new Ast::String(new string(jumpCommand)
+                        new Ast::String(-1, -1, new string(jumpCommand)
                             ))));
             states[-1]->addController(controller);
         }
@@ -1892,9 +1892,9 @@ void Character::fixAssumptions(){
             };
 
             StopGuardStandController * controller = new StopGuardStandController();
-            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(Ast::ExpressionInfix::Equals,
+            controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
-                    new Ast::Number(0))));
+                    new Ast::Number(-1, -1, 0))));
             states[StopGuardStand]->addController(controller);
         }
     }

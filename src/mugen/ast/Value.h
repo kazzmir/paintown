@@ -15,7 +15,8 @@ namespace Ast{
 class Value: public Element {
 public:
 
-    Value(){
+    Value(int line, int column):
+    Element(line, column){
     }
 
 public:

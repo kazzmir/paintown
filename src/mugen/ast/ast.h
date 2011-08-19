@@ -37,7 +37,9 @@ class KeyList;
 
 class Element{
 public:
-    Element(){
+    Element(int line, int column):
+    line(line),
+    column(column){
     }
 
     static std::string SERIAL_STRING;
@@ -68,7 +70,7 @@ public:
      * between the code and any existing serialized files then you *must*
      * increment this variable.
      */
-    static const int SERIAL_VERSION = 6;
+    static const int SERIAL_VERSION = 8;
 
     virtual void mark(std::map<const void*, bool> & marks) const = 0;
 
@@ -140,6 +142,17 @@ public:
 
     virtual ~Element(){
     }
+
+    virtual int getLine() const {
+        return line;
+    }
+
+    virtual int getColumn() const {
+        return column;
+    }
+
+private:
+    int line, column;
 };
 
 };

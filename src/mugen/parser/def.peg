@@ -77,7 +77,8 @@ std::string * toString(char front, const Value & input){
 }
 
 Ast::ValueAttribute * makeValueAttribute(const Value & attribute){
-    Ast::ValueAttribute * value = new Ast::ValueAttribute(as<Ast::Attribute*>(attribute));
+    /* FIXME: fix line numbers here */
+    Ast::ValueAttribute * value = new Ast::ValueAttribute(-1, -1, as<Ast::Attribute*>(attribute));
     GC::save(value);
     return value;
 }
@@ -123,7 +124,8 @@ Ast::Attribute * makeIndexedAttribute(const Value & id, const Value & index, con
 }
 
 Ast::Keyword * makeKeyword(const Value & value){
-    Ast::Keyword * object = new Ast::Keyword(as<char*>(value));
+    /* FIXME: fix line numbers here */
+    Ast::Keyword * object = new Ast::Keyword(-1, -1, as<char*>(value));
     GC::save(object);
     return object;
 }
@@ -140,7 +142,8 @@ Ast::Attribute * makeAttributes(const Value & id, const Value & data){
 
 /* TODO */
 Ast::Value * makeValue(){
-    Ast::Number * object = new Ast::Number(0);
+    /* FIXME: fix line numbers here */
+    Ast::Number * object = new Ast::Number(-1, -1, 0);
     GC::save(object);
     return object;
 }
@@ -181,13 +184,15 @@ Ast::Value * makeNumber(const Value & sign, const Value & number){
         value = -value;
     }
 
-    Ast::Number * object = new Ast::Number(value);
+    /* FIXME: fix line numbers here */
+    Ast::Number * object = new Ast::Number(-1, -1, value);
     GC::save(object);
     return object;
 }
 
 Ast::String * makeString(const Value & value){
-    Ast::String * object = new Ast::String(toString(value));
+    /* FIXME: fix line numbers here */
+    Ast::String * object = new Ast::String(-1, -1, toString(value));
     GC::save(object);
     return object;
 }
@@ -206,7 +211,8 @@ Ast::Value * asValue(const Value & value){
 
 /* FIXME */
 Ast::Value * makeDate(const Value & month, const Value & day, const Value & year){
-    Ast::Number * object = new Ast::Number(0);
+    /* FIXME: fix line numbers here */
+    Ast::Number * object = new Ast::Number(-1, -1, 0);
     GC::save(object);
     return object;
 }
@@ -258,7 +264,7 @@ rules:
     line_end_or_comment = line_end
                         | comment
 	# characters = name s "," s filename
-	filename = !<quote> file:filename_char+ {{ value = new Ast::Filename(toString(file)); GC::save(as<Ast::Filename*>(value)); }}
+	filename = line:<line> !<quote> file:filename_char+ {{ value = new Ast::Filename(getCurrentLine(line), getCurrentColumn(line), toString(file)); GC::save(as<Ast::Filename*>(value)); }}
 	filename_char = !"," !"\n" !"[" !<ascii 13> !"=" !";" .
 	attribute = line:<line> id:identifier s "=" s &line_end_or_comment {{ value = makeAttributeWithInfo(line, id); }}
               | line:<line> id:identifier s "=" s data:valuelist {{ value = makeAttribute(line, id, data); }}

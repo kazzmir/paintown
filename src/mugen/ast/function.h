@@ -8,18 +8,18 @@ namespace Ast{
 
 class Function: public Value {
 public:
+    /*
     Function(const std::string & name, const ValueList * args = NULL):
+    Value(-1, -1),
     name(name),
-    args(args),
-    line(-1),
-    column(-1){
+    args(args){
     }
+    */
 
     Function(int line, int column,const std::string & name, const ValueList * args = NULL):
+    Value(line, column),
     name(name),
-    args(args),
-    line(line),
-    column(column){
+    args(args){
     }
 
     virtual std::string toString() const {
@@ -55,17 +55,9 @@ public:
         return getArg(2);
     }
 
-    int getLine() const {
-        return line;
-    }
-
-    int getColumn() const {
-        return column;
-    }
-
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_FUNCTION << name << line << column;
+        *token << SERIAL_FUNCTION << name << getLine() << getColumn();
         if (args != NULL){
             *token << args->serialize();
         }
@@ -118,7 +110,7 @@ public:
         if (args){
             args_copy = (ValueList*) args->copy();
         }
-        return new Function(line, column, name, args_copy);
+        return new Function(getLine(), getColumn(), name, args_copy);
     }
     
     virtual void mark(std::map<const void*, bool> & marks) const {
@@ -143,8 +135,6 @@ protected:
 
     std::string name;
     const ValueList * args;
-    int line;
-    int column;
 };
 
 }

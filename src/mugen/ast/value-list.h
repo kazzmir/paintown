@@ -15,22 +15,19 @@ class Walker;
 class ValueList: public Value {
 public:
     ValueList(int line, int column, const std::list<Value*> & values):
-    values(values),
-    line(line),
-    column(column){
+    Value(line, column),
+    values(values){
         current_value = this->values.begin();
     }
 
     ValueList(const std::list<Value*> & values):
-    values(values),
-    line(-1),
-    column(-1){
+    Value(-1, -1),
+    values(values){
         current_value = this->values.begin();
     }
 
     ValueList(Value * value):
-    line(-1),
-    column(-1){
+    Value(-1, -1){
         values.push_back(value);
         current_value = this->values.begin();
     }
@@ -49,7 +46,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_VALUE_LIST << line << column;
+        *token << SERIAL_VALUE_LIST << getLine() << getColumn();
         for (std::list<Value*>::const_iterator it = values.begin(); it != values.end(); it++){
             const Value * value = *it;
             *token << value->serialize();
@@ -91,7 +88,7 @@ public:
             const Value * value = *it;
             copied.push_back((Value*) value->copy());
         }
-        return new ValueList(line, column, copied);
+        return new ValueList(getLine(), getColumn(), copied);
     }
 
     using Element::operator==;
@@ -121,9 +118,9 @@ public:
     using Value::operator>>;
 
     void listfail() const {
-        if (line != -1 && column != -1){
+        if (getLine() != -1 && getColumn() != -1){
             std::ostringstream out;
-            out << "No more values in this value list at line " << line << " column " << column << ": " << toString();
+            out << "No more values in this value list at line " << getLine() << " column " << getColumn() << ": " << toString();
             throw Exception(out.str());
         } else {
             throw Exception("No more values in this value list: " + toString());
@@ -247,8 +244,6 @@ public:
 protected:
     std::list<Value*> values;
     mutable std::list<Value*>::const_iterator current_value;
-    int line;
-    int column;
 };
 
 }

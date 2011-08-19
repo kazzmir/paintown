@@ -15,16 +15,16 @@ namespace Ast{
 class AttributeArray: public Attribute {
 public:
     
-    AttributeArray(const Keyword * name, const Value * index, const Value * value):
-    Attribute(Array),
+    AttributeArray(int line, int column, const Keyword * name, const Value * index, const Value * value):
+    Attribute(line, column, Array),
     keyword_name(name),
     identifier_name(0),
     index(index),
     value(value){
     }
 
-    AttributeArray(const Identifier * name, const Value * index, const Value * value):
-    Attribute(Array),
+    AttributeArray(int line, int column, const Identifier * name, const Value * index, const Value * value):
+    Attribute(line, column, Array),
     keyword_name(0),
     identifier_name(name),
     index(index),
@@ -33,9 +33,9 @@ public:
 
     virtual Element * copy() const {
         if (keyword_name != 0){
-            return new AttributeArray((Keyword*) keyword_name->copy(), (Value*) index->copy(), (Value*) value->copy());
+            return new AttributeArray(getLine(), getColumn(), (Keyword*) keyword_name->copy(), (Value*) index->copy(), (Value*) value->copy());
         } else if (identifier_name != 0){
-            return new AttributeArray((Identifier*) identifier_name->copy(), (Value*) index->copy(), (Value*) value->copy());
+            return new AttributeArray(getLine(), getColumn(), (Identifier*) identifier_name->copy(), (Value*) index->copy(), (Value*) value->copy());
         }
         throw Exception("don't copy that floppy!");
     }
@@ -89,7 +89,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_ATTRIBUTE_ARRAY;
+        *token << SERIAL_ATTRIBUTE_ARRAY << getLine() << getColumn();
         if (keyword_name != NULL){
             *token << keyword_name->serialize();
         }

@@ -68,8 +68,9 @@ AttributeSimple * AttributeSimple::deserialize(const Token * token){
     
 AttributeArray * AttributeArray::deserialize(const Token * token){
     const Token * name;
+    int line, column;
     TokenView view = token->view();
-    view >> name;
+    view >> line >> column >> name;
     Identifier * identifier = NULL;
     Keyword * keyword = NULL;
     if (*name == SERIAL_IDENTIFIER){
@@ -83,9 +84,9 @@ AttributeArray * AttributeArray::deserialize(const Token * token){
     Value * index = Value::deserialize(indexToken);
     Value * value = Value::deserialize(valueToken);
     if (identifier != NULL){
-        return new AttributeArray(identifier, index, value);
+        return new AttributeArray(line, column, identifier, index, value);
     } else if (keyword != NULL){
-        return new AttributeArray(keyword, index, value);
+        return new AttributeArray(line, column, keyword, index, value);
     }
     throw Exception("Deserialization error: no name given for an attribute array");
 }

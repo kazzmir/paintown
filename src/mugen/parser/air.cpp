@@ -669,13 +669,15 @@ std::string * toString(const Value & input){
 }
 
 Ast::String * makeString(std::string * str){
-    Ast::String * object = new Ast::String(str);
+    /* FIXME: fix line numbers here */
+    Ast::String * object = new Ast::String(-1, -1, str);
     GC::save(object);
     return object;
 }
 
 Ast::String * makeString(const Value & value){
-    Ast::String * object = new Ast::String(toString(value));
+    /* FIXME: fix line numbers here */
+    Ast::String * object = new Ast::String(-1, -1, toString(value));
     GC::save(object);
     return object;
 }
@@ -687,7 +689,8 @@ Ast::Section * makeSection(const Value & str){
 }
 
 Ast::Keyword * makeKeyword(const Value & value){
-    Ast::Keyword * object = new Ast::Keyword(as<char*>(value));
+    /* FIXME: fix line numbers here */
+    Ast::Keyword * object = new Ast::Keyword(-1, -1, as<char*>(value));
     GC::save(object);
     return object;
 }
@@ -728,7 +731,8 @@ Ast::Value * makeNumber(const Value & sign, const Value & number){
         value = -value;
     }
 
-    Ast::Number * object = new Ast::Number(value);
+    /* FIXME! replace empty with a new node */
+    Ast::Number * object = new Ast::Number(-1, -1, value);
     GC::save(object);
     return object;
 }
@@ -757,7 +761,8 @@ SectionList * makeSectionList(){
 }
 
 Ast::Attribute * makeAttributeArray(Ast::Keyword * name, Ast::Value * index, Ast::Value * value){
-    Ast::AttributeArray * object = new Ast::AttributeArray(name, index, value);
+    /* FIXME! fix line numbers here */
+    Ast::AttributeArray * object = new Ast::AttributeArray(-1, -1, name, index, value);
     GC::save(object);
     return object;
 }
@@ -772,13 +777,15 @@ void addSection(const Value & section_list_value, const Value & section_value){
 }
 
 Ast::Attribute * makeAttributeKeyword(const Value & id, const Value & data){
-    Ast::AttributeKeyword * object = new Ast::AttributeKeyword(as<Ast::Keyword*>(id), as<Ast::Value*>(data));
+    /* FIXME: fix line numbers here */
+    Ast::AttributeKeyword * object = new Ast::AttributeKeyword(-1, -1, as<Ast::Keyword*>(id), as<Ast::Value*>(data));
     GC::save(object);
     return object;
 }
 
 Ast::Attribute * makeAttributeKeyword(const Value & id){
-    Ast::AttributeKeyword * object = new Ast::AttributeKeyword(as<Ast::Keyword*>(id));
+    /* FIXME: fix line numbers here */
+    Ast::AttributeKeyword * object = new Ast::AttributeKeyword(-1, -1, as<Ast::Keyword*>(id));
     GC::save(object);
     return object;
 }

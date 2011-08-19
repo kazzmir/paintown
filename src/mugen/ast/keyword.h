@@ -9,7 +9,8 @@ namespace Ast{
 class Keyword: public Value {
 public:
     /* do not pass in a dynamically allocated string!!! */
-    Keyword(std::string str):
+    Keyword(int line, int column, std::string str):
+    Value(line, column),
     str(str){
     }
 
@@ -25,7 +26,7 @@ public:
     }
     
     virtual Element * copy() const {
-        return new Keyword(str);
+        return new Keyword(getLine(), getColumn(), str);
     }
     
     using Element::operator==;
@@ -47,14 +48,15 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_KEYWORD << toString();
+        *token << SERIAL_KEYWORD << getLine() << getColumn() << toString();
         return token;
     }
 
     static Keyword * deserialize(const Token * token){
         std::string name;
-        token->view() >> name;
-        return new Keyword(name);
+        int line, column;
+        token->view() >> line >> column >> name;
+        return new Keyword(line, column, name);
     }
 
     static std::string downcase(std::string str){

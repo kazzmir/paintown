@@ -7,8 +7,8 @@ namespace Ast{
 
 class Expression: public Value {
 public:
-    Expression():
-        Value(){
+    Expression(int line, int column):
+    Value(line, column){
     }
 
     /* TODO: get rid of this method, this class should not be instantiated */
@@ -34,7 +34,8 @@ public:
         Negation,
     };
     
-    ExpressionUnary(UnaryType type, const Value * expression):
+    ExpressionUnary(int line, int column, UnaryType type, const Value * expression):
+    Expression(line, column),
     type(type),
     expression(expression){
     }
@@ -49,14 +50,15 @@ public:
 
     static ExpressionUnary * deserialize(const Token * token){
         int type;
+        int line, column;
         const Token * value;
-        token->view() >> type >> value;
-        return new ExpressionUnary(UnaryType(type), Value::deserialize(value));
+        token->view() >> line >> column >> type >> value;
+        return new ExpressionUnary(line, column, UnaryType(type), Value::deserialize(value));
     }
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_EXPRESSION_UNARY << getExpressionType() << getExpression()->serialize();
+        *token << SERIAL_EXPRESSION_UNARY << getLine() << getColumn() << getExpressionType() << getExpression()->serialize();
         return token;
     }
 
@@ -75,7 +77,7 @@ public:
     }
     
     virtual Element * copy() const {
-        return new ExpressionUnary(type, (Value*) expression->copy());
+        return new ExpressionUnary(getLine(), getColumn(), type, (Value*) expression->copy());
     }
 
     virtual void mark(std::map<const void*, bool> & marks) const {
@@ -151,8 +153,8 @@ public:
         Power,
     };
 
-    ExpressionInfix(InfixType type, const Value * left, const Value * right):
-    Expression(),
+    ExpressionInfix(int line, int column, InfixType type, const Value * left, const Value * right):
+    Expression(line, column),
     type(type),
     left(left),
     right(right){
@@ -178,7 +180,7 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_EXPRESSION_INFIX << getExpressionType() << getLeft()->serialize() << getRight()->serialize();
+        *token << SERIAL_EXPRESSION_INFIX << getLine() << getColumn() << getExpressionType() << getLeft()->serialize() << getRight()->serialize();
         return token;
     }
 
@@ -197,8 +199,9 @@ public:
         int type;
         const Token * left;
         const Token * right;
-        token->view() >> type >> left >> right;
-        return new ExpressionInfix(InfixType(type), Value::deserialize(left), Value::deserialize(right));
+        int line, column;
+        token->view() >> line >> column >> type >> left >> right;
+        return new ExpressionInfix(line, column, InfixType(type), Value::deserialize(left), Value::deserialize(right));
     }
 
     virtual inline const Value * getRight() const {
@@ -206,7 +209,7 @@ public:
     }
     
     virtual Element * copy() const {
-        return new ExpressionInfix(type, (const Value*) left->copy(), (const Value*) right->copy());
+        return new ExpressionInfix(getLine(), getColumn(), type, (const Value*) left->copy(), (const Value*) right->copy());
     }
 
     virtual std::string toString() const {

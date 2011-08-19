@@ -10,7 +10,8 @@ namespace Ast{
 
 class Number: public Value {
 public:
-    Number(double value):
+    Number(int line, int column, double value):
+    Value(line, column),
     value(value){
         /* arbitrary limit */
         /*
@@ -35,15 +36,9 @@ public:
     virtual void walk(Walker & walker) const {
         walker.onNumber(*this);
     }
-
-    static Number * deserialize(const Token * token){
-        double value;
-        token->view() >> value;
-        return new Number(value);
-    }
     
     virtual Element * copy() const {
-        return new Number(value);
+        return new Number(getLine(), getColumn(), value);
     }
 
     using Element::operator==;
@@ -62,9 +57,16 @@ public:
         return *this;
     }
 
+    static Number * deserialize(const Token * token){
+        double value;
+        int line, column;
+        token->view() >> line >> column >> value;
+        return new Number(line, column, value);
+    }
+
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_NUMBER << value;
+        *token << SERIAL_NUMBER << getLine() << getColumn() << value;
         return token;
     }
     
@@ -100,6 +102,7 @@ protected:
 /* this is hack to make double jumping work. try not to use this class if you
  * can help it.
  */
+/*
 class MutableNumber: public Number {
 public:
     MutableNumber(double value):
@@ -117,6 +120,7 @@ public:
         this->value = v;
     }
 };
+*/
 
 }
 

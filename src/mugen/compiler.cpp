@@ -3922,7 +3922,12 @@ public:
                         return RuntimeValue(left->evaluate(environment).toNumber() / right->evaluate(environment).toNumber());
                     }
                     case ExpressionInfix::Modulo : {
-                        return RuntimeValue((int) left->evaluate(environment).toNumber() % (int) right->evaluate(environment).toNumber());
+                        int result_left = (int) left->evaluate(environment).toNumber();
+                        int result_right = (int) right->evaluate(environment).toNumber();
+                        if (result_right == 0){
+                            throw MugenException("mod by 0");
+                        }
+                        return RuntimeValue(result_left % result_right);
                     }
                     case ExpressionInfix::Power : {
                         return RuntimeValue(pow(left->evaluate(environment).toNumber(), right->evaluate(environment).toNumber()));
@@ -4007,12 +4012,12 @@ Value * compileAndDelete(const Ast::Value * input){
 }
 
 Value * compile(int immediate){
-    Ast::Number number(immediate);
+    Ast::Number number(-1, -1, immediate);
     return CompileWalker::compileNumber(number);
 }
 
 Value * compile(double immediate){
-    Ast::Number number(immediate);
+    Ast::Number number(-1, -1, immediate);
     return CompileWalker::compileNumber(number);
 }
     

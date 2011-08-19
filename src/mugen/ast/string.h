@@ -8,7 +8,8 @@ namespace Ast{
 
 class String: public Value {
 public:
-    String(const std::string * str):
+    String(int line, int column, const std::string * str):
+    Value(line, column),
     str(str){
     }
     
@@ -37,14 +38,15 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_STRING << *str;
+        *token << SERIAL_STRING << getLine() << getColumn() << *str;
         return token;
     }
 
     static String * deserialize(const Token * token){
         std::string out;
-        token->view() >> out;
-        return new String(new std::string(out));
+        int line, column;
+        token->view() >> line >> column >> out;
+        return new String(line, column, new std::string(out));
     }
     
     virtual std::string getType() const {
@@ -52,7 +54,7 @@ public:
     }
     
     virtual Element * copy() const {
-        return new String(new std::string(*str));
+        return new String(getLine(), getColumn(), new std::string(*str));
     }
     
     /*

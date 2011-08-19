@@ -25,18 +25,16 @@ public:
     static std::string SERIAL_SECTION_VALUE;
 
     Section(const std::string * name):
-    name(name),
-    line(-1),
-    column(-1){
+    Element(-1, -1),
+    name(name){
         if (name == 0){
             throw Exception("Cannot create a section with an empty name");
         }
     }
 
     Section(const std::string * name, int line, int column):
-    name(name),
-    line(line),
-    column(column){
+    Element(line, column),
+    name(name){
         if (name == 0){
             throw Exception("Cannot create a section with an empty name");
         }
@@ -93,14 +91,6 @@ public:
         return *name;
     }
 
-    int getLine() const {
-        return line;
-    }
-
-    int getColumn() const {
-        return column;
-    }
-
     void addAttribute(Attribute * attribute){
         attributes.push_back(attribute);
         walkList.push_back(WalkAttribute);
@@ -137,7 +127,7 @@ public:
     }
     
     virtual Element * copy() const {
-        Section * out = new Section(new std::string(getName()), line, column);
+        Section * out = new Section(new std::string(getName()), getLine(), getColumn());
         out->walkList = walkList;
         for (std::list<Attribute*>::const_iterator attribute_it = attributes.begin(); attribute_it != attributes.end(); attribute_it++){
             out->attributes.push_back((Attribute*) (*attribute_it)->copy());
@@ -321,8 +311,6 @@ public:
 
 private:
     const std::string * name;
-    int line;
-    int column;
     std::list<Attribute *> attributes;
     std::list<Value *> values;
     std::list<WalkList> walkList;

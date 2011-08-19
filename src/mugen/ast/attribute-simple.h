@@ -13,35 +13,27 @@ namespace Ast{
 class AttributeSimple: public Attribute {
 public:
     AttributeSimple(int line, int column, const Identifier * name, const Value * value):
-    Attribute(Simple),
+    Attribute(line, column, Simple),
     name(name),
-    value(value),
-    line(line),
-    column(column){
+    value(value){
     }
 
     AttributeSimple(int line, int column, const Identifier * name):
-    Attribute(Simple),
+    Attribute(line, column, Simple),
     name(name),
-    value(NULL),
-    line(line),
-    column(column){
+    value(NULL){
     }
     
     AttributeSimple(const Identifier * name, const Value * value):
-    Attribute(Simple),
+    Attribute(-1, -1, Simple),
     name(name),
-    value(value),
-    line(-1),
-    column(-1){
+    value(value){
     }
     
     AttributeSimple(const Identifier * name):
-    Attribute(Simple),
+    Attribute(-1, -1, Simple),
     name(name),
-    value(0),
-    line(-1),
-    column(-1){
+    value(0){
     }
 
     virtual void walk(Walker & walker){
@@ -63,8 +55,8 @@ public:
             same_values = false;
         }
 
-        return line == him.line &&
-               column == him.column &&
+        return getLine() == him.getLine() &&
+               getColumn() == him.getColumn() &&
                *name == *him.name &&
                same_values;
     }
@@ -75,23 +67,15 @@ public:
 
     virtual Element * copy() const {
         if (value != 0){
-            return new AttributeSimple(line, column, (Identifier*) name->copy(), (Value*) value->copy());
+            return new AttributeSimple(getLine(), getColumn(), (Identifier*) name->copy(), (Value*) value->copy());
         } else {
             return new AttributeSimple((Identifier*) name->copy());
         }
     }
 
-    virtual int getLine() const {
-        return line;
-    }
-
-    virtual int getColumn() const {
-        return column;
-    }
-
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_ATTRIBUTE_SIMPLE << line << column << name->serialize();
+        *token << SERIAL_ATTRIBUTE_SIMPLE << getLine() << getColumn() << name->serialize();
         if (value != NULL){
             *token << value->serialize();
         }
@@ -118,16 +102,16 @@ public:
             } catch (const Exception & ex){
                 std::ostringstream out;
                 out << "tried to read the wrong type for '" << this->toString() << "' : " << ex.getReason();
-                if (line != -1 && column != -1){
-                    out << " at line " << line << " column " << column;
+                if (getLine() != -1 && getColumn() != -1){
+                    out << " at line " << getLine() << " column " << getColumn();
                 }
                 throw Exception(out.str());
             }
         } else {
             std::ostringstream out;
             out << "no values available for attribute '" << this->toString() << "'";
-            if (line != -1 && column != -1){
-                out << " at line " << line << " column " << column;
+            if (getLine() != -1 && getColumn() != -1){
+                out << " at line " << getLine() << " column " << getColumn();
             }
             throw Exception(out.str());
         }
@@ -174,8 +158,6 @@ public:
 protected:
     const Identifier * name;
     const Value * value;
-    int line;
-    int column;
 };
 
 }

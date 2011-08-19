@@ -51,6 +51,7 @@ test/paintown-engine/level/scene.cpp
 test/paintown-engine/level/blockobject.cpp
 test/paintown-engine/level/random-scene.cpp
 test/paintown-engine/level/utils.cpp
+test/util/audio.cpp
 test/util/sound.cpp
 test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/environment/atmosphere.cpp

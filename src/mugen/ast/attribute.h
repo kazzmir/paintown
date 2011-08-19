@@ -20,7 +20,8 @@ public:
         Array = 3,
     };
 
-    Attribute(Kind kind):
+    Attribute(int line, int column, Kind kind):
+    Element(line, column),
     kind(kind){
     }
     

@@ -9,7 +9,8 @@ namespace Ast{
 
 class Filename: public Value {
 public:
-    Filename(const std::string * str):
+    Filename(int line, int column, const std::string * str):
+    Value(line, column),
     str(str){
     }
 
@@ -25,7 +26,7 @@ public:
     }
     
     virtual Element * copy() const {
-        return new Filename(new std::string(*str));
+        return new Filename(getLine(), getColumn(), new std::string(*str));
     }
 
     virtual std::string getType() const {
@@ -34,14 +35,15 @@ public:
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_FILENAME << *str;
+        *token << SERIAL_FILENAME << getLine() << getColumn() << *str;
         return token;
     }
 
     static Filename * deserialize(const Token * token){
         std::string out;
-        token->view() >> out;
-        return new Filename(new std::string(out));
+        int line, column;
+        token->view() >> line >> column >> out;
+        return new Filename(line, column, new std::string(out));
     }
 
     using Element::operator==;

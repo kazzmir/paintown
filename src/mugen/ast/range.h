@@ -14,7 +14,8 @@ public:
         LeftExclusiveRightInclusive,
     };
 
-    Range(RangeType type, const Value * low, const Value * high):
+    Range(int line, int column, RangeType type, const Value * low, const Value * high):
+    Value(line, column),
     type(type),
     low(low),
     high(high){
@@ -65,16 +66,17 @@ public:
     
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_RANGE << getRangeType() << getLow()->serialize() << getHigh()->serialize();
+        *token << SERIAL_RANGE << getLine() << getColumn() << getRangeType() << getLow()->serialize() << getHigh()->serialize();
         return token;
     }
 
     static Range * deserialize(const Token * token){
         int type;
+        int line, column;
         const Token * low;
         const Token * high;
-        token->view() >> type >> low >> high;
-        return new Range(RangeType(type), Value::deserialize(low), Value::deserialize(high));
+        token->view() >> line >> column >> type >> low >> high;
+        return new Range(line, column, RangeType(type), Value::deserialize(low), Value::deserialize(high));
     }
 
     virtual void mark(std::map<const void*, bool> & marks) const {
@@ -84,7 +86,7 @@ public:
     }
 
     virtual Element * copy() const {
-        return new Range(type, (Value*) low->copy(), (Value*) high->copy());
+        return new Range(getLine(), getColumn(), type, (Value*) low->copy(), (Value*) high->copy());
     }
     
     virtual std::string getType() const {
@@ -100,7 +102,6 @@ protected:
     RangeType type;
     const Value * low;
     const Value * high;
-
 };
 
 }
