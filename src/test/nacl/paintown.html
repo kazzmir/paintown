@@ -4,17 +4,32 @@
   <title>Paintown!</title>
   <script>
       paintownModule = null;
-
+      keydisplaystatus='show';
       function moduleDidLoad() {
+	  document.getElementById('notes').style.display='none';
           paintownModule = document.getElementById('paintown');
           run = document.getElementById('run');
           run.style.display = 'inline';
           loader = document.getElementById('loader');
           loader.style.display = 'none';
+
       }
 
       function dorun(){
           paintownModule.postMessage('run');
+      }
+
+      function hideshowkeys(){
+	if (keydisplaystatus == 'show') {
+		keydisplaystatus = 'hide';
+		document.getElementById('keys').style.display='none';
+		document.getElementById('hideshowkeys').innerHTML='&lt; Show<br />&nbsp;&nbsp;&nbsp;Keys';
+
+	} else {
+		keydisplaystatus = 'show';
+		document.getElementById('keys').style.display='block';
+		document.getElementById('hideshowkeys').innerHTML='&gt; Hide<br />&nbsp;&nbsp;&nbsp;Keys';
+        }
       }
 
   </script>
@@ -22,9 +37,18 @@
   <style>
       body{
           background: #666;
+	  font-family: arial, helvetica, sans-serif;
       }
+
       span{
           color: #fff;
+      }
+      div#header{
+	text-align: center;
+      }
+
+      div#loader{
+	text-align: center;
       }
 
       div.main{
@@ -41,24 +65,39 @@
       div.information{
           margin-right: auto;
           margin-left: auto;
+	  font-size: 14px;
+	  text-align:center;
       }
 
       div.instructions{
           float: right;
-          width: 200px;
+	  font-size: 14px;
       }
+
+      div#notes {
+	padding: 3px;
+      }
+
+      div#footer{
+	text-align: center;
+      }
+
+      span#hideshowkeys{
+	cursor:pointer;
+	text-align: right;
+	font-size: 10px;
+      }
+
   </style>
 </head>
 <body>
-    <span>Paintown!</span>
-    &nbsp;
-    <div id='loader'>
-        <span>Loading</span>
-        <img src="loader.gif" />
-    </div>
-    <button id='run' onclick="dorun()" style="display:none">Run</button>
-    <div class='instructions'>
-        Wait for the binary to completely download. Once it has downloaded a button labeled <b>Run</b> will appear. Click that and wait for the game to start. It may seem that the game is hanging at times but just be patient, loading resources over the network can be quite slow. Loading times will be improved in the future.
+   <div id='header'>
+    <span>Paintown!</span>  
+   </div>
+<div id='content'>
+    <div id='instructions' class='instructions'>
+	<span id='hideshowkeys' onclick='hideshowkeys();'>&gt; Hide<br />&nbsp;&nbsp;Keys</span><br />
+	<div id='keys'>
         <br /><br />
         Keys in game: <br/><br />
         <b>A</b> Attack 1<br />
@@ -68,12 +107,27 @@
         <b>Up</b> Up<br />
         <b>Down</b> Down<br />
         <b>Left</b> Left<br />
-        <b>Right</b> Right<br />
+        <b>Right</b> Right<br /><br />
+	<b>Esc</b> Menu<br />
+	<b>Enter</b> Select
+	</div>
     </div>
+
     <div class='main' id='listener'>
+    <div id='loader'>
+        <span>Loading, Please wait...</span>
+        <img src="loader.gif" />
+    </div>
+    <button id='run' onclick="dorun()" style="display:none">Start Paintown</button>
         <script type="text/javascript">
             document.getElementById('listener').addEventListener('load', moduleDidLoad, true);
         </script>
+
+	<div id='notes'>
+        	Wait for the binary to completely download. Once it has downloaded a button labeled <b>Start Paintown</b> will appear. Click that and wait for the game to start. It may seem that the game is hanging at times but just be patient, loading resources over the network can be quite slow. Loading times will be improved in the future.<br />
+		<br />
+		<div id='naclstatus'></div>
+        </div>
 
         <embed name="nacl_module"
                id="paintown"
@@ -81,12 +135,60 @@
                src="paintown.nmf"
                type="application/x-nacl" />
    </div>
-   <br />
+
+
+
+</div>
+   <br /><br />
    <div class='information'>
        <span>This is a demo of Paintown running inside <a href="http://code.google.com/p/nativeclient/">Google's Native Client</a>.</span>
        
        <br />
-       <span>You need chrome at least version 14 to run the demo.</span>
+       <span>You need <b>Google Chrome 14</b> or higher to run the demo. You can get it from <a href="http://www.google.com/landing/chrome/beta/">the beta download page</a> .</span>
    </div>
+<br />
+   <div id='footer'>
+	<a href='http://paintown.sf.net' target='_blank'>Visit the Paintown website</a> or <a href='http://webchat.freenode.net/?channels=paintown' target='_blank'>Join the IRC Chat room</a>
+   </div>
+
+<script>
+  //Web browser version & NaCl checker
+      
+      var fullVersion  = ''+parseFloat(navigator.appVersion); 
+      var majorVersion = parseInt(navigator.appVersion,10);
+      
+      if ((verOffset=navigator.userAgent.indexOf("Chrome"))!=-1) {
+	fullVersion = navigator.userAgent.substring(verOffset+7);
+
+	majorVersion = parseInt(''+fullVersion,10);
+ 	if (majorVersion >= 14) {
+
+
+	      	var L = navigator.plugins.length;
+		var has_nacl = false;
+		for(var i=0; i<L; i++) {
+			if (navigator.plugins[i].name == "Native Client") {
+				has_nacl = true;  //found it!
+			}
+		}
+		if (has_nacl == true) { //NaCL is enabled
+			document.getElementById("naclstatus").innerHTML="Chrome NaCl is enabled. You should be able to run Paintown in your browser.";		
+		} else { // NaCl Not enabled
+		document.getElementById("naclstatus").innerHTML="You do not have Chrome NaCL Enabled. You should see &quot;Missing Plug-in&quot; below. Please go to <b>about:plugins</b> in your address bar and Click <em>Enable</em> under &quot;Chrome NaCl&quot;. Then <a href='javascript:location.reload(true)'>Refresh this page</a>";
+
+		} 
+        } else { 
+		document.getElementById("naclstatus").innerHTML="You have an older version of Chrome installed. Please upgrade to at least version 14 to play.";
+	}
+      } else { //it's not chrome - hide stuff and tell user
+	document.getElementById('content').innerHTML="<center><b>Your web browser is not supported.</b></center>";
+	
+	document.getElementById('listener').style.display="none";
+	document.getElementById('paintown').style.display="none";
+	document.getElementById('instructions').style.display="none";
+
+      }
+      
+</script>
 </body>
 </html>
