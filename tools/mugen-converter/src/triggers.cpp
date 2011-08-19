@@ -453,6 +453,7 @@ class Evaluator{
                         deletable.push_back(newBuilder);
                         newBuilder->setType(ExpressionBuilder::String);
                         newBuilder->setExpression(Expression(range));
+                        return newBuilder;
                     } else if (builder->getRightComplex()->getType() == ExpressionBuilder::Range){
                         /* Handle range  */
                         std::string leftExpression;
@@ -465,6 +466,7 @@ class Evaluator{
                         deletable.push_back(newBuilder);
                         newBuilder->setType(ExpressionBuilder::String);
                         newBuilder->setExpression(Expression(range));
+                        return newBuilder;
                     } else if (builder->getRightComplex()->getType() == ExpressionBuilder::ValueList){
                         /* TODO */
                     } else {
@@ -487,6 +489,7 @@ class Evaluator{
                         deletable.push_back(newBuilder);
                         newBuilder->setType(ExpressionBuilder::String);
                         newBuilder->setExpression(Expression(function+"()"));
+                        return newBuilder;
                     }
                 } else if (builder->getLeftComplex() != NULL && builder->getRightComplex() == NULL){
                     /* This should be a unary operation */
@@ -502,6 +505,7 @@ class Evaluator{
                         deletable.push_back(newBuilder);
                         newBuilder->setType(ExpressionBuilder::String);
                         newBuilder->setExpression(Expression(function + "()"));
+                        return newBuilder;
                     }
                 } else if (builder->getLeftComplex() == NULL && builder->getRightComplex() != NULL){
                     /* NOTE This shouldn't happen but it is here just so that it can be monitored */
