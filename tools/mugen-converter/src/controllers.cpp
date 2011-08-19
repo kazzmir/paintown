@@ -3,6 +3,8 @@
 
 #include "ast/all.h"
 
+#include <sstream>
+
 using namespace Mugen;
 
 Content getController(const std::string & type){
@@ -143,6 +145,9 @@ std::vector<Ast::AttributeSimple *> * StateParameterMap::find(const std::string 
 }
 
 void StateParameterMap::addToDefinition(PythonDefinition & definition){
+    Content triggerallContent(1, "# Triggerall");
+    triggerallContent.addLine(1, "def triggerall(self):");
+    std::string tempString;
     for (std::vector<Ast::AttributeSimple *>::iterator i = triggerall.begin(); i != triggerall.end(); ++i){
         Ast::AttributeSimple * simple = (*i);
         ExpressionBuilder builder = TriggerHandler::convert(*simple->getValue());
@@ -151,11 +156,22 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
         for (std::vector<Content>::const_iterator j = functions.begin(); j != functions.end(); ++j){
             definition.addContent(*j);
         }
+        tempString += trigger.getName() + " and ";
     }
+    triggerallContent.addLine(2, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-5) + ")"));
+    definition.addContent(triggerallContent);
     
+    Content allTriggers(1, "# Check all triggers");
+    allTriggers.addLine(1, "def checkAll(self):");
+    tempString.clear();
     for (int i = 0; ; ++i){
         std::map<int, std::vector<Ast::AttributeSimple *> >::iterator trigger = triggers.find(i);
         if (trigger != triggers.end()){
+            std::ostringstream number;
+            number << i;
+            Content triggerContent(1, "# Trigger " + number.str());
+            triggerContent.addLine(1, "def trigger" + number.str() +"(self):");
+            std::string triggerString;
             for (std::vector<Ast::AttributeSimple *>::iterator i = trigger->second.begin(); i != trigger->second.end(); ++i){
                 Ast::AttributeSimple * simple = (*i);
                 ExpressionBuilder builder = TriggerHandler::convert(*simple->getValue());
@@ -164,12 +180,27 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
                 for (std::vector<Content>::const_iterator j = functions.begin(); j != functions.end(); ++j){
                     definition.addContent(*j);
                 }
+                triggerString += "(triggerall() and " + trigger.getName() + ")" + " and ";
             }
+            triggerContent.addLine(2, (triggerString.empty() ? "return 1" : "return (" + triggerString.substr(0, triggerString.size()-5) + ")"));
+            definition.addContent(triggerContent);
+            
+            tempString += "trigger" + number.str() + "() or ";
         } else {
+            // No triggers were added
             break;
         }
     }
+    // checkAll
+    allTriggers.addLine(2, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-3) + ")"));
+    definition.addContent(allTriggers);
     
+    Content allContent(1, "# Check all triggers");
+    allContent.addLine(1, "if checkAll() != 1:");
+    allContent.addLine(2, "return");
+    definition.addContent(allContent);
+    
+    /* FIXME What to do here? */
     for (std::vector<Ast::AttributeSimple *>::iterator i = vars.begin(); i != vars.end(); ++i){
         Ast::AttributeSimple * simple = (*i);
         ExpressionBuilder builder = TriggerHandler::convert(*simple->getValue());
