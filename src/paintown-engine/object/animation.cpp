@@ -84,7 +84,7 @@ static string join(const char * names[], const int max, const string & sep){
 Animation::Animation(const Token * tok, Character * const owner ):
 parent( owner ),
 current_frame( NULL ),
-attack_collide( NULL ),
+// attack_collide( NULL ),
 delay(1),
 minZDistance( 10 ),
 bbox_x1( 0 ),
@@ -105,7 +105,8 @@ range( 0 ),
 is_attack( false ),
 status( Status_Ground ),
 commision( true ),
-contact( NULL ){
+contact( NULL ),
+changedAttacks(false){
 
     prev_sequence = "none";
     next_sequence = "none";
@@ -275,7 +276,7 @@ contact( NULL ){
                    AnimationEvent * ani = new AnimationEventBBox( x1, y1, x2, y2 );
                    events.push_back( ani );
                    */
-            } else if ( current == "attack" ){
+            } else if (current == "attack"){
 
                 Attack ak(current);
 
@@ -291,8 +292,10 @@ contact( NULL ){
                  */
 
                 // AnimationEvent * ani = new AnimationEventAttack( x1, y1, x2, y2, damage, force );
-                AnimationEvent * ani = new AnimationEventAttack( ak );
-                events.push_back( ani );
+                vector<Attack> attacks;
+                attacks.push_back(ak);
+                AnimationEvent * ani = new AnimationEventAttack(attacks);
+                events.push_back(ani);
             } else if (current == "z-distance" ){
                 double d;
                 current.view() >> d;
@@ -429,8 +432,9 @@ contact( NULL ){
 
 Animation::Animation( const Animation & animation, Character * const owner ):
 parent( owner ),
-attack_collide( NULL ),
-commision( true ){
+// attack_collide( NULL ),
+commision( true ),
+changedAttacks(false){
 
 	own_bitmaps = false;
 	own_events = false;
@@ -522,21 +526,46 @@ void Animation::createProjectile( int x, int y, Projectile * projectile ){
 }
 	
 void Animation::nextTicket(){
-	if ( parent ){
-		parent->nextTicket();
-	}
+    if (parent){
+        parent->nextTicket();
+    }
 }
-	
-int Animation::getDamage() const{
-    return attack.getDamage();
+
+/* FIXME: currently we just take the highest damage and force from all attack
+ * boxes but really the game should check to see which attack box collided and
+ * get the damage/force from that attack box
+ */
+int Animation::getDamage() const {
+    int damage = 0;
+    for (vector<Attack>::const_iterator it = attacks.begin(); it != attacks.end(); it++){
+        const Attack & attack = *it;
+        if (attack.getDamage() > damage){
+            damage = attack.getDamage();
+        }
+    }
+    return damage;
 }
 
 double Animation::getForceX() const {
-    return attack.getForceX();
+    double forceX = 0;
+    for (vector<Attack>::const_iterator it = attacks.begin(); it != attacks.end(); it++){
+        const Attack & attack = *it;
+        if (attack.getForceX() > forceX){
+            forceX = attack.getForceX();
+        }
+    }
+    return forceX;
 }
 
 double Animation::getForceY() const {
-    return attack.getForceY();
+    double forceY = 0;
+    for (vector<Attack>::const_iterator it = attacks.begin(); it != attacks.end(); it++){
+        const Attack & attack = *it;
+        if (attack.getForceY() > forceY){
+            forceY = attack.getForceY();
+        }
+    }
+    return forceY;
 }
 
 void Animation::upperCase( string & who ){
@@ -655,12 +684,14 @@ void Animation::reMap( Graphics::Bitmap * work, map<Graphics::Color, Graphics::C
        */
 }
 	
-void Animation::getAttackCoords( int & x, int & y ){	
-	// x = (attack_x1+attack_x2)/2;
-	// y = (attack_y1+attack_y2)/2;
-	x = (attack.getX1() + attack.getX2() ) / 2;
-	y = (attack.getY1() + attack.getY2() ) / 2;
-	Global::debug( 0 ) << getName()<<"[ "<<attack.getX1()<<","<<attack.getY1()<<","<<attack.getX2()<<","<<attack.getY2()<<"]"<<endl;
+void Animation::getAttackCoords1(int & x, int & y){
+    /*
+    // x = (attack_x1+attack_x2)/2;
+    // y = (attack_y1+attack_y2)/2;
+    x = (attack.getX1() + attack.getX2() ) / 2;
+    y = (attack.getY1() + attack.getY2() ) / 2;
+    Global::debug( 0 ) << getName()<<"[ "<<attack.getX1()<<","<<attack.getY1()<<","<<attack.getX2()<<","<<attack.getY2()<<"]"<<endl;
+    */
 }
 	
 vector<ECollide*> Animation::getNormalCollide(){
@@ -669,35 +700,39 @@ vector<ECollide*> Animation::getNormalCollide(){
     return out;
 }
 
-vector<ECollide*> Animation::getCollide( int facing ){
+vector<ECollide*> Animation::getCollide(int facing){
     if (isAttack()){
-        if (attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2()){
-            if (attack_collide){
-                delete attack_collide;
+        if (changedAttacks){
+            changedAttacks = false;
+            attackCollides.clear();
+            for (vector<Attack>::iterator it = attacks.begin(); it != attacks.end(); it++){
+                Attack & attack = *it;
+                if (attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2()){
+                    /* Have to create our own ECollide structure */
+                    Util::ReferenceCount<ECollide> collide = new ECollide(getWidth(), getHeight());
+                    EQuad * ac = collide->getHead();
+                    EQuad * adder = new EQuad(attack.getXLen(), attack.getYLen(), NULL);
+                    if (facing == Object::FACING_LEFT){
+                        adder->setMinX(getWidth() - attack.getX2() );
+                        adder->setMinY(attack.getY1());
+                    } else {
+                        adder->setMinX(attack.getX1());
+                        adder->setMinY(attack.getY1());
+                    }
+
+                    adder->setFull(true);
+                    ac->addQuad(adder);
+
+                    attackCollides.push_back(collide);
+                }
             }
-
-            // attack_collide = new ECollide( attack_x2-attack_x1, attack_y2-attack_y1 );
-
-            /* Have to create our own ECollide structure */
-            attack_collide = new ECollide( getWidth(), getHeight() );
-            EQuad * ac = attack_collide->getHead();
-            EQuad * adder = new EQuad( attack.getXLen(), attack.getYLen(), NULL );
-            if ( facing == Object::FACING_LEFT ){
-                adder->setMinX( getWidth() - attack.getX2() );
-                adder->setMinY( attack.getY1() );
-            } else {
-                adder->setMinX( attack.getX1() );
-                adder->setMinY( attack.getY1() );
-            }
-
-            adder->setFull( true );
-            ac->addQuad( adder );
-
-            vector<ECollide*> out;
-            out.push_back(attack_collide);
-            return out;
         }
+
         vector<ECollide*> out;
+        for (vector<Util::ReferenceCount<ECollide> >::iterator it = attackCollides.begin(); it != attackCollides.end(); it++){
+            out.push_back(it->raw());
+        }
+        
         return out;
     }
     vector<ECollide*> out;
@@ -823,6 +858,7 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
     // cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
 
     // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
+    /*
     if ( Global::getDebug() > 5 ){
         work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor(255, 255, 255));
         work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
@@ -835,6 +871,7 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
             }
         }
     }
+    */
 
     // work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
     // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
@@ -892,6 +929,7 @@ void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Rem
 
     // work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
     // work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
+    /*
     if ( Global::getDebug() > 5 ){
         work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor( 255, 255, 255 ) );
         work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
@@ -904,6 +942,7 @@ void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Rem
             }
         }
     }
+    */
 
     // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
@@ -1125,8 +1164,10 @@ Animation::~Animation(){
         }
     }
 
+    /*
     if ( attack_collide )
         delete attack_collide;
+        */
 }
 
 }

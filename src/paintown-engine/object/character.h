@@ -312,7 +312,7 @@ public:
     virtual inline int getShadow() const {
         return shadow;
     }
-    virtual void getAttackCoords( int & x, int & y);
+    // virtual void getAttackCoords( int & x, int & y);
     const std::string getName() const;
     void setName( const std::string & str );
 

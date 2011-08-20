@@ -88,7 +88,7 @@ public:
 	/* getAttackCoords:
 	 * Get the middle of the current attacking box
 	 */
-	void getAttackCoords( int & x, int & y );
+	void getAttackCoords1( int & x, int & y );
 
 	// inline const map<std::string,string> & getSequences() const{
 	inline const std::vector<std::string> & getSequences() const {
@@ -233,8 +233,9 @@ public:
 		return keys;
 	}
 
-	inline void setAttack( const Attack & a ){
-		attack = a;
+	inline void setAttacks(const std::vector<Attack> & a){
+            attacks = a;
+            changedAttacks = true;
 	}
 
 	inline double getMinZDistance() const {
@@ -292,7 +293,7 @@ protected:
 
         Graphics::Bitmap * current_frame;
 	ECollide * current_collide;
-	ECollide * attack_collide;
+	// ECollide * attack_collide;
 	double delay;
 	double delay_counter;
 
@@ -334,7 +335,9 @@ protected:
         std::vector< std::string > disable_animations;
         std::vector< std::string > enable_animations;
 
-	Attack attack;
+        bool changedAttacks;
+        std::vector<Attack> attacks;
+        std::vector<Util::ReferenceCount<ECollide> > attackCollides;
 };
 
 }

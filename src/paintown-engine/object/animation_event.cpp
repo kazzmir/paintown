@@ -22,13 +22,14 @@ void AnimationEvent::Interact( Animation * parent ){
 AnimationEvent::~AnimationEvent(){
 }
 
-AnimationEventAttack::AnimationEventAttack(const Attack & a){
-    attack = a;
+AnimationEventAttack::AnimationEventAttack(const vector<Attack> & a){
+    attacks = a;
 }
 
-void AnimationEventAttack::Interact( Animation * animation ){
-    animation->setAttack(attack);
+void AnimationEventAttack::Interact(Animation * animation){
+    animation->setAttacks(attacks);
 }
+
 /*
 void AnimationEventAttack::Interact( Animation * animation ){
 	animation->setAttack( x1, y1, x2, y2 );
@@ -37,10 +38,10 @@ void AnimationEventAttack::Interact( Animation * animation ){
 */
 
 AnimationEventBBox::AnimationEventBBox( int _x1, int _y1, int _x2, int _y2 ):
-x1( _x1 ),
-y1( _y1 ),
-x2( _x2 ),
-y2( _y2 ){
+x1(_x1),
+y1(_y1),
+x2(_x2),
+y2(_y2){
 }
 
 

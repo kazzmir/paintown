@@ -1,6 +1,8 @@
 #ifndef _paintown_animation_event_h
 #define _paintown_animation_event_h
 
+#include <vector>
+
 #include "attack.h"
 #include "util/load_exception.h"
 
@@ -20,15 +22,13 @@ public:
 
 class Animation;
 
-class AnimationEventAttack: public AnimationEvent{
+class AnimationEventAttack: public AnimationEvent {
 public:
-	AnimationEventAttack( const Attack & a );
-	// AnimationEventAttack( int _x1, int _y1, int _x2, int _y2, int _damage, int _force );
-
-	virtual void Interact( Animation * animation ); 
+    AnimationEventAttack(const std::vector<Attack> & a);
+    virtual void Interact(Animation * animation); 
 
 protected:
-        Attack attack;
+    std::vector<Attack> attacks;
 };
 
 class AnimationEventBBox: public AnimationEvent {

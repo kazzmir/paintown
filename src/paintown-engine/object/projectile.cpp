@@ -212,6 +212,7 @@ int Projectile::getHeight() const {
 	return currentAnimation->getHeight();
 }
 
+/*
 void Projectile::getAttackCoords( int & x, int & y){
 	currentAnimation->getAttackCoords( x, y );
 	if ( getFacing() == FACING_LEFT ){
@@ -222,6 +223,7 @@ void Projectile::getAttackCoords( int & x, int & y){
 
 	y += getRY() - getHeight();
 }
+*/
 
 double Projectile::minZDistance() const {
 	return currentAnimation->getMinZDistance();

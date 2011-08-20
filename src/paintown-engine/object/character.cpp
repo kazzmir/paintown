@@ -1321,6 +1321,7 @@ void Character::thrown(){
 }
 	
 /* used to find the x/y where the attack takes place for effects */
+/*
 void Character::getAttackCoords( int & x, int & y){
 	if ( animation_current != NULL){
 		animation_current->getAttackCoords( x, y );
@@ -1332,6 +1333,7 @@ void Character::getAttackCoords( int & x, int & y){
 		y += getRY() - getHeight();
 	}
 }
+*/
 	
 const map<string, Util::ReferenceCount<Animation> > & Character::getMovements(){
     return movements;

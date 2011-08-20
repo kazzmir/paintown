@@ -36,7 +36,7 @@ public:
 	virtual bool isGettable();
 	virtual int getWidth() const;
 	virtual int getHeight() const;
-	virtual void getAttackCoords( int & x, int & y);
+	// virtual void getAttackCoords( int & x, int & y);
 	virtual double minZDistance() const;
 	virtual void attacked(World * world, Object * something, std::vector< Object * > & objects );
 	virtual Network::Message getCreateMessage();
