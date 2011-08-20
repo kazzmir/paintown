@@ -30,7 +30,7 @@ character(NULL){
     time.startTime();
     module = PyImport_Import(name);
     time.endTime();
-    std::cout << "Load Time for Character " << time.printTime() << std::endl;
+    std::cout << time.printTime("Loading Character Module took") << std::endl;
     if (module == NULL){
         throw PyException("Couldn't load module: " + std::string(str));
     }

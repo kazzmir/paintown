@@ -707,8 +707,18 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         virtual void onIdentifier(const Ast::Identifier & identifier){
             // Triggers or Constants
             //std::cout << "Found Identifier: " << identifier.toString() << std::endl;
-            exp.setType(ExpressionBuilder::Identifier);
-            exp.setExpression(Expression(identifier.toString()));
+            // Check for state types, convert to string
+            if (match(identifier.toString(), "s") || 
+                match(identifier.toString(), "c") || 
+                match(identifier.toString(), "a") || 
+                match(identifier.toString(), "l") || 
+                match(identifier.toString(), "h")){
+                exp.setType(ExpressionBuilder::String);
+                exp.setExpression(Expression(identifier.toString()));
+            } else {
+                exp.setType(ExpressionBuilder::Identifier);
+                exp.setExpression(Expression(identifier.toString()));
+            }
         }
         
         virtual void onHelper(const Ast::Helper & helper){
