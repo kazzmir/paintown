@@ -1,5 +1,7 @@
 #include "character.h"
 
+#include "util/timedifference.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -24,8 +26,11 @@ charClass(NULL),
 character(NULL){
     PyObject * name; 
     name = PyString_FromString(str);
-    
+    TimeDifference time;
+    time.startTime();
     module = PyImport_Import(name);
+    time.endTime();
+    std::cout << "Load Time for Character " << time.printTime() << std::endl;
     if (module == NULL){
         throw PyException("Couldn't load module: " + std::string(str));
     }

@@ -101,6 +101,8 @@ def havePython(env):
         return 0
 
 testEnv = Environment(ENV = os.environ)
+testEnv.VariantDir('build/paintown', '../../src')
+testEnv.Append(CPPPATH = ['../../src'])
     
 if havePython(testEnv):
     if getDebug():
@@ -108,5 +110,7 @@ if havePython(testEnv):
     source = Split("""
 build/converter/test/main.cpp
 build/converter/test/character.cpp
+build/paintown/util/system.cpp
+build/paintown/util/timedifference.cpp
 """)
     testEnv.Program('test', source)
