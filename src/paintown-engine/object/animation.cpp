@@ -81,6 +81,26 @@ static string join(const char * names[], const int max, const string & sep){
     return out.str();
 }
 
+static vector<Attack> parseAttacks(const Token & token){
+    vector<Attack> out;
+
+    Attack top(token);
+    if (!top.empty()){
+        out.push_back(top);
+    }
+
+    vector<const Token *> more = token.findTokens("_/box");
+    for (vector<const Token*>::iterator it = more.begin(); it != more.end(); it++){
+        /* double pointer dereference.. whoa nelly! */
+        const Token & box = **it;
+        Attack maybe(box);
+        if (!maybe.empty()){
+            out.push_back(maybe);
+        }
+    }
+    return out;
+}
+
 Animation::Animation(const Token * tok, Character * const owner ):
 parent( owner ),
 current_frame( NULL ),
@@ -278,7 +298,7 @@ changedAttacks(false){
                    */
             } else if (current == "attack"){
 
-                Attack ak(current);
+                // Attack ak(current);
 
                 /*
                    int x1 = 0; 
@@ -292,9 +312,7 @@ changedAttacks(false){
                  */
 
                 // AnimationEvent * ani = new AnimationEventAttack( x1, y1, x2, y2, damage, force );
-                vector<Attack> attacks;
-                attacks.push_back(ak);
-                AnimationEvent * ani = new AnimationEventAttack(attacks);
+                AnimationEvent * ani = new AnimationEventAttack(parseAttacks(current));
                 events.push_back(ani);
             } else if (current == "z-distance" ){
                 double d;

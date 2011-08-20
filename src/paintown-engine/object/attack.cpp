@@ -60,6 +60,7 @@ forceY(4.4){
     // tok.match("_/force", force);
     
     /* TODO: read all attack boxes */
+    /*
     tok.match("_/box/x1", x1);
     tok.match("_/box/y1", y1);
     tok.match("_/box/x2", x2);
@@ -70,46 +71,20 @@ forceY(4.4){
         forceX = x;
         forceY = y;
     }
+    */
 
-    /*
-	Token * current;
-	while ( tok->hasTokens() ){
-		try{
-			*tok >> current;
+    /* make sure x1, y1 is upper left and x2, y2 is lower right */
+    if (x1 > x2){
+        int p = x2;
+        x2 = x1;
+        x1 = p;
+    }
 
-			int thing;
-			*current >> thing;
-			if ( *current == "x1" )
-				setX1( thing );
-			else if ( *current == "x2" )
-				setX2( thing );
-			else if ( *current == "y1" )
-				setY1( thing );
-			else if ( *current == "y2" )
-				setY2( thing );
-			else if ( *current == "damage" )
-				setDamage( thing );
-			else if ( *current == "force" )
-				setForce( thing );
-
-		} catch ( const TokenException & te ){
-			string k = "Could not parse attack: ";
-			k += te.getReason();
-			throw LoadException( k );
-		}
-	}
-        */
-
-	if ( x1 > x2 ){
-		int p = x2;
-		x2 = x1;
-		x1 = p;
-	}
-	if ( y1 > y2 ){
-		int p = y2;
-		y2 = y1;
-		y1 = p;
-	}
+    if (y1 > y2){
+        int p = y2;
+        y2 = y1;
+        y1 = p;
+    }
 }
 	
 void Attack::print(){
@@ -119,11 +94,16 @@ void Attack::print(){
 	cout<<"Y2: "<<getY2()<<endl;
 	cout<<"Damage: "<<getDamage()<<endl;
 }
+
+bool Attack::empty() const {
+    return getXLen() == 0 &&
+           getYLen() == 0;
+}
 	
 int Attack::getXLen() const {
 	return getX2() - getX1();
 }
-
+    
 int Attack::getYLen() const {
 	return getY2() - getY1();
 }
