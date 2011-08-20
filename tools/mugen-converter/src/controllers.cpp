@@ -171,7 +171,7 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
     Content allTriggers(3, "# Check all triggers");
     allTriggers.addLine(3, "def checkAll(self):");
     tempString.clear();
-    for (int i = 0; ; ++i){
+    for (int i = 1; ; ++i){
         std::map<int, std::vector<Ast::AttributeSimple *> >::iterator trigger = triggers.find(i);
         if (trigger != triggers.end()){
             std::ostringstream number;

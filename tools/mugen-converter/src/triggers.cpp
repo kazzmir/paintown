@@ -398,8 +398,9 @@ class Evaluator{
         Evaluator(ExpressionBuilder & builder, std::vector<Content> & functions):
         builder(builder),
         functions(functions){
-            name = getNextFunctionName() + "()";
-            std::string main = handleBuilder(crawl(&builder));
+            //name = getNextFunctionName() + "()";
+            //std::string main = handleBuilder(crawl(&builder));
+            name = handleBuilder(crawl(&builder));
         }
         
         virtual ~Evaluator(){
@@ -417,6 +418,10 @@ class Evaluator{
         const std::string convertInfixOperator(const std::string & op){
             if (op == "="){
                 return "==";
+            } else if (op == "&&"){
+                return "and";
+            } else if (op == "||"){
+                return "or";
             }
             
             return op;
@@ -483,7 +488,7 @@ class Evaluator{
                         }
                         std::string function = getNextFunctionName();
                         Content infix(3, "def " + function + "(self):");
-                            infix.addLine(4, "return (" + leftExpression + op + rightExpression + ")");
+                            infix.addLine(4, "return (" + leftExpression + " " + op + " " + rightExpression + ")");
                         functions.push_back(infix);
                         ExpressionBuilder * newBuilder = new ExpressionBuilder();
                         deletable.push_back(newBuilder);
@@ -585,7 +590,7 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         ExpressionBuilder & exp;
         
         virtual void onValueList(const Ast::ValueList & values){
-            std::cout << "Found Value List: " << values.toString() << std::endl;
+            //std::cout << "Found Value List: " << values.toString() << std::endl;
             exp.setType(ExpressionBuilder::ValueList);
             for (unsigned int i = 0;;++i){
                 Ast::Value * value = values.get(i);
@@ -598,7 +603,7 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
             }
         }
         virtual void onRange(const Ast::Range & range){
-            std::cout << "Found range: " << range.toString() << std::endl;
+            //std::cout << "Found range: " << range.toString() << std::endl;
             exp.setType(ExpressionBuilder::Range);
             exp.getExpression().addArguments(Expression(range.getLow()->toString()));
             exp.getExpression().addArguments(Expression(range.getHigh()->toString()));
@@ -613,7 +618,7 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
             std::cout << "Found array: " << simple.toString() << std::endl;
         }
         virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
-            std::cout << "Found Infix: " <<  expression.toString() << std::endl;
+            //std::cout << "Found Infix: " <<  expression.toString() << std::endl;
             
             exp.setType(ExpressionBuilder::Infix);
             ExpressionBuilder * expLeft = new ExpressionBuilder(convert(*expression.getLeft()));
@@ -625,7 +630,7 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
             exp.setOperator(expression.infixName(expression.getExpressionType()));
         }
         virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
-            std::cout << "Found Unary: " <<  expression.toString() << std::endl;
+            //std::cout << "Found Unary: " <<  expression.toString() << std::endl;
             exp.setType(ExpressionBuilder::Unary);
             ExpressionBuilder * left = new ExpressionBuilder(convert(*expression.getExpression()));
             exp.setLeft(left);
@@ -633,25 +638,25 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         }
         virtual void onIdentifier(const Ast::Identifier & identifier){
             // Triggers or Constants
-            std::cout << "Found Identifier: " << identifier.toString() << std::endl;
+            //std::cout << "Found Identifier: " << identifier.toString() << std::endl;
             exp.setType(ExpressionBuilder::Identifier);
             exp.setExpression(Expression(identifier.toString()));
         }
         
         virtual void onHelper(const Ast::Helper & helper){
-            std::cout << "Found Helper: " << helper.toString() << std::endl;
+            //std::cout << "Found Helper: " << helper.toString() << std::endl;
         }
 
         virtual void onString(const Ast::String & string){
             // Commands
-            std::cout << "Found String: " << string.toString() << std::endl;
+            //std::cout << "Found String: " << string.toString() << std::endl;
             exp.setType(ExpressionBuilder::String);
             exp.setExpression(Expression(string.toString()));
         }
         
         virtual void onFunction(const Ast::Function & function){
             // Triggers w/ arguments
-            std::cout << "Found Function: " << function.toString() << std::endl;
+            //std::cout << "Found Function: " << function.toString() << std::endl;
             Expression func = Expression(function.getName());//handleKeyWord(function.getName());
             for (unsigned int i = 0;;++i){
                 const Ast::Value * value = function.getArg(i);
@@ -668,14 +673,14 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         virtual void onKeyword(const Ast::Keyword & keyword){
             // Triggers or constants
             Expression word = Expression(keyword.toString());//handleKeyWord(keyword.toString());
-            std::cout << "Found Keyword: " << keyword.toString() << "' translated as: " << word.get() << std::endl;
+            //std::cout << "Found Keyword: " << keyword.toString() << "' translated as: " << word.get() << std::endl;
             exp.setType(ExpressionBuilder::Keyword);
             exp.setExpression(word);
         }
         
         virtual void onNumber(const Ast::Number & number){
             // Numerals
-            std::cout << "Found Number: " << number.toString()  <<  std::endl;
+            //std::cout << "Found Number: " << number.toString()  <<  std::endl;
             exp.setType(ExpressionBuilder::Number);
             exp.setExpression(Expression(number.toString()));
         }
