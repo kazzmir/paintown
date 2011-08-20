@@ -241,7 +241,7 @@ void StateControllerStore::addToDefinition(PythonDefinition & definition){
         out << controller;
         definition.addSpace();
         definition.addContent(Content(1, "class controller" + out.str() + "(self, player, world):"));
-        definition.addContent(Content(2, "def run():"));
+        definition.addContent(Content(2, "def run(self):"));
         std::vector<Ast::AttributeSimple *> * type = (*i).find("type");
         if (type != NULL){
             std::ostringstream line;

@@ -89,60 +89,61 @@ void Expression::addArguments(const Expression & argument){
  * Assuming that an object named player and an object named world is going to be passed to States for evaluation
  * And also assuming that the names of the functions are going to be what they are below (most likely most of it will change)
  */;
-static std::string handleKeyWord(const std::string & keyword){
+static std::string handleKeyWord(const Expression & expression){
+    const std::string & keyword = expression.getKeyword();
     if (match("AILevel", keyword)){
     } else if (match("Abs", keyword)){
-        //return new Function("math.fabs");
+        return "math.fabs";
     } else if (match("Acos", keyword)){
-        //return new Function("math.acos");
+        return "math.acos";
     } else if (match("Alive", keyword)){
-        //return new Function("player.isAlive");
+        return "self.player.isAlive()";
     } else if (match("Anim", keyword)){
-        //return new Function("player.currentAnimation");
+        return "self.player.currentAnimation()";
     } else if (match("AnimElem", keyword)){
     } else if (match("AnimElemNo", keyword)){
     } else if (match("AnimElemTime", keyword)){
     } else if (match("AnimExist", keyword)){
     } else if (match("AnimTime", keyword)){
     } else if (match("Asin", keyword)){
-        //return new Function("math.asin");
+        return "math.asin";
     } else if (match("Atan", keyword)){
-        //return new Function("math.atan");
+        return "math.atan";
     } else if (match("AuthorName", keyword)){
-        //return new Function("player.getAuthor");
+        return "self.player.getAuthor()";
     } else if (match("BackEdgeBodyDist", keyword)){
     } else if (match("BackEdgeDist", keyword)){
 
     } else if (match("CanRecover", keyword)){
-        //return new Function("player.canRecover");
+        return "self.player.canRecover()";
     } else if (match("Ceil", keyword)){
-        //return new Function("math.ceil");
+        return "math.ceil";
     } else if (match("Command", keyword)){
-        //return new Function("player.EvaluateCommand");
+        return "self.player.EvaluateCommand()";
     } else if (match("Const", keyword)){
     } else if (match("Const240p", keyword)){
     } else if (match("Const480p", keyword)){
     } else if (match("Const720p", keyword)){
     } else if (match("Cos", keyword)){
-        //return new Function("math.cos");
+        return "math.cos";
     } else if (match("Ctrl", keyword)){
-        //return new Function("player.hasControl");
+        return "self.player.hasControl()";
     } else if (match("DrawGame", keyword)){
 
     } else if (match("E", keyword)){
         //return new Keyword("math.e");
     } else if (match("Exp", keyword)){
-        //return new Function("math.exp");
+        return "math.exp";
     } else if (match("FVar", keyword)){
     } else if (match("Facing", keyword)){
-        //return new Function("player.getFacing");
+        return "self.player.getFacing()";
     } else if (match("Floor", keyword)){
-        //return new Function("math.floor");
+        return "math.floor";
     } else if (match("FrontEdgeBodyDist", keyword)){
     } else if (match("FrontEdgeDist", keyword)){
 
     } else if (match("GameTime", keyword)){
-        //return new Function("world.getTime");
+        //return new Function("self.world.getTime");
     } else if (match("GetHitVar", keyword)){
 
     } else if (match("HitCount", keyword)){
@@ -155,7 +156,7 @@ static std::string handleKeyWord(const std::string & keyword){
 
     } else if (match("ID", keyword)){
     } else if (match("IfElse", keyword)){
-        //return Expression("mugen.ifelse");
+        return "ifelse";
     } else if (match("InGuardDist", keyword)){
     } else if (match("IsHelper", keyword)){
     } else if (match("IsHomeTeam", keyword)){
@@ -163,9 +164,9 @@ static std::string handleKeyWord(const std::string & keyword){
     } else if (match("Life", keyword)){
     } else if (match("LifeMax", keyword)){
     } else if (match("Ln", keyword)){
-        //return new Function("mugen.ln");
+        return "mugen.ln(" + expression.getArguments()[0].getKeyword() + ")";
     } else if (match("Log", keyword)){
-        //return new Function("math.log");
+        return "math.log" + expression.getArguments()[0].getKeyword() + ")";
     } else if (match("Lose", keyword)){
 
     } else if (match("MatchNo", keyword)){
@@ -186,8 +187,14 @@ static std::string handleKeyWord(const std::string & keyword){
     } else if (match("NumTarget", keyword)){
 
     } else if (match("P1Name", keyword)){
-    } else if (match("P2BodyDist", keyword)){
-    } else if (match("P2Dist", keyword)){
+    } else if (match("P2BodyDist x", keyword)){
+        return "self.world.getPlayerBodyDistance()";
+    } else if (match("P2BodyDist y", keyword)){
+        return "self.world.getPlayerBodyDistance()";
+    } else if (match("P2Dist x", keyword)){
+        return "self.world.getPlayerDistance()";
+    } else if (match("P2Dist y", keyword)){
+        return "self.world.getPlayerDistance()";
     } else if (match("P2Life", keyword)){
     } else if (match("P2MoveType", keyword)){
     } else if (match("P2Name", keyword)){
@@ -198,9 +205,12 @@ static std::string handleKeyWord(const std::string & keyword){
     } else if (match("PalNo", keyword)){
     } else if (match("ParentDist", keyword)){
     } else if (match("Pi", keyword)){
-        //return new Keyword("math.pi");
+        return "math.pi";
     } else if (match("PlayerIDExist", keyword)){
-    } else if (match("Pos", keyword)){
+    } else if (match("Pos x", keyword)){
+        return "self.player.getPositionX()";
+    } else if (match("Pos y", keyword)){
+        return "self.player.getPositionY()";
     } else if (match("Power", keyword)){
     } else if (match("PowerMax", keyword)){
     } else if (match("PrevStateNo", keyword)){
@@ -216,33 +226,36 @@ static std::string handleKeyWord(const std::string & keyword){
         //return new Function("random");
     } else if (match("RootDist", keyword)){
     } else if (match("RoundNo", keyword)){
-        //return new Function("world.currentRound");
+        //return new Function("self.world.currentRound");
     } else if (match("RoundState", keyword)){
-        //return new Function("world.roundState");
+        //return new Function("self.world.roundState");
     } else if (match("RoundsExisted", keyword)){
-        //return new Function("player.roundsExisted");
+        return "self.player.roundsExisted()";
     } else if (match("ScreenPos", keyword)){
     } else if (match("SelfAnimExist", keyword)){
     } else if (match("Sin", keyword)){
-        //return new Function("math.sin");
+        return "math.sin";
     } else if (match("StateNo", keyword)){
     } else if (match("StateType", keyword)){
     } else if (match("SysFVar", keyword)){
     } else if (match("SysVar", keyword)){
 
     } else if (match("Tan", keyword)){
-        //return new Function("math.tan");
+        return "math.tan";
     } else if (match("TeamMode", keyword)){
     } else if (match("TeamSide", keyword)){
     } else if (match("TicksPerSecond", keyword)){
     } else if (match("Time", keyword)){
+        return "self.world.getTime()";
     } else if (match("TimeMod", keyword)){
 
     } else if (match("UniqHitCount", keyword)){
 
     } else if (match("Var", keyword)){
-    } else if (match("Vel", keyword)){
-
+    } else if (match("Vel x", keyword)){
+        return "self.player.getVelocityX()";
+    } else if (match("Vel y", keyword)){
+        return "self.player.getVelocityY()";
     } else if (match("Win", keyword)){
     } else {
         std::cout << "Unhandled keyword: " << keyword << std::endl;
@@ -270,6 +283,12 @@ ExpressionBuilder::ExpressionBuilder(const ExpressionBuilder & copy){
             valueList.push_back(new ExpressionBuilder(*builder));
         }
     }
+    for (std::vector<ExpressionBuilder *>::const_iterator i = copy.arguments.begin(); i != copy.arguments.end(); ++i){
+        ExpressionBuilder * builder = *i;
+        if (builder != NULL){
+            arguments.push_back(new ExpressionBuilder(*builder));
+        }
+    }
     expressionOperator = copy.expressionOperator;
     type = copy.type;
 }
@@ -281,6 +300,11 @@ ExpressionBuilder::~ExpressionBuilder(){
         delete rightComplex;
     }
     for (std::vector<ExpressionBuilder *>::iterator i = valueList.begin(); i != valueList.end(); ++i){
+        if ((*i) != NULL){
+            delete *i;
+        }
+    }
+    for (std::vector<ExpressionBuilder *>::iterator i = arguments.begin(); i != arguments.end(); ++i){
         if ((*i) != NULL){
             delete *i;
         }
@@ -298,6 +322,12 @@ const ExpressionBuilder & ExpressionBuilder::operator=(const ExpressionBuilder &
         ExpressionBuilder * builder = *i;
         if (builder != NULL){
             valueList.push_back(new ExpressionBuilder(*builder));
+        }
+    }
+    for (std::vector<ExpressionBuilder *>::const_iterator i = copy.arguments.begin(); i != copy.arguments.end(); ++i){
+        ExpressionBuilder * builder = *i;
+        if (builder != NULL){
+            arguments.push_back(new ExpressionBuilder(*builder));
         }
     }
     expressionOperator = copy.expressionOperator;
@@ -336,7 +366,7 @@ const std::string ExpressionBuilder::get(){
             break;
         }
         case Identifier:
-            return expression.get();
+            return handleKeyWord(expression);
             break;
         case Helper:
             return expression.get();
@@ -345,10 +375,10 @@ const std::string ExpressionBuilder::get(){
             return expression.get();
             break;
         case Function:
-            return expression.get();
+            return handleKeyWord(expression);
             break;
         case Keyword:
-            return expression.get();
+            return handleKeyWord(expression);
             break;
         case Number:
             return expression.get();
@@ -372,6 +402,9 @@ ExpressionBuilder * ExpressionBuilder::getRightComplex(){
 }
 std::vector<ExpressionBuilder *> & ExpressionBuilder::getValueList(){
     return valueList;
+}
+std::vector<ExpressionBuilder *> & ExpressionBuilder::getArguments(){
+    return arguments;
 }
 void ExpressionBuilder::setType(const Type & type){
     this->type = type;
@@ -440,6 +473,21 @@ class Evaluator{
             Content checker(3, "def " + function + "(self):");
                 checker.addLine(4, "return (" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
             functions.push_back(checker);
+            return function + "()";
+        }
+        
+        const std::string createIfElse(ExpressionBuilder * ifelse){
+            std::string function = getNextFunctionName();
+            std::vector<ExpressionBuilder *> arguments = ifelse->getArguments();
+            ExpressionBuilder * condition = crawl(arguments[0]);
+            ExpressionBuilder * ifTrue = crawl(arguments[1]);
+            ExpressionBuilder * ifFalse = crawl(arguments[2]);
+            Content content(3, "def " + function + "(self):");
+                content.addLine(4, "if " + condition->get() + ":");
+                    content.addLine(5, "return " + ifTrue->get());
+                content.addLine(4, "else:");
+                    content.addLine(5, "return " + ifFalse->get());
+            functions.push_back(content);
             return function + "()";
         }
         
@@ -528,14 +576,34 @@ class Evaluator{
         /* Pushes back a function and returns the function name */
         const std::string handleBuilder(ExpressionBuilder * builder){
             if (builder != NULL){
-                std::string function = getNextFunctionName();
-                Content content(3, "def " + function + "(self):");
-                    /* TODO FIXME */
-                    content.addLine(4, "# Temporary - " + builder->get());
-                    content.addLine(4, "pass");
-                functions.push_back(content);
-                
-                return function + "()";
+                if (builder->getType() == ExpressionBuilder::Function){
+                    std::string keyword = builder->get();
+                    if (keyword == "ifelse"){
+                        return createIfElse(builder);
+                    } else {
+                        std::string function = getNextFunctionName();
+                        std::string arguments;
+                        for (std::vector<ExpressionBuilder *>::iterator i = builder->getArguments().begin(); i != builder->getArguments().end(); ++i){
+                            ExpressionBuilder * ex = crawl(*i);
+                            if (ex != NULL){
+                                arguments += ex->get() + ", ";
+                            }
+                        }
+                        Content content(3, "def " + function + "(self):");
+                            content.addLine(4, "return " + keyword + "(" + (arguments.empty() ? "" : arguments.substr(0,arguments.size()-3)) + ")" );
+                        functions.push_back(content);
+                        return function + "()";
+                    }
+                } else {
+                    std::string function = getNextFunctionName();
+                    Content content(3, "def " + function + "(self):");
+                        /* TODO FIXME */
+                        //content.addLine(4, "# Temporary - " + builder->get());
+                        content.addLine(4, "return " + builder->get());
+                        //content.addLine(4, "pass");
+                    functions.push_back(content);
+                    return function + "()";
+                }
             }
             return "";
         }
@@ -656,18 +724,20 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         
         virtual void onFunction(const Ast::Function & function){
             // Triggers w/ arguments
-            //std::cout << "Found Function: " << function.toString() << std::endl;
-            Expression func = Expression(function.getName());//handleKeyWord(function.getName());
+            exp.setType(ExpressionBuilder::Function);
+            ExpressionBuilder * expLeft = new ExpressionBuilder();
+            expLeft->getExpression().setKeyword(function.getName());
+            exp.setLeft(expLeft);
+            
+            std::vector<ExpressionBuilder *> & arguments = exp.getArguments();
             for (unsigned int i = 0;;++i){
                 const Ast::Value * value = function.getArg(i);
                 if (value){
-                    func.addArguments(Expression(convert(*value).get()));
+                    arguments.push_back(new ExpressionBuilder(convert(*value)));
                 } else {
                     break;
                 }
             }
-            exp.setType(ExpressionBuilder::Function);
-            exp.setExpression(func);
         }
 
         virtual void onKeyword(const Ast::Keyword & keyword){

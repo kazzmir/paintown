@@ -30,6 +30,9 @@ class Expression{
         inline virtual bool isConstant() const {
             return this->constant;
         }
+        inline const std::string & getKeyword() const{
+            return this->keyword;
+        }
         inline const std::vector<Expression> & getArguments() const{
             return this->arguments;
         }
@@ -75,6 +78,7 @@ class ExpressionBuilder{
         virtual ExpressionBuilder * getLeftComplex();
         virtual ExpressionBuilder * getRightComplex();
         virtual std::vector<ExpressionBuilder *> & getValueList();
+        virtual std::vector<ExpressionBuilder *> & getArguments();
         virtual void setType(const Type &);
         inline virtual const std::string & getOperator(){
             return this->expressionOperator;
@@ -90,6 +94,7 @@ class ExpressionBuilder{
         ExpressionBuilder * leftComplex;
         ExpressionBuilder * rightComplex;
         std::vector<ExpressionBuilder *> valueList;
+        std::vector<ExpressionBuilder *> arguments;
         std::string expressionOperator;
         Type type;
 };
