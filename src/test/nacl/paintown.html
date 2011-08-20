@@ -161,6 +161,7 @@
 	fullVersion = navigator.userAgent.substring(verOffset+7);
 
 	majorVersion = parseInt(''+fullVersion,10);
+	
  	if (majorVersion >= 14) {
 
 
@@ -178,7 +179,10 @@
 
 		} 
         } else { 
-		document.getElementById("naclstatus").innerHTML="You have an older version of Chrome installed. Please upgrade to at least version 14 to play.";
+		document.getElementById("content").innerHTML="<center>You have an older version of Chrome installed (Version "+majorVersion+"). Please upgrade to at least version 14 to play.</center>";
+		document.getElementById('listener').style.display="none";
+		document.getElementById('paintown').style.display="none";
+		document.getElementById('instructions').style.display="none";
 	}
       } else { //it's not chrome - hide stuff and tell user
 	document.getElementById('content').innerHTML="<center><b>Your web browser is not supported.</b></center>";
