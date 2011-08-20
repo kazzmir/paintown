@@ -31,7 +31,7 @@ public:
 	virtual int getDamage() const;
         virtual double getForceX() const;
         virtual double getForceY() const;
-	virtual ECollide * getCollide() const;
+	virtual std::vector<ECollide*> getCollide() const;
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
 	virtual int getWidth() const;

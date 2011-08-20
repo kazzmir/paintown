@@ -289,8 +289,8 @@ void Object::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphi
 void Object::touch( Object * obj ){
 }
 
-ECollide * Object::getCollide() const {
-    return 0;
+vector<ECollide*> Object::getCollide() const {
+    return vector<ECollide*>();
 }
         
 bool Object::touchPoint(int x, int y){

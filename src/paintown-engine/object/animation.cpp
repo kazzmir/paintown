@@ -663,14 +663,16 @@ void Animation::getAttackCoords( int & x, int & y ){
 	Global::debug( 0 ) << getName()<<"[ "<<attack.getX1()<<","<<attack.getY1()<<","<<attack.getX2()<<","<<attack.getY2()<<"]"<<endl;
 }
 	
-ECollide * Animation::getNormalCollide(){
-	return current_collide;
+vector<ECollide*> Animation::getNormalCollide(){
+    vector<ECollide*> out;
+    out.push_back(current_collide);
+    return out;
 }
 
-ECollide * Animation::getCollide( int facing ){
-    if ( isAttack() ){
-        if ( attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2() ){
-            if ( attack_collide ){
+vector<ECollide*> Animation::getCollide( int facing ){
+    if (isAttack()){
+        if (attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2()){
+            if (attack_collide){
                 delete attack_collide;
             }
 
@@ -691,11 +693,16 @@ ECollide * Animation::getCollide( int facing ){
             adder->setFull( true );
             ac->addQuad( adder );
 
-            return attack_collide;
+            vector<ECollide*> out;
+            out.push_back(attack_collide);
+            return out;
         }
-        return NULL;
+        vector<ECollide*> out;
+        return out;
     }
-    return current_collide;
+    vector<ECollide*> out;
+    out.push_back(current_collide);
+    return out;
 }
 
 // int Animation::convertKeyPress( const string & key_name ) throw( LoadException ){
@@ -820,9 +827,12 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
         work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor(255, 255, 255));
         work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
         // current_collide->draw( *work, x-w, y-h );
-        ECollide * c = getCollide( Object::FACING_RIGHT );
-        if ( c != NULL ){
-            c->draw( *work, x - w, y - h, Graphics::makeColor( 255, 255, 255 ) );
+        vector<ECollide*> collides = getCollide(Object::FACING_RIGHT);
+        for (vector<ECollide*>::iterator it = collides.begin(); it != collides.end(); it++){
+            ECollide * c = *it;
+            if (c != NULL){
+                c->draw(*work, x - w, y - h, Graphics::makeColor(255, 255, 255));
+            }
         }
     }
 
@@ -886,9 +896,12 @@ void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Rem
         work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor( 255, 255, 255 ) );
         work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
         // current_collide->draw( *work, x-w, y-h, true );
-        ECollide * c = getCollide( Object::FACING_LEFT );
-        if ( c != NULL ){
-            c->draw( *work, x - w, y - h, Graphics::makeColor( 255, 255, 255 ), true );
+        vector<ECollide*> collides = getCollide(Object::FACING_LEFT);
+        for (vector<ECollide*>::iterator it = collides.begin(); it != collides.end(); it++){
+            ECollide * c = *it;
+            if ( c != NULL ){
+                c->draw( *work, x - w, y - h, Graphics::makeColor( 255, 255, 255 ), true );
+            }
         }
     }
 

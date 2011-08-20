@@ -151,8 +151,8 @@ bool Projectile::isGrabbed(){
 void Projectile::unGrab(){
 }
 		
-ECollide * Projectile::getCollide() const {
-	return currentAnimation->getCollide( getFacing() );
+vector<ECollide*> Projectile::getCollide() const {
+    return currentAnimation->getCollide(getFacing());
 }
 
 Object * Projectile::copy(){

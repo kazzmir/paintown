@@ -113,7 +113,7 @@ public:
 	/* getCollide
 	 * Returns the ECollide object that encompasses this object
 	 */
-	virtual ECollide * getCollide() const;
+	virtual std::vector<ECollide*> getCollide() const;
 
 	virtual double currentDamage() const {
 		return damage;

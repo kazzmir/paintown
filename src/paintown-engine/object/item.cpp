@@ -87,38 +87,46 @@ void Item::touch( Object * obj ){
 	sound.play();
 }
 
-ECollide * Item::getCollide() const {
-	return collide;
+vector<ECollide*> Item::getCollide() const {
+    vector<ECollide*> out;
+    out.push_back(collide);
+    return out;
 }
 	
 bool Item::collision( ObjectAttack * obj ){
-	if ( getAlliance() == obj->getAlliance() ){
-		return false;
-	}
+    if ( getAlliance() == obj->getAlliance() ){
+        return false;
+    }
 
-	if ( this->getCollide() != 0 && obj->getCollide() != 0 ){
-		bool my_xflip = false;
-		bool his_xflip = false;
-		if ( getFacing() == FACING_LEFT )
-			my_xflip = true;
-		if ( obj->getFacing() == FACING_LEFT )
-			his_xflip = true;
+    vector<ECollide*> myCollides = getCollide();
+    vector<ECollide*> himCollides = obj->getCollide();
+    for (vector<ECollide*>::iterator mine = myCollides.begin(); mine != myCollides.end(); mine++){
+        for (vector<ECollide*>::iterator his = himCollides.begin(); his != himCollides.end(); his++){
+            bool my_xflip = false;
+            bool his_xflip = false;
+            if (getFacing() == FACING_LEFT)
+                my_xflip = true;
+            if (obj->getFacing() == FACING_LEFT)
+                his_xflip = true;
 
-		int mx, my;
-		int ax, ay;
+            int mx, my;
+            int ax, ay;
 
-		ECollide * me = getCollide();
-		ECollide * him = obj->getCollide();
+            ECollide * me = *mine;
+            ECollide * him = *his;
 
-		mx = this->getRX() - getWidth() / 2;
-		my = this->getRY() - getHeight();
-		ax = obj->getRX() - obj->getWidth() / 2;
-		ay = obj->getRY() - obj->getHeight();
+            mx = this->getRX() - getWidth() / 2;
+            my = this->getRY() - getHeight();
+            ax = obj->getRX() - obj->getWidth() / 2;
+            ay = obj->getRY() - obj->getHeight();
 
-		return ( me->Collision( him, mx, my, ax, ay, my_xflip, false, his_xflip, false ) );
+            if (me->Collision( him, mx, my, ax, ay, my_xflip, false, his_xflip, false )){
+                return true;
+            }
+        }
+    }
 
-	}
-	return false;
+    return false;
 }
 
 void Item::act( vector< Object * > * others, World * world, vector< Object * > * add ){

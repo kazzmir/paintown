@@ -1405,68 +1405,76 @@ int Character::getRY() const {
 }
 
 bool Character::realCollision( ObjectAttack * obj ){
+    vector<ECollide*> myCollides = this->getNormalCollide();
+    vector<ECollide*> himCollides = obj->getCollide();
 
-	ECollide * myCollide = this->getNormalCollide();
-	ECollide * hisCollide = obj->getCollide();
-	// cout << "Obj attacking with " << obj->getAttackName() << " my collide = " << myCollide << " his collide = " << hisCollide << endl;
-	if ( myCollide != 0 && hisCollide ){
-		bool my_xflip = false;
-		bool his_xflip = false;
-		if ( getFacing() == FACING_LEFT )
-			my_xflip = true;
-		if ( obj->getFacing() == FACING_LEFT )
-			his_xflip = true;
+    for (vector<ECollide*>::iterator mine = myCollides.begin(); mine != myCollides.end(); mine++){
+        for (vector<ECollide*>::iterator him = himCollides.begin(); him != himCollides.end(); him++){
 
-		/*
-		my_xflip = false;
-		his_xflip = false;
-		*/
+            ECollide * myCollide = *mine;
+            ECollide * hisCollide = *him;
+            // cout << "Obj attacking with " << obj->getAttackName() << " my collide = " << myCollide << " his collide = " << hisCollide << endl;
+            if (myCollide != 0 && hisCollide){
+                bool my_xflip = false;
+                bool his_xflip = false;
+                if (getFacing() == FACING_LEFT)
+                    my_xflip = true;
+                if (obj->getFacing() == FACING_LEFT)
+                    his_xflip = true;
 
-		int mx, my;
-		int ax, ay;
-
-		// ECollide * me = getCollide();
-		// ECollide * him = obj->getCollide();
-		/*
-		if ( !me ){
-			// cout<<"No collide"<<endl;
-			return false;
-		}
-		*/
-		
-		mx = this->getRX() - getWidth() / 2;
-		my = this->getRY() - getHeight();
-		ax = obj->getRX() - obj->getWidth() / 2;
-		ay = obj->getRY() - obj->getHeight();
-
-		/*
-		mx = getRX();
-		my = getRY();
-		ax = obj->getRX();
-		ay = obj->getRY();
-		*/
-
-		// Bitmap Screen( screen );
-		/*
-		myCollide->draw( *Bitmap::Screen, mx, my, Bitmap::makeColor( 255, 0, 128 ), my_xflip );
-		hisCollide->draw( *Bitmap::Screen, ax, ay, Bitmap::makeColor( 128, 255, 0 ), his_xflip );
-		*/
-
-		// cout<<"Mx: "<<mx<< " My: "<<my<<" Width: "<<myCollide->getWidth()<<" Height: "<<myCollide->getHeight()<<endl;
-		// cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<hisCollide->getWidth()<<" Height: "<<hisCollide->getHeight()<<endl;
-
-		bool b = myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false );
                 /*
-		if ( b && false ){
-			myCollide->draw( *Bitmap::Screen, 50, 50, my_xflip );
-			hisCollide->draw( *Bitmap::Screen, 50 + (ax - mx), 50 + (ay - my), his_xflip );
-			Util::rest( 500 );
-		}
-                */
-		return b;
-	}
-	return false;
+                   my_xflip = false;
+                   his_xflip = false;
+                   */
 
+                int mx, my;
+                int ax, ay;
+
+                // ECollide * me = getCollide();
+                // ECollide * him = obj->getCollide();
+                /*
+                   if ( !me ){
+                // cout<<"No collide"<<endl;
+                return false;
+                }
+                */
+
+                mx = this->getRX() - getWidth() / 2;
+                my = this->getRY() - getHeight();
+                ax = obj->getRX() - obj->getWidth() / 2;
+                ay = obj->getRY() - obj->getHeight();
+
+                /*
+                   mx = getRX();
+                   my = getRY();
+                   ax = obj->getRX();
+                   ay = obj->getRY();
+                   */
+
+                // Bitmap Screen( screen );
+                /*
+                   myCollide->draw( *Bitmap::Screen, mx, my, Bitmap::makeColor( 255, 0, 128 ), my_xflip );
+                   hisCollide->draw( *Bitmap::Screen, ax, ay, Bitmap::makeColor( 128, 255, 0 ), his_xflip );
+                   */
+
+                // cout<<"Mx: "<<mx<< " My: "<<my<<" Width: "<<myCollide->getWidth()<<" Height: "<<myCollide->getHeight()<<endl;
+                // cout<<"Ax: "<<ax<< " Ay: "<<ay<<" Width: "<<hisCollide->getWidth()<<" Height: "<<hisCollide->getHeight()<<endl;
+
+                bool b = myCollide->Collision( hisCollide, mx, my, ax, ay, my_xflip, false, his_xflip, false );
+                /*
+                   if ( b && false ){
+                   myCollide->draw( *Bitmap::Screen, 50, 50, my_xflip );
+                   hisCollide->draw( *Bitmap::Screen, 50 + (ax - mx), 50 + (ay - my), his_xflip );
+                   Util::rest( 500 );
+                   }
+                   */
+                if (b){
+                    return b;
+                }
+            }
+        }
+    }
+    return false;
 }
 	
 double Character::minZDistance() const {
@@ -1864,19 +1872,19 @@ int Character::getHeight() const{
 	return 0;
 }
 
-ECollide * Character::getCollide() const {
-	if (animation_current != NULL){
-		return animation_current->getCollide( getFacing() );
-	}
-        Global::debug(0) << "No animation collide"<<endl;
-	return NULL;
+vector<ECollide*> Character::getCollide() const {
+    if (animation_current != NULL){
+        return animation_current->getCollide(getFacing());
+    }
+    Global::debug(0) << "No animation collide"<<endl;
+    return vector<ECollide*>();
 }
 	
-ECollide * Character::getNormalCollide() const {
-	if (animation_current != NULL){
-		return animation_current->getNormalCollide();
-	}
-	return NULL;
+vector<ECollide*> Character::getNormalCollide() const {
+    if (animation_current != NULL){
+        return animation_current->getNormalCollide();
+    }
+    return vector<ECollide*>();
 }
 
 void Character::print() const{

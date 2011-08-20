@@ -26,7 +26,7 @@ public:
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 	virtual bool isCollidable( Object * obj );
-	virtual ECollide * getCollide() const;
+	virtual std::vector<ECollide*> getCollide() const;
 	virtual bool collision( ObjectAttack * obj );
 	virtual bool isGettable();
 	virtual void touch( Object * obj );

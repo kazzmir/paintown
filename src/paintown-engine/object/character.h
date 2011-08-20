@@ -286,7 +286,7 @@ public:
     virtual double getForceY() const;
 
     /* collision detection object */
-    virtual ECollide * getCollide() const;
+    virtual std::vector<ECollide*> getCollide() const;
 
     inline Object * getLink(){
         return linked;
@@ -433,7 +433,7 @@ protected:
 
     virtual void drawLifeBar( int x, int y, int he, Graphics::Bitmap * work );
 
-    virtual ECollide * getNormalCollide() const;
+    virtual std::vector<ECollide*> getNormalCollide() const;
 
     /* helper functions */
 
