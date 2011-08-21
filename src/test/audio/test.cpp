@@ -42,6 +42,7 @@ void initialize(int rate){
     int audio_rate = rate;
     // int audio_rate = 22050;
     Uint16 audio_format = AUDIO_S16; 
+    audio_format = AUDIO_U8;
     // Uint16 audio_format = MIX_DEFAULT_FORMAT; 
     int audio_channels = 2;
     int audio_buffers = 4096;
@@ -66,5 +67,9 @@ int main(int argc, char ** argv){
         return 0;
     }
     initialize(48000);
-    play(argv[1]);
+    try{
+        play(argv[1]);
+    } catch (...){
+        Global::debug(0) << "Failed" << endl;
+    }
 }
