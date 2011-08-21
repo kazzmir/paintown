@@ -112,6 +112,9 @@ Configuration Configuration::defaultPlayer1Keys(){
     config.setJoystickAttack1(Joystick::Button1);
     config.setJoystickAttack2(Joystick::Button2);
     config.setJoystickAttack3(Joystick::Button3);
+    config.setJoystickAttack4(Joystick::Button4);
+    config.setJoystickAttack5(Joystick::Button5);
+    config.setJoystickAttack6(Joystick::Button6);
     config.setJoystickJump(Joystick::Button4);
     config.setJoystickQuit(Joystick::Quit);
 
@@ -132,6 +135,23 @@ Configuration Configuration::defaultPlayer2Keys(){
     config.setAttack5(Keyboard::Key_G);
     config.setAttack6(Keyboard::Key_H);
     config.setJump(Keyboard::Key_B);
+
+    /* these mappings should agree with input-manager.cpp:convertJoystickKey,
+     * but otherwise they are completely arbitrary
+     */
+    config.setJoystickRight(Joystick::Right);
+    config.setJoystickLeft(Joystick::Left);
+    config.setJoystickUp(Joystick::Up);
+    config.setJoystickDown(Joystick::Down);
+    config.setJoystickAttack1(Joystick::Button1);
+    config.setJoystickAttack2(Joystick::Button2);
+    config.setJoystickAttack3(Joystick::Button3);
+    config.setJoystickAttack4(Joystick::Button4);
+    config.setJoystickAttack5(Joystick::Button5);
+    config.setJoystickAttack6(Joystick::Button6);
+    config.setJoystickJump(Joystick::Button4);
+    config.setJoystickQuit(Joystick::Quit);
+
     return config;
 }
 
@@ -176,6 +196,9 @@ joystick_down(Joystick::Invalid),
 joystick_attack1(Joystick::Invalid),
 joystick_attack2(Joystick::Invalid),
 joystick_attack3(Joystick::Invalid),
+joystick_attack4(Joystick::Invalid),
+joystick_attack5(Joystick::Invalid),
+joystick_attack6(Joystick::Invalid),
 joystick_jump(Joystick::Invalid),
 joystick_quit(Joystick::Invalid){
 }
@@ -199,6 +222,9 @@ joystick_down(config.getJoystickDown()),
 joystick_attack1(config.getJoystickAttack1()),
 joystick_attack2(config.getJoystickAttack2()),
 joystick_attack3(config.getJoystickAttack3()),
+joystick_attack4(config.getJoystickAttack4()),
+joystick_attack5(config.getJoystickAttack5()),
+joystick_attack6(config.getJoystickAttack6()),
 joystick_jump(config.getJoystickJump()),
 joystick_quit(config.getJoystickQuit())
 {
@@ -268,6 +294,9 @@ Configuration::JoystickInput Configuration::getJoystickKey(Input::PaintownInput 
         case Input::Attack1 : return this->joystick_attack1;
         case Input::Attack2 : return this->joystick_attack2;
         case Input::Attack3 : return this->joystick_attack3;
+        case Input::Attack4 : return this->joystick_attack4;
+        case Input::Attack5 : return this->joystick_attack5;
+        case Input::Attack6 : return this->joystick_attack6;
         case Input::Jump : return this->joystick_jump;
         default : return Joystick::Invalid;
     }
@@ -459,6 +488,18 @@ void Configuration::setJoystickAttack3(Configuration::JoystickInput i){
     setJoystickKey(joystick_attack3, i);
 }
 
+void Configuration::setJoystickAttack4(Configuration::JoystickInput i){
+    setJoystickKey(joystick_attack4, i);
+}
+
+void Configuration::setJoystickAttack5(Configuration::JoystickInput i){
+    setJoystickKey(joystick_attack5, i);
+}
+
+void Configuration::setJoystickAttack6(Configuration::JoystickInput i){
+    setJoystickKey(joystick_attack6, i);
+}
+
 void Configuration::setJoystickJump(Configuration::JoystickInput i){
     setJoystickKey(joystick_jump, i);
 }
@@ -493,6 +534,18 @@ Configuration::JoystickInput Configuration::getJoystickAttack2() const {
 
 Configuration::JoystickInput Configuration::getJoystickAttack3() const {
     return joystick_attack3;
+}
+
+Configuration::JoystickInput Configuration::getJoystickAttack4() const {
+    return joystick_attack4;
+}
+
+Configuration::JoystickInput Configuration::getJoystickAttack5() const {
+    return joystick_attack5;
+}
+
+Configuration::JoystickInput Configuration::getJoystickAttack6() const {
+    return joystick_attack6;
 }
 
 Configuration::JoystickInput Configuration::getJoystickJump() const {
@@ -564,7 +617,8 @@ void Configuration::loadConfigurations(){
                     attack2, attack3, attack4, attack5, attack6,
                     jump;
                 right = left = down = up = attack1 = attack2
-                      = attack3 = jump = InvalidKey;
+                      = attack3 = attack4 = attack5 = attack6 =
+                      jump = InvalidKey;
 
                 /* before the 'version' key was added all backends were
                  * Allegro so that is the default.
@@ -625,9 +679,10 @@ void Configuration::loadConfigurations(){
             } else if ( *n == config_joystick_configuration ){
                 int number = -1;
                 JoystickInput right, left, down, up, attack1,
-                    attack2, attack3, jump, quit;
+                    attack2, attack3, attack4, attack5, attack6, jump, quit;
                 right = left = down = up = attack1 = attack2
-                      = attack3 = jump = quit = InvalidJoystick;
+                      = attack3 = attack4 = attack5 = attack6 =
+                      jump = quit = InvalidJoystick;
                 /* see above */
                 std::string input = "Allegro";
 
@@ -661,6 +716,15 @@ void Configuration::loadConfigurations(){
                     } else if ( *thing == config_attack3){
                         thing->view() >> temp;
                         attack3 = intToJoystick(temp);
+                    } else if ( *thing == config_attack4){
+                        thing->view() >> temp;
+                        attack4 = intToJoystick(temp);
+                    } else if ( *thing == config_attack5){
+                        thing->view() >> temp;
+                        attack5 = intToJoystick(temp);
+                    } else if ( *thing == config_attack6){
+                        thing->view() >> temp;
+                        attack6 = intToJoystick(temp);
                     } else if ( *thing == config_jump){
                         thing->view() >> temp;
                         jump = intToJoystick(temp);
@@ -683,6 +747,9 @@ void Configuration::loadConfigurations(){
                     myconfig.setJoystickAttack1(attack1);
                     myconfig.setJoystickAttack2(attack2);
                     myconfig.setJoystickAttack3(attack3);
+                    myconfig.setJoystickAttack4(attack4);
+                    myconfig.setJoystickAttack5(attack5);
+                    myconfig.setJoystickAttack6(attack6);
                     myconfig.setJoystickJump(jump);
                     myconfig.setJoystickQuit(quit);
                 }
@@ -815,13 +882,16 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
     const char * func_names[] = {config_left, config_right,
                                  config_up, config_down,
                                  config_attack1, config_attack2,
-                                 config_attack3,
+                                 config_attack3, config_attack4,
+                                 config_attack5, config_attack6,
                                  config_jump, config_quit};
 
     get_func funcs[] = {&Configuration::getJoystickLeft, &Configuration::getJoystickRight,
                         &Configuration::getJoystickUp, &Configuration::getJoystickDown,
                         &Configuration::getJoystickAttack1, &Configuration::getJoystickAttack2,
-                        &Configuration::getJoystickAttack3, &Configuration::getJoystickJump,
+                        &Configuration::getJoystickAttack3, &Configuration::getJoystickAttack4,
+                        &Configuration::getJoystickAttack5, &Configuration::getJoystickAttack6,
+                        &Configuration::getJoystickJump,
                         &Configuration::getJoystickQuit
     };
 

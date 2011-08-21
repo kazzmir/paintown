@@ -63,6 +63,9 @@ public:
     void setJoystickAttack1(JoystickInput i);
     void setJoystickAttack2(JoystickInput i);
     void setJoystickAttack3(JoystickInput i);
+    void setJoystickAttack4(JoystickInput i);
+    void setJoystickAttack5(JoystickInput i);
+    void setJoystickAttack6(JoystickInput i);
     void setJoystickJump(JoystickInput i);
     void setJoystickQuit(JoystickInput i);
 
@@ -73,6 +76,9 @@ public:
     JoystickInput getJoystickAttack1() const;
     JoystickInput getJoystickAttack2() const;
     JoystickInput getJoystickAttack3() const;
+    JoystickInput getJoystickAttack4() const;
+    JoystickInput getJoystickAttack5() const;
+    JoystickInput getJoystickAttack6() const;
     JoystickInput getJoystickJump() const;
     JoystickInput getJoystickQuit() const;
 
@@ -164,6 +170,9 @@ private:
     JoystickInput joystick_attack1;
     JoystickInput joystick_attack2;
     JoystickInput joystick_attack3;
+    JoystickInput joystick_attack4;
+    JoystickInput joystick_attack5;
+    JoystickInput joystick_attack6;
     JoystickInput joystick_jump;
     JoystickInput joystick_quit;
 
