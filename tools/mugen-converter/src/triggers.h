@@ -70,6 +70,7 @@ class ExpressionBuilder{
             Function,
             Keyword,
             Number,
+            Custom
         };
         
         virtual const std::string get();

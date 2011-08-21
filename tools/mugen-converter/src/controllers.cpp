@@ -153,7 +153,7 @@ std::vector<Ast::AttributeSimple *> * StateParameterMap::find(const std::string 
 
 void StateParameterMap::addToDefinition(PythonDefinition & definition){
     Content triggerallContent(3, "# Triggerall");
-    triggerallContent.addLine(3, "def triggerall(self):");
+    //triggerallContent.addLine(3, "def triggerall(self):");
     std::string tempString;
     for (std::vector<Ast::AttributeSimple *>::iterator i = triggerall.begin(); i != triggerall.end(); ++i){
         Ast::AttributeSimple * simple = (*i);
@@ -165,11 +165,12 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
         }
         tempString += trigger.getName() + " and ";
     }
-    triggerallContent.addLine(4, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-5) + ")"));
+    //triggerallContent.addLine(4, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-5) + ")"));
+    triggerallContent.addLine(3, "triggerall = lambda : " + (tempString.empty() ? "1" : "(" + tempString.substr(0, tempString.size()-5) + ")"));
     definition.addContent(triggerallContent);
     
     Content allTriggers(3, "# Check all triggers");
-    allTriggers.addLine(3, "def checkAll(self):");
+    //allTriggers.addLine(3, "def checkAll(self):");
     tempString.clear();
     for (int i = 1; ; ++i){
         std::map<int, std::vector<Ast::AttributeSimple *> >::iterator trigger = triggers.find(i);
@@ -177,7 +178,7 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
             std::ostringstream number;
             number << i;
             Content triggerContent(3, "# Trigger " + number.str());
-            triggerContent.addLine(3, "def trigger" + number.str() +"(self):");
+            //triggerContent.addLine(3, "def trigger" + number.str() +"(self):");
             std::string triggerString;
             for (std::vector<Ast::AttributeSimple *>::iterator i = trigger->second.begin(); i != trigger->second.end(); ++i){
                 Ast::AttributeSimple * simple = (*i);
@@ -189,7 +190,8 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
                 }
                 triggerString += "(triggerall() and " + trigger.getName() + ")" + " and ";
             }
-            triggerContent.addLine(4, (triggerString.empty() ? "return 1" : "return (" + triggerString.substr(0, triggerString.size()-5) + ")"));
+            //triggerContent.addLine(4, (triggerString.empty() ? "return 1" : "return (" + triggerString.substr(0, triggerString.size()-5) + ")"));
+            triggerContent.addLine(3, "trigger" + number.str() + " = lambda : " + (triggerString.empty() ? "1" : "(" + triggerString.substr(0, triggerString.size()-5) + ")"));
             definition.addContent(triggerContent);
             
             tempString += "trigger" + number.str() + "() or ";
@@ -199,7 +201,8 @@ void StateParameterMap::addToDefinition(PythonDefinition & definition){
         }
     }
     // checkAll
-    allTriggers.addLine(4, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-3) + ")"));
+    //allTriggers.addLine(4, (tempString.empty() ? "return 1" : "return (" + tempString.substr(0, tempString.size()-3) + ")"));
+    allTriggers.addLine(3, "checkAll = lambda : " + (tempString.empty() ? "1" : "(" + tempString.substr(0, tempString.size()-4) + ")"));
     definition.addContent(allTriggers);
     
     Content allContent(3, "# Check all triggers");
