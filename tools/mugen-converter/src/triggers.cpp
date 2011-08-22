@@ -473,7 +473,7 @@ class Evaluator{
         const std::string createRange(const std::string & against, ExpressionBuilder * range){
             std::string function = getNextFunctionName();
             std::vector<Expression> args = range->getExpression().getArguments();
-            Content checker(3, function + " = lambda : " + "(" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
+            Content checker(2, function + " = lambda : " + "(" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
             functions.push_back(checker);
             return function + "()";
         }
@@ -484,11 +484,11 @@ class Evaluator{
             ExpressionBuilder * condition = crawl(arguments[0]);
             ExpressionBuilder * ifTrue = crawl(arguments[1]);
             ExpressionBuilder * ifFalse = crawl(arguments[2]);
-            Content content(3, "def " + function + "(self):");
-                content.addLine(4, "if " + condition->get() + ":");
-                    content.addLine(5, "return " + ifTrue->get());
-                content.addLine(4, "else:");
-                    content.addLine(5, "return " + ifFalse->get());
+            Content content(2, "def " + function + "(self):");
+                content.addLine(3, "if " + condition->get() + ":");
+                    content.addLine(4, "return " + ifTrue->get());
+                content.addLine(3, "else:");
+                    content.addLine(4, "return " + ifFalse->get());
             functions.push_back(content);
             return function + "()";
         }
@@ -531,7 +531,7 @@ class Evaluator{
                             array += value->get() + ", ";
                         }
                         std::string function = getNextFunctionName();
-                        Content checker(3, function + " = lambda : " + "(" + crawl(builder->getLeftComplex())->get() + " in [" + (array.empty() ? "" : array.substr(0,array.size()-4) ) + "]");
+                        Content checker(2, function + " = lambda : " + "(" + crawl(builder->getLeftComplex())->get() + " in [" + (array.empty() ? "" : array.substr(0,array.size()-4) ) + "]");
                         functions.push_back(checker);
                         ExpressionBuilder * newBuilder = new ExpressionBuilder();
                         deletable.push_back(newBuilder);
@@ -551,7 +551,7 @@ class Evaluator{
                             rightExpression = handleBuilder(crawl(right));
                         }
                         std::string function = getNextFunctionName();
-                        Content infix(3, function + " = lambda : " + "(" + leftExpression + " " + op + " " + rightExpression + ")");
+                        Content infix(2, function + " = lambda : " + "(" + leftExpression + " " + op + " " + rightExpression + ")");
                         functions.push_back(infix);
                         ExpressionBuilder * newBuilder = new ExpressionBuilder();
                         deletable.push_back(newBuilder);
@@ -580,7 +580,7 @@ class Evaluator{
                                         arguments += ex->get() + ", ";
                                     }
                                 }
-                                Content content(3, function + " = lambda : " + keyword + "("+ (arguments.empty() ? "" : arguments.substr(0,arguments.size()-2)) + ")" );
+                                Content content(2, function + " = lambda : " + keyword + "("+ (arguments.empty() ? "" : arguments.substr(0,arguments.size()-2)) + ")" );
                                 functions.push_back(content);
                                 ExpressionBuilder * newBuilder = new ExpressionBuilder();
                                 deletable.push_back(newBuilder);
@@ -596,8 +596,8 @@ class Evaluator{
                             const std::string & leftExpression = handleBuilder(crawl(left));
                             const std::string & op = convertUnaryOperator(builder->getOperator());
                             std::string function = getNextFunctionName();
-                            Content unary(3, "def " + function + "(self):");
-                                unary.addLine(4, "return (" + op + "(" + leftExpression + "))");
+                            Content unary(2, "def " + function + "(self):");
+                                unary.addLine(3, "return (" + op + "(" + leftExpression + "))");
                             functions.push_back(unary);
                             ExpressionBuilder * newBuilder = new ExpressionBuilder();
                             deletable.push_back(newBuilder);
@@ -623,7 +623,7 @@ class Evaluator{
         const std::string handleBuilder(ExpressionBuilder * builder){
             if (builder != NULL){
                 std::string function = getNextFunctionName();
-                Content content(3, function + " = lambda : " + builder->get());
+                Content content(2, function + " = lambda : " + builder->get());
                 functions.push_back(content);
                 return function + "()";
             }
