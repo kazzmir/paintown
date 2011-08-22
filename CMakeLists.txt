@@ -290,7 +290,7 @@ if (USE_SDL)
     # SPRIG
     add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
     # Mixer
-    add_library(mixer_module src/util/sdl/mixer/music.c src/util/sdl/mixer/mixer.c src/util/sdl/mixer/music_ogg.c src/util/sdl/mixer/music_flac.c src/util/sdl/mixer/music_mad.c src/util/sdl/mixer/dynamic_ogg.c src/util/sdl/mixer/effect_position.c src/util/sdl/mixer/effects_internal.c src/util/sdl/mixer/effect_stereoreverse.c src/util/sdl/mixer/load_voc.c src/util/sdl/mixer/load_aiff.c src/util/sdl/mixer/wavestream.c src/util/sdl/mixer/load_ogg.c)
+    add_library(mixer_module src/util/sdl/mixer/music.c src/util/sdl/mixer/mixer.c src/util/sdl/mixer/music_ogg.c src/util/sdl/mixer/music_flac.c src/util/sdl/mixer/music_mad.c src/util/sdl/mixer/dynamic_ogg.c src/util/sdl/mixer/effect_position.c src/util/sdl/mixer/effects_internal.c src/util/sdl/mixer/effect_stereoreverse.c src/util/sdl/mixer/load_voc.c src/util/sdl/mixer/load_aiff.c src/util/sdl/mixer/wavestream.c src/util/sdl/mixer/load_ogg.c src/util/sdl/mixer/convert.cpp)
 elseif (USE_ALLEGRO5)
     # SFL
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sfl)
