@@ -40,10 +40,12 @@ void play(const string & path){
     Sound sound(path);
     sound.play();
 
+    /*
     while (true){
         SDL_Delay(1);
     }
-    // SDL_Delay(8000 * 3);
+    */
+    SDL_Delay(8000 * 2);
 }
 
 void initialize(int rate){
