@@ -52,7 +52,9 @@ static const char * key_names[] = {
     "key_jump", "key_forward",
     "key_back", "key_grab", "key_right",
     "key_down", "key_up", "key_attack1",
-    "key_attack2", "key_attack3", };
+    "key_attack2", "key_attack3",
+    "key_attack4", "key_attack5",
+    "key_attack6"};
 
 namespace Keys{
     /* order of the enums should match the key_names array *exactly* */
@@ -62,6 +64,8 @@ namespace Keys{
         Back, Grab, Right,
         Down, Up, Attack1,
         Attack2, Attack3,
+        Attack4, Attack5,
+        Attack6,
 
         /* sentinal value. should always be last */
         Max,
@@ -772,6 +776,9 @@ Input::PaintownInput Animation::convertKeyPress( const string & key_name ) {
     if (key_name == key_names[Keys::Attack1]) return Input::Attack1;
     if (key_name == key_names[Keys::Attack2]) return Input::Attack2;
     if (key_name == key_names[Keys::Attack3]) return Input::Attack3;
+    if (key_name == key_names[Keys::Attack4]) return Input::Attack4;
+    if (key_name == key_names[Keys::Attack5]) return Input::Attack5;
+    if (key_name == key_names[Keys::Attack6]) return Input::Attack6;
 
     Global::debug(1) << "Unknown key name '" << key_name << "'" << endl;
 
