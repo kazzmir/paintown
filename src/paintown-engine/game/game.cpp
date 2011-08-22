@@ -294,6 +294,7 @@ public:
                 input.set(configuration.getDown(), 0, true, Down);
                 input.set(configuration.getJoystickUp(), 0, true, Up);
                 input.set(configuration.getJoystickDown(), 0, true, Down);
+                input.set(configuration.getJoystickQuit(), 0, false, Quit);
 
                 const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
                 for (map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find = movements.begin(); find != movements.end(); find++){
