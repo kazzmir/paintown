@@ -580,7 +580,7 @@ class Evaluator{
                                         arguments += ex->get() + ", ";
                                     }
                                 }
-                                Content content(3, function + " = lambda : " + keyword + "("+ (arguments.empty() ? "" : arguments.substr(0,arguments.size()-3)) + ")" );
+                                Content content(3, function + " = lambda : " + keyword + "("+ (arguments.empty() ? "" : arguments.substr(0,arguments.size()-2)) + ")" );
                                 functions.push_back(content);
                                 ExpressionBuilder * newBuilder = new ExpressionBuilder();
                                 deletable.push_back(newBuilder);
