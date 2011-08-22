@@ -18,8 +18,10 @@ def sdlMixerLibrary(env):
     return SConscript('../../util/sdl/mixer/SConscript', exports = ['use'], variant_dir = 'mixer')
 
 env.VariantDir('build', '../../')
+env.Append(CPPPATH = ['#/src'])
 source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
 build/util/audio.cpp build/exceptions/exception.cpp""")
+wav_source = Split("""wav.cpp build/util/audio.cpp build/util/debug.cpp build/exceptions/exception.cpp build/util/sound.cpp build/util/load_exception.cpp""")
 
 env.Append(CPPPATH = '../..')
 env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MAD'])
@@ -32,4 +34,6 @@ env.ParseConfig('sdl-config --libs --cflags')
 env.Append(LIBS = ['mad', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
 
 program = env.Program('test', source)
-Return('program')
+wav = env.Program('wav', wav_source)
+all = [program, wav]
+Return('all')

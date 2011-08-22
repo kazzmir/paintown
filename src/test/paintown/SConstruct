@@ -304,6 +304,7 @@ test/configuration.cpp
 test/util/input/keyboard.cpp
 test/paintown-engine/level/utils.cpp
 test/util/network/network.cpp
+test/util/audio.cpp
 test/openbor/mod.cpp
 test/openbor/pack-reader.cpp
 test/paintown-engine/game/mod.cpp
