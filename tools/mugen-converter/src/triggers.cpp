@@ -233,6 +233,7 @@ static std::string handleKeyWord(const Expression & expression){
         return "self.player.roundsExisted()";
     } else if (match("ScreenPos", keyword)){
     } else if (match("SelfAnimExist", keyword)){
+        return "self.player.selfAnimExist()";
     } else if (match("Sin", keyword)){
         return "math.sin";
     } else if (match("StateNo", keyword)){
@@ -472,8 +473,6 @@ class Evaluator{
         const std::string createRange(const std::string & against, ExpressionBuilder * range){
             std::string function = getNextFunctionName();
             std::vector<Expression> args = range->getExpression().getArguments();
-            //Content checker(3, "def " + function + "(self):");
-            //    checker.addLine(4, "return (" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
             Content checker(3, function + " = lambda : " + "(" + against + " in range(" + args[0].get() + ", " + args[1].get() + "))");
             functions.push_back(checker);
             return function + "()";
@@ -561,20 +560,51 @@ class Evaluator{
                         return newBuilder;
                     }
                 } else if (builder->getLeftComplex() != NULL && builder->getRightComplex() == NULL){
-                    /* This should be a unary operation */
-                    ExpressionBuilder * left =  crawl(builder->getLeftComplex());
-                    if (left != NULL){
-                        const std::string & leftExpression = handleBuilder(crawl(left));
-                        const std::string & op = convertUnaryOperator(builder->getOperator());
-                        std::string function = getNextFunctionName();
-                        Content unary(3, "def " + function + "(self):");
-                            unary.addLine(4, "return (" + op + "(" + leftExpression + "))");
-                        functions.push_back(unary);
-                        ExpressionBuilder * newBuilder = new ExpressionBuilder();
-                        deletable.push_back(newBuilder);
-                        newBuilder->setType(ExpressionBuilder::Custom);
-                        newBuilder->setExpression(Expression(function + "()"));
-                        return newBuilder;
+                    if (builder->getType() == ExpressionBuilder::Function){
+                        ExpressionBuilder * left =  builder->getLeftComplex();
+                        if (left != NULL){
+                            std::string keyword = left->getExpression().getKeyword();
+                            if (keyword == "ifelse"){
+                                std::string ifelse = createIfElse(builder);
+                                ExpressionBuilder * newBuilder = new ExpressionBuilder();
+                                deletable.push_back(newBuilder);
+                                newBuilder->setType(ExpressionBuilder::Custom);
+                                newBuilder->setExpression(Expression(ifelse));
+                                return newBuilder;
+                            } else {
+                                std::string function = getNextFunctionName();
+                                std::string arguments;
+                                for (std::vector<ExpressionBuilder *>::iterator i = builder->getArguments().begin(); i != builder->getArguments().end(); ++i){
+                                    ExpressionBuilder * ex = crawl(*i);
+                                    if (ex != NULL){
+                                        arguments += ex->get() + ", ";
+                                    }
+                                }
+                                Content content(3, function + " = lambda : " + keyword + "("+ (arguments.empty() ? "" : arguments.substr(0,arguments.size()-3)) + ")" );
+                                functions.push_back(content);
+                                ExpressionBuilder * newBuilder = new ExpressionBuilder();
+                                deletable.push_back(newBuilder);
+                                newBuilder->setType(ExpressionBuilder::Custom);
+                                newBuilder->setExpression(Expression(function+"()"));
+                                return newBuilder;
+                            }
+                        }
+                    } else if (builder->getType() == ExpressionBuilder::Unary){
+                        /* This should be a unary operation */
+                        ExpressionBuilder * left =  crawl(builder->getLeftComplex());
+                        if (left != NULL){
+                            const std::string & leftExpression = handleBuilder(crawl(left));
+                            const std::string & op = convertUnaryOperator(builder->getOperator());
+                            std::string function = getNextFunctionName();
+                            Content unary(3, "def " + function + "(self):");
+                                unary.addLine(4, "return (" + op + "(" + leftExpression + "))");
+                            functions.push_back(unary);
+                            ExpressionBuilder * newBuilder = new ExpressionBuilder();
+                            deletable.push_back(newBuilder);
+                            newBuilder->setType(ExpressionBuilder::Custom);
+                            newBuilder->setExpression(Expression(function + "()"));
+                            return newBuilder;
+                        }
                     }
                 } else if (builder->getLeftComplex() == NULL && builder->getRightComplex() != NULL){
                     /* NOTE This shouldn't happen but it is here just so that it can be monitored */
@@ -592,36 +622,10 @@ class Evaluator{
         /* Pushes back a function and returns the function name */
         const std::string handleBuilder(ExpressionBuilder * builder){
             if (builder != NULL){
-                if (builder->getType() == ExpressionBuilder::Function){
-                    std::string keyword = builder->get();
-                    if (keyword == "ifelse"){
-                        return createIfElse(builder);
-                    } else {
-                        std::string function = getNextFunctionName();
-                        std::string arguments;
-                        for (std::vector<ExpressionBuilder *>::iterator i = builder->getArguments().begin(); i != builder->getArguments().end(); ++i){
-                            ExpressionBuilder * ex = crawl(*i);
-                            if (ex != NULL){
-                                arguments += ex->get() + ", ";
-                            }
-                        }
-                        //Content content(3, "def " + function + "(self):");
-                        //    content.addLine(4, "return " + keyword + "(" + (arguments.empty() ? "" : arguments.substr(0,arguments.size()-3)) + ")" );
-                        Content content(3, function + " = lambda : " + keyword + "("+ (arguments.empty() ? "" : arguments.substr(0,arguments.size()-3)) + ")" );
-                        functions.push_back(content);
-                        return function + "()";
-                    }
-                } else {
-                    std::string function = getNextFunctionName();
-                    //Content content(3, "def " + function + "(self):");
-                        /* TODO FIXME */
-                        //content.addLine(4, "# Temporary - " + builder->get());
-                        //content.addLine(4, "return " + builder->get());
-                        //content.addLine(4, "pass");
-                    Content content(3, function + " = lambda : " + builder->get());
-                    functions.push_back(content);
-                    return function + "()";
-                }
+                std::string function = getNextFunctionName();
+                Content content(3, function + " = lambda : " + builder->get());
+                functions.push_back(content);
+                return function + "()";
             }
             return "";
         }
