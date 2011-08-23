@@ -340,7 +340,8 @@ class StateHandler{
         std::string definition;
         std::string function;
         std::string stateNumber;
-        std::string statedefParameters;
+        Content stateClassLine;
+        Content stateInitLine;
         Content initContent;
         bool inDef;
         StateControllerStore stateControllers;
@@ -371,17 +372,16 @@ class StateHandler{
                 
                 
                 /* Construct state class */
-                Content stateClassLine(0, "");
+                stateClassLine.addSpace();
                 stateClassLine.addLine(0, "# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str());
                 stateClassLine.addLine(0, "class StateDef" + function.substr(5) + "(mugen.StateDef):");
-                    Content stateInitLine(1, "def __init__(self, player, world):");
+                    stateInitLine.addLine(1, "def __init__(self, player, world):");
                         stateInitLine.addLine(2, "mugen.StateDef.__init__(self, player, world)");
-                        /* FIXME fill in parameters of init afterwards */
-                        stateInitLine.addLine(2, "pass");
-                stateDef = PythonClass(stateClassLine, stateInitLine);
         }
 
         void addStateClass(std::vector<PythonClass> & classes){
+            // Do init line
+            stateDef = PythonClass(stateClassLine, stateInitLine);
             stateControllers.addToDefinition(stateDefinition);
             stateDef.add(stateDefinition);
             classes.push_back(stateDef);
@@ -392,67 +392,57 @@ class StateHandler{
         PythonClass stateDef;
         PythonDefinition stateDefinition;
         
+        void addDefConstants(const std::string & name, const Ast::AttributeSimple & simple){
+            ExpressionBuilder builder = TriggerHandler::convert(*simple.getValue());
+            Trigger trigger = Trigger(builder);
+            const std::vector<Content> & functions = trigger.getFunctions();
+            for (std::vector<Content>::const_iterator j = functions.begin(); j != functions.end(); ++j){
+                stateInitLine.append(*j);
+            }
+            stateInitLine.addLine(2, "self." + name + " = " + trigger.getName());
+        }
+        
         void handleDef(const Ast::AttributeSimple & simple){
             if (simple == "type"){
-                statedefParameters += "'type' : '" + simple.valueAsString() + "',";
+                addDefConstants("stateType", simple);
             } else if (simple == "movetype"){
-                statedefParameters += "'movetype' : '" + simple.valueAsString() + "',";
+                addDefConstants("moveType", simple);
             } else if (simple == "physics"){
-                statedefParameters += "'physics' : '" + simple.valueAsString() + "',";
+                addDefConstants("physics", simple);
             } else if (simple == "anim"){
-                statedefParameters += "'anim' : " + simple.valueAsString() + ",";
+                addDefConstants("anim", simple);
             } else if (simple == "velset"){
-                std::string x, y;
-                try {
-                    simple >> x >> y;
-                } catch (const Ast::Exception & fail){
-                }
-                statedefParameters += "'velset' : (" + x + "," + y + "),";
+                addDefConstants("velset", simple);
             } else if (simple == "ctrl"){
-                statedefParameters += "'ctrl' : " + simple.valueAsString() + ",";
+                addDefConstants("ctrl", simple);
             } else if (simple == "poweradd"){
-                statedefParameters += "'poweradd' : " + simple.valueAsString() + ",";
+                addDefConstants("poweraff", simple);
             } else if (simple == "juggle"){
-                statedefParameters += "'juggle' : " + simple.valueAsString() + ",";
+                addDefConstants("stateType", simple);
             } else if (simple == "facep2"){
-                statedefParameters += "'facep2' : " + simple.valueAsString() + ",";
+                addDefConstants("facep2", simple);
             } else if (simple == "hitdefpersist"){
-                statedefParameters += "'hitdefpersist' : " + simple.valueAsString() + ",";
+                addDefConstants("hitdefpersist", simple);
             } else if (simple == "movehitpersist"){
-                statedefParameters += "'movehitpersist' : " + simple.valueAsString() + ",";
+                addDefConstants("movehitpersist", simple);
             } else if (simple == "hitcounterpersist"){
-                statedefParameters += "'hitcounterpersist' : " + simple.valueAsString() + ",";
+                addDefConstants("hitcounterpersist", simple);
             } else if (simple == "sprpriority"){
-                statedefParameters += "'sprpriority' : " + simple.valueAsString() + ",";
+                addDefConstants("sprpriority", simple);
             } else {
                 std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
             }
         }
         
         void handleState(const Ast::AttributeSimple & simple){
-            /*if (simple == "type"){
-            } else if (simple == "triggerall"){
-            } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
-            } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
-            } else if (simple == "persistent"){
-            } else if (simple == "value"){
-            } else if (simple == "x"){
-            } else if (simple == "y"){
-            } else {
-                std::cout << "Unhandled option in [" << currentSection << "] Section: " << simple.toString() << std::endl;
-            }*/
             if (simple == "triggerall"){
-                //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
                 stateControllers.getCurrentController().addTriggerall((Ast::AttributeSimple *)simple.copy());
             } else if (Util::matchRegex(simple.idString(), "trigger[0-9]+")){
-                //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;
                 int number = atoi(Util::captureRegex(simple.idString(), "trigger([0-9]+)",0).c_str());
                 stateControllers.getCurrentController().addTrigger(number, (Ast::AttributeSimple *)simple.copy());
             } else if (Util::matchRegex(simple.idString(), "var([0-9]+)")){
-                //std::cout << TriggerHandler::convert(*simple.getValue()).get() << std::endl;stateControllers.getCurrentController().addTriggerall((Ast::AttributeSimple *)simple.copy());
                 stateControllers.getCurrentController().addVar((Ast::AttributeSimple *)simple.copy());
             } else {
-                
                 std::string id = simple.idString();
                 stateControllers.getCurrentController().add(id, (Ast::AttributeSimple *)simple.copy());
             }

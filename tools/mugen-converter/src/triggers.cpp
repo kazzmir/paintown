@@ -354,8 +354,14 @@ void ExpressionBuilder::setOperator(const std::string & op){
 
 const std::string ExpressionBuilder::get(){
    switch (type){
-        case ValueList:
+        case ValueList:{
+            std::string array = "[";
+            for(std::vector<ExpressionBuilder *>::iterator i = valueList.begin(); i != valueList.end(); ++i){
+                array += crawlComplex(*i) + ", ";
+            }
+            return array.substr(0,array.size()-2) + "]"; 
             break;
+        }
         case Range:
             return expression.get();
             break;
