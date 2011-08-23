@@ -430,9 +430,12 @@ void Mugen::Stage::loadSectionShadow(Ast::Section * section, cymk_holder & shado
             } else if (*simple == "reflect"){
                 *simple >> reflect;
             } else if (*simple == "color"){
-                *simple >> shadow.c;
-                *simple >> shadow.y;
-                *simple >> shadow.m;
+                try{
+                    *simple >> shadow.c;
+                    *simple >> shadow.y;
+                    *simple >> shadow.m;
+                } catch (const Ast::Exception & fail){
+                }
             } else if (*simple == "yscale"){
                 *simple >> shadowYscale;
             } else if (*simple == "fade.range"){
