@@ -374,8 +374,8 @@ class StateHandler{
                 Content stateClassLine(0, "");
                 stateClassLine.addLine(0, "# [" + Mugen::stripDir(file) + "] Section - " + sectionName + " on line " + out.str());
                 stateClassLine.addLine(0, "class StateDef" + function.substr(5) + "(mugen.StateDef):");
-                    Content stateInitLine(1, "def __init__(self, world):");
-                        stateInitLine.addLine(2, "mugen.StateDef.__init__(self, world)");
+                    Content stateInitLine(1, "def __init__(self, player, world):");
+                        stateInitLine.addLine(2, "mugen.StateDef.__init__(self, player, world)");
                         /* FIXME fill in parameters of init afterwards */
                         stateInitLine.addLine(2, "pass");
                 stateDef = PythonClass(stateClassLine, stateInitLine);

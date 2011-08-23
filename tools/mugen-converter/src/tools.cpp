@@ -188,6 +188,13 @@ const unsigned int Mugen::Content::getIndentLevel() const{
     return 0;
 }
 
+void Mugen::Content::append(const Mugen::Content & add, unsigned int indentStart){
+    for (unsigned int i = 0; i < add.totalLines; ++i){
+        unsigned int level = indentStart + add.indentLevel[i];
+        addLine(level, add.content[i]);
+    }
+}
+
 
 // Python definition
 Mugen::PythonDefinition::PythonDefinition(const Mugen::Content & content):

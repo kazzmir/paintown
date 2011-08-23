@@ -10,7 +10,9 @@ class Command():
 
 # StateDef holds it's parameters declared in statedef and it's relative procedure states
 class StateDef():
-    def __init__(self, world):
+    def __init__(self, player, world):
+        self.player = player
+        self.world = world
         self.stateType = None
         self.moveType = None
         self.physics = None
@@ -112,6 +114,9 @@ class Character():
         
         # State holders
         self.states = {}
+        
+        # Current State
+        self.currentState = None
 
     def setName(self, name):
         self.name = name
@@ -135,14 +140,10 @@ class Character():
         
     def addState(self, number, state):
         self.states[number] = state
+        
+    def changeState(self, number, world):
+        self.currentState = self.states[number](self, world)
 
 # LN definition
 def ln(number):
     return math.log(number, math.e)
-    
-# handle mugens ifelse
-def ifelse(result, exp1, exp2):
-    if result:
-        return exp1
-    else:
-        return exp2

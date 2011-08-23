@@ -138,6 +138,7 @@ class Content{
         void addSpace();
         void output(PythonStream &, unsigned int indentStart = 0);
         const unsigned int getIndentLevel() const;
+        void append(const Content &, unsigned int indentStart = 0);
     protected:
         unsigned int totalLines;
         std::vector<unsigned int> indentLevel;
