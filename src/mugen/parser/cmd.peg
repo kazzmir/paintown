@@ -773,7 +773,10 @@ rules:
              # 'animelem' but some scripts use >= for some reason
              # We just treat any comparison as if it had used = since thats the only
              # one with a semantic meaning
-             | line:<line> "animelem"{case} s all_compare s arg1:integer s "," s comparison:all_compare s arg2:integer {{
+             | line:<line> "animelem"{case} s all_compare s arg1:integer s "," s comparison:all_compare? s arg2:integer {{
+                if (comparison.getValue() == NULL){
+                    comparison = (void*) makeExpressionEquals;
+                }
                 value = makeAnimElem(line, arg1, comparison, arg2);
              }}
              | line:<line> "animelem"{case} s all_compare s arg1:integer {{
