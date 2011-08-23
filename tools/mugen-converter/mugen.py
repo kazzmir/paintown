@@ -1,5 +1,9 @@
 # Mugen Classes
 
+# Exception handler
+class MugenException(Exception):
+    pass
+
 # Command class
 class Command():
     def __init__(self):
@@ -141,8 +145,18 @@ class Character():
     def addState(self, number, state):
         self.states[number] = state
         
+    def getState(self, number):
+        try:
+            return self.states[number]
+        except KeyError:
+            raise MugenException()
+        
     def changeState(self, number, world):
-        self.currentState = self.states[number](self, world)
+        try:
+            self.currentState = self.states[number](self, world)
+        except KeyError:
+            self.addState(number, StateDef)
+            self.currentState = self.states[number](self, world)
 
 # LN definition
 def ln(number):
