@@ -25,6 +25,7 @@
 #include "util/timedifference.h"
 #include "util/music.h"
 #include "util/events.h"
+#include "util/system.h"
 #include "util/parameter.h"
 
 /* TODO: remove this dependancy */
@@ -359,10 +360,18 @@ void MugenMenu::loadData(){
                             simple >> menu.fightFile;
                             Global::debug(1) << "Got Fight File: '" << menu.fightFile << "'" << endl;
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
-                            string temp;
-                            simple >> temp;
-                            menu.fonts.push_back(new MugenFont(Mugen::Util::findFile(Filesystem::RelativePath(temp))));
-                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+                            try{
+                                string temp;
+                                simple >> temp;
+                                Filesystem::AbsolutePath path = Mugen::Util::findFile(Filesystem::RelativePath(temp));
+
+                                if (true){
+                                    menu.fonts.push_back(new MugenFont(path));
+                                    Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
+                                }
+                            } catch (const Filesystem::NotFound & fail){
+                                Global::debug(0) << "Could not find font " << fail.getTrace() << endl;
+                            }
 
                         } else {
                             //throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
@@ -607,6 +616,10 @@ void MugenMenu::loadData(){
         ostringstream out;
         out << "Error loading data " << ourDefFile.path() << ": " << fail.getTrace();
         throw MugenException(out.str());
+    }
+
+    if (fonts.size() == 0){
+        throw MugenException("No fonts specified");
     }
 }
 
