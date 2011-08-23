@@ -4,19 +4,24 @@
   <title>Paintown!</title>
   <script>
       paintownModule = null;
-      keydisplaystatus='show';
       function moduleDidLoad() {
 	  document.getElementById('notes').style.display='none';
-          paintownModule = document.getElementById('paintown');
-          run = document.getElementById('run').style.display = 'inline';
-          loader = document.getElementById('loader').style.display = 'none';
+          document.getElementById('paintown').style.display='inline';
+          document.getElementById('run').style.display = 'inline';
+          document.getElementById('loader').style.display = 'none';
       }
 
-      function dorun(){
+      function dorun(){ //run Nacl 
           paintownModule.postMessage('run');
           document.getElementById('run').style.display='none'; //Hide Button - Don't need users to click twice
+	  //document.getElementById('loader').style.display='inline';
       }
 
+      function reporterrors(e) { //Display errors from NaCL
+            document.getElementById('troubleshoot').innerHTML+="<br /><br /><span class='error'>ERROR: " + document.getElementById('paintown').lastError + "</span>";
+      }                                 
+
+      keydisplaystatus='show';
       function hideshowkeys(){ //Toggle Keys
 	if (keydisplaystatus == 'show') {
 		keydisplaystatus = 'hide';
@@ -87,7 +92,7 @@
 
       div#troubleshoot{
 	text-align: center;
-	font-size: 10px;
+	font-size: 12px;
       }
 
       .error{
@@ -97,6 +102,11 @@
 	color: white;
       }
 	
+      .good{
+	color: green;
+	font-weight: bold;
+      }
+
      A:link{
 	color : #77aadd;
      }
@@ -105,6 +115,9 @@
 	color : #77aadd;
      }
 
+     div#loader{
+	text-align: center;
+     }
   </style>
 </head>
 <body>
@@ -134,19 +147,19 @@
     </div>
 
     <div class='main' id='listener'>
-    <div id='loader'>
-        <span>Loading, Please wait...</span>
-        <img src="loader.gif" />
-    </div>
-    <button id='run' onclick="dorun()" style="display:none;">Start Paintown</button>
-        <script type="text/javascript">
-            document.getElementById('listener').addEventListener('load', moduleDidLoad, true);
-        </script>
+        <div id='loader'>
+             Loading, Please wait...<br />
+             <img src="loader.gif" />
+        </div>
 
 	<div id='notes'>
         	Wait for the binary to completely download. Once it has downloaded a button labeled <b>Start Paintown</b> will appear. Click that and wait for the game to start. It may seem that the game is hanging at times but just be patient, loading resources over the network can be quite slow. Loading times will be improved in the future.<br />
         </div>
-
+        <button id='run' onclick="dorun()" style="display:none;">Start Paintown</button>
+        <script type="text/javascript">
+            document.getElementById('listener').addEventListener('load', moduleDidLoad, true);
+            document.getElementById('listener').addEventListener('error', reporterrors, true);
+        </script>
         <embed name="nacl_module"
                id="paintown"
                width=640 height=480
@@ -155,11 +168,12 @@
    </div>
 
 </div>  <!-- End Content -->
-   <div id='troubleshoot'></div>
-   <br />
+
+<div id='troubleshoot'></div>
+<br />
 
 <script>
-  //Web browser version & NaCl checker
+      //Web browser version & NaCl checker
       var fullVersion  = ''+parseFloat(navigator.appVersion); 
       var majorVersion = parseInt(navigator.appVersion,10);
       if ((verOffset=navigator.userAgent.indexOf("Chrome"))!=-1) {
@@ -174,7 +188,7 @@
 			}
 		}
 		if (has_nacl == true) { //NaCL is enabled
-			document.getElementById("troubleshoot").innerHTML="Chrome Native Client is enabled. You should be able to run Paintown in your browser.<br />If you are getting the message &quot;The Native Plugin is not allowed&quot; above,<br />go to <b>chrome://flags</b> in your address bar and click on <em>Enable</em> under &quot;Native Client&quot; and restart Google Chrome.";
+			document.getElementById("troubleshoot").innerHTML="<span class='good'><b>&#x2713;</b> Chrome Native Client is Enabled.</span><br /> You should be able to run Paintown in your browser.<br />If you are getting the message &quot;The Native Plugin is not allowed&quot; above,<br />go to <b>chrome://flags</b> in your address bar and click on <em>Enable</em> under &quot;Native Client&quot; and restart Google Chrome.";
 		} else { // NaCl Not enabled
 			document.getElementById('content').innerHTML='';
 			document.getElementById("troubleshoot").innerHTML="<div class='error'>You do not have Chrome NaCL Enabled.<br />Please go to <b>chrome://plugins</b> in your address bar and Click <em>Enable</em> under &quot;Native Client&quot;.<br />Then <a href='javascript:location.reload(true)'>Refresh this page</a></div>";
@@ -190,14 +204,14 @@
       }
 </script>
 
-   <div class='information'>
+<div class='information'>
        <span>This is a demo of Paintown running inside <a href="http://code.google.com/p/nativeclient/">Google's Native Client</a>.</span>
        <br />
        <span>You need <b>Google Chrome 14</b> or higher to run the demo. You can get it from <a href="http://www.google.com/landing/chrome/beta/">the beta download page</a>.</span>
-   </div>
+</div>
 <br />
-   <div id='footer'>
+<div id='footer'>
 	<a href='http://paintown.org' target='_blank'>Visit the Paintown website</a> or <a href='http://webchat.freenode.net/?channels=paintown' target='_blank'>Join the IRC Chat room</a>
-   </div>
+</div>
 </body>
 </html>
