@@ -354,9 +354,11 @@ void StateControllerStore::addToDefinition(PythonDefinition & definition){
     
     // TODO Go through current parameters and create new classes based on 'type' and add to definition
     int controller = 0;
+    std::vector<std::string> controllers;
     for (std::vector<StateParameterMap>::iterator i = controllerParameters.begin(); i != controllerParameters.end(); ++i){
         std::ostringstream out;
         out << controller;
+        controllers.push_back("controller" + out.str() + "()");
         definition.addSpace();
         definition.addContent(Content(1, "def controller" + out.str() + "(self):"));
         std::vector<Ast::AttributeSimple *> * type = (*i).find("type");
@@ -370,6 +372,9 @@ void StateControllerStore::addToDefinition(PythonDefinition & definition){
         controller++;
     }
     definition.addSpace();
+    for (std::vector<std::string>::iterator i = controllers.begin(); i != controllers.end(); ++i){
+        definition.addContent(Content(1, *i));
+    }
 }
     
 StateController::StateController(const StateParameterMap & parameters):
