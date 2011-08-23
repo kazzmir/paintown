@@ -358,7 +358,7 @@ void StateControllerStore::addToDefinition(PythonDefinition & definition){
     for (std::vector<StateParameterMap>::iterator i = controllerParameters.begin(); i != controllerParameters.end(); ++i){
         std::ostringstream out;
         out << controller;
-        controllers.push_back("controller" + out.str() + "()");
+        controllers.push_back("controller" + out.str() + "(self)");
         definition.addSpace();
         definition.addContent(Content(1, "def controller" + out.str() + "(self):"));
         std::vector<Ast::AttributeSimple *> * type = (*i).find("type");
