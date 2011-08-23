@@ -540,8 +540,11 @@ static Configuration::JoystickInput getKey(int player, OptionJoystick::JoystickT
         case OptionJoystick::Attack3:
             return Configuration::config(player).getJoystickAttack3();
         case OptionJoystick::Attack4:
+            return Configuration::config(player).getJoystickAttack4();
         case OptionJoystick::Attack5:
+            return Configuration::config(player).getJoystickAttack5();
         case OptionJoystick::Attack6:
+            return Configuration::config(player).getJoystickAttack6();
         default:
             break;
     }
@@ -576,8 +579,14 @@ static void setKey(int player, OptionJoystick::JoystickType k, Configuration::Jo
             Configuration::config(player).setJoystickAttack3( key );
             break;
         case OptionJoystick::Attack4:
+            Configuration::config(player).setJoystickAttack4( key );
+            break;
         case OptionJoystick::Attack5:
+            Configuration::config(player).setJoystickAttack5( key );
+            break;
         case OptionJoystick::Attack6:
+            Configuration::config(player).setJoystickAttack6( key );
+            break;
         default:
             break;
     }
@@ -593,6 +602,8 @@ static Configuration::JoystickInput readJoystick(){
     keys.push_back(Joystick::Button2);
     keys.push_back(Joystick::Button3);
     keys.push_back(Joystick::Button4);
+    keys.push_back(Joystick::Button5);
+    keys.push_back(Joystick::Button6);
 
     InputMap<Joystick::Key> input;
     for (vector<Joystick::Key>::iterator it = keys.begin(); it != keys.end(); it++){
