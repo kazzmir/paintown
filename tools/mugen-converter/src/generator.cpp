@@ -304,7 +304,7 @@ class StateException : public std::exception{
 
 class StateHandler{
     public:
-        StateHandler(const std::string & section):
+        StateHandler(const std::string & section, int line):
         inDef(true),
         stateDef(Content(1,""), Content(1, "")),
         stateDefinition(Content(1,"")){
@@ -323,9 +323,11 @@ class StateHandler{
                 }
                 
                 function = func;
-                //definition = "def " + function + "(self, world):";
+                
+                std::ostringstream sectionLine;
+                sectionLine << line;
                 definition = "def evaluate(self, world):";
-                stateDefinition.addContent(Content(0, "# State File function for " + section));
+                stateDefinition.addContent(Content(0, "# State File function for " + section + " on line " + sectionLine.str()));
                 stateDefinition.addContent(Content(0, definition));
                 
                 initContent.addSpace();
@@ -465,7 +467,7 @@ class StateCollection{
             if (Util::matchRegex(Mugen::lowercase(section.getName()), "statedef")){
                 // Create state handler
                 try {
-                    StateHandler * state = new StateHandler(section.getName());
+                    StateHandler * state = new StateHandler(section.getName(), section.getLine());
                     state->init(filename, section.getLine());
                     states.push_back(state);
                     stateDefDeclared[state->stateNumber] = true;

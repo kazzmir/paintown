@@ -148,6 +148,10 @@ static std::string handleKeyWord(const Expression & expression){
 
     } else if (match("HitCount", keyword)){
     } else if (match("HitDefAttr", keyword)){
+    } else if (match("HitDefAttr:state", keyword)){
+        return "self.player.getHitDefAttributeState()";
+    } else if (match("HitDefAttr:attribute", keyword)){
+        return "self.player.getHitDefAttribute()";
     } else if (match("HitFall", keyword)){
     } else if (match("HitOver", keyword)){
     } else if (match("HitPauseTime", keyword)){
@@ -537,7 +541,7 @@ class Evaluator{
                             array += value->get() + ", ";
                         }
                         std::string function = getNextFunctionName();
-                        Content checker(2, function + " = lambda : " + "(" + crawl(builder->getLeftComplex())->get() + " in [" + (array.empty() ? "" : array.substr(0,array.size()-4) ) + "]");
+                        Content checker(2, function + " = lambda : " + "(" + crawl(builder->getLeftComplex())->get() + " in [" + (array.empty() ? "" : array.substr(0,array.size()-2) ) + "])");
                         functions.push_back(checker);
                         ExpressionBuilder * newBuilder = new ExpressionBuilder();
                         deletable.push_back(newBuilder);
@@ -685,6 +689,10 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
         }
         ExpressionBuilder & exp;
         
+        virtual void onValue(const Ast::Value & value){
+            std::cout << "Found Value: " << value.toString() << std::endl;
+        }
+        
         virtual void onValueList(const Ast::ValueList & values){
             //std::cout << "Found Value List: " << values.toString() << std::endl;
             exp.setType(ExpressionBuilder::ValueList);
@@ -694,6 +702,27 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
                     ExpressionBuilder * item = new ExpressionBuilder(convert(*value));
                     exp.addToList(item);
                 } else {
+                    break;
+                }
+            }
+        }
+        virtual void onHitDefAttribute(const Ast::HitDefAttribute & attribute){
+            //std::cout << "Found Hitdef Attribute: " << attribute.toString() << std::endl;
+            exp.setType(ExpressionBuilder::String);
+            exp.setExpression(Expression(attribute.toString()));
+        }
+        virtual void onHitDefAttackAttribute(const Ast::HitDefAttackAttribute & attribute){
+            //std::cout << "Found Hitdef Attack Attribute: " << attribute.toString() << std::endl;
+            exp.setType(ExpressionBuilder::ValueList);
+            while (true){
+                std::string value;
+                try {
+                    attribute >> value;
+                    ExpressionBuilder * item = new ExpressionBuilder();
+                    item->setType(ExpressionBuilder::String);
+                    item->setExpression(Expression(value));
+                    exp.addToList(item);
+                } catch (const Ast::Exception & ex) {
                     break;
                 }
             }
