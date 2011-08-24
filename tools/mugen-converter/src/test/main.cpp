@@ -43,7 +43,7 @@ int main(int argc, char ** argv){
             
             delete character;
         } catch (const PyException & ex){
-            error("Problem loading module! Reason: " + ex.getReason());
+            error("Problem with module! Reason: " + ex.getReason());
         }
         
         Py_Finalize();

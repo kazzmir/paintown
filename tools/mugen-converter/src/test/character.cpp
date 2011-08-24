@@ -49,8 +49,12 @@ character(NULL){
     std::cout << "Successfull loaded module: " << str << ".py" << std::endl;
     
     // Set initial state
-    PyObject_CallMethod(character, "changeState", "(is)", 5900, "None");
+    PyObject * check = PyObject_CallMethod(character, "changeState", "(is)", 5900, "None");
+    if (check == NULL){
+        throw PyException("Couldn't load initialize state 5900");
+    }
     
+    Py_DECREF(check);
     Py_DECREF(name);
 }
 
@@ -67,8 +71,12 @@ void Character::act(){
     // State -1
     
     // Current State
-    PyObject_CallMethod(character, "act", "(s)", "world");
-    
+    PyObject * check = PyObject_CallMethod(character, "act", "(s)", "world");
+    if (check != NULL){
+    } else if (check == NULL){
+        throw PyException("Calling current state failed.");
+    }
+    Py_DECREF(check);
 }
         
 void Character::addAttribute(const std::string & attributeName, const AttributeType & type){
