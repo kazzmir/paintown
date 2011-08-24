@@ -32,6 +32,8 @@ class Character{
             Numerical,
         };
         
+        virtual void act();
+        
         virtual void addAttribute(const std::string &, const AttributeType &);
         
         virtual void callMethod(const std::string &);

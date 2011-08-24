@@ -121,6 +121,11 @@ class Character():
         
         # Current State
         self.currentState = None
+        
+        # States -3, -2, -1
+        self.neg3State = None
+        self.neg2State = None
+        self.neg1State = None
 
     def setName(self, name):
         self.name = name
@@ -153,10 +158,19 @@ class Character():
         
     def changeState(self, number, world):
         try:
-            self.currentState = self.states[number](self, world)
-        except KeyError:
+            self.currentState = getState(number)(self, world)
+        except MugenException:
             self.addState(number, StateDef)
             self.currentState = self.states[number](self, world)
+
+    def act(self, world):
+        # State -3, -2, -1
+        self.neg3State.evaluate(self, world)
+        self.neg2State.evaluate(self, world)
+        self.neg1State.evaluate(self, world)
+        
+        # Current state
+        self.currentState.evaluate(self, world)
 
 # LN definition
 def ln(number):

@@ -20,6 +20,7 @@ const std::string & PyException::getReason() const throw(){
 
 
 Character::Character(const char * str):
+moduleName(str),
 module(NULL),
 dict(NULL),
 charClass(NULL),
@@ -53,6 +54,17 @@ character(NULL){
 Character::~Character(){
     Py_DECREF(character);
     Py_DECREF(module);
+}
+
+void Character::act(){
+    // State -3
+    
+    // State -2 
+    
+    // State -1
+    
+    // Current State
+    
 }
         
 void Character::addAttribute(const std::string & attributeName, const AttributeType & type){
