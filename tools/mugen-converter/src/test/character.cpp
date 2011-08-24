@@ -21,34 +21,38 @@ const std::string & PyException::getReason() const throw(){
 
 Character::Character(const char * str):
 moduleName(str),
-module(NULL),
-dict(NULL),
+charModule(NULL),
+charDict(NULL),
 charClass(NULL),
 character(NULL){
-    PyObject * name; 
-    name = PyString_FromString(str);
+    PyObject * name = PyString_FromString(str);
     TimeDifference time;
     time.startTime();
-    module = PyImport_Import(name);
+    charModule = PyImport_Import(name);
     time.endTime();
     std::cout << time.printTime("Loading Character Module took") << std::endl;
-    if (module == NULL){
+    if (charModule == NULL){
         throw PyException("Couldn't load module: " + std::string(str));
     }
     
-    dict = PyModule_GetDict(module);
+    charDict = PyModule_GetDict(charModule);
         
-    charClass = PyDict_GetItemString(dict, str);
+    charClass = PyDict_GetItemString(charDict, str);
     
     if (PyCallable_Check(charClass)){
         character = PyObject_CallObject(charClass, NULL);
     } else {
-        throw PyException("Couldn't verify class.");
+        throw PyException("Couldn't verify " + std::string(str) + " class.");
     }
     
-    std::cout << "Successfull loaded module: " << str << ".py" << std::endl;
+    std::cout << "Successfully loaded module: " << str << ".py" << std::endl;
+    
+    addAttribute("name", Character::String);
+    
+    std::cout << "Character Name: " << getStringValue("name") << std::endl;
     
     // Set initial state
+    std::cout << "Initializing initial state 5900" << std::endl;
     PyObject * check = PyObject_CallMethod(character, "changeState", "(is)", 5900, "None");
     if (check == NULL){
         throw PyException("Couldn't load initialize state 5900");
@@ -56,11 +60,34 @@ character(NULL){
     
     Py_DECREF(check);
     Py_DECREF(name);
+    
+    // Load mugen.World
+    name = PyString_FromString("mugen");
+    time.startTime();
+    worldModule = PyImport_Import(name);
+    time.endTime();
+    std::cout << time.printTime("Loading mugen.World took") << std::endl;
+    if (worldModule == NULL){
+        throw PyException("Couldn't load mugen.World.");
+    }
+    worldDict = PyModule_GetDict(worldModule);
+    worldClass = PyDict_GetItemString(worldDict, "World");
+    
+    if (PyCallable_Check(worldClass)){
+        world = PyObject_CallObject(worldClass, NULL);
+    } else {
+        throw PyException("Couldn't verify mugen.World class.");
+    }
+    
+    std::cout << "Successfully loaded mugen.World" << std::endl;
+    Py_DECREF(name);
 }
 
 Character::~Character(){
     Py_DECREF(character);
-    Py_DECREF(module);
+    Py_DECREF(charModule);
+    Py_DECREF(world);
+    Py_DECREF(worldModule);
 }
 
 void Character::act(){
@@ -71,12 +98,15 @@ void Character::act(){
     // State -1
     
     // Current State
-    PyObject * check = PyObject_CallMethod(character, "act", "(s)", "world");
+    //PyObject * check = PyObject_CallMethod(character, "act", "(o)", world);
+    PyObject * act = PyString_FromString("act");
+    PyObject * check = PyObject_CallMethodObjArgs(character, act, world, NULL);
     if (check != NULL){
     } else if (check == NULL){
         throw PyException("Calling current state failed.");
     }
     Py_DECREF(check);
+    Py_DECREF(act);
 }
         
 void Character::addAttribute(const std::string & attributeName, const AttributeType & type){

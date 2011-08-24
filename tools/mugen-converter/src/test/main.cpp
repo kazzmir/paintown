@@ -29,8 +29,6 @@ int main(int argc, char ** argv){
        
         try {
             Character * character = new Character(argv[1]);
-            character->addAttribute("name", Character::String);
-            std::cout << "Character Name: " << character->getStringValue("name") << std::endl;
             
             bool quit = false;
             while (!quit){

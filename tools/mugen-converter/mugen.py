@@ -39,6 +39,21 @@ class Controller():
     def __init__(self):
         pass
 
+# World class
+class World():
+    def __init__(self):
+        self.currentTime = None
+        self.endTime = None
+        self.currentRound = None
+        self.rounds = None
+        self.player1 = None
+        self.player2 = None
+        self.player3 = None
+        self.player4 = None
+    
+    def getTime(self):
+        return self.currentTime
+
 # Character Class
 class Character():
     def __init__(self):
@@ -116,6 +131,9 @@ class Character():
         # Command Holders
         self.commands = {}
         
+        # Current Command
+        self.currentCommand = None
+        
         # State holders
         self.states = {}
         
@@ -156,6 +174,7 @@ class Character():
         except KeyError:
             raise MugenException()
         
+    # Change state to number and pass world
     def changeState(self, number, world):
         try:
             self.currentState = self.getState(number)(self, world)
@@ -163,6 +182,15 @@ class Character():
             self.addState(number, StateDef)
             self.currentState = self.states[number](self, world)
 
+    # Set command
+    def setCurrentCommand(self, command):
+        self.currentCommand = command
+        
+    # Evaluate a command
+    def evaluateCommand(self):
+        return self.currentCommand
+    
+    # Run through -3, -2, -1 and current states
     def act(self, world):
         # State -3, -2, -1
         self.neg3State.evaluate(world)

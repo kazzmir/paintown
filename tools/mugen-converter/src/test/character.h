@@ -44,7 +44,8 @@ class Character{
         
     protected:
         std::string moduleName;
-        PyObject * module, * dict, *charClass, * character;
+        PyObject * charModule, * charDict, * charClass, * character;
+        PyObject * worldModule, * worldDict, * worldClass, * world;
         
         // Simplified for now, can change later
         std::map<std::string, std::string> stringValues;

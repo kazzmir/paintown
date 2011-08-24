@@ -101,7 +101,7 @@ Content getController(StateParameterMap & map){
                 for (std::vector<Content>::const_iterator j = functions.begin(); j != functions.end(); ++j){
                     state.append(*j, 1);
                 }
-                state.addLine(3, "self.player.changeState(" + trigger.getName() + ", self.world)");
+                state.addLine(3, "self.player.changeState(" + trigger.getName() + ", world)");
             } else {
                 state.addLine(3, "# No value assigned...");
             }

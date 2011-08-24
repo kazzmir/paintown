@@ -119,7 +119,7 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("Ceil", keyword)){
         return "math.ceil";
     } else if (match("Command", keyword)){
-        return "self.player.EvaluateCommand()";
+        return "self.player.evaluateCommand()";
     } else if (match("Const", keyword)){
     } else if (match("Const240p", keyword)){
     } else if (match("Const480p", keyword)){
@@ -143,7 +143,7 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("FrontEdgeDist", keyword)){
 
     } else if (match("GameTime", keyword)){
-        //return new Function("self.world.getTime");
+        return "world.getTime";
     } else if (match("GetHitVar", keyword)){
 
     } else if (match("HitCount", keyword)){
@@ -192,13 +192,13 @@ static std::string handleKeyWord(const Expression & expression){
 
     } else if (match("P1Name", keyword)){
     } else if (match("P2BodyDist x", keyword)){
-        return "self.world.getPlayerBodyDistance()";
+        return "world.getPlayerBodyDistance()";
     } else if (match("P2BodyDist y", keyword)){
-        return "self.world.getPlayerBodyDistance()";
+        return "world.getPlayerBodyDistance()";
     } else if (match("P2Dist x", keyword)){
-        return "self.world.getPlayerDistance()";
+        return "world.getPlayerDistance()";
     } else if (match("P2Dist y", keyword)){
-        return "self.world.getPlayerDistance()";
+        return "world.getPlayerDistance()";
     } else if (match("P2Life", keyword)){
     } else if (match("P2MoveType", keyword)){
     } else if (match("P2Name", keyword)){
@@ -230,9 +230,9 @@ static std::string handleKeyWord(const Expression & expression){
         //return new Function("random");
     } else if (match("RootDist", keyword)){
     } else if (match("RoundNo", keyword)){
-        //return new Function("self.world.currentRound");
+        //return new Function("world.currentRound");
     } else if (match("RoundState", keyword)){
-        //return new Function("self.world.roundState");
+        //return new Function("world.roundState");
     } else if (match("RoundsExisted", keyword)){
         return "self.player.roundsExisted()";
     } else if (match("ScreenPos", keyword)){
@@ -251,7 +251,7 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("TeamSide", keyword)){
     } else if (match("TicksPerSecond", keyword)){
     } else if (match("Time", keyword)){
-        return "self.world.getTime()";
+        return "world.getTime()";
     } else if (match("TimeMod", keyword)){
 
     } else if (match("UniqHitCount", keyword)){
