@@ -78,6 +78,24 @@ void CharacterGenerator::output(const std::string & file){
         handleBaseDef(character);
         handleCmdFile(character);
         handleStateFiles(character);
+        
+        // Initialize -3, -2, -1
+        character.getInit().addSpace();
+        Content negativeStates(0, "# Initialize states -3, -2, -1");
+        negativeStates.addLine(0, "try:");
+            negativeStates.addLine(1, "self.neg3State = self.getState(-3)(self, None)");
+        negativeStates.addLine(0, "except mugen.MugenException:");
+            negativeStates.addLine(1, "self.neg3State = mugen.StateDef(self, None)");
+        negativeStates.addLine(0, "try:");
+            negativeStates.addLine(1, "self.neg2State = self.getState(-2)(self, None)");
+        negativeStates.addLine(0, "except mugen.MugenException:");
+            negativeStates.addLine(1, "self.neg2State = mugen.StateDef(self, None)");
+        negativeStates.addLine(0, "try:");
+            negativeStates.addLine(1, "self.neg1State = self.getState(-1)(self, None)");
+        negativeStates.addLine(0, "except mugen.MugenException:");
+            negativeStates.addLine(1, "self.neg1State = mugen.StateDef(self, None)");
+        character.getInit().addContent(negativeStates);
+        
         character.output(out, 0);
         outputStateClasses(out);
         out.close();
@@ -500,23 +518,6 @@ class StateCollection{
                     cl.getInit().addContent((*i)->getInitEntry());
                 }
             }
-            // Initialize -3, -2, -1
-            cl.getInit().addSpace();
-            Content negativeStates(0, "# Initialize states -3, -2, -1");
-            negativeStates.addLine(0, "try:");
-                negativeStates.addLine(1, "self.neg3State = self.getState(-3)(self, None)");
-            negativeStates.addLine(0, "except mugen.MugenException:");
-                negativeStates.addLine(1, "self.neg3State = mugen.StateDef(self, None)");
-            negativeStates.addLine(0, "try:");
-                negativeStates.addLine(1, "self.neg2State = self.getState(-2)(self, None)");
-            negativeStates.addLine(0, "except mugen.MugenException:");
-                negativeStates.addLine(1, "self.neg2State = mugen.StateDef(self, None)");
-            negativeStates.addLine(0, "try:");
-                negativeStates.addLine(1, "self.neg1State = self.getState(-1)(self, None)");
-            negativeStates.addLine(0, "except mugen.MugenException:");
-                negativeStates.addLine(1, "self.neg1State = mugen.StateDef(self, None)");
-            
-            cl.getInit().addContent(negativeStates);
         }
         
         void addStateClasses(std::vector<PythonClass> & classes){
