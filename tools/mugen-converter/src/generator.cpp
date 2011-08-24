@@ -503,19 +503,18 @@ class StateCollection{
             // Initialize -3, -2, -1
             cl.getInit().addSpace();
             Content negativeStates(0, "# Initialize states -3, -2, -1");
-            negativeStates.addLine(0, "world = []");
             negativeStates.addLine(0, "try:");
-                negativeStates.addLine(1, "self.neg3State = self.getState(-3)(self, world)");
+                negativeStates.addLine(1, "self.neg3State = self.getState(-3)(self, None)");
             negativeStates.addLine(0, "except mugen.MugenException:");
-                negativeStates.addLine(1, "self.neg3State = mugen.StateDef(self, world)");
+                negativeStates.addLine(1, "self.neg3State = mugen.StateDef(self, None)");
             negativeStates.addLine(0, "try:");
-                negativeStates.addLine(1, "self.neg2State = self.getState(-2)(self, world)");
+                negativeStates.addLine(1, "self.neg2State = self.getState(-2)(self, None)");
             negativeStates.addLine(0, "except mugen.MugenException:");
-                negativeStates.addLine(1, "self.neg2State = mugen.StateDef(self, world)");
+                negativeStates.addLine(1, "self.neg2State = mugen.StateDef(self, None)");
             negativeStates.addLine(0, "try:");
-                negativeStates.addLine(1, "self.neg1State = self.getState(-1)(self, world)");
+                negativeStates.addLine(1, "self.neg1State = self.getState(-1)(self, None)");
             negativeStates.addLine(0, "except mugen.MugenException:");
-                negativeStates.addLine(1, "self.neg1State = mugen.StateDef(self, world)");
+                negativeStates.addLine(1, "self.neg1State = mugen.StateDef(self, None)");
             
             cl.getInit().addContent(negativeStates);
         }

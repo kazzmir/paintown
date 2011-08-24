@@ -60,6 +60,33 @@ env.Prepend(LIBS = pcreLibrary(env))
 env.Program('converter', source)
 
 
+# Check for allegro
+def haveAllegro(env):
+    
+    new_env = env
+    new_env.ParseConfig('allegro-config --libs --cflags')
+    
+    print 'Configuration: Checking for Allegro in the environment.'
+    
+    config = new_env.Configure()
+    
+    ok = config.TryLink("""
+        #include <allegro.h>
+        int main(int argc, char ** argv){
+            install_allegro(0, NULL, NULL);
+            return 0;
+        }
+        END_OF_MAIN()
+    """, ".c")
+    
+    config.Finish()
+    if ok:
+        print 'Configuration: Allegro found.'
+        env = new_env
+        return 1
+    else:
+        print 'Configuration: Allegro not found'
+        return 0
 
 # Test application for python
 def havePython(env):
@@ -84,7 +111,8 @@ def havePython(env):
     new_env.Replace(LIBS = new_libs)
     
     print 'Configuration: Checking if python is available in the environment.'
-    ret = new_env.Configure().TryLink("""
+    config = new_env.Configure()
+    ret = config.TryLink("""
         #include <Python.h>
         int main(int argc, char *argv[]) {
             Py_Initialize();
@@ -92,6 +120,7 @@ def havePython(env):
         }
     """, ".c");
     
+    config.Finish()
     if ret:
         print 'Configuration: Python found.'
         env = new_env
@@ -104,7 +133,7 @@ testEnv = Environment(ENV = os.environ)
 testEnv.VariantDir('build/paintown', '../../src')
 testEnv.Append(CPPPATH = ['../../src'])
     
-if havePython(testEnv):
+if havePython(testEnv) and haveAllegro(testEnv):
     if getDebug():
         testEnv.Prepend(CPPFLAGS = ['-g3','-ggdb', '-Wfatal-errors'])
     source = Split("""

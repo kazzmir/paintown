@@ -48,6 +48,9 @@ character(NULL){
     
     std::cout << "Successfull loaded module: " << str << ".py" << std::endl;
     
+    // Set initial state
+    PyObject_CallMethod(character, "changeState", "(is)", 5900, "None");
+    
     Py_DECREF(name);
 }
 
@@ -64,6 +67,7 @@ void Character::act(){
     // State -1
     
     // Current State
+    PyObject_CallMethod(character, "act", "(s)", "world");
     
 }
         
