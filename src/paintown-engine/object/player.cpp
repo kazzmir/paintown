@@ -161,7 +161,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
 
     Configuration & configuration = Configuration::config(config);
     int facing = getFacing();
-    enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Jump, Input::Grab};
+    enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
     for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
         input.set(configuration.getKey(all[i], facing), 0, false, all[i]);
         input.set(configuration.getJoystickKey(all[i], facing), 0, false, all[i]);
