@@ -1,4 +1,33 @@
-# A specification for mugen characters in python:
+----------------- A converter for mugen character scripts to python code. ----------------- Modified 08/25/2011
+
+  *Note - The implementation of the mugen engine in paintown will support characters in this format sometime in or after version 3.6.
+
+ - The program can be found in the tools/mugen-converter directory of the paintown root directory.
+ 
+ - To build the converter you can type scons or make (which calls scons w/ extra parameters for cpu support).
+   - If you have python developer libraries and allegro installed it will also build a test application to test characters generated with the converter.
+
+ -The application will be name 'converter' and will output this below if no parameters are passed to it:
+    
+    - Usage: ./converter character.def [character.py]
+
+ - The second argument is not required and will just reuse the same name of the character definition file passed in argument 1.
+   - When converting a character, ensure that all the files that the 'character.def' references are available within the same directory or location specified in the definition file.
+   - It will fail if can't find a file and should report what it is missing or can't find.
+
+ - Once the converter has completed the outputed file (assuming the above) character.py will be ready for use
+   - The generated character will import the mugen module which can be found in the same directory which you can basically get an idea from the example specification at the bottom of this page.
+ 
+ - If you have the python developer libraries and allegro installed you may test the character with application test:
+ 
+    - Usage: ./test character_module_name
+ 
+ - Running it in the test application will initialize the character as well as set up it's states and basically step through individuals states to test if there are any issues in the actual conversion
+   - Python will raise any errors or problems that may be encountered and report it to console so that you may address or correct them.
+   - The test application will eventually support inputing state numbers and calling other functions that may be provided by the mugen.Character class to target specific things
+
+
+----------------- An example specification for mugen characters in python -----------------
 
 # This import will come from the paintown engine
 import mugen
