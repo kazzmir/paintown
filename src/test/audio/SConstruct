@@ -17,23 +17,32 @@ def sdlMixerLibrary(env):
     use = env
     return SConscript('../../util/sdl/mixer/SConscript', exports = ['use'], variant_dir = 'mixer')
 
-env.VariantDir('build', '../../')
-env.Append(CPPPATH = ['#/src'])
-source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
-build/util/audio.cpp build/exceptions/exception.cpp""")
-wav_source = Split("""wav.cpp build/util/audio.cpp build/util/debug.cpp build/exceptions/exception.cpp build/util/sound.cpp build/util/load_exception.cpp""")
+def isLinux():
+    import sys
+    return 'linux' in sys.platform
 
-env.Append(CPPPATH = '../..')
-env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MAD'])
-env.Append(CCFLAGS = ['-g3'])
-#env.Append(CCFLAGS = ['-O2', '-pg'])
-#env.Append(LINKFLAGS = ['-pg'])
-# env.ParseConfig('sdl-config --libs --cflags')
-env.ParseConfig('sdl-config --libs --cflags')
+# Just test this on linux for now
+if isLinux():
+    env.VariantDir('build', '../../')
+    env.Append(CPPPATH = ['#/src'])
+    source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
+    build/util/audio.cpp build/exceptions/exception.cpp""")
+    wav_source = Split("""wav.cpp build/util/audio.cpp build/util/debug.cpp build/exceptions/exception.cpp build/util/sound.cpp build/util/load_exception.cpp""")
 
-env.Append(LIBS = ['mad', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
+    env.Append(CPPPATH = '../..')
+    env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MAD'])
+    env.Append(CCFLAGS = ['-g3'])
+    #env.Append(CCFLAGS = ['-O2', '-pg'])
+    #env.Append(LINKFLAGS = ['-pg'])
+    # env.ParseConfig('sdl-config --libs --cflags')
+    env.ParseConfig('sdl-config --libs --cflags')
 
-program = env.Program('test', source)
-wav = env.Program('wav', wav_source)
-all = [program, wav]
-Return('all')
+    env.Append(LIBS = ['mad', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
+
+    program = env.Program('test', source)
+    wav = env.Program('wav', wav_source)
+    all = [program, wav]
+    Return('all')
+else:
+    all = []
+    Return('all')
