@@ -1472,7 +1472,7 @@ void Character::load(int useAct){
                             } else if (simple == "sound"){
                                 simple >> self.sndFile;
                                 // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
-                                Util::readSounds(self.baseDir.join(Filesystem::RelativePath(self.sndFile)), self.sounds);
+                                Util::readSounds(Storage::instance().lookupInsensitive(self.baseDir, Filesystem::RelativePath(self.sndFile)), self.sounds);
                             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal([0-9]+)", 0).c_str());
                                 string what;

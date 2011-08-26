@@ -4535,6 +4535,15 @@ public:
                 } else if (simple == "sinadd"){
                     try{
                         simple >> controller.sinRed;
+                        simple >> controller.sinGreen;
+                        simple >> controller.sinBlue;
+                        simple >> controller.period;
+                    } catch (const Ast::Exception & fail){
+                        /* I guess we don't care about failures here */
+                    }
+                    /*
+                    try{
+                        simple >> controller.sinRed;
                     } catch (const Ast::Exception & fail){
                         ostringstream out;
                         out << "Could not get the red component of sinadd. " << fail.getTrace();
@@ -4564,6 +4573,7 @@ public:
                         out << "Could not get the period component of sinadd. " << fail.getTrace();
                         throw MugenException(out.str(), __FILE__, __LINE__);
                     }
+                    */
                 } else if (simple == "invertall"){
                     simple >> controller.invert;
                 } else if (simple == "color"){

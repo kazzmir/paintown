@@ -56,6 +56,7 @@ test/util/font.cpp
 test/util/ftalleg.cpp
 test/util/regex.cpp
 test/util/system.cpp
+test/util/audio.cpp
 test/util/file-system.cpp
 test/util/message-queue.cpp
 test/util/token.cpp
@@ -105,6 +106,7 @@ test/mugen/parse-cache.cpp
 test/mugen/characterhud.cpp
 test/util/gui/rectarea.cpp
 test/menu/font-info.cpp
+test/util/audio.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
@@ -195,7 +197,6 @@ test/mugen/character-select.cpp
 test/mugen/search.cpp
 test/util/music.cpp
 test/util/music-player.cpp
-test/util/audio.cpp
 test/util/messages.cpp
 test/util/gradient.cpp
 test/util/loading.cpp
