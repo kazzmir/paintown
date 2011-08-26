@@ -479,15 +479,29 @@ public:
                  area.getArea().getWidth() - area.getTransforms().getRadius(),
                  area.getArea().getHeight() - area.getTransforms().getRadius());
                 // space.clear();
-                playerCopy->setX(space.getWidth() / 2 + 50);
-                playerCopy->setY(0);
-                playerCopy->setZ(space.getHeight() / 2);
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
                 list.render(space, font);
                 // listMovements(space, selected);
-                playerCopy->draw(&space, 0, 0);
+                int margin = 190;
+                int playerX = space.getWidth() - margin - area.getTransforms().getRadius();
+                if (playerX < 1){
+                    playerX = 1;
+                }
+                int playerY = (int)(playerX / 1.3333);
+                if (playerY < 1){
+                    playerY = 1;
+                }
+                Graphics::Bitmap playerArea(space, margin, 20, playerX, playerY);
+                Graphics::StretchedBitmap show(playerArea.getWidth() / 2, playerArea.getHeight() / 2, playerArea);
+                show.start();
+                playerCopy->setX(show.getWidth() / 2);
+                playerCopy->setY(0);
+                playerCopy->setZ(show.getHeight());
+                playerCopy->draw(&show, 0, 0);
+                show.finish();
 
-                int x = playerCopy->getX();
+                // int x = playerCopy->getX();
+                int x = margin + 50;
                 int y = space.getHeight() - 50;
                 drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
                 /*
