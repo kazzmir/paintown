@@ -276,6 +276,114 @@ public:
         return out;
     }
 
+    struct MoveNode{
+        MoveNode(){
+        }
+
+        MoveNode(const string & name):
+            name(name){
+            }
+
+        /* how many nodes point to this node */
+        int rank() const {
+            return edgesFrom.size();
+        }
+
+        const vector<string> & nextNodes() const {
+            return edgesTo;
+        }
+
+        const string & getName() const {
+            return name;
+        }
+
+        string name;
+        vector<string> edgesTo;
+        vector<string> edgesFrom;
+    };
+
+    /* a directed acyclic graph (DAG)
+     * nodes with no incoming edges (rank 0) are top level.
+     * animations that have (sequence foo) in them will have an edge
+     * from the referenced node, foo.
+     */
+    class MoveGraph{
+    public:
+        MoveGraph(){
+        }
+
+        void addNode(const string & name){
+            if (nodes.find(name) == nodes.end()){
+                nodes[name] = MoveNode(name);
+            }
+        }
+
+        void addEdge(const string & from, const string & to){
+            MoveNode & nodeFrom = nodes[from];
+            MoveNode & nodeTo = nodes[to];
+            nodeFrom.edgesTo.push_back(to);
+            nodeTo.edgesFrom.push_back(from);
+        }
+
+        MoveNode getNode(const string & name) const {
+            if (nodes.find(name) != nodes.end()){
+                return nodes.find(name)->second;
+            }
+
+            return MoveNode();
+        }
+
+        vector<MoveNode> rank0Nodes() const {
+            vector<MoveNode> out;
+            for (map<string, MoveNode>::const_iterator it = nodes.begin(); it != nodes.end(); it++){
+                if (it->second.rank() == 0){
+                    out.push_back(it->second);
+                }
+            }
+            return out;
+        }
+
+        map<string, MoveNode> nodes;
+    };
+
+    static Util::ReferenceCount<Paintown::Animation> findAnimation(const map<string, Util::ReferenceCount<Paintown::Animation> > & movements, const string & name){
+        if (movements.find(name) != movements.end()){
+            return movements.find(name)->second;
+        }
+        return NULL;
+    }
+
+    static Util::ReferenceCount<MoveGraph> buildMoveGraph(const map<string, Util::ReferenceCount<Paintown::Animation> > & movements){
+        Util::ReferenceCount<MoveGraph> graph = new MoveGraph();
+
+        for (map<string, Util::ReferenceCount<Paintown::Animation> >::const_iterator it = movements.begin(); it != movements.end(); it++){
+            string name = it->first;
+            Util::ReferenceCount<Paintown::Animation> animation = it->second;
+            graph->addNode(animation->getName());
+            const vector<string> & sequences = animation->getSequences();
+            for (vector<string>::const_iterator sequence_it = sequences.begin(); sequence_it != sequences.end(); sequence_it++){
+                string previous = *sequence_it;
+                Util::ReferenceCount<Paintown::Animation> who = findAnimation(movements, previous);
+                if (who != NULL){
+                    graph->addNode(who->getName());
+                    graph->addEdge(who->getName(), name);
+                }
+            }
+        }
+
+        return graph;
+    }
+
+    static void dumpGraph(Util::ReferenceCount<MoveGraph> graph){
+        vector<MoveNode> top = graph->rank0Nodes();
+        Global::debug(0) << "Graph" << std::endl;
+        for (vector<MoveNode>::iterator it = top.begin(); it != top.end(); it++){
+            const MoveNode & node = *it;
+            Global::debug(0) << node.getName() << std::endl;
+        }
+        Global::debug(0) << "End Graph" << std::endl;
+    }
+
     void showMoveList(Paintown::Player * player, const Menu::Context & context){
         class Logic: public Util::Logic {
         public:
@@ -297,9 +405,18 @@ public:
                 input.set(configuration.getJoystickQuit(), 0, false, Quit);
 
                 const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
+                graph = buildMoveGraph(movements);
+                // dumpGraph(graph);
+                vector<MoveNode> start = graph->rank0Nodes();
+                for (vector<MoveNode>::iterator it = start.begin(); it != start.end(); it++){
+                    string name = it->getName();
+                    list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(name, gradient)).convert<Gui::ScrollItem>());
+                }
+                /*
                 for (map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find = movements.begin(); find != movements.end(); find++){
                     list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(find->first, gradient)).convert<Gui::ScrollItem>());
                 }
+                */
 
                 changeAnimation(list.getCurrentIndex());
             }
@@ -312,12 +429,13 @@ public:
             Effects::Gradient gradient;
             int idleWait;
             string nextAnimation;
+            Util::ReferenceCount<MoveGraph> graph;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
             }
 
-            void run(){
+            void updatePlayer(){
                 int limit = 30;
                 /* idle for X frames and then do the move */
                 if (idleWait < limit){
@@ -331,18 +449,24 @@ public:
                     }
                 } else {
                     if (playerCopy->testAnimation()){
-                        idleWait = 0;
-                        playerCopy->testAnimation("idle");
-                        playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
+                        MoveNode node = graph->getNode(playerCopy->getCurrentMovement()->getName());
+                        if (node.nextNodes().size() == 0){
+                            idleWait = 0;
+                            playerCopy->testAnimation("idle");
+                            playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
+                        } else {
+                            vector<string> nexts = node.nextNodes();
+                            /* FIXME: handle all branches */
+                            string first = nexts[0];
+                            playerCopy->testAnimation(first);
+                            playerCopy->testReset();
+                        }
                     }
                 }
+            }
 
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
-                area.act(font);
-                gradient.update();
-
+            void handleInput(){
                 vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input);
-
                 unsigned int old = list.getCurrentIndex();
                 for (vector<InputMap<MoveListInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                     const InputMap<MoveListInput>::InputEvent & event = *it;
@@ -370,14 +494,26 @@ public:
                 }
             }
 
+            void run(){
+                updatePlayer();
+
+                /* TODO: maybe change the font here */
+                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+                area.act(font);
+                gradient.update();
+                handleInput();
+            }
+
             void changeAnimation(int animation){
                 int count = 0;
-                const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
-                map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find;
-                for (find = movements.begin(); count != animation && find != movements.end(); find++, count += 1){ /**/ }
+                vector<MoveNode> nodes = graph->rank0Nodes();
+                vector<MoveNode>::iterator find;
+                // const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
+                // map<std::string, Util::ReferenceCount<Paintown::Animation> >::const_iterator find;
+                for (find = nodes.begin(); count != animation && find != nodes.end(); find++, count += 1){ /**/ }
 
-                if (find != movements.end()){
-                    nextAnimation = find->first;
+                if (find != nodes.end()){
+                    nextAnimation = find->getName();
                     idleWait = 0;
                     playerCopy->testAnimation("idle");
                     playerCopy->setFacing(Paintown::Object::FACING_RIGHT);
@@ -388,20 +524,6 @@ public:
                     */
                 }
             }
-
-            /*
-            int selectNext(int current, int way){
-                int size = getAttacks(playerCopy->getMovements()).size();
-                int next = current + way;
-                if (next < 0){
-                    return 0;
-                }
-                if (next > size - 1){
-                    return size - 1;
-                }
-                return next;
-            }
-            */
 
             bool done(){
                 return ! area.isActive();
@@ -482,7 +604,7 @@ public:
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
                 list.render(space, font);
                 // listMovements(space, selected);
-                int margin = 190;
+                int margin = 180;
                 int playerX = space.getWidth() - margin - area.getTransforms().getRadius();
                 if (playerX < 1){
                     playerX = 1;
@@ -491,8 +613,8 @@ public:
                 if (playerY < 1){
                     playerY = 1;
                 }
-                Graphics::Bitmap playerArea(space, margin, 20, playerX, playerY);
-                Graphics::StretchedBitmap show(playerArea.getWidth() / 2, playerArea.getHeight() / 2, playerArea);
+                Graphics::Bitmap playerArea(space, margin, 30, playerX, playerY);
+                Graphics::StretchedBitmap show(playerArea.getWidth() / 1.7, playerArea.getHeight() / 1.7, playerArea);
                 show.start();
                 playerCopy->setX(show.getWidth() / 2);
                 playerCopy->setY(0);
@@ -503,13 +625,9 @@ public:
                 // int x = playerCopy->getX();
                 int x = margin + 50;
                 int y = space.getHeight() - 50;
-                drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
-                /*
-                up.draw(x, y, space);
-                down.draw(x + 50, y, space);
-                left.draw(x, y + 50, space);
-                right.draw(x + 50, y + 50, space);
-                */
+                // drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
+                /* FIXME: show keys for the entire combo */
+                drawKeys(playerCopy->getCurrentMovement(), x, y, space);
 
                 // space.border(0, 2, Graphics::makeColor(128, 128, 128));
                 buffer.BlitToScreen();
@@ -988,12 +1106,12 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
 static string funnyGo(){
     switch (Util::rnd(10)){
-        case 0 : return "Robofrance 99";
+        case 0 : return "Calculating reverse theorems";
         case 1 : return "Is that a weasel?";
-        case 2 : return "You are the insult master!";
+        case 2 : return "Rebuffering..";
         case 3 : return "Get to the choppaa!!!";
-        case 4 : return "Ride or die";
-        case 5 : return "Let the Dragon ride on the winds of time";
+        case 4 : return "Generating dual proxies";
+        case 5 : return "Keep elbows in at all times";
         case 6 : return "I LIKE TURTLES";
         default : return "Go!";
     }
