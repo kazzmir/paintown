@@ -5,15 +5,24 @@
   <script>
       paintownModule = null;
       function moduleDidLoad() {
-	  document.getElementById('notes').style.display='none';
-          document.getElementById('paintown').style.display='inline';
+          document.getElementById('notes').style.display='none';
           document.getElementById('run').style.display = 'inline';
           document.getElementById('loader').style.display = 'none';
+
+          /* this gets the reference to the NACL module so we can talk to it
+           * through javascript
+           */
+          paintownModule = document.getElementById('paintown');
+          // document.getElementById('paintown').style.display='inline';
       }
 
       function dorun(){ //run Nacl 
-          paintownModule.postMessage('run');
-          document.getElementById('run').style.display='none'; //Hide Button - Don't need users to click twice
+          if (paintownModule == null){
+              alert('NACL module not loaded!');
+          } else {
+              paintownModule.postMessage('run');
+              document.getElementById('run').style.display='none'; //Hide Button - Don't need users to click twice
+          }
 	  //document.getElementById('loader').style.display='inline';
       }
 
