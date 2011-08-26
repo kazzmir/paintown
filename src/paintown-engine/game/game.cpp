@@ -504,6 +504,22 @@ public:
                 handleInput();
             }
 
+            vector<Util::ReferenceCount<Paintown::Animation> > getCombo(const Util::ReferenceCount<Paintown::Character> & player, const string & name){
+                vector<Util::ReferenceCount<Paintown::Animation> > out;
+                MoveNode node = graph->getNode(name);
+                Util::ReferenceCount<Paintown::Animation> animation = player->getMovement(node.getName());
+                if (animation != NULL){
+                    out.push_back(animation);
+                }
+                vector<string> next = node.nextNodes();
+                if (next.size() > 0){
+                    /* FIXME: handle the whole tree */
+                    vector<Util::ReferenceCount<Paintown::Animation> > more = getCombo(player, next[0]);
+                    out.insert(out.end(), more.begin(), more.end());
+                }
+                return out;
+            }
+
             void changeAnimation(int animation){
                 int count = 0;
                 vector<MoveNode> nodes = graph->rank0Nodes();
@@ -566,27 +582,35 @@ public:
             const Gui::NormalList & list;
             Logic & logic;
 
-            int doDraw(const Graphics::Bitmap & what, int x, int y, const Graphics::Bitmap & where){
+            int doDraw(const Graphics::Bitmap & what, int x, int y, bool highlight, const Graphics::Bitmap & where){
+                if (highlight){
+                    where.rectangleFill(x - 1, y - 1, x + what.getWidth() + 1, y + what.getHeight() + 1, Graphics::makeColor(128, 128, 128));
+                }
                 what.draw(x, y, where);
                 return x + what.getWidth() + 5;
             }
 
-            void drawKeys(const Util::ReferenceCount<Paintown::Animation> & movement, int x, int y, const Graphics::Bitmap & where){
-                const vector<Paintown::KeyPress> & keys = movement->getKeys();
-                for (vector<Paintown::KeyPress>::const_iterator it = keys.begin(); it != keys.end(); it++){
-                    const Paintown::KeyPress & key = *it;
-                    if (key.combo.size() > 0){
-                        Input::PaintownInput press = key.combo[0];
-                        switch (press){
-                            case Input::Forward: x = doDraw(right, x, y, where); break;
-                            case Input::Back: x = doDraw(left, x, y, where); break;
-                            case Input::Up: x = doDraw(up, x, y, where); break;
-                            case Input::Down: x = doDraw(down, x, y, where); break;
-                            case Input::Attack1: doDraw(attack1, x, y, where); break;
-                            case Input::Attack2: doDraw(attack2, x, y, where); break;
-                            case Input::Attack3: doDraw(attack3, x, y, where); break;
-                            case Input::Jump: doDraw(jump, x, y, where); break;
-                            default: break;
+            void drawKeys(const vector<Util::ReferenceCount<Paintown::Animation> > & combo, const Util::ReferenceCount<Paintown::Animation> & movement, int x, int y, const Graphics::Bitmap & where){
+
+                for (vector<Util::ReferenceCount<Paintown::Animation> >::const_iterator it = combo.begin(); it != combo.end(); it++){
+                    const Util::ReferenceCount<Paintown::Animation> & animation = *it;
+                    const vector<Paintown::KeyPress> & keys = animation->getKeys();
+                    bool highlight = animation == movement;
+                    for (vector<Paintown::KeyPress>::const_iterator it = keys.begin(); it != keys.end(); it++){
+                        const Paintown::KeyPress & key = *it;
+                        if (key.combo.size() > 0){
+                            Input::PaintownInput press = key.combo[0];
+                            switch (press){
+                                case Input::Forward: x = doDraw(right, x, y, highlight, where); break;
+                                case Input::Back: x = doDraw(left, x, y, highlight, where); break;
+                                case Input::Up: x = doDraw(up, x, y, highlight, where); break;
+                                case Input::Down: x = doDraw(down, x, y, highlight, where); break;
+                                case Input::Attack1: x = doDraw(attack1, x, y, highlight, where); break;
+                                case Input::Attack2: x = doDraw(attack2, x, y, highlight, where); break;
+                                case Input::Attack3: x = doDraw(attack3, x, y, highlight, where); break;
+                                case Input::Jump: x = doDraw(jump, x, y, highlight, where); break;
+                                default: break;
+                            }
                         }
                     }
                 }
@@ -627,7 +651,7 @@ public:
                 int y = space.getHeight() - 50;
                 // drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
                 /* FIXME: show keys for the entire combo */
-                drawKeys(playerCopy->getCurrentMovement(), x, y, space);
+                drawKeys(logic.getCombo(playerCopy, logic.nextAnimation), playerCopy->getCurrentMovement(), x, y, space);
 
                 // space.border(0, 2, Graphics::makeColor(128, 128, 128));
                 buffer.BlitToScreen();
@@ -645,7 +669,7 @@ public:
 
         Util::ReferenceCount<Paintown::Character> playerCopy = new Paintown::Character(*player);
         Gui::PopupBox area;
-        area.location.setDimensions(GFX_X - 100, GFX_Y - 100);
+        area.location.setDimensions(GFX_X - 75, GFX_Y - 75);
         area.location.setCenterPosition(Gui::RelativePoint(0, 0));
         area.transforms.setRadius(20);
 
