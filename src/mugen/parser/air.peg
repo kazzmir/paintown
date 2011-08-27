@@ -160,6 +160,7 @@ rules:
                          | s data:valuelist {{ as<Ast::Section*>(section)->addValue(as<Ast::Value*>(data)); }}
                          | s data:loopstart {{ as<Ast::Section*>(section)->addAttribute(as<Ast::Attribute*>(data)); }}
                          | space s
+                         | line:<line> !(s action_start) (!line_end .)+ &line_end {{ std::cout << "Warning: ignoring input at line " << getCurrentLine(line) << " column " << getCurrentColumn(line) << std::endl; }}
 	              # | space+
 	line_end = newline+
 	         | &<eof> <void>
