@@ -1104,6 +1104,8 @@ public:
         fall(you.fall),
         getPower(you.getPower),
         down(you.down),
+        id(copy(you.id)),
+        chainId(copy(you.chainId)),
         envShake(you.envShake){
         }
 
@@ -4472,7 +4474,6 @@ class ControllerPalFX: public StateController {
 public:
     ControllerPalFX(Ast::Section * section, const string & name, int state):
     StateController(name, state, section),
-    time(0),
     sinRed(0),
     sinGreen(0),
     sinBlue(0),
@@ -4484,7 +4485,7 @@ public:
 
     ControllerPalFX(const ControllerPalFX & you):
     StateController(you),
-    time(you.time),
+    time(copy(you.time)),
     addRed(copy(you.addRed)),
     addGreen(copy(you.addGreen)),
     addBlue(copy(you.addBlue)),
@@ -4499,7 +4500,7 @@ public:
     color(you.color){
     }
 
-    int time;
+    Value time;
     Value addRed;
     Value addGreen;
     Value addBlue;
@@ -4527,7 +4528,9 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
-                    simple >> controller.time;
+                    const Ast::Value * time;
+                    simple >> time;
+                    controller.time = Compiler::compile(time);
                 } else if (simple == "add"){
                     const Ast::Value * red;
                     const Ast::Value * green;
@@ -4625,6 +4628,8 @@ public:
         int multiplyGreen = (int) evaluateNumber(this->multiplyGreen, environment, 256);
         int multiplyBlue = (int) evaluateNumber(this->multiplyBlue, environment, 256);
 
+        int time = (int) evaluateNumber(this->time, environment, 0);
+
         guy.setPaletteEffects(time, addRed, addGreen, addBlue,
                               multiplyRed, multiplyGreen, multiplyBlue,
                               sinRed, sinGreen, sinBlue, period, invert, color);
@@ -4654,6 +4659,8 @@ public:
         int multiplyRed = (int) evaluateNumber(this->multiplyRed, environment, 256);
         int multiplyGreen = (int) evaluateNumber(this->multiplyGreen, environment, 256);
         int multiplyBlue = (int) evaluateNumber(this->multiplyBlue, environment, 256);
+
+        int time = (int) evaluateNumber(this->time, environment, 0);
 
         stage.setPaletteEffects(time, addRed, addGreen, addBlue,
                                 multiplyRed, multiplyGreen, multiplyBlue,
@@ -6420,7 +6427,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        Global::debug(0) << "AppendToClipboard is not implemented" << endl;
+        /* FIXME: implement */
     }
 
     StateController * deepCopy() const {
