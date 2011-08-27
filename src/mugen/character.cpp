@@ -301,6 +301,8 @@ void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, c
     airType = hit.airType;
     groundType = hit.groundType;
 
+    chainId = hit.id;
+
     /* FIXME: set damage */
     
     /* if in the air */

@@ -1615,6 +1615,9 @@ public:
             bool bounce;
         } down;
 
+        Value id;
+        Value chainId;
+
         /* down.velocity = x_velocity, y_velocity (float, float)
          * This is the velocity to assign P2 if P2 is hit while lying down. If the y_velocity is non-zero, P2 will be hit into the air. If it is zero, then P2 will slide back on the ground. Defaults to the same values as the "air.velocity" parameter if omitted.
          * down.hittime = hit_time (int)
@@ -2036,6 +2039,14 @@ public:
                     simple >> x >> y;
                     hit.snap.x = Compiler::compile(x);
                     hit.snap.y = Compiler::compile(y);
+                } else if (simple == "id"){
+                    const Ast::Value * id;
+                    simple >> id;
+                    hit.id = Compiler::compile(id);
+                } else if (simple == "chainid"){
+                    const Ast::Value * id;
+                    simple >> id;
+                    hit.chainId = Compiler::compile(id);
                 } else if (simple == "p1sprpriority"){
                     hit.player1SpritePriority = Compiler::compile(simple.getValue());
                 } else if (simple == "p2sprpriority"){
@@ -2146,6 +2157,8 @@ public:
         his.fall.damage = evaluateNumberLocal(hit.fall.damage, 0);
         his.fall.recover = evaluateBoolLocal(hit.fall.recover, true);
         his.fall.recoverTime = (int) evaluateNumberLocal(hit.fall.recoverTime, 4);
+        his.id = (int) evaluateNumberLocal(hit.id, 0);
+        his.chainId = (int) evaluateNumberLocal(hit.chainId, -1);
         his.groundSlideTime = evaluateNumberLocal(hit.groundSlideTime, 0);
         his.guardControlTime = evaluateNumberLocal(hit.guardControlTime, his.groundSlideTime);
         his.airGuardControlTime = evaluateNumberLocal(hit.airGuardControlTime, his.guardControlTime);

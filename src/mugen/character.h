@@ -165,7 +165,9 @@ struct HitDefinition{
     airHitTime(20),
     yAcceleration(0.35),
     guardVelocity(0),
-    airJuggle(0)
+    airJuggle(0),
+    id(0),
+    chainId(-1)
     {}
 
     bool alive;
@@ -297,6 +299,10 @@ struct HitDefinition{
     int airGuardControlTime;
     int airJuggle;
 
+    int id;
+    /* FIXME: handle the chainid when a hitdef is activated */
+    int chainId;
+
     struct Distance{
         int x, y;
     };
@@ -388,7 +394,8 @@ struct HitState{
         yVelocity(0),
         xVelocity(0),
         guarded(false),
-        damage(0){
+        damage(0),
+        chainId(-1){
         }
 
     void update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
@@ -410,6 +417,7 @@ struct HitState{
     AttackType::Ground hitType;
     bool guarded;
     int damage;
+    int chainId;
 
     struct Fall{
         Fall():

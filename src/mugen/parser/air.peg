@@ -148,7 +148,7 @@ Ast::Attribute * makeAttributeKeyword(const Value & id){
 }}
 
 rules:
-	start = current:{{ value = makeSectionList(); }} whitespace newline* (line(current) whitespace line_end?)* <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
+	start = current:{{ value = makeSectionList(); }} whitespace newline* (sn line(current) whitespace line_end?)* sn <eof> {{ value = current; GC::cleanup(as<SectionList*>(value)); }} <fail> {{ GC::cleanup(0); }}
 
 	line(current) = s comment
 	              | s action {{ addSection(current, $2); }}
@@ -165,8 +165,11 @@ rules:
 	         | &<eof> <void>
 	newline = "\n"
 	        | "\r"
-	loopstart = "loopstart"{case} {{ value = makeAttributeKeyword(Value(makeKeyword($1))); }}
+	loopstart = "loopstart"{case} ":"? {{ value = makeAttributeKeyword(Value(makeKeyword($1))); }}
 	whitespace = sw*
+    sn = space_newline*
+    space_newline = space
+                  | newline
 	sw = space
 	   | comment
 	inline s = space*

@@ -2926,7 +2926,18 @@ public:
             } else if (var == "hitid"){
                 /* TODO */
             } else if (var == "chainid"){
-                /* TODO */
+                class ChainId: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).chainId);
+                    }
+
+                    Value * copy() const {
+                        return new ChainId();
+                    }
+                };
+
+                return new ChainId();
             } else if (var == "guarded"){
                 class HitVarGuarded: public HitVar {
                 public:
