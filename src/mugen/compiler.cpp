@@ -2074,7 +2074,6 @@ public:
                     }
                     
                     /* FIXME others
-		     *  movement.stand.friction: Returns value of the "stand.friction" parameter. (float)
 			movement.crouch.friction: Returns value of the "crouch.friction" parameter. (float)
 			movement.stand.friction.threshold: Returns value of the "stand.friction.threshold" parameter. (float)
 			movement.crouch.friction.threshold: Returns value of the "crouch.friction.threshold" parameter. (float)
@@ -2091,6 +2090,21 @@ public:
 			movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
 			movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
 		    */
+
+                    if (identifier == "movement.stand.friction"){
+                        class StandFriction: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getStandingFriction());
+                            }
+
+                            Value * copy() const {
+                                return new StandFriction();
+                            }
+                        };
+
+                        return new StandFriction();
+                    }
 
                     if (identifier == "velocity.walk.back.x"){
                         class VelocityBackX: public Value {
@@ -2167,7 +2181,11 @@ public:
                         return new JumpX();
                     }
 
-                    if (identifier == "velocity.jump.y"){
+                    if (identifier == "velocity.jump.y" ||
+                        /* HACK: mugen docs don't say runjump.y is the same as
+                         * jump.y, but some characters use it anyway (Gouki)
+                         */
+                        identifier == "velocity.runjump.y"){
                         class JumpY: public Value {
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
