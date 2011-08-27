@@ -621,19 +621,20 @@ public:
             }
 
             void grid(const Graphics::Bitmap & buffer, unsigned int counter){
-                int distance = 5;
-                Graphics::Color color = Graphics::makeColor(64, 64, 64);
-                Graphics::Color white = Graphics::makeColor(128, 128, 128);
-                for (int x = 0; x < buffer.getWidth(); x += 5){
+                int distance = 7;
+                Graphics::Color color = Graphics::makeColor(0x22, 0x44, 0x99);
+                Graphics::Color white = Graphics::makeColor(196, 196, 196);
+                for (int x = 0; x < buffer.getWidth(); x += distance){
                     buffer.line(x, 0, x, buffer.getHeight(), color);
                 }
-                for (int y = 0; y < buffer.getHeight(); y += 5){
+                for (int y = 0; y < buffer.getHeight(); y += distance){
                     buffer.line(0, y, buffer.getWidth(), y, color);
                 }
 
-                int position = counter % (100 + (buffer.getWidth() > buffer.getHeight() ? buffer.getWidth() : buffer.getHeight()));
-                buffer.line(position, 0, position, buffer.getHeight(), white);
-                buffer.line(0, position, buffer.getWidth(), position, white);
+                int positionX = distance * (counter / 5 % (10 + (buffer.getWidth() > buffer.getHeight() ? buffer.getWidth() : buffer.getHeight())));
+                int positionY = distance * (counter / 5 % (3 + (buffer.getWidth() > buffer.getHeight() ? buffer.getWidth() : buffer.getHeight())));
+                buffer.line(positionX, 0, positionX, buffer.getHeight(), white);
+                buffer.line(0, positionY, buffer.getWidth(), positionY, white);
             }
 
             void draw(const Graphics::Bitmap & buffer){
