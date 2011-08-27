@@ -394,7 +394,8 @@ public:
             context(context),
             gradient(Menu::standardGradient()),
             idleWait(0),
-            nextAnimation("idle"){
+            nextAnimation("idle"),
+            counter(0){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
                 Configuration & configuration = Configuration::config(config);
@@ -430,6 +431,7 @@ public:
             int idleWait;
             string nextAnimation;
             Util::ReferenceCount<MoveGraph> graph;
+            unsigned int counter;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -496,6 +498,8 @@ public:
 
             void run(){
                 updatePlayer();
+
+                counter += 1;
 
                 /* TODO: maybe change the font here */
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
@@ -616,6 +620,22 @@ public:
                 }
             }
 
+            void grid(const Graphics::Bitmap & buffer, unsigned int counter){
+                int distance = 5;
+                Graphics::Color color = Graphics::makeColor(64, 64, 64);
+                Graphics::Color white = Graphics::makeColor(128, 128, 128);
+                for (int x = 0; x < buffer.getWidth(); x += 5){
+                    buffer.line(x, 0, x, buffer.getHeight(), color);
+                }
+                for (int y = 0; y < buffer.getHeight(); y += 5){
+                    buffer.line(0, y, buffer.getWidth(), y, color);
+                }
+
+                int position = counter % (100 + (buffer.getWidth() > buffer.getHeight() ? buffer.getWidth() : buffer.getHeight()));
+                buffer.line(position, 0, position, buffer.getHeight(), white);
+                buffer.line(0, position, buffer.getWidth(), position, white);
+            }
+
             void draw(const Graphics::Bitmap & buffer){
                 background.Blit(buffer);
                 area.render(buffer);
@@ -640,9 +660,10 @@ public:
                 Graphics::Bitmap playerArea(space, margin, 30, playerX, playerY);
                 Graphics::StretchedBitmap show(playerArea.getWidth() / 1.7, playerArea.getHeight() / 1.7, playerArea);
                 show.start();
+                grid(show, logic.counter);
                 playerCopy->setX(show.getWidth() / 2);
                 playerCopy->setY(0);
-                playerCopy->setZ(show.getHeight());
+                playerCopy->setZ(show.getHeight() - 10);
                 playerCopy->draw(&show, 0, 0);
                 show.finish();
 
