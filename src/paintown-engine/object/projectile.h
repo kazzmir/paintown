@@ -77,7 +77,7 @@ public:
 	virtual int getHealth() const;
 
 protected:
-	Animation * main;
+	Animation * mainAnimation;
 	Animation * death;
 	Animation * currentAnimation;
 

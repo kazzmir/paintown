@@ -18,7 +18,7 @@ namespace Paintown{
 /* the alliance must be set by someone else at some point */
 Projectile::Projectile( Token * token ):
 ObjectAttack( ALLIANCE_NONE ),
-main( NULL ),
+mainAnimation( NULL ),
 death( NULL ),
 dx( 0 ),
 dy( 0 ),
@@ -36,7 +36,7 @@ life( 0 ){
             if ( *current == "anim" ){
                 Animation * animation = new Animation(current, NULL);
                 if ( animation->getName() == "main" ){
-                    main = animation;
+                    mainAnimation = animation;
                 } else if ( animation->getName() == "death" ){
                     death = animation;
                 } else {
@@ -49,18 +49,18 @@ life( 0 ){
         }
     }
 
-    if ( main == NULL ){
+    if ( mainAnimation == NULL ){
         throw LoadException(__FILE__, __LINE__, "No 'main' animation given" );
     }
 
-    currentAnimation = main;
+    currentAnimation = mainAnimation;
 
     // nextTicket();
 }
 	
 Projectile::Projectile( const Projectile * const projectile ):
 ObjectAttack( projectile->getAlliance() ),
-main( new Animation( *projectile->main, NULL ) ),
+mainAnimation( new Animation( *projectile->mainAnimation, NULL ) ),
 death( NULL ),
 dx( projectile->getDX() ),
 dy( projectile->getDY() ),
@@ -69,14 +69,14 @@ life( projectile->getLife() ){
 		death = new Animation( *projectile->death, NULL );
 	}
 
-	currentAnimation = main;
+	currentAnimation = mainAnimation;
 	
 	nextTicket();
 }
 	
 Projectile::~Projectile(){
-	if ( main ){
-		delete main;
+	if ( mainAnimation ){
+		delete mainAnimation;
 	}
 	if ( death ){
 		delete death;
@@ -181,15 +181,15 @@ bool Projectile::collision( ObjectAttack * obj ){
 }
 
 int Projectile::getDamage() const {
-	return main->getDamage();
+	return mainAnimation->getDamage();
 }
         
 double Projectile::getForceX() const {
-    return main->getForceX();
+    return mainAnimation->getForceX();
 }
 
 double Projectile::getForceY() const {
-    return main->getForceY();
+    return mainAnimation->getForceY();
 }
 
 bool Projectile::isCollidable( Object * obj ){
