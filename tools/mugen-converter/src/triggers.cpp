@@ -180,7 +180,7 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("MoveHit", keyword)){
     } else if (match("MoveReversed", keyword)){
     } else if (match("MoveType", keyword)){
-
+        return "self.player.getMoveType()";
     } else if (match("Name", keyword)){
     } else if (match("NumEnemy", keyword)){
     } else if (match("NumExplod", keyword)){
@@ -230,7 +230,7 @@ static std::string handleKeyWord(const Expression & expression){
         //return new Function("random");
     } else if (match("RootDist", keyword)){
     } else if (match("RoundNo", keyword)){
-        //return new Function("world.currentRound");
+        return "world.getCurrentRound()";
     } else if (match("RoundState", keyword)){
         //return new Function("world.roundState");
     } else if (match("RoundsExisted", keyword)){
@@ -241,7 +241,9 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("Sin", keyword)){
         return "math.sin";
     } else if (match("StateNo", keyword)){
+        return "self.player.getStateNo()";
     } else if (match("StateType", keyword)){
+        return "self.player.getStateType()";
     } else if (match("SysFVar", keyword)){
     } else if (match("SysVar", keyword)){
 

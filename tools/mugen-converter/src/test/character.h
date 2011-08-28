@@ -42,8 +42,17 @@ class Character{
         
         virtual const double getNumericValue(const std::string & attribute);
         
+        virtual int getCurrentStateNumber();
+        
+        virtual void changeState(int number);
+        
+        virtual inline const std::string & getName() const{
+            return this->characterName;
+        }
+        
     protected:
         std::string moduleName;
+        std::string characterName;
         PyObject * charModule, * charDict, * charClass, * character;
         PyObject * worldModule, * worldDict, * worldClass, * world;
         

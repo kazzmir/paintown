@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sstream>
 
 PyException::PyException(const std::string & what):
 reason(what){
@@ -48,17 +49,10 @@ character(NULL){
     std::cout << "Successfully loaded module: " << str << ".py" << std::endl;
     
     addAttribute("name", Character::String);
+    characterName = getStringValue("name");
     
-    std::cout << "Character Name: " << getStringValue("name") << std::endl;
+    std::cout << "Character Name: " << characterName << std::endl;
     
-    // Set initial state
-    std::cout << "Initializing initial state 5900" << std::endl;
-    PyObject * check = PyObject_CallMethod(character, "changeState", "(is)", 5900, "None");
-    if (check == NULL){
-        throw PyException("Couldn't load initialize state 5900");
-    }
-    
-    Py_DECREF(check);
     Py_DECREF(name);
     
     // Load mugen.World
@@ -80,6 +74,11 @@ character(NULL){
     }
     
     std::cout << "Successfully loaded mugen.World" << std::endl;
+    
+    // Set initial state
+    std::cout << "Setting initial state 5900" << std::endl;
+    changeState(5900);
+    
     Py_DECREF(name);
 }
 
@@ -153,4 +152,24 @@ const double Character::getNumericValue(const std::string & attribute){
     } else {
         throw PyException("Attribute '" + attribute + "' Not Found");
     }
+}
+
+int Character::getCurrentStateNumber(){
+    PyObject * check = PyObject_CallMethod(character, "getStateNo", NULL);
+    if (check == NULL){
+         throw PyException("Couldn't get current state number.");
+    }
+    int number = PyLong_AsLong(check);
+    Py_DECREF(check);
+    return number;
+}
+
+void Character::changeState(int number){
+    PyObject * check = PyObject_CallMethod(character, "changeState", "(is)", number, world);
+    if (check == NULL){
+        std::ostringstream num;
+        num << number;
+        throw PyException("Couldn't change to state " + num.str());
+    }
+    Py_DECREF(check);
 }

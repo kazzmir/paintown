@@ -15,6 +15,7 @@ class Command():
 # StateDef holds it's parameters declared in statedef and it's relative procedure states
 class StateDef():
     def __init__(self, player, world):
+        self.number = None
         self.player = player
         self.world = world
         self.stateType = None
@@ -30,6 +31,9 @@ class StateDef():
         self.movehitpersist = None
         self.hitcountpersist = None
         self.sprpriority = None
+    
+    def getNumber(self):
+        return self.number
     
     def evaluate(self, world):
         pass
@@ -53,6 +57,10 @@ class World():
     
     def getTime(self):
         return self.currentTime
+    
+    # TODO
+    def getCurrentRound(self):
+        return 0
 
 # Character Class
 class Character():
@@ -179,8 +187,10 @@ class Character():
         try:
             self.currentState = self.getState(number)(self, world)
         except MugenException:
-            self.addState(number, StateDef)
-            self.currentState = self.states[number](self, world)
+            # TODO remove later
+            # self.addState(number, StateDef)
+            # self.currentState = self.states[number](self, world)
+            print 'State (' + str(number) + ') does not exist' 
 
     # Set command
     def setCurrentCommand(self, command):
@@ -199,6 +209,20 @@ class Character():
         
         # Current state
         self.currentState.evaluate(world)
+    
+    # Get current state
+    def getStateNo(self):
+        return self.currentState.getNumber()
+    
+    # TODO
+    def getMoveType(self):
+        return 0
+    def getStateType(self):
+        return 0
+    def hasControl(self):
+        return 0
+    def roundsExisted(self):
+        return 0
 
 # LN definition
 def ln(number):
