@@ -46,7 +46,7 @@ class Controller():
 # World class
 class World():
     def __init__(self):
-        self.currentTime = None
+        self.currentTime = 0
         self.endTime = None
         self.currentRound = 1
         self.rounds = None
@@ -228,6 +228,14 @@ class Character():
         return 1
     def setAnimation(self, number, element):
         pass
+    def currentAnimation(self):
+        return 0
+    def getVelocityX(self):
+        return 0
+    def getVelocityY(self):
+        return 0
+    def isAlive(self):
+        return 1
 
 # LN definition
 def ln(number):

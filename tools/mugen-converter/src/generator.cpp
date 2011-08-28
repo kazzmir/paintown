@@ -64,6 +64,7 @@ void CharacterGenerator::output(const std::string & file){
         out << "# File generated from original file '" << Mugen::stripDir(filename) << "' on " << getCurrentDate() << endl;
         out << endl;
         
+        out << "import math" << endl;
         out << "import mugen" << endl;
         out << endl;
         // Create character class

@@ -496,7 +496,7 @@ class Evaluator{
             ExpressionBuilder * condition = crawl(arguments[0]);
             ExpressionBuilder * ifTrue = crawl(arguments[1]);
             ExpressionBuilder * ifFalse = crawl(arguments[2]);
-            Content content(2, "def " + function + "(self):");
+            Content content(2, "def " + function + "():");
                 content.addLine(3, "if " + condition->get() + ":");
                     content.addLine(4, "return " + ifTrue->get());
                 content.addLine(3, "else:");
@@ -608,7 +608,7 @@ class Evaluator{
                             const std::string & leftExpression = handleBuilder(crawl(left));
                             const std::string & op = convertUnaryOperator(builder->getOperator());
                             std::string function = getNextFunctionName();
-                            Content unary(2, "def " + function + "(self):");
+                            Content unary(2, "def " + function + "():");
                                 unary.addLine(3, "return (" + op + "(" + leftExpression + "))");
                             functions.push_back(unary);
                             ExpressionBuilder * newBuilder = new ExpressionBuilder();
