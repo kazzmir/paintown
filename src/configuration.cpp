@@ -16,7 +16,11 @@
 #include <map>
 
 #ifdef USE_SDL
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+static const std::string INPUT_TYPE = "SDL1.3";
+#else
 static const std::string INPUT_TYPE = "SDL";
+#endif
 #endif
 #ifdef USE_ALLEGRO
 static const std::string INPUT_TYPE = "Allegro";
