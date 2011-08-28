@@ -384,10 +384,43 @@ public:
         Global::debug(0) << "End Graph" << std::endl;
     }
 
+    static const int gridDistance = 7;
     void showMoveList(Paintown::Player * player, const Menu::Context & context){
-        class Logic: public Util::Logic {
+        class Main: public Util::Logic, public Util::Draw {
         public:
-            Logic(int config, Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::NormalList & list, const Menu::Context & context):
+
+            /* shows moving lines on the grid */
+            struct Snake{
+                enum Direction{
+                    Up, Down, Left, Right
+                };
+
+                Snake(int x1, int y1, int x2, int y2, Direction direction):
+                x1(x1), y1(y1), x2(x2), y2(y2),
+                direction(direction){
+                }
+
+                Snake(const Snake & copy):
+                x1(copy.x1), y1(copy.y1),
+                x2(copy.x2), y2(copy.y2),
+                direction(copy.direction){
+                }
+
+                double x1, y1, x2, y2;
+                Direction direction;
+
+                void move(){
+                    double speed = 7;
+                    switch (direction){
+                        case Up: y1 -= speed; y2 -= speed; break;
+                        case Down: y1 += speed; y2 += speed; break;
+                        case Left: x1 -= speed; x2 -= speed; break;
+                        case Right: x1 += speed; x2 += speed; break;
+                    }
+                }
+            };
+
+            Main(int config, Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::NormalList & list, const Menu::Context & context):
             playerCopy(playerCopy),
             area(area),
             list(list),
@@ -395,7 +428,19 @@ public:
             gradient(Menu::standardGradient()),
             idleWait(0),
             nextAnimation("idle"),
-            counter(0){
+            counter(0),
+            background(GFX_X, GFX_Y),
+            up(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/up.png")).path()),
+            down(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/down.png")).path()),
+            left(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/left.png")).path()),
+            right(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/right.png")).path()),
+            attack1(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-1.png")).path()),
+            attack2(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-2.png")).path()),
+            attack3(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-3.png")).path()),
+            jump(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/jump.png")).path()){
+                background.BlitFromScreen(0, 0);
+                playerCopy->testAnimation("idle");
+
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
                 Configuration & configuration = Configuration::config(config);
@@ -432,6 +477,18 @@ public:
             string nextAnimation;
             Util::ReferenceCount<MoveGraph> graph;
             unsigned int counter;
+
+            Graphics::Bitmap background;
+
+            Graphics::Bitmap up;
+            Graphics::Bitmap down;
+            Graphics::Bitmap left;
+            Graphics::Bitmap right;
+            
+            Graphics::Bitmap attack1, attack2, attack3;
+            Graphics::Bitmap jump;
+
+            vector<Snake> snakes;
 
             double ticks(double system){
                 return system * Global::LOGIC_MULTIPLIER;
@@ -496,6 +553,20 @@ public:
                 }
             }
 
+            void moveSnakes(){
+                for (vector<Snake>::iterator it = snakes.begin(); it != snakes.end(); /**/){
+                    Snake & snake = *it;
+                    snake.move();
+                    int max = 200;
+                    if (snake.x1 < -max || snake.x1 > area.getArea().getWidth() + max ||
+                        snake.y1 < -max || snake.y1 > area.getArea().getHeight() + max){
+                        it = snakes.erase(it);
+                    } else {
+                        it++;
+                    }
+                }
+            }
+
             void run(){
                 updatePlayer();
 
@@ -506,6 +577,7 @@ public:
                 area.act(font);
                 gradient.update();
                 handleInput();
+                moveSnakes();
             }
 
             vector<Util::ReferenceCount<Paintown::Animation> > getCombo(const Util::ReferenceCount<Paintown::Character> & player, const string & name){
@@ -548,44 +620,8 @@ public:
             bool done(){
                 return ! area.isActive();
             }
-        };
 
-        class Draw: public Util::Draw {
-        public:
-            Draw(Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, const Gui::NormalList & list, Logic & logic):
-                background(GFX_X, GFX_Y),
-                up(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/up.png")).path()),
-                down(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/down.png")).path()),
-                left(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/left.png")).path()),
-                right(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/right.png")).path()),
-                attack1(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-1.png")).path()),
-                attack2(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-2.png")).path()),
-                attack3(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-3.png")).path()),
-                jump(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/jump.png")).path()),
-                playerCopy(playerCopy),
-                area(area),
-                // selected(selected),
-                list(list),
-                logic(logic){
-                    background.BlitFromScreen(0, 0);
-                    playerCopy->testAnimation("idle");
-                }
-
-            Graphics::Bitmap background;
-
-            Graphics::Bitmap up;
-            Graphics::Bitmap down;
-            Graphics::Bitmap left;
-            Graphics::Bitmap right;
             
-            Graphics::Bitmap attack1, attack2, attack3;
-            Graphics::Bitmap jump;
-
-            Util::ReferenceCount<Paintown::Character> & playerCopy;
-            Gui::PopupBox & area;
-            const Gui::NormalList & list;
-            Logic & logic;
-
             int doDraw(const Graphics::Bitmap & what, int x, int y, bool highlight, const Graphics::Bitmap & where){
                 if (highlight){
                     where.rectangleFill(x - 1, y - 1, x + what.getWidth() + 1, y + what.getHeight() + 1, Graphics::makeColor(128, 128, 128));
@@ -621,20 +657,61 @@ public:
             }
 
             void grid(const Graphics::Bitmap & buffer, unsigned int counter){
-                int distance = 7;
                 Graphics::Color color = Graphics::makeColor(0x22, 0x44, 0x99);
                 Graphics::Color white = Graphics::makeColor(196, 196, 196);
-                for (int x = 0; x < buffer.getWidth(); x += distance){
+                for (int x = 0; x < buffer.getWidth(); x += gridDistance){
                     buffer.line(x, 0, x, buffer.getHeight(), color);
                 }
-                for (int y = 0; y < buffer.getHeight(); y += distance){
+                for (int y = 0; y < buffer.getHeight(); y += gridDistance){
                     buffer.line(0, y, buffer.getWidth(), y, color);
                 }
 
+                for (vector<Snake>::iterator it = snakes.begin(); it != snakes.end(); it++){
+                    const Snake & snake = *it;
+                    buffer.line(snake.x1, snake.y1, snake.x2, snake.y2, white);
+                }
+
+                if (Util::rnd(70) == 0){
+                    Snake::Direction direction = Snake::Direction(Util::rnd(4));
+                    switch (direction){
+                        case Snake::Up: {
+                            int x = Util::rnd(0, buffer.getWidth() / gridDistance) * gridDistance;
+                            int y1 = buffer.getHeight() + Util::rnd(50, 100);
+                            int y2 = y1 + Util::rnd(10, 20);
+                            snakes.push_back(Snake(x, y1, x, y2, direction));
+                            break;
+                        }
+                        case Snake::Down: {
+                            int x = Util::rnd(0, buffer.getWidth() / gridDistance) * gridDistance;
+                            int y1 = Util::rnd(-100, -50);
+                            int y2 = y1 + Util::rnd(10, 20);
+                            snakes.push_back(Snake(x, y1, x, y2, direction));
+                            break;
+                        }
+                        case Snake::Left: {
+                            int y = Util::rnd(0, buffer.getHeight() / gridDistance) * gridDistance;
+                            int x1 = buffer.getWidth() + Util::rnd(50, 100);
+                            int x2 = x1 + Util::rnd(10, 20);
+                            snakes.push_back(Snake(x1, y, x2, y, direction));
+                            break;
+                        }
+                        case Snake::Right: {
+                            int y = Util::rnd(0, buffer.getHeight() / gridDistance) * gridDistance;
+                            int x1 = Util::rnd(-100, -50);
+                            int x2 = x1 + Util::rnd(10, 20);
+                            snakes.push_back(Snake(x1, y, x2, y, direction));
+                            break;
+                        }
+                    }
+                }
+
+
+                /*
                 int positionX = distance * (counter / 5 % (10 + (buffer.getWidth() > buffer.getHeight() ? buffer.getWidth() : buffer.getHeight())));
                 int positionY = distance * (counter / 5 % (3 + (buffer.getWidth() > buffer.getHeight() ? buffer.getWidth() : buffer.getHeight())));
                 buffer.line(positionX, 0, positionX, buffer.getHeight(), white);
                 buffer.line(0, positionY, buffer.getWidth(), positionY, white);
+                */
             }
 
             void draw(const Graphics::Bitmap & buffer){
@@ -661,7 +738,7 @@ public:
                 Graphics::Bitmap playerArea(space, margin, 30, playerX, playerY);
                 Graphics::StretchedBitmap show(playerArea.getWidth() / 1.7, playerArea.getHeight() / 1.7, playerArea);
                 show.start();
-                grid(show, logic.counter);
+                grid(show, counter);
                 playerCopy->setX(show.getWidth() / 2);
                 playerCopy->setY(0);
                 playerCopy->setZ(show.getHeight() - 10);
@@ -673,7 +750,7 @@ public:
                 int y = space.getHeight() - 50;
                 // drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
                 /* FIXME: show keys for the entire combo */
-                drawKeys(logic.getCombo(playerCopy, logic.nextAnimation), playerCopy->getCurrentMovement(), x, y, space);
+                drawKeys(getCombo(playerCopy, nextAnimation), playerCopy->getCurrentMovement(), x, y, space);
 
                 // space.border(0, 2, Graphics::makeColor(128, 128, 128));
                 buffer.BlitToScreen();
@@ -701,10 +778,9 @@ public:
         area.colors.borderAlpha = 200;
 
         area.open();
-        Logic logic(player->getConfig(), playerCopy, area, list, context);
-        Draw draw(playerCopy, area, list, logic);
+        Main all(player->getConfig(), playerCopy, area, list, context);
 
-        Util::standardLoop(logic, draw);
+        Util::standardLoop(all, all);
     }
 
     virtual void run(const Menu::Context & context){
