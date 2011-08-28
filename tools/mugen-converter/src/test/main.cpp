@@ -20,7 +20,10 @@ int enteredState = 0;
 bool checkKeys(){
     if (keypressed()){
         int val = readkey();
-        if ((val & 0xff) >= 48 && (val & 0xff) <= 57){
+        if (((val & 0xff) == 45) && localKeys.empty()){
+            localKeys += (char)(val & 0xff);
+        }
+        else if ((val & 0xff) >= 48 && (val & 0xff) <= 57){
             localKeys += (char)(val & 0xff);
         } else if ((val & 0xff) == 13){
             enteredState = atoi(localKeys.c_str());
