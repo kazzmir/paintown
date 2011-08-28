@@ -237,7 +237,7 @@ static std::string handleKeyWord(const Expression & expression){
         return "self.player.roundsExisted()";
     } else if (match("ScreenPos", keyword)){
     } else if (match("SelfAnimExist", keyword)){
-        return "self.player.selfAnimExist()";
+        return "self.player.selfAnimExist";
     } else if (match("Sin", keyword)){
         return "math.sin";
     } else if (match("StateNo", keyword)){
@@ -575,7 +575,7 @@ class Evaluator{
                     if (builder->getType() == ExpressionBuilder::Function){
                         ExpressionBuilder * left =  builder->getLeftComplex();
                         if (left != NULL){
-                            std::string keyword = left->getExpression().getKeyword();
+                            std::string keyword = handleKeyWord(left->getExpression().getKeyword());
                             if (keyword == "ifelse"){
                                 std::string ifelse = createIfElse(builder);
                                 ExpressionBuilder * newBuilder = new ExpressionBuilder();

@@ -15,7 +15,7 @@ class Command():
 # StateDef holds it's parameters declared in statedef and it's relative procedure states
 class StateDef():
     def __init__(self, player, world):
-        self.number = None
+        self.stateNumber = None
         self.player = player
         self.world = world
         self.stateType = None
@@ -33,7 +33,7 @@ class StateDef():
         self.sprpriority = None
     
     def getNumber(self):
-        return self.number
+        return self.stateNumber
     
     def evaluate(self, world):
         pass
@@ -48,7 +48,7 @@ class World():
     def __init__(self):
         self.currentTime = None
         self.endTime = None
-        self.currentRound = None
+        self.currentRound = 1
         self.rounds = None
         self.player1 = None
         self.player2 = None
@@ -60,7 +60,7 @@ class World():
     
     # TODO
     def getCurrentRound(self):
-        return 0
+        return self.currentRound
 
 # Character Class
 class Character():
@@ -186,6 +186,7 @@ class Character():
     def changeState(self, number, world):
         try:
             self.currentState = self.getState(number)(self, world)
+            print 'Changed te state ' + str(number) + '' 
         except MugenException:
             # TODO remove later
             # self.addState(number, StateDef)
@@ -223,6 +224,10 @@ class Character():
         return 0
     def roundsExisted(self):
         return 0
+    def selfAnimExist(self, number):
+        return 1
+    def setAnimation(self, number, element):
+        pass
 
 # LN definition
 def ln(number):

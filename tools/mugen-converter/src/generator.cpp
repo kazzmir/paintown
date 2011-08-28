@@ -397,7 +397,7 @@ class StateHandler{
                 stateClassLine.addLine(0, "class StateDef" + function.substr(5) + "(mugen.StateDef):");
                     stateInitLine.addLine(1, "def __init__(self, player, world):");
                         stateInitLine.addLine(2, "mugen.StateDef.__init__(self, player, world)");
-                        stateInitLine.addLine(2, "self.number = " + stateNumber);
+                        stateInitLine.addLine(2, "self.stateNumber = " + stateNumber);
         }
 
         void addStateClass(std::vector<PythonClass> & classes){
