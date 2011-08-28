@@ -248,6 +248,41 @@ class MoveItem: public Gui::ScrollItem {
         }
 };
 
+namespace{
+
+/* shows moving lines on the grid */
+struct Snake{
+    enum Direction{
+        Up, Down, Left, Right
+    };
+
+    Snake(int x1, int y1, int x2, int y2, Direction direction):
+        x1(x1), y1(y1), x2(x2), y2(y2),
+        direction(direction){
+        }
+
+    Snake(const Snake & copy):
+        x1(copy.x1), y1(copy.y1),
+        x2(copy.x2), y2(copy.y2),
+        direction(copy.direction){
+        }
+
+    double x1, y1, x2, y2;
+    Direction direction;
+
+    void move(){
+        double speed = 7;
+        switch (direction){
+            case Up: y1 -= speed; y2 -= speed; break;
+            case Down: y1 += speed; y2 += speed; break;
+            case Left: x1 -= speed; x2 -= speed; break;
+            case Right: x1 += speed; x2 += speed; break;
+        }
+    }
+};
+
+}
+
 class OptionMoveList: public MenuOption {
 public:
     OptionMoveList(const Gui::ContextBox & parent, const Token * token, Paintown::Player * player):
@@ -389,36 +424,6 @@ public:
         class Main: public Util::Logic, public Util::Draw {
         public:
 
-            /* shows moving lines on the grid */
-            struct Snake{
-                enum Direction{
-                    Up, Down, Left, Right
-                };
-
-                Snake(int x1, int y1, int x2, int y2, Direction direction):
-                x1(x1), y1(y1), x2(x2), y2(y2),
-                direction(direction){
-                }
-
-                Snake(const Snake & copy):
-                x1(copy.x1), y1(copy.y1),
-                x2(copy.x2), y2(copy.y2),
-                direction(copy.direction){
-                }
-
-                double x1, y1, x2, y2;
-                Direction direction;
-
-                void move(){
-                    double speed = 7;
-                    switch (direction){
-                        case Up: y1 -= speed; y2 -= speed; break;
-                        case Down: y1 += speed; y2 += speed; break;
-                        case Left: x1 -= speed; x2 -= speed; break;
-                        case Right: x1 += speed; x2 += speed; break;
-                    }
-                }
-            };
 
             Main(int config, Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::NormalList & list, const Menu::Context & context):
             playerCopy(playerCopy),
