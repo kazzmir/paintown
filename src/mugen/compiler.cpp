@@ -310,7 +310,55 @@ public:
         return RuntimeValue(attribute);
     }
 
-    static AttackType::Attribute convertAttackType(const std::string & attack){
+    static std::vector<AttackType::Attribute> convertAttackType(const std::string & attack){
+        std::vector<AttackType::Attribute> types;
+        if (attack.size() == 2){
+            if (attack[0] == 'N'){
+                if (attack[1] == 'A'){
+                    types.push_back(AttackType::NormalAttack);
+                } else if (attack[1] == 'T'){
+                    types.push_back(AttackType::NormalThrow);
+                } else if (attack[1] == 'P'){
+                    types.push_back(AttackType::NormalProjectile);
+                }
+            } else if (attack[0] == 'S'){
+                if (attack[1] == 'A'){
+                    types.push_back(AttackType::SpecialAttack);
+                } else if (attack[1] == 'T'){
+                    types.push_back(AttackType::SpecialThrow);
+                } else if (attack[1] == 'P'){
+                    types.push_back(AttackType::SpecialProjectile);
+                }
+            } else if (attack[0] == 'H'){
+                if (attack[1] == 'A'){
+                    types.push_back(AttackType::HyperAttack);
+                } else if (attack[1] == 'T'){
+                    types.push_back(AttackType::HyperThrow);
+                } else if (attack[1] == 'P'){
+                    types.push_back(AttackType::HyperProjectile);
+                }
+            } else if (attack[0] == 'A'){
+                if (attack[1] == 'A'){
+                    types.push_back(AttackType::NormalAttack);
+                    types.push_back(AttackType::SpecialAttack);
+                    types.push_back(AttackType::HyperAttack);
+                } else if (attack[1] == 'T'){
+                    types.push_back(AttackType::NormalThrow);
+                    types.push_back(AttackType::SpecialThrow);
+                    types.push_back(AttackType::HyperThrow);
+                } else if (attack[1] == 'P'){
+                    types.push_back(AttackType::NormalProjectile);
+                    types.push_back(AttackType::SpecialProjectile);
+                    types.push_back(AttackType::HyperProjectile);
+                }
+            } else {
+                throw MugenException(std::string("Invalid attack type '") + attack + "'");
+            }
+        }
+
+        return types;
+
+        /*
         std::map<std::string, AttackType::Attribute> attributes;
         attributes["NA"] = AttackType::NormalAttack;
         attributes["NT"] = AttackType::NormalThrow;
@@ -326,6 +374,7 @@ public:
         }
 
         throw MugenException(std::string("Invalid attack type '") + attack + "'");
+        */
     }
 
     Value * compileHitDefAttackAttribute(const Ast::HitDefAttackAttribute & attribute){
@@ -335,7 +384,8 @@ public:
                 std::string type;
                 attribute >> type;
                 type = PaintownUtil::upperCaseAll(type);
-                attacks.push_back(convertAttackType(type));
+                std::vector<AttackType::Attribute> more = convertAttackType(type);
+                attacks.insert(attacks.begin(), more.begin(), more.end());
             }
         } catch (const Ast::Exception & e){
             /* */
@@ -701,8 +751,7 @@ public:
 
                     const HitDefinition & hit = environment.getCharacter().getHit();
 
-                    std::vector<AttackType::Attribute> all;
-                    all.push_back(convertAttackType(PaintownUtil::upperCaseAll(hit.attribute.attackType) + PaintownUtil::upperCaseAll(hit.attribute.physics)));
+                    std::vector<AttackType::Attribute> all = convertAttackType(PaintownUtil::upperCaseAll(hit.attribute.attackType) + PaintownUtil::upperCaseAll(hit.attribute.physics));
                     return RuntimeValue(all);
                 }
 

@@ -15006,7 +15006,7 @@ Result rule_hitdef__attack__attribute(Stream & stream, const int position){
 
 Result rule_hitdef__attack__attribute__item(Stream & stream, const int position, Value attribute){
     
-    RuleTrace trace_peg_26(stream, "hitdef__attack__attribute__item");
+    RuleTrace trace_peg_29(stream, "hitdef__attack__attribute__item");
     int myposition = position;
     
     
@@ -15063,34 +15063,34 @@ Result rule_hitdef__attack__attribute__item(Stream & stream, const int position,
                 }
                 goto success_peg_4;
                 out_peg_13:
-                goto out_peg_14;
-                success_peg_4:
-                ;
-            
-            Result result_peg_3 = result_peg_2;
-            
-            {
-                    int position_peg_18 = result_peg_2.getPosition();
+                {
+                    int position_peg_15 = result_peg_2.getPosition();
                     
                     result_peg_2.setValue(Value((void*) "a"));
                     for (int i = 0; i < 1; i++){
                         if (compareCharCase("a"[i], stream.get(result_peg_2.getPosition()))){
                             result_peg_2.nextPosition();
                         } else {
-                            result_peg_2.setPosition(position_peg_18);
-                            goto out_peg_19;
+                            result_peg_2.setPosition(position_peg_15);
+                            goto out_peg_16;
                         }
                     }
                         
                 }
-                goto success_peg_16;
-                out_peg_19:
-                {
+                goto success_peg_4;
+                out_peg_16:
+                goto out_peg_17;
+                success_peg_4:
+                ;
+            
+            Result result_peg_3 = result_peg_2;
+            
+            {
                     int position_peg_21 = result_peg_2.getPosition();
                     
-                    result_peg_2.setValue(Value((void*) "t"));
+                    result_peg_2.setValue(Value((void*) "a"));
                     for (int i = 0; i < 1; i++){
-                        if (compareCharCase("t"[i], stream.get(result_peg_2.getPosition()))){
+                        if (compareCharCase("a"[i], stream.get(result_peg_2.getPosition()))){
                             result_peg_2.nextPosition();
                         } else {
                             result_peg_2.setPosition(position_peg_21);
@@ -15099,14 +15099,14 @@ Result rule_hitdef__attack__attribute__item(Stream & stream, const int position,
                     }
                         
                 }
-                goto success_peg_16;
+                goto success_peg_19;
                 out_peg_22:
                 {
                     int position_peg_24 = result_peg_2.getPosition();
                     
-                    result_peg_2.setValue(Value((void*) "p"));
+                    result_peg_2.setValue(Value((void*) "t"));
                     for (int i = 0; i < 1; i++){
-                        if (compareCharCase("p"[i], stream.get(result_peg_2.getPosition()))){
+                        if (compareCharCase("t"[i], stream.get(result_peg_2.getPosition()))){
                             result_peg_2.nextPosition();
                         } else {
                             result_peg_2.setPosition(position_peg_24);
@@ -15115,18 +15115,34 @@ Result rule_hitdef__attack__attribute__item(Stream & stream, const int position,
                     }
                         
                 }
-                goto success_peg_16;
+                goto success_peg_19;
                 out_peg_25:
-                goto out_peg_14;
-                success_peg_16:
+                {
+                    int position_peg_27 = result_peg_2.getPosition();
+                    
+                    result_peg_2.setValue(Value((void*) "p"));
+                    for (int i = 0; i < 1; i++){
+                        if (compareCharCase("p"[i], stream.get(result_peg_2.getPosition()))){
+                            result_peg_2.nextPosition();
+                        } else {
+                            result_peg_2.setPosition(position_peg_27);
+                            goto out_peg_28;
+                        }
+                    }
+                        
+                }
+                goto success_peg_19;
+                out_peg_28:
+                goto out_peg_17;
+                success_peg_19:
                 ;
             
-            Result result_peg_15 = result_peg_2;
+            Result result_peg_18 = result_peg_2;
             
             {
                     Value value((void*) 0);
                     std::string * result = toString(as<const char *>(result_peg_3.getValues()));
-                            std::string * other = toString(as<const char *>(result_peg_15.getValues()));
+                            std::string * other = toString(as<const char *>(result_peg_18.getValues()));
                             as<Ast::HitDefAttackAttribute*>(attribute)->addAttribute(*result + *other);
                     result_peg_2.setValue(value);
                 }
@@ -15136,7 +15152,7 @@ Result rule_hitdef__attack__attribute__item(Stream & stream, const int position,
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
-        out_peg_14:
+        out_peg_17:
     stream.update(errorResult.getPosition());
     
     return errorResult;

@@ -831,6 +831,7 @@ rules:
     hitdef-attack-type = "n"{case} # normal
                        | "s"{case} # special
                        | "h"{case} # hyper
+                       | "a"{case} # all of the above
     hitdef-attack-movement = "a"{case} # attack
                            | "t"{case} # throw
                            | "p"{case} # projectile
