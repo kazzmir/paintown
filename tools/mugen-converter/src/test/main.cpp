@@ -12,6 +12,13 @@ static int error(const std::string & message){
     return -1;
 }
 
+static void lock(pthread_mutex_t & mutex){
+    pthread_mutex_lock(&mutex);
+}
+static void unlock(pthread_mutex_t & mutex){
+    pthread_mutex_unlock(&mutex);
+}
+
 pthread_mutex_t quitMutex = PTHREAD_MUTEX_INITIALIZER;
 bool globalQuit = false;
 pthread_mutex_t stateChangedMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -24,52 +31,55 @@ bool listStates = false;
 void * handleCharacter (void * arg){
     const char * module = (const char *)arg;
     
+    Py_Initialize();
+        
+    /* NOTE need to make sure we are trying to load in the same directory (is there a work around?) */
+    PyRun_SimpleString("import sys"); 
+    PyRun_SimpleString("sys.path.append('./')");
+    
     try {
         Character * character = new Character(module);
         bool quit = false;
         while(!quit){
             character->act();
-            pthread_mutex_lock(&quitMutex);
+            lock(quitMutex);
             if (globalQuit){
                 quit = true;
             }
-            pthread_mutex_unlock(&quitMutex);
+            unlock(quitMutex);
             
-            pthread_mutex_lock(&stateChangedMutex);
+            lock(stateChangedMutex);
             if (stateChanged){
-                pthread_mutex_lock(&stateMutex);
+                lock(stateMutex);
                 character->changeState(stateNumber);
-                pthread_mutex_unlock(&stateMutex);
+                unlock(stateMutex);
                 stateChanged = false;
             }
-            pthread_mutex_unlock(&stateChangedMutex);
+            unlock(stateChangedMutex);
             
-            pthread_mutex_lock(&listMutex);
+            lock(listMutex);
             if (listStates){
                 character->listStates();
                 listStates = false;
             }
-            pthread_mutex_unlock(&listMutex);
+            unlock(listMutex);
         }
         delete character;
     } catch (const PyException & ex){
         error("Problem with module! Reason: " + ex.getReason());
+        unlock(stateMutex);
+        unlock(stateChangedMutex);
     }
     
-    pthread_mutex_lock(&quitMutex);
+    Py_Finalize();
+    
+    lock(quitMutex);
     globalQuit = true;
-    pthread_mutex_unlock(&quitMutex);
+    unlock(quitMutex);
 }
 
 int main(int argc, char ** argv){
     if (argc > 1){
-        
-        Py_Initialize();
-        
-        /* NOTE need to make sure we are trying to load in the same directory (is there a work around?) */
-        PyRun_SimpleString("import sys"); 
-        PyRun_SimpleString("sys.path.append('./')");
-        
         
         std::cout << "Type 'quit' or 'exit' to quit." << std::endl;
         std::cout << "To change to state zero type 'zero'." << std::endl; 
@@ -83,49 +93,67 @@ int main(int argc, char ** argv){
             std::string keys;
             std::cout << "Enter state number: ";
             std::cin >> keys;
+            
+            lock(quitMutex);
+            if (globalQuit){
+                globalQuit = false;
+                
+                lock(stateChangedMutex);
+                stateChanged = false;
+                unlock(stateChangedMutex);
+                
+                lock(listMutex);
+                listStates = false;
+                unlock(listMutex);
+                
+                std::cout << "Character crashed or had a problem! Restarting..." << std::endl;
+                
+                ret = pthread_create(&characterThread, NULL, handleCharacter, (void *)argv[1]);
+                keys.clear();
+                std::cin.clear();
+            }
+            unlock(quitMutex);
+            
             if (ret == -1){
                 quit = true;
             }
-            pthread_mutex_lock(&quitMutex);
-            if (globalQuit){
-                std::cout << "Killed!" << std::endl;
-                quit = true;
-            }
-            pthread_mutex_unlock(&quitMutex);
+            
             if (keys == "quit" || keys == "exit" || keys == "q"){
                 quit = true;
-                pthread_mutex_lock(&quitMutex);
+                lock(quitMutex);
                 globalQuit = true;
-                pthread_mutex_unlock(&quitMutex);
+                unlock(quitMutex);
                 std::cout << "Shutting Down." << std::endl;
+            } else if (keys == "help" || keys == "?"){
+                std::cout << "'quit', 'exit', 'q' to exit" << std::endl;
+                std::cout << "'list', to print available states" << std::endl;
+                std::cout << "'zero', to change to state zero" << std::endl;
             } else if (keys == "zero"){
-                pthread_mutex_lock(&stateChangedMutex);
+                lock(stateChangedMutex);
                 stateChanged = true;
-                pthread_mutex_lock(&stateMutex);
+                lock(stateMutex);
                 stateNumber = 0;
-                pthread_mutex_unlock(&stateMutex);
-                pthread_mutex_unlock(&stateChangedMutex);
+                unlock(stateMutex);
+                unlock(stateChangedMutex);
             } else if (keys == "list"){
-                pthread_mutex_lock(&listMutex);
+                lock(listMutex);
                 listStates = true;
-                pthread_mutex_unlock(&listMutex);
+                unlock(listMutex);
             } else {
                 int number = atoi(keys.c_str());
                 if (number != 0){
-                    pthread_mutex_lock(&stateChangedMutex);
+                    lock(stateChangedMutex);
                     stateChanged = true;
-                    pthread_mutex_lock(&stateMutex);
+                    lock(stateMutex);
                     stateNumber = number;
-                    pthread_mutex_unlock(&stateMutex);
-                    pthread_mutex_unlock(&stateChangedMutex);
+                    unlock(stateMutex);
+                    unlock(stateChangedMutex);
                 }
             }
             std::cin.clear();
         }
         
         pthread_join(characterThread, NULL);
-        
-        Py_Finalize();
         
         return 0;
     }
