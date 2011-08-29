@@ -70,6 +70,7 @@ int main(int argc, char ** argv){
         bool quit = false;
         while (!quit){
             std::string keys;
+            std::cout << "Enter state number: ";
             std::cin >> keys;
             if (ret == -1){
                 quit = true;

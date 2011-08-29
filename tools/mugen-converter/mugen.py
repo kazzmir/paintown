@@ -186,7 +186,7 @@ class Character():
     def changeState(self, number, world):
         try:
             self.currentState = self.getState(number)(self, world)
-            print 'Changed te state ' + str(number) + '' 
+            print 'Changed to state ' + str(number) + '' 
         except MugenException:
             # TODO remove later
             # self.addState(number, StateDef)
