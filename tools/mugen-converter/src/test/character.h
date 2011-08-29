@@ -46,6 +46,8 @@ class Character{
         
         virtual void changeState(int number);
         
+        virtual void listStates();
+        
         virtual inline const std::string & getName() const{
             return this->characterName;
         }

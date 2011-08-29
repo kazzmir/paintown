@@ -193,6 +193,12 @@ class Character():
             # self.currentState = self.states[number](self, world)
             print 'State (' + str(number) + ') does not exist' 
 
+    # List states
+    def listStates(self):
+        for key in self.states:
+            print str(key) + ', ',
+        print ''
+
     # Set command
     def setCurrentCommand(self, command):
         self.currentCommand = command

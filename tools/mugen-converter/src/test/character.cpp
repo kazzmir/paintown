@@ -173,3 +173,11 @@ void Character::changeState(int number){
     }
     Py_DECREF(check);
 }
+
+void Character::listStates(){
+    PyObject * check = PyObject_CallMethod(character, "listStates", NULL);
+    if (check == NULL){
+        throw PyException("Couldn't print list of states.");
+    }
+    Py_DECREF(check);
+}

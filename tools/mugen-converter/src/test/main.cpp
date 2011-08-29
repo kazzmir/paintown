@@ -18,6 +18,8 @@ pthread_mutex_t stateChangedMutex = PTHREAD_MUTEX_INITIALIZER;
 bool stateChanged = false;
 pthread_mutex_t stateMutex = PTHREAD_MUTEX_INITIALIZER;
 int stateNumber = 0;
+pthread_mutex_t listMutex = PTHREAD_MUTEX_INITIALIZER;
+bool listStates = false;
 
 void * handleCharacter (void * arg){
     const char * module = (const char *)arg;
@@ -41,6 +43,13 @@ void * handleCharacter (void * arg){
                 stateChanged = false;
             }
             pthread_mutex_unlock(&stateChangedMutex);
+            
+            pthread_mutex_lock(&listMutex);
+            if (listStates){
+                character->listStates();
+                listStates = false;
+            }
+            pthread_mutex_unlock(&listMutex);
         }
         delete character;
     } catch (const PyException & ex){
@@ -62,7 +71,9 @@ int main(int argc, char ** argv){
         PyRun_SimpleString("sys.path.append('./')");
         
         
-        std::cout << "Type 'quit' or 'exit' to quit. To change to state zero type 'zero'." << std::endl;
+        std::cout << "Type 'quit' or 'exit' to quit." << std::endl;
+        std::cout << "To change to state zero type 'zero'." << std::endl; 
+        std::cout << "To list all states type 'list'." << std::endl;
         
         pthread_t characterThread;
         int ret = pthread_create(&characterThread, NULL, handleCharacter, (void *)argv[1]);
@@ -81,7 +92,7 @@ int main(int argc, char ** argv){
                 quit = true;
             }
             pthread_mutex_unlock(&quitMutex);
-            if (keys == "quit" || keys == "exit"){
+            if (keys == "quit" || keys == "exit" || keys == "q"){
                 quit = true;
                 pthread_mutex_lock(&quitMutex);
                 globalQuit = true;
@@ -94,6 +105,10 @@ int main(int argc, char ** argv){
                 stateNumber = 0;
                 pthread_mutex_unlock(&stateMutex);
                 pthread_mutex_unlock(&stateChangedMutex);
+            } else if (keys == "list"){
+                pthread_mutex_lock(&listMutex);
+                listStates = true;
+                pthread_mutex_unlock(&listMutex);
             } else {
                 int number = atoi(keys.c_str());
                 if (number != 0){
