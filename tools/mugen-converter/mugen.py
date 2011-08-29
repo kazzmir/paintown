@@ -222,6 +222,20 @@ class Character():
         return self.currentState.getNumber()
     
     # TODO
+    def animationElementTime(self, time):
+        return 1
+    def getAnimationTime(self):
+        return 0
+    def getBackEdgeBodyDistance(self):
+        return 0
+    def getBackEdgeDistance(self):
+        return 0
+    def getFrontEdgeBodyDistance(self):
+        return 0
+    def getFrontEdgeDistance(self):
+        return 0
+    def getHitShakeOver(self):
+        return 0
     def getMoveType(self):
         return 0
     def getStateType(self):
@@ -236,12 +250,20 @@ class Character():
         pass
     def currentAnimation(self):
         return 0
+    def getPositionX(self):
+        return 0
+    def getPositionY(self):
+        return 0
     def getVelocityX(self):
         return 0
     def getVelocityY(self):
         return 0
     def isAlive(self):
         return 1
+    def turn(self):
+        pass
+    def setControl(self, trigger):
+        pass
 
 # LN definition
 def ln(number):

@@ -82,7 +82,6 @@ int main(int argc, char ** argv){
     if (argc > 1){
         
         std::cout << "Type 'quit' or 'exit' to quit." << std::endl;
-        std::cout << "To change to state zero type 'zero'." << std::endl; 
         std::cout << "To list all states type 'list'." << std::endl;
         
         pthread_t characterThread;
@@ -128,18 +127,17 @@ int main(int argc, char ** argv){
                 std::cout << "'help', '?' to print help" << std::endl;
                 std::cout << "'quit', 'exit', 'q' to exit" << std::endl;
                 std::cout << "'list', to print available states" << std::endl;
-                std::cout << "'zero', to change to state zero" << std::endl;
-            } else if (keys == "zero"){
+            } else if (keys == "list"){
+                lock(listMutex);
+                listStates = true;
+                unlock(listMutex);
+            } else if (keys == "0"){
                 lock(stateChangedMutex);
                 stateChanged = true;
                 lock(stateMutex);
                 stateNumber = 0;
                 unlock(stateMutex);
                 unlock(stateChangedMutex);
-            } else if (keys == "list"){
-                lock(listMutex);
-                listStates = true;
-                unlock(listMutex);
             } else {
                 int number = atoi(keys.c_str());
                 if (number != 0){

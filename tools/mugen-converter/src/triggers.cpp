@@ -103,8 +103,10 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("AnimElem", keyword)){
     } else if (match("AnimElemNo", keyword)){
     } else if (match("AnimElemTime", keyword)){
+        return "self.player.animationElementTime";
     } else if (match("AnimExist", keyword)){
     } else if (match("AnimTime", keyword)){
+        return "self.player.getAnimationTime()";
     } else if (match("Asin", keyword)){
         return "math.asin";
     } else if (match("Atan", keyword)){
@@ -112,8 +114,9 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("AuthorName", keyword)){
         return "self.player.getAuthor()";
     } else if (match("BackEdgeBodyDist", keyword)){
+        return "self.player.getBackEdgeBodyDistance()";
     } else if (match("BackEdgeDist", keyword)){
-
+        return "self.player.getBackEdgeDistance()";
     } else if (match("CanRecover", keyword)){
         return "self.player.canRecover()";
     } else if (match("Ceil", keyword)){
@@ -140,8 +143,9 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("Floor", keyword)){
         return "math.floor";
     } else if (match("FrontEdgeBodyDist", keyword)){
+        return "self.player.getFrontEdgeBodyDistance()";
     } else if (match("FrontEdgeDist", keyword)){
-
+        return "self.player.getFrontEdgeDistance()";
     } else if (match("GameTime", keyword)){
         return "world.getTime";
     } else if (match("GetHitVar", keyword)){
@@ -156,6 +160,7 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("HitOver", keyword)){
     } else if (match("HitPauseTime", keyword)){
     } else if (match("HitShakeOver", keyword)){
+        return "self.player.getHitShakeOver()";
     } else if (match("HitVel", keyword)){
 
     } else if (match("ID", keyword)){
@@ -770,8 +775,10 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
             if (match(identifier.toString(), "s") || 
                 match(identifier.toString(), "c") || 
                 match(identifier.toString(), "a") || 
+                match(identifier.toString(), "i") ||  
                 match(identifier.toString(), "l") || 
-                match(identifier.toString(), "h")){
+                match(identifier.toString(), "h") || 
+                match(identifier.toString(), "n")){
                 exp.setType(ExpressionBuilder::String);
                 exp.setExpression(Expression(identifier.toString()));
             } else {
