@@ -85,6 +85,42 @@ void Expression::addArguments(const Expression & argument){
     arguments.push_back(argument);
 }
 
+bool stringIdentifiers(const std::string & word){
+    return (match("xveladd", word) ||
+         match("yveladd", word) ||
+         match("type", word) ||
+         match("animtype", word) ||
+         match("airtype", word) ||
+         match("groundtype", word) ||
+         match("damage", word) ||
+         match("hitcount", word) ||
+         match("fallcount", word) ||
+         match("hitshaketime", word) ||
+         match("hittime", word) ||
+         match("slidetime", word) ||
+         match("ctrltime", word) ||
+         match("recovertime", word) ||
+         match("xoff", word) ||
+         match("yoff", word) ||
+         match("xvel", word) ||
+         match("yvel", word) ||
+         match("yaccel", word) ||
+         match("chainid", word) ||
+         match("guarded", word) ||
+         match("isbound", word) ||
+         match("fall", word) ||
+         match("fall.damage", word) ||
+         match("fall.xvel", word) ||
+         match("fall.yvel", word) ||
+         match("fall.recover", word) ||
+         match("fall.recovertime", word) ||
+         match("fall.kill", word) ||
+         match("fall.envshake.time", word) ||
+         match("fall.envshake.freq", word) ||
+         match("fall.envshake.ampl", word) ||
+         match("fall.envshake.phase", word));
+}
+
 /* TODO FIXME and all that
  * Assuming that an object named player and an object named world is going to be passed to States for evaluation
  * And also assuming that the names of the functions are going to be what they are below (most likely most of it will change)
@@ -149,7 +185,7 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("GameTime", keyword)){
         return "world.getTime";
     } else if (match("GetHitVar", keyword)){
-
+        return "self.player.getHitVariable";
     } else if (match("HitCount", keyword)){
     } else if (match("HitDefAttr", keyword)){
     } else if (match("HitDefAttr:state", keyword)){
@@ -157,7 +193,9 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("HitDefAttr:attribute", keyword)){
         return "self.player.getHitDefAttribute()";
     } else if (match("HitFall", keyword)){
+        return "self.player.getHitFall()";
     } else if (match("HitOver", keyword)){
+        return "self.player.getHitOver()";
     } else if (match("HitPauseTime", keyword)){
     } else if (match("HitShakeOver", keyword)){
         return "self.player.getHitShakeOver()";
@@ -180,9 +218,13 @@ static std::string handleKeyWord(const Expression & expression){
 
     } else if (match("MatchNo", keyword)){
     } else if (match("MatchOver", keyword)){
+        return "world.isMatchOver()";
     } else if (match("MoveContact", keyword)){
+        return "self.player.getMoveContact()";
     } else if (match("MoveGuarded", keyword)){
+        return "self.player.getMoveGuarded()";
     } else if (match("MoveHit", keyword)){
+        return "self.player.getMoveHit()";
     } else if (match("MoveReversed", keyword)){
     } else if (match("MoveType", keyword)){
         return "self.player.getMoveType()";
@@ -197,13 +239,13 @@ static std::string handleKeyWord(const Expression & expression){
 
     } else if (match("P1Name", keyword)){
     } else if (match("P2BodyDist x", keyword)){
-        return "world.getPlayerBodyDistance()";
+        return "world.getPlayerBodyXDistance()";
     } else if (match("P2BodyDist y", keyword)){
-        return "world.getPlayerBodyDistance()";
+        return "world.getPlayerBodyFDistance()";
     } else if (match("P2Dist x", keyword)){
-        return "world.getPlayerDistance()";
+        return "world.getPlayerXDistance()";
     } else if (match("P2Dist y", keyword)){
-        return "world.getPlayerDistance()";
+        return "world.getPlayerYDistance()";
     } else if (match("P2Life", keyword)){
     } else if (match("P2MoveType", keyword)){
     } else if (match("P2Name", keyword)){
@@ -223,6 +265,7 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("Power", keyword)){
     } else if (match("PowerMax", keyword)){
     } else if (match("PrevStateNo", keyword)){
+        return "self.player.getPreviousStateNumber()";
     } else if (match("ProjCancelTime", keyword)){
     } else if (match("ProjContact", keyword)){
     } else if (match("ProjContactTime", keyword)){
@@ -246,12 +289,13 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("Sin", keyword)){
         return "math.sin";
     } else if (match("StateNo", keyword)){
-        return "self.player.getStateNo()";
+        return "self.player.getStateNumber()";
     } else if (match("StateType", keyword)){
         return "self.player.getStateType()";
     } else if (match("SysFVar", keyword)){
+        return "self.player.getSystemFloatVariable";
     } else if (match("SysVar", keyword)){
-
+        return "self.player.getSystemVariable";
     } else if (match("Tan", keyword)){
         return "math.tan";
     } else if (match("TeamMode", keyword)){
@@ -264,11 +308,14 @@ static std::string handleKeyWord(const Expression & expression){
     } else if (match("UniqHitCount", keyword)){
 
     } else if (match("Var", keyword)){
+        return "self.player.getVariable";
     } else if (match("Vel x", keyword)){
         return "self.player.getVelocityX()";
     } else if (match("Vel y", keyword)){
         return "self.player.getVelocityY()";
     } else if (match("Win", keyword)){
+    } else if (stringIdentifiers(keyword)){
+        return "'" + keyword + "'";
     } else {
         std::cout << "Unhandled keyword: " << keyword << std::endl;
     }
@@ -383,9 +430,10 @@ const std::string ExpressionBuilder::get(){
             return crawlComplex(leftComplex) + expressionOperator + crawlComplex(rightComplex);
             break;
         }
-        case Identifier:
+        case Identifier:{
             return handleKeyWord(expression);
             break;
+        }
         case Helper:
             return expression.get();
             break;
@@ -778,7 +826,8 @@ ExpressionBuilder TriggerHandler::convert(const Ast::Value & value){
                 match(identifier.toString(), "i") ||  
                 match(identifier.toString(), "l") || 
                 match(identifier.toString(), "h") || 
-                match(identifier.toString(), "n")){
+                match(identifier.toString(), "n") || 
+                match(identifier.toString(), "u")){
                 exp.setType(ExpressionBuilder::String);
                 exp.setExpression(Expression(identifier.toString()));
             } else {

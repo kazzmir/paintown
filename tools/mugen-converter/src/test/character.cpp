@@ -155,7 +155,7 @@ const double Character::getNumericValue(const std::string & attribute){
 }
 
 int Character::getCurrentStateNumber(){
-    PyObject * check = PyObject_CallMethod(character, "getStateNo", NULL);
+    PyObject * check = PyObject_CallMethod(character, "getStateNumber", NULL);
     if (check == NULL){
          throw PyException("Couldn't get current state number.");
     }

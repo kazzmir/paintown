@@ -61,6 +61,16 @@ class World():
     # TODO
     def getCurrentRound(self):
         return self.currentRound
+    def isMatchOver(self):
+        return 0
+    def getPlayerBodyXDistance(self):
+        return 0
+    def getPlayerBodyYDistance(self):
+        return 0
+    def getPlayerXDistance(self):
+        return 0
+    def getPlayerYDistance(self):
+        return 0
 
 # Character Class
 class Character():
@@ -145,6 +155,9 @@ class Character():
         # State holders
         self.states = {}
         
+        # Previous State number
+        self.previousStateNumber = None
+        
         # Current State
         self.currentState = None
         
@@ -185,7 +198,10 @@ class Character():
     # Change state to number and pass world
     def changeState(self, number, world):
         try:
+            prev = self.currentState
             self.currentState = self.getState(number)(self, world)
+            if prev:
+                self.previousStateNumber = prev.getNumber()
             print 'Changed to state ' + str(number) + '' 
         except MugenException:
             # TODO remove later
@@ -217,12 +233,18 @@ class Character():
         # Current state
         self.currentState.evaluate(world)
     
-    # Get current state
-    def getStateNo(self):
+    # Get previous state number
+    def getPreviousStateNumber(self):
+        return self.previousStateNumber
+    
+    # Get current state number
+    def getStateNumber(self):
         return self.currentState.getNumber()
     
     # TODO
     def animationElementTime(self, time):
+        return 1
+    def canRecover(self):
         return 1
     def getAnimationTime(self):
         return 0
@@ -234,7 +256,19 @@ class Character():
         return 0
     def getFrontEdgeDistance(self):
         return 0
+    def getHitFall(self):
+        return 0
+    def getHitOver(self):
+        return 0
     def getHitShakeOver(self):
+        return 0
+    def getHitVariable(self, value):
+        return 0
+    def getMoveContact(self):
+        return 0
+    def getMoveGuarded(self):
+        return 0
+    def getMoveHit(self):
         return 0
     def getMoveType(self):
         return 0
@@ -253,6 +287,12 @@ class Character():
     def getPositionX(self):
         return 0
     def getPositionY(self):
+        return 0
+    def getSystemFloatVariable(self, number):
+        return 0
+    def getSystemVariable(self, number):
+        return 0
+    def getVariable(self, number):
         return 0
     def getVelocityX(self):
         return 0
