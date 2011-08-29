@@ -112,12 +112,13 @@ def copyData(currentRoot, binDirectory, widget, emitter):
     # Copy paintown to paintown-bin
     updateGui('Copying the paintown binary...')
     try:
+        createDirectory(str(currentRoot))
+        createDirectory(str(binDirectory))
         shutil.copy('paintown', str(currentRoot + '/' + 'paintown-bin'))
         os.chmod(str(currentRoot + '/' + 'paintown-bin'), stat.S_IRWXU)
     except Exception, e:
-        updateGui('Could not copy the paintown binary!')
-        print 'Could not copy the paintown binary!'
-        print e
+        updateGui('Could not copy the paintown binary because %s!' % e)
+        print 'Could not copy the paintown binary because %s!' % e
 
     updateGui('Creating run script in %s/%s' % (str(binDirectory), 'paintown'))
     createRunScript('%s/paintown' % str(binDirectory), '%s/paintown-bin' % str(currentRoot))
