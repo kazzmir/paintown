@@ -104,13 +104,11 @@ def copyData(currentRoot, binDirectory, widget, emitter):
     def createRunScript(script, binary):
         out = open(script, 'w')
         data = """#!/bin/sh
-%s -d %s
+%s -d %s/data
 """ % (binary, currentRoot)
         out.write(data)
         os.chmod(script, stat.S_IRWXU)
 
-    # copyAllFiles()
-   
     # Copy paintown to paintown-bin
     updateGui('Copying the paintown binary...')
     try:
@@ -123,6 +121,8 @@ def copyData(currentRoot, binDirectory, widget, emitter):
 
     updateGui('Creating run script in %s/%s' % (str(binDirectory), 'paintown'))
     createRunScript('%s/paintown' % str(binDirectory), '%s/paintown-bin' % str(currentRoot))
+    copyAllFiles()
+   
     updateGui('Done!')
 
 # Load Interface
