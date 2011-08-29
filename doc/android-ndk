@@ -1,17 +1,38 @@
 * How to build with Google's Android SDK:
-*  This assumes you are on linux and the current version which is revision 11 (you can modify it for windows as necessary)
-*  You can go to http://developer.android.com/sdk/index.html and download the appropriate bins for your OS
+*  This assumes you are on linux and the current version which is revision 12 for the sdk and revision 6 for the ndk (you can modify it for windows as necessary)
+*  You can go to http://developer.android.com/sdk/index.html and download the appropriate android sdk bins for your OS
+*  You can go to http://developer.android.com/sdk/ndk/index.html and download the appropriate android ndk bins for your OS
 *  
 *  - To work with the SDK you need to have Java JDK installed: http://java.sun.com/javase/downloads/index.jsp
 
   1. Setup the Android environment:
-      - wget http://dl.google.com/android/android-sdk_r11-linux_x86.tgz
-      - tar xzvf android-sdk_r11-linux_x86.tgz
+      - wget http://dl.google.com/android/android-sdk_r12-linux_x86.tgz
+      - tar xzvf android-sdk_r12-linux_x86.tgz
       - cd android-sdk-linux_x86/tools
       - ./android
-      - 
+            - Select the "Installed packages" on the right column and under "Description" hit "Update All..."
+                - A dialog should pop up for choosing packages, hit the radial "Accept All" and hit "Install" (this may take some time)
+      - cd ../../
+      - wget http://dl.google.com/android/ndk/android-ndk-r6-linux-x86.tar.bz2
+      - tar xvjf android-ndk-r6-linux-x86.tar.bz2
+      - ln -s android-ndk-r6 /opt/android
+      
   
-  2. TODO
+  2. Install and/or compile requisite libraries:
+      - Get freetype:
+        - git clone https://github.com/cdave1/freetype2-android.github
+        - cd freetype2-android/Android/jni
+        - /opt/android/ndk-build
+      - Get SDL:
+        - hg clone http://hg.libsdl.org/SDL
+        - cd SDL
+        - ?
+      - TODO
+      
+  3. Set the build type environment variable to 'android' and build paintown:
+      - export android=1
+        cd /path/to/paintown
+        make
   
   
   

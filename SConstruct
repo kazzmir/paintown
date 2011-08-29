@@ -120,6 +120,7 @@ usePrx = makeUseEnvironment('prx', False)
 isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
 useMinpspw = makeUseEnvironment('minpspw', False)
+useAndroid = makeUseEnvironment('android', False)
 usePs3 = makeUseEnvironment('ps3', False)
 useNDS = makeUseEnvironment('nds', False)
 useDingoo = makeUseEnvironment('dingoo', False)
@@ -1108,6 +1109,35 @@ rsx
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', ogc_bin_path)
         return env
+    def android(env):
+        # Sets up the environment for Google Android
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        
+        path = '/opt/android'
+        bin_path = setup(path, '/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin')
+        prefix = 'arm-linux-androideabi-'
+        def set_prefix(x):
+            return '%s%s' % (prefix, x)
+        env['CC'] = set_prefix('gcc')
+        env['LD'] = set_prefix('ld')
+        env['CXX'] = set_prefix('g++')
+        env['AS'] = set_prefix('as')
+        env['AR'] = set_prefix('ar')
+        env['OBJCOPY'] = set_prefix('objcopy')
+        
+        env.Append(CPPPATH = [setup(path, '/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/include'), setup(path, '/android/platforms/android-8/arch-arm/usr/include')])
+        env.Append(CPPDEFINES = ['ANDROID'])
+        flags = ['']
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env.Append(LINKFLAGS = flags)
+        env.Append(CPPPATH = ['#src/android'])
+        
+        #env.Append(LIBS = [''])
+        
+        env.PrependENVPath('PATH', bin_path)
+        return env
     def nacl(env):
         # Sets up the environment for Googles Native Client
         # check for architecture
@@ -1256,6 +1286,8 @@ rsx
                 return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useMinpspw():
                 return minpspw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
+            elif useAndroid():
+                return android(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif usePs3():
                 return ps3(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useNacl():
@@ -1431,7 +1463,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not usePs3():
+if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not usePs3():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1512,6 +1544,8 @@ def buildType(dir, env):
             properties.append('sdl')
         if useMinpspw():
             properties.append('psp')
+    if useAndroid():
+        properties.append('android')
     if usePs3():
         properties.append('ps3')
     if useNacl():
@@ -1572,6 +1606,8 @@ def display_build_properties(env):
         properties.append(colorize("NDS", color))
     if useMinpspw():
         properties.append(colorize("PSP", color))
+    if useAndroid():
+        properties.append(colorize("ANDROID", color))
     if usePs3():
         properties.append(colorize("PS3", color))
     if useNacl():
@@ -1659,7 +1695,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useNacl():
+    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useNacl():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
@@ -1680,19 +1716,19 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw() and not usePs3() and not useNDS() and not useNacl():
+        if useSDL() and not useMinpspw() and not usePs3() and not useNDS() and not useAndroid() and not useNacl():
             if not config.CheckSDL():
                 print "Install libsdl 1.2"
                 Exit(1)
             config.CheckSDLMain()
-        elif useMinpspw() or usePs3() or useNDS() or useNacl():
+        elif useMinpspw() or usePs3() or useNDS() or useAndroid() or useNacl():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             config.CheckSDLMain()
             #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
             #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
         
-        if not usePs3() and not useNacl():
+        if not usePs3() and not useNacl() and not useAndroid():
             safeParseConfig(config.env, 'freetype-config --libs --cflags')
             safeParseConfig(config.env, 'libpng-config --libs --cflags')
         
