@@ -15,6 +15,7 @@
 #include "exceptions/exception.h"
 #include "globals.h"
 #include "util/init.h"
+#include "util/input/input-source.h"
 #include "util/gui/lineedit.h"
 #include "util/input/input-manager.h"
 #include "menu/menu.h"
@@ -837,7 +838,7 @@ void ChatServer::run(){
         }
 
         void handleInput(bool inputHadFocus){
-            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource());
             bool select = false;
             bool next = false;
             bool quit = false;

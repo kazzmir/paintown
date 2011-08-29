@@ -48,6 +48,7 @@
 */
 
 #include "util/input/input-manager.h"
+#include "util/input/input-source.h"
 
 #include "animation.h"
 #include "background.h"
@@ -770,7 +771,7 @@ void MugenMenu::run(){
 
         bool doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chosenPlayer, Mugen::PlayerType type){
             bool quit = false;
-            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(input);
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(input, InputSource());
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;
                 if (!event.enabled){

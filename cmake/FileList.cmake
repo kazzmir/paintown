@@ -14,7 +14,8 @@ src/paintown-engine/game/mod.cpp
 src/paintown-engine/game/options.cpp
 src/util/input/input.cpp
 src/util/input/text-input.cpp
-src/util/input/input-manager.cpp)
+src/util/input/input-manager.cpp
+src/util/input/input-source.cpp)
 
 set(SCRIPT_SRC
 src/paintown-engine/script/script.cpp

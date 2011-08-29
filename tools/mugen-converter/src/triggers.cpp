@@ -10,17 +10,15 @@
 using namespace Mugen;
 using namespace TriggerHandler;
 
-/* Used to generate a useable function to handle infix's and unary's */
-static int FUNCTION_NUMBER = 0;
-
 static const std::string getNextFunctionName(){
+    /* Used to generate a useable function to handle infix's and unary's */
+    static int FUNCTION_NUMBER = 0;
     FUNCTION_NUMBER++;
     std::ostringstream stream;
     //stream << "def function" << FUNCTION_NUMBER << "(self, player, world):";
     stream << "evaluator" << FUNCTION_NUMBER;
     return stream.str();
 }
-
 
 Expression::Expression():
 constant(false){
@@ -55,7 +53,6 @@ const Expression & Expression::operator=(const Expression & copy){
 }
 
 const std::string Expression::get(){
-
     if (constant){
         return keyword;
     }
@@ -328,6 +325,7 @@ type(NotSet),
 leftComplex(NULL),
 rightComplex(NULL){
 }
+
 ExpressionBuilder::ExpressionBuilder(const ExpressionBuilder & copy){
     expression = copy.expression;
     if (copy.leftComplex != NULL){

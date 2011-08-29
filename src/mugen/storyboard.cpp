@@ -24,6 +24,7 @@
 #include "ast/all.h"
 #include "parser/all.h"
 #include "util/input/input-map.h"
+#include "util/input/input-source.h"
 #include "util/input/input-manager.h"
 
 namespace PaintownUtil = ::Util;
@@ -455,7 +456,7 @@ void Storyboard::run(bool repeat){
         }
 
         void run(){
-            vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(input);
+            vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(input, InputSource());
             for (vector<InputMap<Keys>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
                 InputMap<Keys>::InputEvent event = *it;
 

@@ -25,6 +25,7 @@
 #include "factory/font_render.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
+#include "util/input/input-source.h"
 #include "util/input/keyboard.h"
 #include "globals.h"
 #include "../script/script.h"
@@ -530,7 +531,7 @@ public:
             }
 
             void handleInput(){
-                vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input);
+                vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input, InputSource());
                 unsigned int old = list.getCurrentIndex();
                 for (vector<InputMap<MoveListInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                     const InputMap<MoveListInput>::InputEvent & event = *it;
@@ -981,7 +982,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         }
 
         void doInput(GameState & state, bool & force_quit){
-            vector<InputMap<Game::Input>::InputEvent> events = InputManager::getEvents(input);
+            vector<InputMap<Game::Input>::InputEvent> events = InputManager::getEvents(input, InputSource());
 
             bool pressed = false;
             for (vector<InputMap<Game::Input>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){

@@ -11,6 +11,7 @@
 #include "util/init.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-manager.h"
+#include "util/input/input-source.h"
 #include "util/input/input-map.h"
 #include "util/funcs.h"
 #include "util/timedifference.h"
@@ -167,7 +168,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         bool & show_fps;
 
         void doInput(){
-            std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput);
+            std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput, InputSource());
             for (std::vector<InputMap<int>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
                 const InputMap<int>::InputEvent & event = *it;
                 if (!event.enabled){

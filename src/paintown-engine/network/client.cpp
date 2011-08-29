@@ -7,6 +7,7 @@
 #include "util/parameter.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-map.h"
+#include "util/input/input-source.h"
 #include "util/input/input-manager.h"
 #include "util/input/text-input.h"
 #include "util/init.h"
@@ -568,7 +569,7 @@ void networkClient(){
 
         void run(){
             Focus oldFocus = focus;
-            vector<InputMap<ClientActions>::InputEvent> events = InputManager::getEvents(input);
+            vector<InputMap<ClientActions>::InputEvent> events = InputManager::getEvents(input, InputSource());
 
             switch (focus){
                 case Name: state.draw = state.draw || nameInput.doInput(); break;

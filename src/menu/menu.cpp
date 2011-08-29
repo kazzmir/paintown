@@ -24,6 +24,7 @@
 
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
+#include "util/input/input-source.h"
 #include "util/parameter.h"
 
 #include <queue>
@@ -1749,7 +1750,7 @@ void Menu::Menu::act(Context & ourContext){
     // Keys
     // InputManager::poll();
     // InputMap<Actions>::Output inputState = InputManager::getMap(input);
-    vector<InputMap<Actions>::InputEvent> events = InputManager::getEvents(input);
+    vector<InputMap<Actions>::InputEvent> events = InputManager::getEvents(input, InputSource());
 
     for (vector<InputMap<Actions>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
         InputMap<Actions>::InputEvent event = *it;

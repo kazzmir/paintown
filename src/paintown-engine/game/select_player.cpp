@@ -18,6 +18,7 @@
 #include "util/input/keyboard.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
+#include "util/input/input-source.h"
 #include "util/font.h"
 #include "paintown-engine/level/utils.h"
 #include "util/file-system.h"
@@ -253,7 +254,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             };
 
             Handler handler(choose, character, loader, beep, current, boxesPerLine, players.size(), input);
-            InputManager::handleEvents(input, handler);
+            InputManager::handleEvents(input, InputSource(), handler);
 
             if (current >= players.size()){
                 current = players.size() - 1;

@@ -10,6 +10,7 @@
 #include "util/init.h"
 #include "globals.h"
 #include "util/input/keyboard.h"
+#include "util/input/input-source.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -467,7 +468,7 @@ void ChatClient::run(){
         }
 
         void run(){
-            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource());
 
             bool hasInputFocus = client.focus == INPUT_BOX;
             bool next = false;

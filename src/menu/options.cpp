@@ -2,6 +2,7 @@
 
 #include "options.h"
 #include "util/token.h"
+#include "util/input/input-source.h"
 #include "util/parameter.h"
 #include "util/tokenreader.h"
 #include "menu.h"
@@ -233,7 +234,7 @@ void OptionCredits::run(const Menu::Context & context){
         bool quit;
 
         void run(){
-            vector<InputMap<CreditKey>::InputEvent> out = InputManager::getEvents(input);
+            vector<InputMap<CreditKey>::InputEvent> out = InputManager::getEvents(input, InputSource());
             for (vector<InputMap<CreditKey>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
                 const InputMap<CreditKey>::InputEvent & event = *it;
                 if (event.enabled){
@@ -613,7 +614,7 @@ static Configuration::JoystickInput readJoystick(){
 
     while (true){
         InputManager::poll();
-        vector<InputMap<Joystick::Key>::InputEvent> out = InputManager::getEvents(input);
+        vector<InputMap<Joystick::Key>::InputEvent> out = InputManager::getEvents(input, InputSource());
         for (vector<InputMap<Joystick::Key>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
             const InputMap<Joystick::Key>::InputEvent & event = *it;
             if (event.enabled){

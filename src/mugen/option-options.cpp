@@ -24,6 +24,7 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/input/input-manager.h"
+#include "util/input/input-source.h"
 #include "exceptions/exception.h"
 
 #include "util/gui/box.h"
@@ -489,8 +490,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         void run(){
-            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input);
-            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input);
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, InputSource());
+            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, InputSource());
             out1.insert(out1.end(), out2.begin(), out2.end());
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;

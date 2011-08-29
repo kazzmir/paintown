@@ -18,6 +18,7 @@
 #include "player.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
+#include "util/input/input-source.h"
 #include "draw-effect.h"
 #include <math.h>
 
@@ -171,7 +172,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
 
     // keyHold.back = false;
 
-    vector<InputMap<Input::PaintownInput>::InputEvent> events = InputManager::getEvents(input);
+    vector<InputMap<Input::PaintownInput>::InputEvent> events = InputManager::getEvents(input, InputSource());
     for (vector<InputMap<Input::PaintownInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
         InputMap<Input::PaintownInput>::InputEvent event = *it;
 
@@ -212,7 +213,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
         inputHold.set(configuration.getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
     }
 
-    vector<InputMap<Input::PaintownInput>::InputEvent> eventsHold = InputManager::getEvents(inputHold);
+    vector<InputMap<Input::PaintownInput>::InputEvent> eventsHold = InputManager::getEvents(inputHold, InputSource());
     for (vector<InputMap<Input::PaintownInput>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
         InputMap<Input::PaintownInput>::InputEvent event = *it;
 

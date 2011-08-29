@@ -3,6 +3,7 @@
 #include <string>
 #include <math.h>
 #include "util/input/input-map.h"
+#include "util/input/input-source.h"
 #include "command.h"
 #include "util/debug.h"
 #include "character.h"
@@ -58,7 +59,7 @@ void HumanBehavior::flip(){
 }
 
 Mugen::Input HumanBehavior::updateInput(InputMap<Keys> & keys, Mugen::Input old){
-    vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(keys);
+    vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(keys, InputSource());
     for (vector<InputMap<Keys>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
         InputMap<Keys>::InputEvent event = *it;
 

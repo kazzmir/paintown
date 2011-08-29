@@ -51,6 +51,7 @@
 #include "util/loading.h"
 
 #include "util/input/input-manager.h"
+#include "util/input/input-source.h"
 
 #include "exceptions/exception.h"
 
@@ -817,7 +818,7 @@ Cursor::~Cursor(){
 
 void Cursor::act(Grid &grid){
     // InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
-    vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input);
+    vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input, InputSource());
     for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
         const InputMap<Mugen::Keys>::InputEvent & event = *it;
         if (!event.enabled){
@@ -2768,7 +2769,7 @@ void CharacterSelect::run(const std::string & title, Searcher & search){
         }
 
         void run(){
-            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput);
+            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput, InputSource());
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;
                 if (!event.enabled){
