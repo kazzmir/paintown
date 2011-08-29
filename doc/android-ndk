@@ -1,0 +1,17 @@
+* How to build with Google's Android SDK:
+*  This assumes you are on linux and the current version which is revision 11 (you can modify it for windows as necessary)
+*  You can go to http://developer.android.com/sdk/index.html and download the appropriate bins for your OS
+*  
+*  - To work with the SDK you need to have Java JDK installed: http://java.sun.com/javase/downloads/index.jsp
+
+  1. Setup the Android environment:
+      - wget http://dl.google.com/android/android-sdk_r11-linux_x86.tgz
+      - tar xzvf android-sdk_r11-linux_x86.tgz
+      - cd android-sdk-linux_x86/tools
+      - ./android
+      - 
+  
+  2. TODO
+  
+  
+  

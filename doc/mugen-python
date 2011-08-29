@@ -7,7 +7,7 @@
  - To build the converter you can type scons or make (which calls scons w/ extra parameters for cpu support).
    - If you have python developer libraries and allegro installed it will also build a test application to test characters generated with the converter.
 
- -The application will be name 'converter' and will output this below if no parameters are passed to it:
+ -The application will be named 'converter' and will output this below if no parameters are passed to it:
     
     - Usage: ./converter character.def [character.py]
 
