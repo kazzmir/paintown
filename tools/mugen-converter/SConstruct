@@ -59,33 +59,32 @@ env.Prepend(LIBS = pcreLibrary(env))
 
 env.Program('converter', source)
 
-
-# Check for allegro
-def haveAllegro(env):
+# Check for pthreads
+def haveThreads(env):
     
     new_env = env
-    new_env.ParseConfig('allegro-config --libs --cflags')
+    new_env.Append(LIBS = ['pthread'])
     
-    print 'Configuration: Checking for Allegro in the environment.'
+    print 'Configuration: Checking for pthreads in the environment.'
     
     config = new_env.Configure()
     
     ok = config.TryLink("""
-        #include <allegro.h>
+        #include <pthread.h>
         int main(int argc, char ** argv){
-            install_allegro(0, NULL, NULL);
+            pthread_t thr;
+            pthread_create(&thr, NULL, NULL, NULL);
             return 0;
         }
-        END_OF_MAIN()
     """, ".c")
     
     config.Finish()
     if ok:
-        print 'Configuration: Allegro found.'
+        print 'Configuration: pthreads found.'
         env = new_env
         return 1
     else:
-        print 'Configuration: Allegro not found'
+        print 'Configuration: pthreads not found'
         return 0
 
 # Test application for python
@@ -133,7 +132,7 @@ testEnv = Environment(ENV = os.environ)
 testEnv.VariantDir('build/paintown', '../../src')
 testEnv.Append(CPPPATH = ['../../src'])
     
-if havePython(testEnv) and haveAllegro(testEnv):
+if havePython(testEnv) and haveThreads(testEnv):
     if getDebug():
         testEnv.Prepend(CPPFLAGS = ['-g3','-ggdb', '-Wfatal-errors'])
     source = Split("""

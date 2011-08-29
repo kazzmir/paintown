@@ -1,7 +1,5 @@
-#include <allegro.h>
 #include <iostream>
-#include <sstream>
-#include <vector>
+#include <pthread.h>
 
 #include <Python.h>
 
@@ -14,85 +12,104 @@ static int error(const std::string & message){
     return -1;
 }
 
-std::string localKeys = "5900";
-int enteredState = 0;
+pthread_mutex_t quitMutex = PTHREAD_MUTEX_INITIALIZER;
+bool globalQuit = false;
+pthread_mutex_t stateChangedMutex = PTHREAD_MUTEX_INITIALIZER;
+bool stateChanged = false;
+pthread_mutex_t stateMutex = PTHREAD_MUTEX_INITIALIZER;
+int stateNumber = 0;
 
-bool checkKeys(){
-    if (keypressed()){
-        int val = readkey();
-        if (((val & 0xff) == 45) && localKeys.empty()){
-            localKeys += (char)(val & 0xff);
-        }
-        else if ((val & 0xff) >= 48 && (val & 0xff) <= 57){
-            localKeys += (char)(val & 0xff);
-        } else if ((val & 0xff) == 13){
-            enteredState = atoi(localKeys.c_str());
-            localKeys.clear();
-            return true;
-        } else if ((val & 0xff) == 8){
-            if (localKeys.size() > 0){
-                localKeys.erase(localKeys.size()-1);
+void * handleCharacter (void * arg){
+    const char * module = (const char *)arg;
+    
+    try {
+        Character * character = new Character(module);
+        bool quit = false;
+        while(!quit){
+            character->act();
+            pthread_mutex_lock(&quitMutex);
+            if (globalQuit){
+                quit = true;
             }
+            pthread_mutex_unlock(&quitMutex);
+            
+            pthread_mutex_lock(&stateChangedMutex);
+            if (stateChanged){
+                pthread_mutex_lock(&stateMutex);
+                character->changeState(stateNumber);
+                pthread_mutex_unlock(&stateMutex);
+                stateChanged = false;
+            }
+            pthread_mutex_unlock(&stateChangedMutex);
         }
+        delete character;
+    } catch (const PyException & ex){
+        error("Problem with module! Reason: " + ex.getReason());
     }
-    return false;
+    
+    pthread_mutex_lock(&quitMutex);
+    globalQuit = true;
+    pthread_mutex_unlock(&quitMutex);
 }
 
 int main(int argc, char ** argv){
     if (argc > 1){
-        install_allegro(0, NULL, NULL);
-        install_timer();
-        install_keyboard();
-        if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) != 0){
-            error("Couldn't create GFX window");
-        }
         
         Py_Initialize();
         
         /* NOTE need to make sure we are trying to load in the same directory (is there a work around?) */
         PyRun_SimpleString("import sys"); 
-        PyRun_SimpleString("sys.path.append('./')"); 
-        BITMAP * buffer = create_bitmap(640, 480);
+        PyRun_SimpleString("sys.path.append('./')");
+        
+        
+        std::cout << "Type 'quit' or 'exit' to quit. To change to state zero type 'zero'." << std::endl;
+        
+        pthread_t characterThread;
+        int ret = pthread_create(&characterThread, NULL, handleCharacter, (void *)argv[1]);
             
-        try {
-            Character * character = new Character(argv[1]);
-            
-            bool quit = false;
-            while (!quit){
-                if (key[KEY_ESC]){
-                    quit = true;
-                }
-                
-                character->act();
-                
-                poll_keyboard();
-                if (checkKeys()){
-                    // Change state
-                    character->changeState(enteredState);
-                }
-                
-                clear_to_color(buffer, makecol(0,0,0));
-                
-                
-                textprintf_ex(buffer, font, 10, 10, makecol(255, 255, 255), -1, "Loaded Character: %s", character->getName().c_str());
-                textprintf_ex(buffer, font, 10, 20, makecol(255, 255, 255), -1, "Current State: %d", character->getCurrentStateNumber());
-                
-                textprintf_ex(buffer, font, 10, 60, makecol(255, 255, 255), -1, "Input new state: %s", localKeys.c_str());
-                
-                blit(buffer, screen, 0, 0, 0, 0, 640, 480);
+        bool quit = false;
+        while (!quit){
+            std::string keys;
+            std::cin >> keys;
+            if (ret == -1){
+                quit = true;
             }
-            
-            
-            delete character;
-        } catch (const PyException & ex){
-            error("Problem with module! Reason: " + ex.getReason());
+            pthread_mutex_lock(&quitMutex);
+            if (globalQuit){
+                std::cout << "Killed!" << std::endl;
+                quit = true;
+            }
+            pthread_mutex_unlock(&quitMutex);
+            if (keys == "quit" || keys == "exit"){
+                quit = true;
+                pthread_mutex_lock(&quitMutex);
+                globalQuit = true;
+                pthread_mutex_unlock(&quitMutex);
+                std::cout << "Shutting Down." << std::endl;
+            } else if (keys == "zero"){
+                pthread_mutex_lock(&stateChangedMutex);
+                stateChanged = true;
+                pthread_mutex_lock(&stateMutex);
+                stateNumber = 0;
+                pthread_mutex_unlock(&stateMutex);
+                pthread_mutex_unlock(&stateChangedMutex);
+            } else {
+                int number = atoi(keys.c_str());
+                if (number != 0){
+                    pthread_mutex_lock(&stateChangedMutex);
+                    stateChanged = true;
+                    pthread_mutex_lock(&stateMutex);
+                    stateNumber = number;
+                    pthread_mutex_unlock(&stateMutex);
+                    pthread_mutex_unlock(&stateChangedMutex);
+                }
+            }
+            std::cin.clear();
         }
         
-        destroy_bitmap(buffer);
+        pthread_join(characterThread, NULL);
         
         Py_Finalize();
-        
-        allegro_exit();
         
         return 0;
     }
@@ -102,4 +119,3 @@ int main(int argc, char ** argv){
     return 0;
     
 }
-END_OF_MAIN()
