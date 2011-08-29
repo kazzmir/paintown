@@ -125,6 +125,7 @@ int main(int argc, char ** argv){
                 unlock(quitMutex);
                 std::cout << "Shutting Down." << std::endl;
             } else if (keys == "help" || keys == "?"){
+                std::cout << "'help', '?' to print help" << std::endl;
                 std::cout << "'quit', 'exit', 'q' to exit" << std::endl;
                 std::cout << "'list', to print available states" << std::endl;
                 std::cout << "'zero', to change to state zero" << std::endl;
