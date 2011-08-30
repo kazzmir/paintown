@@ -1132,13 +1132,13 @@ rsx
                               setup(path, '/platforms/android-9/arch-arm/usr/include/freetype'),
                              ])
         env.Append(CPPDEFINES = ['ANDROID'])
-        flags = ['']
+        flags = ['-MMD', '-MP', '-MF', '-fpic', '-ffunction-sections', '-funwind-tables', '-fstack-protector', '-D__ARM_ARCH_5__', '-D__ARM_ARCH_5T__', '-D__ARM_ARCH_5E__', '-D__ARM_ARCH_5TE__',  '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64',]
+        libs = ['freetype', 'png', 'SDL', 'm', 'log', 'jnigraphics', 'c', 'm', 'supc++',]
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
         env.Append(CPPPATH = ['#src/android'])
-        
-        #env.Append(LIBS = [''])
+        env.Append(LIBS = libs)
         
         env.PrependENVPath('PATH', bin_path)
         return env
