@@ -480,10 +480,10 @@ int paintown_main(int argc, char ** argv){
             // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
             Global::debug(0) << "Base exception: " << base.getTrace() << endl;
 /* android doesn't have bad_alloc for some reason */
-#ifndef ANDROID
+// #ifndef ANDROID
         } catch (const std::bad_alloc & fail){
             Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
-#endif
+// #endif
         } catch (...){
             Global::debug(0) << "Uncaught exception!" << endl;
         }

@@ -46,8 +46,13 @@
         - /opt/android/ndk-build TARGET_PLATFORM=android-9
         - ln -s SDL/include/ /opt/android/platforms/android-9/arch-arm/usr/include/SDL
         - ln -s SDL/android-project/libs/armeabi/libSDL.so /opt/android/platforms/android-9/arch-arm/usr/lib/
+
+  3. Make a standalone version of the ndk
+    - cd /opt/android
+    - ./build/tools/make-standalone-toolchain.sh
+    - tar -xf ndk-<your username> arm-linux-androideabi-4.4.3.tar.bz2
       
-  3. Set the build type environment variable to 'android' and build paintown:
+  4. Set the build type environment variable to 'android' and build paintown:
       - export android=1
       - cd /path/to/paintown
       - make
