@@ -1136,10 +1136,10 @@ rsx
                              ])
         env.Append(CPPDEFINES = Split("""ANDROID __ARM_ARCH_5__ __ARM_ARCH_5T__ __ARM_ARCH_5E__ __ARM_ARCH_5TE__"""))
         # flags = ['-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-fstack-protector',  '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64',]
-        flags = ['-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64']
+        flags = ['-shared', '-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64']
         linkflags = flags + ['-Wl,--allow-shlib-undefined']
         # libs = ['freetype', 'png', 'SDL', 'm', 'log', 'jnigraphics', 'c', 'm', 'supc++',]
-        libs = Split("""freetype png SDL m log c supc++ EGL GLESv2 GLESv1_CM z""")
+        libs = Split("""freetype2-static png SDL m log c supc++ EGL GLESv2 GLESv1_CM z""")
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
