@@ -23,6 +23,10 @@
         - git clone https://github.com/cdave1/freetype2-android
         - cd freetype2-android/Android/jni
         - /opt/android/ndk-build freetype2-static
+      - Get libpng
+        - git clone https://github.com/julienr/libpng-android.git
+        - cd libpng-android/jni
+        - /opt/android/ndk-build
       - Get SDL:
         - hg clone http://hg.libsdl.org/SDL
         - cd SDL/android-project/jni
