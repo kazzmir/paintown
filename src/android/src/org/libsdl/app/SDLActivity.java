@@ -1,4 +1,4 @@
-package org.paintown;
+package org.libsdl.app;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -18,10 +18,10 @@ import android.content.*;
 
 import java.lang.*;
 
-public class PaintownActivity extends Activity {
+public class SDLActivity extends Activity {
 
     // Main components
-    private static PaintownActivity mSingleton;
+    private static SDLActivity mSingleton;
     private static SDLSurface mSurface;
 
     // Audio
@@ -215,7 +215,7 @@ public class PaintownActivity extends Activity {
 class SDLMain implements Runnable {
     public void run() {
         // Runs SDL_main()
-        PaintownActivity.nativeInit();
+        SDLActivity.nativeInit();
 
         //Log.v("SDL", "SDL thread terminated");
     }
@@ -268,7 +268,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         //Log.v("SDL", "surfaceDestroyed()");
 
         // Send a quit message to the application
-        PaintownActivity.nativeQuit();
+        SDLActivity.nativeQuit();
 
         // Now wait for the SDL thread to quit
         if (mSDLThread != null) {
@@ -334,7 +334,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
             Log.v("SDL", "pixel format unknown " + format);
             break;
         }
-        PaintownActivity.onNativeResize(width, height, sdlFormat);
+        SDLActivity.onNativeResize(width, height, sdlFormat);
 
         // Now start up the C app thread
         if (mSDLThread == null) {
@@ -438,12 +438,12 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             //Log.v("SDL", "key down: " + keyCode);
-            PaintownActivity.onNativeKeyDown(keyCode);
+            SDLActivity.onNativeKeyDown(keyCode);
             return true;
         }
         else if (event.getAction() == KeyEvent.ACTION_UP) {
             //Log.v("SDL", "key up: " + keyCode);
-            PaintownActivity.onNativeKeyUp(keyCode);
+            SDLActivity.onNativeKeyUp(keyCode);
             return true;
         }
         
@@ -459,7 +459,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         float p = event.getPressure();
 
         // TODO: Anything else we need to pass?        
-        PaintownActivity.onNativeTouch(action, x, y, p);
+        SDLActivity.onNativeTouch(action, x, y, p);
         return true;
     }
 
@@ -482,7 +482,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            PaintownActivity.onNativeAccel(event.values[0],
+            SDLActivity.onNativeAccel(event.values[0],
                                            event.values[1],
                                            event.values[2]);
         }
