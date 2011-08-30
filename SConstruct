@@ -194,6 +194,8 @@ def checkRTTI(context):
         context.sconf.env['SPAWN'] = context.sconf.pspawn_wrapper
         nodes = env.Program(context.sconf.confdir.File('rtti%d' % rtti_counter), [s1,s2])
         result = context.sconf.BuildNodes(nodes)
+    except Exception:
+        result = False
     finally:
         context.sconf.env['SPAWN'] = spawn
 
@@ -1130,9 +1132,10 @@ rsx
                               setup(path, '/platforms/android-9/arch-arm/usr/include'),
                               setup(path, '/platforms/android-9/arch-arm/usr/include/SDL'),
                               setup(path, '/platforms/android-9/arch-arm/usr/include/freetype'),
+                              setup(path, '/sources/cxx-stl/stlport/stlport')
                              ])
-        env.Append(CPPDEFINES = ['ANDROID'])
-        flags = ['-MMD', '-MP', '-MF', '-fpic', '-ffunction-sections', '-funwind-tables', '-fstack-protector', '-D__ARM_ARCH_5__', '-D__ARM_ARCH_5T__', '-D__ARM_ARCH_5E__', '-D__ARM_ARCH_5TE__',  '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64',]
+        env.Append(CPPDEFINES = Split("""ANDROID __ARM_ARCH_5__ __ARM_ARCH_5T__ __ARM_ARCH_5E__ __ARM_ARCH_5TE__"""))
+        flags = ['-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-fstack-protector',  '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64',]
         libs = ['freetype', 'png', 'SDL', 'm', 'log', 'jnigraphics', 'c', 'm', 'supc++',]
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
