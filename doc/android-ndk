@@ -24,7 +24,8 @@
         - cd freetype2-android/Android/jni
         - Edit Application.mk and change android-8 to android-9
         - /opt/android/ndk-build freetype2-static
-        - ln -s freetype2-android/include/* /opt/android/platforms/android-9/arch-arm/usr/include/
+        - ln -s freetype2-android/include/ft2build.h /opt/android/platforms/android-9/arch-arm/usr/include/
+        - ln -s freetype2-android/include/freetype/ /opt/android/platforms/android-9/arch-arm/usr/include/freetype
         - ln -s freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a /opt/android/platforms/android-9/arch-arm/usr/lib/
 
       - Get libpng

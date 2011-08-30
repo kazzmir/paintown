@@ -1126,7 +1126,11 @@ rsx
         env['AR'] = set_prefix('ar')
         env['OBJCOPY'] = set_prefix('objcopy')
         
-        env.Append(CPPPATH = [setup(path, '/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/include'), setup(path, '/android/platforms/android-8/arch-arm/usr/include')])
+        env.Append(CPPPATH = [setup(path, '/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/include'), 
+                              setup(path, '/platforms/android-9/arch-arm/usr/include'),
+                              setup(path, '/platforms/android-9/arch-arm/usr/include/SDL'),
+                              setup(path, '/platforms/android-9/arch-arm/usr/include/freetype'),
+                             ])
         env.Append(CPPDEFINES = ['ANDROID'])
         flags = ['']
         env.Append(CCFLAGS = flags)
