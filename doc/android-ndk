@@ -49,8 +49,8 @@
 
   3. Make a standalone version of the ndk
     - cd /opt/android
-    - ./build/tools/make-standalone-toolchain.sh
-    - tar -xf ndk-<your username> arm-linux-androideabi-4.4.3.tar.bz2
+    - ./build/tools/make-standalone-toolchain.sh --package-dir=/opt/android
+    - tar -xf arm-linux-androideabi-4.4.3.tar.bz2
       
   4. Set the build type environment variable to 'android' and build paintown:
       - export android=1
