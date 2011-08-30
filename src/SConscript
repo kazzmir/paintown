@@ -126,6 +126,13 @@ for i in filelist:
 def useSDL():
     return use['PAINTOWN_BACKEND'] == 'sdl'
 
+def useAndroid():
+    import os
+    try:
+        return int(os.environ['android'])
+    except KeyError:
+        return False
+
 def useMinpspw():
     import os
     try:
@@ -165,6 +172,12 @@ def hawknlLibrary(env):
 
 def main():
     return ['xmain.cpp']
+    
+def androidSDLMain():
+    if useAndroid():
+        return ['util/android/SDL_android_main.cpp']
+    else:
+        return []
 
 def psp_prx(env):
     if env['PAINTOWN_USE_PRX']:
@@ -194,7 +207,7 @@ SConscript('mugen/parser/SConstruct', exports = ['use', 'addObjects']);
 
 x = []
 # FIXME: adding psp_prx here is ugly, find a better way
-x.append(use.Program('paintown', psp_prx(use) + obj_files + main() + icon()))
+x.append(use.Program('paintown', psp_prx(use) + obj_files + main() + icon() + androidSDLMain()))
 #x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
 #x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
 
