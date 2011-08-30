@@ -60,11 +60,16 @@
   
   5. Copy over paintown, create android emulator and build java applet
       - Create android emulator (android-9 platform):
-        - /opt/android-sdk/tools/android create avd -n test -t 5 
-      - cp paintown src/test/android/assets/paintown.so
+        - /opt/android-sdk/tools/android create avd -n paintown -t 5 
+      - cp /path/to/paintown/paintown src/test/android/assets/paintown.so
       - cd src/test/android
-      - Update the project
+      - Update the project:
         - /opt/android-sdk/tools/android update project -p . -s
-      - Build the project
-        - ant
+      - Build the project (release requires a signature):
+        - ant debug
+      - Install in emulator (you may need two terminals for this):
+        - /opt/android-sdk/tools/android
+            Start paintown avd (this takes a while)
+        - /opt/android-sdk/platform-tools/adb install bin/Paintown-debug.apk
+        - Navigate to the apps in android and launch Paintown
       
