@@ -13,6 +13,7 @@
             - Select the "Installed packages" on the right column and under "Description" hit "Update All..."
                 - A dialog should pop up for choosing packages, hit the radial "Accept All" and hit "Install" (this may take some time)
       - cd ../../
+      - ln -s android-sdk-linux_x86 /opt/android-sdk
       - wget http://dl.google.com/android/ndk/android-ndk-r6-linux-x86.tar.bz2
       - tar xvjf android-ndk-r6-linux-x86.tar.bz2
       - ln -s android-ndk-r6 /opt/android
@@ -56,3 +57,14 @@
       - export android=1
       - cd /path/to/paintown
       - make
+  
+  5. Copy over paintown, create android emulator and build java applet
+      - Create android emulator (android-9 platform):
+        - /opt/android-sdk/tools/android create avd -n test -t 5 
+      - cp paintown src/test/android/assets/paintown.so
+      - cd src/test/android
+      - Update the project
+        - /opt/android-sdk/tools/android update project -p . -s
+      - Build the project
+        - ant
+      
