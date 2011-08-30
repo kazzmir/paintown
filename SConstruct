@@ -196,8 +196,8 @@ def checkRTTI(context):
         result = context.sconf.BuildNodes(nodes)
     except Exception:
         result = False
-    finally:
-        context.sconf.env['SPAWN'] = spawn
+
+    context.sconf.env['SPAWN'] = spawn
 
     foo = 0
 
