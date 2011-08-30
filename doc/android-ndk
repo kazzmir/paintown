@@ -27,6 +27,8 @@
       - Get libpng
         - git clone https://github.com/julienr/libpng-android.git
         - cd libpng-android/jni
+        - Edit Application.mk and add:
+            APP_PLATFORM := android-9
         - /opt/android/ndk-build
       - Get SDL:
         - hg clone http://hg.libsdl.org/SDL
