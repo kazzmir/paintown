@@ -1137,17 +1137,22 @@ rsx
         env.Append(CPPDEFINES = Split("""ANDROID __ARM_ARCH_5__ __ARM_ARCH_5T__ __ARM_ARCH_5E__ __ARM_ARCH_5TE__"""))
         # flags = ['-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-fstack-protector',  '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64',]
         flags = ['-shared', '-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64']
-        linkflags = flags + ['-Wl,--allow-shlib-undefined']
+        # linkflags = flags + ['-Wl,--allow-shlib-undefined']
+        linkflags = flags
         # libs = ['freetype', 'png', 'SDL', 'm', 'log', 'jnigraphics', 'c', 'm', 'supc++',]
-        libs = Split("""freetype2-static png SDL m log c supc++ EGL GLESv2 GLESv1_CM z""")
+        # Copy the static stdc++ from gnu-libstdc++
+        gnustdlib = env.InstallAs('misc/libgnustdc++.a', '/opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a')
+        libs = Split("""freetype2-static png SDL m log c supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
         env.Append(CPPPATH = ['#src/android'])
         # Hack to put libstdc++ at the end
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS /opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a -o $TARGET'
+        # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS /opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a -o $TARGET'
+        # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         env.Append(LIBS = libs)
-        env.Append(LIBPATH = [setup(path, '/platforms/android-9/arch-arm/usr/lib')])
+        env.Append(LIBPATH = [setup(path, '/platforms/android-9/arch-arm/usr/lib'),
+                              '#misc'])
         
         env.PrependENVPath('PATH', bin_path)
         return env
