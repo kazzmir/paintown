@@ -24,18 +24,26 @@
         - cd freetype2-android/Android/jni
         - Edit Application.mk and change android-8 to android-9
         - /opt/android/ndk-build freetype2-static
+        - ln -s freetype2-android/include/* /opt/android/platforms/android-9/arch-arm/usr/include/
+        - ln -s freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a /opt/android/platforms/android-9/arch-arm/usr/lib/
+
       - Get libpng
         - git clone https://github.com/julienr/libpng-android.git
         - cd libpng-android/jni
         - Edit Application.mk and add:
             APP_PLATFORM := android-9
         - /opt/android/ndk-build
+        - ln -s libpng-android/jni/png.h /opt/android/platforms/android-9/arch-arm/usr/include/
+        - ln -s libpng-android/obj/local/armeabi/libpng.a /opt/android/platforms/android-9/arch-arm/usr/lib/
+
       - Get SDL:
         - hg clone http://hg.libsdl.org/SDL
         - cd SDL/android-project/jni
         - ln -s ../.. SDL
         - cp SDL/include/SDL_config_android.h SDL/include/SDL_config.h
         - /opt/android/ndk-build TARGET_PLATFORM=android-9
+        - ln -s SDL/include/ /opt/android/platforms/android-9/arch-arm/usr/include/SDL
+        - ln -s SDL/android-project/libs/armeabi/libSDL.so /opt/android/platforms/android-9/arch-arm/usr/lib/
       
   3. Set the build type environment variable to 'android' and build paintown:
       - export android=1
