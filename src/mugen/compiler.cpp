@@ -445,7 +445,7 @@ public:
         };
 	
 	if (identifier == "e"){
-	    return compile(exp(1));
+	    return compile(exp(1.0));
 	}
 	
 	if (identifier == "id"){
