@@ -35,6 +35,7 @@
             APP_PLATFORM := android-9
         - /opt/android/ndk-build
         - ln -s libpng-android/jni/png.h /opt/android/platforms/android-9/arch-arm/usr/include/
+        - ln -s libpng-android/jni/pngconf.h /opt/android/platforms/android-9/arch-arm/usr/include/
         - ln -s libpng-android/obj/local/armeabi/libpng.a /opt/android/platforms/android-9/arch-arm/usr/lib/
 
       - Get SDL:
