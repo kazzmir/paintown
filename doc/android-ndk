@@ -25,14 +25,12 @@
         - /opt/android/ndk-build freetype2-static
       - Get SDL:
         - hg clone http://hg.libsdl.org/SDL
-        - cd SDL
-        - ?
-      - TODO
+        - cd SDL/android-project/jni
+        - ln -s ../.. SDL
+        - cp SDL/include/SDL_config_android.h SDL/include/SDL_config.h
+        - /opt/android/ndk-build TARGET_PLATFORM=android-9
       
   3. Set the build type environment variable to 'android' and build paintown:
       - export android=1
-        cd /path/to/paintown
-        make
-  
-  
-  
+      - cd /path/to/paintown
+      - make
