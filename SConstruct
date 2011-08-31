@@ -1142,7 +1142,7 @@ rsx
         # libs = ['freetype', 'png', 'SDL', 'm', 'log', 'jnigraphics', 'c', 'm', 'supc++',]
         # Copy the static stdc++ from gnu-libstdc++
         gnustdlib = env.InstallAs('misc/libgnustdc++.a', '/opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a')
-        libs = Split("""freetype2-static png SDL m log c supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
+        libs = Split("""freetype2-static png SDL m log c jnigraphics supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
@@ -1494,6 +1494,8 @@ def getDataPath():
         if useWii():
             # consistent with homebrew
             return '/apps/paintown/data'
+        if useAndroid():
+            return '/sdcard/paintown/data'
         if useMinpspw():
             return 'ms0:/psp/game150/paintown/data'
         else:
