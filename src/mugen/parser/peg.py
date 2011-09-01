@@ -1929,6 +1929,93 @@ def make_peg_parser(name = 'peg'):
     # module = compile(peg.generate_python(), peg.namespace, 'exec')
     # print module
 
+def convert_regex(regex):
+    def writeFile(input, filename):
+        out = open(filename, 'w')
+        out.write(input)
+        out.close()
+
+    def parse_regex(input):
+        regex_bnf = """
+start-symbol: start
+module: regex
+code: {{
+import regex
+}}
+rules:
+    start = regex <eof> {{ value = $1 }}
+    regex = (item:item modifier:modifier* {{ value = reduce(lambda a, b: b(a), modifier, item) }})* {{ value = regex.Sequence($1) }}
+    item = "(" sub:regex ")" {{ value = sub }}
+         | union
+         | character
+
+    modifier = "*" {{ value = lambda x: regex.Repeat(x) }} 
+             | "?" {{ value = lambda x: regex.Maybe(x) }}
+
+    union = "|" {{ value = regex.Union() }}
+    character = !")" got:. {{ value = regex.Character(got) }} 
+"""
+        # Get the peg bnf parser
+        parser = make_peg_parser()
+
+        tempFile = 'regex_bnf'
+        writeFile(regex_bnf, tempFile)
+        
+        # Parse the regex bnf grammar, get a python representation of the peg
+        out = parser(tempFile)
+        if out == None:
+            raise Exception("Could not create regex parser!")
+        # Create a new python module that implements the regex parser
+        regex_parser = create_peg(out)
+        if regex_parser == None:
+            raise Exception("Could not create regex parser!")
+        # Run the regex parser on the actual input
+        tempFile2 = 'regex_input'
+        writeFile(input, tempFile2)
+        out = regex_parser(tempFile2)
+        print "Parsed %s" % out
+        return out
+
+    def convert_to_peg(data):
+        rules = []
+        def convert_rule(data, combine):
+            import regex
+            if isinstance(data, regex.Character):
+                return combine(PatternVerbatim(data.what))
+            if isinstance(data, regex.Sequence):
+                if len(data.stuff) == 0:
+                    return combine(PatternVoid())
+                first = data.stuff[0]
+                more = data.stuff[1:]
+                return convert_rule(first, lambda what: PatternSequence([what, convert_rule(regex.Sequence(more), combine)]))
+            if isinstance(data, regex.Repeat):
+                repeat = gensym('repeat')
+                more = [convert_rule(data.what, lambda x: x)]
+                rules.append(Rule(repeat, more))
+                return combine(PatternRepeatMany(PatternRule(repeat)))
+            if isinstance(data, regex.Maybe):
+                return combine(PatternMaybe(convert_rule(data.what, lambda x: x)))
+            if isinstance(data, regex.Union):
+                more = [convert_rule(sub, combine) for sub in data.stuff]
+                follow = gensym('or')
+                rules.append(Rule(follow, more))
+                return PatternRule(follow)
+            raise Exception("dont know: %s" % data)
+
+        def add_rule(name, data):
+            rule = Rule(name, [convert_rule(data, lambda x: x)])
+            rules.append(rule)
+
+        start = gensym('start')
+        add_rule(start, data)
+        return Peg(start, None, None, 'regex1', rules, None)
+        
+    print "Convert %s" % regex
+    parsed = parse_regex(regex)
+    peg = convert_to_peg(parsed)
+    print peg.generate_bnf()
+    exit(0)
+
 # test()
 # test2()
 
@@ -1975,6 +2062,7 @@ if __name__ == '__main__':
     separate_rules_re = re.compile('--separate-rules=(.*)')
     list_separate_rules_re = re.compile('--list-separate-rules=(.*)')
     peg_name_re = re.compile('--peg-name=(.*)')
+    regex_re = re.compile('--regex=(.*)')
     def print_it(p):
         print p
     do_output = print_it
@@ -1997,6 +2085,10 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_test())
         elif arg == '--parallel':
             parallel[0] = True
+        elif regex_re.match(arg):
+            all = regex_re.match(arg)
+            regex = all.group(1)
+            convert_regex(regex)
         elif arg == "--help-syntax":
             help_syntax()
         elif peg_name_re.match(arg):
