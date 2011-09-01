@@ -219,7 +219,7 @@ class SDLMain implements Runnable {
         // Runs SDL_main()
         SDLActivity.nativeInit();
         
-        SDLActivity.setExternalLocation(getExternalStorageDirectory().getAbsolutePath());
+        SDLActivity.setExternalLocation(Environment.getExternalStorageDirectory().getAbsolutePath());
 
         //Log.v("SDL", "SDL thread terminated");
     }
