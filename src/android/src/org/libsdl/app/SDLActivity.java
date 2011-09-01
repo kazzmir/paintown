@@ -113,6 +113,10 @@ public class SDLActivity extends Activity {
         return mSingleton;
     }
 
+    public static SDLActivity getActivity(){
+        return mSingleton;
+    }
+
     // Audio
     private static Object buf;
     
@@ -217,11 +221,10 @@ public class SDLActivity extends Activity {
 class SDLMain implements Runnable {
     public void run() {
         // Runs SDL_main()
-        SDLActivity.nativeInit();
-        
         SDLActivity.setExternalLocation(Environment.getExternalStorageDirectory().getAbsolutePath());
-
-        //Log.v("SDL", "SDL thread terminated");
+        SDLActivity.nativeInit();
+        Log.v("SDL", "SDL thread terminated");
+        SDLActivity.getActivity().finish();
     }
 }
 
