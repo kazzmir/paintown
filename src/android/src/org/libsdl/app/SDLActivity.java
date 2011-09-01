@@ -91,7 +91,9 @@ public class SDLActivity extends Activity {
     public static native void onNativeAccel(float x, float y, float z);
     public static native void nativeRunAudioThread();
 
-
+    // Set the SD card path
+    public static native void setExternalLocation(String path);
+    
     // Java functions called from C
 
     public static boolean createGLContext(int majorVersion, int minorVersion) {
@@ -216,6 +218,8 @@ class SDLMain implements Runnable {
     public void run() {
         // Runs SDL_main()
         SDLActivity.nativeInit();
+        
+        SDLActivity.setExternalLocation(getExternalStorageDirectory().getAbsolutePath());
 
         //Log.v("SDL", "SDL thread terminated");
     }
