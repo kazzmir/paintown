@@ -22,6 +22,7 @@ public final class DrawArea extends JComponent {
     private int guideSize;
     private double scale;
     private boolean canMove = true;
+    private boolean snapToGrid = false;
     /* start background as black */
     private Color backgroundColor = new Color(0, 0, 0);
 
@@ -39,10 +40,18 @@ public final class DrawArea extends JComponent {
                 requestFocusInWindow();
             }
 
-            public void mouseDragged( MouseEvent event ){
+            public void mouseDragged(MouseEvent event){
+                requestFocusInWindow();
                 if (canMove){
-                    setCenterX((int)(event.getX() / getScale()));
-                    setCenterY((int)(event.getY() / getScale()));
+                    if (DrawArea.this.isSnapToGrid()){
+                        double whereX = event.getX() / getScale();
+                        double whereY = event.getY() / getScale();
+                        setCenterX((int) closestSnapX(whereX));
+                        setCenterY((int) closestSnapY(whereY));
+                    } else {
+                        setCenterX((int)(event.getX() / getScale()));
+                        setCenterY((int)(event.getY() / getScale()));
+                    }
                     DrawArea.this.repaint();
                 }
             }
@@ -119,6 +128,27 @@ public final class DrawArea extends JComponent {
             }
         });
 
+        this.addKeyListener(new KeyListener(){
+            private boolean isControl(KeyEvent event){
+                return event.getKeyCode() == KeyEvent.VK_CONTROL;
+            }
+
+            public void keyPressed(KeyEvent event){
+                if (isControl(event)){
+                    DrawArea.this.enableSnapToGrid();
+                }
+            }
+
+            public void keyReleased(KeyEvent event){
+                if (isControl(event)){
+                    DrawArea.this.disableSnapToGrid();
+                }
+            }
+
+            public void keyTyped(KeyEvent event){
+            }
+        });
+
         /*
            this.addKeyListener(new KeyListener(){
            private Popup box;
@@ -146,11 +176,40 @@ public final class DrawArea extends JComponent {
            */
     }
 
+    private double getGuideRatio(){
+        if (guideSize > 0){
+            return 10 * getMaxGuideSize() / guideSize;
+        }
+        return 1;
+    }
+
+    public double closestSnapX(double x){
+        return getGuideRatio() * Math.round(x / getGuideRatio());
+    }
+
+    public double closestSnapY(double y){
+        return getGuideRatio() * Math.round(y / getGuideRatio());
+    }
+
+    public boolean isSnapToGrid(){
+        return snapToGrid;
+    }
+
+    public void enableSnapToGrid(){
+        System.out.println("Enable snap to grid");
+        snapToGrid = true;
+    }
+
+    public void disableSnapToGrid(){
+        System.out.println("Disable snap to grid");
+        snapToGrid = false;
+    }
+
     public double getScale(){
         return scale;
     }
 
-    public void setScale( double x ){
+    public void setScale(double x){
         scale = x;
         repaint();
     }
@@ -194,10 +253,10 @@ public final class DrawArea extends JComponent {
     private void drawGrid(Graphics2D graphics){
         if (getGuideSize() > 0){
             graphics.setColor(oppositeColor(backgroundColor()));
-            for (double x = 0; x < getWidth(); x += 10 * getMaxGuideSize() / getGuideSize()){
+            for (double x = 0; x < getWidth(); x += getGuideRatio()){
                 graphics.drawLine((int) x, 0, (int) x, getHeight());
             }
-            for (double y = 0; y < getHeight(); y += 10 * getMaxGuideSize() / getGuideSize()){
+            for (double y = 0; y < getHeight(); y += getGuideRatio()){
                 graphics.drawLine(0, (int) y, getWidth(), (int) y);
             }
         }
