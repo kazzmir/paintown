@@ -155,8 +155,6 @@ public class CharacterAnimation extends JPanel {
 
                 SwingEngine controlEditor = new SwingEngine("animator/controls.xml");
 
-                
-
                 JPanel controls = (JPanel) animEditor.find( "controls" );
 
                 JButton displayToken = (JButton) controlEditor.find( "token" );
@@ -220,9 +218,18 @@ public class CharacterAnimation extends JPanel {
                     }
                 });
 
-                final JLabel animationSpeed = (JLabel) contextEditor.find( "speed-num" );
+                final JSlider guide = (JSlider) contextEditor.find("guide");
+                guide.setValue(area.getGuideSize());
+                guide.addChangeListener(new ChangeListener(){
+                    public void stateChanged(ChangeEvent change){
+                        area.setGuideSize(guide.getValue());
+                        animation.forceRedraw();
+                    }
+                });
+
+                final JLabel animationSpeed = (JLabel) contextEditor.find("speed-num");
                 animationSpeed.setText( "Animation speed: " + animation.getAnimationSpeed() );
-                final JSlider speed = (JSlider) contextEditor.find( "speed" );
+                final JSlider speed = (JSlider) contextEditor.find("speed");
                 final double speedNumerator = 20.0;
                 speed.setValue( (int) (speedNumerator / animation.getAnimationSpeed()) );
                 speed.addChangeListener( new ChangeListener(){
@@ -231,6 +238,7 @@ public class CharacterAnimation extends JPanel {
                         animationSpeed.setText("Animation speed: " + speed.getValue() / speedNumerator);
                     }
                 });
+
                 final JButton speedIncrease = (JButton) contextEditor.find("speed:increase");
                 final JButton speedDecrease = (JButton) contextEditor.find("speed:decrease");
 

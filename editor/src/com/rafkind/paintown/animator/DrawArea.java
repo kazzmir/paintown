@@ -19,6 +19,7 @@ import com.rafkind.paintown.*;
 public final class DrawArea extends JComponent {
     private int x = 50;
     private int y = 50;
+    private int guideSize;
     private double scale;
     private boolean canMove = true;
     /* start background as black */
@@ -154,6 +155,19 @@ public final class DrawArea extends JComponent {
         repaint();
     }
 
+    public double getMaxGuideSize(){
+        return 10;
+    }
+
+    public int getGuideSize(){
+        return guideSize;
+    }
+
+    public void setGuideSize(int size){
+        guideSize = size;
+    }
+
+
     /*
        public Dimension getPreferredSize(){
        return new Dimension(800,600);
@@ -168,6 +182,27 @@ public final class DrawArea extends JComponent {
         return backgroundColor;
     }
 
+    private Color oppositeColor(Color what){
+        /* this should really convert to HSV and rotate H half way
+         * through its possible values then convert back to rgb
+         */
+        return new Color(255 - what.getRed(),
+                         255 - what.getGreen(),
+                         255 - what.getBlue());
+    }
+
+    private void drawGrid(Graphics2D graphics){
+        if (getGuideSize() > 0){
+            graphics.setColor(oppositeColor(backgroundColor()));
+            for (double x = 0; x < getWidth(); x += 10 * getMaxGuideSize() / getGuideSize()){
+                graphics.drawLine((int) x, 0, (int) x, getHeight());
+            }
+            for (double y = 0; y < getHeight(); y += 10 * getMaxGuideSize() / getGuideSize()){
+                graphics.drawLine(0, (int) y, getWidth(), (int) y);
+            }
+        }
+    }
+
     public void paintComponent(Graphics g){
 
         Graphics2D g2d = (Graphics2D) g;
@@ -175,6 +210,7 @@ public final class DrawArea extends JComponent {
 
         g.setColor(backgroundColor());
         g.fillRect(0, 0, getWidth(), getHeight());
+        drawGrid(g2d);
         g.setColor(new Color(255, 255, 0));
         g.drawLine(0, y, getWidth(), y);
         g.drawLine(x, 0, x, getHeight());

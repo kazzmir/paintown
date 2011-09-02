@@ -36,6 +36,10 @@
                         <button id="white-background" text="White background" />
                     </hbox>
                     <hbox>
+                        <label text="Grid size" />
+                        <slider id="guide" minimum="0" maximum="10" />
+                    </hbox>
+                    <hbox>
                         <label id="speed-num" />
                         <glue />
                     </hbox>

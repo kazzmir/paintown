@@ -165,7 +165,7 @@ public class Animation implements Runnable {
 		return sequence;
 	}
 
-	public void removeKey( int index ){
+	public void removeKey(int index){
 		keys.remove( index );
 		updateAll();
 	}
