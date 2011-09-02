@@ -34,6 +34,10 @@ public class SDLActivity extends Activity {
         System.loadLibrary("paintown");
     }
 
+    public static String getDataDirectory(){
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/paintown/data";
+    }
+
     // Setup
     protected void onCreate(Bundle savedInstanceState) {
         //Log.v("SDL", "onCreate()");
@@ -221,7 +225,7 @@ public class SDLActivity extends Activity {
 class SDLMain implements Runnable {
     public void run() {
         // Runs SDL_main()
-        SDLActivity.setExternalLocation(Environment.getExternalStorageDirectory().getAbsolutePath());
+        SDLActivity.setExternalLocation(SDLActivity.getDataDirectory());
         SDLActivity.nativeInit();
         Log.v("SDL", "SDL thread terminated");
         SDLActivity.getActivity().finish();
