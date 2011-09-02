@@ -44,7 +44,9 @@
         - cd SDL/android-project/jni
         - ln -s ../.. SDL
         - cp SDL/include/SDL_config_android.h SDL/include/SDL_config.h
-        - /opt/android/ndk-build TARGET_PLATFORM=android-9
+        # Edit SDL/src/file/SDL_rwops.c line 448, change to
+          #if defined(ANDROID) && defined(DONT_CARE)
+        - /opt/android/ndk-build -j 2 TARGET_PLATFORM=android-9 SDL
         - ln -s SDL/include/ /opt/android/platforms/android-9/arch-arm/usr/include/SDL
         - ln -s SDL/android-project/libs/armeabi/libSDL.so /opt/android/platforms/android-9/arch-arm/usr/lib/
 

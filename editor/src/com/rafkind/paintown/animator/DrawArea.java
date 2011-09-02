@@ -35,11 +35,26 @@ public final class DrawArea extends JComponent {
 
         scale = 1.0;
 
-        this.addMouseMotionListener( new MouseMotionAdapter(){
+        this.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e){
                 requestFocusInWindow();
             }
 
+            public void mousePressed(MouseEvent event){
+                requestFocusInWindow();
+            }
+
+            public void mouseEntered(MouseEvent event){
+            }
+
+            public void mouseExited(MouseEvent event){
+            }
+
+            public void mouseReleased(MouseEvent event){
+            }
+        });
+
+        this.addMouseMotionListener( new MouseMotionAdapter(){
             public void mouseDragged(MouseEvent event){
                 requestFocusInWindow();
                 if (canMove){
@@ -196,12 +211,12 @@ public final class DrawArea extends JComponent {
     }
 
     public void enableSnapToGrid(){
-        System.out.println("Enable snap to grid");
+        // System.out.println("Enable snap to grid");
         snapToGrid = true;
     }
 
     public void disableSnapToGrid(){
-        System.out.println("Disable snap to grid");
+        // System.out.println("Disable snap to grid");
         snapToGrid = false;
     }
 

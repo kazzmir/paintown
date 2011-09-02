@@ -403,7 +403,13 @@ int paintown_main(int argc, char ** argv){
         Paintown::Mod::loadPaintownMod(Configuration::getCurrentGame());
     } catch (const Filesystem::NotFound & e){
         Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << ": " << e.getTrace() << endl;
-        Paintown::Mod::loadDefaultMod();
+        try{
+            Paintown::Mod::loadDefaultMod();
+        } catch (const Filesystem::NotFound & e){
+            Global::debug(0) << "Could not find the paintown default mod" << std::endl;
+            /* Maybe just set up some ultra default thing? */
+            return 0;
+        }
     }
 
     Configuration::setJoystickEnabled(joystick_on);
