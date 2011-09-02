@@ -1020,7 +1020,7 @@ void Configuration::saveConfiguration(){
 /* Defaults for all configuration options */
 double Configuration::gamespeed = 1.0;
 bool Configuration::invincible = false;
-#ifdef PS3
+#if defined(PS3) || defined(ANDROID)
 bool Configuration::fullscreen = true;
 #else
 bool Configuration::fullscreen = false;
