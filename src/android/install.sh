@@ -12,7 +12,9 @@ build_apk(){
 }
 
 install_apk(){
+  echo "Uninstalling old version"
   $adb uninstall org.libsdl.app
+  echo "Installing latest version"
   $adb install bin/Paintown-debug.apk
 }
 

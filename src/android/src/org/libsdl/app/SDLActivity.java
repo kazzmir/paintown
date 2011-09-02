@@ -35,7 +35,7 @@ public class SDLActivity extends Activity {
     }
 
     public static String getDataDirectory(){
-        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/paintown/data";
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/paintown";
     }
 
     // Setup

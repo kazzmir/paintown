@@ -1116,6 +1116,7 @@ rsx
         def setup(pre, x):
             return '%s%s' % (pre, x)
         
+        platform = 'android-9'
         path = '/opt/android'
         bin_path = setup(path, '/arm-linux-androideabi-4.4.3/bin')
         prefix = 'arm-linux-androideabi-'
@@ -1129,9 +1130,9 @@ rsx
         env['OBJCOPY'] = set_prefix('objcopy')
         
         env.Append(CPPPATH = [setup(path, '/arm-linux-androideabi-4.4.3/include'), 
-                              setup(path, '/platforms/android-9/arch-arm/usr/include'),
-                              setup(path, '/platforms/android-9/arch-arm/usr/include/SDL'),
-                              setup(path, '/platforms/android-9/arch-arm/usr/include/freetype'),
+                              setup(path, '/platforms/%s/arch-arm/usr/include' % platform),
+                              setup(path, '/platforms/%s/arch-arm/usr/include/SDL' % platform),
+                              setup(path, '/platforms/%s/arch-arm/usr/include/freetype' % platform),
                               setup(path, '/sources/cxx-stl/gnu-libstdc++/include')
                              ])
         env.Append(CPPDEFINES = Split("""ANDROID __ARM_ARCH_5__ __ARM_ARCH_5T__ __ARM_ARCH_5E__ __ARM_ARCH_5TE__"""))
@@ -1151,7 +1152,7 @@ rsx
         # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS /opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a -o $TARGET'
         # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         env.Append(LIBS = libs)
-        env.Append(LIBPATH = [setup(path, '/platforms/android-9/arch-arm/usr/lib'),
+        env.Append(LIBPATH = [setup(path, '/platforms/%s/arch-arm/usr/lib' % platform),
                               '#misc'])
         
         env.PrependENVPath('PATH', bin_path)
