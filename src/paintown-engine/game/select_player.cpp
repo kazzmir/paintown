@@ -109,15 +109,16 @@ namespace Select{
 namespace{
 class SelectAttributes{
 public:
-    SelectAttributes():
-    animation(NULL){}
-    SelectAttributes(const SelectAttributes & copy):
-    animation(NULL){
+    SelectAttributes(){
+    }
+
+    SelectAttributes(const SelectAttributes & copy){
         if (copy.animation != NULL){
             animation = new Token(*copy.animation);
         }
         background = copy.background;
     }
+
     const SelectAttributes & operator=(const SelectAttributes & copy){
         if (copy.animation != NULL){
             animation = new Token(*copy.animation);
@@ -125,14 +126,14 @@ public:
         background = copy.background;
         return *this;
     }
-    ~SelectAttributes(){
-        if (animation != NULL){
-            delete animation;
-        }
+
+    virtual ~SelectAttributes(){
     }
-    Token * animation;
+
+    Util::ReferenceCount<Token> animation;
     string background;
 };
+
 }
 
 static SelectAttributes loadSelectAttributes(){
@@ -175,7 +176,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     class Logic: public Util::Logic {
     public:
-        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock, Gui::Animation * animation):
+        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock, Util::ReferenceCount<Gui::Animation> animation):
         current(current),
         is_done(false),
         clock(clock),
@@ -221,7 +222,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         Paintown::DisplayCharacterLoader & loader;
         Sound beep;
         
-        Gui::Animation * animation;
+        Util::ReferenceCount<Gui::Animation> animation;
         
         bool done(){
             return is_done;
@@ -349,7 +350,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     class Draw: public Util::Draw {
     public:
-        Draw(const PlayerVector & players, unsigned int & current, int & backgroundX, int & boxesPerLine, const string & message, Paintown::DisplayCharacterLoader & loader, unsigned int & clock, Gui::Animation * animation):
+        Draw(const PlayerVector & players, unsigned int & current, int & backgroundX, int & boxesPerLine, const string & message, Paintown::DisplayCharacterLoader & loader, unsigned int & clock, Util::ReferenceCount<Gui::Animation> animation):
         players(players),
         current(current),
         message(message),
@@ -387,7 +388,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         Paintown::DisplayCharacterLoader & loader;
  
         //Graphics::Bitmap background;
-        Gui::Animation * animation;
+        Util::ReferenceCount<Gui::Animation> animation;
         Graphics::Bitmap temp;
         Graphics::Bitmap preview;
         Graphics::Bitmap reflection;
@@ -602,7 +603,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     int backgroundX = 0;
     int boxesPerLine = 0;
     unsigned int clock = 0;
-    Gui::Animation * animation;
+    Util::ReferenceCount<Gui::Animation> animation;
     Filesystem::AbsolutePath background;
     if (attributes.background != ""){
         try{
@@ -616,7 +617,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     }
     if (attributes.animation != NULL){
         // ignore above bitmap
-        animation = new Gui::Animation(attributes.animation);
+        animation = new Gui::Animation(attributes.animation.raw());
     } else {
         animation = new Gui::Animation(background);
     }
@@ -625,8 +626,6 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     Util::standardLoop(logic, draw);
     
-    delete animation;
-
     return logic.getCurrent();
 }
 
