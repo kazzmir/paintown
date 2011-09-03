@@ -33,6 +33,9 @@
 #include <sstream>
 #include <map>
 
+
+#include "util/gui/animation.h"
+
 #include "configuration.h"
 
 using namespace std;
@@ -104,7 +107,30 @@ namespace Select{
 }
     
 namespace{
-struct SelectAttributes{
+class SelectAttributes{
+public:
+    SelectAttributes():
+    animation(NULL){}
+    SelectAttributes(const SelectAttributes & copy):
+    animation(NULL){
+        if (copy.animation != NULL){
+            animation = new Token(*copy.animation);
+        }
+        background = copy.background;
+    }
+    const SelectAttributes & operator=(const SelectAttributes & copy){
+        if (copy.animation != NULL){
+            animation = new Token(*copy.animation);
+        }
+        background = copy.background;
+        return *this;
+    }
+    ~SelectAttributes(){
+        if (animation != NULL){
+            delete animation;
+        }
+    }
+    Token * animation;
     string background;
 };
 }
@@ -121,6 +147,8 @@ static SelectAttributes loadSelectAttributes(){
                 view >> next;
                 if (*next == "background"){
                     next->view() >> attributes.background;
+                } else if (*next == "anim" || *next == "animation"){
+                    attributes.animation = next->copy();
                 }
             }
         } else {
@@ -147,7 +175,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     class Logic: public Util::Logic {
     public:
-        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock):
+        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock, Gui::Animation * animation):
         current(current),
         is_done(false),
         clock(clock),
@@ -155,7 +183,8 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         boxesPerLine(boxesPerLine),
         players(players),
         loader(loader),
-        beep(Storage::instance().find(Filesystem::RelativePath("sounds/beep1.wav")).path()){
+        beep(Storage::instance().find(Filesystem::RelativePath("sounds/beep1.wav")).path()),
+        animation(animation){
             input.set(Configuration::config(0).getRight(), 300, false, Select::Right);
             input.set(Configuration::config(0).getUp(), 300, false, Select::Up);
             input.set(Configuration::config(0).getDown(), 300, false, Select::Down);
@@ -192,6 +221,8 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         Paintown::DisplayCharacterLoader & loader;
         Sound beep;
         
+        Gui::Animation * animation;
+        
         bool done(){
             return is_done;
         }
@@ -204,6 +235,8 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             if (clock % 5 == 0){
                 backgroundX -= 1;
             }
+            
+            animation->act();
 
             bool choose = false;
             class Handler: public InputHandler<Select::Input> {
@@ -253,14 +286,14 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                             break;
                         }
                         case Select::Up: {
-                            if (current >= boxesPerLine){
+                            if (current >= (unsigned int)boxesPerLine){
                                 current = current - boxesPerLine;
                             }
                             beep.play();
                             break;
                         }
                         case Select::Down: {
-                            if (current < maximum - boxesPerLine){
+                            if (current < (unsigned int)(maximum - boxesPerLine)){
                                 current = current + boxesPerLine;
                             }
                             beep.play();
@@ -316,14 +349,15 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     class Draw: public Util::Draw {
     public:
-        Draw(const PlayerVector & players, unsigned int & current, int & backgroundX, int & boxesPerLine, const string & message, Paintown::DisplayCharacterLoader & loader, unsigned int & clock, const Filesystem::AbsolutePath & path):
+        Draw(const PlayerVector & players, unsigned int & current, int & backgroundX, int & boxesPerLine, const string & message, Paintown::DisplayCharacterLoader & loader, unsigned int & clock, Gui::Animation * animation):
         players(players),
         current(current),
         message(message),
         backgroundX(backgroundX),
         clock(clock),
         loader(loader),
-        background(path.path()),
+        //background(path.path()),
+        animation(animation),
         temp(120, 120),
         preview(GFX_X / 2, GFX_Y / 2),
         reflection(GFX_X / 2, GFX_Y / 2),
@@ -352,7 +386,8 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         unsigned int & clock;
         Paintown::DisplayCharacterLoader & loader;
  
-        Graphics::Bitmap background;
+        //Graphics::Bitmap background;
+        Gui::Animation * animation;
         Graphics::Bitmap temp;
         Graphics::Bitmap preview;
         Graphics::Bitmap reflection;
@@ -492,9 +527,9 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         void draw(const Graphics::Bitmap & work){
             Paintown::DisplayCharacter * character = players[current].guy;
 
-            if (backgroundX < - work.getWidth()){
+            /*if (backgroundX < - work.getWidth()){
                 backgroundX += work.getWidth();
-            }
+            }*/
 
             while (current < top){
                 top -= boxesPerLine;
@@ -503,10 +538,11 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             while (current >= top + boxesPerLine * boxesPerColumn){
                 top += boxesPerLine;
             }
-
             // background.Stretch( work );
-            background.Blit(backgroundX, 0, work);
-            background.Blit(work.getWidth() + backgroundX, 0, work);
+            /*background.Blit(backgroundX, 0, work);
+            background.Blit(work.getWidth() + backgroundX, 0, work);*/
+            work.clear();
+            animation->draw(work);
             const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
             if (character->isLoaded()){
@@ -566,6 +602,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     int backgroundX = 0;
     int boxesPerLine = 0;
     unsigned int clock = 0;
+    Gui::Animation * animation;
     Filesystem::AbsolutePath background;
     if (attributes.background != ""){
         try{
@@ -577,10 +614,18 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     } else {
         background = Global::titleScreen();
     }
-    Logic logic(players, current, loader, backgroundX, boxesPerLine, clock);
-    Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock, background);
+    if (attributes.animation != NULL){
+        // ignore above bitmap
+        animation = new Gui::Animation(attributes.animation);
+    } else {
+        animation = new Gui::Animation(background);
+    }
+    Logic logic(players, current, loader, backgroundX, boxesPerLine, clock, animation);
+    Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock, animation);
 
     Util::standardLoop(logic, draw);
+    
+    delete animation;
 
     return logic.getCurrent();
 }
