@@ -289,13 +289,16 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                         case Select::Up: {
                             if (current >= (unsigned int)boxesPerLine){
                                 current = current - boxesPerLine;
+                            } else {
+                                current = 0;
                             }
                             beep.play();
                             break;
                         }
                         case Select::Down: {
-                            if (current < (unsigned int)(maximum - boxesPerLine)){
-                                current = current + boxesPerLine;
+                            current += boxesPerLine;
+                            if (current >= maximum){
+                                current = maximum - 1;
                             }
                             beep.play();
                             break;
