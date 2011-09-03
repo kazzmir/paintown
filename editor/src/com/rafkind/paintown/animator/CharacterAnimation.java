@@ -928,7 +928,7 @@ public class CharacterAnimation extends JPanel {
                 constraints.gridy = 0;
                 constraints.weightx = 1;
                 constraints.weighty = 1;
-                constraints.fill = GridBagConstraints.BOTH;
+                constraints.fill = GridBagConstraints.NONE;
                 constraints.anchor = GridBagConstraints.NORTHWEST;
                 toolPane.add(getTool((String) tools.getSelectedItem()), constraints);
                 toolPane.revalidate();
