@@ -114,7 +114,18 @@ public:
     /* drawing */
     virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
 
+    /* intensity is the amount of alpha blending to do.
+     * 0 = translucent
+     * 255 = opaque
+     */
     virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
+
+    /* draw the character in a solid color. red, green, blue, intensity change
+     * what color the pixels are drawn.
+     * 0, 0, 0, 255 will draw all non-masking pixels as black
+     */
+    virtual void drawOutline(Graphics::Bitmap * work, int rel_x, int rel_y, int red, int green, int blue, int intensity);
+
     virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 
     virtual const Graphics::Bitmap * getCurrentFrame() const;

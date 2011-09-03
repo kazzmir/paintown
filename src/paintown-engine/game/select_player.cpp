@@ -361,7 +361,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         animation(animation),
         temp(120, 120),
         preview(GFX_X / 2, GFX_Y / 2),
-        reflection(GFX_X / 2, GFX_Y / 2),
+        // reflection(GFX_X / 2, GFX_Y / 2),
         startX(GFX_X / 2 - 20),
         startY(20),
         boxSize(80),
@@ -391,7 +391,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         Util::ReferenceCount<Gui::Animation> animation;
         Graphics::Bitmap temp;
         Graphics::Bitmap preview;
-        Graphics::Bitmap reflection;
+        // Graphics::Bitmap reflection;
 
         const int startX;
         const int startY;
@@ -416,11 +416,14 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             // copy.setZ( preview.getHeight() - stand );
             copy.setZ(preview.getHeight() - stand);
             preview.fill(Graphics::MaskColor());
-            reflection.fill(Graphics::MaskColor());
+            // reflection.fill(Graphics::MaskColor());
             // preview.fill( 0 );
             // reflection.fill( 0 );
 
             copy.draw(&preview, 0, 0);
+            copy.drawOutline(&preview, 0, preview.getHeight() - stand - stand, 0, 0, 0, 255);
+            copy.drawReflection(&preview, 0, preview.getHeight() - stand - stand, 128);
+#if 0
             preview.drawVFlip(0, 0, reflection);
 
             int reflection_y = preview.getHeight() - stand - stand;
@@ -445,6 +448,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             // preview.drawTransVFlip( 0, preview.getHeight() - stand - stand, preview );
 
             // preview.draw( 60, 0, work );
+#endif
 
             preview.drawStretched(-GFX_X / 2 + startX / 2, -70 + stand, GFX_X, GFX_Y, work);
             // preview.drawStretched(-320, 0, GFX_X, GFX_Y, work);
