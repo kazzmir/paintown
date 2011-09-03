@@ -4,6 +4,13 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.egl.*;
 
+import java.util.zip.*;
+import java.io.File;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import android.content.res.AssetManager;
 import android.app.*;
 import android.content.*;
 import android.view.*;
@@ -38,6 +45,62 @@ public class SDLActivity extends Activity {
         return Environment.getExternalStorageDirectory().getAbsolutePath() + "/paintown";
     }
 
+    /* copy the data bundled in assets to the external data directory */
+    private void setupData(Context context){
+        File root = new File(getDataDirectory());
+        if (root.exists()){
+            return;
+        }
+
+        Log.v("SDL", "Data directory doesn't exist, creating it: " + getDataDirectory());
+        if (!root.mkdirs()){
+            Log.v("SDL", "Unable to make data directory");
+            return;
+        }
+
+        File user = new File(root, "user");
+        if (!user.exists()){
+            user.mkdirs();
+        }
+
+        unzip(root, "data.zip", context);
+    }
+
+    /* unzips a file from assets into the given root directory */
+    private void unzip(File root, String file, Context context){
+        Log.v("SDL", "Writing data to " + root.getAbsolutePath());
+        try{
+            AssetManager assets = context.getResources().getAssets();
+            ZipInputStream zip = new ZipInputStream(assets.open(file));
+
+            ZipEntry entry = zip.getNextEntry();
+            while (entry != null){
+                String filename = entry.getName();
+                if (entry.isDirectory()){
+                    File directory = new File(root, filename);
+                    directory.mkdirs();
+                } else {
+                    writeFile(new File(root, filename), entry.getSize(), zip);
+                }
+
+                entry = zip.getNextEntry();
+            }
+        } catch (IOException fail){
+            Log.v("SDL", fail.toString());
+        }
+        Log.v("SDL", "Wrote data");
+    }
+
+    private void writeFile(File what, long size, ZipInputStream stream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int count;
+        BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(what));
+        while ((count = stream.read(buffer, 0, buffer.length)) != -1){
+            output.write(buffer, 0, count);
+        }
+        output.close();
+    }
+
     // Setup
     protected void onCreate(Bundle savedInstanceState) {
         //Log.v("SDL", "onCreate()");
@@ -45,6 +108,8 @@ public class SDLActivity extends Activity {
         
         // So we can call stuff from static callbacks
         mSingleton = this;
+
+        setupData(getApplication());
 
         // Set up the surface
         mSurface = new SDLSurface(getApplication());
