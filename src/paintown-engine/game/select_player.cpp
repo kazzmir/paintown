@@ -100,12 +100,43 @@ namespace Select{
         Right, Remap, Quit,
         Choose,
     };
+
+}
+    
+namespace{
+struct SelectAttributes{
+    string background;
+};
+}
+
+static SelectAttributes loadSelectAttributes(){
+    SelectAttributes attributes;
+    try{
+        TokenReader reader;
+        Token * head = reader.readTokenFromFile(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path().c_str());
+        if (*head == "select-screen"){
+            TokenView view = head->view();
+            while (view.hasMore()){
+                const Token * next;
+                view >> next;
+                if (*next == "background"){
+                    next->view() >> attributes.background;
+                }
+            }
+        } else {
+            Global::debug(0) << "Expected to read a 'select-screen' node from select.txt" << std::endl;
+        }
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(1) << "Could not load select-screen attributes. " << fail.getTrace() << std::endl;
+    } catch (const TokenException & fail){
+        Global::debug(0) << "Error while reading tokens from select.txt: " << fail.getTrace() << std::endl;
+    }
+
+    return attributes;
 }
 
 /* TODO: refactor */
 static unsigned int choosePlayer(const PlayerVector & players, const string & message){
-
-    /* TODO: the background should be configurable */
 
     /* use stupid defines becuase const member variables cannot be initialized
      * inside the class outside of the constructor
@@ -285,14 +316,14 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     class Draw: public Util::Draw {
     public:
-        Draw(const PlayerVector & players, unsigned int & current, int & backgroundX, int & boxesPerLine, const string & message, Paintown::DisplayCharacterLoader & loader, unsigned int & clock):
+        Draw(const PlayerVector & players, unsigned int & current, int & backgroundX, int & boxesPerLine, const string & message, Paintown::DisplayCharacterLoader & loader, unsigned int & clock, const Filesystem::AbsolutePath & path):
         players(players),
         current(current),
         message(message),
         backgroundX(backgroundX),
         clock(clock),
         loader(loader),
-        background(Global::titleScreen().path()),
+        background(path.path()),
         temp(120, 120),
         preview(GFX_X / 2, GFX_Y / 2),
         reflection(GFX_X / 2, GFX_Y / 2),
@@ -529,27 +560,27 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
 
+    SelectAttributes attributes = loadSelectAttributes();
+
     unsigned int current = 0;
     int backgroundX = 0;
     int boxesPerLine = 0;
     unsigned int clock = 0;
+    Filesystem::AbsolutePath background;
+    if (attributes.background != ""){
+        try{
+            background = Storage::instance().find(Filesystem::RelativePath(attributes.background));
+        } catch (const Filesystem::NotFound & fail){
+            Global::debug(0) << "Could not find background. " << fail.getTrace() << std::endl;
+            background = Global::titleScreen();
+        }
+    } else {
+        background = Global::titleScreen();
+    }
     Logic logic(players, current, loader, backgroundX, boxesPerLine, clock);
-    Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock);
+    Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock, background);
 
     Util::standardLoop(logic, draw);
-
-    /*
-    try{
-        Util::standardLoop(logic, draw);
-    } catch (const Exception::Return & fail){
-        loader.stop();
-        Util::Thread::joinThread(loadingThread);
-        throw fail;
-    }
-
-    loader.stop();
-    Util::Thread::joinThread(loadingThread);
-    */
 
     return logic.getCurrent();
 }
