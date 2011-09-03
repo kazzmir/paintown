@@ -266,7 +266,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 Sound & beep;
                 unsigned int & current;
                 const int boxesPerLine;
-                const int maximum;
+                const unsigned int maximum;
                 InputMap<Select::Input> & input;
 
                 virtual void release(const Select::Input & what, Keyboard::unicode_t unicode){
