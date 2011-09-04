@@ -357,13 +357,6 @@ void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, c
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
 
-Character::Character(const Filesystem::AbsolutePath & s):
-Object(0),
-commonSounds(NULL){
-    this->location = s;
-    initialize();
-}
-
 /*
 Character::Character( const char * location ):
 ObjectAttack(0),
@@ -375,30 +368,127 @@ hit(NULL){
 */
 
 Object::Object(int alliance):
-Paintown::ObjectAttack(alliance){
+virtualx(0),
+virtualy(0),
+virtualz(0),
+attack_ticket(0),
+alliance(alliance),
+objectId(-1),
+ticket(0){
 }
 
 Object::Object(const int x, const int y, int alliance):
-Paintown::ObjectAttack(x, y, alliance){
+virtualx(x),
+virtualy(y),
+virtualz(0),
+attack_ticket(0),
+alliance(alliance),
+objectId(-1),
+ticket(0){
 }
 
 
 Object::Object(const Object & copy):
-ObjectAttack(copy){
+virtualx(copy.virtualx),
+virtualy(copy.virtualy),
+virtualz(copy.virtualz),
+attack_ticket(copy.attack_ticket),
+alliance(copy.alliance),
+objectId(copy.objectId),
+ticket(copy.ticket){
 }
     
 Object::~Object(){
 }
+    
+unsigned int Object::getTicket() const {
+    return ticket;
+}
 
-Character::Character( const Filesystem::AbsolutePath & s, int alliance ):
+void Object::nextTicket(){
+    ticket += 1;
+}
+
+int Object::getAlliance() const {
+    return alliance;
+}
+
+void Object::setAlliance(int alliance){
+    this->alliance = alliance;
+}
+    
+void Object::setZ(double what){
+    virtualz = what;
+}
+    
+void Object::setX(double what){
+    virtualx = what;
+}
+
+void Object::setY(double what){
+    virtualz = what;
+}
+    
+double Object::getRY() const {
+    return getZ() - getY();
+}
+    
+void Object::moveX(double x){
+    virtualx += x;
+}
+
+void Object::moveY(double y){
+    virtualy += y;
+}
+    
+void Object::moveLeft(double x){
+    if (getFacing() == FacingLeft){
+        moveX(x);
+    } else {
+        moveX(-x);
+    }
+}
+
+void Object::moveRight(double x){
+    if (getFacing() == FacingRight){
+        moveX(x);
+    } else {
+        moveX(-x);
+    }
+}
+
+Facing Object::getFacing() const {
+    return facing;
+}
+
+void Object::setFacing(Facing what){
+    this->facing = what;
+}
+
+Facing Object::getOppositeFacing() const {
+    switch (facing){
+        case FacingLeft: return FacingRight;
+        case FacingRight: return FacingLeft;
+    }
+}
+    
+void Character::reverseFacing(){
+    facing = getOppositeFacing();
+}
+    
+int Object::getObjectId() const {
+    return objectId;
+}
+
+Character::Character(const Filesystem::AbsolutePath & s, int alliance):
 Object(alliance),
 commonSounds(NULL){
     this->location = s;
     initialize();
 }
 
-Character::Character( const Filesystem::AbsolutePath & s, const int x, const int y, int alliance ):
-Object(x,y,alliance),
+Character::Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance):
+Object(x,y, alliance),
 commonSounds(NULL){
     this->location = s;
     initialize();
@@ -413,8 +503,8 @@ currentState(copy.currentState),
 previousState(copy.previousState),
 currentAnimation(copy.currentAnimation),
 debug(false),
-needToGuard(false)
-{
+needToGuard(false),
+max_health(copy.max_health){
 }
 
 Character::~Character(){
@@ -457,6 +547,8 @@ Character::~Character(){
 }
 
 void Character::initialize(){
+    max_health = 0;
+    health = 0;
     currentState = Standing;
     currentPhysics = Physics::Stand;
     moveType = Move::Idle;
@@ -2041,7 +2133,7 @@ const Graphics::Bitmap * Character::getCurrentFrame() const {
 }
 
 void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
-    getCurrentAnimation()->renderReflection(getFacing() == Object::FACING_LEFT, true, intensity, getRX() - rel_x, (int)(getZ() + getY() - rel_y), *work);
+    getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() + getY() - rel_y), *work);
 }
 
 MugenAnimation * Character::getCurrentAnimation() const {
@@ -2063,7 +2155,7 @@ vector<string> Character::doInput(const Mugen::Stage & stage){
         throw MugenException("Internal error: No behavior specified");
     }
 
-    return behavior->currentCommands(stage, this, commands, getFacing() == Object::FACING_RIGHT);
+    return behavior->currentCommands(stage, this, commands, getFacing() == FacingRight);
 }
 
 bool Character::isPaused(){
@@ -2072,6 +2164,13 @@ bool Character::isPaused(){
 
 int Character::pauseTime() const {
     return hitState.shakeTime;
+}
+    
+double Character::getHealth() const {
+    if (health < 0){
+        return 0;
+    }
+    return health;
 }
 
 /*
@@ -2100,8 +2199,8 @@ void Character::processAfterImages(){
 
     afterImage.currentTime -= 1;
 
-    int x = getRX();
-    int y = getRY();
+    int x = (int) getX();
+    int y = (int) getRY();
 
     /* not sure if checking for the timegap > 0 is the right thing.. */
     if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
@@ -2110,7 +2209,7 @@ void Character::processAfterImages(){
         MugenAnimation * animation = getCurrentAnimation();
         // afterImage.currentTime -= afterImage.timegap;
         MugenFrame * currentSprite = animation->getCurrentFrame();
-        afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == Object::FACING_LEFT, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
+        afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
         /*
            while (afterImage.frames.size() > afterImage.length){
            afterImage.frames.pop_front();
@@ -2136,7 +2235,7 @@ void Character::processAfterImages(){
 }
 
 /* Inherited members */
-void Character::act(vector<Paintown::Object*>* others, World* world, vector<Paintown::Object*>* add){
+void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen::Object*>* add){
     
     reversalActive = false;
 
@@ -2210,11 +2309,8 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
     /* if shakeTime is non-zero should we update stateTime? */
     stateTime += 1;
     
-    /* hack! */
-    Mugen::Stage & stage = *(Mugen::Stage*) world;
-
     /* active is the current set of commands */
-    vector<string> active = doInput(stage);
+    vector<string> active = doInput(*stage);
     /* always run through the negative states */
 
     blocking = holdingBlock(active);
@@ -2225,13 +2321,13 @@ void Character::act(vector<Paintown::Object*>* others, World* world, vector<Pain
          * eventually transition to stand/crouch/air guard
          */
         guarding = true;
-        changeState(stage, Mugen::StartGuardStand, active);
+        changeState(*stage, Mugen::StartGuardStand, active);
     }
 
-    doStates(stage, active, -3);
-    doStates(stage, active, -2);
-    doStates(stage, active, -1);
-    doStates(stage, active, currentState);
+    doStates(*stage, active, -3);
+    doStates(*stage, active, -2);
+    doStates(*stage, active, -1);
+    doStates(*stage, active, currentState);
 
     /*
     while (doStates(active, currentState)){
@@ -2326,13 +2422,22 @@ void Character::didHit(Object * enemy, Mugen::Stage & stage){
         behavior->hit(enemy);
     }
 }
-        
-void Character::takeDamage(World & world, ObjectAttack * obj, int amount, bool kill, bool defense){
+
+void Character::takeDamage(Stage & world, Object * obj, double amount, double forceX, double forceY){
+    hurt(amount);
+}
+
+void Character::hurt(double x){
+    setHealth(getHealth() - x);
+}
+
+void Character::takeDamage(Stage & world, Object * obj, double amount, bool kill, bool defense){
     if (defense){
-        Object::takeDamage(world, obj, (int)(amount / defenseMultiplier), 0, 0);
+        takeDamage(world, obj, amount / defenseMultiplier, 0.0, 0.0);
     } else {
-        Object::takeDamage(world, obj, amount, 0, 0);
+        takeDamage(world, obj, amount, 0.0, 0.0);
     }
+
     if (!kill){
         if (getHealth() < 1){
             setHealth(1);
@@ -2340,7 +2445,7 @@ void Character::takeDamage(World & world, ObjectAttack * obj, int amount, bool k
     }
 }
         
-void Character::takeDamage(World & world, ObjectAttack * obj, int amount){
+void Character::takeDamage(Stage & world, Object * obj, int amount){
     takeDamage(world, obj, amount, true, true);
 }
 
@@ -2703,7 +2808,52 @@ void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsign
                     paletteEffects.period, paletteEffects.invert,
                     paletteEffects.color);
 
-    animation->render(getFacing() == Object::FACING_LEFT, false, x, y, work, xscale, yscale, &effects);
+    animation->render(getFacing() == FacingLeft, false, x, y, work, xscale, yscale, &effects);
+}
+
+/* FIXME: reimplement this method */
+void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
+#if 0
+    if (animation_current != NULL){
+        const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
+        const double newheight = bmp->getHeight() * scale;
+        Graphics::Bitmap shade = Graphics::Bitmap::temporaryBitmap(bmp->getWidth(), (int) fabs(newheight));
+        bmp->Stretch(shade);
+
+        /* Could be slow, but meh, lets do it for now to make it look like a real shadow */
+        for (int h = 0; h < shade.getHeight(); ++h){
+            for (int w = 0; w < shade.getWidth(); ++w){
+                Graphics::Color pix = shade.getPixel(w,h);
+                if (pix != Graphics::MaskColor()){
+                    shade.putPixel(w,h, Graphics::makeColor(0,0,0));
+                }
+            }
+        }
+
+        int i = ((Graphics::getRed(color) * 77 + intensity) + (Graphics::getGreen(color) * 154 + intensity) + (Graphics::getBlue(color) * 25 + intensity))/256;
+        i = 255 - i;
+        // Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
+        Graphics::Bitmap::multiplyBlender((Graphics::getRed(color) * 77 + intensity), (Graphics::getGreen(color) * 154 + intensity), (Graphics::getBlue(color) * 25 + intensity), i);
+
+        if (scale > 0){
+            int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
+            int y = (int)(getRZ() + getY() * scale);
+            if (getFacing() == FACING_RIGHT){ 
+                shade.translucent().drawVFlip( x, y, *work );
+            } else { 
+                shade.translucent().drawHVFlip(x, y, *work );
+            }
+        } else if (scale < 0){
+            int x = (int)((getRX() - rel_x) - bmp->getWidth()/2);
+            int y = (int)((getRZ() - fabs(newheight)) + (getY() * scale));
+            if (getFacing() == FACING_RIGHT){ 
+                shade.translucent().draw(x + 3, y, *work );
+            } else { 
+                shade.translucent().drawHFlip(x - 3, y, *work );
+            }
+        }
+    }
+#endif
 }
 
 void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
@@ -2721,7 +2871,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
     MugenAnimation * animation = getCurrentAnimation();
     /* this should never be NULL... */
     if (animation != NULL){
-        int x = getRX() - cameraX + drawOffset.x;
+        int x = getX() - cameraX + drawOffset.x;
         int y = getRY() - cameraY + drawOffset.y;
 
         if (isPaused() && moveType == Move::Hit){
@@ -2740,7 +2890,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         if (paletteEffects.time > 0){
             drawWithEffects(animation, x, y, paletteEffects.counter, *work);
         } else {
-            animation->render(getFacing() == Object::FACING_LEFT, false, x, y, *work, xscale, yscale);
+            animation->render(getFacing() == FacingLeft, false, x, y, *work, xscale, yscale);
         }
     }
 
@@ -2839,34 +2989,16 @@ void Character::doTurn(Mugen::Stage & stage){
     reverseFacing();
 }
 
-void Character::grabbed(Paintown::Object*){
-}
-
-void Character::unGrab(){
-}
-
-bool Character::isGrabbed(){
-    return false;
-}
-
-Paintown::Object* Character::copy(){
-    return this;
-}
-
 const vector<MugenArea> Character::getAttackBoxes() const {
-    return getCurrentAnimation()->getAttackBoxes(getFacing() == Object::FACING_LEFT);
+    return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft);
 }
 
 const vector<MugenArea> Character::getDefenseBoxes() const {
-    return getCurrentAnimation()->getDefenseBoxes(getFacing() == Object::FACING_LEFT);
+    return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft);
 }
 
 const std::string Character::getAttackName(){
     return getName();
-}
-
-bool Character::collision(ObjectAttack*){
-    return false;
 }
 
 int Character::getDamage() const {
@@ -2879,22 +3011,6 @@ double Character::getForceX() const {
 
 double Character::getForceY() const {
     return 0;
-}
-
-bool Character::isCollidable(Paintown::Object*){
-    return true;
-}
-
-bool Character::isGettable(){
-    return false;
-}
-
-bool Character::isGrabbable(Paintown::Object*){
-    return true;
-}
-
-bool Character::isAttacking(){
-    return false;
 }
 
 int Character::getWidth() const {
@@ -2916,10 +3032,10 @@ int Character::getBackX() const {
     if (widthOverride.enabled){
         width = widthOverride.edgeBack;
     }
-    if (getFacing() == Object::FACING_LEFT){
-        return getRX() + width;
+    if (getFacing() == FacingLeft){
+        return getX() + width;
     }
-    return getRX() - width;
+    return getX() - width;
 }
 
 int Character::getFrontX() const {
@@ -2927,26 +3043,12 @@ int Character::getFrontX() const {
     if (widthOverride.enabled){
         width = widthOverride.edgeFront;
     }
-    if (getFacing() == Object::FACING_LEFT){
-        return getRX() + width;
+    if (getFacing() == FacingLeft){
+        return getX() + width;
     }
-    return getRX() - width;
+    return getX() - width;
 }
 
-Network::Message Character::getCreateMessage(){
-    return Network::Message();
-}
-
-void Character::getAttackCoords(int&, int&){
-}
-
-double Character::minZDistance() const{
-    return 0;
-}
-
-void Character::attacked(World*, Paintown::Object*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >&){
-}
-        
 int Character::getCurrentCombo() const {
     return combo;
 }
@@ -3084,18 +3186,39 @@ void Character::doFreeze(){
     frozen = true;
 }
         
-void Character::moveX( const int x ){
+void Character::moveX(double x){
     if (!frozen){
-        ObjectAttack::moveX(x);
+	if (getFacing() == FacingLeft){
+            virtualx -= x;
+	} else {
+            virtualx += x;
+	}
     }
 }
 
-void Character::moveYNoCheck(double y){
+void Character::moveY(double y){
     if (!frozen){
-        ObjectAttack::moveYNoCheck(y);
+        virtualy += y;
     }
 }
-        
+
+void Character::setMaxHealth(double health){
+    max_health = health;
+    if (this->health > max_health){
+        this->health = max_health;
+    }
+}
+
+void Character::setHealth(double health){
+    this->health = health;
+    if (this->health < 0){
+        this->health = 0;
+    }
+    if (this->health > getMaxHealth()){
+        this->health = getMaxHealth();
+    }
+}
+
 void Character::setSpritePriority(int priority){
     /* TODO */
 }

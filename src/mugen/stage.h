@@ -5,11 +5,10 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <deque>
 #include "exception.h"
 #include "util.h"
 #include "util/bitmap.h"
-
-#include "paintown-engine/game/world.h"
 
 namespace Graphics{
 class Bitmap;
@@ -93,8 +92,7 @@ struct PlayerData {
 
 namespace Mugen {
 
-/*! FIXME remove world object dependance which Mugen::Character relies on for Object::takeDamage. */
-class Stage : public World {
+class Stage{
 public:
     // Location at dataPath() + "mugen/stages/"
     Stage(const Filesystem::AbsolutePath & s);
@@ -149,10 +147,10 @@ public:
     void reset();
 
     // Add player1 people
-    virtual void addPlayer1( Paintown::Object * o );
+    virtual void addPlayer1(Object * o);
 
     // Add player2 people
-    virtual void addPlayer2( Paintown::Object * o );
+    virtual void addPlayer2(Object * o);
 
     // Set player health
     virtual void setPlayerHealth(int health);
@@ -167,22 +165,26 @@ public:
         return this->gameOver;
     }
 
-    virtual Mugen::GameInfo * getGameInfo() const {
+    virtual GameInfo * getGameInfo() const {
         return gameHUD;
     }
 
+    virtual void Quake(int q);
+
     //! Do continue screen return true to continue playing, false to end
-    virtual bool doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> &);
+    virtual bool doContinue(const PlayerType & type, InputMap<Keys> &);
 
     /* 1 is normal, 0<rate<1 is slower, 1<rate is faster */
     virtual void setGameRate(double rate);
 
     virtual int currentZOffset() const;
 
+    /*
     virtual void pause();
     virtual void unpause();
     virtual void changePause();
     virtual bool isPaused();
+    */
 
     // Console
     virtual void toggleConsole();
@@ -193,34 +195,19 @@ public:
     // Inherited world actions
     virtual void act();
     virtual void draw( Graphics::Bitmap * work );
-    virtual void addObject(Paintown::Object * o);
+    virtual void addObject(Object * o);
     virtual bool finished() const;
     virtual void reloadLevel() throw( LoadException );
-    virtual Script::Engine * getEngine() const;
     /* upper left hand corner of the screen */
     virtual int getX();
     virtual int getY();
-    /* this shouldn't be here */
-    // I guess ignore this one
-    virtual const std::deque<Graphics::Bitmap*> & getScreenshots();
-    virtual int levelLength() const;
-    // Since this isn't a paintown level, I guess block wouldn't apply
-    virtual const Block * currentBlock() const;
-    /* bleh.. */
-    virtual void addEnemy(Paintown::Enemy * obj);
-    virtual Paintown::Object * findObject(int id);
+    virtual Object * findObject(int id);
     virtual int getMaximumZ();
     virtual int getMinimumZ();
-    virtual void drawMiniMaps( bool b );
-    virtual bool shouldDrawMiniMaps();
-    virtual void killAllHumans( Paintown::Object * player );
-    virtual void addMessage(Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
-    virtual Network::Message createBangMessage( int x, int y, int z );
-
     static const std::string getStageName(const std::string &filename) throw (MugenException);
 
-    virtual Mugen::Character * getEnemy(const Mugen::Character * who) const;
-    virtual std::vector<Mugen::Character *> getTargets(int id, const Mugen::Character * from) const;
+    virtual Character * getEnemy(const Character * who) const;
+    virtual std::vector<Character *> getTargets(int id, const Character * from) const;
 
     virtual int getGameTime() const;
 
@@ -234,18 +221,18 @@ public:
     /* get an animation from fightfx.sff */
     virtual MugenAnimation * getFightAnimation(int id);
 
-    virtual void addEffect(Mugen::Effect * effect);
-    virtual void removeEffects(const Mugen::Character * owner, int id);
-    virtual int countMyEffects(const Mugen::Character * owner) const;
-    virtual int countMyHelpers(const Mugen::Character * owner) const;
-    virtual const Mugen::Character & findRoot(const Mugen::Character & who) const;
-    virtual std::vector<Mugen::Helper*> findHelpers(const Mugen::Character * owner, int id) const;
-    virtual Mugen::Effect * findEffect(const Mugen::Character * owner, int id);
-    virtual std::vector<Mugen::Effect *> findEffects(const Mugen::Character * owner, int id);
+    virtual void addEffect(Effect * effect);
+    virtual void removeEffects(const Character * owner, int id);
+    virtual int countMyEffects(const Character * owner) const;
+    virtual int countMyHelpers(const Character * owner) const;
+    virtual const Character & findRoot(const Character & who) const;
+    virtual std::vector<Helper*> findHelpers(const Character * owner, int id) const;
+    virtual Effect * findEffect(const Character * owner, int id);
+    virtual std::vector<Effect *> findEffects(const Character * owner, int id);
 
     virtual void setEnvironmentColor(Graphics::Color color, int time, bool under); 
 
-    virtual void removeHelper(Mugen::Character * who);
+    virtual void removeHelper(Character * who);
 
     // Alliance setting
     enum teams{
@@ -319,7 +306,7 @@ protected:
 
     void drawBackgroundWithEffects(int x, int y, const Graphics::Bitmap & board);
     void drawForegroundWithEffects(int x, int y, const Graphics::Bitmap & board);
-    void drawBackgroundWithEffectsSide(int x, int y, const Graphics::Bitmap & board, void (Mugen::Background::*render) (int, int, const Graphics::Bitmap &, Graphics::Bitmap::Filter *));
+    void drawBackgroundWithEffectsSide(int x, int y, const Graphics::Bitmap & board, void (Background::*render) (int, int, const Graphics::Bitmap &, Graphics::Bitmap::Filter *));
 
     /* section loaders */
     void loadSectionInfo(Ast::Section * section);
@@ -331,10 +318,10 @@ protected:
     void loadSectionReflection(Ast::Section * section);
     void loadSectionMusic(Ast::Section * section);
 
-    void updatePlayer(Paintown::Object *o);
-    void physics(Paintown::Object * o);
-    bool doBlockingDetection(Mugen::Object * obj1, Mugen::Object * obj2);
-    bool doCollisionDetection(Mugen::Object * obj1, Mugen::Object * obj2);
+    void updatePlayer(Object *o);
+    void physics(Object * o);
+    bool doBlockingDetection(Object * obj1, Object * obj2);
+    bool doCollisionDetection(Object * obj1, Object * obj2);
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
 
 protected:
@@ -342,7 +329,7 @@ protected:
     void addSpark(int x, int y, int sparkNumber);
     void playSound(int group, int item, bool own);
 
-    std::vector<Paintown::Object*> getOpponents(Paintown::Object * who);
+    std::vector<Object*> getOpponents(Object * who);
 
     /* Location is the directory passed in ctor
        This is where the def is loaded and all the relevant files
@@ -542,7 +529,7 @@ protected:
     std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
 
     // MugenBackgroundManager *background;
-    Mugen::Background * background;
+    Background * background;
 
     /* Commands, Triggers or whatever else we come up with */
 
@@ -590,10 +577,12 @@ private:
     bool debugMode;
 
     void cleanup();
-    bool isaPlayer(Paintown::Object * o) const;
+    bool isaPlayer(Object * o) const;
+
+    std::vector<Object*> objects;
 
     // player list so we can distinguish
-    std::vector<Paintown::Object *> players;
+    std::vector<Object *> players;
 
     /* FIXME: sort of a hack which lets other classes with a reference to the
      * stage call stage.addObject(blah). really a vector should be passed
@@ -601,7 +590,7 @@ private:
      * insert all the objects from that vector into the `objects' vector
      * at some later point.
      */
-    std::vector<Paintown::Object*> addedObjects;
+    std::vector<Object*> addedObjects;
     // Hold information for players
     std::map<void *, PlayerData> playerInfo;
 
@@ -625,12 +614,12 @@ private:
 
     void initializeName();
 
-    Mugen::SpriteMap effects;
+    SpriteMap effects;
     std::map<int, MugenAnimation*> sparks;
-    std::vector<Mugen::Effect*> showSparks;
+    std::vector<Effect*> showSparks;
 
     // Character huds
-    Mugen::GameInfo *gameHUD;
+    GameInfo *gameHUD;
 
     bool gameOver;
 
@@ -646,6 +635,8 @@ private:
         int positionX, positionY;
         int soundGroup, soundItem;
     } superPause;
+
+    int quake_time;
 };
 
 }

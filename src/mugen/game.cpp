@@ -385,7 +385,7 @@ static Filesystem::AbsolutePath maybeFindRandom(const std::string & name, std::v
 static Character * doLoad(const Filesystem::AbsolutePath & path){
     TimeDifference timer;
 
-    Character * guy = new Character(path);
+    Character * guy = new Character(path, Stage::Player1Side);
     std::ostream & out = Global::debug(0);
     out << "Loading player " << path.path();
     out.flush();

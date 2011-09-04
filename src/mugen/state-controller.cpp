@@ -832,7 +832,7 @@ public:
         if (y != NULL){
             RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
-                guy.moveYNoCheck(-result.getDoubleValue());
+                guy.moveY(-result.getDoubleValue());
                 // guy.setY(guy.getY() + result.getDoubleValue());
             }
         }
@@ -2409,9 +2409,9 @@ public:
     int computeX(Character & guy, const Environment & env) const {
         int pos = 0;
         if (posX != NULL){
-            pos = (int) posX->evaluate(env).toNumber() * (guy.getFacing() == Object::FACING_LEFT ? -1 : 1);
+            pos = (int) posX->evaluate(env).toNumber() * (guy.getFacing() == FacingLeft ? -1 : 1);
         }
-        return guy.getRX() + pos;
+        return (int)(guy.getX() + pos);
     }
 
     int computeY(Character & guy, const Environment & env) const {
@@ -2419,7 +2419,7 @@ public:
         if (posY != NULL){
             pos = (int) posY->evaluate(env).toNumber();
         }
-        return guy.getRY() + pos;
+        return (guy.getRY() + pos);
     }
 
     void playSound(Character & guy, const Environment & environment) const {
@@ -3378,12 +3378,12 @@ public:
             x = (int) posX->evaluate(environment).toNumber();
             y = (int) posY->evaluate(environment).toNumber();
         }
-        stage.createDust(guy.getRX() + x, guy.getRY() + y);
+        stage.createDust((int)(guy.getX() + x), (int)(guy.getRY() + y));
 
         if (posX2 != NULL && posY2 != NULL){
             x = (int) posX2->evaluate(environment).toNumber();
             y = (int) posY2->evaluate(environment).toNumber();
-            stage.createDust(guy.getRX() + x, guy.getRY() + y);
+            stage.createDust((int)(guy.getX() + x), (int)(guy.getRY() + y));
         }
 
         /* FIXME: use spacing somehow */
@@ -3548,14 +3548,15 @@ public:
                 }
                 switch (positionType){
                     case Player1: {
-                        x = posX + owner->getRX();
-                        y = posY + owner->getRY();
+                        x = (int)(posX + owner->getX());
+                        y = (int)(posY + owner->getRY());
                         break;
                     }
                     /* TODO: implement rest of cases */
                     default : {
                         x = posX;
                         y = posY;
+                        break;
                     }
                 }
             }
@@ -3679,7 +3680,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        int facingLeft = guy.getFacing() == Object::FACING_LEFT ? -1 : 1;
+        int facingLeft = guy.getFacing() == FacingLeft ? -1 : 1;
         FullEnvironment env(stage, guy);
 #define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
         int animation_value = (int) evaluateNumber(this->animation, -1);
@@ -3711,7 +3712,7 @@ public:
          * FIXME: the initial x/y values are determined by the postype value
          * so instead of 'posX_value + guy.getRX()' it should be something else
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, posX_value + guy.getRX(), posY_value + guy.getRY(), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, (int)(posX_value + guy.getX()), (int)(posY_value + guy.getRY()), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value);
         stage.addEffect(effect);
     }
 
@@ -3774,8 +3775,8 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy);
         int animation_value = evaluateNumber(value, environment, 0);
-        int x = evaluateNumber(posX, environment, 0) + guy.getRX();
-        int y = evaluateNumber(posY, environment, 0) + guy.getRY();
+        int x = (int)(evaluateNumber(posX, environment, 0) + guy.getX());
+        int y = (int)(evaluateNumber(posY, environment, 0) + guy.getRY());
 
         int random = evaluateNumber(this->random, environment, 0);
         x += PaintownUtil::rnd(random) - random / 2;
@@ -4320,7 +4321,7 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (isFalling(guy)){
-            guy.takeDamage(stage, (Paintown::ObjectAttack*) stage.getEnemy(&guy), guy.getHitState().fall.damage);
+            guy.takeDamage(stage, stage.getEnemy(&guy), guy.getHitState().fall.damage);
         }
     }
 
@@ -5564,7 +5565,7 @@ public:
         Mugen::Helper * helper = new Mugen::Helper(guy, (int) evaluateNumber(id, environment, 0));
         helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
         if (posType == Player1){
-            double x = evaluateNumber(posX, environment, 0) + guy.getRX();
+            double x = evaluateNumber(posX, environment, 0) + guy.getX();
             double y = evaluateNumber(posY, environment, 0) + guy.getRY();
             helper->setX(x);
             helper->setY(y);
@@ -5634,7 +5635,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        guy.moveYNoCheck(-guy.getGravity());
+        guy.moveY(-guy.getGravity());
     }
 
     StateController * deepCopy() const {

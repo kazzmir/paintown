@@ -665,9 +665,9 @@ public:
             class Facing: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    if (environment.getCharacter().getFacing() == Object::FACING_LEFT){
+                    if (environment.getCharacter().getFacing() == FacingLeft){
                         return RuntimeValue(-1);
-                    } else if (environment.getCharacter().getFacing() == Object::FACING_RIGHT){
+                    } else if (environment.getCharacter().getFacing() == FacingRight){
                         return RuntimeValue(1);
                     }
                     return RuntimeValue(0);

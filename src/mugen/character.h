@@ -537,10 +537,9 @@ class Command;
 class Character: public Object {
 public:
 	// Location at dataPath() + "mugen/chars/"
-	Character(const Filesystem::AbsolutePath & s );
+	Character(const Filesystem::AbsolutePath & s, int alliance);
 	// Character(const char * location );
-	Character(const Filesystem::AbsolutePath & s, int alliance );
-	Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance );
+	Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance);
 	Character(const Character &copy );
 
 	virtual ~Character();
@@ -629,32 +628,31 @@ public:
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
 
     /*! This all the inherited members */
-    virtual void act(std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >*, World*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >*);                       
+    virtual void act(std::vector<Mugen::Object*>*, Stage*, std::vector<Mugen::Object*>*);                       
     virtual void draw(Graphics::Bitmap*, int cameraX, int cameraY);
-    virtual void grabbed(Paintown::Object*);
-    virtual void unGrab();
-    virtual bool isGrabbed();
-    virtual Paintown::Object* copy();
     virtual const std::string getAttackName();
-    virtual bool collision(Paintown::ObjectAttack*);
     virtual int getDamage() const;
     virtual double getForceX() const;
     virtual double getForceY() const;
-    virtual bool isCollidable(Paintown::Object*);
-    virtual bool isGettable();
-    virtual bool isGrabbable(Paintown::Object*);
-    virtual bool isAttacking();
     virtual int getWidth() const;
     virtual int getBackWidth() const;
+
+    virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
+
+    virtual double getMaxHealth() const {
+        return max_health;
+    }
+
+    virtual void setMaxHealth(double health);
+    virtual void setHealth(double health);
+    virtual double getHealth() const;
+
+    virtual void reverseFacing();
 
     /* absolute X coordinate of the back of the character */
     virtual int getBackX() const;
     /* same thing for the front */
     virtual int getFrontX() const;
-    virtual Network::Message getCreateMessage();
-    virtual void getAttackCoords(int&, int&);
-    virtual double minZDistance() const;
-    virtual void attacked(World*, Paintown::Object*, std::vector<Paintown::Object*, std::allocator<Paintown::Object*> >&);
 
     virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
     /* change back to states in the players own cns file */
@@ -971,14 +969,16 @@ public:
         /* prevent character from being hit, like after a KO */
         virtual void setUnhurtable();
 	
-        using Paintown::Object::takeDamage;
         /* if kill is true then the damage can reduce health below 1, otherwise
          * health cannot go below 1
          * if defense is true then the defenseMultiplier is taken into account
          */
-        virtual void takeDamage(World & world, Paintown::ObjectAttack * obj, int amount, bool kill, bool defense);
+        virtual void takeDamage(Stage & world, Mugen::Object * obj, double amount, bool kill, bool defense);
         /* passes true for kill and defense */
-        virtual void takeDamage(World & world, Paintown::ObjectAttack * obj, int amount);
+        virtual void takeDamage(Stage & world, Mugen::Object * obj, int amount);
+        virtual void takeDamage(Stage & world, Object * obj, double amount, double forceX, double forceY);
+        /* lose some life */
+        virtual void hurt(double amount);
 
         /* character can be hit */
         virtual void setHurtable();
@@ -1103,8 +1103,8 @@ public:
 
         virtual void doFreeze();
 	
-        virtual void moveX( const int x );
-        virtual void moveYNoCheck(double y);
+        virtual void moveX(double x);
+        virtual void moveY(double y);
 
         virtual void setSpritePriority(int priority);
         
@@ -1625,6 +1625,9 @@ public:
 
         virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
         void drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Graphics::Bitmap & work);
+
+        double max_health;
+        double health;
 };
 
 }

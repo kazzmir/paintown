@@ -271,9 +271,9 @@ public:
         }
         
         if (identifier == "facing"){
-	    if (environment.getCharacter().getFacing() == Object::FACING_LEFT){
+	    if (environment.getCharacter().getFacing() == FacingLeft){
 		return -1;
-	    } else if (environment.getCharacter().getFacing() == Object::FACING_RIGHT){
+	    } else if (environment.getCharacter().getFacing() == FacingRight){
 		return 1;
 	    }
 	    return 0;

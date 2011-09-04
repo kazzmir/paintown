@@ -239,7 +239,7 @@ void CharacterInfo::loadPlayer1(){
     if (character1){
 	return;
     }
-    character1 = new Mugen::Character(definitionFile);
+    character1 = new Mugen::Character(definitionFile, Stage::Player1Side);
     character1->load(currentPlayer1Act);
 }
 
@@ -247,7 +247,7 @@ void CharacterInfo::loadPlayer2(){
     if (character2){
 	return;
     }
-    character2 = new Mugen::Character(definitionFile);
+    character2 = new Mugen::Character(definitionFile, Stage::Player2Side);
     character2->load(currentPlayer2Act);
 }
 

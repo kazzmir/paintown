@@ -227,7 +227,7 @@ public:
 	 * Y is how far the object is from the ground
 	 */
 	inline double getY() const {
-		return virtualy;
+            return virtualy;
 	}
 
 	/* getZ:

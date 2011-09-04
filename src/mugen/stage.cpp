@@ -133,7 +133,6 @@ static bool centerCollision( Mugen::Object *p1, Mugen::Object *p2 ){
 }
 
 Mugen::Stage::Stage(const Filesystem::AbsolutePath & location):
-World(),
 location(location),
 baseDir(""),
 name(""),
@@ -202,7 +201,8 @@ loaded(false),
 gameHUD(NULL),
 gameOver(false),
 gameRate(1),
-cycles(0){
+cycles(0),
+quake_time(0){
 }
 
 #if 0
@@ -782,9 +782,7 @@ void Mugen::Stage::playSound(int group, int item, bool own){
 }
 
 /* for helpers and players */
-void Mugen::Stage::physics(Paintown::Object * player){
-
-    Mugen::Object * mugen = (Mugen::Object *) player;
+void Mugen::Stage::physics(Object * mugen){
     /* ignore physics while the player is paused */
     if (mugen->isPaused()){
         return;
@@ -805,14 +803,17 @@ void Mugen::Stage::physics(Paintown::Object * player){
     }
 
     mugen->moveX(mugen->getXVelocity());
-    mugen->moveYNoCheck(-mugen->getYVelocity());
+    mugen->moveY(-mugen->getYVelocity());
+    if (mugen->getY() < 0){
+        mugen->setY(0);
+    }
 
     if (mugen->canTurn()){
-        for (vector<Paintown::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-            Mugen::Object * enemy = (Mugen::Object*) *enem;
+        for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            Mugen::Object * enemy = *enem;
             if (isaPlayer(enemy) && enemy->getAlliance() != mugen->getAlliance()){
-                if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Paintown::Object::FACING_RIGHT) ||
-                    (enemy->getX() < mugen->getX() && mugen->getFacing() != Paintown::Object::FACING_LEFT)){
+                if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Mugen::FacingRight) ||
+                    (enemy->getX() < mugen->getX() && mugen->getFacing() != Mugen::FacingLeft)){
 		    mugen->doTurn(*this);
                 }
             }
@@ -837,7 +838,7 @@ void Mugen::Stage::physics(Paintown::Object * player){
 
     if (mugen->getMoveType() == Mugen::Move::Attack && mugen->getHit().isEnabled()){
 
-        for (vector<Paintown::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+        for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
             if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit(mugen)){
 		// Check attack distance to make sure we begin block at the correct distance
@@ -859,7 +860,7 @@ void Mugen::Stage::physics(Paintown::Object * player){
                         if (spark == -1){
                             spark = mugen->getDefaultGuardSpark();
                         }
-                        addSpark(mugen->getHit().sparkPosition.x + enemy->getRX(), mugen->getHit().sparkPosition.y + mugen->getRY(), spark);
+                        addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()), (int)(mugen->getHit().sparkPosition.y + mugen->getRY()), spark);
                         playSound(mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
                     }
                     enemy->guarded(mugen, mugen->getHit());
@@ -875,7 +876,7 @@ void Mugen::Stage::physics(Paintown::Object * player){
                     if (spark == -1){
                         spark = mugen->getDefaultSpark();
                     }
-                    addSpark(mugen->getHit().sparkPosition.x + enemy->getRX(), mugen->getHit().sparkPosition.y + mugen->getRY(), spark);
+                    addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()), (int)(mugen->getHit().sparkPosition.y + mugen->getRY()), spark);
                     playSound(mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
 
                     /* order matters here, the guy attacking needs to know that
@@ -889,50 +890,48 @@ void Mugen::Stage::physics(Paintown::Object * player){
         }
     }
 
-    
-
     // Check collisions
-    for (vector<Paintown::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-        Paintown::Object *enemy = *enem;
-        if (player->getAlliance() != enemy->getAlliance()){
+    for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+        Mugen::Object *enemy = *enem;
+        if (mugen->getAlliance() != enemy->getAlliance()){
             // Do stuff for players
             if (isaPlayer(enemy)){
                 // He collides with another push him away
                 // if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
-                Mugen::Object * mplayer = (Mugen::Object *) player;
+                Mugen::Object * mplayer = (Mugen::Object *) mugen;
                 Mugen::Object * menemy = (Mugen::Object *) enemy;
                 // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 /* TODO: make this cleaner */
                 while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(mplayer, menemy) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
-                    if (enemy->getX() < player->getX()){
+                    if (enemy->getX() < mugen->getX()){
                         if (enemy->getX() <= maximumLeft()){
                             /* FIXME */
-                            player->moveRight(0.5);
+                            mugen->moveRight(0.5);
                         } else {
                             /* FIXME! */
                             enemy->moveLeft(0.5);
                         }
                         // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
-                    } else if (enemy->getX() > player->getX()){
+                    } else if (enemy->getX() > mugen->getX()){
                         if (enemy->getX() >= maximumRight()){
                             /* FIXME */
-                            player->moveLeft(0.5);
+                            mugen->moveLeft(0.5);
                         } else {
                             /* FIXME! */
                             enemy->moveRight(0.5);
                         }
                         // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
-                    } else if (enemy->getX() == player->getX()){
+                    } else if (enemy->getX() == mugen->getX()){
                         if (enemy->getX() >= maximumRight()){
-                            player->moveLeft(0.5);
+                            mugen->moveLeft(0.5);
                         } else {
-                            player->moveRight(0.5);
+                            mugen->moveRight(0.5);
                         }
                     }
                 }
                 // autoturn need to do turning actions
                 if (autoturn){
-                    if (isaPlayer(player)){
+                    if (isaPlayer(mugen)){
                         /* FIXME! */
                         /*
                            if (enemy->getX() > player->getX() && enemy->getFacing() != Object::FACING_LEFT && ((Mugen::Character *)enemy)->getStatus() == Status_Ground){
@@ -976,10 +975,10 @@ void Mugen::Stage::physics(Paintown::Object * player){
     }
 }
 
-vector<Paintown::Object*> Mugen::Stage::getOpponents(Paintown::Object * who){
-    vector<Paintown::Object*> out;
-    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
-        Paintown::Object * player = *it;
+vector<Mugen::Object*> Mugen::Stage::getOpponents(Mugen::Object * who){
+    vector<Mugen::Object*> out;
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+        Mugen::Object * player = *it;
         if (isaPlayer(player) && player->getAlliance() != who->getAlliance()){
             out.push_back(player);
         }
@@ -1058,13 +1057,13 @@ void Mugen::Stage::logic( ){
             background->act();
 
             // Players go in here
-            std::vector<Paintown::Object *> add;
+            std::vector<Mugen::Object *> add;
             addedObjects.clear();
-            for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
+            for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
                 bool next = true;
                 /* use local variables more often, iterators can be easily confused */
-                Paintown::Object * player = *it;
-                player->act( &objects, this, &add);
+                Mugen::Object * player = *it;
+                player->act(&objects, this, &add);
                 physics(player);
 
                 /* Debug crap put it on console */
@@ -1277,8 +1276,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     gameHUD->render(Mugen::Element::Background, *work);
 
     // Players go in here
-    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-        Paintown::Object *obj = *it;
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Object *obj = *it;
 	/* Reflection */
         /* FIXME: reflection and shade need camerax/y */
 	if (reflectionIntensity > 0){
@@ -1312,7 +1311,7 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     gameHUD->render(Mugen::Element::Top, *work);
 
     // Player debug
-    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	if (isaPlayer(*it)){
             Mugen::Character *character = (Mugen::Character*)*it;
 	    // Player debug crap
@@ -1341,7 +1340,7 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     }
     
     // Life bars, will eventually be changed out with mugens interface
-    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	int p1Side = 5;
 	int p2Side = 5;
 	if (isaPlayer(*it)){
@@ -1385,8 +1384,8 @@ void Mugen::Stage::reset(){
     // background->reset(startx, starty, resetBG);
     
     // Reset player positions
-    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end();){
-        Paintown::Object *player = *it;
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end();){
+        Mugen::Object *player = *it;
 
         /* remove any non-player objects, like projectiles or helpers */
         if (!isaPlayer(player)){
@@ -1402,7 +1401,7 @@ void Mugen::Stage::reset(){
                 player->setX(p1startx);
                 player->setY(p1starty);
                 player->setZ(currentZOffset());
-                player->setFacing(Paintown::Object::FACING_RIGHT);
+                player->setFacing(FacingRight);
                 playerInfo[player].oldx = player->getX();
                 playerInfo[player].oldy = player->getY();
                 playerInfo[player].leftTension = false;
@@ -1415,7 +1414,7 @@ void Mugen::Stage::reset(){
                 player->setX(p2startx);
                 player->setY(p2starty);
                 player->setZ(currentZOffset());
-                player->setFacing(Paintown::Object::FACING_LEFT);
+                player->setFacing(FacingLeft);
                 playerInfo[player].oldx = player->getX();
                 playerInfo[player].oldy = player->getY();
                 playerInfo[player].leftTension = false;
@@ -1441,12 +1440,12 @@ void Mugen::Stage::reset(){
 }
 
 // Add player1 people
-void Mugen::Stage::addPlayer1( Paintown::Object * o ){
+void Mugen::Stage::addPlayer1( Mugen::Object * o ){
     o->setAlliance(Player1Side);
     o->setX(p1startx);
     o->setY(p1starty);
     o->setZ(currentZOffset());
-    o->setFacing( Paintown::Object::FACING_RIGHT );
+    o->setFacing(FacingRight);
     objects.push_back(o);
     players.push_back(o);
 
@@ -1462,13 +1461,12 @@ void Mugen::Stage::addPlayer1( Paintown::Object * o ){
 }
 
 // Add player2 people
-void Mugen::Stage::addPlayer2( Paintown::Object * o ){
+void Mugen::Stage::addPlayer2(Mugen::Object * o ){
     o->setAlliance(Player2Side);
     o->setX(p2startx);
     o->setY(p2starty);
     o->setZ(currentZOffset());
-    o->setFacing( Paintown::Object::FACING_LEFT );
-    std::vector<Paintown::Object *>::iterator obj = objects.begin()+1;
+    o->setFacing(FacingLeft);
     objects.push_back(o);
     players.push_back(o);
     
@@ -1484,7 +1482,7 @@ void Mugen::Stage::addPlayer2( Paintown::Object * o ){
 }
 
 void Mugen::Stage::setPlayerHealth(int health){
-    for ( vector< Paintown::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+    for ( vector<Mugen::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
         Mugen::Character *player = (Mugen::Character *)(*it);
 	player->setHealth(health);
     }
@@ -1497,7 +1495,7 @@ void Mugen::Stage::toggleConsole(){
 
 void Mugen::Stage::toggleDebug(){
     debugMode = !debugMode;
-    for ( vector< Paintown::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
+    for ( vector<Mugen::Object *>::iterator it = players.begin(); it != players.end(); it++ ){
         Mugen::Character *player = (Mugen::Character *)(*it);
 	player->toggleDebug();
     }
@@ -1511,7 +1509,7 @@ void Mugen::Stage::draw( Graphics::Bitmap * work ){
     render(work);
 }
 
-void Mugen::Stage::addObject(Paintown::Object * o){
+void Mugen::Stage::addObject(Mugen::Object * o){
     addedObjects.push_back(o);
 }
 
@@ -1521,7 +1519,6 @@ void Mugen::Stage::reloadLevel() throw( LoadException ){
     loaded = false;
     load(); 
 }
-Script::Engine * Mugen::Stage::getEngine() const { return NULL; }
 /* upper left hand corner of the screen */
 int Mugen::Stage::getX(){
     return (int)getCameraX();
@@ -1530,20 +1527,11 @@ int Mugen::Stage::getX(){
 int Mugen::Stage::getY(){
     return (int)getCameraY();
 }
-/* this shouldn't be here */
-// I guess ignore this one
-const deque<Graphics::Bitmap*> & Mugen::Stage::getScreenshots(){
-    return garbage;
-}
 
-int Mugen::Stage::levelLength() const { return 0; }
-// Since this isn't a paintown level, I guess block wouldn't apply
-const Block * Mugen::Stage::currentBlock() const { return NULL; }
 /* bleh.. */
-void Mugen::Stage::addEnemy(Paintown::Enemy * obj){ /* does nothing */ }
-Paintown::Object * Mugen::Stage::findObject(int id){ 
-    for (vector<Paintown::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-        Paintown::Object * object = *it;
+Mugen::Object * Mugen::Stage::findObject(int id){ 
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Object * object = *it;
         if (object->getObjectId() == id){
             return object;
         }
@@ -1555,36 +1543,7 @@ Paintown::Object * Mugen::Stage::findObject(int id){
 int Mugen::Stage::getMaximumZ(){ return zoffset; }
 int Mugen::Stage::getMinimumZ(){ return zoffset; }
 
-void Mugen::Stage::drawMiniMaps( bool b ){ /* Not likely */ }
-bool Mugen::Stage::shouldDrawMiniMaps(){ return false; }
 void Mugen::Stage::begin(){
-}
-void Mugen::Stage::killAllHumans( Paintown::Object * player ){ 
-    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
-        Paintown::Object * o = *it;
-        o->takeDamage(*this, NULL, 999999, 0, 0);
-    }
-}
-
-void Mugen::Stage::addMessage(Network::Message m, Network::Socket from, Network::Socket to){
-}
-
-Network::Message Mugen::Stage::createBangMessage( int x, int y, int z ){
-    Network::Message m;
-    return m;
-}
-        
-bool Mugen::Stage::isPaused(){
-    return false;
-}
-        
-void Mugen::Stage::pause(){
-}
-
-void Mugen::Stage::unpause(){
-}
-
-void Mugen::Stage::changePause(){
 }
 
 const std::string Mugen::Stage::getStageName(const std::string &filename) throw (MugenException){
@@ -1666,8 +1625,8 @@ void Mugen::Stage::cleanup(){
     }
 }
 
-bool Mugen::Stage::isaPlayer( Paintown::Object * o ) const {
-    for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
+bool Mugen::Stage::isaPlayer( Mugen::Object * o ) const {
+    for (vector<Mugen::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
         if ( (*it) == o ){
             return true;
         }
@@ -1683,7 +1642,7 @@ int Mugen::Stage::maximumLeft() const {
     return (int)(camerax - DEFAULT_WIDTH / 2);
 }
 
-void Mugen::Stage::updatePlayer(Paintown::Object * player){
+void Mugen::Stage::updatePlayer(Mugen::Object * player){
     // Z/Y offset
     player->setZ(currentZOffset());
 
@@ -1884,11 +1843,11 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
     switch (type){
         case Mugen::Player1:
             character = ((Mugen::Character *)players[0]);
-            character->setFacing(Paintown::Object::FACING_RIGHT);
+            character->setFacing(FacingRight);
             break;
         case Mugen::Player2:
             character = ((Mugen::Character *)players[1]);
-            character->setFacing(Paintown::Object::FACING_LEFT);
+            character->setFacing(FacingLeft);
             break;
         default:
             break;
@@ -1954,7 +1913,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
                 is_done = true;
                 answer = false;
             }
-            std::vector<Paintown::Object *> add;
+            std::vector<Mugen::Object *> add;
             character->act(&add, stage, &add);
         }
 
@@ -2146,8 +2105,8 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 }
     
 Mugen::Character * Mugen::Stage::getEnemy(const Mugen::Character * who) const {
-    for (vector<Paintown::Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
-        Paintown::Object * enemy = *enem;
+    for (vector<Mugen::Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
+        Mugen::Object * enemy = *enem;
         if (who->getAlliance() != enemy->getAlliance() && isaPlayer(enemy)){
             return (Mugen::Character*) enemy;
         }
@@ -2195,7 +2154,7 @@ int Mugen::Stage::countMyEffects(const Mugen::Character * owner) const {
     
 int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
     int count = 0;
-    for (vector<Paintown::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
         /* FIXME! dont assume its a character */
         Mugen::Character * who = (Mugen::Character*) *it;
         if (who->isHelper()){
@@ -2246,7 +2205,7 @@ void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
     
 vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner, int id) const {
     vector<Mugen::Helper*> out;
-    for (vector<Paintown::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
         /* FIXME! dont assume its a character */
         Mugen::Character * who = (Mugen::Character*) *it;
         if (who->isHelper()){
@@ -2297,4 +2256,8 @@ void Mugen::Stage::setPaletteEffects(int time, int addRed, int addGreen, int add
     paletteEffects.invert = invert;
     paletteEffects.color = color;
     paletteEffects.counter = 0;
+}
+
+void Mugen::Stage::Quake(int q){
+    quake_time += q;
 }
