@@ -22,7 +22,7 @@
                     weighty="0.1"
                     gridheight="1"
                     gridwidth="1"
-                    fill="GridBagConstraints.HORIZONTAL"
+                    fill="GridBagConstraints.NONE"
                     anchor="GridBagConstraints.NORTHWEST"
                     />
                     <label text="Tools" />

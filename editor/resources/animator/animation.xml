@@ -15,7 +15,7 @@
                 gridx="0"
                 gridy="0"
                 weightx="0.7"
-                weighty="1"
+                weighty="0.8"
                 gridheight="1"
                 anchor="GridBagConstraints.NORTHWEST"
                 fill="GridBagConstraints.BOTH"
@@ -25,20 +25,30 @@
                     gridx="0"
                     gridy="1"
                     weightx="1"
-                    weighty="0"
+                    weighty="0.2"
                     gridheight="1"
                     anchor="GridBagConstraints.NORTHWEST"
-                    fill="GridBagConstraints.BOTH"
+                    fill="GridBagConstraints.NONE"
                     />
                 <vbox>
-                    <hbox>
-                        <button id="black-background" text="Black background" />
-                        <button id="white-background" text="White background" />
-                    </hbox>
-                    <hbox>
-                        <label text="Grid size" />
-                        <slider id="guide" minimum="0" maximum="10" />
-                    </hbox>
+                    <panel layout="GridBagLayout">
+                        <vbox>
+                            <gridbagconstraints
+                                gridx="0"
+                                gridy="0"
+                                weightx="0.1"
+                                weighty="0.1"
+                                gridheight="1"
+                                gridwidth="1"
+                                fill="GridBagConstraints.NONE"
+                                anchor="GridBagConstraints.NORTHWEST"
+                                />
+                            <label text="Tools" />
+                            <combobox id="tools" />
+                            <panel id="tool-area" layout="GridBagLayout" />
+                        </vbox>
+                    </panel>
+
                     <hbox>
                         <label id="speed-num" />
                         <glue />

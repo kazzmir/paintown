@@ -202,28 +202,45 @@ public class CharacterAnimation extends JPanel {
                     }
                 });
 
-                final JButton blackBackground = (JButton) contextEditor.find("black-background");
-                final JButton whiteBackground = (JButton) contextEditor.find("white-background");
-                blackBackground.addActionListener(new AbstractAction(){
-                    public void actionPerformed(ActionEvent event){
-                        area.setBackgroundColor(new Color(0, 0, 0));
-                        animation.forceRedraw();
-                    }
-                });
+                final JComboBox tools = (JComboBox) contextEditor.find("tools");
+                final JPanel toolPane = (JPanel) contextEditor.find("tool-area");
+                final String chooseNone = "None";
+                final String chooseBackground = "Background Color";
+                final String chooseGrid = "Grid";
+                tools.addItem(chooseNone);
+                tools.addItem(chooseBackground);
+                tools.addItem(chooseGrid);
 
-                whiteBackground.addActionListener(new AbstractAction(){
-                    public void actionPerformed(ActionEvent event){
-                        area.setBackgroundColor(new Color(255, 255, 255));
-                        animation.forceRedraw();
-                    }
-                });
+                tools.addActionListener(new AbstractAction(){
+                    final JPanel toolNone = new JPanel();
+                    final JPanel toolBackground = makeBackgroundTool(area, animation);
+                    final JPanel toolGrid = makeGridTool(area, animation);
 
-                final JSlider guide = (JSlider) contextEditor.find("guide");
-                guide.setValue(area.getGuideSize());
-                guide.addChangeListener(new ChangeListener(){
-                    public void stateChanged(ChangeEvent change){
-                        area.setGuideSize(guide.getValue());
-                        animation.forceRedraw();
+                    private JPanel getTool(String name){
+                        if (name.equals(chooseNone)){
+                            return toolNone;
+                        }
+                        if (name.equals(chooseBackground)){
+                            return toolBackground;
+                        }
+                        if (name.equals(chooseGrid)){
+                            return toolGrid;
+                        }
+
+                        throw new RuntimeException("No such tool with name '" + name + "'");
+                    }
+
+                    public void actionPerformed(ActionEvent event){
+                        toolPane.removeAll();
+                        GridBagConstraints constraints = new GridBagConstraints();
+                        constraints.gridx = 0;
+                        constraints.gridy = 0;
+                        constraints.weightx = 1;
+                        constraints.weighty = 1;
+                        constraints.fill = GridBagConstraints.NONE;
+                        constraints.anchor = GridBagConstraints.NORTHWEST;
+                        toolPane.add(getTool((String) tools.getSelectedItem()), constraints);
+                        toolPane.revalidate();
                     }
                 });
 
@@ -289,6 +306,40 @@ public class CharacterAnimation extends JPanel {
                 return null;
             }
         };
+    }
+
+    private JPanel makeGridTool(final DrawArea area, final Animation animation){
+        final SwingEngine context = new SwingEngine("animator/animation-tools.xml");
+        final JSlider guide = (JSlider) context.find("guide");
+        guide.setValue(area.getGuideSize());
+        guide.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent change){
+                area.setGuideSize(guide.getValue());
+                animation.forceRedraw();
+            }
+        });
+        return (JPanel) context.find("grid");
+    }
+
+    private JPanel makeBackgroundTool(final DrawArea area, final Animation animation){
+        final SwingEngine context = new SwingEngine("animator/animation-tools.xml");
+        final JButton blackBackground = (JButton) context.find("black-background");
+        final JButton whiteBackground = (JButton) context.find("white-background");
+        blackBackground.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                area.setBackgroundColor(new Color(0, 0, 0));
+                animation.forceRedraw();
+            }
+        });
+
+        whiteBackground.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                area.setBackgroundColor(new Color(255, 255, 255));
+                animation.forceRedraw();
+            }
+        });
+        
+        return (JPanel) context.find("background");
     }
 
     private JComponent makeProperties(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
@@ -902,11 +953,11 @@ public class CharacterAnimation extends JPanel {
         tools.addItem(chooseOnionSkinning);
         tools.addItem(chooseAdjustOffsets);
 
-        final JPanel toolNone = new JPanel();
-        final JPanel toolOnionSkinning = makeOnionSkinningPanel(animation);
-        final JPanel toolAdjustOffsets = makeAdjustOffsetsPanel(animation);
-
         tools.addActionListener(new AbstractAction(){
+            final JPanel toolNone = new JPanel();
+            final JPanel toolOnionSkinning = makeOnionSkinningPanel(animation);
+            final JPanel toolAdjustOffsets = makeAdjustOffsetsPanel(animation);
+
             private JPanel getTool(String name){
                 if (name.equals(chooseNone)){
                     return toolNone;

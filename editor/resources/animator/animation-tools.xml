@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel>
+    <panel id="background">
+        <button id="black-background" text="Black background" />
+        <button id="white-background" text="White background" />
+    </panel>
+    <panel id="grid">
+        <label text="Grid size" />
+        <slider id="guide" minimum="0" maximum="10" />
+    </panel>
+</panel>
