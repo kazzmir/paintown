@@ -365,6 +365,15 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     public void surfaceChanged(SurfaceHolder holder,
                                int format, int width, int height) {
         //Log.v("SDL", "surfaceChanged()");
+        Log.v("SDL", "Surface changed: format " + format + " width " + width + " height " + height);
+        
+        /* Force screen parameters to be a minimum size */
+        if (width < 640){
+            width = 640;
+        }
+        if (height < 480){
+            height = 480;
+        }
 
         int sdlFormat = 0x85151002; // SDL_PIXELFORMAT_RGB565 by default
         switch (format) {
