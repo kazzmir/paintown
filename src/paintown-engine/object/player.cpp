@@ -131,7 +131,7 @@ void Player::gainLife( int l ){
 
 void Player::debugDumpKeyCache(int level){
     if (key_cache.size() > 0){
-        ostream & out = Global::debug(level);
+        Global::stream_type & out = Global::debug(level);
         deque<Input::PaintownInput>::iterator cur = key_cache.begin();
         out << "[player] Key cache" << endl;
         for ( cur = key_cache.begin(); cur != key_cache.end(); cur++ ){
