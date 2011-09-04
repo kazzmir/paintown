@@ -519,7 +519,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     // Key events
-    public boolean onKey(View  v, int keyCode, KeyEvent event) {
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
 
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             //Log.v("SDL", "key down: " + keyCode);
@@ -542,6 +542,11 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         float x = event.getX();
         float y = event.getY();
         float p = event.getPressure();
+
+        Log.v("SDL", "touch " + x + ", " + y);
+
+        SDLActivity.onNativeKeyDown(KeyEvent.KEYCODE_ENTER);
+        SDLActivity.onNativeKeyUp(KeyEvent.KEYCODE_ENTER);
 
         // TODO: Anything else we need to pass?        
         SDLActivity.onNativeTouch(action, x, y, p);
