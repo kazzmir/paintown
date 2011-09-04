@@ -1286,7 +1286,7 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
         }
 
 	/* Shadow */
-	obj->drawShade(work, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+	obj->drawMugenShade(work, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
         /* draw the player */
         obj->draw(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
@@ -2011,7 +2011,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
             }
 
 	    /* Shadow */
-	    character->drawShade(&board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+	    character->drawMugenShade(&board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
         
             character->draw(&board, -(DEFAULT_WIDTH / 2), (int) cameray); 
             
