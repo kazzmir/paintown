@@ -8,7 +8,7 @@ set(GAME_SRC
 src/paintown-engine/game/world.cpp
 src/paintown-engine/game/game.cpp
 src/paintown-engine/game/select_player.cpp
-src/paintown-engine/game/console.cpp
+src/util/console.cpp
 src/paintown-engine/game/adventure_world.cpp
 src/paintown-engine/game/mod.cpp
 src/paintown-engine/game/options.cpp

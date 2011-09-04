@@ -21,7 +21,7 @@
 #include "util/bitmap.h"
 #include "util/stretch-bitmap.h"
 #include "util/trans-bitmap.h"
-#include "paintown-engine/game/console.h"
+#include "util/console.h"
 /*
 #include "object/animation.h"
 #include "object/object.h"

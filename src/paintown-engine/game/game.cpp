@@ -38,7 +38,7 @@
 #include "util/network/network.h"
 #include "world.h"
 #include "adventure_world.h"
-#include "console.h"
+#include "util/console.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
 #include "versus_world.h"
