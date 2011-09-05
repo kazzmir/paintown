@@ -137,24 +137,6 @@ def ps3devPath():
     except KeyError:
         return '/opt/ps3dev'
 
-def checkLex(context):
-    context.Message("Checking for flex... ")
-    out = context.TryAction("flex -V")
-    if out[0] != 1:
-        print "Failed. Output was '%s'" % out[1]
-    ret = out[0] == 1
-    context.Result(colorResult(ret))
-    return ret
-
-def checkYacc(context):
-    context.Message("Checking for yacc... ")
-    out = context.TryAction("yacc src/garbage.yy")
-    if out[0] != 1:
-        print "Failed. Output was '%s'" % out[1]
-    ret = out[0] == 1
-    context.Result(colorResult(ret))
-    return ret
-
 rtti_counter = 0
 def checkRTTI(context):
     global rtti_counter
@@ -1655,14 +1637,7 @@ if isWindows():
     # config.CheckPython()
     #if config.HasRuby():
     #    config.CheckRuby()
-    # if not config.CheckLex():
-    #     print "Can't find lex"
-    #     Exit(1)
-    # the yacc check gets into an infinite loop when checking under
-    # cygwin, so just disable it for now
-    # if False and not config.CheckYacc():
-    #     print "Can't find yacc"
-    #     Exit(1)
+    
     env = config.Finish()
 
     if useAllegro():
