@@ -44,15 +44,18 @@
         - cd SDL/android-project/jni
         - ln -s ../.. SDL
         - cp SDL/include/SDL_config_android.h SDL/include/SDL_config.h
-        # Edit SDL/src/file/SDL_rwops.c line 448, change to
+        * Edit SDL/src/file/SDL_rwops.c line 448, change to
           #if defined(ANDROID) && defined(DONT_CARE)
-        # Edit SDL/src/render/SDL_render.c line 55. swap GLES2 with GLES
+        * Edit SDL/src/render/SDL_render.c line 55. swap GLES2 with GLES
           #if SDL_VIDEO_RENDER_OGL_ES
            &GLES_RenderDriver,
           #endif
           #if SDL_VIDEO_RENDER_OGL_ES2
            &GLES2_RenderDriver,
           #endif
+        * Edit SDL/src/joystick/android/SDL_sysjoystick.c line 91 in SDL_SYS_JoystickUpdate, add a return:
+          return;
+          Android_JNI_GetAccelerometerValues(values);
         - /opt/android/ndk-build -j 2 TARGET_PLATFORM=android-9 SDL
         - ln -s SDL/include/ /opt/android/platforms/android-9/arch-arm/usr/include/SDL
         - ln -s SDL/android-project/libs/armeabi/libSDL.so /opt/android/platforms/android-9/arch-arm/usr/lib/
