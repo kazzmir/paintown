@@ -25,6 +25,7 @@ import android.hardware.*;
 import android.content.*;
 
 import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.ImageView;
 
 import android.util.AttributeSet;
@@ -200,7 +201,7 @@ public class SDLActivity extends Activity {
 
         OnScreenButtons(Context context){
             super(context);
-            setImageResource(R.drawable.buttons);
+            // setImageResource(R.drawable.buttons);
             setOnTouchListener(this);   
         }
 
@@ -223,21 +224,27 @@ public class SDLActivity extends Activity {
 
         private int getKey(int x, int y){
             if (button1.contains(x, y)){
+                Log.v("SDL", "Button 1");
                 return KeyEvent.KEYCODE_A;
             }
             if (button2.contains(x, y)){
+                Log.v("SDL", "Button 2");
                 return KeyEvent.KEYCODE_S;
             }
             if (button3.contains(x, y)){
+                Log.v("SDL", "Button 3");
                 return KeyEvent.KEYCODE_D;
             }
             if (button4.contains(x, y)){
+                Log.v("SDL", "Button 4");
                 return KeyEvent.KEYCODE_Z;
             }
             if (button5.contains(x, y)){
+                Log.v("SDL", "Button 5");
                 return KeyEvent.KEYCODE_X;
             }
             if (button6.contains(x, y)){
+                Log.v("SDL", "Button 6");
                 return KeyEvent.KEYCODE_C;
             }
             return -1;
@@ -252,7 +259,7 @@ public class SDLActivity extends Activity {
             Log.v("SDL", "buttons " + x + ", " + y + " action " + action);
             int code = getKey((int) x, (int) y);
             if (code != -1){
-                // Log.v("SDL", " button " + code);
+                Log.v("SDL", " button " + code);
                 if (action == MotionEvent.ACTION_DOWN){
                     SDLActivity.onNativeKeyDown(code);
                 } else if (action == MotionEvent.ACTION_UP){
@@ -262,6 +269,72 @@ public class SDLActivity extends Activity {
 
             return true;
         }
+    }
+
+    class OnScreenButton extends ImageView implements View.OnTouchListener {
+        public OnScreenButton(Context context, int key, int resource){
+            super(context);
+            this.key = key;
+            setImageResource(resource);
+            setOnTouchListener(this);   
+            setPadding(5, 5, 5, 5);
+        }
+
+        private int key;
+
+        public boolean onTouch(View view, MotionEvent event) {
+            int action = event.getAction();
+            float x = event.getX();
+            float y = event.getY();
+            float p = event.getPressure();
+
+            // Log.v("SDL", "button " + x + ", " + y + " action " + action);
+            // Log.v("SDL", " button " + this.key);
+            if (action == MotionEvent.ACTION_DOWN){
+                SDLActivity.onNativeKeyDown(this.key);
+            } else if (action == MotionEvent.ACTION_UP){
+                SDLActivity.onNativeKeyUp(this.key);
+            }
+
+            return true;
+        }
+    }
+
+    /* TODO: add more space between buttons */
+    private View makeButtons(Context context){
+        RelativeLayout group = new RelativeLayout(context);
+
+        LinearLayout top = new LinearLayout(context);
+        LinearLayout bottom = new LinearLayout(context);
+
+        top.setId(500);
+        bottom.setId(501);
+
+        top.setOrientation(LinearLayout.HORIZONTAL);
+        bottom.setOrientation(LinearLayout.HORIZONTAL);
+
+        top.addView(new OnScreenButton(context, KeyEvent.KEYCODE_A, R.drawable.button1));
+        top.addView(new OnScreenButton(context, KeyEvent.KEYCODE_S, R.drawable.button1));
+        top.addView(new OnScreenButton(context, KeyEvent.KEYCODE_D, R.drawable.button1));
+        
+        bottom.addView(new OnScreenButton(context, KeyEvent.KEYCODE_Z, R.drawable.button2));
+        bottom.addView(new OnScreenButton(context, KeyEvent.KEYCODE_X, R.drawable.button2));
+        bottom.addView(new OnScreenButton(context, KeyEvent.KEYCODE_D, R.drawable.button2));
+        
+        RelativeLayout.LayoutParams paramsTop = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramsTop.addRule(RelativeLayout.ABOVE, bottom.getId());
+        
+        RelativeLayout.LayoutParams paramsBottom = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramsBottom.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+        group.addView(top, paramsTop);
+        group.addView(bottom, paramsBottom);
+
+        return group;
     }
 
     private View createView(SDLSurface main){
@@ -302,7 +375,7 @@ public class SDLActivity extends Activity {
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         group.addView(pad, params);
 
-        OnScreenButtons buttons = new OnScreenButtons(context);
+        View buttons = makeButtons(context);
         buttons.setId(102);
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -310,6 +383,7 @@ public class SDLActivity extends Activity {
         // params1.addRule(RelativeLayout.RIGHT_OF, pad.getId());
         params1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        // params1.addRule(RelativeLayout.CENTER_IN_PARENT);
         // params1.addRule(RelativeLayout.RIGHT_OF, main.getId());
         // params1.addRule(RelativeLayout.ALIGN_BOTTOM, main.getId());
         group.addView(buttons, params1);

@@ -4,7 +4,8 @@ adb=/opt/android-sdk/platform-tools/adb
 run='am start -a android.intent.action.MAIN -n org.libsdl.app/org.libsdl.app.SDLActivity'
 
 build_paintown(){
-  (cd ../..; android=1 make) && cp ../../paintown libs/armeabi/libpaintown.so
+  #(cd ../..; android=1 make) && cp ../../paintown libs/armeabi/libpaintown.so
+  echo skip
 }
 
 build_apk(){
