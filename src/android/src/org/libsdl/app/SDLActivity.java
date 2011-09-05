@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 
 import android.content.res.AssetManager;
 import android.app.*;
@@ -22,6 +23,13 @@ import android.text.*;
 import android.media.*;
 import android.hardware.*;
 import android.content.*;
+
+import android.widget.RelativeLayout;
+import android.widget.ImageView;
+
+import android.util.AttributeSet;
+import android.util.Xml;
+import org.xmlpull.v1.XmlPullParser;
 
 import java.lang.*;
 
@@ -113,9 +121,63 @@ public class SDLActivity extends Activity {
 
         // Set up the surface
         mSurface = new SDLSurface(getApplication());
-        setContentView(mSurface);
+        setContentView(createView(mSurface));
         SurfaceHolder holder = mSurface.getHolder();
         holder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
+    }
+
+    private View createView(SDLSurface main){
+        Context context = getApplication();
+        main.setId(100);
+        Log.v("SDL", "Surface id " + main.getId());
+        RelativeLayout group = new RelativeLayout(context);
+        RelativeLayout.LayoutParams params0 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params0.addRule(RelativeLayout.CENTER_IN_PARENT);
+        group.addView(main, params0);
+
+        /*
+        ImageView main = new ImageView(context);
+        main.setId(105);
+        main.setImageResource(R.drawable.pad);
+        RelativeLayout.LayoutParams params9 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params9.addRule(RelativeLayout.CENTER_IN_PARENT);
+        group.addView(main, params9);
+        */
+
+        ImageView pad = new ImageView(context);
+        pad.setId(101);
+        Log.v("SDL", "Pad id " + pad.getId());
+        pad.setImageResource(R.drawable.pad);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        // params.addRule(RelativeLayout.LEFT_OF, main.getId());
+        // params.addRule(RelativeLayout.ALIGN_BOTTOM, main.getId());
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        group.addView(pad, params);
+
+        ImageView buttons = new ImageView(context);
+        buttons.setId(102);
+        buttons.setImageResource(R.drawable.buttons);
+        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        // params1.addRule(RelativeLayout.RIGHT_OF, pad.getId());
+        params1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        // params1.addRule(RelativeLayout.RIGHT_OF, main.getId());
+        // params1.addRule(RelativeLayout.ALIGN_BOTTOM, main.getId());
+        group.addView(buttons, params1);
+
+        group.bringChildToFront(pad);
+        group.bringChildToFront(buttons);
+
+        return group;
     }
 
     // Events
@@ -428,9 +490,9 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         }
     }
 
-    // unused
-    public void onDraw(Canvas canvas) {}
-
+    public void onDraw(Canvas canvas){
+        /* draw the touch screen here */
+    }
 
     // EGL functions
     public boolean initEGL(int majorVersion, int minorVersion) {
@@ -536,8 +598,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     // Touch events
-    public boolean onTouch(View v, MotionEvent event) {
-    
+    public boolean onTouch(View view, MotionEvent event) {
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
