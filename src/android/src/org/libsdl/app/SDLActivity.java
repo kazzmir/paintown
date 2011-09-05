@@ -174,6 +174,44 @@ public class SDLActivity extends Activity {
         }
     }
 
+    class OnScreenButtons extends ImageView implements View.OnTouchListener {
+        OnScreenButtons(Context context){
+            super(context);
+            setImageResource(R.drawable.buttons);
+            setOnTouchListener(this);   
+        }
+
+        Rect left = new Rect(0, 25, 30, 50);
+        Rect right = new Rect(50, 25, 80, 50);
+        Rect up = new Rect(30, 0, 50, 25);
+        Rect down = new Rect(30, 50, 50, 75);
+
+        private int getKey(int x, int y){
+            return -1;
+        }
+
+        public boolean onTouch(View view, MotionEvent event) {
+            int action = event.getAction();
+            float x = event.getX();
+            float y = event.getY();
+            float p = event.getPressure();
+
+            Log.v("SDL", "buttons " + x + ", " + y + " action " + action);
+            int code = getKey((int) x, (int) y);
+            /*
+            if (code != -1){
+                if (action == MotionEvent.ACTION_DOWN){
+                    SDLActivity.onNativeKeyDown(code);
+                } else if (action == MotionEvent.ACTION_UP){
+                    SDLActivity.onNativeKeyUp(code);
+                }
+            }
+            */
+
+            return true;
+        }
+    }
+
     private View createView(SDLSurface main){
         Context context = getApplication();
         main.setId(100);
@@ -212,9 +250,8 @@ public class SDLActivity extends Activity {
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         group.addView(pad, params);
 
-        ImageView buttons = new ImageView(context);
+        OnScreenButtons buttons = new OnScreenButtons(context);
         buttons.setId(102);
-        buttons.setImageResource(R.drawable.buttons);
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
