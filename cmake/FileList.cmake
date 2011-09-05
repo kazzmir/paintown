@@ -212,6 +212,7 @@ src/platformer/animation.cpp
 src/platformer/background.cpp
 src/platformer/camera.cpp
 src/platformer/game.cpp
+src/platformer/object.cpp
 src/platformer/tile.cpp
 src/platformer/world.cpp
 )
