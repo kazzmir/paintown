@@ -175,18 +175,71 @@ public class SDLActivity extends Activity {
     }
 
     class OnScreenButtons extends ImageView implements View.OnTouchListener {
+        class Point{
+            Point(int x, int y){
+                this.x = x;
+                this.y = y;
+            }
+
+            int x, y;
+
+            int radius(){
+                return 28;
+            }
+
+            boolean contains(int x, int y){
+                return distance(this.x, this.y, x, y) <= radius();
+            }
+
+            double distance(int x1, int y1, int x2, int y2){
+                int xs = x2 - x1;
+                int ys = y2 - y1;
+                return Math.sqrt(xs * xs + ys * ys);
+            }
+        }
+
         OnScreenButtons(Context context){
             super(context);
             setImageResource(R.drawable.buttons);
             setOnTouchListener(this);   
         }
 
-        Rect left = new Rect(0, 25, 30, 50);
-        Rect right = new Rect(50, 25, 80, 50);
-        Rect up = new Rect(30, 0, 50, 25);
-        Rect down = new Rect(30, 50, 50, 75);
+        /* radius = 28
+         * button1 = 30, 50
+         * button2 = 107, 36
+         * button3 = 190, 36
+         * button4 = 34, 127
+         * button5 = 108, 109
+         * button6 = 190, 107
+         */
+        /* top row, starting from left */
+        Point button1 = new Point(30, 50);
+        Point button2 = new Point(107, 36);
+        Point button3 = new Point(190, 36);
+        /* bottom row starting from left */
+        Point button4 = new Point(34, 127);
+        Point button5 = new Point(108, 109);
+        Point button6 = new Point(190, 107);
 
         private int getKey(int x, int y){
+            if (button1.contains(x, y)){
+                return KeyEvent.KEYCODE_A;
+            }
+            if (button2.contains(x, y)){
+                return KeyEvent.KEYCODE_S;
+            }
+            if (button3.contains(x, y)){
+                return KeyEvent.KEYCODE_D;
+            }
+            if (button4.contains(x, y)){
+                return KeyEvent.KEYCODE_Z;
+            }
+            if (button5.contains(x, y)){
+                return KeyEvent.KEYCODE_X;
+            }
+            if (button6.contains(x, y)){
+                return KeyEvent.KEYCODE_C;
+            }
             return -1;
         }
 
@@ -198,15 +251,14 @@ public class SDLActivity extends Activity {
 
             Log.v("SDL", "buttons " + x + ", " + y + " action " + action);
             int code = getKey((int) x, (int) y);
-            /*
             if (code != -1){
+                // Log.v("SDL", " button " + code);
                 if (action == MotionEvent.ACTION_DOWN){
                     SDLActivity.onNativeKeyDown(code);
                 } else if (action == MotionEvent.ACTION_UP){
                     SDLActivity.onNativeKeyUp(code);
                 }
             }
-            */
 
             return true;
         }
