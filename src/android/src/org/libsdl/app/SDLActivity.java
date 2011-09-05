@@ -126,14 +126,66 @@ public class SDLActivity extends Activity {
         holder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
     }
 
+    class OnScreenPad extends ImageView implements View.OnTouchListener {
+        OnScreenPad(Context context){
+            super(context);
+            setImageResource(R.drawable.pad);
+            setOnTouchListener(this);   
+        }
+
+        Rect left = new Rect(0, 25, 30, 50);
+        Rect right = new Rect(50, 25, 80, 50);
+        Rect up = new Rect(30, 0, 50, 25);
+        Rect down = new Rect(30, 50, 50, 75);
+
+        private int getKey(int x, int y){
+            if (left.contains(x, y)){
+                return KeyEvent.KEYCODE_DPAD_LEFT;
+            }
+            if (right.contains(x, y)){
+                return KeyEvent.KEYCODE_DPAD_RIGHT;
+            }
+            if (up.contains(x, y)){
+                return KeyEvent.KEYCODE_DPAD_UP;
+            }
+            if (down.contains(x, y)){
+                return KeyEvent.KEYCODE_DPAD_DOWN;
+            }
+            return -1;
+        }
+
+        public boolean onTouch(View view, MotionEvent event) {
+            int action = event.getAction();
+            float x = event.getX();
+            float y = event.getY();
+            float p = event.getPressure();
+
+            Log.v("SDL", "pad " + x + ", " + y + " action " + action);
+            int code = getKey((int) x, (int) y);
+            if (code != -1){
+                if (action == MotionEvent.ACTION_DOWN){
+                    SDLActivity.onNativeKeyDown(code);
+                } else if (action == MotionEvent.ACTION_UP){
+                    SDLActivity.onNativeKeyUp(code);
+                }
+            }
+
+            return true;
+        }
+    }
+
     private View createView(SDLSurface main){
         Context context = getApplication();
         main.setId(100);
         Log.v("SDL", "Surface id " + main.getId());
         RelativeLayout group = new RelativeLayout(context);
+        /*
         RelativeLayout.LayoutParams params0 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
+                */
+        RelativeLayout.LayoutParams params0 = new RelativeLayout.LayoutParams(
+                640, 480);
         params0.addRule(RelativeLayout.CENTER_IN_PARENT);
         group.addView(main, params0);
 
@@ -148,10 +200,9 @@ public class SDLActivity extends Activity {
         group.addView(main, params9);
         */
 
-        ImageView pad = new ImageView(context);
+        OnScreenPad pad = new OnScreenPad(context);
         pad.setId(101);
         Log.v("SDL", "Pad id " + pad.getId());
-        pad.setImageResource(R.drawable.pad);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -597,6 +648,12 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         return false;
     }
 
+    public boolean inScope(float x, float y){
+        Rect out = new Rect();
+        getGlobalVisibleRect(out);
+        return out.contains((int) x, (int) y);
+    }
+
     // Touch events
     public boolean onTouch(View view, MotionEvent event) {
         int action = event.getAction();
@@ -606,8 +663,11 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         Log.v("SDL", "touch " + x + ", " + y);
 
-        SDLActivity.onNativeKeyDown(KeyEvent.KEYCODE_ENTER);
-        SDLActivity.onNativeKeyUp(KeyEvent.KEYCODE_ENTER);
+        if (action == MotionEvent.ACTION_DOWN){
+            SDLActivity.onNativeKeyDown(KeyEvent.KEYCODE_ENTER);
+        } else if (action == MotionEvent.ACTION_UP){
+            SDLActivity.onNativeKeyUp(KeyEvent.KEYCODE_ENTER);
+        }
 
         // TODO: Anything else we need to pass?        
         SDLActivity.onNativeTouch(action, x, y, p);
