@@ -25,7 +25,12 @@
 /* how many ticks to wait before keys are removed from the key cache.
  * this can probably be user defined in the future.
  */
+#ifdef ANDROID
+/* be a little more forgiving on touch screen devices */
+static const int GLOBAL_KEY_DELAY = 40;
+#else
 static const int GLOBAL_KEY_DELAY = 20;
+#endif
 static const unsigned int KEY_CACHE_SIZE = 100;
 
 using namespace std;
