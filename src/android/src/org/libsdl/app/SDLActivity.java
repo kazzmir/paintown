@@ -337,42 +337,139 @@ public class SDLActivity extends Activity {
         return group;
     }
 
+    private View makePad(Context context){
+        LinearLayout group = new LinearLayout(context);
+        group.setOrientation(LinearLayout.VERTICAL);
+
+        class Dot extends ImageView {
+            public Dot(Context context){
+                super(context);
+                setImageResource(R.drawable.dot);
+            }
+        }
+
+        LinearLayout top = new LinearLayout(context);
+        top.addView(new Dot(context));
+        top.addView(new Dot(context));
+        top.addView(new Dot(context));
+        top.addView(new Dot(context));
+        top.addView(new Dot(context));
+        top.addView(new Dot(context));
+        top.addView(new Dot(context));
+        top.addView(new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_UP, R.drawable.arrowup));
+        top.addView(new Dot(context));
+
+        LinearLayout middle = new LinearLayout(context);
+        middle.addView(new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_LEFT, R.drawable.arrowleft));
+        middle.addView(new Dot(context));
+        middle.addView(new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_RIGHT, R.drawable.arrowright));
+
+        LinearLayout bottom = new LinearLayout(context);
+        bottom.addView(new Dot(context));
+        bottom.addView(new Dot(context));
+        bottom.addView(new Dot(context));
+        bottom.addView(new Dot(context));
+        bottom.addView(new Dot(context));
+        bottom.addView(new Dot(context));
+        bottom.addView(new Dot(context));
+        bottom.addView(new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_DOWN, R.drawable.arrowdown));
+        bottom.addView(new Dot(context));
+
+        group.addView(top);
+        group.addView(middle);
+        group.addView(bottom);
+
+        return group;
+    }
+    
+    private View makePad2(Context context){
+        RelativeLayout group = new RelativeLayout(context);
+        int id = 400;
+
+        ImageView centerView = new ImageView(context);
+        centerView.setImageResource(R.drawable.dot);
+        centerView.setPadding(5, 5, 5, 5);
+        centerView.setId(id); id += 1;
+        RelativeLayout.LayoutParams center = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        center.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        group.addView(centerView, center);
+
+        RelativeLayout.LayoutParams up = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        up.addRule(RelativeLayout.ABOVE, centerView.getId());
+        up.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        OnScreenButton upButton = new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_UP, R.drawable.arrowup);
+        upButton.setId(id); id += 1;
+        group.addView(upButton, up);
+
+        RelativeLayout.LayoutParams down = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        down.addRule(RelativeLayout.BELOW, centerView.getId());
+        down.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        OnScreenButton downButton = new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_DOWN, R.drawable.arrowdown);
+        downButton.setId(id); id += 1;
+        group.addView(downButton, down);
+
+        RelativeLayout.LayoutParams left = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        left.addRule(RelativeLayout.LEFT_OF, centerView.getId());
+        left.addRule(RelativeLayout.CENTER_VERTICAL);
+        OnScreenButton leftButton = new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_LEFT, R.drawable.arrowleft);
+        leftButton.setId(id); id += 1;
+        group.addView(leftButton, left);
+
+        RelativeLayout.LayoutParams right = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        right.addRule(RelativeLayout.RIGHT_OF, centerView.getId());
+        right.addRule(RelativeLayout.CENTER_VERTICAL);
+        OnScreenButton rightButton = new OnScreenButton(context, KeyEvent.KEYCODE_DPAD_RIGHT, R.drawable.arrowright);
+        rightButton.setId(id); id += 1;
+        group.addView(rightButton, right);
+
+        ImageView dotQ3 = new ImageView(context);
+        dotQ3.setImageResource(R.drawable.dot);
+        dotQ3.setPadding(5, 5, 5, 5);
+        dotQ3.setId(id); id += 1;
+        RelativeLayout.LayoutParams dotQ3Params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        dotQ3Params.addRule(RelativeLayout.LEFT_OF, downButton.getId());
+        dotQ3Params.addRule(RelativeLayout.BELOW, leftButton.getId());
+
+        group.addView(dotQ3, dotQ3Params);
+        
+        return group;
+    }
+
+    /* sets up the d-pad, main game area, and the buttons*/
     private View createView(SDLSurface main){
         Context context = getApplication();
         main.setId(100);
         Log.v("SDL", "Surface id " + main.getId());
         RelativeLayout group = new RelativeLayout(context);
-        /*
-        RelativeLayout.LayoutParams params0 = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-                */
+
+        /* main game always runs at 640, 480 */
         RelativeLayout.LayoutParams params0 = new RelativeLayout.LayoutParams(
                 640, 480);
         params0.addRule(RelativeLayout.CENTER_IN_PARENT);
         group.addView(main, params0);
 
-        /*
-        ImageView main = new ImageView(context);
-        main.setId(105);
-        main.setImageResource(R.drawable.pad);
-        RelativeLayout.LayoutParams params9 = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params9.addRule(RelativeLayout.CENTER_IN_PARENT);
-        group.addView(main, params9);
-        */
-
-        OnScreenPad pad = new OnScreenPad(context);
+        View pad = makePad(context);
         pad.setId(101);
         Log.v("SDL", "Pad id " + pad.getId());
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        // params.addRule(RelativeLayout.LEFT_OF, main.getId());
-        // params.addRule(RelativeLayout.ALIGN_BOTTOM, main.getId());
         params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        // params.addRule(RelativeLayout.CENTER_IN_PARENT);
         group.addView(pad, params);
 
         View buttons = makeButtons(context);
@@ -380,14 +477,11 @@ public class SDLActivity extends Activity {
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        // params1.addRule(RelativeLayout.RIGHT_OF, pad.getId());
         params1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        // params1.addRule(RelativeLayout.CENTER_IN_PARENT);
-        // params1.addRule(RelativeLayout.RIGHT_OF, main.getId());
-        // params1.addRule(RelativeLayout.ALIGN_BOTTOM, main.getId());
         group.addView(buttons, params1);
 
+        /* make sure the d-pad and buttons are in front of the actual game */
         group.bringChildToFront(pad);
         group.bringChildToFront(buttons);
 
