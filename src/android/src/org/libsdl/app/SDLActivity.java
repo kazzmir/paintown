@@ -10,8 +10,10 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.InputStream;
 
 import android.content.res.AssetManager;
+import android.content.res.AssetFileDescriptor;
 import android.app.*;
 import android.content.*;
 import android.view.*;
@@ -27,6 +29,8 @@ import android.content.*;
 import android.widget.RelativeLayout;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import android.util.AttributeSet;
 import android.util.Xml;
@@ -55,11 +59,23 @@ public class SDLActivity extends Activity {
     }
 
     /* copy the data bundled in assets to the external data directory */
-    private void setupData(Context context){
-        File root = new File(getDataDirectory());
+    private void setupData(final Context context){
+        final File root = new File(getDataDirectory());
         if (root.exists()){
             return;
         }
+        
+        /* horizontal progress bar */
+        final ProgressBar progress = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
+
+        /* we are in a background thread so to get the bar to show up we
+         * need to run it on the main UI thread
+         */
+        runOnUiThread(new Runnable(){
+            public void run(){
+                setContentView(loadingView(context, progress));
+            }
+        });
 
         Log.v("SDL", "Data directory doesn't exist, creating it: " + getDataDirectory());
         if (!root.mkdirs()){
@@ -72,17 +88,40 @@ public class SDLActivity extends Activity {
             user.mkdirs();
         }
 
-        unzip(root, "data.zip", context);
+        unzip(root, "data.zip", context, progress);
+    }
+
+    /* gets the number of entries in a zip file.. but this is slow with an input stream */
+    private int countZipFiles(InputStream stream) throws IOException {
+        int total = 0;
+        ZipInputStream zip = new ZipInputStream(stream);
+        ZipEntry entry = zip.getNextEntry();
+        while (entry != null){
+            total += 1;
+            entry = zip.getNextEntry();
+        }
+        zip.close();
+        return total;
+    }
+
+    /* get the size of the entire zip file */
+    private long zipSize(AssetManager assets, String file) throws IOException {
+        AssetFileDescriptor descriptor = assets.openFd(file);
+        long size = descriptor.getLength();
+        descriptor.close();
+        return size;
     }
 
     /* unzips a file from assets into the given root directory */
-    private void unzip(File root, String file, Context context){
+    private void unzip(File root, String file, Context context, final ProgressBar progress){
         Log.v("SDL", "Writing data to " + root.getAbsolutePath());
         try{
             AssetManager assets = context.getResources().getAssets();
+            progress.setMax((int) zipSize(assets, file));
             ZipInputStream zip = new ZipInputStream(assets.open(file));
 
             ZipEntry entry = zip.getNextEntry();
+            long count = 0;
             while (entry != null){
                 String filename = entry.getName();
                 if (entry.isDirectory()){
@@ -91,9 +130,20 @@ public class SDLActivity extends Activity {
                 } else {
                     writeFile(new File(root, filename), entry.getSize(), zip);
                 }
+                
+                count += entry.getSize();
 
                 entry = zip.getNextEntry();
+                final long xcount = count;
+
+                /* update the progress bar */
+                runOnUiThread(new Runnable(){
+                    public void run(){
+                        progress.setProgress((int) xcount);
+                    }
+                });
             }
+            zip.close();
         } catch (IOException fail){
             Log.v("SDL", fail.toString());
         }
@@ -114,17 +164,64 @@ public class SDLActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         //Log.v("SDL", "onCreate()");
         super.onCreate(savedInstanceState);
+
+        setContentView(welcomeView(getApplication()));
         
         // So we can call stuff from static callbacks
         mSingleton = this;
 
-        setupData(getApplication());
+        new Thread(){
+            public void run(){
+                setupData(getApplication());
+                runOnUiThread(new Runnable(){
+                    public void run(){
+                        setupSDL();
+                    }
+                });
+            }
+        }.start();
+    }
 
-        // Set up the surface
+    private View welcomeView(Context context){
+        RelativeLayout layout = new RelativeLayout(context);
+        RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        TextView text = new TextView(context);
+        text.setId(800);
+        text.setText("Starting Paintown..");
+        layout.addView(text, textParams);
+        return layout;
+    }
+
+    private void setupSDL(){
         mSurface = new SDLSurface(getApplication());
         setContentView(createView(mSurface));
         SurfaceHolder holder = mSurface.getHolder();
         holder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
+    }
+
+    private View loadingView(Context context, ProgressBar progress){
+        RelativeLayout layout = new RelativeLayout(context);
+        RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+        TextView text = new TextView(context);
+        text.setId(800);
+        text.setText("Installing Paintown data to " + getDataDirectory() + "/data");
+        layout.addView(text, textParams);
+        
+        RelativeLayout.LayoutParams progressParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        progressParams.addRule(RelativeLayout.BELOW, text.getId());
+        progressParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        layout.addView(progress, progressParams);
+        return layout;
     }
 
     public static boolean isActionDown(MotionEvent event){
