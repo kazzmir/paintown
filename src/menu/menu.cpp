@@ -1604,6 +1604,7 @@ void Menu::Menu::run(const Context & parentContext){
         input.set(Configuration::config(0).getLeft(), 0, true, Left);
         input.set(Configuration::config(0).getRight(), 0, true, Right);
         /* FIXME: use configuration keys */
+        input.set(Configuration::config(0).getAttack1(), 0, true, Select);
         input.set(Keyboard::Key_ENTER, 0, true, Select);
         input.set(Keyboard::Key_ESC, 0, true, Cancel);
         /* joystick */
