@@ -151,6 +151,10 @@ void Player::resetInput(){
     keyHold = Held();
 }
 
+bool Player::isPlayer() const {
+    return true;
+}
+
 vector<Input::PaintownInput> Player::fillKeyCache(){
     /*
     acts += 1;

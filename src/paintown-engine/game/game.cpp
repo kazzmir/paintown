@@ -1096,8 +1096,11 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
             state.done |= world.finished();
             if (force_quit){
-                Paintown::Player * player = (Paintown::Player*) players[0];
-                state.menu_quit = state.menu_quit || doMenu(menuData, player);
+                Paintown::PlayerCommon * maybe = (Paintown::PlayerCommon*) players[0];
+                if (maybe->isPlayer()){
+                    Paintown::Player * player = (Paintown::Player*) players[0];
+                    state.menu_quit = state.menu_quit || doMenu(menuData, player);
+                }
             }
         }
 
@@ -1247,7 +1250,7 @@ static string funnyGo(){
 
 static void initializePlayers(const vector<Paintown::Object*> & players){
     for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++){
-        Paintown::Player * playerX = (Paintown::Player *) *it;
+        Paintown::PlayerCommon * playerX = (Paintown::PlayerCommon *) *it;
         playerX->setTrails(0, 0);
         playerX->setY(200);
         /* setMoving(false) sets all velocities to 0 */

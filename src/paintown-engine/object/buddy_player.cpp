@@ -215,6 +215,13 @@ void BuddyPlayer::act( vector< Object * > * others, World * world, vector< Objec
 		}
 	}
 }
+    
+void BuddyPlayer::resetInput(){
+}
+
+bool BuddyPlayer::isPlayer() const {
+    return false;
+}
 	
 int BuddyPlayer::spawnTime(){
 	spawn_time -= 1;

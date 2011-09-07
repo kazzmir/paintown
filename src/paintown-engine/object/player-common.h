@@ -27,6 +27,11 @@ public:
     virtual inline void setScore(unsigned int score){
         this->score = score;
     }
+
+    /* true for human controlled characters */
+    virtual bool isPlayer() const = 0;
+    
+    virtual void resetInput() = 0;
 	
 private:
     unsigned int score;

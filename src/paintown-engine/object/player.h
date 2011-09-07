@@ -82,8 +82,9 @@ public:
         return ignore_lives;
     }
     
-    void resetInput();
-
+    virtual void resetInput();
+    virtual bool isPlayer() const;
+    
     virtual ~Player();
 
 protected:

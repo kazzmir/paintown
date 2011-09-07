@@ -37,6 +37,9 @@ public:
     virtual inline void setExplode( bool b ){
         /* */
     }
+    
+    virtual void resetInput();
+    virtual bool isPlayer() const;
 
     virtual bool getExplode(){
         return false;
