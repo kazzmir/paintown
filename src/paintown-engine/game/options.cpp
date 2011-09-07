@@ -116,6 +116,49 @@ public:
     }
 };
 
+/* multi-player local mode */
+class OptionAdventureLocal: public MenuOption {
+public:
+    OptionAdventureLocal(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token){
+            if ( *token != "adventure-local" ){
+                throw LoadException(__FILE__, __LINE__, "Not an adventure-local");
+            }
+
+            readName(token);
+        }
+
+    virtual ~OptionAdventureLocal(){
+        // Nothing
+    }
+
+    void logic(){
+    }
+
+    void run(const Menu::Context & context){
+        /*
+        Object * player = NULL;
+        try{
+            //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
+            Level::LevelInfo info = doLevelMenu("/levels", context);
+
+            Global::debug(1) << "Selecting players" << endl;
+            int remap = 0;
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
+
+            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap);
+            vector<Util::Future<Object *> *> players;
+            players.push_back(&future);
+            Game::realGame(players, info);
+        } catch ( const LoadException & le ){
+            Global::debug(0) << "Error while loading: " << le.getTrace() << endl;
+        } catch (const Exception::Return & ignore){
+            throw Menu::Reload(__FILE__, __LINE__);
+        }
+        */
+    }
+};
+
 class OptionAdventureCpu: public MenuOption {
 public:
     OptionAdventureCpu(const Gui::ContextBox & parent, const Token *token):
@@ -461,6 +504,8 @@ MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Toke
         return new OptionAdventure(parent, child);
     } else if (*child == "adventure-cpu"){
         return new OptionAdventureCpu(parent, child);
+    } else if (*child == "adventure-local"){
+        return new OptionAdventureLocal(parent, child);
     } else if (*child == "change-mod"){
         return new OptionChangeMod(parent, child);
 #ifdef HAVE_NETWORKING
