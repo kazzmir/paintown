@@ -51,7 +51,7 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Mugen::Character kfm(Storage::instance().find(Filesystem::RelativePath(path)));
+            Mugen::Character kfm(Storage::instance().find(Filesystem::RelativePath(path)), 0);
             kfm.load();
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;

@@ -39,6 +39,7 @@ test/util/load_exception.cpp
 test/util/network/network.cpp
 test/mugen/ast/ast.cpp
 test/util/input/input-manager.cpp
+test/util/input/input-source.cpp
 test/util/input/keyboard.cpp
 test/util/input/joystick.cpp
 test/util/input/allegro/allegro-joystick.cpp
@@ -67,7 +68,7 @@ test/factory/font_render.cpp
 test/factory/font_factory.cpp
 test/util/windows/system.cpp
 test/util/input/text-input.cpp
-test/paintown-engine/game/console.cpp
+test/util/console.cpp
 test/paintown-engine/game/world.cpp
 test/mugen/config.cpp
 test/mugen/characterhud.cpp
@@ -87,6 +88,8 @@ init.cpp
 stage_source = Split("""
 load-stage.cpp
 init.cpp
+test/util/gui/animation.cpp
+test/util/gui/coordinate.cpp
 test/mugen/stage.cpp
 test/mugen/character.cpp
 test/mugen/helper.cpp
@@ -153,6 +156,7 @@ test/paintown-engine/script/script.cpp
 test/util/load_exception.cpp
 test/util/network/network.cpp
 test/util/input/input-manager.cpp
+test/util/input/input-source.cpp
 test/util/input/keyboard.cpp
 test/util/input/joystick.cpp
 test/util/input/allegro/allegro-joystick.cpp
@@ -173,7 +177,7 @@ test/util/token.cpp
 test/util/tokenreader.cpp
 test/util/token_exception.cpp
 test/paintown-engine/game/world.cpp
-test/paintown-engine/game/console.cpp
+test/util/console.cpp
 test/util/input/text-input.cpp
 test/exceptions/exception.cpp
 test/util/thread.cpp
@@ -236,6 +240,8 @@ full_source = most_game_source + Split("""
 load-full.cpp
 init.cpp
 test/factory/collector.cpp
+test/util/gui/animation.cpp
+test/util/gui/coordinate.cpp
 test/paintown-engine/factory/shadow.cpp
 test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/factory/heart_factory.cpp
@@ -319,6 +325,7 @@ test/util/music-player.cpp
 test/util/audio.cpp
 test/util/sound.cpp
 test/util/input/input-manager.cpp
+test/util/input/input-source.cpp
 test/util/events.cpp
 test/util/input/joystick.cpp
 test/util/input/sdl/joystick.cpp
@@ -339,6 +346,9 @@ test/util/token_exception.cpp
 
 match_source = Split("""
 run-match.cpp
+test/util/input/input-source.cpp
+test/util/gui/animation.cpp
+test/util/gui/coordinate.cpp
 test/util/init.cpp
 test/util/file-system.cpp
 test/util/bitmap.cpp
@@ -390,7 +400,7 @@ test/mugen/background.cpp
 test/util/gui/rectarea.cpp
 test/util/regex.cpp
 test/mugen/sound.cpp
-test/paintown-engine/game/console.cpp
+test/util/console.cpp
 test/mugen/parse-cache.cpp
 test/util/input/input-manager.cpp
 test/util/events.cpp

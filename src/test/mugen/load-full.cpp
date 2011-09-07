@@ -53,9 +53,9 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Mugen::Character kfm1(Storage::instance().find(Filesystem::RelativePath(path)));
+            Mugen::Character kfm1(Storage::instance().find(Filesystem::RelativePath(path)), 1);
             kfm1.load();
-            Mugen::Character kfm2(Storage::instance().find(Filesystem::RelativePath(path)));
+            Mugen::Character kfm2(Storage::instance().find(Filesystem::RelativePath(path)), 2);
             kfm2.load();
             const char * file = "mugen/stages/kfm.def";
             Global::debug(0, "test") << "Loading " << file << endl;

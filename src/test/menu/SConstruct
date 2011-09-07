@@ -33,6 +33,7 @@ test/util/input/keyboard.cpp
 test/util/bitmap.cpp
 test/util/funcs.cpp
 test/util/input/input-manager.cpp
+test/util/input/input-source.cpp
 test/util/input/joystick.cpp
 test/util/debug.cpp
 test/openbor/pack-reader.cpp
@@ -116,7 +117,7 @@ test/paintown-engine/game/options.cpp
 test/paintown-engine/game/mod.cpp
 test/util/fire.cpp
 test/paintown-engine/game/adventure_world.cpp
-test/paintown-engine/game/console.cpp
+test/util/console.cpp
 test/paintown-engine/game/game.cpp
 test/util/music.cpp
 test/util/music-player.cpp

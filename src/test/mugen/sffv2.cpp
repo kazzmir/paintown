@@ -85,6 +85,7 @@
 #include "util/input/keyboard.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
+#include "util/input/input-source.h"
 #include "util/init.h"
 
 #include "sff.h"
@@ -827,7 +828,7 @@ int main(int argc, char ** argv){
                 bool ok = false;
                 while (!ok){
                     InputManager::poll();
-                    vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input);
+                    vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource());
                     for (vector<InputMap<int>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                         InputMap<int>::InputEvent event = *it;
 
