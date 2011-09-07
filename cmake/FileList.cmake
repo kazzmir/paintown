@@ -112,6 +112,7 @@ src/util/regex.cpp
 src/util/language-string.cpp
 src/util/thread.cpp
 src/util/input/joystick.cpp
+src/util/input/allegro5/joystick.cpp
 src/util/input/allegro/allegro-joystick.cpp
 src/util/input/sdl/joystick.cpp
 src/util/input/psp/joystick.cpp
