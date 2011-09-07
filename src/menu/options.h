@@ -500,6 +500,7 @@ protected:
 private:
     int lblue, lgreen;
     int rblue, rgreen;
+    std::string originalName;
 };
 
 class OptionMusic: public MenuOption {
@@ -525,6 +526,7 @@ protected:
 private:
     int lblue, lgreen;
     int rblue, rgreen;
+    std::string originalName;
 };
 
 class OptionLanguage: public MenuOption {

@@ -1969,6 +1969,7 @@ rgreen(255){
     }
 
     readName(token);
+    originalName = getName();
 }
 
 OptionSound::~OptionSound(){
@@ -1976,7 +1977,7 @@ OptionSound::~OptionSound(){
 
 void OptionSound::logic(){
     ostringstream temp;
-    temp << "Sound: " << Configuration::getSoundVolume();
+    temp << originalName << ": " << Configuration::getSoundVolume();
     setText(temp.str());
 }
 
@@ -2024,11 +2025,12 @@ rgreen(255){
     }
 
     readName(token);
+    originalName = getName();
 }
 
 void OptionMusic::logic(){
     ostringstream temp;
-    temp << "Music: " << Configuration::getMusicVolume();
+    temp << originalName << ": " << Configuration::getMusicVolume();
     setText(temp.str());
 }
 
