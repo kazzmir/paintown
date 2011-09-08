@@ -423,9 +423,9 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
             // preview.fill( 0 );
             // reflection.fill( 0 );
 
-            copy.draw(&preview, 0, 0);
             copy.drawOutline(&preview, 0, preview.getHeight() - stand - stand, 0, 0, 0, 255);
             copy.drawReflection(&preview, 0, preview.getHeight() - stand - stand, 128);
+            copy.draw(&preview, 0, 0);
 #if 0
             preview.drawVFlip(0, 0, reflection);
 
