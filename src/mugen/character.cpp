@@ -373,6 +373,7 @@ virtualy(0),
 virtualz(0),
 attack_ticket(0),
 alliance(alliance),
+facing(FacingLeft),
 objectId(-1),
 ticket(0){
 }
@@ -383,6 +384,7 @@ virtualy(y),
 virtualz(0),
 attack_ticket(0),
 alliance(alliance),
+facing(FacingLeft),
 objectId(-1),
 ticket(0){
 }
@@ -394,6 +396,7 @@ virtualy(copy.virtualy),
 virtualz(copy.virtualz),
 attack_ticket(copy.attack_ticket),
 alliance(copy.alliance),
+facing(FacingLeft),
 objectId(copy.objectId),
 ticket(copy.ticket){
 }
@@ -494,17 +497,24 @@ commonSounds(NULL){
     initialize();
 }
 
-Character::Character( const Character & copy ):
+Character::Character(const Character & copy):
 Object(copy),
 xscale(copy.xscale),
 yscale(copy.yscale),
 commonSounds(NULL),
+lastTicket(copy.lastTicket),
 currentState(copy.currentState),
 previousState(copy.previousState),
 currentAnimation(copy.currentAnimation),
 debug(false),
+currentPhysics(copy.currentPhysics),
+regenerateHealth(copy.regenerateHealth),
+regenerating(copy.regenerating),
+regenerateTime(copy.regenerateTime),
 needToGuard(false),
-max_health(copy.max_health){
+frozen(false),
+max_health(copy.max_health),
+health(copy.health){
 }
 
 Character::~Character(){

@@ -427,23 +427,8 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
     bool random2 = player2Name == "_";
-    Character * player1 = NULL;
-    Character * player2 = NULL;
-    class Cleanup{
-    public:
-        Cleanup(Character *& player1, Character *& player2):
-        player1(player1),
-        player2(player2){
-        }
-
-        Character *& player1;
-        Character *& player2;
-
-        ~Cleanup(){
-            delete player1;
-            delete player2;
-        }
-    };
+    PaintownUtil::ReferenceCount<Character> player1;
+    PaintownUtil::ReferenceCount<Character> player2;
 
     player1 = makeCharacter(player1Name, random1, allCharacters);
     player2 = makeCharacter(player2Name, random2, allCharacters);
@@ -467,8 +452,8 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
         timer.endTime();
         out << timer.printTime(" took") << std::endl;
     }
-    stage.addPlayer1(player1);
-    stage.addPlayer2(player2);
+    stage.addPlayer1(player1.raw());
+    stage.addPlayer2(player2.raw());
     stage.reset();
     runMatch(&stage);
 }
@@ -482,23 +467,8 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
     bool random2 = player2Name == "_";
-    Character * player1 = NULL;
-    Character * player2 = NULL;
-    class Cleanup{
-    public:
-        Cleanup(Character *& player1, Character *& player2):
-        player1(player1),
-        player2(player2){
-        }
-
-        Character *& player1;
-        Character *& player2;
-
-        ~Cleanup(){
-            delete player1;
-            delete player2;
-        }
-    };
+    PaintownUtil::ReferenceCount<Character> player1;
+    PaintownUtil::ReferenceCount<Character> player2;
 
     player1 = makeCharacter(player1Name, random1, allCharacters);
     player2 = makeCharacter(player2Name, random2, allCharacters);
@@ -521,8 +491,8 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
         timer.endTime();
         out << timer.printTime(" took") << std::endl;
     }
-    stage.addPlayer1(player1);
-    stage.addPlayer2(player2);
+    stage.addPlayer1(player1.raw());
+    stage.addPlayer2(player2.raw());
     stage.reset();
     runMatch(&stage);
 }
