@@ -1043,7 +1043,7 @@ int Configuration::menuFontHeight = 24;
 int Configuration::soundVolume = 70;
 int Configuration::musicVolume = 70;
 bool Configuration::joystickEnabled = true;
-std::string Configuration::currentGameDir = "paintown";
+std::string Configuration::currentGameDir = "";
 std::map<std::string, std::string> Configuration::properties;
 std::string Configuration::language = "";
 std::string Configuration::mugenMotif = "default";

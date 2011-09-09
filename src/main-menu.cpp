@@ -226,6 +226,20 @@ public:
     }
 };
 
+/* gets the mod name from system.txt */
+static string systemMod(){
+    TokenReader reader;
+    Token * mod = reader.readTokenFromFile(Storage::instance().find(Filesystem::RelativePath("system.txt")).path().c_str());
+    if (mod != NULL){
+        string name;
+        if (mod->match("_/default-mod", name)){
+            return name;
+        }
+        throw LoadException(__FILE__, __LINE__, "No `default-mod' token");
+    }
+    throw LoadException(__FILE__, __LINE__, "Could not get system mod");
+}
+
 int paintown_main(int argc, char ** argv){
     /* -1 means use whatever is in the configuration */
     int gfx = -1;
@@ -399,16 +413,30 @@ int paintown_main(int argc, char ** argv){
     Graphics::Bitmap screen(Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
 
+    /* set the game mod. check in this order
+     * 1. whatever is in the configuration under (current-game ...)
+     * 2. whatever is in data/system.txt
+     * 3. try to load 'paintown'
+     * 4. die
+     */
     try{
         Paintown::Mod::loadPaintownMod(Configuration::getCurrentGame());
-    } catch (const Filesystem::NotFound & e){
-        Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << ": " << e.getTrace() << endl;
+    } catch (...){
+        if (Configuration::getCurrentGame() != ""){
+            Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << std::endl;
+        }
         try{
-            Paintown::Mod::loadDefaultMod();
-        } catch (const Filesystem::NotFound & e){
-            Global::debug(0) << "Could not find the paintown default mod" << std::endl;
-            /* Maybe just set up some ultra default thing? */
-            return 0;
+            /* load the mod listed in data/system.txt */
+            Paintown::Mod::loadPaintownMod(systemMod());
+        } catch (...){
+            try{
+                /* failed to find anything, pray that data/paintown is there */
+                Paintown::Mod::loadDefaultMod();
+            } catch (...){
+                Global::debug(0) << "Could not find the paintown default mod" << std::endl;
+                /* Maybe just set up some ultra default thing? */
+                return 0;
+            }
         }
     }
 
