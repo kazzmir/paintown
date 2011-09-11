@@ -38,6 +38,10 @@
 
   3. Execute the toolchain script *note this takes a long while (this downloads all necessary requirements and builds them all if you are missing dependencies it will tell you)
     ./toolchain.sh
+
+  # Hack for now, set the sdl thread size to 256kb. Edit SDL/src/thread/psl1ght/SDL_systhread.c line 73, add a 0 to the size to make it 40000.
+
+   size_t stack_size = 0x40000;
     
   4. Make symlinks to the ps3dev directory you just checked out in /opt
     ln -s /path/to/ps3dev /opt/ps3dev
@@ -48,3 +52,12 @@
     make
 
   The pkg currently does not contain the data directory. Once the pkg is installed, copy the data directory to the install directory/USRDIR. Use the ftp program or something to transfer data to the ps3.
+
+  Notes:
+  * install using ps3load from payloader3: http://git.dashhacks.com/payloader3
+    'ps3load' is in the psl1ght/tools directory from where it was built
+  * use an ftp server to upload data: http://ps3.dashhacks.com/downloads/openps3ftp
+    Put the data in /dev_hdd0/tmp/data if running from ps3load.
+
+  From the payloader3 screen press 'x, triangle' to put it in ps3load/ethdebug mode. Then use socat to get the output
+  $ socat udp-recv:18194 stdout
