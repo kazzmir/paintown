@@ -759,7 +759,7 @@ public:
                 playerCopy->draw(&show, 0, 0);
                 show.finish();
 
-                list.render(space, font);
+                list.render(Graphics::Bitmap(space, 2, 0, space.getWidth(), space.getHeight()), font);
 
                 // int x = playerCopy->getX();
                 int x = margin + 50;
@@ -802,6 +802,7 @@ public:
     class MoveListTab: public Gui::Tab {
     public:
         MoveListTab(Paintown::Player * player, const Menu::Context & context):
+        opened(false),
         player(player),
         main(player->getConfig(), new Paintown::Character(*player), getContext().getBoard(), context){
             setName(player->getName());
@@ -814,6 +815,22 @@ public:
             getContext().colors.bodyAlpha = 220;
             getContext().colors.border = Graphics::makeColor(200,200,200);
             getContext().colors.borderAlpha = 200;
+        }
+
+        bool opened;
+        Paintown::Player * player;
+        Main main;
+
+        /* don't keep re-opening the context box */
+        virtual void open(){
+            if (!opened){
+                Gui::Tab::open();
+                opened = true;
+            }
+        }
+
+        /* don't ever close either */
+        virtual void close(){
         }
     
         virtual void previous(const Font & font){
@@ -833,9 +850,6 @@ public:
             context.render(work, font);
             main.draw(work, font);
         }
-
-        Paintown::Player * player;
-        Main main;
     };
 
     virtual void run(const Menu::Context & context){
