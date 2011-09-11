@@ -265,7 +265,7 @@ BuddyFuture::~BuddyFuture(){
 }
 
 void BuddyFuture::compute(){
-    base = new Player(path);
+    base = new Player(path, NULL);
     base->setMap(remap);
     Character * player = (Character*) playerFuture->get();
     Object * buddy = new BuddyPlayer(player, *base);

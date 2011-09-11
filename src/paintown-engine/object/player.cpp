@@ -39,7 +39,7 @@ namespace Paintown{
 
 #define DEFAULT_LIVES 4
 
-Player::Player( const char * filename, int config ):
+Player::Player(const char * filename, int config):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
@@ -63,14 +63,15 @@ ignore_lives(false){
         commonInitialize();
 }
 	
-Player::Player( const Filesystem::AbsolutePath & filename, int config ):
+Player::Player(const Filesystem::AbsolutePath & filename, Util::ReferenceCount<InputSource> source, int config):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
 attack_bonus(0),
 invincible( false ),
 config(config),
-ignore_lives(false){
+ignore_lives(false),
+source(source){
 
 	lives = DEFAULT_LIVES;
 	
@@ -102,11 +103,11 @@ ignore_lives(false){
 }
 
 Player::Player(const Player & pl):
-PlayerCommon( pl ),
-acts( 0 ),
+PlayerCommon(pl),
+acts(0),
 name_id(-1),
-attack_bonus(0),
-invincible( false ),
+attack_bonus(pl.attack_bonus),
+invincible(pl.invincible),
 ignore_lives(false){
 	show_life = getHealth();
         ignore_lives = pl.ignore_lives;
@@ -181,7 +182,11 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
 
     // keyHold.back = false;
 
-    vector<InputMap<Input::PaintownInput>::InputEvent> events = InputManager::getEvents(input, InputSource());
+    InputSource useSource;
+    if (source != NULL){
+        useSource = *source;
+    }
+    vector<InputMap<Input::PaintownInput>::InputEvent> events = InputManager::getEvents(input, useSource);
     for (vector<InputMap<Input::PaintownInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
         InputMap<Input::PaintownInput>::InputEvent event = *it;
 
@@ -222,7 +227,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
         inputHold.set(configuration.getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
     }
 
-    vector<InputMap<Input::PaintownInput>::InputEvent> eventsHold = InputManager::getEvents(inputHold, InputSource());
+    vector<InputMap<Input::PaintownInput>::InputEvent> eventsHold = InputManager::getEvents(inputHold, useSource);
     for (vector<InputMap<Input::PaintownInput>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
         InputMap<Input::PaintownInput>::InputEvent event = *it;
 
@@ -1109,12 +1114,13 @@ void Player::act( vector< Object * > * others, World * world, vector< Object * >
         }
 }
 
-PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap):
+PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, Util::ReferenceCount<InputSource> source):
 super(),
 path(path),
 invincible(invincible),
 lives(lives),
-remap(remap){
+remap(remap),
+source(source){
     start();
 }
 
@@ -1129,7 +1135,7 @@ PlayerFuture::~PlayerFuture(){
 void PlayerFuture::compute(){
     string look = Storage::instance().cleanse(path).path();
     Global::info("Loading " + look);
-    Player * player = new Player(path);
+    Player * player = new Player(path, source);
     player->setInvincible(invincible);
     player->setMap(remap);
     player->setObjectId(-1);

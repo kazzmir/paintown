@@ -1,4 +1,5 @@
 #include "player.h"
+#include "util/input/input-source.h"
 #include "versus_player.h"
 #include "util/load_exception.h"
 #include "animation.h"
@@ -14,7 +15,7 @@ using namespace std;
 namespace Paintown{
 
 VersusPlayer::VersusPlayer(const Filesystem::AbsolutePath & str) throw( LoadException ):
-Player(str, 0){
+Player(str, NULL, 0){
 }
 	
 VersusPlayer::VersusPlayer(const Player & player) throw( LoadException ):

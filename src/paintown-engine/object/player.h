@@ -7,11 +7,13 @@
 #include "util/load_exception.h"
 #include "util/network/network.h"
 #include "util/input/input.h"
+#include "util/pointer.h"
 #include "../game/adventure_world.h"
 #include "util/thread.h"
 #include "util/bitmap.h"
 
 class World;
+class InputSource;
 
 namespace Paintown{
 
@@ -20,10 +22,10 @@ class Animation;
 class Player: public PlayerCommon {
 public:
 
-    Player( const char * filename, int config = 0 );
-    Player( const Filesystem::AbsolutePath & str, int config = 0 );
-    Player( const Player & pl );
-    Player( const Character & chr );
+    Player(const char * filename, int config = 0);
+    Player(const Filesystem::AbsolutePath & str, Util::ReferenceCount<InputSource> source, int config = 0 );
+    Player(const Player & pl);
+    Player(const Character & chr);
 
     /* drawing */
     virtual void drawFront( Graphics::Bitmap * work, int rel_x );
@@ -141,12 +143,14 @@ protected:
     int config;
     bool ignore_lives;
 
+    Util::ReferenceCount<InputSource> source;
+
     // int last_key;
 };
 
 class PlayerFuture: public Util::Future<Object*> {
 public:
-    PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap);
+    PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, Util::ReferenceCount<InputSource> source);
 
     typedef Util::Future<Object*> super;
 
@@ -159,6 +163,7 @@ protected:
     bool invincible;
     int lives;
     int remap;
+    Util::ReferenceCount<InputSource> source;
 };
 
 }

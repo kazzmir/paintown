@@ -15,6 +15,8 @@
 #include "util/tokenreader.h"
 #include "../network/server.h"
 #include "../network/client.h"
+#include "util/input/input-source.h"
+#include "util/input/joystick.h"
 #include <sstream>
 #include <vector>
 
@@ -97,7 +99,7 @@ public:
             int remap = 0;
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
 
-            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap);
+            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, new InputSource(true, 0));
             vector<Util::Future<Object *> *> players;
             players.push_back(&future);
             Game::realGame(players, info);
@@ -121,7 +123,7 @@ class OptionAdventureLocal: public MenuOption {
 public:
     OptionAdventureLocal(const Gui::ContextBox & parent, const Token *token):
         MenuOption(parent, token){
-            if ( *token != "adventure-local" ){
+            if (*token != "adventure-local"){
                 throw LoadException(__FILE__, __LINE__, "Not an adventure-local");
             }
 
@@ -129,13 +131,121 @@ public:
         }
 
     virtual ~OptionAdventureLocal(){
-        // Nothing
     }
 
     void logic(){
     }
 
+    /* ask the user how many players will be in the game */
+    int howManyPlayers(const Menu::Context & context){
+        /* a reasonable maximum number of players for now */
+        int maxPlayers = 4;
+        int select = 0;
+        Menu::Menu menu;
+        const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+        for (int i = 2; i <= maxPlayers; i++){
+            OptionLevel * option = new OptionLevel(box, 0, &select, i);
+            ostringstream out;
+            out << i << " players";
+            option->setText(out.str());
+            menu.addOption(option);
+        }
+
+        try{
+            menu.run(context);
+        } catch (const Menu::MenuException & ignore){
+        }
+        return select;
+    }
+
+    /* ask the user(s) to select modes of input (keyboard, joystick...) */
+    int selectInput(const Menu::Context & context, const vector<string> & names){
+        Menu::Menu menu;
+        int select = 0;
+        const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+        int index = 0;
+        for (vector<string>::const_iterator it = names.begin(); it != names.end(); it++){
+            OptionLevel * option = new OptionLevel(box, 0, &select, index);
+            option->setText(*it);
+            menu.addOption(option);
+            index += 1;
+        }
+
+        try{
+            menu.run(context);
+        } catch (const Menu::MenuException & ignore){
+        }
+        return select;
+    }
+
+    vector<Util::ReferenceCount<InputSource> > getInputSources(const Menu::Context & context, int players){
+        vector<Util::ReferenceCount<InputSource> > sources;
+
+        vector<string> names;
+        vector<Util::ReferenceCount<InputSource> > possible;
+
+        if (Keyboard::haveKeyboard()){
+            possible.push_back(new InputSource(true, -1));
+            names.push_back("Keyboard");
+        }
+
+        for (int i = 0; i < Joystick::numberOfJoysticks(); i++){
+            possible.push_back(new InputSource(false, i));
+            ostringstream out;
+            out << "Joystick " << (i + 1);
+            names.push_back(out.str());
+        }
+
+        for (int player = 0; player < players; player++){
+            int selection = selectInput(context, names);
+            Util::ReferenceCount<InputSource> source = possible[selection];
+            /* keyboard can be selected multiple times */
+            if (names[selection] != "Keyboard"){
+                possible.erase(possible.begin() + selection);
+                names.erase(names.begin() + selection);
+            }
+            sources.push_back(source);
+        }
+
+        return sources;
+    }
+
+    vector<Util::Future<Object*>* > selectPlayers(const Menu::Context & context, int players, const vector<Util::ReferenceCount<InputSource> > & sources){
+        vector<Util::Future<Object*>* > futures;
+
+        for (int player = 0; player < players; player++){
+            int remap = 0;
+            ostringstream out;
+            out << "Pick player " << (player + 1);
+            Level::LevelInfo info;
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap);
+            Util::Future<Object*> * selection = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, sources[player]);
+            futures.push_back(selection);
+        }
+
+        return futures;
+    }
+
     void run(const Menu::Context & context){
+        try{
+
+            /* 1. ask how many players
+             * 2. each player selects a form of input (keyboard, joystick 1/2/3/4)
+             * 3. do character selection for each player
+             * 4. bind players together
+             * 5. run game as normal
+             */
+
+            int players = howManyPlayers(context);
+            vector<Util::ReferenceCount<InputSource> > sources = getInputSources(context, players);
+            Level::LevelInfo info = doLevelMenu("/levels", context);
+            vector<Util::Future<Object*>* > futures = selectPlayers(context, players, sources);
+            Game::realGame(futures, info);
+
+        } catch (const Exception::Return & fail){
+            /* nothing */
+        }
+
         /*
         Object * player = NULL;
         try{
@@ -207,7 +317,7 @@ public:
 
             int remap;
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
-            Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap);
+            Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, new InputSource(true, 0));
             futures.push_back(player);
 
             for ( int i = 0; i < max_buddies; i++ ){

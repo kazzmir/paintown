@@ -102,7 +102,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
 
         virtual void load(){
             Global::info("Create player " + playerPath.path());
-            player = new Paintown::Player(playerPath);
+            player = new Paintown::Player(playerPath, new InputSource(true, 0));
             player->setMap(remap);
             player->ignoreLives();
             Filesystem::RelativePath cleanPath = Storage::instance().cleanse(playerPath);

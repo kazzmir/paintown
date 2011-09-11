@@ -472,7 +472,7 @@ public class CharacterAnimation extends JPanel {
         keySelect.addItem("key_downback");
         keySelect.addItem("key_downforward");
         keySelect.addItem("key_jump");
-        keySelect.addItem("key_block");
+        // keySelect.addItem("key_block");
         keySelect.addItem("key_attack1");
         keySelect.addItem("key_attack2");
         keySelect.addItem("key_attack3");
