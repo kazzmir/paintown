@@ -30,6 +30,9 @@ bool playLevel( World & world, const std::vector< Paintown::Object * > & players
 /* do the required setup to play a single level */
 void realGame(const std::vector<Util::Future<Paintown::Object *>* > & players, const Level::LevelInfo & levelInfo);
 
+/* run a multi-player local game */
+void realGameLocal(const std::vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo);
+
 // const Level::LevelInfo selectLevelSet( const std::string & base );
 
 void fadeOut( const Graphics::Bitmap & work, const std::string & message );

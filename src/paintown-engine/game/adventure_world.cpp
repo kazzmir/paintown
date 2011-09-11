@@ -5,6 +5,7 @@
 #include "../object/object.h"
 #include "../object/object_attack.h"
 #include "../object/character.h"
+#include "../object/player-common.h"
 #include "util/font.h"
 #include "util/file-system.h"
 #include "util/gradient.h"
@@ -12,6 +13,7 @@
 #include "globals.h"
 #include "../object/effect.h"
 #include "../object/enemy.h"
+#include "../object/player.h"
 #include "../level/scene.h"
 #include "../level/random-scene.h"
 #include "world.h"
@@ -484,11 +486,38 @@ void AdventureWorld::act(){
     }
 
     if (!is_paused){
+        for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++){
+            PlayerTracker & tracker = *it;
+            tracker.minimumX = 0;
+            tracker.maximumX = scene->getLimit();
+            Paintown::PlayerCommon * maybe = (Paintown::PlayerCommon*) tracker.player;
+            if (maybe->getHealth() > 0 && maybe->isPlayer()){
+                Paintown::Player * player = (Paintown::Player*) maybe;
+                vector<Paintown::Player*> binds = player->getBinds();
+                if (binds.size() > 0){
+                    double distance = player->getX();
+                    for (vector<Paintown::Player*>::iterator bind = binds.begin(); bind != binds.end(); bind++){
+                        Paintown::Player* bound = *bind;
+                        distance += bound->getX();
+                    }
+                    double average = (double) distance / (binds.size() + 1);
+                    tracker.minimumX = average - screen_size / 2;
+                    if (tracker.minimumX < 0){
+                        tracker.minimumX = 0;
+                    }
+                    tracker.maximumX = average + screen_size / 2;
+                    if (tracker.maximumX >= scene->getLimit()){
+                        tracker.maximumX = scene->getLimit();
+                    }
+                }
+            }
+        }
 		
 	doLogic();
 	
 	double lowest = 9999999;
-        for (vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++){
+        for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++){
+            PlayerTracker & tracker = *it;
             Paintown::Object * player = it->player;
             if (player->getHealth() > 0){
                 double mx = player->getX() - screen_size / 2;
@@ -501,10 +530,15 @@ void AdventureWorld::act(){
                     it->min_x -= 1;
                 }
 
-                if (it->min_x < 0){
-                    it->min_x = 0;
+                if (it->min_x < tracker.minimumX){
+                    it->min_x = tracker.minimumX;
                 }
 
+                /*
+                if (it->min_x + screen_size >= tracker.maximumX){
+                    it->min_x = tracker.maximumX - screen_size;
+                }
+                */
                 if (it->min_x + screen_size >= scene->getLimit()){
                     it->min_x = scene->getLimit() - screen_size;
                 }
@@ -513,8 +547,8 @@ void AdventureWorld::act(){
                     lowest = it->min_x;
                 }
 
-                if (player->getX() < 0){
-                    player->setX(0);
+                if (player->getX() < tracker.minimumX){
+                    player->setX(tracker.minimumX);
                 }
                 /*
                    if ( player->getX() < it->min_x ){
@@ -522,29 +556,28 @@ void AdventureWorld::act(){
                    }
                    */
 
-                if (player->getX() > scene->getLimit()){
-                    player->setX( scene->getLimit() );
+                if (player->getX() > tracker.maximumX){
+                    player->setX(tracker.maximumX);
                 }
                 if (player->getZ() < getMinimumZ()){
-                    player->setZ( getMinimumZ() );
+                    player->setZ(getMinimumZ());
                 }
                 if (player->getZ() > getMaximumZ()){
-                    player->setZ( getMaximumZ() );
+                    player->setZ(getMaximumZ());
                 }
             }
         }
 
-	doScene( (int) lowest, (int)(lowest + screen_size) );
-	// scene->act( min_x, min_x + screen_size, &objects );
+	doScene((int) lowest, (int)(lowest + screen_size));
     }
 }
 	
 void AdventureWorld::doScene( int min_x, int max_x ){
-	scene->act( min_x, max_x, &objects );
+    scene->act(min_x, max_x, &objects);
 }
 
 void AdventureWorld::addObject( Paintown::Object * o ){
-	objects.push_back( o );
+    objects.push_back(o);
 }
 
 void AdventureWorld::drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
@@ -587,7 +620,7 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Graphics::Bitmap 
 }
 
 void AdventureWorld::drawMiniMaps( bool b ){
-	draw_minimaps = b;
+    draw_minimaps = b;
 }
 
 bool AdventureWorld::shouldDrawMiniMaps(){
@@ -657,25 +690,27 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
     Graphics::Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
     int mini_position_x = work->getWidth() - mini.getWidth() - 1;
     int mini_position_y = work->getHeight() - mini.getHeight() - 1;
-    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+    for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
         Graphics::Bitmap * on = mini_map;
-        if ( it == players.begin() ){
+        if (it == players.begin()){
             on = work;
+        } else if (!shouldDrawMiniMaps()){
+            break;
+        } else if (((Paintown::PlayerCommon*) it->player)->isPlayer()){
+            continue;
         }
 
-        drawWorld( *it, on, object_z );
+        drawWorld(*it, on, object_z);
         if (on != work){
-            on->Stretch( mini );
-            Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
-            mini.border( 0, 1, Graphics::makeColor( 255, 255, 255 ) );
-            mini.translucent().draw( mini_position_x, mini_position_y, *work );
+            on->Stretch(mini);
+            Graphics::Bitmap::transBlender(0, 0, 0, 128);
+            mini.border(0, 1, Graphics::makeColor(255, 255, 255));
+            mini.translucent().draw(mini_position_x, mini_position_y, *work);
             mini_position_x -= mini.getWidth() - 2;
-            if ( mini_position_x <= 0 ){
+            if (mini_position_x <= 0){
                 mini_position_y -= mini.getHeight() - 2;
                 mini_position_x = work->getWidth() - mini.getWidth() - 1;
             }
-        } else if ( ! shouldDrawMiniMaps() ){
-            break;
         }
     }
 

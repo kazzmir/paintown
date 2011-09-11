@@ -1273,15 +1273,16 @@ struct GameData{
     vector<Paintown::Object*> players;
 };
 
-static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, const string & level){
+static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, const string & level, void (*setup_players)(const vector<Paintown::Object*> & players)){
 
     class GameContext: public Loader::LoadingContext {
     public:
-        GameContext(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Filesystem::RelativePath & path):
+        GameContext(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Filesystem::RelativePath & path, void (*setup_players)(const vector<Paintown::Object*> & players)):
             data(NULL),
             futurePlayers(futurePlayers),
             path(path),
-            failed(NULL){
+            failed(NULL),
+            setup_players(setup_players){
             }
 
         virtual ~GameContext(){
@@ -1303,6 +1304,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
                     Util::Future<Paintown::Object*> * future = *fit;
                     players.push_back(future->get());
                 }
+                setup_players(players);
                 data = new GameData(players, Storage::instance().find(path));
             } catch (const LoadException & exception){
                 failed = new LoadException(exception);
@@ -1327,13 +1329,14 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         vector<Util::Future<Paintown::Object*> * > futurePlayers;
         Filesystem::RelativePath path;
         Util::ReferenceCount<LoadException> failed;
+        void (*setup_players)(const vector<Paintown::Object*> & players);
     };
 
     bool gameState = true;
     { /* force scope so the context is destroyed before the factories */
         Global::clearInfo();
         Global::info("Setting up world");
-        GameContext context(futurePlayers, Filesystem::RelativePath(level));
+        GameContext context(futurePlayers, Filesystem::RelativePath(level), setup_players);
         Loader::loadScreen(context, levelInfo);
         context.failure();
         Global::info("World setup");
@@ -1357,9 +1360,34 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
     }
 }
 
+static void doNothingSpecial(const vector<Paintown::Object*> & objects){
+}
+
+/* assume all the objects are Player*'s. I guess in the future they could be
+ * BuddyPlayer's as well.
+ */
+static void setupLocalPlayers(const vector<Paintown::Object*> & objects){
+    for (vector<Paintown::Object*>::const_iterator i1 = objects.begin(); i1 != objects.end(); i1++){
+        for (vector<Paintown::Object*>::const_iterator i2 = objects.begin(); i2 != objects.end(); i2++){
+            if (i1 != i2){
+                Paintown::Player * player1 = (Paintown::Player*) *i1;
+                Paintown::Player * player2 = (Paintown::Player*) *i2;
+                player1->bindTo(player2);
+                player2->bindTo(player1);
+            }
+        }
+    }
+}
+
 void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
     for (vector<string>::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
-        realGame(futurePlayers, levelInfo, *it);
+        realGame(futurePlayers, levelInfo, *it, doNothingSpecial);
+    }
+}
+
+void realGameLocal(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+    for (vector<string>::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
+        realGame(futurePlayers, levelInfo, *it, setupLocalPlayers);
     }
 }
 

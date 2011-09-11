@@ -240,7 +240,7 @@ public:
             vector<Util::ReferenceCount<InputSource> > sources = getInputSources(context, players);
             Level::LevelInfo info = doLevelMenu("/levels", context);
             vector<Util::Future<Object*>* > futures = selectPlayers(context, players, sources);
-            Game::realGame(futures, info);
+            Game::realGameLocal(futures, info);
 
         } catch (const Exception::Return & fail){
             /* nothing */

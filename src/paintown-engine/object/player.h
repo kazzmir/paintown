@@ -83,6 +83,10 @@ public:
     virtual inline bool ignoringLives() const {
         return ignore_lives;
     }
+
+    /* binds this object to 'player' so that they appear on the screen together */
+    virtual void bindTo(Player * player);
+    virtual std::vector<Player*> getBinds() const;
     
     virtual void resetInput();
     virtual bool isPlayer() const;
@@ -144,8 +148,9 @@ protected:
     bool ignore_lives;
 
     Util::ReferenceCount<InputSource> source;
-
-    // int last_key;
+    
+    /* players this object is bound to */
+    std::vector<Player*> binds;
 };
 
 class PlayerFuture: public Util::Future<Object*> {

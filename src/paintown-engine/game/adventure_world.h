@@ -31,9 +31,12 @@ namespace Script{
 }
 
 struct PlayerTracker{
-	double min_x;
-        Paintown::Object * player;
-        void * script;
+    double min_x;
+    Paintown::Object * player;
+    void * script;
+
+    double minimumX;
+    double maximumX;
 };
 
 class AdventureWorld: public World {

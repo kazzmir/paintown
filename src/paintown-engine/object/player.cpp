@@ -675,19 +675,26 @@ void Player::interpretMessage(World * world, Network::Message & message){
     }
 }
 	
-Network::Message Player::thrownMessage( unsigned int id ){
-	Network::Message message;
+Network::Message Player::thrownMessage(unsigned int id){
+    Network::Message message;
 
-	message.id = 0;
-	message << World::THROWN;
-	message << getId();
-	message << id;
+    message.id = 0;
+    message << World::THROWN;
+    message << getId();
+    message << id;
 
-	return message;
+    return message;
 }
 
-void Player::act( vector< Object * > * others, World * world, vector< Object * > * add ){
+void Player::bindTo(Player * player){
+    binds.push_back(player);
+}
+    
+vector<Player*> Player::getBinds() const {
+    return binds;
+}
 
+void Player::act(vector<Object *> * others, World * world, vector<Object *> * add){
     /* this is just for score */
     if (attack_bonus > 0){
         attack_bonus -= 0.02;
