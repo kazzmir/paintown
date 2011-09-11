@@ -777,7 +777,7 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                     tok->view() >> tabInfo->menuInfo;
                 } else if (*tok == "option"){
                     try {
-                        MenuOption *temp = factory.getOption(tab->context, tok);
+                        MenuOption *temp = factory.getOption(tab->getContext(), tok);
                         if (temp){
                             Util::ReferenceCount<MenuOption> ref(temp);
                             tabInfo->options.push_back(ref);
@@ -905,8 +905,10 @@ void Menu::TabRenderer::initialize(Context & context){
 
     menuInfo.open();
     
-    // Add first info option
-    addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
+    if (tabs.size() > 0 && tabs[menu.getCurrentTab()]->options.size() > menu.getCurrentIndex()){
+        // Add first info option
+        addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
+    }
     
 }
 
@@ -943,28 +945,28 @@ void Menu::TabRenderer::addOption(MenuOption * opt){
 
 void Menu::TabRenderer::doAction(const Actions & action, Context & context){
     const Font & font = currentFont();
-    switch(action){
+
+    bool updateInfo = false;
+    switch (action){
         case Up:
             menu.up(font);
             context.playSound(Up);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
+            updateInfo = true;
             break;
         case Down:
             menu.down(font);
             context.playSound(Down);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
+            updateInfo = true;
             break;
         case Left:
             menu.left(font);
-            // setFont(context.getFont());
             context.playSound(Up);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
+            updateInfo = true;
             break;
         case Right:
             menu.right(font);
-            // setFont(context.getFont());
             context.playSound(Down);
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
+            updateInfo = true;
             break;
         case Select:
             try{
@@ -972,15 +974,14 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
                     menu.toggleTabSelect();
                 } else {
                     tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->run(context);
+                    // tabs[menu.getCurrentTab()]->run(menu.getCurrentIndex(), context);
                 }
                 context.playSound(Select);
             } catch (const Exception::Return & ex){
-                //menu.open();
                 menuInfo.open();
             }
-            // setFont(context.getFont());
             context.playMusic();
-            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font); 
+            updateInfo = true;
             break;
         case Cancel:
             context.playSound(Cancel);
@@ -992,6 +993,13 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
             break;
         default:
             break;
+    }
+
+    if (updateInfo){
+        if (tabs.size() > menu.getCurrentTab() &&
+            tabs[menu.getCurrentTab()]->options.size() > menu.getCurrentIndex()){
+            addInfo(tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->getInfoText(), menu, context, font);
+        }
     }
 }
 

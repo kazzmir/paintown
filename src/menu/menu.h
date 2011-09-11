@@ -277,20 +277,20 @@ class DefaultRenderer : public Renderer {
 
 /*! Tabbed Menu */
 class TabInfo {
-    public:
-        TabInfo();
-        ~TabInfo();
-        std::string name;
-        std::string info;
-        std::string menuInfo;
-        
-        void act();
-        
-        /*! Options */
-        std::vector<Util::ReferenceCount<MenuOption> > options;
+public:
+    TabInfo();
+    ~TabInfo();
+    std::string name;
+    std::string info;
+    std::string menuInfo;
+
+    void act();
+
+    /*! Options */
+    std::vector<Util::ReferenceCount<MenuOption> > options;
 };
 
-class TabRenderer : public Renderer {
+class TabRenderer: public Renderer {
     public:
         TabRenderer();
         virtual ~TabRenderer();
@@ -307,10 +307,14 @@ class TabRenderer : public Renderer {
         virtual std::vector<Util::ReferenceCount<MenuOption> > getOptions() const;
         virtual void invokeOverride(const Context &);
         
+        virtual Gui::TabbedBox & getBox(){
+            return menu;
+        }
+        
     private:
 
         /*! Tabs */
-        std::vector <TabInfo *> tabs;
+        std::vector<TabInfo *> tabs;
         
         /*! Tabbed Box */
         Gui::TabbedBox menu;

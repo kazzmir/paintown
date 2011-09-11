@@ -62,7 +62,7 @@ struct Background{
 
     Background():z(0){}
 };
-	
+        
 static double startingGameSpeed(){
     return 1.0;
 }
@@ -286,13 +286,13 @@ struct Snake{
 
 class OptionMoveList: public MenuOption {
 public:
-    OptionMoveList(const Gui::ContextBox & parent, const Token * token, Paintown::Player * player):
+    OptionMoveList(const Gui::ContextBox & parent, const Token * token, vector<Paintown::Player *> players):
     MenuOption(parent, token),
-    player(player){
+    players(players){
         readName(token);
     }
 
-    Paintown::Player * player;
+    vector<Paintown::Player *> players;
 
     virtual ~OptionMoveList(){
     }
@@ -790,24 +790,36 @@ public:
     }
 
     virtual void run(const Menu::Context & context){
-        showMoveList(player, context);
+        /*
+        Menu::Menu menu(Menu::Menu::Tabbed);
+        Gui::TabbedBox & box = ((Menu::TabRenderer *) menu.getRenderer())->getBox();
+        box.addTab("akuma", vector<Util::ReferenceCount<ContextItem> >());
+        box.addTab("joe", vector<Util::ReferenceCount<ContextItem> >());
+
+        try{
+            menu.run(context);
+        } catch (const Menu::MenuException & fail){
+        }
+        */
+
+        showMoveList(players[0], context);
     }
 };
 
 class GameOptionFactory: public Paintown::OptionFactory {
 public:
-    GameOptionFactory(Paintown::Player * player):
+    GameOptionFactory(const vector<Paintown::Player *> & players):
     Paintown::OptionFactory(),
-    player(player){
+    players(players){
     }
 
-    Paintown::Player * player;
+    vector<Paintown::Player *> players;
 
     MenuOption * getOption(const Gui::ContextBox & parent, const Token * data) const {
         const Token * head;
         data->view() >> head;
         if (*head == "move-list"){
-            return new OptionMoveList(parent, head, player);
+            return new OptionMoveList(parent, head, players);
         }
         return Paintown::OptionFactory::getOption(parent, data);
     }
@@ -818,14 +830,17 @@ static const Graphics::Bitmap & getScreen(){
 }
 
 /* in-game menu */
-static bool doMenu(const Token * data, Paintown::Player * player){
+static bool doMenu(const Token * data, const vector<Paintown::Player *> & players){
     const Graphics::Bitmap & screen_buffer = getScreen();
     // Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
-    GameOptionFactory optionFactory(player);
+    GameOptionFactory optionFactory(players);
     Menu::Menu menu(data, optionFactory);
     Menu::Context context;
 
-    player->resetInput();
+    for (vector<Paintown::Player*>::const_iterator it = players.begin(); it != players.end(); it++){
+        Paintown::Player * player = *it;
+        player->resetInput();
+    }
 
     /* use the current screen as the background */
     /* in SDL/Allegro4 the screen buffer is always GFX_X, GFX_Y because it is
@@ -1074,6 +1089,19 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
         }
 
+        vector<Paintown::Player*> getPlayers(){
+            vector<Paintown::Player*> out;
+
+            for (vector<Paintown::Object*>::const_iterator it = players.begin(); it != players.end(); it++){
+                Paintown::PlayerCommon * maybe = (Paintown::PlayerCommon*) *it;
+                if (maybe->isPlayer()){
+                    out.push_back((Paintown::Player*) maybe);
+                }
+            }
+
+            return out;
+        }
+
         using Util::Logic::run;
         void run(GameState & state){
             world.act();
@@ -1096,11 +1124,14 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
             state.done |= world.finished();
             if (force_quit){
+                /*
                 Paintown::PlayerCommon * maybe = (Paintown::PlayerCommon*) players[0];
                 if (maybe->isPlayer()){
                     Paintown::Player * player = (Paintown::Player*) players[0];
                     state.menu_quit = state.menu_quit || doMenu(menuData, player);
                 }
+                */
+                state.menu_quit = state.menu_quit || doMenu(menuData, getPlayers());
             }
         }
 
@@ -1497,12 +1528,12 @@ const Level::LevelInfo selectLevelSet( const string & base ){
     return MenuGlobals::doLevelMenu(base, NULL);
 
         Bitmap background( Global::titleScreen() );
-	// Bitmap::Screen->Blit( Global::titleScreen() );
+        // Bitmap::Screen->Blit( Global::titleScreen() );
 
-	// Bitmap background( Util::getDataPath() + "/paintown-title.png" );
-	int fontY = 20;
-	const Font & font = Font::getFont( Filesystem::find(DEFAULT_FONT), 20, fontY );
-	vector<string> possible = Util::getFiles( base + "/", "*.txt" );
+        // Bitmap background( Util::getDataPath() + "/paintown-title.png" );
+        int fontY = 20;
+        const Font & font = Font::getFont( Filesystem::find(DEFAULT_FONT), 20, fontY );
+        vector<string> possible = Util::getFiles( base + "/", "*.txt" );
         for ( vector<string>::iterator it = possible.begin(); it != possible.end(); it++ ){
             string & path = *it;
             /*
@@ -1511,89 +1542,89 @@ const Level::LevelInfo selectLevelSet( const string & base ){
             path = Filesystem::cleanse(path);
         }
 
-	if ( possible.size() == 0 ){
-		return "no-files!!!";
-	}
+        if ( possible.size() == 0 ){
+                return "no-files!!!";
+        }
 
         if (possible.size() == 1){
             return Filesystem::find(possible[0]);
         }
 
-	/*
-	for ( vector< string >::iterator it = possible.begin(); it != possible.end(); it++ ){
-		string & s = *it;
-		s.insert( 0, base + "/" );
-	}
-	*/
-	int choose = 0;
+        /*
+        for ( vector< string >::iterator it = possible.begin(); it != possible.end(); it++ ){
+                string & s = *it;
+                s.insert( 0, base + "/" );
+        }
+        */
+        int choose = 0;
 
-	font.printf( 180, (int)(200 - fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), background, "Select a set of levels to play", 0 );
-	for ( unsigned int i = 0; i < possible.size(); i++ ){
-		int yellow = Bitmap::makeColor( 255, 255, 0 );
-		int white = Bitmap::makeColor( 255, 255, 255 );
-		unsigned int color = i == (unsigned) choose ? yellow : white;
-		font.printf( 200, (int)(200 + i * fontY * 1.2), color, background, possible[ i ], 0 );
-	}
+        font.printf( 180, (int)(200 - fontY * 1.2), Bitmap::makeColor( 255, 255, 255 ), background, "Select a set of levels to play", 0 );
+        for ( unsigned int i = 0; i < possible.size(); i++ ){
+                int yellow = Bitmap::makeColor( 255, 255, 0 );
+                int white = Bitmap::makeColor( 255, 255, 255 );
+                unsigned int color = i == (unsigned) choose ? yellow : white;
+                font.printf( 200, (int)(200 + i * fontY * 1.2), color, background, possible[ i ], 0 );
+        }
         background.BlitToScreen();
 
-	Keyboard key;
-	bool done = false;
+        Keyboard key;
+        bool done = false;
 
-	key.setDelay( Keyboard::Key_UP, LAZY_KEY_DELAY );
-	key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
-	Global::speed_counter = 0;
+        key.setDelay( Keyboard::Key_UP, LAZY_KEY_DELAY );
+        key.setDelay( Keyboard::Key_DOWN, LAZY_KEY_DELAY );
+        Global::speed_counter = 0;
 
-	key.wait();
+        key.wait();
 
-	while ( ! done ){
-		
-		key.poll();
-		bool draw = false;
-		if ( Global::speed_counter > 0 ){
-			double think = Global::speed_counter;
+        while ( ! done ){
+                
+                key.poll();
+                bool draw = false;
+                if ( Global::speed_counter > 0 ){
+                        double think = Global::speed_counter;
 
-			while ( think > 0 ){
-				think--;
+                        while ( think > 0 ){
+                                think--;
 
-				if ( key[ Keyboard::Key_UP ] ){
-					draw = true;
-					choose = (choose - 1 + possible.size()) % possible.size();
-			}
+                                if ( key[ Keyboard::Key_UP ] ){
+                                        draw = true;
+                                        choose = (choose - 1 + possible.size()) % possible.size();
+                        }
 
-				if ( key[ Keyboard::Key_DOWN ] ){
-					draw = true;
-					choose = (choose + 1 + possible.size()) % possible.size();
-				}
+                                if ( key[ Keyboard::Key_DOWN ] ){
+                                        draw = true;
+                                        choose = (choose + 1 + possible.size()) % possible.size();
+                                }
 
-				if ( key[ Keyboard::Key_ENTER ] ){
-					return Filesystem::find(possible[ choose ]);
-				}
+                                if ( key[ Keyboard::Key_ENTER ] ){
+                                        return Filesystem::find(possible[ choose ]);
+                                }
 
-				if ( key[ Keyboard::Key_ESC ] ){
-					throw ReturnException();
-				}
-			}
+                                if ( key[ Keyboard::Key_ESC ] ){
+                                        throw ReturnException();
+                                }
+                        }
 
-			Global::speed_counter = 0;
-		}
+                        Global::speed_counter = 0;
+                }
 
-		if ( draw ){
-			for ( unsigned int i = 0; i < possible.size(); i++ ){
-				int yellow = Bitmap::makeColor( 255, 255, 0 );
-				int white = Bitmap::makeColor( 255, 255, 255 );
-				unsigned int color = i == (unsigned) choose ? yellow : white;
-				font.printf( 200, (int)(200 + i * fontY * 1.2), color, background, possible[ i ], 0 );
-			}
+                if ( draw ){
+                        for ( unsigned int i = 0; i < possible.size(); i++ ){
+                                int yellow = Bitmap::makeColor( 255, 255, 0 );
+                                int white = Bitmap::makeColor( 255, 255, 255 );
+                                unsigned int color = i == (unsigned) choose ? yellow : white;
+                                font.printf( 200, (int)(200 + i * fontY * 1.2), color, background, possible[ i ], 0 );
+                        }
                         background.BlitToScreen();
-		}
-		
-		while ( Global::speed_counter == 0 ){
-			Util::rest( 1 );
-			key.poll();
-		}
-	}
+                }
+                
+                while ( Global::speed_counter == 0 ){
+                        Util::rest( 1 );
+                        key.poll();
+                }
+        }
 
-	return "nothing-selected";
+        return "nothing-selected";
 }
 #endif
 
@@ -1621,299 +1652,299 @@ static bool closeFloat(double a, double b){
 #if 0
 void playVersusMode( Paintown::Character * player1, Paintown::Character * player2, int round ){
 
-	player1->setY( 0 );
-	player2->setY( 0 );
-	player1->setX( 0 );
-	player2->setX( 400 );
+        player1->setY( 0 );
+        player2->setY( 0 );
+        player1->setX( 0 );
+        player2->setX( 400 );
 
-	player1->setMaxHealth( 150 );
-	player2->setMaxHealth( 150 );
-	player1->setHealth( 150 );
-	player2->setHealth( 150 );
+        player1->setMaxHealth( 150 );
+        player2->setMaxHealth( 150 );
+        player1->setHealth( 150 );
+        player2->setHealth( 150 );
 
-	// Keyboard key;
+        // Keyboard key;
 
-	// key.setDelay( Keyboard::Key_P, 100 );
+        // key.setDelay( Keyboard::Key_P, 100 );
 
-	bool done = false;
-	bool paused = false;
-	double runCounter = 0;
-	double gameSpeed = startingGameSpeed();
+        bool done = false;
+        bool paused = false;
+        double runCounter = 0;
+        double gameSpeed = startingGameSpeed();
 
-	vector< Background > backgrounds;
-	backgrounds = readBackgrounds(Filesystem::find(Filesystem::RelativePath("bgs/versus/")));
+        vector< Background > backgrounds;
+        backgrounds = readBackgrounds(Filesystem::find(Filesystem::RelativePath("bgs/versus/")));
 
-	Bitmap background( 640, 480 );
-	int z = 400;
-	if ( backgrounds.size() != 0 ){
-		Background use = backgrounds[ Util::rnd( backgrounds.size() ) ];
-		Bitmap b(Filesystem::find(Filesystem::RelativePath(use.path)).path());
-		b.Stretch(background);
-		z = use.z;
-	}
-	
-	VersusWorld world( z, player1, player2 );
-	
-	Bitmap work( 640, 480 );
-	// Bitmap work( GFX_X, GFX_Y );
-	Bitmap screen_buffer( GFX_X, GFX_Y );
+        Bitmap background( 640, 480 );
+        int z = 400;
+        if ( backgrounds.size() != 0 ){
+                Background use = backgrounds[ Util::rnd( backgrounds.size() ) ];
+                Bitmap b(Filesystem::find(Filesystem::RelativePath(use.path)).path());
+                b.Stretch(background);
+                z = use.z;
+        }
+        
+        VersusWorld world( z, player1, player2 );
+        
+        Bitmap work( 640, 480 );
+        // Bitmap work( GFX_X, GFX_Y );
+        Bitmap screen_buffer( GFX_X, GFX_Y );
 
         Music::changeSong();
         /*
-	Music::pause();
-	Music::fadeIn( 0.3 );
-	Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
-	Music::play();
+        Music::pause();
+        Music::fadeIn( 0.3 );
+        Music::loadSong( Util::getFiles( Filesystem::find("/music/"), "*" ) );
+        Music::play();
         */
 
-	int roundColors[ 120 ];
-	int showRound = sizeof( roundColors ) / sizeof(int) - 1;
-	Util::blend_palette( roundColors, 60, Bitmap::makeColor( 96, 0, 0 ), Bitmap::makeColor( 200, 0, 0 ) );
-	Util::blend_palette( roundColors + 60, 60, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 96, 0, 0 ) );
+        int roundColors[ 120 ];
+        int showRound = sizeof( roundColors ) / sizeof(int) - 1;
+        Util::blend_palette( roundColors, 60, Bitmap::makeColor( 96, 0, 0 ), Bitmap::makeColor( 200, 0, 0 ) );
+        Util::blend_palette( roundColors + 60, 60, Bitmap::makeColor( 255, 0, 0 ), Bitmap::makeColor( 96, 0, 0 ) );
 
-	while ( ! done ){
+        while ( ! done ){
 
-		bool draw = false;
-		// key.poll();
+                bool draw = false;
+                // key.poll();
 
-		if ( Global::speed_counter > 0 ){
-			if ( ! paused ){
-				runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+                if ( Global::speed_counter > 0 ){
+                        if ( ! paused ){
+                                runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
 
-				while ( runCounter >= 1.0 ){
-					draw = true;
-					world.act();
-					runCounter -= 1.0;
+                                while ( runCounter >= 1.0 ){
+                                        draw = true;
+                                        world.act();
+                                        runCounter -= 1.0;
 
-					if ( player1->getHealth() <= 0 || player2->getHealth() <= 0 ){
-						if ( player1->getHealth() <= 0 && player2->getHealth() > 0 ){
-							fadeOut( screen_buffer, "Player 2 wins!" );
-						} else if ( player1->getHealth() > 0 && player2->getHealth() <= 0 ){
-							fadeOut( screen_buffer, "Player 1 wins!" );
-						} else {
-							fadeOut( screen_buffer, "Draw!" );
-						}
-						return;
-					}
-				}
-			}
+                                        if ( player1->getHealth() <= 0 || player2->getHealth() <= 0 ){
+                                                if ( player1->getHealth() <= 0 && player2->getHealth() > 0 ){
+                                                        fadeOut( screen_buffer, "Player 2 wins!" );
+                                                } else if ( player1->getHealth() > 0 && player2->getHealth() <= 0 ){
+                                                        fadeOut( screen_buffer, "Player 1 wins!" );
+                                                } else {
+                                                        fadeOut( screen_buffer, "Draw!" );
+                                                }
+                                                return;
+                                        }
+                                }
+                        }
 
                         /* FIXME */
                         /*
-			const double SPEED_INC = 0.02;
-			if ( key[Keyboard::Key_MINUS_PAD] ){
-				gameSpeed -= SPEED_INC;
-				if ( gameSpeed < SPEED_INC ){
-					gameSpeed = SPEED_INC;
-				}
-				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-			}
+                        const double SPEED_INC = 0.02;
+                        if ( key[Keyboard::Key_MINUS_PAD] ){
+                                gameSpeed -= SPEED_INC;
+                                if ( gameSpeed < SPEED_INC ){
+                                        gameSpeed = SPEED_INC;
+                                }
+                                Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                        }
 
-			if ( key[ Keyboard::Key_ESC ] ){
-				throw Exception::Return(__FILE__, __LINE__);
-			}
+                        if ( key[ Keyboard::Key_ESC ] ){
+                                throw Exception::Return(__FILE__, __LINE__);
+                        }
 
-			if ( key[ Keyboard::Key_P ] ){
-				paused = ! paused;
-				draw = true;
-			}
+                        if ( key[ Keyboard::Key_P ] ){
+                                paused = ! paused;
+                                draw = true;
+                        }
 
-			if ( key[ Keyboard::Key_PLUS_PAD ] ){
-				gameSpeed += SPEED_INC;
-				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-			}
+                        if ( key[ Keyboard::Key_PLUS_PAD ] ){
+                                gameSpeed += SPEED_INC;
+                                Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                        }
 
-			if ( key[ Keyboard::Key_ENTER_PAD ] ){
-				gameSpeed = 1;
-				Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
-			}
+                        if ( key[ Keyboard::Key_ENTER_PAD ] ){
+                                gameSpeed = 1;
+                                Global::debug( 3 ) << "Game speed " << gameSpeed << endl;
+                        }
                         */
 
-			Global::speed_counter = 0;
-		} else {
-			Util::rest( 1 );
-		}
-		
-		/*
-		while ( Global::second_counter > 0 ){
-			game_time--;
-			Global::second_counter--;
-			if ( game_time < 0 )
-				game_time = 0;
-		}
-		*/
-	
-		if ( draw ){
-			const Font & font = Font::getFont(Global::DEFAULT_FONT);
+                        Global::speed_counter = 0;
+                } else {
+                        Util::rest( 1 );
+                }
+                
+                /*
+                while ( Global::second_counter > 0 ){
+                        game_time--;
+                        Global::second_counter--;
+                        if ( game_time < 0 )
+                                game_time = 0;
+                }
+                */
+        
+                if ( draw ){
+                        const Font & font = Font::getFont(Global::DEFAULT_FONT);
 
-			background.Blit( work );
-			world.draw( &work );
-			
-			/*
+                        background.Blit( work );
+                        world.draw( &work );
+                        
+                        /*
 
-			// work.printf( 180, 1, Bitmap::makeColor(255,255,255), (FONT *)all_fonts[ JOHNHANDY_PCX ].dat, "%d", game_time );
+                        // work.printf( 180, 1, Bitmap::makeColor(255,255,255), (FONT *)all_fonts[ JOHNHANDY_PCX ].dat, "%d", game_time );
 
-			int min_x = (int)(player1->getX() < player2->getX() ? player1->getX() - 50 : player2->getX() - 50);
-			int max_x = (int)(player1->getX() > player2->getX() ? player1->getX() + 50 : player2->getX() + 50);
-			int min_y = 0;
-			// int max_y = screen_buffer.getHeight();
+                        int min_x = (int)(player1->getX() < player2->getX() ? player1->getX() - 50 : player2->getX() - 50);
+                        int max_x = (int)(player1->getX() > player2->getX() ? player1->getX() + 50 : player2->getX() + 50);
+                        int min_y = 0;
+                        // int max_y = screen_buffer.getHeight();
 
-			while ( max_x - min_x < screen_buffer.getWidth() / 2 ){
-				max_x += 1;
-				min_x -= 1;
-			}
+                        while ( max_x - min_x < screen_buffer.getWidth() / 2 ){
+                                max_x += 1;
+                                min_x -= 1;
+                        }
 
-			if ( min_x > screen_buffer.getWidth() / 2 ){
-				min_x = screen_buffer.getWidth() / 2;
-			}
-			if ( min_x < 0 ){
-				min_x = 0;
-			}
-			if ( max_x < screen_buffer.getWidth() / 2 ){
-				max_x = screen_buffer.getWidth() / 2;
-			}
-			if ( max_x > screen_buffer.getWidth() ){
-				max_x = screen_buffer.getWidth();
-			}
-	
-			/ * split is the number of pixels to show in the Y direction * /
-			int split = screen_buffer.getHeight() * (max_x - min_x) / screen_buffer.getWidth();
-			/ * cut the difference into two pieces, min_y and max_y * /
-			min_y = (screen_buffer.getHeight() - split);
-			// max_y -= (screen_buffer.getHeight() - split) / 2;
+                        if ( min_x > screen_buffer.getWidth() / 2 ){
+                                min_x = screen_buffer.getWidth() / 2;
+                        }
+                        if ( min_x < 0 ){
+                                min_x = 0;
+                        }
+                        if ( max_x < screen_buffer.getWidth() / 2 ){
+                                max_x = screen_buffer.getWidth() / 2;
+                        }
+                        if ( max_x > screen_buffer.getWidth() ){
+                                max_x = screen_buffer.getWidth();
+                        }
+        
+                        / * split is the number of pixels to show in the Y direction * /
+                        int split = screen_buffer.getHeight() * (max_x - min_x) / screen_buffer.getWidth();
+                        / * cut the difference into two pieces, min_y and max_y * /
+                        min_y = (screen_buffer.getHeight() - split);
+                        // max_y -= (screen_buffer.getHeight() - split) / 2;
 
-			// work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
-			
-			*/
+                        // work.Stretch( screen_buffer, min_x, min_y, max_x - min_x, max_y - min_y, 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
+                        
+                        */
 
-			// work.Blit( screen_buffer );
-			const double divider = 5;
-			const double x_distance = screen_buffer.getWidth() / divider;
-			double min_x_1 = player1->getX() - x_distance;
-			double max_x_1 = player1->getX() + x_distance;
-			double min_x_2 = player2->getX() - x_distance;
-			double max_x_2 = player2->getX() + x_distance;
+                        // work.Blit( screen_buffer );
+                        const double divider = 5;
+                        const double x_distance = screen_buffer.getWidth() / divider;
+                        double min_x_1 = player1->getX() - x_distance;
+                        double max_x_1 = player1->getX() + x_distance;
+                        double min_x_2 = player2->getX() - x_distance;
+                        double max_x_2 = player2->getX() + x_distance;
 
-			if ( min_x_1 < 0 ){
-				max_x_1 += 0 - min_x_1;
-				min_x_1 = 0;
-			}
-			if ( max_x_1 > screen_buffer.getWidth() ){
-				min_x_1 -= max_x_1 - screen_buffer.getWidth();
-				max_x_1 = screen_buffer.getWidth();
-			}
-			
-			if ( min_x_2 < 0 ){
-				max_x_2 += 0 - min_x_2;
-				min_x_2 = 0;
-			}
-			if ( max_x_2 > screen_buffer.getWidth() ){
-				min_x_2 -= max_x_2 - screen_buffer.getWidth();
-				max_x_2 = screen_buffer.getWidth();
-			}
+                        if ( min_x_1 < 0 ){
+                                max_x_1 += 0 - min_x_1;
+                                min_x_1 = 0;
+                        }
+                        if ( max_x_1 > screen_buffer.getWidth() ){
+                                min_x_1 -= max_x_1 - screen_buffer.getWidth();
+                                max_x_1 = screen_buffer.getWidth();
+                        }
+                        
+                        if ( min_x_2 < 0 ){
+                                max_x_2 += 0 - min_x_2;
+                                min_x_2 = 0;
+                        }
+                        if ( max_x_2 > screen_buffer.getWidth() ){
+                                min_x_2 -= max_x_2 - screen_buffer.getWidth();
+                                max_x_2 = screen_buffer.getWidth();
+                        }
 
-			if ( (min_x_1 < min_x_2 && max_x_1 > min_x_2) ||
-			     (min_x_2 < min_x_1 && max_x_2 > min_x_1) ||
-			     (closeFloat(min_x_1, min_x_2)) ){
-			     /* the players are close enough together to show
-			      * them in the same screen
-			      */
+                        if ( (min_x_1 < min_x_2 && max_x_1 > min_x_2) ||
+                             (min_x_2 < min_x_1 && max_x_2 > min_x_1) ||
+                             (closeFloat(min_x_1, min_x_2)) ){
+                             /* the players are close enough together to show
+                              * them in the same screen
+                              */
 
-				double space = x_distance * 4 - fabs( player1->getX() - player2->getX() );
-				double p1 = player1->getX() < player2->getX() ? player1->getX() : player2->getX();
-				double p2 = player1->getX() >= player2->getX() ? player1->getX() : player2->getX();
-				double x1 = p1 - space / 2;
-				double x2 = p2 + space / 2;
+                                double space = x_distance * 4 - fabs( player1->getX() - player2->getX() );
+                                double p1 = player1->getX() < player2->getX() ? player1->getX() : player2->getX();
+                                double p2 = player1->getX() >= player2->getX() ? player1->getX() : player2->getX();
+                                double x1 = p1 - space / 2;
+                                double x2 = p2 + space / 2;
 
-				if ( x2 > screen_buffer.getWidth() ){
-					x1 -= x2 - screen_buffer.getWidth();
-					x2 = screen_buffer.getWidth();
-				} else if ( x1 < 0 ){
-					x2 += 0 - x1;
-					x1 = 0;
-				}
-				
+                                if ( x2 > screen_buffer.getWidth() ){
+                                        x1 -= x2 - screen_buffer.getWidth();
+                                        x2 = screen_buffer.getWidth();
+                                } else if ( x1 < 0 ){
+                                        x2 += 0 - x1;
+                                        x1 = 0;
+                                }
+                                
 
-				/*
-				int y1 = (int)(distance / 2 - screen_buffer.getHeight() / divider);
-				int y2 = plane + screen_buffer.getHeight();
-				*/
-				double visible = screen_buffer.getHeight() * (divider - 1) / divider;
-				double y1 = world.getMinimumZ() - visible / 2;
-				double y2 = world.getMinimumZ() + visible / 2;
-				if ( y1 < 0 ){
-					y2 += - y1;
-					y1 = 0;
-				} else if ( y2 > screen_buffer.getHeight() ){
-					y1 -= y2 - screen_buffer.getHeight();
-					y2 = screen_buffer.getHeight();
-				}
+                                /*
+                                int y1 = (int)(distance / 2 - screen_buffer.getHeight() / divider);
+                                int y2 = plane + screen_buffer.getHeight();
+                                */
+                                double visible = screen_buffer.getHeight() * (divider - 1) / divider;
+                                double y1 = world.getMinimumZ() - visible / 2;
+                                double y2 = world.getMinimumZ() + visible / 2;
+                                if ( y1 < 0 ){
+                                        y2 += - y1;
+                                        y1 = 0;
+                                } else if ( y2 > screen_buffer.getHeight() ){
+                                        y1 -= y2 - screen_buffer.getHeight();
+                                        y2 = screen_buffer.getHeight();
+                                }
 
-				work.Stretch( screen_buffer, (int)x1, (int)y1, (int)(x2 - x1), (int)(y2 - y1), 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
+                                work.Stretch( screen_buffer, (int)x1, (int)y1, (int)(x2 - x1), (int)(y2 - y1), 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight() );
 
-			} else {
-				/* split screen */
+                        } else {
+                                /* split screen */
 
-				/*
-				int y1 = (int)(screen_buffer.getHeight() / divider);
-				int y2 = screen_buffer.getHeight();
-				*/
+                                /*
+                                int y1 = (int)(screen_buffer.getHeight() / divider);
+                                int y2 = screen_buffer.getHeight();
+                                */
 
-				double visible = screen_buffer.getHeight() * (divider - 1) / divider;
-				double y1 = world.getMinimumZ() - visible / 2;
-				double y2 = world.getMinimumZ() + visible / 2;
-				if ( y1 < 0 ){
-					y2 += - y1;
-					y1 = 0;
-				} else if ( y2 > screen_buffer.getHeight() ){
-					y1 -= y2 - screen_buffer.getHeight();
-					y2 = screen_buffer.getHeight();
-				}
-				int p = player1->getX() < player2->getX() ? 0 : screen_buffer.getWidth() / 2;
-				work.Stretch( screen_buffer, (int)min_x_1, (int)y1, (int)(max_x_1 - min_x_1), (int)(y2 - y1), p, 0, screen_buffer.getWidth() / 2, screen_buffer.getHeight() );
-				work.Stretch( screen_buffer, (int)min_x_2, (int)y1, (int)(max_x_2 - min_x_2), (int)(y2 - y1), screen_buffer.getWidth() / 2 - p, 0, screen_buffer.getWidth() / 2, screen_buffer.getHeight() );
-			}
-			     
+                                double visible = screen_buffer.getHeight() * (divider - 1) / divider;
+                                double y1 = world.getMinimumZ() - visible / 2;
+                                double y2 = world.getMinimumZ() + visible / 2;
+                                if ( y1 < 0 ){
+                                        y2 += - y1;
+                                        y1 = 0;
+                                } else if ( y2 > screen_buffer.getHeight() ){
+                                        y1 -= y2 - screen_buffer.getHeight();
+                                        y2 = screen_buffer.getHeight();
+                                }
+                                int p = player1->getX() < player2->getX() ? 0 : screen_buffer.getWidth() / 2;
+                                work.Stretch( screen_buffer, (int)min_x_1, (int)y1, (int)(max_x_1 - min_x_1), (int)(y2 - y1), p, 0, screen_buffer.getWidth() / 2, screen_buffer.getHeight() );
+                                work.Stretch( screen_buffer, (int)min_x_2, (int)y1, (int)(max_x_2 - min_x_2), (int)(y2 - y1), screen_buffer.getWidth() / 2 - p, 0, screen_buffer.getWidth() / 2, screen_buffer.getHeight() );
+                        }
+                             
 
-			if ( showRound > 0 ){
-				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, roundColors[ showRound ], screen_buffer, "Round %d", 0, round );
-				showRound -= 1;
-			}
+                        if ( showRound > 0 ){
+                                font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, roundColors[ showRound ], screen_buffer, "Round %d", 0, round );
+                                showRound -= 1;
+                        }
 
-			
-			font.printf( 10, 0, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player1->getName().c_str() );
-			player1->drawLifeBar( 10, font.getHeight(), &screen_buffer );
-			font.printf( screen_buffer.getWidth() - 200, 0, Graphics::Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player2->getName().c_str() );
-			player2->drawLifeBar( screen_buffer.getWidth() - 200, font.getHeight(), &screen_buffer );
+                        
+                        font.printf( 10, 0, Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player1->getName().c_str() );
+                        player1->drawLifeBar( 10, font.getHeight(), &screen_buffer );
+                        font.printf( screen_buffer.getWidth() - 200, 0, Graphics::Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "%s", 0, player2->getName().c_str() );
+                        player2->drawLifeBar( screen_buffer.getWidth() - 200, font.getHeight(), &screen_buffer );
 
-			FontRender * render = FontRender::getInstance();
-			render->render( &screen_buffer );
+                        FontRender * render = FontRender::getInstance();
+                        render->render( &screen_buffer );
 
-			if ( paused ){
-				screen_buffer.transBlender( 0, 0, 0, 128 );
-				screen_buffer.drawingMode( Graphics::Bitmap::MODE_TRANS );
-				screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Graphics::Bitmap::makeColor( 0, 0, 0 ) );
-				screen_buffer.drawingMode( Graphics::Bitmap::MODE_SOLID );
-				const Font & font = Font::getFont(Global::DEFAULT_FONT);
-				font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
-			}
+                        if ( paused ){
+                                screen_buffer.transBlender( 0, 0, 0, 128 );
+                                screen_buffer.drawingMode( Graphics::Bitmap::MODE_TRANS );
+                                screen_buffer.rectangleFill( 0, 0, screen_buffer.getWidth(), screen_buffer.getHeight(), Graphics::Bitmap::makeColor( 0, 0, 0 ) );
+                                screen_buffer.drawingMode( Graphics::Bitmap::MODE_SOLID );
+                                const Font & font = Font::getFont(Global::DEFAULT_FONT);
+                                font.printf( screen_buffer.getWidth() / 2, screen_buffer.getHeight() / 2, Graphics::Bitmap::makeColor( 255, 255, 255 ), screen_buffer, "Paused", 0 );
+                        }
 
-			/* getX/Y move when the world is quaking */
-			screen_buffer.BlitToScreen( world.getX(), world.getY() );
+                        /* getX/Y move when the world is quaking */
+                        screen_buffer.BlitToScreen( world.getX(), world.getY() );
 
                         /*
-			if ( key[ Keyboard::Key_F12 ] ){
-				Global::debug( 2 ) << "Saved screenshot to scr.bmp" << endl;
-				work.save( "scr.bmp" );
-			}
+                        if ( key[ Keyboard::Key_F12 ] ){
+                                Global::debug( 2 ) << "Saved screenshot to scr.bmp" << endl;
+                                work.save( "scr.bmp" );
+                        }
                         */
 
-			work.clear();
-		}
+                        work.clear();
+                }
 
-		// done |= key[ Keyboard::Key_ESC ] || world.finished();
-		done = world.finished();
-	}
+                // done |= key[ Keyboard::Key_ESC ] || world.finished();
+                done = world.finished();
+        }
 }
 #endif
 
