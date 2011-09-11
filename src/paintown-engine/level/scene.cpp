@@ -230,7 +230,7 @@ void Scene::calculateLength(){
 
 /* returns the farthest point the player can go */
 int Scene::getLimit(){
-	return block_length + current_block->getLength();
+    return block_length + current_block->getLength();
 }
 
 int Scene::getFinished() const {

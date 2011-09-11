@@ -608,7 +608,13 @@ void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap *
             x += bind->getX();
         }
         x /= binds.size() + 1;
-        min_x = x - screen_size / 2;
+        min_x = x + screen_size / 2;
+        if (min_x >= scene->getLimit()){
+            min_x = scene->getLimit();
+        }
+
+        min_x -= screen_size;
+
         if (min_x < 0){
             min_x = 0;
         }
