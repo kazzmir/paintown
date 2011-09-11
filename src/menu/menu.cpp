@@ -973,7 +973,10 @@ void Menu::TabRenderer::doAction(const Actions & action, Context & context){
                 if (!menu.isInTab()){
                     menu.toggleTabSelect();
                 } else {
-                    tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->run(context);
+                    if (menu.getCurrentTab() < tabs.size() &&
+                        menu.getCurrentIndex() < tabs[menu.getCurrentTab()]->options.size()){
+                        tabs[menu.getCurrentTab()]->options[menu.getCurrentIndex()]->run(context);
+                    }
                     // tabs[menu.getCurrentTab()]->run(menu.getCurrentIndex(), context);
                 }
                 context.playSound(Select);

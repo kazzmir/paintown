@@ -421,15 +421,11 @@ public:
     }
 
     static const int gridDistance = 7;
-    void showMoveList(Paintown::Player * player, const Menu::Context & context){
-        class Main: public Util::Logic, public Util::Draw {
+    class Main{
         public:
-
-
-            Main(int config, Util::ReferenceCount<Paintown::Character> & playerCopy, Gui::PopupBox & area, Gui::NormalList & list, const Menu::Context & context):
+            Main(int config, Util::ReferenceCount<Paintown::Character> playerCopy, Gui::PopupBox & area, const Menu::Context & context):
             playerCopy(playerCopy),
             area(area),
-            list(list),
             context(context),
             gradient(Menu::standardGradient()),
             idleWait(0),
@@ -456,6 +452,8 @@ public:
                 input.set(configuration.getJoystickDown(), 0, true, Down);
                 input.set(configuration.getJoystickQuit(), 0, false, Quit);
 
+                list.setJustification(Gui::LeftJustify);
+
                 const map<string, Util::ReferenceCount<Paintown::Animation> > movements = getAttacks(playerCopy->getMovements());
                 graph = buildMoveGraph(movements);
                 // dumpGraph(graph);
@@ -473,10 +471,11 @@ public:
                 changeAnimation(list.getCurrentIndex());
             }
 
-            Util::ReferenceCount<Paintown::Character> & playerCopy;
+            Gui::NormalList list;
+
+            Util::ReferenceCount<Paintown::Character> playerCopy;
             Gui::PopupBox & area;
             InputMap<MoveListInput> input;
-            Gui::NormalList & list;
             const Menu::Context & context;
             Effects::Gradient gradient;
             int idleWait;
@@ -530,6 +529,16 @@ public:
                 }
             }
 
+            void previous(){
+                list.previous();
+                changeAnimation(list.getCurrentIndex());
+            }
+
+            void next(){
+                list.next();
+                changeAnimation(list.getCurrentIndex());
+            }
+
             void handleInput(){
                 vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input, InputSource());
                 unsigned int old = list.getCurrentIndex();
@@ -579,10 +588,10 @@ public:
                 counter += 1;
 
                 /* TODO: maybe change the font here */
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
-                area.act(font);
+                // const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+                // area.act(font);
                 gradient.update();
-                handleInput();
+                // handleInput();
                 moveSnakes();
             }
 
@@ -720,17 +729,16 @@ public:
                 */
             }
 
-            void draw(const Graphics::Bitmap & buffer){
-                background.Blit(buffer);
-                area.render(buffer);
+            void draw(const Graphics::Bitmap & buffer, const Font & font){
+                // background.Blit(buffer);
+                // area.render(buffer);
                 Graphics::Bitmap space(buffer,
                  area.getArea().getX() + area.getTransforms().getRadius(),
                  area.getArea().getY(),
                  area.getArea().getWidth() - area.getTransforms().getRadius(),
                  area.getArea().getHeight() - area.getTransforms().getRadius());
                 // space.clear();
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
-                list.render(space, font);
+                // const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
                 // listMovements(space, selected);
                 int margin = 180;
                 int playerX = space.getWidth() - margin - area.getTransforms().getRadius();
@@ -751,6 +759,8 @@ public:
                 playerCopy->draw(&show, 0, 0);
                 show.finish();
 
+                list.render(space, font);
+
                 // int x = playerCopy->getX();
                 int x = margin + 50;
                 int y = space.getHeight() - 50;
@@ -759,18 +769,17 @@ public:
                 drawKeys(getCombo(playerCopy, nextAnimation), playerCopy->getCurrentMovement(), x, y, space);
 
                 // space.border(0, 2, Graphics::makeColor(128, 128, 128));
-                buffer.BlitToScreen();
+                // buffer.BlitToScreen();
             }
         };
 
+#if 0
+    void showMoveList(Paintown::Player * player, const Menu::Context & context){
         if (getAttacks(player->getMovements()).size() == 0){
             /* no attacks, failure! */
             Global::debug(0) << "No attacks for " << player->getName() << " so the move list can't be shown" << endl;
             return;
         }
-
-        Gui::NormalList list;
-        list.setJustification(Gui::LeftJustify);
 
         Util::ReferenceCount<Paintown::Character> playerCopy = new Paintown::Character(*player);
         Gui::PopupBox area;
@@ -784,25 +793,65 @@ public:
         area.colors.borderAlpha = 200;
 
         area.open();
-        Main all(player->getConfig(), playerCopy, area, list, context);
+        Main all(player->getConfig(), playerCopy, area, context);
 
         Util::standardLoop(all, all);
     }
+#endif
+
+    class MoveListTab: public Gui::Tab {
+    public:
+        MoveListTab(Paintown::Player * player, const Menu::Context & context):
+        player(player),
+        main(player->getConfig(), new Paintown::Character(*player), getContext().getBoard(), context){
+            setName(player->getName());
+
+            /*
+            getContext().transforms.setRadius(20);
+            */
+
+            getContext().colors.body = Graphics::makeColor(0,0,0);
+            getContext().colors.bodyAlpha = 220;
+            getContext().colors.border = Graphics::makeColor(200,200,200);
+            getContext().colors.borderAlpha = 200;
+        }
+    
+        virtual void previous(const Font & font){
+            main.previous();
+        }
+
+        virtual void next(const Font & font){
+            main.next();
+        }
+    
+        virtual void act(const Font & font){
+            context.act(font);
+            main.run();
+        }
+    
+        virtual void render(const Graphics::Bitmap & work, const Font & font){
+            context.render(work, font);
+            main.draw(work, font);
+        }
+
+        Paintown::Player * player;
+        Main main;
+    };
 
     virtual void run(const Menu::Context & context){
-        /*
         Menu::Menu menu(Menu::Menu::Tabbed);
         Gui::TabbedBox & box = ((Menu::TabRenderer *) menu.getRenderer())->getBox();
-        box.addTab("akuma", vector<Util::ReferenceCount<ContextItem> >());
-        box.addTab("joe", vector<Util::ReferenceCount<ContextItem> >());
+        box.location.setDimensions(GFX_X - 50, GFX_Y - 50);
+        box.location.setCenterPosition(Gui::RelativePoint(0, 0));
+        for (vector<Paintown::Player*>::iterator it = players.begin(); it != players.end(); it++){
+            box.addTab(new MoveListTab(*it, context));
+        }
 
         try{
             menu.run(context);
         } catch (const Menu::MenuException & fail){
+        } catch (const Exception::Return & fail){
         }
-        */
-
-        showMoveList(players[0], context);
     }
 };
 
