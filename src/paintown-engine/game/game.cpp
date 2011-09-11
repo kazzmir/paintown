@@ -431,7 +431,6 @@ public:
             idleWait(0),
             nextAnimation("idle"),
             counter(0),
-            background(GFX_X, GFX_Y),
             up(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/up.png")).path()),
             down(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/down.png")).path()),
             left(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/left.png")).path()),
@@ -440,7 +439,6 @@ public:
             attack2(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-2.png")).path()),
             attack3(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/attack-3.png")).path()),
             jump(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/jump.png")).path()){
-                background.BlitFromScreen(0, 0);
                 playerCopy->testAnimation("idle");
 
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
@@ -483,8 +481,6 @@ public:
             Util::ReferenceCount<MoveGraph> graph;
             unsigned int counter;
 
-            Graphics::Bitmap background;
-
             Graphics::Bitmap up;
             Graphics::Bitmap down;
             Graphics::Bitmap left;
@@ -495,9 +491,6 @@ public:
 
             vector<Snake> snakes;
 
-            double ticks(double system){
-                return system * Global::LOGIC_MULTIPLIER;
-            }
 
             void updatePlayer(){
                 int limit = 30;
@@ -730,7 +723,6 @@ public:
             }
 
             void draw(const Graphics::Bitmap & buffer, const Font & font){
-                // background.Blit(buffer);
                 // area.render(buffer);
                 Graphics::Bitmap space(buffer,
                  area.getArea().getX() + area.getTransforms().getRadius(),
@@ -773,7 +765,6 @@ public:
             }
         };
 
-#if 0
     void showMoveList(Paintown::Player * player, const Menu::Context & context){
         if (getAttacks(player->getMovements()).size() == 0){
             /* no attacks, failure! */
@@ -795,9 +786,47 @@ public:
         area.open();
         Main all(player->getConfig(), playerCopy, area, context);
 
-        Util::standardLoop(all, all);
+        class Runner: public Util::Logic, public Util::Draw {
+        public:
+            Runner(Main & main, Gui::PopupBox & area):
+            main(main),
+            area(area),
+            background(GFX_X, GFX_Y){
+                background.BlitFromScreen(0, 0);
+            }
+
+            Main & main;
+            Gui::PopupBox & area;
+            Graphics::Bitmap background;
+
+            virtual void run(){
+                const Font & font = Menu::menuFontParameter.current()->get();
+                main.run();
+                main.handleInput();
+                area.act(font);
+            }
+
+            bool done(){
+                return main.done();
+            }
+
+            void draw(const Graphics::Bitmap & buffer){
+                const Font & font = Menu::menuFontParameter.current()->get();
+                background.Blit(buffer);
+                area.render(buffer, font);
+                main.draw(buffer, font);
+                buffer.BlitToScreen();
+            }
+            
+            double ticks(double system){
+                return system * Global::LOGIC_MULTIPLIER;
+            }
+        };
+
+        Runner runner(all, area);
+
+        Util::standardLoop(runner, runner);
     }
-#endif
 
     class MoveListTab: public Gui::Tab {
     public:
@@ -853,18 +882,22 @@ public:
     };
 
     virtual void run(const Menu::Context & context){
-        Menu::Menu menu(Menu::Menu::Tabbed);
-        Gui::TabbedBox & box = ((Menu::TabRenderer *) menu.getRenderer())->getBox();
-        box.location.setDimensions(GFX_X - 50, GFX_Y - 50);
-        box.location.setCenterPosition(Gui::RelativePoint(0, 0));
-        for (vector<Paintown::Player*>::iterator it = players.begin(); it != players.end(); it++){
-            box.addTab(new MoveListTab(*it, context));
-        }
+        if (players.size() > 1){
+            Menu::Menu menu(Menu::Menu::Tabbed);
+            Gui::TabbedBox & box = ((Menu::TabRenderer *) menu.getRenderer())->getBox();
+            box.location.setDimensions(GFX_X - 50, GFX_Y - 50);
+            box.location.setCenterPosition(Gui::RelativePoint(0, 0));
+            for (vector<Paintown::Player*>::iterator it = players.begin(); it != players.end(); it++){
+                box.addTab(new MoveListTab(*it, context));
+            }
 
-        try{
-            menu.run(context);
-        } catch (const Menu::MenuException & fail){
-        } catch (const Exception::Return & fail){
+            try{
+                menu.run(context);
+            } catch (const Menu::MenuException & fail){
+            } catch (const Exception::Return & fail){
+            }
+        } else if (players.size() == 1){
+            showMoveList(players[0], context);
         }
     }
 };
