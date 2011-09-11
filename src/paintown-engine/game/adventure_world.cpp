@@ -486,6 +486,8 @@ void AdventureWorld::act(){
     }
 
     if (!is_paused){
+
+        /* keep track of the positions that players can have if they are bound together */
         for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++){
             PlayerTracker & tracker = *it;
             tracker.minimumX = 0;
@@ -580,7 +582,7 @@ void AdventureWorld::addObject( Paintown::Object * o ){
     objects.push_back(o);
 }
 
-void AdventureWorld::drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
+void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
     int min_x = 0;
 
     min_x = (int) tracker.min_x;
@@ -595,9 +597,26 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Graphics::Bitmap 
         min_x = (int) tracker.min_x;
     }
 
+    /* sort of a hack, but draw the world using the average X coordinate
+     * between all the bound players
+     */
+    if (((Paintown::PlayerCommon*) tracker.player)->isPlayer()){
+        vector<Paintown::Player*> binds = ((Paintown::Player*) tracker.player)->getBinds();
+        double x = tracker.player->getX();
+        for (vector<Paintown::Player*>::iterator it = binds.begin(); it != binds.end(); it++){
+            Paintown::Player * bind = *it;
+            x += bind->getX();
+        }
+        x /= binds.size() + 1;
+        min_x = x - screen_size / 2;
+        if (min_x < 0){
+            min_x = 0;
+        }
+    }
+
     scene->drawBack(min_x, where);
 
-    for ( map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+    for (map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
         const vector<Paintown::Object *> & xx = (*it).second;
         for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
@@ -611,7 +630,7 @@ void AdventureWorld::drawWorld( const PlayerTracker & tracker, Graphics::Bitmap 
      * this is things like icon/name/health, not objects that are part of
      * the scene, and therefore the atmosphere doesn't apply to them.
      */
-    for ( map<int,vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
+    for (map<int,vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++){
         const vector<Paintown::Object *> & xx = (*it).second;
         for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
             (*mm)->drawFront( where, min_x );
@@ -664,15 +683,12 @@ void AdventureWorld::doTakeScreenshot(Graphics::Bitmap * work){
 }
 
 void AdventureWorld::draw(Graphics::Bitmap * work){
-
     map< int, vector<Paintown::Object*> > object_z;
 
-    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+    for (vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++){
         Paintown::Object * n = *it;
         object_z[n->getRZ()].push_back(n);
     }
-
-    Global::debug( 4 ) << "World draw" << endl;
 
     if (descriptionTime > 0 && scene->getDescription() != ""){
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 30, 30);
@@ -692,6 +708,16 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
     int mini_position_y = work->getHeight() - mini.getHeight() - 1;
     for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
         Graphics::Bitmap * on = mini_map;
+
+        /* this logic is a bit whacky. we assume the first element in the player tracker
+         * list is a real player so we draw the world on the real buffer (on = work).
+         * after that, the rest of the players might be AI controlled so they can
+         * appear off-screen and should show up on the mini map. If mini-maps are 
+         * turned off then there is no reason to iterate through the rest of the elements.
+         * Some objects might be other players though, and in that case we don't need
+         * to do anything because they don't want to redraw the world nor do they need
+         * to draw a minimap.
+         */
         if (it == players.begin()){
             on = work;
         } else if (!shouldDrawMiniMaps()){
@@ -700,6 +726,7 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
             continue;
         }
 
+        /* either draw on the buffer or the mini-map */
         drawWorld(*it, on, object_z);
         if (on != work){
             on->Stretch(mini);

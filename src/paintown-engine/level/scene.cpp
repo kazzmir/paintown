@@ -297,7 +297,7 @@ void Scene::doTriggers(){
     }
 }
 
-void Scene::act(int min_x, int max_x, vector< Paintown::Object * > * objects){
+void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
     clearHearts();
 
     if (canContinue(min_x)){
