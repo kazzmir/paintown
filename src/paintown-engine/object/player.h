@@ -22,8 +22,8 @@ class Animation;
 class Player: public PlayerCommon {
 public:
 
-    Player(const char * filename, int config = 0);
-    Player(const Filesystem::AbsolutePath & str, Util::ReferenceCount<InputSource> source, int config = 0 );
+    Player(const char * filename, int config);
+    Player(const Filesystem::AbsolutePath & str, Util::ReferenceCount<InputSource> source, int config);
     Player(const Player & pl);
     Player(const Character & chr);
 
@@ -155,7 +155,7 @@ protected:
 
 class PlayerFuture: public Util::Future<Object*> {
 public:
-    PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, Util::ReferenceCount<InputSource> source);
+    PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, int config, Util::ReferenceCount<InputSource> source);
 
     typedef Util::Future<Object*> super;
 
@@ -168,6 +168,7 @@ protected:
     bool invincible;
     int lives;
     int remap;
+    int config;
     Util::ReferenceCount<InputSource> source;
 };
 

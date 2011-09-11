@@ -9,6 +9,7 @@
 #include "util/funcs.h"
 #include "buddy_player.h"
 #include "player.h"
+#include "util/input/input-source.h"
 #include "util/file-system.h"
 #include "factory/font_render.h"
 #include <math.h>
@@ -265,7 +266,7 @@ BuddyFuture::~BuddyFuture(){
 }
 
 void BuddyFuture::compute(){
-    base = new Player(path, NULL);
+    base = new Player(path, NULL, 0);
     base->setMap(remap);
     Character * player = (Character*) playerFuture->get();
     Object * buddy = new BuddyPlayer(player, *base);

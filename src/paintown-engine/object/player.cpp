@@ -1121,12 +1121,13 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
         }
 }
 
-PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, Util::ReferenceCount<InputSource> source):
+PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, int config, Util::ReferenceCount<InputSource> source):
 super(),
 path(path),
 invincible(invincible),
 lives(lives),
 remap(remap),
+config(config),
 source(source){
     start();
 }
@@ -1142,7 +1143,7 @@ PlayerFuture::~PlayerFuture(){
 void PlayerFuture::compute(){
     string look = Storage::instance().cleanse(path).path();
     Global::info("Loading " + look);
-    Player * player = new Player(path, source);
+    Player * player = new Player(path, source, config);
     player->setInvincible(invincible);
     player->setMap(remap);
     player->setObjectId(-1);

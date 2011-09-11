@@ -99,7 +99,7 @@ public:
             int remap = 0;
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
 
-            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, new InputSource(true, 0));
+            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, 0, new InputSource(true, 0));
             vector<Util::Future<Object *> *> players;
             players.push_back(&future);
             Game::realGame(players, info);
@@ -136,10 +136,25 @@ public:
     void logic(){
     }
 
+    int maximumPlayers(){
+        if (Keyboard::haveKeyboard()){
+            int use = 1 + Joystick::numberOfJoysticks();
+            return use > 4 ? use : 4;
+        }
+        return Joystick::numberOfJoysticks();
+    }
+
+    void showError(string what){
+        Global::debug(0) << what << endl;
+    }
+
     /* ask the user how many players will be in the game */
     int howManyPlayers(const Menu::Context & context){
-        /* a reasonable maximum number of players for now */
-        int maxPlayers = 4;
+        int maxPlayers = maximumPlayers();
+        if (maxPlayers < 2){
+            showError("Not enough input devices for multiplayer");
+            throw Exception::Return(__FILE__, __LINE__);
+        }
         int select = 0;
         Menu::Menu menu;
         const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
@@ -159,7 +174,7 @@ public:
     }
 
     /* ask the user(s) to select modes of input (keyboard, joystick...) */
-    int selectInput(const Menu::Context & context, const vector<string> & names){
+    int selectInput(const Menu::Context & context, const vector<string> & names, int player){
         Menu::Menu menu;
         int select = 0;
         const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
@@ -167,6 +182,9 @@ public:
         for (vector<string>::const_iterator it = names.begin(); it != names.end(); it++){
             OptionLevel * option = new OptionLevel(box, 0, &select, index);
             option->setText(*it);
+            ostringstream out;
+            out << "Select input for player " << player;
+            option->setInfoText(out.str());
             menu.addOption(option);
             index += 1;
         }
@@ -197,7 +215,7 @@ public:
         }
 
         for (int player = 0; player < players; player++){
-            int selection = selectInput(context, names);
+            int selection = selectInput(context, names, player + 1);
             Util::ReferenceCount<InputSource> source = possible[selection];
             /* keyboard can be selected multiple times */
             if (names[selection] != "Keyboard"){
@@ -219,7 +237,7 @@ public:
             out << "Pick player " << (player + 1);
             Level::LevelInfo info;
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap);
-            Util::Future<Object*> * selection = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, sources[player]);
+            Util::Future<Object*> * selection = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, player, sources[player]);
             futures.push_back(selection);
         }
 
@@ -317,7 +335,7 @@ public:
 
             int remap;
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
-            Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, new InputSource(true, 0));
+            Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, 0, new InputSource(true, 0));
             futures.push_back(player);
 
             for ( int i = 0; i < max_buddies; i++ ){
