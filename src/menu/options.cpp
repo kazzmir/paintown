@@ -44,7 +44,7 @@
 // #include "openbor/pack-reader.h"
 // #include "paintown-engine/game/mod.h"
 
-#include "platformer/game.h"
+#include "platformer/game/game.h"
 
 #include <sstream>
 #include <algorithm>

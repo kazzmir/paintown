@@ -209,13 +209,13 @@ src/mugen/parser/air.cpp
 )
 
 set(PLATFORMER_SRC
-src/platformer/animation.cpp
-src/platformer/background.cpp
-src/platformer/camera.cpp
-src/platformer/game.cpp
-src/platformer/object.cpp
-src/platformer/tile.cpp
-src/platformer/world.cpp
+src/platformer/game/animation.cpp
+src/platformer/game/background.cpp
+src/platformer/game/camera.cpp
+src/platformer/game/game.cpp
+src/platformer/game/tile.cpp
+src/platformer/game/world.cpp
+src/platformer/object/object.cpp
 )
 
 set(TRIGGER_SRC
