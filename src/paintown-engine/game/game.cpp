@@ -201,23 +201,28 @@ static void doTakeScreenshot(const Graphics::Bitmap & work){
 
 /* returns false if players cannot be respawned due to running out of lives */
 static bool respawnPlayers(const vector<Paintown::Object*> & players, World & world){
-    for ( vector< Paintown::Object * >::const_iterator it = players.begin(); it != players.end(); it++ ){
-        Paintown::Character * player = (Paintown::Character *) *it;
-        if ( player->getHealth() <= 0 ){
-            if ( player->spawnTime() == 0 ){
+    bool alive = false;
+    for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++){
+        Paintown::PlayerCommon * player = (Paintown::PlayerCommon *) *it;
+        if (player->getHealth() <= 0){
+            if (player->spawnTime() == 0){
                 player->deathReset();
-                if ( player->getLives() == 0 ){
-                    return false;
+                if (player->getLives() > 0){
+                    if (player->isPlayer()){
+                        alive = true;
+                    }
+                    world.addMessage(removeMessage(player->getId()));
+                    world.addObject(player);
+                    world.addMessage(player->getCreateMessage());
+                    world.addMessage(player->movedMessage());
+                    world.addMessage(player->animationMessage());
                 }
-                world.addMessage( removeMessage( player->getId() ) );
-                world.addObject( player );
-                world.addMessage( player->getCreateMessage() );
-                world.addMessage( player->movedMessage() );
-                world.addMessage( player->animationMessage() );
             }
+        } else {
+            alive = true;
         }
     }
-    return true;
+    return alive;
 }
 
 enum MoveListInput{

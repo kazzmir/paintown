@@ -805,33 +805,6 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
         font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
     }
-
-    /*
-       int min_x = 0;
-       if ( players.size() > 0 ){
-       min_x = (int) players[ 0 ].min_x;
-
-       int max_x = (int)(players[ 0 ].player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : players[ 0 ].player->getX() + screen_size / 2);
-       min_x = (int)(max_x - screen_size);
-       if ( min_x < 0 ){
-       min_x = 0;
-       }
-
-       if ( min_x > players[ 0 ].min_x ){
-       min_x = (int) players[ 0 ].min_x;
-       }
-       }
-
-       scene->drawBack( min_x, work );
-       for ( map<int,vector<Object *> >::iterator it = object_z.begin(); it != object_z.end(); it++ ){
-       vector<Object *> & xx = (*it).second;
-       for ( vector<Object *>::iterator mm = xx.begin(); mm != xx.end(); mm++ ){
-
-       (*mm)->draw( work, min_x );
-       }
-       }
-       scene->drawFront( min_x, work );
-       */
 }
         
 double AdventureWorld::ticks(const double in) const{
