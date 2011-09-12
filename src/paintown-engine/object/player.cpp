@@ -625,17 +625,19 @@ static Util::ReferenceCount<Animation> hasGetAnimation( const map<Util::Referenc
 
 /* things to do when the player dies */
 void Player::deathReset(){
-	setY( 200 );
-	setMoving( true );
-	setStatus( Status_Falling );
-	setHealth( getMaxHealth() );
+    loseLife();
+    if (getLives() > 0){
+        setY(200);
+        setMoving(true);
+        setStatus(Status_Falling);
+        setHealth(getMaxHealth());
         if (! isInvincible()){
-            setInvincibility( 400 );
+            setInvincibility(400);
         }
         setTrails(0, 0);
-	setDeath( 0 );
-	animation_current = getMovement( "idle" );
-	loseLife();
+        setDeath(0);
+        animation_current = getMovement("idle");
+    }
 }
         
 void Player::interpretMessage(World * world, Network::Message & message){
@@ -687,11 +689,26 @@ Network::Message Player::thrownMessage(unsigned int id){
 }
 
 void Player::bindTo(Player * player){
+    /* don't add duplicates */
+    for (vector<Player*>::iterator it = binds.begin(); it != binds.end(); it++){
+        if (*it == player){
+            return;
+        }
+    }
+    /* made it this far so add the player */
     binds.push_back(player);
 }
-    
+
+/* get all alive players */
 vector<Player*> Player::getBinds() const {
-    return binds;
+    vector<Player*> alive;
+    for (vector<Player*>::const_iterator it = binds.begin(); it != binds.end(); it++){
+        Player * bind = *it;
+        if (bind->getHealth() > 0){
+            alive.push_back(bind);
+        }
+    }
+    return alive;
 }
 
 void Player::act(vector<Object *> * others, World * world, vector<Object *> * add){

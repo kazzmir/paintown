@@ -626,46 +626,6 @@ void AdventureWorld::addObject( Paintown::Object * o ){
 }
 
 void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
-
-    /*
-    int min_x = 0;
-
-    min_x = (int) tracker.min_x;
-
-    // int max_x = (int)(tracker.player->getX() + screen_size / 2 > scene->getLimit() ? scene->getLimit() : tracker.player->getX() + screen_size / 2);
-    // min_x = (int)(max_x - screen_size);
-    if (min_x < 0){
-        min_x = 0;
-    }
-
-    if (min_x > tracker.min_x){
-        min_x = (int) tracker.min_x;
-    }
-
-    / * sort of a hack, but draw the world using the average X coordinate
-     * between all the bound players
-     * /
-    if (((Paintown::PlayerCommon*) tracker.player)->isPlayer()){
-        vector<Paintown::Player*> binds = ((Paintown::Player*) tracker.player)->getBinds();
-        double x = tracker.player->getX();
-        for (vector<Paintown::Player*>::iterator it = binds.begin(); it != binds.end(); it++){
-            Paintown::Player * bind = *it;
-            x += bind->getX();
-        }
-        x /= binds.size() + 1;
-        min_x = x + screen_size / 2;
-        if (min_x >= scene->getLimit()){
-            min_x = scene->getLimit();
-        }
-
-        min_x -= screen_size;
-
-        if (min_x < 0){
-            min_x = 0;
-        }
-    }
-    */
-
     scene->drawBack((int) camera.getX(), where);
 
     for (map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){

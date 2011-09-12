@@ -206,16 +206,28 @@ static bool respawnPlayers(const vector<Paintown::Object*> & players, World & wo
         Paintown::PlayerCommon * player = (Paintown::PlayerCommon *) *it;
         if (player->getHealth() <= 0){
             if (player->spawnTime() == 0){
-                player->deathReset();
-                if (player->getLives() > 0){
-                    if (player->isPlayer()){
-                        alive = true;
+
+                /* if the player has at least 1 life left then make them lose a life
+                 * and respawn them. if they have infinite lives enabled then they
+                 * might have 1 life but deathReset() won't actually decrement the
+                 * number of lives.
+                 * if the player is reduced to 0 lives then remove them from the
+                 * world entirely.
+                 */
+                if (player->getLives() >= 1){
+                    player->deathReset();
+                    if (player->getLives() > 0){
+                        if (player->isPlayer()){
+                            alive = true;
+                        }
+                        world.addMessage(removeMessage(player->getId()));
+                        world.addObject(player);
+                        world.addMessage(player->getCreateMessage());
+                        world.addMessage(player->movedMessage());
+                        world.addMessage(player->animationMessage());
+                    } else {
+                        world.addMessage(removeMessage(player->getId()));
                     }
-                    world.addMessage(removeMessage(player->getId()));
-                    world.addObject(player);
-                    world.addMessage(player->getCreateMessage());
-                    world.addMessage(player->movedMessage());
-                    world.addMessage(player->animationMessage());
                 }
             }
         } else {
