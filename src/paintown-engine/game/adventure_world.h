@@ -39,6 +39,30 @@ struct PlayerTracker{
     double maximumX;
 };
 
+class Camera{
+public:
+    Camera(double x, double y);
+    virtual ~Camera();
+
+    /* move the camera to x/y */
+    virtual void moveTo(double x, double y, int ticks);
+
+    virtual double getX() const;
+    virtual double getY() const;
+
+    virtual void move();
+
+protected:
+    /* current position */
+    double x, y;
+
+    /* place to move to */
+    double moveX, moveY;
+
+    /* how many ticks to do it in */
+    int ticksLeft;
+};
+
 class AdventureWorld: public World {
 public:
 	AdventureWorld();
@@ -188,6 +212,8 @@ protected:
 
     std::vector<ReplayEvent> replay;
     bool replayEnabled;
+
+    Camera camera;
 };
 
 #endif
