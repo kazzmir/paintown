@@ -216,6 +216,7 @@ src/platformer/game/game.cpp
 src/platformer/game/tile.cpp
 src/platformer/game/world.cpp
 src/platformer/object/object.cpp
+src/platformer/script/script.cpp
 )
 
 set(TRIGGER_SRC
