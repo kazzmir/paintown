@@ -58,6 +58,7 @@ protected:
 
     /* place to move to */
     double moveX, moveY;
+    double speed;
 
     /* how many ticks to do it in */
     int ticksLeft;

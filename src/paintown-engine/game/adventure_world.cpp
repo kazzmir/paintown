@@ -34,6 +34,7 @@ x(x),
 y(y),
 moveX(x),
 moveY(y),
+speed(0),
 ticksLeft(0){
 }
 
@@ -44,12 +45,13 @@ void Camera::moveTo(double x, double y, int ticks){
     moveX = x;
     moveY = y;
     ticksLeft = ticks;
+    speed = ticks;
 }
 
 void Camera::move(){
-    if (ticksLeft > 0){
-        x += (moveX - x) / ticksLeft;
-        y += (moveY - y) / ticksLeft;
+    if (ticksLeft > 0 && speed > 0){
+        x += (moveX - x) / speed;
+        y += (moveY - y) / speed;
         ticksLeft -= 1;
     }
 }
@@ -552,7 +554,7 @@ void AdventureWorld::act(){
                 if (cameraLimit < 0){
                     cameraLimit = 0;
                 }
-                camera.moveTo(cameraLimit, 0, 6);
+                camera.moveTo(cameraLimit, 0, 15);
             }
         }
 		
