@@ -473,6 +473,7 @@ Facing Object::getOppositeFacing() const {
         case FacingLeft: return FacingRight;
         case FacingRight: return FacingLeft;
     }
+    return FacingRight;
 }
     
 void Character::reverseFacing(){

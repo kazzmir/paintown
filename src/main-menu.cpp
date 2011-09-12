@@ -445,6 +445,14 @@ int paintown_main(int argc, char ** argv){
     InputManager input;
     Music music(music_on);
 
+    /* Testing hack
+    mugenInstant.enabled = true;
+    mugenInstant.kind = MugenInstant::Watch;
+    mugenInstant.player1 = "kfm";
+    mugenInstant.player2 = "kfm";
+    mugenInstant.stage = "kfm";
+    */
+
     Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(Menu::menuFontParameter, new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
 
     while (true){
