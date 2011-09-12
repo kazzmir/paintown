@@ -13,6 +13,7 @@
 #include <iostream>
 #include "util/message-queue.h"
 #include "util/file-system.h"
+#include "util/input/input-source.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
 #include "util/sound.h"
@@ -50,7 +51,7 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(path)));
+            Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(path)), new InputSource(), 0);
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
         } catch (const Filesystem::NotFound & e){
