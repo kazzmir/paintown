@@ -547,35 +547,14 @@ public:
     }
 };
 
-void showMoveList(Player * player, const Menu::Context & context){
-    if (getAttacks(player->getMovements()).size() == 0){
-        /* no attacks, failure! */
-        Global::debug(0) << "No attacks for " << player->getName() << " so the move list can't be shown" << endl;
-        return;
-    }
-
-    Util::ReferenceCount<Character> playerCopy = new Character(*player);
-    Gui::PopupBox area;
-    area.location.setDimensions(GFX_X - 75, GFX_Y - 75);
-    area.location.setCenterPosition(Gui::RelativePoint(0, 0));
-    area.transforms.setRadius(20);
-
-    area.colors.body = Graphics::makeColor(0,0,0);
-    area.colors.bodyAlpha = 220;
-    area.colors.border = Graphics::makeColor(200,200,200);
-    area.colors.borderAlpha = 200;
-
-    area.open();
-    MoveList all(player->getConfig(), playerCopy, area, context);
-
-    class Runner: public Util::Logic, public Util::Draw {
+class Runner: public Util::Logic, public Util::Draw {
     public:
         Runner(MoveList & main, Gui::PopupBox & area):
             main(main),
-            area(area),
-            background(GFX_X, GFX_Y){
-                background.BlitFromScreen(0, 0);
-            }
+        area(area),
+        background(GFX_X, GFX_Y){
+            background.BlitFromScreen(0, 0);
+        }
 
         MoveList & main;
         Gui::PopupBox & area;
@@ -603,8 +582,28 @@ void showMoveList(Player * player, const Menu::Context & context){
         double ticks(double system){
             return system * Global::LOGIC_MULTIPLIER;
         }
-    };
+};
 
+void showMoveList(Player * player, const Menu::Context & context){
+    if (getAttacks(player->getMovements()).size() == 0){
+        /* no attacks, failure! */
+        Global::debug(0) << "No attacks for " << player->getName() << " so the move list can't be shown" << endl;
+        return;
+    }
+
+    Util::ReferenceCount<Character> playerCopy = new Character(*player);
+    Gui::PopupBox area;
+    area.location.setDimensions(GFX_X - 75, GFX_Y - 75);
+    area.location.setCenterPosition(Gui::RelativePoint(0, 0));
+    area.transforms.setRadius(20);
+
+    area.colors.body = Graphics::makeColor(0,0,0);
+    area.colors.bodyAlpha = 220;
+    area.colors.border = Graphics::makeColor(200,200,200);
+    area.colors.borderAlpha = 200;
+
+    area.open();
+    MoveList all(player->getConfig(), playerCopy, area, context);
     Runner runner(all, area);
 
     Util::standardLoop(runner, runner);
