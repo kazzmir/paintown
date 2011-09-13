@@ -12,6 +12,7 @@
 #include "mugen/config.h"
 #include "util/init.h"
 #include "util/events.h"
+#include "optionfactory.h"
 
 #include "util/music.h"
 
@@ -1055,7 +1056,7 @@ bool OptionLives::rightKey(){
 	return false;
 }
 
-OptionMenu::OptionMenu(const Gui::ContextBox & parent, const Token *token):
+OptionMenu::OptionMenu(const Gui::ContextBox & parent, const Token *token, const Menu::OptionFactory & factory):
 MenuOption(parent, token),
 menu(0){
     if (*token != "menu"){
@@ -1065,9 +1066,9 @@ menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         token->view() >> temp;
-        menu = new Menu::Menu(Storage::instance().find(Filesystem::RelativePath(temp)));
+        menu = new Menu::Menu(Storage::instance().find(Filesystem::RelativePath(temp)), factory);
     } else {
-        menu = new Menu::Menu(token);
+        menu = new Menu::Menu(token, factory);
     }
 
     this->setText(menu->getName());

@@ -29,7 +29,7 @@ MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Toke
                 return new OptionTabMenu(parent, tok);
             }
         }
-        return new OptionMenu(parent, tok);
+        return new OptionMenu(parent, tok, *this);
     } else if (*tok == "tabmenu" ){
         // Create a tab menu
         return new OptionTabMenu(parent, tok);

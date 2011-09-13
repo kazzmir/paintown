@@ -9,6 +9,10 @@
 
 class Token;
 
+namespace Menu{
+    class OptionFactory;
+}
+
 /*! Handles key reconfiguration */
 class OptionCredits: public MenuOption {
 public:
@@ -239,7 +243,7 @@ class OptionMenu: public MenuOption {
         // endGame will be set true if it is a terminating option
         virtual void run(const Menu::Context &);
 
-        OptionMenu(const Gui::ContextBox & parent, const Token *token);
+        OptionMenu(const Gui::ContextBox & parent, const Token *token, const Menu::OptionFactory & factory);
 
         virtual ~OptionMenu();
 
