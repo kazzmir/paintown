@@ -213,6 +213,7 @@ set(PLATFORMER_SRC
 src/platformer/game/animation.cpp
 src/platformer/game/background.cpp
 src/platformer/game/camera.cpp
+src/platformer/game/cutscene.cpp
 src/platformer/game/game.cpp
 src/platformer/game/tile.cpp
 src/platformer/game/world.cpp
