@@ -7,6 +7,7 @@ src/nameplacer.cpp)
 set(GAME_SRC
 src/paintown-engine/game/world.cpp
 src/paintown-engine/game/game.cpp
+src/paintown-engine/game/move-list.cpp
 src/paintown-engine/game/select_player.cpp
 src/util/console.cpp
 src/paintown-engine/game/adventure_world.cpp
