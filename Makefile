@@ -1,19 +1,21 @@
 .PHONY: all doc static quiet clean win nsis count test
 
 osx_version="3-5-0"
+scons:=scons -j `python misc/cores.py`
+gnome_notify:=python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
 all:
-	@scons -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"
-	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
+	@$(scons) || echo "Get scons at www.scons.org or read the README for compilation instructions"
+	@$(gnome_notify)
 
 # Same as `all' but shows time taken by scons
 time:
-	@scons --debug=time -j `python misc/cores.py` || echo "Get scons at www.scons.org or read the README for compilation instructions"
-	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
+	@$(scons) --debug=time || echo "Get scons at www.scons.org or read the README for compilation instructions"
+	@$(gnome_notify)
 
 test:
-	@scons --keep-going -j `python misc/cores.py` test-all
-	@python misc/gnome-notify "Finished compiling" 2>/dev/null
+	@$(scons) --keep-going test-all
+	@$(gnome_notify)
 	@-rm /tmp/token*
 
 install:
@@ -23,10 +25,10 @@ install:
 # gch is broken for some reason: http://gcc.gnu.org/ml/gcc-help/2005-02/msg00007.html
 buildbot: buildbot_normal buildbot_static buildbot_editor buildbot_cmake
 buildbot_normal:
-	@scons -j `python misc/cores.py` gch=0 colors=0
-	@scons -j `python misc/cores.py` gch=0 colors=0 allegro=1
+	@$(scons) gch=0 colors=0
+	@$(scons) gch=0 colors=0 allegro=1
 buildbot_static:
-	@scons static -j `python misc/cores.py` gch=0 colors=0
+	@$(scons) static gch=0 colors=0
 buildbot_editor:
 	cd editor; $(MAKE)
 buildbot_cmake:
@@ -36,15 +38,15 @@ buildbot_cmake:
 
 # Special target for setting up an OSX build
 osx:
-	@scons -j `python misc/cores.py` static data=paintown-${osx_version}.app/Contents/Resources/data
+	@$(scons) static data=paintown-${osx_version}.app/Contents/Resources/data
 
 static:
-	@scons -j `python misc/cores.py` static
-	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
+	@$(scons) static
+	@$(gnome_notify)
 
 quiet:
-	@scons -j `python misc/cores.py` -s
-	@python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
+	@$(scons) -s
+	@$(gnome_notify)
 
 clean:
 	scons -c
@@ -74,3 +76,9 @@ count:
 
 doc:
 	doxygen misc/doxygen.conf
+
+# Build wii
+wii:
+	@echo Building for wii
+	@DEVKITPRO=/opt/devkitpro DEVKITPPC=/opt/devkitpro/devkitPPC/ wii=1 $(scons)
+	@$(gnome_notify)
