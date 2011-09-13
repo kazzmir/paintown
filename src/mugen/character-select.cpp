@@ -1105,8 +1105,10 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
              *  newlib/libc/stdio/fopen.c -- calls sfp_lock_acquire
              *  newlib/libc/sys/linux/sys/libc-lock.h - uses pthread's as the lock implementation
              */
+            /*
             __sfp_lock_acquire();
             __sfp_lock_release();
+            */
 #endif
             set(0);
         }
@@ -1327,7 +1329,14 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
         };
 
         Context context(playerLoader, stage);
+        /* FIXME: the wii has problems loading stuff in a background thread
+         * while the load screen is going on.
+         */
+#ifdef WII
+        context.load();
+#else
         Loader::loadScreen(context, info);
+#endif
         context.maybeFail();
 
         fader.setState(Gui::FadeTool::FadeOut);
