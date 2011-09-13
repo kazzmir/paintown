@@ -22,9 +22,6 @@ set(SCRIPT_SRC
 src/paintown-engine/script/script.cpp
 src/paintown-engine/script/modules/python.cpp)
 
-set(OGG_SRC
-src/util/ogg/logg.c)
-
 set(LEVEL_SRC
 src/paintown-engine/level/block.cpp
 src/paintown-engine/level/blockobject.cpp
