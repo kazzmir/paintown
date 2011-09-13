@@ -1248,6 +1248,7 @@ rsx
             # env.Append(CPPDEFINES = 'MACOSX')
         cflags = []
         if debug:
+            defines.append('DEBUG')
             # for gcov:
             # ['-fprofile-arcs', '-ftest-coverage']
             # cflags.append( ['-g3','-ggdb', '-Werror'])
