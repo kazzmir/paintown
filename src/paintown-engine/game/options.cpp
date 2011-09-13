@@ -97,7 +97,7 @@ public:
 
             Global::debug(1) << "Selecting players" << endl;
             int remap = 0;
-            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
 
             PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, 0, new InputSource(true, 0));
             vector<Util::Future<Object *> *> players;
@@ -236,7 +236,7 @@ public:
             ostringstream out;
             out << "Pick player " << (player + 1);
             Level::LevelInfo info;
-            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap);
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, player);
             Util::Future<Object*> * selection = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, player, sources[player]);
             futures.push_back(selection);
         }
@@ -334,7 +334,7 @@ public:
             Level::LevelInfo info = doLevelMenu("/levels", context);
 
             int remap;
-            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
             Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, 0, new InputSource(true, 0));
             futures.push_back(player);
 
@@ -342,7 +342,7 @@ public:
                 ostringstream out;
                 out << "Pick buddy " << nthWord(i+1);
                 int remap;
-                Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap);
+                Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, 0);
                 Util::Future<Object*> * buddy = new BuddyFuture(path, player, remap, -(i+2));
                 futures.push_back(buddy);
             }

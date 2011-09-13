@@ -389,7 +389,7 @@ static void playGame(vector<Client*> & clients){
         /* first the user selects his own player */
         Level::LevelInfo info;
         int remap = 0;
-        Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
+        Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
         Paintown::Player * player = new Paintown::Player(playerPath, new InputSource(true, 0), 0);
         player->setMap(remap);
         player->ignoreLives();

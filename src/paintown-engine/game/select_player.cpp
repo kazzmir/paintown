@@ -165,7 +165,7 @@ static SelectAttributes loadSelectAttributes(){
 }
 
 /* TODO: refactor */
-static unsigned int choosePlayer(const PlayerVector & players, const string & message){
+static unsigned int choosePlayer(const PlayerVector & players, const string & message, int config){
 
     /* use stupid defines becuase const member variables cannot be initialized
      * inside the class outside of the constructor
@@ -176,7 +176,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     class Logic: public Util::Logic {
     public:
-        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock, Util::ReferenceCount<Gui::Animation> animation):
+        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock, Util::ReferenceCount<Gui::Animation> animation, int config):
         current(current),
         is_done(false),
         clock(clock),
@@ -186,19 +186,20 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         loader(loader),
         beep(Storage::instance().find(Filesystem::RelativePath("sounds/beep1.wav")).path()),
         animation(animation){
-            input.set(Configuration::config(0).getRight(), 300, false, Select::Right);
-            input.set(Configuration::config(0).getUp(), 300, false, Select::Up);
-            input.set(Configuration::config(0).getDown(), 300, false, Select::Down);
-            input.set(Configuration::config(0).getLeft(), 300, false, Select::Left);
+            Configuration & configuration = Configuration::config(config);
+            input.set(configuration.getRight(), 300, false, Select::Right);
+            input.set(configuration.getUp(), 300, false, Select::Up);
+            input.set(configuration.getDown(), 300, false, Select::Down);
+            input.set(configuration.getLeft(), 300, false, Select::Left);
             input.set(Keyboard::Key_ESC, 0, true, Select::Quit);
-            input.set(Joystick::Up, 300, false, Select::Up);
-            input.set(Joystick::Down, 300, false, Select::Down);
-            input.set(Joystick::Left, 300, false, Select::Left);
-            input.set(Joystick::Right, 300, false, Select::Right);
-            input.set(Joystick::Button1, 0, false, Select::Choose);
-            input.set(Joystick::Button2, 0, false, Select::Choose);
-            input.set(Joystick::Button3, 300, false, Select::Remap);
-            input.set(Joystick::Quit, 300, false, Select::Quit);
+            input.set(configuration.getJoystickUp(), 300, false, Select::Up);
+            input.set(configuration.getJoystickDown(), 300, false, Select::Down);
+            input.set(configuration.getJoystickLeft(), 300, false, Select::Left);
+            input.set(configuration.getJoystickRight(), 300, false, Select::Right);
+            input.set(configuration.getJoystickAttack1(), 0, false, Select::Choose);
+            input.set(configuration.getJoystickAttack2(), 0, false, Select::Choose);
+            input.set(configuration.getJoystickAttack3(), 300, false, Select::Remap);
+            input.set(configuration.getJoystickQuit(), 300, false, Select::Quit);
 
             input.set(Keyboard::Key_TAB, 200, false, Select::Remap);
             input.set(Keyboard::Key_ENTER, 0, false, Select::Choose);
@@ -628,15 +629,14 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     } else {
         animation = new Gui::Animation(background);
     }
-    Logic logic(players, current, loader, backgroundX, boxesPerLine, clock, animation);
+    Logic logic(players, current, loader, backgroundX, boxesPerLine, clock, animation, config);
     Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock, animation);
 
     Util::standardLoop(logic, draw);
-    
     return logic.getCurrent();
 }
 
-static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, const string & message, const Level::LevelInfo & info, int & remap){
+static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, const string & message, const Level::LevelInfo & info, int & remap, int config){
     try{
         unsigned int current = 0;
         if (players.size() == 0){
@@ -646,7 +646,7 @@ static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, con
         }
         /* only run the selection screen if there is more than 1 player to choose */
         if (players.size() > 1){
-            current = choosePlayer(players, message);
+            current = choosePlayer(players, message, config);
         }
 
         /* set the map */
@@ -697,8 +697,8 @@ static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
 
 namespace Paintown{
 
-Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
-    return doSelectPlayer(getDisplayPlayers(info), message, info, remap);
+Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, int config){
+    return doSelectPlayer(getDisplayPlayers(info), message, info, remap, config);
 }
 
 }

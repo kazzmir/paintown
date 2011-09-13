@@ -116,7 +116,7 @@ namespace Select{
     };
 }
 
-Filesystem::AbsolutePath OpenborMod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap){
+Filesystem::AbsolutePath OpenborMod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, int config){
     Graphics::Bitmap background(makeBitmap(Filesystem::RelativePath("data/bgs/select.gif")));
     Graphics::Bitmap work(GFX_X / 2, GFX_Y / 2);
     background.Blit(work);

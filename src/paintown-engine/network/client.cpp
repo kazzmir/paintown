@@ -138,7 +138,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
 
     /* remap will be modified by the selectPlayer method */
     int remap = 0;
-    Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
+    Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
 
     Context context(socket, info, playerPath, remap);
     Loader::loadScreen(context, info);

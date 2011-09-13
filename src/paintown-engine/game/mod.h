@@ -33,7 +33,7 @@ public:
 
     virtual ~Mod();
 
-    virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap);
+    virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap, int config);
 
     /* tries to find files in the mod path first and then the regular
      * places next.
