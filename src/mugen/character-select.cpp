@@ -817,7 +817,6 @@ Cursor::~Cursor(){
 }
 
 void Cursor::act(Grid &grid){
-    // InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
     vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input, InputSource());
     for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
         const InputMap<Mugen::Keys>::InputEvent & event = *it;

@@ -1895,23 +1895,32 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         }
 
         void run(){
-            InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
-            if (out[Mugen::Left] || out[Mugen::Right]){
-                selector = !selector;
-            }
-            if (out[Mugen::A] || out[Mugen::B] || out[Mugen::C] || out[Mugen::X] || out[Mugen::Y] || out[Mugen::Z]){
-                if (selector){
-                    is_done = true;
-                    answer = true;
-                } else {
+            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input, InputSource());
+            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+                if (event[Mugen::Left] || event[Mugen::Right]){
+                    selector = !selector;
+                }
+
+                if (event[Mugen::A] || event[Mugen::B] || event[Mugen::C] ||
+                    event[Mugen::X] || event[Mugen::Y] || event[Mugen::Z]){
+                    if (selector){
+                        is_done = true;
+                        answer = true;
+                    } else {
+                        is_done = true;
+                        answer = false;
+                    }
+                }
+                // If enter return true
+                if (event[Mugen::Esc]){
                     is_done = true;
                     answer = false;
                 }
-            }
-            // If enter return true
-            if (out[Mugen::Esc]){
-                is_done = true;
-                answer = false;
             }
             std::vector<Mugen::Object *> add;
             character->act(&add, stage, &add);

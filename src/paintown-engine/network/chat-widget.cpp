@@ -31,32 +31,22 @@ ChatWidget::~ChatWidget(){
 }
 
 void ChatWidget::act(){
-    /*
-    if (removeChatTimer > 0){
-        removeChatTimer -= 1;
-        if (removeChatTimer == 0 && chatMessages.size() > 0){
-            chatMessages.pop_front();
+    vector<InputMap<Inputs>::InputEvent> events = InputManager::getEvents(input, InputSource());
+
+    for (vector<InputMap<Inputs>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+        const InputMap<Inputs>::InputEvent & event = *it;
+        if (!event.enabled){
+            continue;
         }
-    } else if (chatMessages.size() > 0){
-        removeChatTimer = 175;
-    }
-    */
-    
-    InputMap<Inputs>::Output inputState = InputManager::getMap(input);
 
-    /*
-    if (inputState[Talk]){
-        chatInput.enable();
-    }
-    */
-
-    /* This prevents 't' from being pressed in the chat thing immediately */
-    if (inputState[Talk]){
-        enable_chat = true;
-    } else {
-        if (enable_chat){
-            chatInput.enable();
-            enable_chat = false;
+        /* This prevents 't' from being pressed in the chat thing immediately */
+        if (event[Talk]){
+            enable_chat = true;
+        } else {
+            if (enable_chat){
+                chatInput.enable();
+                enable_chat = false;
+            }
         }
     }
     
