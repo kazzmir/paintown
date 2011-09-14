@@ -1911,15 +1911,15 @@ bool OptionSpeed::rightKey(){
     return false;
 }
 
-OptionTabMenu::OptionTabMenu(const Gui::ContextBox & parent, const Token *token):
+OptionTabMenu::OptionTabMenu(const Gui::ContextBox & parent, const Token *token, const Menu::OptionFactory & factory):
 MenuOption(parent, token),
 menu(0){
     if (token->numTokens() == 1){
         std::string temp;
         token->view() >> temp;
-        menu = new Menu::Menu(Storage::instance().find(Filesystem::RelativePath(temp)), Menu::Menu::Tabbed);
+        menu = new Menu::Menu(Storage::instance().find(Filesystem::RelativePath(temp)), factory, Menu::Menu::Tabbed);
     } else {
-        menu = new Menu::Menu(token, Menu::Menu::Tabbed);
+        menu = new Menu::Menu(token, factory, Menu::Menu::Tabbed);
     }
 
     // this->setText(menu->getName());

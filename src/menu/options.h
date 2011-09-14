@@ -473,7 +473,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context &);
 
-    OptionTabMenu(const Gui::ContextBox & parent, const Token *token);
+    OptionTabMenu(const Gui::ContextBox & parent, const Token *token, const Menu::OptionFactory & factory);
 
     virtual ~OptionTabMenu();
 

@@ -26,13 +26,13 @@ MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Toke
             std::string type;
             typeToken->view() >> type;
             if (type == "tabbed"){
-                return new OptionTabMenu(parent, tok);
+                return new OptionTabMenu(parent, tok, *this);
             }
         }
         return new OptionMenu(parent, tok, *this);
     } else if (*tok == "tabmenu" ){
         // Create a tab menu
-        return new OptionTabMenu(parent, tok);
+        return new OptionTabMenu(parent, tok, *this);
     } else if ( *tok == "key" ){
         // Reconfigure a given key
         return new OptionKey(parent, tok);
