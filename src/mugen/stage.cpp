@@ -800,13 +800,17 @@ void Mugen::Stage::physics(Object * mugen){
             /* FIXME: replace 52 with a constant */
             mugen->changeState(*this, 52, inputs);
         }
+    } else if (mugen->getCurrentPhysics() == Mugen::Physics::Stand){
+        mugen->setY(0);
     }
 
     mugen->moveX(mugen->getXVelocity());
     mugen->moveY(-mugen->getYVelocity());
+    /*
     if (mugen->getY() < 0){
         mugen->setY(0);
     }
+    */
 
     if (mugen->canTurn()){
         for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
@@ -945,33 +949,7 @@ void Mugen::Stage::physics(Object * mugen){
                     }
                 }
             }
-            // Attacking
-            /*if ( player->isAttacking() ){
-              ObjectAttack * playerAttack = (ObjectAttack *)player;
-              if ( enemy != player && enemy->isCollidable( player ) && player->isCollidable( enemy ) ){
-              if ( player->ZDistance( enemy ) <= playerAttack->minZDistance() && enemy->collision( playerAttack ) ){ 
-              double x = 0, y = 0;
-
-              x = enemy->getX();
-              y = enemy->getRY() - enemy->getHeight() + enemy->getHeight() / 3;*/
-        /*
-           if ( bang != NULL ){
-           Object * addx = bang->copy();
-           addx->setX( x );
-           addx->setY( 0 );
-           addx->setZ( y+addx->getHeight()/2 );
-           addx->setHealth( 1 );
-           added_effects.push_back( addx );
-           }
-           */
-        /*
-           playerAttack->attacked(this, enemy, add );
-           enemy->collided( playerAttack, add );
-           enemy->takeDamage( this, playerAttack, playerAttack->getDamage() );
-           }    
-           }
-           }*/
-        }
+            }
     }
 }
 

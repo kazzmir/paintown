@@ -429,7 +429,7 @@ void Object::setX(double what){
 }
 
 void Object::setY(double what){
-    virtualz = what;
+    virtualy = what;
 }
     
 double Object::getRY() const {
