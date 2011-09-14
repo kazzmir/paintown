@@ -1655,7 +1655,9 @@ if isWindows():
             # TODO: move this to a configure check
             env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-            env.Append( LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll', 'psapi'] )
+            env.Append(LIBS = ['SDL', 'pthread', 'png', 'user32', 'gdi32', 'winmm', 'freetype', 'z', 'wsock32', 'regex.dll', 'psapi', 'mpg123'] )
+            env['HAVE_MP3_MPG123'] = True
+            env.Append(CPPDEFINES = ['HAVE_MP3_MPG123'])
         elif useMinpspw() or usePs3() or useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
