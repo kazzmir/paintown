@@ -24,16 +24,12 @@
 
 using namespace std;
 
-Panel::Panel( Graphics::Bitmap * _pic, Graphics::Bitmap * _neon, Graphics::Bitmap * _my_screen ){
+Panel::Panel(Graphics::Bitmap * _pic){
     pic = _pic;
-    neon = _neon;
-    screen_overlay = _my_screen;
 }
 
 Panel::~Panel(){
-    if ( pic ) delete pic;
-    if ( neon ) delete neon;
-    if ( screen_overlay ) delete screen_overlay;
+    if (pic) delete pic;
 }
 
 Scene::Scene(const char * filename, const Level::Cacher & cacher):
@@ -130,27 +126,19 @@ hasMusic(false){
                 }
             } else if ( *tok == "panel" ){
                 int num;
-                string normal, neon, s_screen;
-                tok->view() >> num >> normal >> neon >> s_screen;
+                string normal;
+                tok->view() >> num >> normal;
 
                 Graphics::Bitmap * x_normal = NULL;
+                /*
                 Graphics::Bitmap * x_neon = NULL;
                 Graphics::Bitmap * x_screen = NULL;
-                if ( normal != "none" ){
+                */
+                if (normal != "none"){
                     x_normal = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(normal)).path());
                 }
-                x_neon = new Graphics::Bitmap();
-                x_screen = new Graphics::Bitmap();
-                /*
-                   if ( neon != "none" ){
-                   x_neon = new Bitmap( neon );
-                   }
-                   if ( s_screen != "none" ){
-                   x_screen = new Bitmap( s_screen );
-                   }
-                   */
-                Panel * p = new Panel( x_normal, x_neon, x_screen );
-                panels[ num ] = p;
+                Panel * p = new Panel(x_normal);
+                panels[num] = p;
                 // panel_num++;
             } else if (*tok == "trigger"){
                 Trigger * trigger = Trigger::parse(tok);
@@ -185,8 +173,9 @@ hasMusic(false){
         throw ex;
     }
 
-    if ( level_blocks.empty() )
+    if (level_blocks.empty()){
         throw LoadException(__FILE__, __LINE__, "No level blocks defined");
+    }
 
     current_block = level_blocks.front();
     level_blocks.pop_front();
@@ -196,20 +185,20 @@ hasMusic(false){
 
     // delete current;
 
-    Global::debug( 1 ) <<"Loaded level "<< filename << endl;
+    Global::debug(1) <<"Loaded level "<< filename << endl;
 
     calculateLength();
 
     int blength = 0;
-    for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
+    for (deque<Util::ReferenceCount<Block> >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++){
         blength += (*it)->getLength();
     }
-    Global::debug( 1 ) <<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
+    Global::debug(1) <<"Scene length = "<<scene_length<<". Length used = "<<blength<<endl;
 }
         
 int Scene::totalLength() const {
     int blength = 0;
-    for ( deque< Block * >::const_iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
+    for (deque<Util::ReferenceCount<Block> >::const_iterator it = level_blocks.begin(); it != level_blocks.end(); it++){
         blength += (*it)->getLength();
     }
     return blength;
@@ -254,7 +243,7 @@ void Scene::clearHearts(){
 
 void Scene::advanceBlocks( int n ){
     while ( blockNumber < n ){
-        if ( level_blocks.empty() ){
+        if (level_blocks.empty()){
             break;
         }
 
@@ -270,9 +259,9 @@ void Scene::advanceBlocks( int n ){
     }
 }
 
-bool Scene::canContinue( int x ){
-	return (current_block->isContinuous() && x >= getLimit() - 320) ||
-               (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
+bool Scene::canContinue(int x){
+    return (current_block->isContinuous() && x >= getLimit() - 320) ||
+           (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
 }
 
 /* put the enemy into a vector so that it can be added into the game objects
@@ -457,10 +446,6 @@ void Scene::startMusic(){
 }
 
 Scene::~Scene(){
-    for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
-        delete *it;
-    }
-
     if (frontBuffer){
         delete frontBuffer;
     }

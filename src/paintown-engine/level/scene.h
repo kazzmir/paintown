@@ -28,11 +28,8 @@ namespace Level{
 
 struct Panel{
     Graphics::Bitmap * pic;
-    Graphics::Bitmap * neon;
-    Graphics::Bitmap * screen_overlay;
-
-	Panel( Graphics::Bitmap * _pic = NULL, Graphics::Bitmap * _neon = NULL, Graphics::Bitmap * my_screen = NULL );
-	~Panel();
+    Panel(Graphics::Bitmap * _pic = NULL);
+    ~Panel();
 };
 
 class Scene{
@@ -129,7 +126,7 @@ protected:
     std::vector< Graphics::Bitmap * > front_panels;
     std::map< int, Panel * > panels;
 
-    std::deque< Block * > level_blocks;
+    std::deque<Util::ReferenceCount<Block> > level_blocks;
     std::vector<Util::ReferenceCount<Block> > old_level_blocks;
 
     std::vector< Heart * > hearts;

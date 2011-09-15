@@ -48,7 +48,7 @@ static vector<BlockObject*> collect(const Util::ReferenceCount<Block> & block){
 /* get all the different objects that could be created. try to just get enemies */
 vector<BlockObject*> RandomScene::collectObjects(){
     vector<BlockObject*> all;
-    for (deque<Block *>::iterator it = level_blocks.begin(); it != level_blocks.end(); it++){
+    for (deque<Util::ReferenceCount<Block> >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++){
         vector<BlockObject*> collected = collect(*it);
         all.insert(all.end(), collected.begin(), collected.end());
     }
