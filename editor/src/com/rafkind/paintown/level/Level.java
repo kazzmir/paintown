@@ -564,8 +564,6 @@ public class Level{
             Panel p = (Panel) entry.getValue();
             f.addToken( new Token( f, entry.getKey().toString() ) );
             f.addToken( new Token( f, "\"" + p.name.replaceAll( "\\\\", "/" ) + "\"" ) );
-            f.addToken( new Token( f, "junk" ) );
-            f.addToken( new Token( f, "junk" ) );
         }
 
         if (getDescription() != null){
