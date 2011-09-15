@@ -167,7 +167,7 @@ namespace PaintownLevel{
 
         if (PyArg_ParseTuple(args, "O", &cobject)){
             World * world = (World*) PyCObject_AsVoidPtr(cobject);
-            return Py_BuildValue("i", world->currentBlock());
+            return Py_BuildValue("i", world->currentBlock().raw());
         }
 
         Py_INCREF(Py_None);

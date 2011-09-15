@@ -340,7 +340,7 @@ Network::Message AdventureWorld::deleteMessage( unsigned int id ){
 	return message;
 }
         
-const Block * AdventureWorld::currentBlock() const {
+const Util::ReferenceCount<Block> AdventureWorld::currentBlock() const {
     if (scene == NULL){
         Global::debug(-1) << "*BUG* Scene is null" << endl;
         exit(1);

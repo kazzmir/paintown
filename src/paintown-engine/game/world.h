@@ -10,7 +10,6 @@ class Enemy;
 }
 
 class Scene;
-class Block;
 namespace Graphics{
 class Bitmap;
 }
@@ -22,6 +21,8 @@ class Bitmap;
 
 #include "util/load_exception.h"
 #include "util/network/network.h"
+#include "../level/block.h"
+#include "util/pointer.h"
 
 namespace Script{
     class Engine;
@@ -63,7 +64,7 @@ public:
     virtual const std::deque<Graphics::Bitmap*> & getScreenshots() = 0;
 
     virtual int levelLength() const = 0;
-    virtual const Block * currentBlock() const = 0;
+    virtual const Util::ReferenceCount<Block> currentBlock() const = 0;
 
     virtual inline const std::vector<Paintown::Object*> & getObjects() const {
         return objects;

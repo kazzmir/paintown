@@ -9,7 +9,6 @@ class Enemy;
 namespace Graphics{
 class Bitmap;
 }
-class Block;
 class Scene;
 
 namespace Effects{
@@ -25,6 +24,7 @@ class Gradient;
 #include "util/network/network.h"
 #include "world.h"
 #include "../level/cacher.h"
+#include "../level/block.h"
 
 namespace Script{
     class Engine;
@@ -99,7 +99,7 @@ public:
     virtual const std::deque<Graphics::Bitmap*> & getScreenshots();
 
     virtual int levelLength() const;
-    virtual const Block * currentBlock() const;
+    virtual const Util::ReferenceCount<Block> currentBlock() const;
 
     virtual inline const std::vector<Paintown::Object*> & getObjects() const {
         return objects;

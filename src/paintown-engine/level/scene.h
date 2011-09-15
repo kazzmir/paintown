@@ -6,12 +6,13 @@
 #include <map>
 #include <deque>
 #include "util/load_exception.h"
+#include "util/pointer.h"
+#include "block.h"
 
 namespace Graphics{
 class Bitmap;
 }
 
-class Block;
 class Heart;
 class Atmosphere;
 class Trigger;
@@ -60,7 +61,7 @@ public:
         return blockNumber;
     }
 
-    inline Block * currentBlock() const {
+    inline Util::ReferenceCount<Block> currentBlock() const {
         return current_block;
     }
 
@@ -129,7 +130,7 @@ protected:
     std::map< int, Panel * > panels;
 
     std::deque< Block * > level_blocks;
-    std::vector<Block*> old_level_blocks;
+    std::vector<Util::ReferenceCount<Block> > old_level_blocks;
 
     std::vector< Heart * > hearts;
     std::vector<Paintown::Object*> added_objects;
@@ -142,7 +143,7 @@ protected:
     /* minimum/maximum values characters can move within the z-plane */
     int minimum_z, maximum_z;
 
-    Block * current_block;
+    Util::ReferenceCount<Block> current_block;
 
     /* count of how many blocks have gone by */
     int blockNumber;

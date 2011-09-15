@@ -457,11 +457,7 @@ void Scene::startMusic(){
 }
 
 Scene::~Scene(){
-    delete current_block;
     for ( deque< Block * >::iterator it = level_blocks.begin(); it != level_blocks.end(); it++ ){
-        delete *it;
-    }
-    for (vector<Block*>::iterator it = old_level_blocks.begin(); it != old_level_blocks.end(); it++){
         delete *it;
     }
 

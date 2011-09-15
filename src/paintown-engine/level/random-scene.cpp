@@ -34,7 +34,7 @@ void RandomScene::advanceBlocks(int blocks){
     current_block = createRandomBlock(getMinimumZ(), getMaximumZ(), objects);
 }
 
-static vector<BlockObject*> collect(Block * block){
+static vector<BlockObject*> collect(const Util::ReferenceCount<Block> & block){
     vector<BlockObject*> objects;
     for (vector<BlockObject*>::const_iterator it = block->getObjects().begin(); it != block->getObjects().end(); it++){
         BlockObject * object = *it;
