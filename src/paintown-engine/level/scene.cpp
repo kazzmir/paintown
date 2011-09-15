@@ -432,12 +432,23 @@ void Scene::startMusic(){
     if (hasMusic){
         Music::pause();
         vector<Filesystem::AbsolutePath> songs;
-        for (vector<string>::iterator it = music.begin(); it != music.end(); it++){
-            try{
-                songs.push_back(Storage::instance().find(Filesystem::RelativePath("music").join(Filesystem::RelativePath(*it))));
-            } catch (const Filesystem::NotFound & fail){
+
+        /* this lets you give music paths like foo*.mp3 or use a sub directory */
+        try{
+            Filesystem::AbsolutePath root = Storage::instance().find(Filesystem::RelativePath("music"));
+            for (vector<string>::iterator it = music.begin(); it != music.end(); it++){
+                vector<Filesystem::AbsolutePath> more = Storage::instance().getFiles(root, Filesystem::RelativePath(*it), false);
+                songs.insert(songs.end(), more.begin(), more.end());
             }
+        } catch (const Filesystem::NotFound & fail){
         }
+
+        /*
+        for (vector<Filesystem::AbsolutePath>::iterator it = songs.begin(); it != songs.end(); it++){
+            Global::debug(0) << "Found " << it->path() << std::endl;
+        }
+        */
+
         Music::loadSong(songs);
     } else {
         /* choose a song randomly */
