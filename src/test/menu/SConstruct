@@ -57,6 +57,7 @@ test/util/sound.cpp
 test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/environment/atmosphere.cpp
 test/platformer/game/world.cpp
+test/platformer/game/cutscene.cpp
 test/platformer/game/animation.cpp
 test/platformer/game/background.cpp
 test/platformer/game/camera.cpp
@@ -115,6 +116,7 @@ test/util/language-string.cpp
 test/paintown-engine/trigger/trigger.cpp
 test/paintown-engine/game/select_player.cpp
 test/paintown-engine/game/options.cpp
+test/paintown-engine/game/move-list.cpp
 test/paintown-engine/game/mod.cpp
 test/util/fire.cpp
 test/paintown-engine/game/adventure_world.cpp
@@ -124,7 +126,6 @@ test/util/music.cpp
 test/util/music-player.cpp
 test/util/loading.cpp
 test/util/messages.cpp
-test/util/ogg/logg.c
 test/paintown-engine/game/world.cpp
 test/paintown-engine/factory/shadow.cpp
 test/mugen/config.cpp

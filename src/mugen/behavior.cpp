@@ -207,11 +207,11 @@ void LearningAIBehavior::flip(){
 
 static LearningAIBehavior::Direction randomDirection(){
     int what = PaintownUtil::rnd(100);
-    if (what > 65){
+    if (what > 70){
         return LearningAIBehavior::Forward;
-    } else if (what > 30){
+    } else if (what > 40){
         return LearningAIBehavior::Backward;
-    } else if (what > 10){
+    } else if (what > 20){
         return LearningAIBehavior::Stopped;
     } else {
         return LearningAIBehavior::Crouch;
