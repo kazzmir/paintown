@@ -121,6 +121,7 @@ isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
 useMinpspw = makeUseEnvironment('minpspw', False)
 useAndroid = makeUseEnvironment('android', False)
+useIos = makeUseEnvironment('ios', False)
 usePs3 = makeUseEnvironment('ps3', False)
 useNDS = makeUseEnvironment('nds', False)
 useDingoo = makeUseEnvironment('dingoo', False)
@@ -1139,6 +1140,53 @@ rsx
         
         env.PrependENVPath('PATH', bin_path)
         return env
+    def ios(env):
+        # Sets up the environment for Apple IOS
+        # FIXME Target correct arm or simulator
+        # iPhoneOS.platform
+        # iPhoneSimulator.platform
+
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        
+        # Check for or target above mentioned platforms
+        platform = 'iPhoneOS.platform'
+        # Target sdk
+        sdk = 'SDKs/iPhoneOS4.3.sdk'
+        path = '/Developer/Platforms/%s/Developer' % platform
+        bin_path = setup(path, 'usr/bin')
+        # Prefix may depend on target platform
+        prefix = 'arm-apple-darwin10-'
+        def set_prefix(x):
+            return '%s%s' % (prefix, x)
+        env['CC'] = set_prefix('gcc')
+        env['LD'] = set_prefix('ld')
+        env['CXX'] = set_prefix('g++')
+        env['AS'] = set_prefix('as')
+        env['AR'] = set_prefix('ar')
+        env['OBJCOPY'] = set_prefix('objcopy')
+        
+        env.Append(CPPPATH = [setup(path, '/include'), 
+                              setup(path, '/%s/usr/include' % sdk)
+                             ])
+        env.Append(CPPDEFINES = ['IOS'])
+        
+        flags = ['-shared', '-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64']
+        
+        linkflags = flags
+        
+        libs = Split("""m c z""")
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env.Append(LINKFLAGS = linkflags)
+        env.Append(CPPPATH = ['#src/ios'])
+        
+        env.Append(LIBS = libs)
+        env.Append(LIBPATH = [setup(path, '%s/usr/lib' % sdk),
+                              '#misc'])
+        
+        env.PrependENVPath('PATH', bin_path)
+        return env
     def nacl(env):
         # Sets up the environment for Googles Native Client
         # check for architecture
@@ -1290,6 +1338,8 @@ rsx
                 return minpspw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useAndroid():
                 return android(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
+            elif useIos():
+                return ios(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif usePs3():
                 return ps3(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useNacl():
@@ -1465,7 +1515,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not usePs3():
+if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not useIos() and not usePs3():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1550,6 +1600,8 @@ def buildType(dir, env):
             properties.append('psp')
     if useAndroid():
         properties.append('android')
+    if useIos():
+        properties.append('ios')
     if usePs3():
         properties.append('ps3')
     if useNacl():
@@ -1612,6 +1664,8 @@ def display_build_properties(env):
         properties.append(colorize("PSP", color))
     if useAndroid():
         properties.append(colorize("ANDROID", color))
+    if useIos():
+        properties.append(colorize("IOS", color))
     if usePs3():
         properties.append(colorize("PS3", color))
     if useNacl():
