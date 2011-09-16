@@ -100,14 +100,14 @@
       }
 
       div#troubleshoot{
-	text-align: center;
-	font-size: 12px;
+      text-align: center;
+      font-size: 12px;
       }
 
       .error{
 	text-align: center;
 	font-size: 14px;
-	background-color: red;
+	background-color: #dd0000;
 	color: white;
       }
 	
@@ -182,34 +182,40 @@
 <br />
 
 <script>
+    function checkPlugins(){
+        var L = navigator.plugins.length;
+        var has_nacl = false;
+        var all = "";
+        for(var i=0; i<L; i++) {
+            all = all + " " + navigator.plugins[i].name;
+            if (navigator.plugins[i].name == "Native Client") {
+                return true;
+            }
+        }
+        return false;
+    }
+
       //Web browser version & NaCl checker
       var fullVersion  = ''+parseFloat(navigator.appVersion); 
       var majorVersion = parseInt(navigator.appVersion,10);
       if ((verOffset=navigator.userAgent.indexOf("Chrome"))!=-1) {
-	fullVersion = navigator.userAgent.substring(verOffset+7);
-	majorVersion = parseInt(''+fullVersion,10);
- 	if (majorVersion >= 14) { //Chrome version OK
-	      	var L = navigator.plugins.length;
-		var has_nacl = false;
-		for(var i=0; i<L; i++) {
-			if (navigator.plugins[i].name == "Native Client") {
-				has_nacl = true;  //found it!
-			}
-		}
-		if (has_nacl == true) { //NaCL is enabled
-			document.getElementById("troubleshoot").innerHTML="<span class='good'><b>&#x2713;</b> Chrome Native Client is Enabled.</span><br /> You should be able to run Paintown in your browser.<br />If you are getting the message &quot;The Native Plugin is not allowed&quot; above,<br />go to <b>chrome://flags</b> in your address bar and click on <em>Enable</em> under &quot;Native Client&quot; and restart Google Chrome.";
-		} else { // NaCl Not enabled
-			document.getElementById('content').innerHTML='';
-			document.getElementById("troubleshoot").innerHTML="<div class='error'>You do not have Chrome NaCL Enabled.<br />Please go to <b>chrome://plugins</b> in your address bar and Click <em>Enable</em> under &quot;Native Client&quot;.<br />Then <a href='javascript:location.reload(true)'>Refresh this page</a></div>";
-		} 
-        } else { //Old Chrome
-		document.getElementById('content').innerHTML='';
-		document.getElementById("troubleshoot").innerHTML="<div class='error'>You have an older version of Chrome installed (Version "+majorVersion+"). Please upgrade to at least version 14 to play.</div>";
-	}
+          fullVersion = navigator.userAgent.substring(verOffset+7);
+          majorVersion = parseInt(''+fullVersion, 10);
+          if (majorVersion >= 14) { //Chrome version OK
+              if (checkPlugins()) { //NaCL is enabled
+                  document.getElementById("troubleshoot").innerHTML="<span class='good'><b>&#x2713;</b> Chrome Native Client is Enabled.</span><br /> You should be able to run Paintown in your browser.<br />If you are getting the message &quot;The Native Plugin is not allowed&quot; above,<br />go to <b>chrome://flags</b> in your address bar and click on <em>Enable</em> under &quot;Native Client&quot; and restart Google Chrome.";
+              } else { // NaCl Not enabled
+                  document.getElementById('content').innerHTML='';
+                  document.getElementById("troubleshoot").innerHTML="<div class='error'>You do not have Chrome NaCL Enabled.<br />Please go to <b>chrome://plugins</b> in your address bar and Click <em>Enable</em> under &quot;Native Client&quot;.<br />Then <a href='javascript:location.reload(true)'>Refresh this page</a></div>";
+              } 
+          } else { //Old Chrome
+              document.getElementById('content').innerHTML='';
+              document.getElementById("troubleshoot").innerHTML="<div class='error'>You have an older version of Chrome installed (Version "+majorVersion+"). Please upgrade to at least version 14 to play.</div>";
+          }
       } else { //it's not chrome - hide stuff and tell user
-	document.getElementById('content').innerHTML='';
-	document.getElementById('troubleshoot').innerHTML="<div class='error'><p><b>Your web browser is not supported.</b></p></div>";
-	
+          document.getElementById('content').innerHTML='';
+          document.getElementById('troubleshoot').innerHTML="<div class='error'><p><b>Your web browser is not supported.</b></p></div>";
+
       }
 </script>
 
