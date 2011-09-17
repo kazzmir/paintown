@@ -16,6 +16,36 @@
           // document.getElementById('paintown').style.display='inline';
       }
 
+      function moduleLoadProgress(event){
+          var loadPercent = 0.0;
+          var loadPercentString;
+          if (event.lengthComputable && event.total > 0) {
+              loadPercent = event.loaded / event.total * 100.0;
+              loadPercentString = loadPercent + '%';
+          } else {
+              // The total length is not yet known.
+              loadPercent = -1.0;
+              loadPercentString = 'Computing...';
+          }
+
+          /* TODO: do something with the progress */
+          /*
+          appendToEventLog('progress: ' + loadPercentString +
+          ' (' + event.loaded + ' of ' + event.total + ' bytes)');
+          */
+      }
+
+      function moduleLoadError() {
+          /* TODO: do something */
+          // appendToEventLog('error: ' + loadProgressModule.lastError);
+      }
+
+      // Handler that gets called if the NaCl module load is aborted.
+      function moduleLoadAbort() {
+          /* TODO: do something */
+          // appendToEventLog('abort');
+      }
+
       function dorun(){ //run Nacl 
           if (paintownModule == null){
               alert('NACL module not loaded!');
@@ -30,17 +60,18 @@
             document.getElementById('troubleshoot').innerHTML+="<br /><br /><span class='error'>ERROR: " + document.getElementById('paintown').lastError + "</span>";
       }                                 
 
-      keydisplaystatus='show';
-      function hideshowkeys(){ //Toggle Keys
-	if (keydisplaystatus == 'show') {
-		keydisplaystatus = 'hide';
-		document.getElementById('keys').style.display='none';
-		document.getElementById('hideshowkeys').innerHTML='&lt; Show<br />&nbsp;&nbsp;&nbsp;Keys';
-	} else {
-		keydisplaystatus = 'show';
-		document.getElementById('keys').style.display='block';
-		document.getElementById('hideshowkeys').innerHTML='&gt; Hide<br />&nbsp;&nbsp;&nbsp;Keys';
-        }
+      keydisplaystatus = 'show';
+      //Toggle Keys
+      function hideshowkeys(){
+          if (keydisplaystatus == 'show') {
+              keydisplaystatus = 'hide';
+              document.getElementById('keys').style.display='none';
+              document.getElementById('hideshowkeys').innerHTML='&lt; Show<br />&nbsp;&nbsp;&nbsp;Keys';
+              } else {
+              keydisplaystatus = 'show';
+              document.getElementById('keys').style.display='block';
+              document.getElementById('hideshowkeys').innerHTML='&gt; Hide<br />&nbsp;&nbsp;&nbsp;Keys';
+          }
       }
 
   </script>
@@ -48,18 +79,18 @@
   <style>
       body{
           background: #2F4E6F;
-	  font-family: arial, helvetica, sans-serif;
+          font-family: arial, helvetica, sans-serif;
       }
 
       span{
           color: #fff;
       }
       div#header{
-	text-align: center;
+          text-align: center;
       }
 
       div#loader{
-	text-align: center;
+          text-align: center;
       }
 
       div.main{
@@ -76,27 +107,27 @@
       div.information{
           margin-right: auto;
           margin-left: auto;
-	  font-size: 14px;
-	  text-align:center;
+          font-size: 14px;
+          text-align:center;
       }
 
       div.instructions{
           float: right;
-	  font-size: 14px;
+          font-size: 14px;
       }
 
       div#notes {
-	padding: 3px;
+          padding: 3px;
       }
 
       div#footer{
-	text-align: center;
+          text-align: center;
       }
 
       span#hideshowkeys{
-	cursor:pointer;
-	text-align: right;
-	font-size: 10px;
+          cursor:pointer;
+          text-align: right;
+          font-size: 10px;
       }
 
       div#troubleshoot{
@@ -105,27 +136,27 @@
       }
 
       .error{
-	text-align: center;
-	font-size: 14px;
-	background-color: #dd0000;
-	color: white;
+          text-align: center;
+          font-size: 14px;
+          background-color: #dd0000;
+          color: white;
       }
-	
+
       .good{
-	color: green;
-	font-weight: bold;
+          color: green;
+          font-weight: bold;
       }
 
      A:link{
-	color : #77aadd;
+         color : #77aadd;
      }
 
      A:visited{
-	color : #77aadd;
+         color : #77aadd;
      }
 
      div#loader{
-	text-align: center;
+         text-align: center;
      }
   </style>
 </head>
@@ -135,8 +166,8 @@
    </div>
 <div id='content'>
     <div id='instructions' class='instructions'>
-	<span id='hideshowkeys' onclick='hideshowkeys();'>&gt; Hide<br />&nbsp;&nbsp;Keys</span><br />
-	<div id='keys'>
+        <span id='hideshowkeys' onclick='hideshowkeys();'>&gt; Hide<br />&nbsp;&nbsp;Keys</span><br />
+        <div id='keys'>
         <br /><br />
         Keys in game: <br/><br />
         <b>A</b> Attack 1<br />
@@ -150,9 +181,9 @@
         <b>Down</b> Down<br />
         <b>Left</b> Left<br />
         <b>Right</b> Right<br /><br />
-	<b>Esc</b> Menu<br />
-	<b>Enter</b> Select
-	</div>
+        <b>Esc</b> Menu<br />
+        <b>Enter</b> Select
+    </div>
     </div>
 
     <div class='main' id='listener'>
@@ -161,13 +192,17 @@
              <img src="loader.gif" />
         </div>
 
-	<div id='notes'>
-        	Wait for the binary to completely download. Once it has downloaded a button labeled <b>Start Paintown</b> will appear. Click that and wait for the game to start. It may seem that the game is hanging at times but just be patient, loading resources over the network can be quite slow. Loading times will be improved in the future.<br />
+        <div id='notes'>
+            Wait for the binary to completely download. Once it has downloaded a button labeled <b>Start Paintown</b> will appear. Click that and wait for the game to start. It may seem that the game is hanging at times but just be patient, loading resources over the network can be quite slow. Loading times will be improved in the future.<br />
         </div>
         <button id='run' onclick="dorun()" style="display:none;">Start Paintown</button>
         <script type="text/javascript">
-            document.getElementById('listener').addEventListener('load', moduleDidLoad, true);
-            document.getElementById('listener').addEventListener('error', reporterrors, true);
+            var listener = document.getElementById('listener');
+            listener.addEventListener('load', moduleDidLoad, true);
+            listener.addEventListener('progress', moduleLoadProgress, true);
+            listener.addEventListener('error', moduleLoadError, true);
+            listener.addEventListener('abort', moduleLoadAbort, true);
+            listener.addEventListener('error', reporterrors, true);
         </script>
         <embed name="nacl_module"
                id="paintown"
@@ -182,6 +217,9 @@
 <br />
 
 <script>
+    /* TODO: maybe use this script to check for nacl
+     * http://code.google.com/p/nativeclient-sdk/source/browse/trunk/src/examples/load_progress/check_browser.js
+     */
     function checkPlugins(){
         var L = navigator.plugins.length;
         var has_nacl = false;
@@ -226,7 +264,7 @@
 </div>
 <br />
 <div id='footer'>
-	<a href='http://paintown.org' target='_blank'>Visit the Paintown website</a> or <a href='http://webchat.freenode.net/?channels=paintown' target='_blank'>Join the IRC Chat room</a>
+    <a href='http://paintown.org' target='_blank'>Visit the Paintown website</a> or <a href='http://webchat.freenode.net/?channels=paintown' target='_blank'>Join the IRC Chat room</a>
 </div>
 </body>
 </html>
