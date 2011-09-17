@@ -22,8 +22,8 @@ class Animation;
 class Player: public PlayerCommon {
 public:
 
-    Player(const char * filename, int config);
-    Player(const Filesystem::AbsolutePath & str, Util::ReferenceCount<InputSource> source, int config);
+    Player(const char * filename);
+    Player(const Filesystem::AbsolutePath & str, Util::ReferenceCount<InputSource> source);
     Player(const Player & pl);
     Player(const Character & chr);
 
@@ -68,14 +68,6 @@ public:
 
     virtual Network::Message getCreateMessage();
 
-    virtual inline void setConfig(int config){
-        this->config = config;
-    }
-
-    virtual int getConfig() const {
-        return this->config;
-    }
-
     virtual inline void ignoreLives(){
         ignore_lives = true;
     }
@@ -83,6 +75,8 @@ public:
     virtual inline bool ignoringLives() const {
         return ignore_lives;
     }
+
+    virtual const InputSource & getInput() const;
 
     /* binds this object to 'player' so that they appear on the screen together */
     virtual void bindTo(Player * player);
@@ -104,8 +98,10 @@ protected:
     const char * keyToName(Input::PaintownInput key);
     bool combo(Util::ReferenceCount<Animation> ani);
     bool combo(Util::ReferenceCount<Animation> ani, std::deque<Input::PaintownInput>::iterator cache_cur_key, std::deque<Input::PaintownInput>::iterator end );
+    /*
     virtual int getKey( Input::PaintownInput x, int facing );
     virtual int getKey( Input::PaintownInput x );
+    */
 
     bool canGrab( Object * enemy );
     void grabEnemy( Object * enemy );
@@ -144,7 +140,6 @@ protected:
     Graphics::Color attack_gradient[num_attack_gradient];
 
     bool invincible;
-    int config;
     bool ignore_lives;
 
     Util::ReferenceCount<InputSource> source;
@@ -155,7 +150,7 @@ protected:
 
 class PlayerFuture: public Util::Future<Object*> {
 public:
-    PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, int config, Util::ReferenceCount<InputSource> source);
+    PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, Util::ReferenceCount<InputSource> source);
 
     typedef Util::Future<Object*> super;
 
@@ -168,7 +163,6 @@ protected:
     bool invincible;
     int lives;
     int remap;
-    int config;
     Util::ReferenceCount<InputSource> source;
 };
 

@@ -165,7 +165,7 @@ static SelectAttributes loadSelectAttributes(){
 }
 
 /* TODO: refactor */
-static unsigned int choosePlayer(const PlayerVector & players, const string & message, int config){
+static unsigned int choosePlayer(const PlayerVector & players, const string & message, const InputSource & source){
 
     /* use stupid defines becuase const member variables cannot be initialized
      * inside the class outside of the constructor
@@ -176,39 +176,44 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
 
     class Logic: public Util::Logic {
     public:
-        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock, Util::ReferenceCount<Gui::Animation> animation, int config):
+        Logic(const PlayerVector & players, unsigned int & current, Paintown::DisplayCharacterLoader & loader, int & backgroundX, int & boxesPerLine, unsigned int & clock, Util::ReferenceCount<Gui::Animation> animation, const InputSource & source):
         current(current),
         is_done(false),
         clock(clock),
         backgroundX(backgroundX),
         boxesPerLine(boxesPerLine),
+        source(source),
         players(players),
         loader(loader),
         beep(Storage::instance().find(Filesystem::RelativePath("sounds/beep1.wav")).path()),
         animation(animation){
-            Configuration & configuration = Configuration::config(config);
-            input.set(configuration.getRight(), 300, false, Select::Right);
-            input.set(configuration.getUp(), 300, false, Select::Up);
-            input.set(configuration.getDown(), 300, false, Select::Down);
-            input.set(configuration.getLeft(), 300, false, Select::Left);
-            input.set(Keyboard::Key_ESC, 0, true, Select::Quit);
-            input.set(configuration.getJoystickUp(), 300, false, Select::Up);
-            input.set(configuration.getJoystickDown(), 300, false, Select::Down);
-            input.set(configuration.getJoystickLeft(), 300, false, Select::Left);
-            input.set(configuration.getJoystickRight(), 300, false, Select::Right);
-            input.set(configuration.getJoystickAttack1(), 0, false, Select::Choose);
-            input.set(configuration.getJoystickAttack2(), 0, false, Select::Choose);
-            input.set(configuration.getJoystickAttack3(), 300, false, Select::Remap);
-            input.set(configuration.getJoystickQuit(), 300, false, Select::Quit);
+            if (source.useKeyboard()){
+                Configuration & configuration = Configuration::config(source.getKeyboard());
+                input.set(configuration.getRight(), 300, false, Select::Right);
+                input.set(configuration.getUp(), 300, false, Select::Up);
+                input.set(configuration.getDown(), 300, false, Select::Down);
+                input.set(configuration.getLeft(), 300, false, Select::Left);
+                input.set(Keyboard::Key_ESC, 0, true, Select::Quit);
+                input.set(Keyboard::Key_TAB, 200, false, Select::Remap);
+                input.set(Keyboard::Key_ENTER, 0, false, Select::Choose);
+                input.set(Keyboard::Key_SPACE, 0, false, Select::Choose);
+                input.set(configuration.getAttack1(), 0, false, Select::Choose);
+            }
 
-            input.set(Keyboard::Key_TAB, 200, false, Select::Remap);
-            input.set(Keyboard::Key_ENTER, 0, false, Select::Choose);
-            input.set(Keyboard::Key_SPACE, 0, false, Select::Choose);
-            input.set(Configuration::config(0).getAttack1(), 0, false, Select::Choose);
+            if (source.useJoystick()){
+                Configuration & configuration = Configuration::config(source.getJoystick());
+                input.set(configuration.getJoystickUp(), 300, false, Select::Up);
+                input.set(configuration.getJoystickDown(), 300, false, Select::Down);
+                input.set(configuration.getJoystickLeft(), 300, false, Select::Left);
+                input.set(configuration.getJoystickRight(), 300, false, Select::Right);
+                input.set(configuration.getJoystickAttack1(), 0, false, Select::Choose);
+                input.set(configuration.getJoystickAttack2(), 0, false, Select::Choose);
+                input.set(configuration.getJoystickAttack3(), 300, false, Select::Remap);
+                input.set(configuration.getJoystickQuit(), 300, false, Select::Quit);
+            }
 
             /* wait for the player to let go of the choose button */
-            InputManager::waitForRelease(input, Select::Choose);
-
+            InputManager::waitForRelease(input, source, Select::Choose);
         }
 
         unsigned int & current;
@@ -217,6 +222,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         int & backgroundX;
         int & boxesPerLine;
     
+        InputSource source;
         InputMap<Select::Input> input;
 
         const PlayerVector & players;
@@ -250,7 +256,8 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                         unsigned int & current,
                         const int boxesPerLine,
                         const int maximum,
-                        InputMap<Select::Input> & input):
+                        InputMap<Select::Input> & input,
+                        InputSource & source):
                     choose(choose),
                     character(character),
                     loader(loader),
@@ -258,7 +265,8 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                     current(current),
                     boxesPerLine(boxesPerLine),
                     maximum(maximum),
-                    input(input){
+                    input(input),
+                    source(source){
                     }
 
                 bool & choose;
@@ -269,6 +277,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 const int boxesPerLine;
                 const unsigned int maximum;
                 InputMap<Select::Input> & input;
+                InputSource source;
 
                 virtual void release(const Select::Input & what, Keyboard::unicode_t unicode){
                 }
@@ -305,7 +314,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                             break;
                         }
                         case Select::Quit: {
-                            InputManager::waitForRelease(input, Select::Quit);
+                            InputManager::waitForRelease(input, source, Select::Quit);
                             throw Exception::Return(__FILE__, __LINE__);
                         }
                         case Select::Choose: {
@@ -322,8 +331,8 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
                 }
             };
 
-            Handler handler(choose, character, loader, beep, current, boxesPerLine, players.size(), input);
-            InputManager::handleEvents(input, InputSource(), handler);
+            Handler handler(choose, character, loader, beep, current, boxesPerLine, players.size(), input, source);
+            InputManager::handleEvents(input, source, handler);
 
             if (current >= players.size()){
                 current = players.size() - 1;
@@ -629,14 +638,14 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
     } else {
         animation = new Gui::Animation(background);
     }
-    Logic logic(players, current, loader, backgroundX, boxesPerLine, clock, animation, config);
+    Logic logic(players, current, loader, backgroundX, boxesPerLine, clock, animation, source);
     Draw draw(players, current, backgroundX, boxesPerLine, message, loader, clock, animation);
 
     Util::standardLoop(logic, draw);
     return logic.getCurrent();
 }
 
-static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, const string & message, const Level::LevelInfo & info, int & remap, int config){
+static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, const string & message, const Level::LevelInfo & info, int & remap, const InputSource & source){
     try{
         unsigned int current = 0;
         if (players.size() == 0){
@@ -646,7 +655,7 @@ static Filesystem::AbsolutePath doSelectPlayer(const PlayerVector & players, con
         }
         /* only run the selection screen if there is more than 1 player to choose */
         if (players.size() > 1){
-            current = choosePlayer(players, message, config);
+            current = choosePlayer(players, message, source);
         }
 
         /* set the map */
@@ -697,8 +706,8 @@ static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
 
 namespace Paintown{
 
-Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, int config){
-    return doSelectPlayer(getDisplayPlayers(info), message, info, remap, config);
+Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, const InputSource & source){
+    return doSelectPlayer(getDisplayPlayers(info), message, info, remap, source);
 }
 
 }

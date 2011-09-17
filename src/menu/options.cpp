@@ -378,7 +378,7 @@ void OptionCredits::run(const Menu::Context & context){
     }
 #endif
 
-    InputManager::waitForRelease(input, Exit);
+    InputManager::waitForRelease(input, InputSource(), Exit);
     throw Menu::Reload(__FILE__, __LINE__);
     // throw Exception::Return(__FILE__, __LINE__);
 }
@@ -621,7 +621,7 @@ static Configuration::JoystickInput readJoystick(){
             if (event.enabled){
                 Global::debug(1) << "Press: " << event.out << std::endl;
                 if (event.out == Joystick::Invalid){
-                    InputManager::waitForRelease(input, Joystick::Invalid);
+                    InputManager::waitForRelease(input, InputSource(), Joystick::Invalid);
                     throw Exception::Return(__FILE__, __LINE__);
                 }
                 return event.out;
@@ -1175,7 +1175,7 @@ void OptionMugenMenu::run(const Menu::Context & context){
         out << "\n";
         out << "We are very sorry but an error has occured while trying to load MUGEN.";
         Util::showError(le, out.str());
-        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource());
     }
     throw Menu::Reload(__FILE__, __LINE__);
     // throw Exception::Return(__FILE__, __LINE__);

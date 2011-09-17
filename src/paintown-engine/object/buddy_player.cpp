@@ -21,16 +21,16 @@ static const int SPAWN_TIME = 1500;
 namespace Paintown{
 
 BuddyPlayer::BuddyPlayer( const Character * leader, const Character & chr ):
-PlayerCommon( chr ),
+PlayerCommon(chr),
 name_id(-1),
-invincible( false ),
-want_x( -1 ),
-want_z( -1 ),
-spawn_time( SPAWN_TIME ),
-leader( leader ){
-	show_life = getHealth();
-	int x, y;
-	NamePlacer::getPlacement( x, y, name_id );
+invincible(false),
+want_x(-1),
+want_z(-1),
+spawn_time(SPAWN_TIME),
+leader(leader){
+    show_life = getHealth();
+    int x, y;
+    NamePlacer::getPlacement( x, y, name_id );
 }
 	
 void BuddyPlayer::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
@@ -266,7 +266,7 @@ BuddyFuture::~BuddyFuture(){
 }
 
 void BuddyFuture::compute(){
-    base = new Player(path, NULL, 0);
+    base = new Player(path, NULL);
     base->setMap(remap);
     Character * player = (Character*) playerFuture->get();
     Object * buddy = new BuddyPlayer(player, *base);

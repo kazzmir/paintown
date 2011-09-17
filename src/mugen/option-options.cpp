@@ -490,8 +490,10 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         void run(){
-            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, InputSource());
-            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, InputSource());
+            InputSource input1;
+            InputSource input2;
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
+            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
             out1.insert(out1.end(), out2.begin(), out2.end());
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;
@@ -505,8 +507,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                     if (cancelSound != NULL){
                         cancelSound->play();
                     }
-                    InputManager::waitForRelease(player1Input, Esc);
-                    InputManager::waitForRelease(player2Input, Esc);
+                    InputManager::waitForRelease(player1Input, input1, Esc);
+                    InputManager::waitForRelease(player2Input, input2, Esc);
                 }
 
                 if (event[Up]){

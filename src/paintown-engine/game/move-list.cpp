@@ -205,7 +205,7 @@ static void dumpGraph(Util::ReferenceCount<MoveGraph> graph){
 static const int gridDistance = 7;
 class MoveList{
 public:
-    MoveList(int config, Util::ReferenceCount<Character> playerCopy, Gui::PopupBox & area, const Menu::Context & context):
+    MoveList(const InputSource & source, Util::ReferenceCount<Character> playerCopy, Gui::PopupBox & area, const Menu::Context & context):
         playerCopy(playerCopy),
         area(area),
         context(context),
@@ -223,14 +223,20 @@ public:
         jump(Storage::instance().find(Filesystem::RelativePath("sprites/arrows/jump.png")).path()){
             playerCopy->testAnimation("idle");
 
-            input.set(Keyboard::Key_ESC, 0, false, Quit);
-            /* some standard way to set up the keys should be used here */
-            Configuration & configuration = Configuration::config(config);
-            input.set(configuration.getUp(), 0, true, Up);
-            input.set(configuration.getDown(), 0, true, Down);
-            input.set(configuration.getJoystickUp(), 0, true, Up);
-            input.set(configuration.getJoystickDown(), 0, true, Down);
-            input.set(configuration.getJoystickQuit(), 0, false, Quit);
+            if (source.useKeyboard()){
+                input.set(Keyboard::Key_ESC, 0, false, Quit);
+                /* some standard way to set up the keys should be used here */
+                Configuration & configuration = Configuration::config(source.getKeyboard());
+                input.set(configuration.getUp(), 0, true, Up);
+                input.set(configuration.getDown(), 0, true, Down);
+            }
+
+            if (source.useJoystick()){
+                Configuration & configuration = Configuration::config(source.getJoystick());
+                input.set(configuration.getJoystickUp(), 0, true, Up);
+                input.set(configuration.getJoystickDown(), 0, true, Down);
+                input.set(configuration.getJoystickQuit(), 0, false, Quit);
+            }
 
             list.setJustification(Gui::LeftJustify);
 
@@ -603,7 +609,7 @@ void showMoveList(Player * player, const Menu::Context & context){
     area.colors.borderAlpha = 200;
 
     area.open();
-    MoveList all(player->getConfig(), playerCopy, area, context);
+    MoveList all(player->getInput(), playerCopy, area, context);
     Runner runner(all, area);
 
     Util::standardLoop(runner, runner);
@@ -614,7 +620,7 @@ public:
     MoveListTab(Player * player, const Menu::Context & context):
         opened(false),
         player(player),
-        main(player->getConfig(), new Character(*player), getContext().getBoard(), context){
+        main(player->getInput(), new Character(*player), getContext().getBoard(), context){
             setName(player->getName());
 
             /*

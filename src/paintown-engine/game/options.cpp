@@ -97,9 +97,9 @@ public:
 
             Global::debug(1) << "Selecting players" << endl;
             int remap = 0;
-            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource(0, 0));
 
-            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, 0, new InputSource(true, 0));
+            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, new InputSource(0, 0));
             vector<Util::Future<Object *> *> players;
             players.push_back(&future);
             Game::realGame(players, info);
@@ -203,12 +203,12 @@ public:
         vector<Util::ReferenceCount<InputSource> > possible;
 
         if (Keyboard::haveKeyboard()){
-            possible.push_back(new InputSource(true, -1));
+            possible.push_back(new InputSource(0, -1));
             names.push_back("Keyboard");
         }
 
         for (int i = 0; i < Joystick::numberOfJoysticks(); i++){
-            possible.push_back(new InputSource(false, i));
+            possible.push_back(new InputSource(-1, i));
             ostringstream out;
             out << "Joystick " << (i + 1);
             names.push_back(out.str());
@@ -236,8 +236,8 @@ public:
             ostringstream out;
             out << "Pick player " << (player + 1);
             Level::LevelInfo info;
-            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, player);
-            Util::Future<Object*> * selection = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, player, sources[player]);
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, *sources[player]);
+            Util::Future<Object*> * selection = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, sources[player]);
             futures.push_back(selection);
         }
 
@@ -334,15 +334,15 @@ public:
             Level::LevelInfo info = doLevelMenu("/levels", context);
 
             int remap;
-            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
-            Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, 0, new InputSource(true, 0));
+            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource(0, 0));
+            Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, new InputSource(0, 0));
             futures.push_back(player);
 
             for ( int i = 0; i < max_buddies; i++ ){
                 ostringstream out;
                 out << "Pick buddy " << nthWord(i+1);
                 int remap;
-                Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, 0);
+                Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, InputSource());
                 Util::Future<Object*> * buddy = new BuddyFuture(path, player, remap, -(i+2));
                 futures.push_back(buddy);
             }

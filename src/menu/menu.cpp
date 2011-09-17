@@ -1773,11 +1773,11 @@ void Menu::Menu::act(Context & ourContext){
 
         if (event.out == Cancel){
             if (renderer){
-                InputManager::waitForRelease(input, Cancel);
+                InputManager::waitForRelease(input, InputSource(), Cancel);
                 renderer->doAction(Cancel, ourContext);
             } else {
                 ourContext.playSound(Cancel);
-                InputManager::waitForRelease(input, Cancel);
+                InputManager::waitForRelease(input, InputSource(), Cancel);
                 throw Exception::Return(__FILE__, __LINE__);
             }
         }

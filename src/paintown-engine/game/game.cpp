@@ -524,7 +524,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         }
 
         void waitForQuit(){
-            InputManager::waitForRelease(input, Game::Quit);
+            InputManager::waitForRelease(input, InputSource(), Game::Quit);
         }
     };
 

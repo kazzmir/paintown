@@ -2777,7 +2777,8 @@ void CharacterSelect::run(const std::string & title, Searcher & search){
         }
 
         void run(){
-            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput, InputSource());
+            InputSource source;
+            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput, source);
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;
                 if (!event.enabled){
@@ -2791,7 +2792,7 @@ void CharacterSelect::run(const std::string & title, Searcher & search){
                     if (cancelSound){
                         cancelSound->play();
                     }
-                    InputManager::waitForRelease(gameInput, Mugen::Esc);
+                    InputManager::waitForRelease(gameInput, source, Mugen::Esc);
                 }
             }
 

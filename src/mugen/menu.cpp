@@ -771,7 +771,8 @@ void MugenMenu::run(){
 
         bool doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chosenPlayer, Mugen::PlayerType type){
             bool quit = false;
-            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(input, InputSource());
+            InputSource source;
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(input, source);
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;
                 if (!event.enabled){
@@ -813,7 +814,7 @@ void MugenMenu::run(){
                         // Set the fade state
                         fader.setState(Gui::FadeTool::FadeOut);
                         (*currentOption)->setState(Mugen::ItemOption::Deselected);
-                        InputManager::waitForRelease(input, Mugen::Esc);
+                        InputManager::waitForRelease(input, source, Mugen::Esc);
                         menu.playSound(Cancel);
                         break;
                     }

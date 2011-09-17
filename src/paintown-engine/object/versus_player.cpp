@@ -15,7 +15,7 @@ using namespace std;
 namespace Paintown{
 
 VersusPlayer::VersusPlayer(const Filesystem::AbsolutePath & str) throw( LoadException ):
-Player(str, NULL, 0){
+Player(str, NULL){
 }
 	
 VersusPlayer::VersusPlayer(const Player & player) throw( LoadException ):

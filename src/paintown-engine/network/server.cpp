@@ -389,8 +389,8 @@ static void playGame(vector<Client*> & clients){
         /* first the user selects his own player */
         Level::LevelInfo info;
         int remap = 0;
-        Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
-        Paintown::Player * player = new Paintown::Player(playerPath, new InputSource(true, 0), 0);
+        Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource());
+        Paintown::Player * player = new Paintown::Player(playerPath, new InputSource(0, 0));
         player->setMap(remap);
         player->ignoreLives();
         players.push_back(player);
@@ -633,7 +633,7 @@ Network::blocking( true );
         } else {
             // key.poll();
             popup(font, "No clients connected" );
-            InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+            InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource());
             // key.wait();
             // key.readKey();
         }
@@ -642,7 +642,7 @@ Network::blocking( true );
         debug(0) << "Network error: " << ne.getMessage() << endl;
         // key.poll();
         popup(font, "Network error: " + ne.getMessage());
-        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
+        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource());
         /*
         key.wait();
         key.readKey();

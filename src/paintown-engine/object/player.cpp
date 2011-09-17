@@ -39,14 +39,14 @@ namespace Paintown{
 
 #define DEFAULT_LIVES 4
 
-Player::Player(const char * filename, int config):
+Player::Player(const char * filename):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
 attack_bonus(0),
-invincible( false ),
-config(config),
-ignore_lives(false){
+invincible(false),
+ignore_lives(false),
+source(new InputSource()){
 	lives = DEFAULT_LIVES;
 	
 	/*
@@ -63,13 +63,12 @@ ignore_lives(false){
         commonInitialize();
 }
 	
-Player::Player(const Filesystem::AbsolutePath & filename, Util::ReferenceCount<InputSource> source, int config):
+Player::Player(const Filesystem::AbsolutePath & filename, Util::ReferenceCount<InputSource> source):
 PlayerCommon(filename),
 acts(0),
 name_id(-1),
 attack_bonus(0),
 invincible( false ),
-config(config),
 ignore_lives(false),
 source(source){
 
@@ -95,11 +94,11 @@ acts(0),
 name_id(-1),
 attack_bonus(0),
 invincible( false ),
-config(0),
-ignore_lives(false){
-	show_life = getHealth();
-	lives = DEFAULT_LIVES;
-        commonInitialize();
+ignore_lives(false),
+source(new InputSource()){
+    show_life = getHealth();
+    lives = DEFAULT_LIVES;
+    commonInitialize();
 }
 
 Player::Player(const Player & pl):
@@ -108,11 +107,11 @@ acts(0),
 name_id(-1),
 attack_bonus(pl.attack_bonus),
 invincible(pl.invincible),
-ignore_lives(false){
-	show_life = getHealth();
-        ignore_lives = pl.ignore_lives;
-        commonInitialize();
-        config = pl.config;
+ignore_lives(false),
+source(pl.source){
+    show_life = getHealth();
+    ignore_lives = pl.ignore_lives;
+    commonInitialize();
 }
 
 void Player::commonInitialize(){
@@ -155,6 +154,15 @@ void Player::resetInput(){
 bool Player::isPlayer() const {
     return true;
 }
+    
+const InputSource & Player::getInput() const {
+    if (source != NULL){
+        return *source;
+    }
+
+    /* we failed.. */
+    throw std::exception();
+}
 
 vector<Input::PaintownInput> Player::fillKeyCache(){
     /*
@@ -169,23 +177,34 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     */
 
     InputMap<Input::PaintownInput> input;
+    InputSource useSource;
+    if (source != NULL){
+        useSource = *source;
+    }
 
-    Configuration & configuration = Configuration::config(config);
     int facing = getFacing();
-    enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
-    for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
-        input.set(configuration.getKey(all[i], facing), 0, false, all[i]);
-        input.set(configuration.getJoystickKey(all[i], facing), 0, false, all[i]);
+    /* set up keyboard */
+    if (useSource.useKeyboard()){
+        Configuration & configuration = Configuration::config(useSource.getKeyboard());
+        enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
+        for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
+            input.set(configuration.getKey(all[i], facing), 0, false, all[i]);
+        }
+    }
+
+    /* set up joystick */
+    if (useSource.useJoystick()){
+        Configuration & configuration = Configuration::config(useSource.getJoystick());
+        enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
+        for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
+            input.set(configuration.getJoystickKey(all[i], facing), 0, false, all[i]);
+        }
     }
 
     acts += 1;
 
     // keyHold.back = false;
 
-    InputSource useSource;
-    if (source != NULL){
-        useSource = *source;
-    }
     vector<InputMap<Input::PaintownInput>::InputEvent> events = InputManager::getEvents(input, useSource);
     for (vector<InputMap<Input::PaintownInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
         InputMap<Input::PaintownInput>::InputEvent event = *it;
@@ -223,8 +242,12 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     int facingHold = FACING_LEFT;
     enum Input::PaintownInput allHold[] = {Input::Forward, Input::Back, Input::Up, Input::Down};
     for (unsigned int i = 0; i < sizeof(allHold) / sizeof(Input::PaintownInput); i++){
-        inputHold.set(configuration.getKey(allHold[i], facingHold), 0, false, allHold[i]);
-        inputHold.set(configuration.getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
+        if (useSource.useKeyboard()){
+            inputHold.set(Configuration::config(useSource.getKeyboard()).getKey(allHold[i], facingHold), 0, false, allHold[i]);
+        }
+        if (useSource.useJoystick()){
+            inputHold.set(Configuration::config(useSource.getJoystick()).getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
+        }
     }
 
     vector<InputMap<Input::PaintownInput>::InputEvent> eventsHold = InputManager::getEvents(inputHold, useSource);
@@ -503,9 +526,11 @@ bool Player::combo(Util::ReferenceCount<Animation> ani){
     return false;
 }
 
+/*
 int Player::getKey(Input::PaintownInput motion, int facing){
     return Configuration::config(config).getKey( motion, facing );
 }
+*/
         
 const char * Player::keyToName(Input::PaintownInput key){
     switch (key){
@@ -526,9 +551,11 @@ const char * Player::keyToName(Input::PaintownInput key){
     return "key-to-name-error";
 }
 	
+/*
 int Player::getKey(Input::PaintownInput x){
 	return this->getKey( x, getFacing() );
 }
+*/
 	
 Object * Player::copy(){
 	return new Player( *this );
@@ -1138,13 +1165,12 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
         }
 }
 
-PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, int config, Util::ReferenceCount<InputSource> source):
+PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, Util::ReferenceCount<InputSource> source):
 super(),
 path(path),
 invincible(invincible),
 lives(lives),
 remap(remap),
-config(config),
 source(source){
     start();
 }
@@ -1160,7 +1186,7 @@ PlayerFuture::~PlayerFuture(){
 void PlayerFuture::compute(){
     string look = Storage::instance().cleanse(path).path();
     Global::info("Loading " + look);
-    Player * player = new Player(path, source, config);
+    Player * player = new Player(path, source);
     player->setInvincible(invincible);
     player->setMap(remap);
     player->setObjectId(-1);

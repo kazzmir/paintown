@@ -15,6 +15,8 @@ namespace Graphics{
 class Bitmap;
 }
 
+class InputSource;
+
 /* encapsulates a configuration for a game */
 namespace Paintown{
 
@@ -33,7 +35,7 @@ public:
 
     virtual ~Mod();
 
-    virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap, int config);
+    virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap, const InputSource & source);
 
     /* tries to find files in the mod path first and then the regular
      * places next.

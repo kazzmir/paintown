@@ -116,14 +116,14 @@ namespace Select{
     };
 }
 
-Filesystem::AbsolutePath OpenborMod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, int config){
+Filesystem::AbsolutePath OpenborMod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, const InputSource & source){
     Graphics::Bitmap background(makeBitmap(Filesystem::RelativePath("data/bgs/select.gif")));
     Graphics::Bitmap work(GFX_X / 2, GFX_Y / 2);
     background.Blit(work);
     work.BlitToScreen();
     InputMap<Select::Input> input;
     input.set(Keyboard::Key_ESC, 0, true, Select::Quit);
-    InputManager::waitForPress(input, Select::Quit);
+    InputManager::waitForPress(input, source, Select::Quit);
 
     throw Exception::Base(__FILE__, __LINE__);
 

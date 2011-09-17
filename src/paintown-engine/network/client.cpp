@@ -102,7 +102,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
 
         virtual void load(){
             Global::info("Create player " + playerPath.path());
-            player = new Paintown::Player(playerPath, new InputSource(true, 0), 0);
+            player = new Paintown::Player(playerPath, new InputSource(0, 0));
             player->setMap(remap);
             player->ignoreLives();
             Filesystem::RelativePath cleanPath = Storage::instance().cleanse(playerPath);
@@ -138,7 +138,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
 
     /* remap will be modified by the selectPlayer method */
     int remap = 0;
-    Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, 0);
+    Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource());
 
     Context context(socket, info, playerPath, remap);
     Loader::loadScreen(context, info);
@@ -604,14 +604,14 @@ void networkClient(){
                         case Connect: {
                             is_done = true;
                             try{
-                                InputManager::waitForRelease(input, Action);
+                                InputManager::waitForRelease(input, InputSource(), Action);
                                 runClient(nameInput.getText(), hostInput.getText(), portInput.getText());
                             } catch (const NetworkException & e){
                                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
                                 popup(font, e.getMessage());
-                                InputManager::waitForRelease(input, Action);
-                                InputManager::waitForPress(input, Action);
-                                InputManager::waitForRelease(input, Action);
+                                InputManager::waitForRelease(input, InputSource(), Action);
+                                InputManager::waitForPress(input, InputSource(), Action);
+                                InputManager::waitForRelease(input, InputSource(), Action);
                                 
                                 is_done = false;
                                 state.draw = true;
