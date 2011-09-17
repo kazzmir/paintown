@@ -177,11 +177,11 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
     message >> alliance >> id >> map;
     if (uniqueObject(id)){
         bool found = false;
-        for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+        for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
             Paintown::Character * character = (Paintown::Character *) it->player;
-            if ( character->getId() == id ){
+            if (character->getId() == id){
                 character->deathReset();
-                addObject( character );
+                addObject(character);
                 found = true;
                 break;
             }
@@ -193,14 +193,14 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
             int isPlayer;
             message >> isPlayer;
             if (isPlayer == World::IS_PLAYER){
-                block.setType( ObjectFactory::NetworkPlayerType );
+                block.setType(ObjectFactory::NetworkPlayerType);
             } else {
-                block.setType( ObjectFactory::NetworkCharacterType );
+                block.setType(ObjectFactory::NetworkCharacterType);
             }
             block.setMap(map);
             block.setPath(path);
             Paintown::Character * character = (Paintown::Character *) ObjectFactory::createObject( &block );
-            if ( character == NULL ){
+            if (character == NULL){
                 debug(0) << "Could not create character!" << endl;
                 return;
             }
@@ -298,6 +298,10 @@ void NetworkWorldClient::handleCreateBang( Network::Message & message ){
     addx->setHealth( 1 );
     addx->setId( (unsigned int) -1 );
     addObject( addx );
+}
+        
+bool NetworkWorldClient::respawnPlayers(const std::vector<Paintown::Object*> & players){
+    return true;
 }
 
 Paintown::Object * NetworkWorldClient::findNetworkObject( Paintown::Object::networkid_t id ){

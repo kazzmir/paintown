@@ -90,6 +90,8 @@ public:
 	/* upper left hand corner of the screen */
 	virtual int getX();
 	virtual int getY();
+    
+        virtual bool respawnPlayers(const std::vector<Paintown::Object*> & players);
 
     virtual void pause();
     virtual void unpause();

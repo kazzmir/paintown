@@ -45,6 +45,7 @@ public:
 	
 	virtual void doScene( int min_x, int max_x );
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
+        virtual bool respawnPlayers(const std::vector<Paintown::Object*> & players);
 
         virtual void changePause();
 

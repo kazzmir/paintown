@@ -82,16 +82,6 @@ static void startLoading(Util::Thread::Id * thread, const Level::LevelInfo & inf
 }
 */
 
-static Network::Message removeMessage(int id){
-    Network::Message message;
-
-    message.id = 0;
-    message << World::REMOVE;
-    message << id;
-
-    return message;
-}
-
 static vector<Background> readBackgrounds( const Filesystem::AbsolutePath & path ){
     vector<Background> backgrounds;
 
@@ -198,44 +188,6 @@ static void doTakeScreenshot(const Graphics::Bitmap & work){
     string file = findNextFile("paintown-screenshot.bmp");
     Global::debug(2) << "Saved screenshot to " << file << endl;
     work.save(file);
-}
-
-/* returns false if players cannot be respawned due to running out of lives */
-static bool respawnPlayers(const vector<Paintown::Object*> & players, World & world){
-    bool alive = false;
-    for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++){
-        Paintown::PlayerCommon * player = (Paintown::PlayerCommon *) *it;
-        if (player->getHealth() <= 0){
-            if (player->spawnTime() == 0){
-
-                /* if the player has at least 1 life left then make them lose a life
-                 * and respawn them. if they have infinite lives enabled then they
-                 * might have 1 life but deathReset() won't actually decrement the
-                 * number of lives.
-                 * if the player is reduced to 0 lives then remove them from the
-                 * world entirely.
-                 */
-                if (player->getLives() >= 1){
-                    player->deathReset();
-                    if (player->getLives() > 0){
-                        if (player->isPlayer()){
-                            alive = true;
-                        }
-                        world.addMessage(removeMessage(player->getId()));
-                        world.addObject(player);
-                        world.addMessage(player->getCreateMessage());
-                        world.addMessage(player->movedMessage());
-                        world.addMessage(player->animationMessage());
-                    } else {
-                        world.addMessage(removeMessage(player->getId()));
-                    }
-                }
-            }
-        } else {
-            alive = true;
-        }
-    }
-    return alive;
 }
 
 class GameOptionFactory: public Paintown::OptionFactory {
@@ -539,7 +491,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             world.act();
             console.act();
 
-            if (!respawnPlayers(players, world)){
+            if (!world.respawnPlayers(players)){
                 throw LoseException();
             }
 

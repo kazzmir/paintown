@@ -85,6 +85,9 @@ public:
     /* bleh.. */
     virtual void addEnemy(Paintown::Enemy * obj) = 0;
 
+    /* reset the players, return false if no more players can be spawned */
+    virtual bool respawnPlayers(const std::vector<Paintown::Object*> & players) = 0;
+
     virtual Paintown::Object * findObject(int id) = 0;
 
 	virtual int getMaximumZ() = 0;

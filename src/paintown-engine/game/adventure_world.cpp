@@ -235,6 +235,53 @@ bool AdventureWorld::randomLevel() const {
     return false;
 }
 
+static Network::Message removeMessage(int id){
+    Network::Message message;
+
+    message.id = 0;
+    message << World::REMOVE;
+    message << id;
+
+    return message;
+}
+
+bool AdventureWorld::respawnPlayers(const std::vector<Paintown::Object*> & players){
+    bool alive = false;
+    for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++){
+        Paintown::PlayerCommon * player = (Paintown::PlayerCommon *) *it;
+        if (player->getHealth() <= 0){
+            if (player->spawnTime() == 0){
+
+                /* if the player has at least 1 life left then make them lose a life
+                 * and respawn them. if they have infinite lives enabled then they
+                 * might have 1 life but deathReset() won't actually decrement the
+                 * number of lives.
+                 * if the player is reduced to 0 lives then remove them from the
+                 * world entirely.
+                 */
+                if (player->getLives() >= 1){
+                    player->deathReset();
+                    if (player->getLives() > 0){
+                        if (player->isPlayer()){
+                            alive = true;
+                        }
+                        addMessage(removeMessage(player->getId()));
+                        addObject(player);
+                        addMessage(player->getCreateMessage());
+                        addMessage(player->movedMessage());
+                        addMessage(player->animationMessage());
+                    } else {
+                        addMessage(removeMessage(player->getId()));
+                    }
+                }
+            }
+        } else {
+            alive = true;
+        }
+    }
+    return alive;
+}
+
 void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	/*
 	if ( scene ){
