@@ -6,7 +6,6 @@
 #include "paintown-engine/game/adventure_world.h"
 #include "util/network/network.h"
 #include "paintown-engine/object/object.h"
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include "util/input/input-map.h"
 #include "util/input/text-input.h"
@@ -21,9 +20,11 @@ class Bitmap;
 class NetworkWorldClient: public AdventureWorld, public ChatWidget {
 public:
 
-	NetworkWorldClient( Network::Socket server, const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Paintown::Object::networkid_t id, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorldClient( Network::Socket server, const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Paintown::Object::networkid_t id, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 );
 	
 	virtual void act();
+        /* override logic to do nothing because the server will do all the logic */
+	virtual void doLogic();
 	virtual void draw(Graphics::Bitmap * work);
 
 	void addIncomingMessage( const Network::Message & message );
@@ -32,9 +33,11 @@ public:
 		return server;
 	}
 
+        /*
 	inline Util::Thread::Lock * getLock(){
 		return &message_mutex;
 	}
+        */
 
         /* start thread to handle messages */
         void startMessageHandler();
@@ -81,8 +84,8 @@ private:
 	NLsocket server;
 	std::vector< Network::Message > incoming;
 	std::vector< Network::Message > outgoing;
-        Util::Thread::Lock message_mutex;
-        Util::Thread::Lock running_mutex;
+        Util::Thread::LockObject messageLock;
+        Util::Thread::LockObject runningLock;
         Util::Thread::Id message_thread;
 
 	bool world_finished;

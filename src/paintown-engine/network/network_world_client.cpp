@@ -76,11 +76,11 @@ static void * handleMessages(void * arg){
     return NULL;
 }
 	
-NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Paintown::Object::networkid_t id, const map<Paintown::Object::networkid_t, string> & clientNames, int screen_size ) throw ( LoadException ):
-super( players, path, new NetworkCacher(), screen_size ),
+NetworkWorldClient::NetworkWorldClient( Network::Socket server, const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Paintown::Object::networkid_t id, const map<Paintown::Object::networkid_t, string> & clientNames, int screen_size ):
+super(players, path, new NetworkCacher(), screen_size),
 ChatWidget(*this, id),
-server( server ),
-world_finished( false ),
+server(server),
+world_finished(false),
 secondCounter(Global::second_counter),
 id(id),
 running(true),
@@ -88,29 +88,25 @@ currentPing(0),
 clientNames(clientNames),
 pingCounter(0){
     objects.clear();
-    Util::Thread::initializeLock(&message_mutex);
-    Util::Thread::initializeLock(&running_mutex);
 }
 
 void NetworkWorldClient::startMessageHandler(){
-    Util::Thread::createThread( &message_thread, NULL, (Util::Thread::ThreadFunction) handleMessages, this );
+    Util::Thread::createThread(&message_thread, NULL, (Util::Thread::ThreadFunction) handleMessages, this);
 }
 	
 NetworkWorldClient::~NetworkWorldClient(){
-    debug( 1 ) << "Destroy client world" << endl;
+    debug(1) << "Destroy client world" << endl;
 }
 	
 bool NetworkWorldClient::isRunning(){
-    Util::Thread::acquireLock( &running_mutex );
-    bool b = running;
-    Util::Thread::releaseLock( &running_mutex );
-    return b;
+    Util::Thread::ScopedLock scoped(runningLock);
+    return running;
 }
 
 void NetworkWorldClient::stopRunning(){
-    Util::Thread::acquireLock( &running_mutex );
+    runningLock.acquire();
     running = false;
-    Util::Thread::releaseLock( &running_mutex );
+    runningLock.release();
     Network::Message finish;
     finish << World::FINISH;
     finish.id = 0;
@@ -120,17 +116,15 @@ void NetworkWorldClient::stopRunning(){
 }
 	
 void NetworkWorldClient::addIncomingMessage( const Network::Message & message ){
-    Util::Thread::acquireLock( &message_mutex );
-    incoming.push_back( message );
-    Util::Thread::releaseLock( &message_mutex );
+    Util::Thread::ScopedLock lock(messageLock);
+    incoming.push_back(message);
 }
 	
 void NetworkWorldClient::getIncomingMessages(vector<Network::Message> & messages){
+    Util::Thread::ScopedLock scoped(messageLock);
     // vector< Network::Message > m;
-    Util::Thread::acquireLock( &message_mutex );
     messages = incoming;
     incoming.clear();
-    Util::Thread::releaseLock( &message_mutex );
     // return m;
 }
 
@@ -225,22 +219,22 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
 void NetworkWorldClient::handleCreateCat( Network::Message & message ){
     Paintown::Object::networkid_t id;
     message >> id;
-    if ( uniqueObject( id ) ){
+    if (uniqueObject(id)){
         Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
         BlockObject block;
-        block.setType( ObjectFactory::CatType );
-        block.setPath( path );
+        block.setType(ObjectFactory::CatType);
+        block.setPath(path);
         /* TODO: should these values be hard-coded? */
-        block.setCoords( 200, 150 );
-        Paintown::Cat * cat = (Paintown::Cat *) ObjectFactory::createObject( &block );
-        if ( cat == NULL ){
-            debug( 0 ) << "Could not create cat" << endl;
+        block.setCoords(200, 150);
+        Paintown::Cat * cat = (Paintown::Cat *) ObjectFactory::createObject(&block);
+        if (cat == NULL){
+            debug(0) << "Could not create cat" << endl;
             return;
         }
 
-        cat->setY( 0 );
-        cat->setId( (unsigned int) -1 );
-        addObject( cat );
+        cat->setY(0);
+        cat->setId((unsigned int) -1);
+        addObject(cat);
     }
 }
 	
@@ -249,10 +243,10 @@ bool NetworkWorldClient::finished() const {
 }
 
 Paintown::Object * NetworkWorldClient::removeObject( Paintown::Object::networkid_t id ){
-    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); ){
+    for (vector<Paintown::Object *>::iterator it = objects.begin(); it != objects.end(); ){
         Paintown::Object * o = *it;
-        if ( o->getId() == id ){
-            it = objects.erase( it );
+        if (o->getId() == id){
+            it = objects.erase(it);
             return o;
         } else {
             it++;
@@ -264,7 +258,7 @@ Paintown::Object * NetworkWorldClient::removeObject( Paintown::Object::networkid
 void NetworkWorldClient::handleCreateItem( Network::Message & message ){
     int id;
     message >> id;
-    if ( uniqueObject( id ) ){
+    if (uniqueObject(id)){
         int x, z;
         int value;
         message >> x >> z >> value;
@@ -273,17 +267,17 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
         block.setType(ObjectFactory::ItemType);
         block.setPath(path);
         /* TODO: dont hard-code this */
-        block.setStimulationType( "health" );
-        block.setStimulationValue( value );
-        block.setCoords( x, z );
+        block.setStimulationType("health");
+        block.setStimulationValue(value);
+        block.setCoords(x, z);
         Paintown::Item * item = (Paintown::Item *) ObjectFactory::createObject( &block );
         if ( item == NULL ){
             debug( 0 ) << "Could not create item" << endl;
             return;
         }
 
-        item->setY( 0 );
-        item->setId( id );
+        item->setY(0);
+        item->setId(id);
         addObject(item);
     }
 }
@@ -292,12 +286,12 @@ void NetworkWorldClient::handleCreateBang( Network::Message & message ){
     int x, y, z;
     message >> x >> y >> z;
     Paintown::Object * addx = bang->copy();
-    addx->setX( x );
-    addx->setY( 0 );
-    addx->setZ( y+addx->getHeight()/2 );
+    addx->setX(x);
+    addx->setY(0);
+    addx->setZ(y + addx->getHeight() / 2);
     addx->setHealth( 1 );
-    addx->setId( (unsigned int) -1 );
-    addObject( addx );
+    addx->setId((unsigned int) -1);
+    addObject(addx);
 }
         
 bool NetworkWorldClient::respawnPlayers(const std::vector<Paintown::Object*> & players){
@@ -305,9 +299,9 @@ bool NetworkWorldClient::respawnPlayers(const std::vector<Paintown::Object*> & p
 }
 
 Paintown::Object * NetworkWorldClient::findNetworkObject( Paintown::Object::networkid_t id ){
-    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+    for (vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
         Paintown::Object * o = *it;
-        if ( o->getId() == id ){
+        if (o->getId() == id){
             return o;
         }
     }
@@ -318,7 +312,7 @@ Paintown::Object * NetworkWorldClient::findNetworkObject( Paintown::Object::netw
  * try to abstract it out at some point.
  */
 void NetworkWorldClient::removePlayer(Paintown::Object * player){
-    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); ){
+    for (vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); ){
         PlayerTracker & tracker = *it;
         if (tracker.player == player){
             void * handle = tracker.script;
@@ -373,25 +367,25 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
         Global::debug(2) << "Message type " << type << endl;
         switch ( type ){
             case CREATE_CHARACTER : {
-                handleCreateCharacter( message );
+                handleCreateCharacter(message);
                 break;
             }
             case CREATE_CAT : {
-                handleCreateCat( message );	
+                handleCreateCat(message);
                 break;
             }
             case CREATE_BANG : {
-                handleCreateBang( message );
+                handleCreateBang(message);
                 break;
             }
             case CREATE_ITEM : {
-                handleCreateItem( message );
+                handleCreateItem(message);
                 break;
             }
             case NEXT_BLOCK : {
                 int block;
                 message >> block;
-                scene->advanceBlocks( block );
+                scene->advanceBlocks(block);
                 break;
             }
             case GRAB : {
@@ -399,23 +393,23 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
                 Paintown::Object::networkid_t grabbed;
                 message >> grabbing;
                 message >> grabbed;
-                Paintown::Character * c_grabbing = (Paintown::Character *) findNetworkObject( grabbing );
-                Paintown::Character * c_grabbed = (Paintown::Character *) findNetworkObject( grabbed );
-                if ( c_grabbing != NULL && c_grabbed != NULL ){
-                    c_grabbed->grabbed( c_grabbing );
-                    c_grabbing->setLink( c_grabbed );
+                Paintown::Character * c_grabbing = (Paintown::Character *) findNetworkObject(grabbing);
+                Paintown::Character * c_grabbed = (Paintown::Character *) findNetworkObject(grabbed);
+                if (c_grabbing != NULL && c_grabbed != NULL){
+                    c_grabbed->grabbed(c_grabbing);
+                    c_grabbing->setLink(c_grabbed);
                 }
                 break;
             }
             case DELETE_OBJ : {
                 Paintown::Object::networkid_t id;
                 message >> id;
-                Paintown::Object * o = removeObject( id );
+                Paintown::Object * o = removeObject(id);
 
                 if (isPlayer(o)){
                     removePlayer(o);
                 } else {
-                    if ( o != NULL ){
+                    if (o != NULL){
                         delete o;
                     }
                 }
@@ -441,17 +435,16 @@ void NetworkWorldClient::handleMessage( Network::Message & message ){
                 break;
             }
             case FINISH : {
-
-                debug( 1 ) << "Received finish message" << endl;
+                debug(1) << "Received finish message" << endl;
                 world_finished = true;
                 break;
             }
             case NOTHING : {
-                debug( 0 ) << "Invalid message. Data dump" << endl;
-                for ( int i = 0; i < Network::DATA_SIZE; i++ ){
-                    debug( 0 ) << (int) message.data[ i ] << " ";
+                debug(0) << "Invalid message. Data dump" << endl;
+                for (int i = 0; i < Network::DATA_SIZE; i++){
+                    debug( 0 ) << (int) message.data[i] << " ";
                 }
-                debug( 0 ) << endl;
+                debug(0) << endl;
                 break;
             }
             case PING_REPLY : {
@@ -497,18 +490,10 @@ void NetworkWorldClient::addMessage( Network::Message m, Network::Socket from, N
 }
 	
 void NetworkWorldClient::doScene( int min_x, int max_x ){
-    scene->act(min_x, max_x, 0);
-#if 0
-    vector< Object * > objs;
-    scene->act( min_x, max_x,  &objs );
-
-    /* throw out everything the scene just made because the server is
-     * going to tell us which objects/characters to make
+    /* pass in a null objects vector so any new objects get
+     * tossed into the void.
      */
-    for ( vector< Object * >::iterator it = objs.begin(); it != objs.end(); it++ ){
-        delete *it;
-    }
-#endif
+    scene->act(min_x, max_x, NULL);
 }
 
 Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){
@@ -532,7 +517,7 @@ Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){
 }
 
 void NetworkWorldClient::sendMessage( const Network::Message & message, Network::Socket socket ){
-	message.send( socket );
+    message.send(socket);
 }
 
 void NetworkWorldClient::sendMessages(const vector<Network::Message> & messages, Network::Socket socket){
@@ -561,12 +546,16 @@ void NetworkWorldClient::draw(Graphics::Bitmap * work){
 
     ChatWidget::drawChat(work, work->getHeight() * 2 - 1 - font.getHeight() - 1);
 }
+	
+void NetworkWorldClient::doLogic(){
+    /* do nothing */
+}
 
-/* does NOT call AdventureWorld::act() */
 void NetworkWorldClient::act(){
 	
+#if 0
     /* these things are copy/pasted from AdventureWorld */
-    if ( quake_time > 0 ){
+    if (quake_time > 0){
         quake_time--;
     }
 
@@ -575,10 +564,12 @@ void NetworkWorldClient::act(){
         descriptionGradient->update();
     }
     /* end copy/paste */
+#endif
 
     ChatWidget::act();
 
-    vector< Paintown::Object * > added_effects;
+#if 0
+    vector<Paintown::Object *> added_effects;
     if (! isPaused()){
 
         for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
@@ -630,23 +621,27 @@ void NetworkWorldClient::act(){
 
         doScene( 0, 0 );
     }
+#endif
+    AdventureWorld::act();
 
-    vector< Network::Message > messages;
+    vector<Network::Message> messages;
     getIncomingMessages(messages);
     // vector< Network::Message > messages = getIncomingMessages();
-    for ( vector< Network::Message >::iterator it = messages.begin(); it != messages.end(); it++ ){
-        handleMessage( *it );
+    for (vector<Network::Message>::iterator it = messages.begin(); it != messages.end(); it++){
+        handleMessage(*it);
     }
 
-    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); ){
+#if 0
+    for (vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end();){
         if ( (*it)->getHealth() <= 0 ){
-            (*it)->died( added_effects );
+            (*it)->died(added_effects);
             if ( ! isPlayer( *it ) ){
                 delete *it;
             }
             it = objects.erase( it );
         } else ++it;
     }
+#endif
 
     if (currentPing < 1 || abs((long)(Global::second_counter) - (long)secondCounter) > 2){
         pingCounter += 1;
@@ -657,12 +652,15 @@ void NetworkWorldClient::act(){
     sendMessages(outgoing, getServer());
     outgoing.clear();
 
-    for ( vector< Paintown::Object * >::iterator it = added_effects.begin(); it != added_effects.end(); ){
+#if 0
+    for ( vector<Paintown::Object *>::iterator it = added_effects.begin(); it != added_effects.end(); ){
         Paintown::Object * o = *it;
-        o->setId( (Paintown::Object::networkid_t) -1 );
+        o->setId((Paintown::Object::networkid_t) -1);
         it++;
     }
-    objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
+
+    objects.insert(objects.end(), added_effects.begin(), added_effects.end());
+#endif
 }
 
 #endif

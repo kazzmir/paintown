@@ -33,7 +33,7 @@ max_health( 0 ),
 damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( alliance ),
-id( 0 ),
+id((unsigned int) -1),
 objectId(-1),
 scriptObject(NULL){
 }
@@ -50,7 +50,7 @@ max_health( 0 ),
 damage( 0 ),
 facing( FACING_RIGHT ),
 alliance( _alliance ),
-id( 0 ),
+id((unsigned int) -1),
 objectId(-1),
 scriptObject(NULL){
 }

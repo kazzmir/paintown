@@ -100,6 +100,10 @@ camera(_screen_size / 2, 0){
 	bang = NULL;
 	screen_size = _screen_size;
 
+        /* we add players to the player tracker here because the world wants to set
+         * some attributes (x/y coordinates).
+         * then we load the world and afterwards set up the script object
+         */
 	for ( vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
 		PlayerTracker t;
 		t.min_x = 0;
@@ -178,6 +182,13 @@ Script::Engine * AdventureWorld::getEngine() const {
 
 void AdventureWorld::begin(){
     scene->startMusic();
+}
+    
+void AdventureWorld::trackPlayer(Paintown::Player * player){
+    PlayerTracker tracker;
+    tracker.min_x = 0;
+    tracker.player = player;
+    this->players.push_back(tracker);
 }
 
 void AdventureWorld::reloadLevel(){
@@ -315,16 +326,16 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 		
 	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
             Paintown::Object * const player = it->player;	
-		player->setX( 100 + Util::rnd( 75 ) );
-		player->setZ( getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
-		player->setY( 0 );
+            player->setX(100 + Util::rnd( 75 ));
+            player->setZ(getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
+            player->setY(0);
 	}
 
 	deleteObjects( &objects );
 	
 	objects.clear();
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-		objects.push_back( it->player );
+	for (vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++){
+            objects.push_back( it->player );
 	}
 
 }
@@ -434,8 +445,73 @@ void AdventureWorld::dyingObject(const Paintown::Player & obj){
     // enterSlowMotion(60);
 }
 
-void AdventureWorld::doLogic(){
+void AdventureWorld::handleCollisions(Paintown::ObjectAttack * o_good, vector<Paintown::Object*> & added_effects){
+    for (vector<Paintown::Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
+        if (*fight != o_good && (*fight)->isCollidable(o_good) && o_good->isCollidable(*fight)){
+            // cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
+            // cout << "Collision: " << (*fight)->collision( o_good ) << endl;
+            if ( o_good->ZDistance(*fight) <= o_good->minZDistance() && (*fight)->collision(o_good)){
+                Global::debug(2) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
 
+                // cout << "There was a collision" << endl;
+                // cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;
+
+                // if ( good->isAttacking() ){
+                double x = 0, y = 0;
+                // o_good->getAttackCoords(x,y);
+                x = (*fight)->getX();
+                y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
+
+                if ( bang != NULL ){
+                    Paintown::Object * addx = bang->copy();
+                    addx->setX( x );
+                    addx->setY( 0 );
+                    addx->setZ( y+addx->getHeight()/2 );
+                    addx->setHealth( 1 );
+                    added_effects.push_back( addx );
+                    addMessage(createBangMessage((int) x, 0, (int) y + addx->getHeight() / 2));
+                }
+
+                o_good->attacked(this, *fight, added_effects);
+                (*fight)->collided(this, o_good, added_effects);
+                /* move this to the object now */
+                addMessage((*fight)->collidedMessage());
+                (*fight)->takeDamage(*this, o_good, o_good->getDamage(), o_good->getForceX(), o_good->getForceY());
+
+
+                /* TODO: enter slow motion for bosses
+                   if ((*fight)->getHealth() <= 0){
+                   enterSlowMotion(100);
+                   }
+                   */
+
+                takeScreenshot();
+                // }
+            }
+        }
+    }
+}
+
+void AdventureWorld::updateObject(Paintown::Object * good, vector<Paintown::Object*> & added_effects){
+    good->act(&objects, this, &added_effects);
+
+    if (good->getZ() < getMinimumZ()){
+        good->setZ(getMinimumZ());
+    }
+
+    if (good->getZ() > getMaximumZ()){
+        good->setZ(getMaximumZ());
+    }
+
+    /* Check for collisions */
+    if (good->isAttacking()){
+        // ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
+        Paintown::ObjectAttack * o_good = (Paintown::ObjectAttack *)good;
+        handleCollisions(o_good, added_effects);
+    }
+}
+
+void AdventureWorld::doLogic(){
     if (slowmotion > 0){
         slowmotion -= 1;
     }
@@ -443,72 +519,26 @@ void AdventureWorld::doLogic(){
     /* increase game time */
     gameTicks += 1;
 
-    vector< Paintown::Object * > added_effects;
-    for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++ ){
+    vector<Paintown::Object *> added_effects;
+    for ( vector<Paintown::Object *>::iterator it = objects.begin(); it != objects.end(); it++ ){
         Paintown::Object * good = *it;
-        good->act( &objects, this, &added_effects );
-
-        if ( good->getZ() < getMinimumZ() ){
-            good->setZ( getMinimumZ() );
-        }
-        if ( good->getZ() > getMaximumZ() ){
-            good->setZ( getMaximumZ() );
-        }
-        /* Check for collisions */
-        if ( good->isAttacking() ){
-            // ObjectAttack * o_good = dynamic_cast<ObjectAttack*>( good );
-            Paintown::ObjectAttack * o_good = (Paintown::ObjectAttack *)good;
-            for ( vector<Paintown::Object*>::iterator fight = objects.begin(); fight != objects.end(); fight++){
-                if ( fight != it && (*fight)->isCollidable( good ) && good->isCollidable( *fight ) ){
-                    // cout << "Zdistance: " << good->ZDistance( *fight ) << " = " << (good->ZDistance( *fight ) < o_good->minZDistance()) << endl;
-                    // cout << "Collision: " << (*fight)->collision( o_good ) << endl;
-                    if ( good->ZDistance( *fight ) <= o_good->minZDistance() && (*fight)->collision( o_good ) ){
-                        Global::debug(2) << o_good << " is attacking " << *fight << " with " << o_good->getAttackName() << endl;
-
-                        // cout << "There was a collision" << endl;
-                        // cout<<"Attacked " << *fight << " with animation "<< good->getAttackName() << " ticket " << o_good->getTicket() << endl;
-
-                        // if ( good->isAttacking() ){
-                        double x = 0, y = 0;
-                        // o_good->getAttackCoords(x,y);
-                        x = (*fight)->getX();
-                        y = (*fight)->getRY() - (*fight)->getHeight() + (*fight)->getHeight() / 3;
-
-                        if ( bang != NULL ){
-                            Paintown::Object * addx = bang->copy();
-                            addx->setX( x );
-                            addx->setY( 0 );
-                            addx->setZ( y+addx->getHeight()/2 );
-                            addx->setHealth( 1 );
-                            added_effects.push_back( addx );
-                            addMessage( createBangMessage( (int) x, 0, (int) y + addx->getHeight() / 2 ) );
-                        }
-
-                        o_good->attacked(this, *fight, added_effects );
-                        (*fight)->collided(this, o_good, added_effects );
-                        /* move this to the object now */
-                        addMessage( (*fight)->collidedMessage() );
-                        (*fight)->takeDamage(*this, o_good, o_good->getDamage(), o_good->getForceX(), o_good->getForceY());
-
-
-                        /* TODO: enter slow motion for bosses
-                           if ((*fight)->getHealth() <= 0){
-                           enterSlowMotion(100);
-                           }
-                           */
-
-                        takeScreenshot();
-                        // }
-                    }
-                }
-            }
-        }
+        updateObject(good, added_effects);
     }
 
+    eraseDeadObjects(added_effects);
+    getItems();
+
+    objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
+
+    /* script engine tick. Is this the right place for it? */
+    getEngine()->tick();
+}
+
+void AdventureWorld::eraseDeadObjects(vector<Paintown::Object*> & added_effects){
     for ( vector<Paintown::Object *>::iterator it = objects.begin(); it != objects.end(); ){
         if ( (*it)->getHealth() <= 0 ){
-            (*it)->died( added_effects );
-            if ( ! isPlayer( *it ) ){
+            (*it)->died(added_effects);
+            if (! isPlayer(*it)){
                 delete *it;
             }
             it = objects.erase(it);
@@ -516,29 +546,26 @@ void AdventureWorld::doLogic(){
             ++it;
         }
     }
+}
 
+void AdventureWorld::getItems(){
     /* special case for getting items */
-    for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
+    for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++){
         Paintown::Character * const cplayer = (Paintown::Character *) it->player; 
-        if ( cplayer->getStatus() == Paintown::Status_Get ){
+        if (cplayer->getStatus() == Paintown::Status_Get){
             for ( vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); ){
                 Paintown::Object * const o = *it;
-                if ( o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision( cplayer ) ){
+                if (o->isGettable() && o->ZDistance( cplayer ) < 10 && o->collision(cplayer)){
                     o->touch( cplayer );
                     addMessage( deleteMessage( o->getId() ) );
                     /* hack */
                     addMessage( cplayer->healthMessage() );
                     delete o;
-                    it = objects.erase( it );
+                    it = objects.erase(it);
                 } else ++it;
             }
         }
     }
-
-    objects.insert( objects.end(), added_effects.begin(), added_effects.end() );
-
-    /* script engine tick. Is this the right place for it? */
-    getEngine()->tick();
 }
 
 void AdventureWorld::killAllHumans( Paintown::Object * player ){

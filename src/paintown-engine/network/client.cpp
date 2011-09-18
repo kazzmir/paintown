@@ -70,7 +70,7 @@ static void sendDummy(Socket socket){
     Message dummy;
     dummy.id = 0;
     dummy << World::IGNORE_MESSAGE;
-    dummy.send( socket );
+    dummy.send(socket);
 }
 
 static void sendQuit(Socket socket){
@@ -291,7 +291,7 @@ static void playGame(Socket socket){
                 } catch ( const Exception::Return & e ){
                     /* do we need to close the socket here?
                      * when this function returns the socket will be
-                     * close anyway.
+                     * closed anyway.
                      */
                     Network::close(socket);
                 }

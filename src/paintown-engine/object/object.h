@@ -201,9 +201,9 @@ public:
         this->objectId = id;
     }
 
-	virtual inline int getObjectId() const {
-		return this->objectId;
-	}
+    virtual inline int getObjectId() const {
+        return this->objectId;
+    }
 
 	/* getRY:
 	 * Returns the absolute Y position of the object.

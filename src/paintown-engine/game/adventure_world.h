@@ -3,6 +3,7 @@
 
 namespace Paintown{
 class Object;
+class ObjectAttack;
 class Enemy;
 }
 
@@ -121,6 +122,13 @@ public:
         
         virtual double ticks(const double in) const;
 
+        /* handle players getting items */
+        virtual void getItems();
+        /* remove any objects that have health <= 0 */
+        virtual void eraseDeadObjects(std::vector<Paintown::Object*> & added_effects);
+        virtual void updateObject(Paintown::Object * good, std::vector<Paintown::Object*> & added_effects);
+        virtual void handleCollisions(Paintown::ObjectAttack * o_good, std::vector<Paintown::Object*> & added_effects);
+
 	void killAllHumans( Paintown::Object * player );
 
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
@@ -164,6 +172,9 @@ protected:
     static void * do_load_level(void * arg);
 
 protected:
+    /* add a player to the player tracker list*/
+    void trackPlayer(Paintown::Player*);
+
     std::vector< PlayerTracker > players;
     /* when an attack hits show this graphic. this should be changed to a
      * per-character effect.
