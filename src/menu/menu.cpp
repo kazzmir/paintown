@@ -527,6 +527,18 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
         int speed;
         token->view() >> speed;
         menu.setFadeSpeed(speed);
+    } else if ( *token == "scroll-type" ){
+        std::string type;
+        token->view() >> type;
+        if (type == "normal"){
+            menu.setListType(ContextBox::Normal);
+        } else if (type == "scroll"){
+            menu.setListType(ContextBox::Scroll);
+        }
+    } else if ( *token == "scroll-wrap" ){
+        bool wrap;
+        token->view() >> wrap;
+        menu.setListWrap(wrap);
     } else {
         return false;
     }
