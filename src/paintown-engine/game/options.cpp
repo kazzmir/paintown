@@ -136,9 +136,14 @@ public:
     void logic(){
     }
 
+    int numberOfKeyboards(){
+        /* 2 keyboard configurations for now, probably make this configurable */
+        return 2;
+    }
+
     int maximumPlayers(){
         if (Keyboard::haveKeyboard()){
-            int use = 1 + Joystick::numberOfJoysticks();
+            int use = numberOfKeyboards() + Joystick::numberOfJoysticks();
             return use > 4 ? use : 4;
         }
         return Joystick::numberOfJoysticks();
@@ -203,8 +208,12 @@ public:
         vector<Util::ReferenceCount<InputSource> > possible;
 
         if (Keyboard::haveKeyboard()){
-            possible.push_back(new InputSource(0, -1));
-            names.push_back("Keyboard");
+            for (int keyboard = 0; keyboard < numberOfKeyboards(); keyboard++){
+                possible.push_back(new InputSource(keyboard, -1));
+                ostringstream out;
+                out << "Keyboard " << (keyboard + 1);
+                names.push_back(out.str());
+            }
         }
 
         for (int i = 0; i < Joystick::numberOfJoysticks(); i++){
@@ -217,11 +226,8 @@ public:
         for (int player = 0; player < players; player++){
             int selection = selectInput(context, names, player + 1);
             Util::ReferenceCount<InputSource> source = possible[selection];
-            /* keyboard can be selected multiple times */
-            if (names[selection] != "Keyboard"){
-                possible.erase(possible.begin() + selection);
-                names.erase(names.begin() + selection);
-            }
+            possible.erase(possible.begin() + selection);
+            names.erase(names.begin() + selection);
             sources.push_back(source);
         }
 
