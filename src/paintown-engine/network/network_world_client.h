@@ -23,8 +23,13 @@ public:
 	NetworkWorldClient( Network::Socket server, const std::vector< Paintown::Object * > & players, const Filesystem::AbsolutePath & path, Paintown::Object::networkid_t id, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 );
 	
 	virtual void act();
-        /* override logic to do nothing because the server will do all the logic */
-	virtual void doLogic();
+
+        /* the server will handle collisions and items so the client
+         * will just do nothing
+         */
+        virtual void handleCollisions(Paintown::ObjectAttack * o_good, std::vector<Paintown::Object*> & added_effects);
+        virtual void getItems();
+
 	virtual void draw(Graphics::Bitmap * work);
 
 	void addIncomingMessage( const Network::Message & message );

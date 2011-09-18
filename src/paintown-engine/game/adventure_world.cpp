@@ -520,7 +520,7 @@ void AdventureWorld::doLogic(){
     gameTicks += 1;
 
     vector<Paintown::Object *> added_effects;
-    for ( vector<Paintown::Object *>::iterator it = objects.begin(); it != objects.end(); it++ ){
+    for (vector<Paintown::Object *>::iterator it = objects.begin(); it != objects.end(); it++){
         Paintown::Object * good = *it;
         updateObject(good, added_effects);
     }

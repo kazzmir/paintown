@@ -547,8 +547,12 @@ void NetworkWorldClient::draw(Graphics::Bitmap * work){
     ChatWidget::drawChat(work, work->getHeight() * 2 - 1 - font.getHeight() - 1);
 }
 	
-void NetworkWorldClient::doLogic(){
-    /* do nothing */
+void NetworkWorldClient::handleCollisions(Paintown::ObjectAttack * o_good, std::vector<Paintown::Object*> & added_effects){
+    /* nothing */
+}
+
+void NetworkWorldClient::getItems(){
+    /* nothing */
 }
 
 void NetworkWorldClient::act(){
