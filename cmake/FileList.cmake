@@ -32,7 +32,6 @@ src/paintown-engine/level/utils.cpp)
 
 set(NETWORK_SRC
 src/util/network/network.cpp
-src/util/network/network-system.cpp
 src/paintown-engine/network/cacher.cpp
 src/paintown-engine/network/client.cpp
 src/paintown-engine/network/chat_client.cpp

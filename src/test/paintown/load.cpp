@@ -51,7 +51,7 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(path)), new InputSource(), 0);
+            Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(path)), new InputSource());
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
         } catch (const Filesystem::NotFound & e){
