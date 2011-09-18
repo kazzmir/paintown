@@ -144,7 +144,7 @@ public:
     int maximumPlayers(){
         if (Keyboard::haveKeyboard()){
             int use = numberOfKeyboards() + Joystick::numberOfJoysticks();
-            return use > 4 ? use : 4;
+            return use > 4 ? 4 : use;
         }
         return Joystick::numberOfJoysticks();
     }
