@@ -248,7 +248,7 @@ static Network::Message removeMessage(int id){
 bool AdventureWorld::respawnPlayers(const std::vector<Paintown::Object*> & players){
     bool alive = false;
     for (vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++){
-        Paintown::PlayerCommon * player = (Paintown::PlayerCommon *) *it;
+        Paintown::Character * player = (Paintown::Character *) *it;
         if (player->getHealth() <= 0){
             if (player->spawnTime() == 0){
 
@@ -781,7 +781,7 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
             on = work;
         } else if (!shouldDrawMiniMaps()){
             break;
-        } else if (((Paintown::PlayerCommon*) it->player)->isPlayer()){
+        } else if (((Paintown::Character*) it->player)->isPlayer()){
             continue;
         }
 

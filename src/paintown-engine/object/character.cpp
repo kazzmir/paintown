@@ -786,7 +786,11 @@ int Character::getAlliance() const{
 
 	return Object::getAlliance();
 }
-        
+    
+bool Character::isPlayer() const {
+    return false;
+}
+
 bool Character::isGrabbable(Object * obj){
     return getStatus() == Status_Ground || getStatus() == Status_Hurt;
 }

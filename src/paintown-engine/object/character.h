@@ -386,6 +386,9 @@ public:
     virtual int spawnTime(){
         return 0;
     }
+    
+    /* true for human controlled characters */
+    virtual bool isPlayer() const;
 
     virtual void deathReset();
 

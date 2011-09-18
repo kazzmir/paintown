@@ -28,9 +28,6 @@ public:
         this->score = score;
     }
 
-    /* true for human controlled characters */
-    virtual bool isPlayer() const = 0;
-    
     virtual void resetInput() = 0;
 	
 private:
