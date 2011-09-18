@@ -260,6 +260,10 @@ class DefaultRenderer : public Renderer {
             return menu;
         }
         
+        virtual Gui::ContextBox & getBox(){
+            return menu;
+        }
+        
     private:
 
         /*! Options */

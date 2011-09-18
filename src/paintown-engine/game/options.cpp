@@ -48,7 +48,8 @@ Level::LevelInfo doLevelMenu(const string dir, const Menu::Context & context){
         Menu::Menu temp;
         
         int index = 0;
-        const Gui::ContextBox & box = ((Menu::DefaultRenderer *) temp.getRenderer())->getBox();
+        Gui::ContextBox & box = ((Menu::DefaultRenderer *) temp.getRenderer())->getBox();
+        box.setListType(Gui::ContextBox::Normal);
         for ( unsigned int i = 0; i < possible.size(); i++ ){
             OptionLevel *opt = new OptionLevel(box, 0, &index, i);
             opt->setText(possible[i].getName());
@@ -182,7 +183,8 @@ public:
     int selectInput(const Menu::Context & context, const vector<string> & names, int player){
         Menu::Menu menu;
         int select = 0;
-        const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+        Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+        box.setListType(Gui::ContextBox::Normal);
         int index = 0;
         for (vector<string>::const_iterator it = names.begin(); it != names.end(); it++){
             OptionLevel * option = new OptionLevel(box, 0, &select, index);
@@ -508,7 +510,8 @@ public:
             map<int, ModType*> modMap;
             int index = 0;
             std::vector<OptionLevel *> options;
-            const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+            Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+            box.setListType(Gui::ContextBox::Normal);
             for (vector<ModType>::iterator it = mods.begin(); it != mods.end(); it++){
                 OptionLevel *opt = new OptionLevel(box, 0, &select, index);
                 string name = modName(*it);
