@@ -7,11 +7,11 @@ import os
 # /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x c -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -fexceptions -fasm-blocks -mmacosx-version-min=10.6 -gdwarf-2 -D__IPHONE_OS_VERSION_MIN_REQUIRED=40300 -I/Users/elias/prog/git5/build-iphone/lib/Debug/include -I/Users/elias/prog/git5/include -I/Users/elias/prog/git5/build-iphone/include -I/Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphonesimulator/allegro.build/DerivedSources/i386 -I/Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphonesimulator/allegro.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/elias/prog/git5/build-iphone/lib/Debug -std=gnu99 -W -Wall -DDEBUGMODE=1 -DD3D_DEBUG_INFO -DALLEGRO_SRC -DALLEGRO_STATICLINK -DALLEGRO_LIB_BUILD -c /Users/elias/prog/git5/src/allegro.c -o /Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphonesimulator/allegro.build/Objects-normal/i386/allegro.o
 
 
-env = Environment(ENV = os.environ)
-env.VariantDir('build/', 'src')
+sim_env = Environment(ENV = os.environ)
+phone_env = Environment(ENV = os.environ)
 
-gccversion = '4.0'
-iostarget = '3.2'
+gccversion = '4.2'
+iostarget = '4.3'
 osxtarget = '10.5'
  
 platform_sim = 'iPhoneSimulator'
@@ -21,30 +21,59 @@ arch_sim = 'i686'
 arch_phone = 'armv6'
  
 sim_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_sim
-platform_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_phone
+phone_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_phone
 
-#TODO select platform or sim set to sim for now
-env.PrependENVPath('PATH', sim_bin_dir)
- 
+# Set environment paths
+sim_env.PrependENVPath('PATH', sim_bin_dir)
+phone_env.PrependENVPath('PATH', phone_bin_dir)
+
 sdkroot_sim = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform_sim, platform_sim, iostarget)
 sdkroot_phone = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform_phone, platform_phone, iostarget)
 
 postfix = '-%s' % gccversion
-def setup(x, post):
-	return '%s%s' % (x, post)
-env['CC'] = setup('gcc', postfix)
-env['LD'] = setup('ld', postfix)
-env['CXX'] = setup('g++', postfix)
-env['AS'] = setup('as', postfix)
-env['AR'] = setup('ar', postfix)
-env['OBJCOPY'] = setup('objcopy', postfix)
+def setGCC(env):
+    def setup(x, post):
+        return '%s%s' % (x, post)
+    env['CC'] = setup('gcc', postfix)
+    env['LD'] = setup('ld', postfix)
+    env['CXX'] = setup('g++', postfix)
+    env['AS'] = setup('as', postfix)
+    env['AR'] = setup('ar', postfix)
+    env['OBJCOPY'] = setup('objcopy', postfix)
+
+setGCC(sim_env)
+setGCC(phone_env)
+
+def stringify(array):
+    str = ''
+    for item in array:
+        str += item + ' '
+    return [str.split(" ")]
+
+cflags_sim = ['-arch %s' % arch_sim, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_sim, '-std=gnu99', '-mmacosx-version-min=%s' % osxtarget]
+ldflags_sim = ['-arch %s' % arch_sim, '-isysroot %s' % sdkroot_sim, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget]
+defines_sim = Split("""
+-D__IPHONE_OS_VERSION_MIN_REQUIRED=40300
+-DDEBUGMODE=1
+-DD3D_DEBUG_INFO
+-DALLEGRO_SRC
+-DALLEGRO_STATICLINK
+-DALLEGRO_LIB_BUILD""")
+ 
+cflags_phone = ['-arch %s' % arch_phone, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_phone, '-std=gnu99', '-miphoneos-version-min=%s' % iostarget]
+ldflags_phone = ['-arch %s' % arch_phone, '-isysroot %s' % sdkroot_phone, '-Wl,-dead_strip', '-miphoneos-version-min=%s' % iostarget]
+defines_phone = Split("""
+-DDEBUGMODE=1
+-DD3D_DEBUG_INFO
+-DALLEGRO_SRC
+-DALLEGRO_STATICLINK
+-DALLEGRO_LIB_BUILD""")
 
 cflags =  Split("""
 -g
 -O2
 -Wall
 -Wmissing-prototypes
--std=c99
 -ffast-math
 -fno-strict-aliasing""")
 
@@ -71,107 +100,125 @@ src/opengl
 src/unix 
 src/win 
 src/x 
-addons/primitives 
-addons/primitives/allegro5 
-addons/primitives/allegro5/internal""")
+src/addons/primitives 
+src/addons/primitives/allegro5 
+src/addons/primitives/allegro5/internal""")
 
-env.Append(CPATH = [includes])
-env.Append(CFLAGS = [cflags])
-env.Append(CPPFLAGS = [cppflags])
+def setFlags(includes, cflags, cppflags, ldflags, defines, env):
+    env.Append(CPATH = includes)
+    env.Append(CPPPATH = includes)
+    env.Append(CFLAGS = cflags)
+    env.Append(CPPFLAGS = cppflags)
+    env.Append(LDFLAGS = ldflags)
+    env.Append(CDEFINES = defines)
+    
+setFlags(includes + ['-I%s/usr/include' % sdkroot_sim], cflags + stringify(cflags_sim), cppflags + stringify(cflags_sim), stringify(ldflags_sim), defines_sim, sim_env)
+setFlags(includes + ['-I%s/usr/include' % sdkroot_phone], cflags + stringify(cflags_phone), cppflags + stringify(cflags_phone), stringify(ldflags_phone), defines_phone, phone_env)
 
 source = Split("""
-build/allegro.c
-build/display.c
-build/file_slice.c
-build/iphone/EAGLView.h
-build/iphone/EAGLView.m
-build/iphone/ViewController.h
-build/iphone/ViewController.m
-build/iphone/allegroAppDelegate.h
-build/iphone/allegroAppDelegate.m
-build/iphone/iphone.h
-build/iphone/iphone_display.c
-build/iphone/iphone_joystick.m
-build/iphone/iphone_keyboard.c
-build/iphone/iphone_main.m
-build/iphone/iphone_mouse.m
-build/iphone/iphone_path.m
-build/iphone/iphone_system.c
-build/iphone/iphone_touch_input.m
-build/math.c src/opengl/extensions.c
-build/opengl/ogl_bitmap.c
-build/opengl/ogl_display.c
-build/opengl/ogl_draw.c
-build/threads.c
-build/unix/udrvlist.c
-build/unix/ufdwatch.c
-build/unix/ugfxdrv.c
-build/unix/ujoydrv.c
-build/unix/ukeybd.c
-build/unix/umodules.c
-build/unix/umouse.c
-build/unix/upath.c
-build/unix/utime.c
-build/unix/uxthread.c
-build/bitmap.c
-build/display_settings.c
-build/file_stdio.c
-build/joynu.c
-build/memblit.c
-build/optimized.c
-build/timernu.c
-build/utf8.c
-build/bitmap_io.c
-build/dtor.c
-build/fshook.c
-build/keybdnu.c
-build/memdraw.c
-build/path.c
-build/tls.c
-build/blenders.c
-build/events.c
-build/fshook_stdio.c
-build/libc.c
-build/memory.c
-build/pixels.c
-build/touch_input.c
-build/x
-build/config.c
-build/evtsrc.c
-build/misc/aatree.c
-build/misc/bstrlib.c
-build/misc/bstrlib.txt
-build/misc/list.c
-build/misc/vector.c
-build/scanline_drawers.c
-build/transformations.c
-build/convert.c
-build/file.c
-build/inline.c
-build/macosx/hidjoy-10.4.m
-build/macosx/hidjoy.m
-build/macosx/hidman.m
-build/macosx/keybd.m
-build/macosx/osx_app_delegate.m
-build/macosx/osxgl.h
-build/macosx/osxgl.m
-build/macosx/qzmouse.m
-build/macosx/system.m
-build/mousenu.c
-build/system.c
-build/tri_soft.c
-addons/primitives/directx_shaders.cpp
-addons/primitives/high_primitives.c
-addons/primitives/line_soft.c
-addons/primitives/point_soft.c
-addons/primitives/polygon.c
-addons/primitives/polyline.c
-addons/primitives/prim_directx.cpp
-addons/primitives/prim_opengl.c
-addons/primitives/prim_soft.c
-addons/primitives/prim_util.c
-addons/primitives/primitives.c
-addons/primitives/triangulator.c
+allegro.c
+display.c
+file_slice.c
+iphone/EAGLView.h
+iphone/EAGLView.m
+iphone/ViewController.h
+iphone/ViewController.m
+iphone/allegroAppDelegate.h
+iphone/allegroAppDelegate.m
+iphone/iphone.h
+iphone/iphone_display.c
+iphone/iphone_joystick.m
+iphone/iphone_keyboard.c
+iphone/iphone_main.m
+iphone/iphone_mouse.m
+iphone/iphone_path.m
+iphone/iphone_system.c
+iphone/iphone_touch_input.m
+math.c src/opengl/extensions.c
+opengl/ogl_bitmap.c
+opengl/ogl_display.c
+opengl/ogl_draw.c
+threads.c
+unix/udrvlist.c
+unix/ufdwatch.c
+unix/ugfxdrv.c
+unix/ujoydrv.c
+unix/ukeybd.c
+unix/umodules.c
+unix/umouse.c
+unix/upath.c
+unix/utime.c
+unix/uxthread.c
+bitmap.c
+display_settings.c
+file_stdio.c
+joynu.c
+memblit.c
+optimized.c
+timernu.c
+utf8.c
+bitmap_io.c
+dtor.c
+fshook.c
+keybdnu.c
+memdraw.c
+path.c
+tls.c
+blenders.c
+events.c
+fshook_stdio.c
+libc.c
+memory.c
+pixels.c
+touch_input.c
+x
+config.c
+evtsrc.c
+misc/aatree.c
+misc/bstrlib.c
+misc/bstrlib.txt
+misc/list.c
+misc/vector.c
+scanline_drawers.c
+transformations.c
+convert.c
+file.c
+inline.c
+macosx/hidjoy-10.4.m
+macosx/hidjoy.m
+macosx/hidman.m
+macosx/keybd.m
+macosx/osx_app_delegate.m
+macosx/osxgl.h
+macosx/osxgl.m
+macosx/qzmouse.m
+macosx/system.m
+mousenu.c
+system.c
+tri_soft.c""")
+
+addons = Split("""
+../addons/primitives/directx_shaders.cpp
+../addons/primitives/high_primitives.c
+../addons/primitives/line_soft.c
+../addons/primitives/point_soft.c
+../addons/primitives/polygon.c
+../addons/primitives/polyline.c
+../addons/primitives/prim_directx.cpp
+../addons/primitives/prim_opengl.c
+../addons/primitives/prim_soft.c
+../addons/primitives/prim_util.c
+../addons/primitives/primitives.c
+../addons/primitives/triangulator.c
 """)
 
-env.Library('allegro', source)
+def prepend(location, source):
+    new_source = []
+    for s in source:
+        new_source.append('%s/%s' % (location, s))
+    return new_source
+
+sim_env.VariantDir('build/sim', 'src')
+phone_env.VariantDir('build/phone', 'src')
+sim_env.Library('allegro-sim', prepend('build/sim', source))
+phone_env.Library('allegro-phone', prepend('build/phone', source))
