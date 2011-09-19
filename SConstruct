@@ -1784,7 +1784,7 @@ else:
         
         if not usePs3() and not useNacl() and not useAndroid():
             safeParseConfig(config.env, 'freetype-config --libs --cflags')
-            safeParseConfig(config.env, 'libpng-config --libs --cflags')
+            safeParseConfig(config.env, 'libpng-config --libs --ldflags --cflags')
         
             # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
             safeParseConfig(staticEnv, 'freetype-config --cflags')
