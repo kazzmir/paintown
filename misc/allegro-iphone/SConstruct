@@ -1,0 +1,170 @@
+import os
+
+env = Environment(ENV = os.environ)
+env.VariantDir('build/', 'src')
+
+gccversion = '4.0'
+iostarget = '3.2'
+osxtarget = '10.5'
+ 
+platform_sim = 'iPhoneSimulator'
+platform_phone = 'iPhoneOS'
+ 
+arch_sim = 'i686'
+arch_phone = 'armv6'
+ 
+sim_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_sim
+platform_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_phone
+
+#TODO select platform or sim set to sim for now
+env.PrependENVPath('PATH', sim_bin_dir)
+ 
+sdkroot_sim = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform_sim, platform_sim, iostarget)
+sdkroot_phone = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform_phone, platform_phone, iostarget)
+
+postfix = '-%s' % gccversion
+def setup(x, post):
+	return '%s%s' % (x, post)
+env['CC'] = setup('gcc', postfix)
+env['LD'] = setup('ld', postfix)
+env['CXX'] = setup('g++', postfix)
+env['AS'] = setup('as', postfix)
+env['AR'] = setup('ar', postfix)
+env['OBJCOPY'] = setup('objcopy', postfix)
+
+cflags =  Split("""
+-g
+-O2
+-Wall
+-Wmissing-prototypes
+-std=c99
+-ffast-math
+-fno-strict-aliasing""")
+
+cppflags = Split("""
+-g
+-O2
+-Wall
+-fno-strict-aliasing""")
+
+includes = Split("""
+include 
+include/allegro5 
+include/allegro5/inline 
+include/allegro5/internal 
+include/allegro5/opengl 
+include/allegro5/platform 
+src 
+src/gp2xwiz 
+src/iphone 
+src/linux 
+src/macosx 
+src/misc 
+src/opengl 
+src/unix 
+src/win 
+src/x 
+addons/primitives 
+addons/primitives/allegro5 
+addons/primitives/allegro5/internal""")
+
+env.Append(CPATH = [includes])
+env.Append(CFLAGS = [cflags])
+env.Append(CPPFLAGS = [cppflags])
+
+source = Split("""
+src/allegro.c
+src/display.c
+src/file_slice.c
+src/iphone/EAGLView.h
+src/iphone/EAGLView.m
+src/iphone/ViewController.h
+src/iphone/ViewController.m
+src/iphone/allegroAppDelegate.h
+src/iphone/allegroAppDelegate.m
+src/iphone/iphone.h
+src/iphone/iphone_display.c
+src/iphone/iphone_joystick.m
+src/iphone/iphone_keyboard.c
+src/iphone/iphone_main.m
+src/iphone/iphone_mouse.m
+src/iphone/iphone_path.m
+src/iphone/iphone_system.c
+src/iphone/iphone_touch_input.m
+src/math.c src/opengl/extensions.c
+src/opengl/ogl_bitmap.c
+src/opengl/ogl_display.c
+src/opengl/ogl_draw.c
+src/threads.c
+src/unix/udrvlist.c
+src/unix/ufdwatch.c
+src/unix/ugfxdrv.c
+src/unix/ujoydrv.c
+src/unix/ukeybd.c
+src/unix/umodules.c
+src/unix/umouse.c
+src/unix/upath.c
+src/unix/utime.c
+src/unix/uxthread.c
+src/bitmap.c
+src/display_settings.c
+src/file_stdio.c
+src/joynu.c
+src/memblit.c
+src/optimized.c
+src/timernu.c
+src/utf8.c
+src/bitmap_io.c
+src/dtor.c
+src/fshook.c
+src/keybdnu.c
+src/memdraw.c
+src/path.c
+src/tls.c
+src/blenders.c
+src/events.c
+src/fshook_stdio.c
+src/libc.c
+src/memory.c
+src/pixels.c
+src/touch_input.c
+src/x
+src/config.c
+src/evtsrc.c
+src/misc/aatree.c
+src/misc/bstrlib.c
+src/misc/bstrlib.txt
+src/misc/list.c
+src/misc/vector.c
+src/scanline_drawers.c
+src/transformations.c
+src/convert.c
+src/file.c
+src/inline.c
+src/macosx/hidjoy-10.4.m
+src/macosx/hidjoy.m
+src/macosx/hidman.m
+src/macosx/keybd.m
+src/macosx/osx_app_delegate.m
+src/macosx/osxgl.h
+src/macosx/osxgl.m
+src/macosx/qzmouse.m
+src/macosx/system.m
+src/mousenu.c
+src/system.c
+src/tri_soft.c
+addons/primitives/directx_shaders.cpp
+addons/primitives/high_primitives.c
+addons/primitives/line_soft.c
+addons/primitives/point_soft.c
+addons/primitives/polygon.c
+addons/primitives/polyline.c
+addons/primitives/prim_directx.cpp
+addons/primitives/prim_opengl.c
+addons/primitives/prim_soft.c
+addons/primitives/prim_util.c
+addons/primitives/primitives.c
+addons/primitives/triangulator.c
+""")
+
+env.Library('allegro', source)
