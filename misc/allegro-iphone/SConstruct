@@ -1,5 +1,12 @@
 import os
 
+# From elias's xcodebuild for iphone
+# /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.2 -x c -arch armv6 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk -gdwarf-2 -mthumb -miphoneos-version-min=4.3 -I/Users/elias/prog/git5/build-iphone/lib/Debug/include -I/Users/elias/prog/git5/include -I/Users/elias/prog/git5/build-iphone/include -I/Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphoneos/allegro.build/DerivedSources/armv6 -I/Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphoneos/allegro.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/elias/prog/git5/build-iphone/lib/Debug -std=gnu99 -W -Wall -DDEBUGMODE=1 -DD3D_DEBUG_INFO -DALLEGRO_SRC -DALLEGRO_STATICLINK -DALLEGRO_LIB_BUILD -c /Users/elias/prog/git5/src/allegro.c -o /Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphoneos/allegro.build/Objects-normal/armv6/allegro.o
+
+# x86 build for the simulator
+# /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x c -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk -fexceptions -fasm-blocks -mmacosx-version-min=10.6 -gdwarf-2 -D__IPHONE_OS_VERSION_MIN_REQUIRED=40300 -I/Users/elias/prog/git5/build-iphone/lib/Debug/include -I/Users/elias/prog/git5/include -I/Users/elias/prog/git5/build-iphone/include -I/Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphonesimulator/allegro.build/DerivedSources/i386 -I/Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphonesimulator/allegro.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/elias/prog/git5/build-iphone/lib/Debug -std=gnu99 -W -Wall -DDEBUGMODE=1 -DD3D_DEBUG_INFO -DALLEGRO_SRC -DALLEGRO_STATICLINK -DALLEGRO_LIB_BUILD -c /Users/elias/prog/git5/src/allegro.c -o /Users/elias/prog/git5/build-iphone/ALLEGRO.build/Debug-iphonesimulator/allegro.build/Objects-normal/i386/allegro.o
+
+
 env = Environment(ENV = os.environ)
 env.VariantDir('build/', 'src')
 
