@@ -94,9 +94,12 @@ src/opengl
 src/unix 
 src/win 
 src/x 
-src/addons/primitives 
-src/addons/primitives/allegro5 
-src/addons/primitives/allegro5/internal""")
+addons/primitives 
+addons/primitives/allegro5 
+addons/primitives/allegro5/internal
+addons/ttf 
+addons/ttf/allegro5 
+addons/ttf/allegro5/internal""")
 
 def setFlags(includes, cflags, cppflags, ldflags, defines, env):
     env.Append(CPATH = includes)
@@ -177,7 +180,7 @@ mousenu.c
 system.c
 tri_soft.c""")
 
-addons = Split("""
+primitives = Split("""
 primitives/directx_shaders.cpp
 primitives/high_primitives.c
 primitives/line_soft.c
@@ -192,6 +195,14 @@ primitives/primitives.c
 primitives/triangulator.c
 """)
 
+ttf = Split("""ttf/ttf.c""")
+memfile = Split("""memfile/memfile.c""")
+image = Split("""image/bmp.c image/iio.c image/iphone.m image/png.c image/jpg.c image/pcx.c image/tga.c""")
+audio = Split("""audio/audio.c audio/kcm_instance.c audio/kcm_sample.c audio/kcm_voice.c audio/audio_io.c audio/kcm_dtor.c audio/kcm_mixer.c audio/kcm_stream.c audio/openal.c""")
+
+libsim = 'lib/sim'
+libphone = 'lib/phone'
+
 def prepend(location, source):
     new_source = []
     for s in source:
@@ -202,5 +213,28 @@ sim_env.VariantDir('build/sim', 'src')
 sim_env.VariantDir('build/sim/addons', 'addons')
 phone_env.VariantDir('build/phone', 'src')
 phone_env.VariantDir('build/phone/addons', 'addons')
-sim_env.Library('allegro-sim', prepend('build/sim', source) + prepend('build/sim/addons', addons))
-phone_env.Library('allegro-phone', prepend('build/phone', source) + prepend('build/phone/addons', addons))
+
+def createAddonIncludes(name):
+    return ['addons/%s' % name, 'addons/%s/allegro5' % name, 'addons/%s/allegro5/internal' % name]
+
+def buildLib(env, libname, sources, includes = ''):
+    new_env = env
+    new_env.Append(CPATH = includes)
+    new_env.Append(CPPPATH = includes)
+    new_env.Library(libname, sources)
+
+# Simulator
+buildLib(sim_env, '%s/allegro' % libsim, prepend('build/sim', source))
+#buildLib(sim_env, '%s/allegro_ttf' % libsim, prepend('build/sim/addons', ttf), createAddonIncludes('ttf'))
+buildLib(sim_env, '%s/allegro_memfile' % libsim, prepend('build/sim/addons', memfile), createAddonIncludes('memfile'))
+#buildLib(sim_env, '%s/allegro_image' % libsim, prepend('build/sim/addons', image), createAddonIncludes('image'))
+buildLib(sim_env, '%s/allegro_primitives' % libsim, prepend('build/sim/addons', primitives))
+buildLib(sim_env, '%s/allegro_audio' % libsim, prepend('build/sim/addons', audio), createAddonIncludes('audio'))
+
+# Phone
+buildLib(phone_env, '%s/allegro' % libphone, prepend('build/phone', source))
+#buildLib(phone_env, '%s/allegro_ttf' % libphone, prepend('build/phone/addons', ttf), createAddonIncludes('ttf'))
+buildLib(phone_env, '%s/allegro_memfile' % libphone, prepend('build/phone/addons', memfile), createAddonIncludes('memfile'))
+#buildLib(phone_env, '%s/allegro_image' % libphone, prepend('build/phone/addons', image), createAddonIncludes('image'))
+buildLib(phone_env, '%s/allegro_primitives' % libphone, prepend('build/phone/addons', primitives))
+buildLib(phone_env, '%s/allegro_audio' % libphone, prepend('build/phone/addons', audio), createAddonIncludes('audio'))
