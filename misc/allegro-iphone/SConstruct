@@ -12,7 +12,7 @@ phone_env = Environment(ENV = os.environ)
 
 gccversion = '4.2'
 iostarget = '4.3'
-osxtarget = '10.4'
+osxtarget = '10.5'
  
 platform_sim = 'iPhoneSimulator'
 platform_phone = 'iPhoneOS'
@@ -69,19 +69,9 @@ ALLEGRO_SRC
 ALLEGRO_STATICLINK
 ALLEGRO_LIB_BUILD""")
 
-cflags =  Split("""
--g
--O2
--Wall
--Wmissing-prototypes
--ffast-math
--fno-strict-aliasing""")
+cflags =  Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 -Wmost -Wno-four-char-constants -Wno-unknown-pragmas""")
 
-cppflags = Split("""
--g
--O2
--Wall
--fno-strict-aliasing""")
+cppflags = Split("""-g-O2 -Wall -fno-strict-aliasing""")
 
 includes = Split("""
 include 
