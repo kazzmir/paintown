@@ -71,7 +71,7 @@ ALLEGRO_LIB_BUILD""")
 
 cflags =  Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 -Wmost -Wno-four-char-constants -Wno-unknown-pragmas""")
 
-cppflags = Split("""-g -O2 -Wall -fno-strict-aliasing""")
+cppflags = Split("""-x objective-c -g -O2 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -Wall -fno-strict-aliasing""")
 
 includes = Split("""
 include 
