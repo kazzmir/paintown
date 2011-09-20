@@ -12,7 +12,7 @@ phone_env = Environment(ENV = os.environ)
 
 gccversion = '4.2'
 iostarget = '4.3'
-osxtarget = '10.'
+osxtarget = '10.4'
  
 platform_sim = 'iPhoneSimulator'
 platform_phone = 'iPhoneOS'
@@ -134,7 +134,8 @@ iphone/iphone_mouse.m
 iphone/iphone_path.m
 iphone/iphone_system.c
 iphone/iphone_touch_input.m
-math.c src/opengl/extensions.c
+math.c 
+opengl/extensions.c
 opengl/ogl_bitmap.c
 opengl/ogl_display.c
 opengl/ogl_draw.c
@@ -178,7 +179,6 @@ misc/bstrlib.c
 misc/bstrlib.txt
 misc/list.c
 misc/vector.c
-scanline_drawers.c
 transformations.c
 convert.c
 file.c
