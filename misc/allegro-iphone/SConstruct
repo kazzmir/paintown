@@ -71,7 +71,7 @@ ALLEGRO_LIB_BUILD""")
 
 cflags =  Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 -Wmost -Wno-four-char-constants -Wno-unknown-pragmas""")
 
-cppflags = Split("""-g-O2 -Wall -fno-strict-aliasing""")
+cppflags = Split("""-g -O2 -Wall -fno-strict-aliasing""")
 
 includes = Split("""
 include 
@@ -109,13 +109,9 @@ source = Split("""
 allegro.c
 display.c
 file_slice.c
-iphone/EAGLView.h
 iphone/EAGLView.m
-iphone/ViewController.h
 iphone/ViewController.m
-iphone/allegroAppDelegate.h
 iphone/allegroAppDelegate.m
-iphone/iphone.h
 iphone/iphone_display.c
 iphone/iphone_joystick.m
 iphone/iphone_keyboard.c
