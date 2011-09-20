@@ -12,7 +12,7 @@ phone_env = Environment(ENV = os.environ)
 
 gccversion = '4.2'
 iostarget = '4.3'
-osxtarget = '10.5'
+osxtarget = '10.'
  
 platform_sim = 'iPhoneSimulator'
 platform_phone = 'iPhoneOS'
@@ -53,21 +53,21 @@ def stringify(array):
 cflags_sim = ['-arch %s' % arch_sim, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_sim, '-std=gnu99', '-mmacosx-version-min=%s' % osxtarget]
 ldflags_sim = ['-arch %s' % arch_sim, '-isysroot %s' % sdkroot_sim, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget]
 defines_sim = Split("""
--D__IPHONE_OS_VERSION_MIN_REQUIRED=40300
--DDEBUGMODE=1
--DD3D_DEBUG_INFO
--DALLEGRO_SRC
--DALLEGRO_STATICLINK
--DALLEGRO_LIB_BUILD""")
+__IPHONE_OS_VERSION_MIN_REQUIRED=40300
+DEBUGMODE=1
+D3D_DEBUG_INFO
+ALLEGRO_SRC
+ALLEGRO_STATICLINK
+ALLEGRO_LIB_BUILD""")
  
 cflags_phone = ['-arch %s' % arch_phone, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_phone, '-std=gnu99', '-miphoneos-version-min=%s' % iostarget]
 ldflags_phone = ['-arch %s' % arch_phone, '-isysroot %s' % sdkroot_phone, '-Wl,-dead_strip', '-miphoneos-version-min=%s' % iostarget]
 defines_phone = Split("""
--DDEBUGMODE=1
--DD3D_DEBUG_INFO
--DALLEGRO_SRC
--DALLEGRO_STATICLINK
--DALLEGRO_LIB_BUILD""")
+DEBUGMODE=1
+D3D_DEBUG_INFO
+ALLEGRO_SRC
+ALLEGRO_STATICLINK
+ALLEGRO_LIB_BUILD""")
 
 cflags =  Split("""
 -g
@@ -171,7 +171,6 @@ libc.c
 memory.c
 pixels.c
 touch_input.c
-x
 config.c
 evtsrc.c
 misc/aatree.c
@@ -184,15 +183,6 @@ transformations.c
 convert.c
 file.c
 inline.c
-macosx/hidjoy-10.4.m
-macosx/hidjoy.m
-macosx/hidman.m
-macosx/keybd.m
-macosx/osx_app_delegate.m
-macosx/osxgl.h
-macosx/osxgl.m
-macosx/qzmouse.m
-macosx/system.m
 mousenu.c
 system.c
 tri_soft.c""")
