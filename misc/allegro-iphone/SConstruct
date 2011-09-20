@@ -178,18 +178,18 @@ system.c
 tri_soft.c""")
 
 addons = Split("""
-../addons/primitives/directx_shaders.cpp
-../addons/primitives/high_primitives.c
-../addons/primitives/line_soft.c
-../addons/primitives/point_soft.c
-../addons/primitives/polygon.c
-../addons/primitives/polyline.c
-../addons/primitives/prim_directx.cpp
-../addons/primitives/prim_opengl.c
-../addons/primitives/prim_soft.c
-../addons/primitives/prim_util.c
-../addons/primitives/primitives.c
-../addons/primitives/triangulator.c
+primitives/directx_shaders.cpp
+primitives/high_primitives.c
+primitives/line_soft.c
+primitives/point_soft.c
+primitives/polygon.c
+primitives/polyline.c
+primitives/prim_directx.cpp
+primitives/prim_opengl.c
+primitives/prim_soft.c
+primitives/prim_util.c
+primitives/primitives.c
+primitives/triangulator.c
 """)
 
 def prepend(location, source):
@@ -199,6 +199,8 @@ def prepend(location, source):
     return new_source
 
 sim_env.VariantDir('build/sim', 'src')
+sim_env.VariantDir('build/sim/addons', 'addons')
 phone_env.VariantDir('build/phone', 'src')
-sim_env.Library('allegro-sim', prepend('build/sim', source))
-phone_env.Library('allegro-phone', prepend('build/phone', source))
+phone_env.VariantDir('build/phone/addons', 'addons')
+sim_env.Library('allegro-sim', prepend('build/sim', source) + prepend('build/sim/addons', addons))
+phone_env.Library('allegro-phone', prepend('build/phone', source) + prepend('build/phone/addons', addons))
