@@ -199,6 +199,7 @@ ttf = Split("""ttf/ttf.c""")
 memfile = Split("""memfile/memfile.c""")
 image = Split("""image/bmp.c image/iio.c image/iphone.m image/png.c image/jpg.c image/pcx.c image/tga.c""")
 audio = Split("""audio/audio.c audio/kcm_instance.c audio/kcm_sample.c audio/kcm_voice.c audio/audio_io.c audio/kcm_dtor.c audio/kcm_mixer.c audio/kcm_stream.c audio/openal.c""")
+acodec = Split("""acodec/acodec.c acodec/flac.c acodec/modaudio.c acodec/ogg.c acodec/wav.c""")
 
 libsim = 'lib/sim'
 libphone = 'lib/phone'
@@ -230,6 +231,7 @@ buildLib(sim_env, '%s/allegro_memfile' % libsim, prepend('build/sim/addons', mem
 #buildLib(sim_env, '%s/allegro_image' % libsim, prepend('build/sim/addons', image), createAddonIncludes('image'))
 buildLib(sim_env, '%s/allegro_primitives' % libsim, prepend('build/sim/addons', primitives))
 buildLib(sim_env, '%s/allegro_audio' % libsim, prepend('build/sim/addons', audio), createAddonIncludes('audio'))
+#buildLib(sim_env, '%s/allegro_acodec' % libsim, prepend('build/sim/addons', acodec), createAddonIncludes('acodec'))
 
 # Phone
 buildLib(phone_env, '%s/allegro' % libphone, prepend('build/phone', source))
@@ -238,3 +240,4 @@ buildLib(phone_env, '%s/allegro_memfile' % libphone, prepend('build/phone/addons
 #buildLib(phone_env, '%s/allegro_image' % libphone, prepend('build/phone/addons', image), createAddonIncludes('image'))
 buildLib(phone_env, '%s/allegro_primitives' % libphone, prepend('build/phone/addons', primitives))
 buildLib(phone_env, '%s/allegro_audio' % libphone, prepend('build/phone/addons', audio), createAddonIncludes('audio'))
+#buildLib(phone_env, '%s/allegro_codec' % libphone, prepend('build/phone/addons', acodec), createAddonIncludes('acodec'))
