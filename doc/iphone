@@ -1,0 +1,22 @@
+1. goto misc/allegro-iphone and get allegro 5.1 from svn
+  $ cd misc/allegro-iphone
+  $ svn co https://alleg.svn.sourceforge.net/svnroot/alleg/allegro/branches/5.1
+  $ ln -s allegro/addons .
+  $ cp -r allegro/include .
+  # dont build allegro yet, set up freetype first so ttf works
+
+2. get freetype: http://download.savannah.gnu.org/releases/freetype/freetype-2.4.6.tar.bz2
+   goto the root paintown directory and make a 'tmp' directory, then build freetype there
+
+   paintown $ md tmp
+   paintown $ cd tmp
+   paintown/tmp $ tar -xf freetype-2.4.6.tar.bz2
+   paintown/tmp $ cd freetype-2.4.6
+   paintown/tmp/freetype-2.4.6 $ CC=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 ./configure --prefix=`pwd`/../freetype-sim && make && make install
+
+3. in misc/allegro-iphone symlink the freetype include directory, then build allegro
+  $ ln -s ../../tmp/freetype-sim/include freetype
+  $ scons
+
+4. build paintown for the iphone simulator
+  paintown $ scons -f scons/iphone.py
