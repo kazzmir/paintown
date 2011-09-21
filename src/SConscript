@@ -126,6 +126,9 @@ for i in filelist:
 def useSDL():
     return use['PAINTOWN_BACKEND'] == 'sdl'
 
+def useAllegro5():
+    return use['PAINTOWN_BACKEND'] == 'allegro5'
+
 def useAndroid():
     import os
     try:
@@ -193,7 +196,7 @@ if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
 
 use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
-if not useSDL():
+if not useSDL() and not useAllegro5():
     use.Prepend(LIBS = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
