@@ -197,9 +197,13 @@ primitives/triangulator.c
 
 ttf = Split("""ttf/ttf.c""")
 memfile = Split("""memfile/memfile.c""")
-image = Split("""image/bmp.c image/iio.c image/iphone.m image/png.c image/jpg.c image/pcx.c image/tga.c""")
+image = Split("""image/bmp.c image/iio.c image/iphone.m image/pcx.c image/tga.c""")
+# image/jpg.c image/png.c 
 audio = Split("""audio/audio.c audio/kcm_instance.c audio/kcm_sample.c audio/kcm_voice.c audio/audio_io.c audio/kcm_dtor.c audio/kcm_mixer.c audio/kcm_stream.c audio/openal.c""")
-acodec = Split("""acodec/acodec.c acodec/flac.c acodec/modaudio.c acodec/ogg.c acodec/wav.c""")
+acodec = Split("""acodec/acodec.c acodec/wav.c""")
+# acodec/flac.c acodec/modaudio.c acodec/ogg.c 
+font = Split("""font/font.c font/font.h font/fontbmp.c font/text.c""")
+# main = Split("""main/generic_main.c""")
 
 libsim = 'lib/sim'
 libphone = 'lib/phone'
@@ -216,7 +220,7 @@ phone_env.VariantDir('build/phone', 'src')
 phone_env.VariantDir('build/phone/addons', 'addons')
 
 def createAddonIncludes(name):
-    return ['addons/%s' % name, 'addons/%s/allegro5' % name, 'addons/%s/allegro5/internal' % name]
+    return ['#include/addons', 'addons/%s' % name, 'addons/%s/allegro5' % name, 'addons/%s/allegro5/internal' % name]
 
 def buildLib(env, libname, sources, includes = ''):
     new_env = env
@@ -226,18 +230,22 @@ def buildLib(env, libname, sources, includes = ''):
 
 # Simulator
 buildLib(sim_env, '%s/allegro' % libsim, prepend('build/sim', source))
-#buildLib(sim_env, '%s/allegro_ttf' % libsim, prepend('build/sim/addons', ttf), createAddonIncludes('ttf'))
+buildLib(sim_env, '%s/allegro_ttf' % libsim, prepend('build/sim/addons', ttf), createAddonIncludes('ttf') + ['#freetype'])
 buildLib(sim_env, '%s/allegro_memfile' % libsim, prepend('build/sim/addons', memfile), createAddonIncludes('memfile'))
-#buildLib(sim_env, '%s/allegro_image' % libsim, prepend('build/sim/addons', image), createAddonIncludes('image'))
+buildLib(sim_env, '%s/allegro_image' % libsim, prepend('build/sim/addons', image), createAddonIncludes('image'))
 buildLib(sim_env, '%s/allegro_primitives' % libsim, prepend('build/sim/addons', primitives))
 buildLib(sim_env, '%s/allegro_audio' % libsim, prepend('build/sim/addons', audio), createAddonIncludes('audio'))
-#buildLib(sim_env, '%s/allegro_acodec' % libsim, prepend('build/sim/addons', acodec), createAddonIncludes('acodec'))
+buildLib(sim_env, '%s/allegro_acodec' % libsim, prepend('build/sim/addons', acodec), createAddonIncludes('acodec'))
+buildLib(sim_env, '%s/allegro_font' % libsim, prepend('build/sim/addons', font), createAddonIncludes('font'))
+# buildLib(sim_env, '%s/allegro_main' % libsim, prepend('build/sim/addons', main), createAddonIncludes('main'))
 
 # Phone
 buildLib(phone_env, '%s/allegro' % libphone, prepend('build/phone', source))
-#buildLib(phone_env, '%s/allegro_ttf' % libphone, prepend('build/phone/addons', ttf), createAddonIncludes('ttf'))
+buildLib(phone_env, '%s/allegro_ttf' % libphone, prepend('build/phone/addons', ttf), createAddonIncludes('ttf') + ['#freetype'])
 buildLib(phone_env, '%s/allegro_memfile' % libphone, prepend('build/phone/addons', memfile), createAddonIncludes('memfile'))
-#buildLib(phone_env, '%s/allegro_image' % libphone, prepend('build/phone/addons', image), createAddonIncludes('image'))
+buildLib(phone_env, '%s/allegro_image' % libphone, prepend('build/phone/addons', image), createAddonIncludes('image'))
 buildLib(phone_env, '%s/allegro_primitives' % libphone, prepend('build/phone/addons', primitives))
 buildLib(phone_env, '%s/allegro_audio' % libphone, prepend('build/phone/addons', audio), createAddonIncludes('audio'))
-#buildLib(phone_env, '%s/allegro_codec' % libphone, prepend('build/phone/addons', acodec), createAddonIncludes('acodec'))
+buildLib(phone_env, '%s/allegro_codec' % libphone, prepend('build/phone/addons', acodec), createAddonIncludes('acodec'))
+buildLib(phone_env, '%s/allegro_font' % libphone, prepend('build/phone/addons', font), createAddonIncludes('font'))
+# buildLib(phone_env, '%s/allegro_main' % libphone, prepend('build/phone/addons', main), createAddonIncludes('main'))

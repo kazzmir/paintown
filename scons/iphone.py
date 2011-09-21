@@ -96,10 +96,10 @@ def simulatorEnvironment():
     cflags_sim = ['-std=gnu99', '-fobjc-legacy-dispatch', '-fobjc-abi-version=2']
     ccflags_sim = ['-arch %s' % arch_sim, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_sim, '-mmacosx-version-min=%s' % osxtarget] + Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -gdwarf-2 -Wall -fno-strict-aliasing""")
     ldflags_sim = ['-arch %s' % arch_sim, '-isysroot %s' % sdkroot_sim, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget, '-Xlinker -objc_abi_version', '-Xlinker 2', '-Wl,-search_paths_first', '-Wl,-headerpad_max_install_names']
-    frameworks = Split("""OpenGLES CoreGraphics QuartzCore UIKit Foundation CoreFoundation""")
+    frameworks = Split("""OpenGLES CoreGraphics QuartzCore UIKit Foundation CoreFoundation OpenAL""")
 
     # ldflags_sim = ['-arch %s' % arch_sim, '-framework OpenGLES']
-    defines_sim = Split("""__IPHONE_OS_VERSION_MIN_REQUIRED=40300 DEBUGMODE=1 D3D_DEBUG_INFO ALLEGRO_SRC ALLEGRO_STATICLINK ALLEGRO_LIB_BUILD""")
+    defines_sim = Split("""__IPHONE_OS_VERSION_MIN_REQUIRED=40300""")
     cppflags = Split("")
 
     def setFlags(includes, cflags, ccflags, cppflags, ldflags, defines, env):
@@ -112,8 +112,10 @@ def simulatorEnvironment():
         env.Append(CPPDEFINES = defines)
         
     # base.Append(LIBS = ['allegro-sim'])
-    base['LIBS'] = ['allegro-sim']
     base.Append(FRAMEWORKS = frameworks)
+    base['LIBS'] = ['allegro', 'allegro_acodec', 'allegro_audio', 'allegro_image', 'allegro_memfile', 'allegro_primitives', 'allegro_ttf', 'allegro_font']
+    base.ParseConfig('tmp/freetype-sim/bin/freetype-config --cflags --libs')
+    base.Append(LIBPATH = ['#misc/allegro-iphone/lib/sim'])
     includes = [sdkroot_sim]
     #  + ['%s/usr/include/c++/4.2.1' % sdkroot_sim] + ['%s/usr/include/c++/4.2.1/i686-apple-darwin10' % sdkroot_sim]
     setFlags(includes + ['%s/usr/include' % sdkroot_sim], stringify(cflags_sim), stringify(ccflags_sim), cppflags, stringify(ldflags_sim), defines_sim, base)
