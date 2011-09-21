@@ -787,6 +787,18 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                     tok->view() >> tabInfo->info;
                 } else if (*tok == "menuinfo"){
                     tok->view() >> tabInfo->menuInfo;
+                } else if ( *tok == "scroll-type" ){
+                    std::string type;
+                    tok->view() >> type;
+                    if (type == "normal"){
+                        tab->getContext().setListType(ContextBox::Normal);
+                    } else if (type == "scroll"){
+                        tab->getContext().setListType(ContextBox::Scroll);
+                    }
+                } else if ( *tok == "scroll-wrap" ){
+                    bool wrap;
+                    tok->view() >> wrap;
+                    tab->getContext().setListWrap(wrap);
                 } else if (*tok == "option"){
                     try {
                         MenuOption *temp = factory.getOption(tab->getContext(), tok);
