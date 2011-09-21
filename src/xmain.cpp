@@ -10,9 +10,11 @@ END_OF_MAIN()
 #endif
 
 #ifdef USE_ALLEGRO5
-int main( int argc, char ** argv ){
+#ifndef IPHONE
+int main(int argc, char ** argv){
     return paintown_main(argc, argv);
 }
+#endif
 #endif
 
 #ifdef MINPSPW

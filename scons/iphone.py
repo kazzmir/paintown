@@ -74,7 +74,7 @@ def simulatorEnvironment():
     base = Environment(ENV = os.environ)
     gccversion = '4.2'
     iostarget = '4.3'
-    osxtarget = '10.5'
+    osxtarget = '10.6'
     platform_sim = 'iPhoneSimulator'
     arch_sim = 'i686'
     sim_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_sim
@@ -95,7 +95,10 @@ def simulatorEnvironment():
 
     cflags_sim = ['-std=gnu99', '-fobjc-legacy-dispatch', '-fobjc-abi-version=2']
     ccflags_sim = ['-arch %s' % arch_sim, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_sim, '-mmacosx-version-min=%s' % osxtarget] + Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -gdwarf-2 -Wall -fno-strict-aliasing""")
-    ldflags_sim = ['-arch %s' % arch_sim, '-isysroot %s' % sdkroot_sim, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget]
+    ldflags_sim = ['-arch %s' % arch_sim, '-isysroot %s' % sdkroot_sim, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget, '-Xlinker -objc_abi_version', '-Xlinker 2', '-Wl,-search_paths_first', '-Wl,-headerpad_max_install_names']
+    frameworks = Split("""OpenGLES CoreGraphics QuartzCore UIKit Foundation CoreFoundation""")
+
+    # ldflags_sim = ['-arch %s' % arch_sim, '-framework OpenGLES']
     defines_sim = Split("""__IPHONE_OS_VERSION_MIN_REQUIRED=40300 DEBUGMODE=1 D3D_DEBUG_INFO ALLEGRO_SRC ALLEGRO_STATICLINK ALLEGRO_LIB_BUILD""")
     cppflags = Split("")
 
@@ -105,9 +108,12 @@ def simulatorEnvironment():
         env.Append(CFLAGS = cflags)
         env.Append(CCFLAGS = ccflags)
         env.Append(CPPFLAGS = cppflags)
-        env.Append(LDFLAGS = ldflags)
+        env.Append(LINKFLAGS = ldflags)
         env.Append(CPPDEFINES = defines)
         
+    # base.Append(LIBS = ['allegro-sim'])
+    base['LIBS'] = ['allegro-sim']
+    base.Append(FRAMEWORKS = frameworks)
     includes = [sdkroot_sim]
     #  + ['%s/usr/include/c++/4.2.1' % sdkroot_sim] + ['%s/usr/include/c++/4.2.1/i686-apple-darwin10' % sdkroot_sim]
     setFlags(includes + ['%s/usr/include' % sdkroot_sim], stringify(cflags_sim), stringify(ccflags_sim), cppflags, stringify(ldflags_sim), defines_sim, base)
@@ -131,8 +137,9 @@ env['PAINTOWN_BUILD_TESTS'] = False
 env['PAINTOWN_TESTS'] = {'CheckPython': dummyCheck}
 env['PAINTOWN_COLORIZE'] = colorize
 env['PAINTOWN_USE_PRX'] = False
-env['LIBS'] = []
-env.Append(CPPPATH = ["#%s" % buildDir, '#misc/allegro-iphone/include', '#tmp/include'])
-env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+env.Append(CPPPATH = ["#%s" % buildDir, '#misc/allegro-iphone/include',
+                      '#tmp/include', '#misc/allegro-iphone/include/addons'])
+env.Append(LIBPATH = ['#misc/allegro-iphone'])
+env.Append(CPPDEFINES = ['USE_ALLEGRO5', 'IPHONE'])
 use = env
 shared = SConscript('src/SConscript', variant_dir = buildDir, exports = ['use'] );
