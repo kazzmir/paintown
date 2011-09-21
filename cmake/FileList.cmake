@@ -155,6 +155,7 @@ src/util/gui/box.cpp
 src/util/gui/container.cpp
 src/util/gui/context-box.cpp
 src/util/gui/coordinate.cpp
+src/util/gui/cutscene.cpp
 src/util/gui/fadetool.cpp
 src/util/gui/keys.cpp
 src/util/gui/keyinput.cpp
@@ -209,7 +210,6 @@ set(PLATFORMER_SRC
 src/platformer/game/animation.cpp
 src/platformer/game/background.cpp
 src/platformer/game/camera.cpp
-src/platformer/game/cutscene.cpp
 src/platformer/game/game.cpp
 src/platformer/game/tile.cpp
 src/platformer/game/world.cpp
