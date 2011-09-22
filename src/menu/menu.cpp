@@ -211,11 +211,12 @@ void Menu::InfoBox::setText(const std::string & info){
     */
 }
 
-static std::vector<Util::ReferenceCount<ContextItem> > toContextList(const std::vector<Util::ReferenceCount<MenuOption> > & list){
-    std::vector<Util::ReferenceCount<ContextItem> > contextItems;
+static std::vector<Util::ReferenceCount<ScrollItem> > toContextList(const ContextBox & context, const std::vector<Util::ReferenceCount<MenuOption> > & list){
+    std::vector<Util::ReferenceCount<ScrollItem> > contextItems;
     for (std::vector<Util::ReferenceCount<MenuOption> >::const_iterator i = list.begin(); i != list.end(); ++i){
         const Util::ReferenceCount<MenuOption> & option = *i;
-        contextItems.push_back(option.convert<ContextItem>());
+        //contextItems.push_back(option.convert<ContextItem>());
+        contextItems.push_back(option->getAsScrollItem<ContextItem>(context));
     }
     return contextItems;
 }
@@ -539,6 +540,10 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
         bool wrap;
         token->view() >> wrap;
         menu.setListWrap(wrap);
+    } else if ( *token == "scroll-list-item"){
+        Gui::ListValues values;
+        values.getValues(token);
+        menu.setListValues(values);
     } else {
         return false;
     }
@@ -577,7 +582,7 @@ void Menu::DefaultRenderer::initialize(Context & context){
     */
 
     // setFont(new FontInfo(localFont, width, height));
-    menu.setList(toContextList(options));
+    menu.setList(toContextList(menu, options));
     menu.open();
     
     // const Font & font = Configuration::getMenuFont()->get(context.getFont()->get());
@@ -795,6 +800,10 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                     } else if (type == "scroll"){
                         tab->getContext().setListType(ContextBox::Scroll);
                     }
+                } else if ( *tok == "scroll-list-item"){
+                    Gui::ListValues values;
+                    values.getValues(token);
+                    tab->getContext().setListValues(values);
                 } else if ( *tok == "scroll-wrap" ){
                     bool wrap;
                     tok->view() >> wrap;
@@ -805,7 +814,8 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                         if (temp){
                             Util::ReferenceCount<MenuOption> ref(temp);
                             tabInfo->options.push_back(ref);
-                            tab->addOption(ref.convert<Gui::ContextItem>());
+                            //tab->addOption(ref.convert<Gui::ScrollItem>());
+                            tab->addOption(ref->getAsScrollItem<ContextItem>(tab->getContext()));
                         }
                     } catch (const LoadException & le){
                         tok->print(" ");

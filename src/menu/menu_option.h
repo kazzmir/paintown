@@ -7,6 +7,7 @@
 #include "util/load_exception.h"
 #include "util/language-string.h"
 #include "util/gui/context-box.h"
+#include "util/gui/scroll-list.h"
 
 class Bitmap;
 class Token;
@@ -14,7 +15,7 @@ namespace Menu {
     class Context;
 }
 
-class MenuOption: public Gui::ContextItem {
+class MenuOption {
 public:
     /* called when the menu containing this option is displayed to the user.
      * default behavior is to do nothing.
@@ -51,6 +52,12 @@ public:
     };
 
     MenuOption(const Gui::ContextBox & parent, const Token *token);
+    
+    template <typename T>
+    Util::ReferenceCount<Gui::ScrollItem> getAsScrollItem(const Gui::ContextBox & parent){
+        Util::ReferenceCount<T> item = new T(this->getName(), parent);
+        return item.template convert<Gui::ScrollItem>();
+    }
 
     virtual ~MenuOption();
 
