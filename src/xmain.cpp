@@ -3,7 +3,7 @@
 #ifdef USE_ALLEGRO
 #include <allegro.h>
 
-int main( int argc, char ** argv ){
+int main(int argc, char ** argv){
     return paintown_main(argc, argv);
 }
 END_OF_MAIN()
