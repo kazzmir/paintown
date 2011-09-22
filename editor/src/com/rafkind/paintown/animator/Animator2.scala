@@ -571,7 +571,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
   }
 }
 
-object NewAnimator{
+object NewAnimator extends swing.JFrame("Paintown Animator"){
   def dataPath(f:File):File = {
     new File(Data.getDataPath().getPath() + "/" + f.getPath());
   }

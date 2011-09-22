@@ -9,6 +9,7 @@
 using namespace std;
 
 MenuOption::MenuOption(const Gui::ContextBox & parent, const Token *token):
+Gui::ContextItem("", parent),
 currentState(Deselected),
 text(""),
 infoText(""),
@@ -126,4 +127,7 @@ bool MenuOption::rightKey(){
     return false;
 }
 
+const std::string MenuOption::getName() const {
+    return getText();
+}
 

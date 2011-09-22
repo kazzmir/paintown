@@ -15,7 +15,7 @@ namespace Menu {
     class Context;
 }
 
-class MenuOption {
+class MenuOption: public Gui::ContextItem {
 public:
     /* called when the menu containing this option is displayed to the user.
      * default behavior is to do nothing.
@@ -53,11 +53,13 @@ public:
 
     MenuOption(const Gui::ContextBox & parent, const Token *token);
     
+    /*
     template <typename T>
     Util::ReferenceCount<Gui::ScrollItem> getAsScrollItem(const Gui::ContextBox & parent){
         Util::ReferenceCount<T> item = new T(this->getName(), parent);
         return item.template convert<Gui::ScrollItem>();
     }
+    */
 
     virtual ~MenuOption();
 
@@ -77,20 +79,13 @@ public:
     
     inline void setType(const OptionType t) { mType = t; }
     inline OptionType getType() const { return mType; }
-    inline void setText(const LanguageString & t) { text = t; }
-
-    inline const LanguageString & getLanguageText() const {
-        return text;
-    }
-
-    virtual inline std::string getText() const { return text.get(); }
     inline void setInfoText(const LanguageString &t) { infoText = t; }
     inline std::string getInfoText(){ return infoText.get(); }
     inline void setRunnable(const bool r) { runnable = r; }
     inline bool isRunnable() const { return runnable; }
 
 public:
-    inline const std::string getName() const { return this->getText(); }
+    const std::string getName() const;
 
 protected:
     void readName(const Token * token);

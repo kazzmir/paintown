@@ -211,12 +211,11 @@ void Menu::InfoBox::setText(const std::string & info){
     */
 }
 
-static std::vector<Util::ReferenceCount<ScrollItem> > toContextList(const ContextBox & context, const std::vector<Util::ReferenceCount<MenuOption> > & list){
-    std::vector<Util::ReferenceCount<ScrollItem> > contextItems;
+static std::vector<Util::ReferenceCount<ContextItem> > toContextList(const ContextBox & context, const std::vector<Util::ReferenceCount<MenuOption> > & list){
+    std::vector<Util::ReferenceCount<ContextItem> > contextItems;
     for (std::vector<Util::ReferenceCount<MenuOption> >::const_iterator i = list.begin(); i != list.end(); ++i){
         const Util::ReferenceCount<MenuOption> & option = *i;
-        //contextItems.push_back(option.convert<ContextItem>());
-        contextItems.push_back(option->getAsScrollItem<ContextItem>(context));
+        contextItems.push_back(option.convert<ContextItem>());
     }
     return contextItems;
 }
@@ -814,8 +813,8 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                         if (temp){
                             Util::ReferenceCount<MenuOption> ref(temp);
                             tabInfo->options.push_back(ref);
-                            //tab->addOption(ref.convert<Gui::ScrollItem>());
-                            tab->addOption(ref->getAsScrollItem<ContextItem>(tab->getContext()));
+                            tab->addOption(ref.convert<Gui::ContextItem>());
+                            // tab->addOption(ref->getAsScrollItem<ContextItem>(tab->getContext()));
                         }
                     } catch (const LoadException & le){
                         tok->print(" ");
