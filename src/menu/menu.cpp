@@ -51,7 +51,7 @@ static int sharedFontWidth = 24;
 static int sharedFontHeight = 24;
 
 Effects::Gradient Menu::standardGradient(){
-    return Gui::standardGradient();
+    return Gui::standardGradient(50);
 }
 
 Menu::Point::Point():
