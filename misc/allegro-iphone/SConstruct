@@ -127,7 +127,7 @@ def prepend(location, source):
 
 def buildLibraries(env):
     def buildAddon(env, name, source):
-        env.StaticLibrary('install/%s/lib/allegro_%s' % (env['NAME'], name), prepend('build/%s/addons' % env['NAME'], source))
+        env.Default(env.StaticLibrary('install/%s/lib/allegro_%s' % (env['NAME'], name), prepend('build/%s/addons' % env['NAME'], source)))
 
     # Need to include freetype
     def ttfEnv(env):
@@ -136,7 +136,7 @@ def buildLibraries(env):
         return ttf
 
     #buildLib(sim_env, '%s/allegro_ttf' % libsim, prepend('build/sim/addons', ttf), createAddonIncludes('ttf') + ['#freetype'])
-    env.StaticLibrary('install/%s/lib/allegro' % env['NAME'], prepend('build/%s' % env['NAME'], source))
+    env.Default(env.StaticLibrary('install/%s/lib/allegro' % env['NAME'], prepend('build/%s' % env['NAME'], source)))
 
     buildAddon(env, 'memfile', memfile)
     buildAddon(env, 'image', image)
@@ -145,6 +145,7 @@ def buildLibraries(env):
     buildAddon(env, 'acodec', acodec)
     buildAddon(env, 'font', font)
     buildAddon(ttfEnv(env), 'ttf', ttf)
+    env.Default(env.Install('install/%s/include' % env['NAME'], 'includes/allegro5'))
 
 # Copy allegro headers and our own
 Execute(Mkdir('includes'))

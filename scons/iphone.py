@@ -115,7 +115,7 @@ def simulatorEnvironment():
     base.Append(FRAMEWORKS = frameworks)
     base['LIBS'] = ['allegro', 'allegro_acodec', 'allegro_audio', 'allegro_image', 'allegro_memfile', 'allegro_primitives', 'allegro_ttf', 'allegro_font']
     base.ParseConfig('tmp/freetype-sim/bin/freetype-config --cflags --libs')
-    base.Append(LIBPATH = ['#misc/allegro-iphone/lib/sim'])
+    base.Append(LIBPATH = ['#misc/allegro-iphone/install/sim/lib'])
     includes = [sdkroot_sim]
     #  + ['%s/usr/include/c++/4.2.1' % sdkroot_sim] + ['%s/usr/include/c++/4.2.1/i686-apple-darwin10' % sdkroot_sim]
     setFlags(includes + ['%s/usr/include' % sdkroot_sim], stringify(cflags_sim), stringify(ccflags_sim), cppflags, stringify(ldflags_sim), defines_sim, base)
@@ -139,9 +139,7 @@ env['PAINTOWN_BUILD_TESTS'] = False
 env['PAINTOWN_TESTS'] = {'CheckPython': dummyCheck}
 env['PAINTOWN_COLORIZE'] = colorize
 env['PAINTOWN_USE_PRX'] = False
-env.Append(CPPPATH = ["#%s" % buildDir, '#misc/allegro-iphone/include',
-                      '#tmp/include', '#misc/allegro-iphone/include/addons'])
-env.Append(LIBPATH = ['#misc/allegro-iphone'])
+env.Append(CPPPATH = ["#%s" % buildDir, '#misc/allegro-iphone/install/sim/include'])
 env.Append(CPPDEFINES = ['USE_ALLEGRO5', 'IPHONE'])
 use = env
 shared = SConscript('src/SConscript', variant_dir = buildDir, exports = ['use'] );
