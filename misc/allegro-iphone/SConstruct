@@ -12,29 +12,14 @@ phone_env = Environment(ENV = os.environ)
 
 gccversion = '4.2'
 iostarget = '4.3'
-osxtarget = '10.5'
- 
-platform_sim = 'iPhoneSimulator'
-platform_phone = 'iPhoneOS'
- 
-arch_sim = 'i686'
-arch_phone = 'armv6'
- 
-sim_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_sim
-phone_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_phone
-
-# Set environment paths
-sim_env.PrependENVPath('PATH', sim_bin_dir)
-phone_env.PrependENVPath('PATH', phone_bin_dir)
-
-sdkroot_sim = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform_sim, platform_sim, iostarget)
-sdkroot_phone = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform_phone, platform_phone, iostarget)
+osxtarget = '10.6'
 
 postfix = '-%s' % gccversion
 def setGCC(env):
     def setup(x, post):
         return '%s%s' % (x, post)
     # only the compiler can have different versions
+    # maybe use clang here?
     env['CC'] = setup('gcc', postfix)
     env['CXX'] = setup('g++', postfix)
 
@@ -43,157 +28,86 @@ def setGCC(env):
     # env['AR'] = setup('ar', postfix)
     # env['OBJCOPY'] = setup('objcopy', postfix)
 
-setGCC(sim_env)
-setGCC(phone_env)
-
 def stringify(array):
     str = ''
     for item in array:
         str += item + ' '
     return [str.split(" ")]
 
-cflags_sim = ['-arch %s' % arch_sim, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_sim, '-std=gnu99', '-mmacosx-version-min=%s' % osxtarget]
-ldflags_sim = ['-arch %s' % arch_sim, '-isysroot %s' % sdkroot_sim, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget]
-defines_sim = Split("""
-__IPHONE_OS_VERSION_MIN_REQUIRED=40300
-DEBUGMODE=1
-D3D_DEBUG_INFO
-ALLEGRO_SRC
-ALLEGRO_STATICLINK
-ALLEGRO_LIB_BUILD""")
- 
-cflags_phone = ['-arch %s' % arch_phone, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_phone, '-std=gnu99', '-miphoneos-version-min=%s' % iostarget]
-ldflags_phone = ['-arch %s' % arch_phone, '-isysroot %s' % sdkroot_phone, '-Wl,-dead_strip', '-miphoneos-version-min=%s' % iostarget]
-defines_phone = Split("""
-DEBUGMODE=1
-D3D_DEBUG_INFO
-ALLEGRO_SRC
-ALLEGRO_STATICLINK
-ALLEGRO_LIB_BUILD""")
+def makeAll(base, path):
+    # print "Make all %s" % path
+    dir, rest = os.path.split(path)
+    if dir != '':
+        makeAll(base, dir)
+    Execute(Mkdir("%s/%s" % (base, dir)))
+    # print "dir %s rest %s" % (dir, rest)
 
-cflags =  Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 -Wmost -Wno-four-char-constants -Wno-unknown-pragmas""")
+def stripAllegro(path):
+    head, tail = os.path.split(path)
+    if tail == 'allegro5':
+        return tail
+    return os.path.join(stripAllegro(head), tail)
 
-cppflags = Split("""-x objective-c -g -O2 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -Wall -fno-strict-aliasing""")
+def copyHeaders(where):
+    headers = Glob('include/allegro5/*/*.h') + Glob('allegro/include/allegro5/*/*.h') + Glob('allegro/include/allegro5/*.h') + Glob('allegro/include/allegro5/*/*/*.h') + Glob('allegro/include/allegro5/*/*.inl') + Glob('allegro/addons/*/allegro5/*.h') + Glob('allegro/addons/*/allegro5/*/*.h')
+    for header in headers:
+        # print "Make directory for %s" % stripAllegro(header.path)
+        makeAll(where, stripAllegro(header.path))
+        Execute(Copy('%s/%s' % (where, stripAllegro(header.path)), header))
+        # Copy('%s/%s' % (where, stripAllegro(header.path)), header)
 
-includes = Split("""include""")
+def baseEnv(platform, arch, name):
+    base = Environment(ENV = os.environ)
+    bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform
+    base.PrependENVPath('PATH', bin_dir)
+    sdkroot = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform, platform, iostarget)
+    setGCC(base)
 
-includes1 = Split("""
-include 
-include/allegro5 
-include/allegro5/inline 
-include/allegro5/internal 
-include/allegro5/opengl 
-include/allegro5/platform 
-src 
-src/gp2xwiz 
-src/iphone 
-src/linux 
-src/macosx 
-src/misc 
-src/opengl 
-src/unix 
-src/win 
-src/x 
-addons/primitives 
-addons/primitives/allegro5 
-addons/primitives/allegro5/internal
-addons/ttf 
-addons/ttf/allegro5 
-addons/ttf/allegro5/internal""")
+    cflags = ['-arch %s' % arch, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot, '-std=gnu99', '-mmacosx-version-min=%s' % osxtarget]
+    cxxflags = ['-arch %s' % arch, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot, '-std=gnu99', '-mmacosx-version-min=%s' % osxtarget]
+    ldflags = ['-arch %s' % arch, '-isysroot %s' % sdkroot, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget]
+    defines = Split("""__IPHONE_OS_VERSION_MIN_REQUIRED=40300 DEBUGMODE=1 D3D_DEBUG_INFO ALLEGRO_SRC ALLEGRO_STATICLINK ALLEGRO_LIB_BUILD""")
+    cflags = cflags + Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 -Wmost -Wno-four-char-constants -Wno-unknown-pragmas""")
+    cppflags = Split("""-x objective-c -g -O2 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch -Wall -fno-strict-aliasing""")
+    includes = Split("""#includes""")
 
-def setFlags(includes, cflags, cppflags, ldflags, defines, env):
-    env.Append(CPATH = includes)
-    env.Append(CPPPATH = includes)
-    env.Append(CFLAGS = cflags)
-    env.Append(CPPFLAGS = cppflags)
-    env.Append(LDFLAGS = ldflags)
-    env.Append(CPPDEFINES = defines)
-    
-setFlags(includes + ['-I%s/usr/include' % sdkroot_sim], cflags + stringify(cflags_sim), cppflags + stringify(cflags_sim), stringify(ldflags_sim), defines_sim, sim_env)
-setFlags(includes + ['-I%s/usr/include' % sdkroot_phone], cflags + stringify(cflags_phone), cppflags + stringify(cflags_phone), stringify(ldflags_phone), defines_phone, phone_env)
+    base.Append(CPPPATH = includes,
+                CFLAGS = stringify(cflags),
+                CXXFLAGS = stringify(cxxflags),
+                CPPFLAGS = cppflags,
+                LINKFLAGS = ldflags,
+                CPPDEFINES = defines)
 
-source = Split("""
-allegro.c
-display.c
-file_slice.c
-iphone/EAGLView.m
-iphone/ViewController.m
-iphone/allegroAppDelegate.m
-iphone/iphone_display.c
-iphone/iphone_joystick.m
-iphone/iphone_keyboard.c
-iphone/iphone_main.m
-iphone/iphone_mouse.m
-iphone/iphone_path.m
-iphone/iphone_system.c
-iphone/iphone_touch_input.m
-math.c 
-opengl/extensions.c
-opengl/ogl_bitmap.c
-opengl/ogl_display.c
-opengl/ogl_draw.c
-threads.c
-unix/udrvlist.c
-unix/ufdwatch.c
-unix/ugfxdrv.c
-unix/ujoydrv.c
-unix/ukeybd.c
-unix/umodules.c
-unix/umouse.c
-unix/upath.c
-unix/utime.c
-unix/uxthread.c
-bitmap.c
-display_settings.c
-file_stdio.c
-joynu.c
-memblit.c
-optimized.c
-timernu.c
-utf8.c
-bitmap_io.c
-dtor.c
-fshook.c
-keybdnu.c
-memdraw.c
-path.c
-tls.c
-blenders.c
-events.c
-fshook_stdio.c
-libc.c
-memory.c
-pixels.c
-touch_input.c
-config.c
-evtsrc.c
-misc/aatree.c
-misc/bstrlib.c
-misc/bstrlib.txt
-misc/list.c
-misc/vector.c
-transformations.c
-convert.c
-file.c
-inline.c
-mousenu.c
-system.c
-tri_soft.c""")
+    base.VariantDir('build/%s' % name, 'allegro/src')
+    base.VariantDir('build/%s/addons' % name, 'allegro/addons')
+    base['NAME'] = name
 
-primitives = Split("""
-primitives/directx_shaders.cpp
-primitives/high_primitives.c
-primitives/line_soft.c
-primitives/point_soft.c
-primitives/polygon.c
-primitives/polyline.c
-primitives/prim_directx.cpp
-primitives/prim_opengl.c
-primitives/prim_soft.c
-primitives/prim_util.c
-primitives/primitives.c
-primitives/triangulator.c
-""")
+    return base
+
+def simEnv():
+    return baseEnv(platform = 'iPhoneSimulator', arch = 'i686', name = 'sim')
+
+def phoneEnv():
+    return baseEnv(platform = 'iPhoneOS', arch = 'armv6', name = 'phone')
+
+source = Split("""allegro.c display.c file_slice.c iphone/EAGLView.m
+iphone/ViewController.m iphone/allegroAppDelegate.m iphone/iphone_display.c
+iphone/iphone_joystick.m iphone/iphone_keyboard.c iphone/iphone_main.m
+iphone/iphone_mouse.m iphone/iphone_path.m iphone/iphone_system.c
+iphone/iphone_touch_input.m math.c opengl/extensions.c opengl/ogl_bitmap.c
+opengl/ogl_display.c opengl/ogl_draw.c threads.c unix/udrvlist.c unix/ufdwatch.c
+unix/ugfxdrv.c unix/ujoydrv.c unix/ukeybd.c unix/umodules.c unix/umouse.c unix/upath.c
+unix/utime.c unix/uxthread.c bitmap.c display_settings.c file_stdio.c joynu.c
+memblit.c optimized.c timernu.c utf8.c bitmap_io.c dtor.c fshook.c keybdnu.c
+memdraw.c path.c tls.c blenders.c events.c fshook_stdio.c libc.c memory.c
+pixels.c touch_input.c config.c evtsrc.c misc/aatree.c misc/bstrlib.c
+misc/list.c misc/vector.c transformations.c convert.c file.c inline.c
+mousenu.c system.c tri_soft.c""")
+
+primitives = Split("""primitives/directx_shaders.cpp primitives/high_primitives.c
+primitives/line_soft.c primitives/point_soft.c primitives/polygon.c primitives/polyline.c
+primitives/prim_directx.cpp primitives/prim_opengl.c primitives/prim_soft.c
+primitives/prim_util.c primitives/primitives.c primitives/triangulator.c""")
 
 ttf = Split("""ttf/ttf.c""")
 memfile = Split("""memfile/memfile.c""")
@@ -205,47 +119,36 @@ acodec = Split("""acodec/acodec.c acodec/wav.c""")
 font = Split("""font/font.c font/font.h font/fontbmp.c font/text.c""")
 # main = Split("""main/generic_main.c""")
 
-libsim = 'lib/sim'
-libphone = 'lib/phone'
-
 def prepend(location, source):
     new_source = []
     for s in source:
         new_source.append('%s/%s' % (location, s))
     return new_source
 
-sim_env.VariantDir('build/sim', 'src')
-sim_env.VariantDir('build/sim/addons', 'addons')
-phone_env.VariantDir('build/phone', 'src')
-phone_env.VariantDir('build/phone/addons', 'addons')
+def buildLibraries(env):
+    def buildAddon(env, name, source):
+        env.StaticLibrary('install/%s/lib/allegro_%s' % (env['NAME'], name), prepend('build/%s/addons' % env['NAME'], source))
 
-def createAddonIncludes(name):
-    return ['#include/addons', 'addons/%s' % name, 'addons/%s/allegro5' % name, 'addons/%s/allegro5/internal' % name]
+    # Need to include freetype
+    def ttfEnv(env):
+        ttf = env.Clone()
+        ttf.Append(CPPPATH = ['#install/%s/include' % env['NAME'], '#install/%s/include/freetype2' % env['NAME']])
+        return ttf
 
-def buildLib(env, libname, sources, includes = ''):
-    new_env = env
-    new_env.Append(CPATH = includes)
-    new_env.Append(CPPPATH = includes)
-    new_env.Library(libname, sources)
+    #buildLib(sim_env, '%s/allegro_ttf' % libsim, prepend('build/sim/addons', ttf), createAddonIncludes('ttf') + ['#freetype'])
+    env.StaticLibrary('install/%s/lib/allegro' % env['NAME'], prepend('build/%s' % env['NAME'], source))
 
-# Simulator
-buildLib(sim_env, '%s/allegro' % libsim, prepend('build/sim', source))
-buildLib(sim_env, '%s/allegro_ttf' % libsim, prepend('build/sim/addons', ttf), createAddonIncludes('ttf') + ['#freetype'])
-buildLib(sim_env, '%s/allegro_memfile' % libsim, prepend('build/sim/addons', memfile), createAddonIncludes('memfile'))
-buildLib(sim_env, '%s/allegro_image' % libsim, prepend('build/sim/addons', image), createAddonIncludes('image'))
-buildLib(sim_env, '%s/allegro_primitives' % libsim, prepend('build/sim/addons', primitives))
-buildLib(sim_env, '%s/allegro_audio' % libsim, prepend('build/sim/addons', audio), createAddonIncludes('audio'))
-buildLib(sim_env, '%s/allegro_acodec' % libsim, prepend('build/sim/addons', acodec), createAddonIncludes('acodec'))
-buildLib(sim_env, '%s/allegro_font' % libsim, prepend('build/sim/addons', font), createAddonIncludes('font'))
-# buildLib(sim_env, '%s/allegro_main' % libsim, prepend('build/sim/addons', main), createAddonIncludes('main'))
+    buildAddon(env, 'memfile', memfile)
+    buildAddon(env, 'image', image)
+    buildAddon(env, 'primitives', primitives)
+    buildAddon(env, 'audio', audio)
+    buildAddon(env, 'acodec', acodec)
+    buildAddon(env, 'font', font)
+    buildAddon(ttfEnv(env), 'ttf', ttf)
 
-# Phone
-buildLib(phone_env, '%s/allegro' % libphone, prepend('build/phone', source))
-buildLib(phone_env, '%s/allegro_ttf' % libphone, prepend('build/phone/addons', ttf), createAddonIncludes('ttf') + ['#freetype'])
-buildLib(phone_env, '%s/allegro_memfile' % libphone, prepend('build/phone/addons', memfile), createAddonIncludes('memfile'))
-buildLib(phone_env, '%s/allegro_image' % libphone, prepend('build/phone/addons', image), createAddonIncludes('image'))
-buildLib(phone_env, '%s/allegro_primitives' % libphone, prepend('build/phone/addons', primitives))
-buildLib(phone_env, '%s/allegro_audio' % libphone, prepend('build/phone/addons', audio), createAddonIncludes('audio'))
-buildLib(phone_env, '%s/allegro_codec' % libphone, prepend('build/phone/addons', acodec), createAddonIncludes('acodec'))
-buildLib(phone_env, '%s/allegro_font' % libphone, prepend('build/phone/addons', font), createAddonIncludes('font'))
-# buildLib(phone_env, '%s/allegro_main' % libphone, prepend('build/phone/addons', main), createAddonIncludes('main'))
+# Copy allegro headers and our own
+Execute(Mkdir('includes'))
+copyHeaders('includes')
+
+buildLibraries(simEnv())
+buildLibraries(phoneEnv())
