@@ -2,13 +2,14 @@
   $ cd misc/allegro-iphone
   $ mkdir -p install/sim
   $ mkdir -p install/phone
-
+  
 2. get freetype and build for the simulator
   $ mkdir tmp
   $ wget http://download.savannah.gnu.org/releases/freetype/freetype-2.4.6.tar.bz2
   $ tar -xf freetype-2.4.6.tar.bz2
   $ cd freetype-2.4.6
-  $ CC=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 ./configure --prefix=`pwd`/../../install/sim && make && make install
+  $ CFLAGS='-arch i386' LDFLAGS='-arch i386' CC=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 ./configure --prefix=`pwd`/misc/allegro-iphone/install/sim/ && make && make install
+  
 
 3. get the precompiled freetype for the iphone
   $ wget http://alleg.sourceforge.net/files/freetype-iphone-2.3.12-bin.zip
@@ -32,7 +33,7 @@
 5. get ios-sim to run in the simulator (https://github.com/Fingertips/ios-sim)
   $ git clone https://github.com/Fingertips/ios-sim.git
   $ cd ios-sim
-  $ rake
+  $ rake install prefix=/usr/local
   # If rake doesn't work just run xcodebuild directly:
     $ xcodebuild -project ios-sim.xcodeproj -configuration Release SYMROOT=build
 
