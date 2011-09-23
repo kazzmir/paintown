@@ -114,7 +114,7 @@ def simulatorEnvironment():
     # base.Append(LIBS = ['allegro-sim'])
     base.Append(FRAMEWORKS = frameworks)
     base['LIBS'] = ['allegro', 'allegro_acodec', 'allegro_audio', 'allegro_image', 'allegro_memfile', 'allegro_primitives', 'allegro_ttf', 'allegro_font']
-    base.ParseConfig('tmp/freetype-sim/bin/freetype-config --cflags --libs')
+    base.ParseConfig('misc/allegro-iphone/install/sim/bin/freetype-config --cflags --libs')
     base.Append(LIBPATH = ['#misc/allegro-iphone/install/sim/lib'])
     includes = [sdkroot_sim]
     #  + ['%s/usr/include/c++/4.2.1' % sdkroot_sim] + ['%s/usr/include/c++/4.2.1/i686-apple-darwin10' % sdkroot_sim]

@@ -795,9 +795,13 @@ void Configuration::loadConfigurations(){
                 n->view() >> x;
                 setMenuFontHeight(x);
             } else if (*n == config_current_game){
-                string game;
-                n->view() >> game;
-                setCurrentGame(game);
+                try{
+                    string game;
+                    n->view() >> game;
+                    setCurrentGame(game);
+                } catch (const TokenException & fail){
+                    Global::debug(0) << "Warning: could not get the current game from the configuration" << std::endl;
+                }
             } else if ( *n == config_npc_buddies){
                 n->view() >> npc_buddies;
             } else if (*n == config_screen_size){
