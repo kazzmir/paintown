@@ -1172,7 +1172,6 @@ invincible(invincible),
 lives(lives),
 remap(remap),
 source(source){
-    start();
 }
 
 PlayerFuture::~PlayerFuture(){

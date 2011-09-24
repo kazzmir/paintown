@@ -717,6 +717,12 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         virtual void load(){
             try{
                 vector<Paintown::Object*> players;
+                /* start the futures so they can run in parallel */
+                for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
+                    Util::Future<Paintown::Object*> * future = *fit;
+                    future->start();
+                }
+                /* then get them */
                 for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
                     Util::Future<Paintown::Object*> * future = *fit;
                     players.push_back(future->get());
