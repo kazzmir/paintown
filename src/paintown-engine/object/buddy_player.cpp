@@ -257,7 +257,6 @@ playerFuture(playerFuture),
 remap(remap),
 id(id),
 base(NULL){
-    start();
 }
 
 BuddyFuture::~BuddyFuture(){
