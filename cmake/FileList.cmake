@@ -77,7 +77,6 @@ src/paintown-engine/object/versus_enemy.cpp
 src/paintown-engine/object/projectile.cpp
 src/paintown-engine/object/attack.cpp
 src/paintown-engine/object/stimulation.cpp
-src/paintown-engine/object/health_stimulation.cpp
 src/paintown-engine/object/character.cpp
 src/paintown-engine/object/heart.cpp)
 

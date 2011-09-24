@@ -12,15 +12,30 @@ class Character;
 
 class Stimulation{
 public:
-	Stimulation();
-	Stimulation( const Stimulation & copy );
+    Stimulation();
+    Stimulation(const Stimulation & copy );
 
-	virtual void stimulate( Object & o ) const;
-	virtual void stimulate( Character & c ) const;
-	virtual Stimulation * copy() const;
-	virtual void createMessage( Network::Message & message ) const;
+    virtual void stimulate(Object & o) const;
+    virtual void stimulate(Character & c) const;
+    virtual Stimulation * copy() const;
+    virtual void createMessage(Network::Message & message) const;
 
-	virtual ~Stimulation();
+    virtual ~Stimulation();
+};
+
+/* adds health to a player */
+class HealthStimulation: public Stimulation {
+public:
+    HealthStimulation(int value);
+    HealthStimulation(const HealthStimulation & h);
+
+    virtual void stimulate(Object & o) const;
+    virtual void stimulate(Character & c) const;
+    virtual Stimulation * copy() const;
+    virtual void createMessage(Network::Message & message) const;
+
+protected:
+    int value;
 };
 
 }

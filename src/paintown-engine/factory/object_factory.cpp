@@ -2,7 +2,6 @@
 #include <map>
 
 #include "paintown-engine/level/blockobject.h"
-#include "paintown-engine/object/health_stimulation.h"
 #include "paintown-engine/object/stimulation.h"
 #include "paintown-engine/object/enemy.h"
 #include "paintown-engine/object/network_character.h"
@@ -53,7 +52,7 @@ nextObjectId(0){
 
 static Paintown::Stimulation * makeStimulation(const string & str, int value){
     if (str == "health"){
-        return new Paintown::HealthStimulation( value );
+        return new Paintown::HealthStimulation(value);
     }
     return new Paintown::Stimulation();
 }
