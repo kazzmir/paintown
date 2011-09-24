@@ -91,13 +91,18 @@ LevelInfo readLevel(const Token * level){
     LevelInfo info;
 
     try{
-        const Token * token_name = level->findToken("level-set/name");
         const Token * token_levels = level->findToken("level-set/levels");
         const Token * token_player = level->findToken("level-set/player-path");
 
         string name;
-        token_name->view() >> name;
-        info.setName(name);
+        if (level->match("level-set/name", name)){
+            info.setName(name);
+        }
+
+        string playerPath;
+        if (level->match("level-set/player-path", playerPath)){
+            info.setPlayerPath(playerPath);
+        }
 
         TokenView view = token_levels->view();
         while (view.hasMore()){
