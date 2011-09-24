@@ -424,6 +424,7 @@ public:
     virtual void fall( double x_vel, double y_vel );
 
     virtual int getInvincibility() const;
+    virtual void setInvincibility(const int x);
 
     virtual void addEffect(DrawEffect * effect);
 
@@ -455,8 +456,6 @@ protected:
     // void parseObject( string object_string ) throw( exception );
     void upperCase( std::string & who );
 
-
-    virtual void setInvincibility(const int x);
 
     virtual inline void setExplode( bool b ){
         explode = b;

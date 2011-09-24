@@ -54,6 +54,9 @@ static Paintown::Stimulation * makeStimulation(const string & str, int value){
     if (str == "health"){
         return new Paintown::HealthStimulation(value);
     }
+    if (str == "invincibility"){
+        return new Paintown::InvincibilityStimulation(value);
+    }
     return new Paintown::Stimulation();
 }
 

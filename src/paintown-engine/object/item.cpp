@@ -150,7 +150,7 @@ Network::Message Item::getCreateMessage(){
 	message << getId();
 	message << (int) getX();
 	message << (int) getZ();
-	this->stimulation->createMessage( message );
+	this->stimulation->createMessage(message);
 
         Filesystem::RelativePath mypath = Storage::instance().cleanse(path);
         Global::debug(2) << "Create item id " << getId() << " path " << mypath.path() << endl;
@@ -176,8 +176,8 @@ int Item::getHeight() const {
 }
 	
 Item::~Item(){
-	delete collide;
-	delete stimulation;
+    delete collide;
+    delete stimulation;
 }
 
 }

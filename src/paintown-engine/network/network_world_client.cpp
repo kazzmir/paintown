@@ -9,6 +9,7 @@
 #include "../script/script.h"
 #include "util/init.h"
 #include "util/font.h"
+#include "../object/stimulation.h"
 #include "factory/font_render.h"
 #include "../level/blockobject.h"
 #include "util/funcs.h"
@@ -261,13 +262,13 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
     if (uniqueObject(id)){
         int x, z;
         int value;
-        message >> x >> z >> value;
+        int type;
+        message >> x >> z >> type >> value;
         Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
         BlockObject block;
         block.setType(ObjectFactory::ItemType);
         block.setPath(path);
-        /* TODO: dont hard-code this */
-        block.setStimulationType("health");
+        block.setStimulationType(Paintown::Stimulation::typeToName(Paintown::Stimulation::Type(type)));
         block.setStimulationValue(value);
         block.setCoords(x, z);
         Paintown::Item * item = (Paintown::Item *) ObjectFactory::createObject( &block );
