@@ -375,8 +375,7 @@ public:
                 throw LoadException(__FILE__, __LINE__, "Not a change mod");
             }
 
-            /* TODO: fix */
-            setText("Change mod");
+            readName(token);
         }
 
     ~OptionChangeMod(){
