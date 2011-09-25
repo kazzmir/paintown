@@ -375,7 +375,7 @@ static bool parseDisplayList(const Token * token, ContextBox & menu){
                 menu.setListWrap(wrap);
             } else if ( *tok == "items"){
                 Gui::ListValues values;
-                values.getValues(token);
+                values.getValues(tok);
                 menu.setListValues(values);
             }
         }
