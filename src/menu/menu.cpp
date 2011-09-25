@@ -357,6 +357,33 @@ const std::string Menu::ValueHolder::getValues() {
     return temp;
 }
 
+static bool parseDisplayList(const Token * token, ContextBox & menu){
+    if (*token == "display-list"){
+        TokenView view = token->view();
+        while (view.hasMore()){
+            const Token * tok;
+            view >> tok;
+            std::string type;
+            bool wrap = true;
+            if (tok->match("type", type)){
+                if (type == "normal"){
+                    menu.setListType(ContextBox::Normal);
+                } else if (type == "scroll"){
+                    menu.setListType(ContextBox::Scroll);
+                }
+            } else if (tok->match("wrap", wrap)){
+                menu.setListWrap(wrap);
+            } else if ( *tok == "items"){
+                Gui::ListValues values;
+                values.getValues(token);
+                menu.setListValues(values);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 /* backgrounds */
 Menu::Background::Background(){
 }
@@ -527,7 +554,7 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
         int speed;
         token->view() >> speed;
         menu.setFadeSpeed(speed);
-    } else if ( *token == "scroll-type" ){
+    /*} else if ( *token == "scroll-type" ){
         std::string type;
         token->view() >> type;
         if (type == "normal"){
@@ -542,7 +569,8 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
     } else if ( *token == "scroll-list-item"){
         Gui::ListValues values;
         values.getValues(token);
-        menu.setListValues(values);
+        menu.setListValues(values);*/
+    } else if ( parseDisplayList(token, menu) ){
     } else {
         return false;
     }
@@ -791,7 +819,7 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                     tok->view() >> tabInfo->info;
                 } else if (*tok == "menuinfo"){
                     tok->view() >> tabInfo->menuInfo;
-                } else if ( *tok == "scroll-type" ){
+                /*} else if ( *tok == "scroll-type" ){
                     std::string type;
                     tok->view() >> type;
                     if (type == "normal"){
@@ -806,7 +834,8 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                 } else if ( *tok == "scroll-wrap" ){
                     bool wrap;
                     tok->view() >> wrap;
-                    tab->getContext().setListWrap(wrap);
+                    tab->getContext().setListWrap(wrap);*/
+                } else if (parseDisplayList(tok, tab->getContext())){
                 } else if (*tok == "option"){
                     try {
                         MenuOption *temp = factory.getOption(tab->getContext(), tok);
