@@ -196,19 +196,6 @@ void Menu::InfoBox::setText(const std::string & info){
     }
     text.push_back(info.substr(last));
 
-    /*
-    int maxWidth = 0;
-    int height = 0;
-    for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
-        int w = vFont.textLength((*it).c_str()) + 10;
-        if (w > maxWidth){
-            maxWidth = w;
-        }
-        height += vFont.getHeight();
-    }
-
-    location.setDimensions(maxWidth, height);
-    */
 }
 
 static std::vector<Util::ReferenceCount<ContextItem> > toContextList(const ContextBox & context, const std::vector<Util::ReferenceCount<MenuOption> > & list){
@@ -508,15 +495,8 @@ void Menu::DefaultRenderer::invokeOverride(const Context & context){
 }
 
 Menu::DefaultRenderer::~DefaultRenderer(){
-    // Kill options
-    /*
-    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
-        if (*i){
-            delete *i;
-        }
-    }
-    */
 }
+
 bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory & factory){
     if( *token == "option" ) {
         try{
@@ -554,22 +534,6 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
         int speed;
         token->view() >> speed;
         menu.setFadeSpeed(speed);
-    /*} else if ( *token == "scroll-type" ){
-        std::string type;
-        token->view() >> type;
-        if (type == "normal"){
-            menu.setListType(ContextBox::Normal);
-        } else if (type == "scroll"){
-            menu.setListType(ContextBox::Scroll);
-        }
-    } else if ( *token == "scroll-wrap" ){
-        bool wrap;
-        token->view() >> wrap;
-        menu.setListWrap(wrap);
-    } else if ( *token == "scroll-list-item"){
-        Gui::ListValues values;
-        values.getValues(token);
-        menu.setListValues(values);*/
     } else if ( parseDisplayList(token, menu) ){
     } else {
         return false;
@@ -578,37 +542,8 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
     return true;
 }
 
-/*
-void Menu::DefaultRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
-    if (!font->empty()){
-        menu.setFont(Configuration::getMenuFont()->getFont(*font),
-                     Configuration::getMenuFont()->getWidth(*font),
-                     Configuration::getMenuFont()->getHeight(*font));
-        menuInfo.setFont(font);
-    }
-}
-*/
-
 void Menu::DefaultRenderer::initialize(Context & context){
-    // FIXME This is wrong, move this over to FontInfo so that the overrides can be accounted for
-    /*
-    Filesystem::RelativePath localFont("fonts/arial.ttf");
-    int width = 24, height = 24;
-    */
-
-    /*
-    if (Configuration::getMenuFont() != NULL){
-        localFont = Configuration::getMenuFont()->getFont();
-        width = Configuration::getMenuFontWidth();
-        height = Configuration::getMenuFontHeight();
-    } else if (Filesystem::exists(context.getFont()->getFont())){
-        localFont = context.getFont()->getFont();
-        width = context.getFont()->getWidth();
-        height = context.getFont()->getHeight();
-    }
-    */
-
-    // setFont(new FontInfo(localFont, width, height));
+    
     menu.setList(toContextList(menu, options));
     menu.open();
     
@@ -660,30 +595,6 @@ void Menu::DefaultRenderer::render(const Graphics::Bitmap & bmp, const Font & fo
     menu.render(bmp, font);
     menuInfo.render(bmp, font);
     renderInfo(bmp, font);
-    
-    /*
-    // Check for adjustability
-    const Util::ReferenceCount<MenuOption> option = options[menu.getCurrentIndex()];
-    
-    // TODO FIXME ContextItem always returns false this overall needs to be changed to a better solution
-    if (option->isAdjustable()){
-        // NOTE consider adding getCenter X & Y to coordinate
-        const int x = menu.location.getX()+(menu.location.getWidth()/2);
-        const int y = menu.location.getY()+(menu.location.getHeight()/2);
-        const int triangleSize = 14;
-        // Get current option width
-        const int startx = x - (font.textLength(option->getName().c_str())/2);
-        int cx = startx - 15;
-
-        // NOTE 1.3 is hardcoded from FONT_SPACER in scroll-list
-        int cy = (int)(y + (font.getHeight()/1.3) / 2 + 2);
-
-        bmp.equilateralTriangle(cx, cy, 180, triangleSize, option->getLeftColor());
-
-        cx = (x + startx + font.textLength(option->getName().c_str()))+15;
-        bmp.equilateralTriangle(cx, cy, 0, triangleSize, option->getRightColor());
-    }
-    */
 }
 
 void Menu::DefaultRenderer::addOption(MenuOption * opt){
@@ -746,14 +657,7 @@ Menu::TabInfo::TabInfo(){
 }
 
 Menu::TabInfo::~TabInfo(){
-    // Kill options
-    /*
-    for (std::vector<MenuOption *>::iterator i = options.begin(); i != options.end(); ++i){
-        if (*i){
-            delete *i;
-        }
-    }
-    */
+    
 }
 
 void Menu::TabInfo::act(){
@@ -819,22 +723,6 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
                     tok->view() >> tabInfo->info;
                 } else if (*tok == "menuinfo"){
                     tok->view() >> tabInfo->menuInfo;
-                /*} else if ( *tok == "scroll-type" ){
-                    std::string type;
-                    tok->view() >> type;
-                    if (type == "normal"){
-                        tab->getContext().setListType(ContextBox::Normal);
-                    } else if (type == "scroll"){
-                        tab->getContext().setListType(ContextBox::Scroll);
-                    }
-                } else if ( *tok == "scroll-list-item"){
-                    Gui::ListValues values;
-                    values.getValues(token);
-                    tab->getContext().setListValues(values);
-                } else if ( *tok == "scroll-wrap" ){
-                    bool wrap;
-                    tok->view() >> wrap;
-                    tab->getContext().setListWrap(wrap);*/
                 } else if (parseDisplayList(tok, tab->getContext())){
                 } else if (*tok == "option"){
                     try {
@@ -914,42 +802,7 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
     return true;
 }
 
-/*
-void Menu::TabRenderer::setFont(const Util::ReferenceCount<FontInfo> & font){
-    if (!font->empty()){
-        menu.setFont(Configuration::getMenuFont()->getFont(*font),
-                     Configuration::getMenuFont()->getWidth(*font),
-                     Configuration::getMenuFont()->getHeight(*font));
-        menuInfo.setFont(font);
-    }
-}
-*/
-
 void Menu::TabRenderer::initialize(Context & context){
-    // FIXME Redundant, see defaultRenderer
-    /*
-    Filesystem::RelativePath localFont("fonts/arial.ttf");
-    int width = 24, height = 24;
-    */
-    /*
-    if (Configuration::getMenuFont() != NULL){
-        localFont = Configuration::getMenuFont()->getFont();
-        width = Configuration::getMenuFontWidth();
-        height = Configuration::getMenuFontHeight();
-    } else if (Filesystem::exists(context.getFont()->getFont())){
-        localFont = context.getFont()->getFont();
-        width = context.getFont()->getWidth();
-        height = context.getFont()->getHeight();
-    }
-    */
-    // setFont(new FontInfo(localFont, width, height));
-    /*
-    for (std::vector<TabInfo *>::iterator i = tabs.begin(); i != tabs.end(); ++i){
-        TabInfo * tab = *i;
-        menu.addTab(tab->name, toContextList(tab->options));
-    }
-    */
-    //menu.open();
     
     const Font & font = currentFont();
     // Menu info
@@ -1117,22 +970,6 @@ menuInfoLocation(0,.95){
     } else if (parent.hasFont()){
         font = parent.getFontInfo();
     }
-
-    /*
-    const FontInfo & result = child.getFont()->get(*parent.getFont());
-    if (child.getFont() == &result){
-        font = child.getFont();
-    } else {
-        font = parent.getFont();
-    }
-    */
-
-    /*
-    if (child.getFont() != NULL){
-        // Filesystem::exists(child.getFont()->getFont())){
-        font = child.getFont();
-    }
-    */
 
     /* what are these magic numbers -.5 and .95? */
     if (child.infoLocation.getRelativeX() != 0 || child.infoLocation.getRelativeY() != -.5){
@@ -1403,24 +1240,6 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
     if (!token->hasTokens()){
         throw LoadException(__FILE__, __LINE__, "Empty Menu");
     } else {
-        // Get version
-        // const Token * tok;
-        // token->view() >> tok;
-#if 0
-        // Do any overrides that may take place before the menu
-        const Token *ourToken = token->findToken("_/override");
-        if (ourToken != NULL){
-            // Handle any overrides of menu or otherwise
-                std::string name;
-                try {
-                    ourToken->view() >> name;
-                } catch (const TokenException & ex){
-                }
-                if (handleOverride(ourToken)){
-                    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
-                }
-        }
-#endif
         const Token *ourToken = token->findToken("_/type");
         if (ourToken != NULL){
             try {
@@ -1459,90 +1278,6 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
 
 }
 
-#if 0
- void Menu::Menu::load(const Token * token, const OptionFactory & factory){
-    // Check tokens for "override" and "menu" tags
-    TokenView view = token->view();
-    while (view.hasMore()){
-        try{
-            const Token * tok;
-            view >> tok;
-            tok->print(" ");
-            if (*tok == "override"){
-                // Handle any overrides of menu or otherwise
-                std::string name;
-                try {
-                    tok->view() >> name;
-                } catch (const TokenException & ex){
-                }
-                if (handleOverride(tok)){
-                    throw LoadException(__FILE__, __LINE__, "Override \"" + name.empty() ? "Unknown" : name + "\" envoked.");
-                }
-            } else if (*tok == "menu"){
-                // Commence menu sequence
-                // version info;
-                int major=0, minor=0, micro=0;
-                if (!tok->hasTokens()){
-                    throw LoadException(__FILE__, __LINE__, "Empty Menu");
-                } else {
-                    // Get version
-                    // const Token * tok;
-                    // token->view() >> tok;
-                    const Token *ourToken = tok->findToken("_/type");
-                    if (ourToken != NULL){
-                        try {
-                            std::string menuType;
-                            ourToken->view() >> menuType;
-                            if (menuType == "default"){
-                                type = Default;
-                            } else if (menuType == "tabbed"){
-                                type = Tabbed;
-                            }
-                        } catch (const TokenException & ex){
-                        }
-                    }
-                    ourToken = token->findToken("_/version");
-                    if (ourToken != NULL){
-                        try {
-                            ourToken->view() >> major >> minor >> micro;
-                        } catch (const TokenException & ex){
-                        }
-                    } else {
-                        Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
-                        major = 3;
-                        minor = 3;
-                        micro = 1;
-                    }
-                }
-
-                setRenderer(type);
-
-                if (Global::getVersion(major, minor, micro) != Global::getVersion()){
-                    // Do compatible translations if necessary
-                    handleCompatibility(tok, Global::getVersion(major, minor, micro), factory);
-                } else {
-                    handleCurrentVersion(tok);
-                }
-            } else {
-                Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
-                if (Global::getDebug() >= 3){
-                    tok->print(" ");
-                }
-            }
-        } catch ( const TokenException & ex ) {
-            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-        } catch (const LoadException & ex){
-            throw ex;
-        } catch (const Filesystem::NotFound & ex){
-            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-        }
-    }
-    
-    // Assuming no menu tag was found
-    throw LoadException(__FILE__, __LINE__, "No \"menu\" tag was found.");
-}
-#endif
-
 typedef Menu::Menu MenuClass;
 class LanguageMenu: public Menu::Menu {
 public:
@@ -1566,29 +1301,6 @@ public:
 
     static vector<string> findLanguages(const MenuClass & original){
         return original.getLanguages();
-#if 0
-        /* get all languages used in the menu */
-        vector<Util::ReferenceCount<MenuOption> > options = original.getRenderer()->getOptions();
-        map<string, bool> languages;
-        for (vector<Util::ReferenceCount<MenuOption> >::iterator it = options.begin(); it != options.end(); it++){
-            Util::ReferenceCount<MenuOption> & option = *it;
-            
-            const map<string, string> strings = option->getLanguageText().getLanguages();
-            for (map<string, string>::const_iterator it = strings.begin(); it != strings.end(); it++){
-                /* ad-hoc structure, maybe use a specific type for languages? */
-                const string & language = (*it).first;
-                if (language != ""){
-                    languages[language] = true;
-                }
-            }
-        }
-
-        vector<string> out;
-        for (map<string, bool>::iterator it = languages.begin(); it != languages.end(); it++){
-            out.push_back((*it).first);
-        }
-        return out;
-#endif
     }
 
     static vector<string> putEnglishFirst(vector<string> languages){
@@ -1699,19 +1411,6 @@ void Menu::Menu::run(const Context & parentContext){
         input.set(Configuration::config(0).getJoystickJump(), 0, true, Select);
         input.set(Configuration::config(0).getJoystickQuit(), 0, true, Cancel);
        
-        /*
-        Bitmap work(Global::getScreenWidth(), Global::getScreenHeight());
-        work.updateOnResize();
-        */
-        
-        // double runCounter = 0;
-        // Global::speed_counter = 0;
-
-        // InputManager::enableBufferInput();
-            
-        // MenuException or something
-        // bool specialExit = false;
-
         class Logic: public Util::Logic {
         public:
             Logic(Menu & menu, Context & localContext, Renderer * renderer):
@@ -1771,52 +1470,7 @@ void Menu::Menu::run(const Context & parentContext){
         Draw draw(*this, localContext);
 
         Util::standardLoop(logic, draw);
-            
-#if 0
-        // Run while till the localContext is done
-        while (localContext.getState() != Context::Completed &&
-              (renderer && renderer->active())){
-
-            if (Global::speed_counter > 0){
-                runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
-                Global::speed_counter = 0;
-                
-                /* Added to make the psp update more frequently. */
-                /*
-                if (runCounter > 3){
-                    runCounter = 3;
-                }
-                */
-
-                while (runCounter >= 1.0){
-                    
-                    runCounter -= 1;
-                    try {
-                        act(localContext);
-                    } catch (const Exception::Return & ex){
-                        // signaled to quit current menu, closing this one out
-                        localContext.finish();
-                        if (renderer){
-                            renderer->finish();
-                        }
-                    }
-                }
-
-                Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont;
-                if (Configuration::hasMenuFont()){
-                    currentFont.push(Configuration::getMenuFont());
-                }
-                render(localContext, work);
-
-                work.BlitToScreen();
-            }
-
-            while (Global::speed_counter < 1){
-                Util::rest(1);
-            }
-        }
-#endif
-
+      
         closeOptions();
         
         // FIXME Menu is finished, lets return. Is this even required anymore?
@@ -1829,8 +1483,6 @@ void Menu::Menu::run(const Context & parentContext){
 
 void Menu::Menu::act(Context & ourContext){
     // Keys
-    // InputManager::poll();
-    // InputMap<Actions>::Output inputState = InputManager::getMap(input);
     vector<InputMap<Actions>::InputEvent> events = InputManager::getEvents(input, InputSource());
 
     for (vector<InputMap<Actions>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
@@ -1911,44 +1563,6 @@ void Menu::Menu::addData(ValueHolder * item){
         data[item->getName()] = item;
     }
 }
-
-#if 0
-bool Menu::Menu::handleOverride(const Token * token){
-    TokenView view = token->view();
-    while (view.hasMore()){
-        try{
-            const Token * tok;
-            view >> tok;
-            if (*tok == "mugen"){
-                try{
-                    Mugen::run();
-                } catch (const LoadException & le){
-                    ostringstream out;
-                    out << "Press ENTER to continue\n";
-                    out << "\n";
-                    out << "We are very sorry but an error has occured while trying to load MUGEN.";
-                    Util::showError(le, out.str());
-                    InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC);
-                }
-                return true;
-            } else {
-                Global::debug(0,"menu") <<"Unhandled override: " <<endl;
-                if (Global::getDebug() >= 3){
-                    tok->print(" ");
-                }
-            }
-        } catch ( const TokenException & ex ) {
-            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-        } catch (const LoadException & ex){
-            throw ex;
-        } catch (const Filesystem::NotFound & ex){
-            throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
-        }
-    }
-    
-    return false;
-}
-#endif
 
 void Menu::Menu::handleCurrentVersion(const Token * token){
     TokenView view = token->view();
