@@ -35,17 +35,31 @@
 			<spinner id="id" />
 		</hbox>
 		<buttongroup>
-
 			<hbox>
 				<radiobutton id="none" selected="true" HorizontalAlignment="SwingConstants.LEFT" text="None" />
 				<glue />
 			</hbox>
 			<hbox>
 				<radiobutton id="health" HorizontalAlignment="SwingConstants.LEFT" text="Health" />
-				<label id="health-label" enabled="false" text="0" />
 				<spinner enabled="false" id="health-spinner" />
 				<glue />
 			</hbox>
+            <hbox>
+				<radiobutton id="invincibility" HorizontalAlignment="SwingConstants.LEFT" text="Invincibility" />
+                <glue />
+                <label text="Duration" />
+				<spinner enabled="false" id="invincibility-spinner" />
+				<glue />
+            </hbox>
+            <hbox>
+				<radiobutton id="speed" HorizontalAlignment="SwingConstants.LEFT" text="Speed" />
+                <glue />
+                <label text="Multiplier" />
+				<spinner enabled="false" id="speed-spinner" />
+                <label text="Duration" />
+				<spinner enabled="false" id="speed-duration" />
+				<glue />
+            </hbox>
 		</buttongroup>
 	</vbox>
 	<hbox>
