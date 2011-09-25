@@ -185,9 +185,11 @@ public:
     /* am I doing an attacking move? */
     virtual bool isAttacking();
 
-    inline bool isMoving() const{
+    inline bool isMoving() const {
         return moving;
     }
+
+    virtual void setSpeedBoost(double boost, int ticks);
 
     virtual double minZDistance() const;
 
@@ -340,9 +342,7 @@ public:
         return death;
     }
 
-    inline virtual double getSpeed() const {
-        return speed;
-    }
+    virtual double getSpeed() const;
 
     inline virtual unsigned int getCurrentMap() const {
         return current_map;
@@ -562,6 +562,16 @@ protected:
 
     std::vector<DrawEffect*> effects;
     Util::ReferenceCount<Graphics::Bitmap> gibBloodImage;
+
+    struct SpeedBoost{
+        SpeedBoost():
+        boost(0),
+        ticks(0){
+        }
+
+        double boost;
+        int ticks;
+    } speedBoost;
 };
 
 }

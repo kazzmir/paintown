@@ -71,7 +71,7 @@ stimulationValue( 0 ){
                 }
             } else if ( *current == "stimulation" ){
                 string type;
-                int value;
+                double value;
                 const Token * next;
                 current->view() >> next;
                 type = next->getName();

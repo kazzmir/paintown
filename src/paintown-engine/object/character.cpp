@@ -805,6 +805,18 @@ int Character::getDamage() const{
     }
     return 0;
 }
+    
+void Character::setSpeedBoost(double boost, int ticks){
+    speedBoost.boost = boost;
+    speedBoost.ticks = ticks;
+}
+    
+double Character::getSpeed() const {
+    if (speedBoost.ticks > 0){
+        return speedBoost.boost * speed;
+    }
+    return speed;
+}
 
 double Character::getForceX() const {
     if (animation_current != NULL){
@@ -1071,194 +1083,198 @@ Network::Message Character::grabMessage( Object::networkid_t from, Object::netwo
 
 void Character::act( vector< Object * > * others, World * world, vector< Object * > * add ){
 
-	if ( invincibility > 0 ){
-		invincibility--;
-	}
-
-        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); ){
-            DrawEffect * effect = *it;
-            if (effect->act()){
-                delete effect;
-                it = effects.erase(it);
-            } else {
-                it++;
-            }
-        }
-
-	for ( vector< Object * >::iterator it = projectiles.begin(); it != projectiles.end(); it++ ){
-		Object * obj = *it;
-		obj->setAlliance( getAlliance() );
-		obj->setFacing( getFacing() );
-	}
-	add->insert( add->end(), projectiles.begin(), projectiles.end() );
-	projectiles.clear();
-
-	reduceDamage();
-	// cout << getName() << " now has " << currentDamage() << endl;
-
-	/* when the character moves not because of a move or walking */
-	if ( isMoving() ){
-		// cout << this << " is moving with velocities " << getXVelocity() << " " << getYVelocity() << " " << getZVelocity() << endl;
-			
-		/* force of gravity, subtract acceleration for
-		 * downward movement
-		 */
-		decreaseYVelocity();
-		moveX( getXVelocity() );
-		moveY( getYVelocity() );
-		moveZ( getZVelocity() );
-	
-        /* moveY ensures that getY() will never be below 0, but we use <=
-         * to make the compiler happy
-         */
-		if (getY() <= 0){
-			landed(world);
-			setMoving(false);
-		}
-	}
-
-	/*
-	if ( animation_current ){
-		if ( animation_current->Act() ){
-			// animation_current->reset();
-			nextTicket();
-			if ( getStatus() == Status_Fell ){
-				animation_current = movements[ "rise" ];
-				setStatus( Status_Ground );
-			} else	animation_current = movements[ "idle" ];
-
-			animation_current->reset();
-		}
-	}
-	*/
-
-	// cout<<getName()<<" death is "<<death<<endl;
-	if ( death >= 2 ){
-		// cout<<getName()<<" Death is "<<death<<endl;
-		if ( ++death > 60 ){
-			Global::debug( 1 ) << this << " dying" << endl;
-			setHealth( 0 );
-			world->addMessage( healthMessage() );
-		}
-	}
-
-	if ( getStatus() == Status_Fell ){
-		// setLink( NULL );
-		
-		/*
-		if ( getY() == 0 ){
-
-			double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
-			cout<<getName()<<" taking "<<cur<<" from falling"<<endl;
-			// Object::takeDamage( NULL, (int)cur );
-
-			// setStatus( Status_Hurt );
-			
-			/ *
-			if ( getHealth() <= 0 && death == 0 ){
-				death = 1;
-				setHealth( 1 );
-				// setStatus( Status_Dead );
-			}
-			* /
-
-			setXVelocity( 0 );
-			setYVelocity( 0 );
-		} else 
-			decreaseYVelocity();
-
-		if ( animation_current->Act() && death < 2 ){
-			if ( death == 0 ){
-				if ( getY() == 0 ){
-					setStatus( Status_Hurt );
-					animation_current = movements[ "rise" ];
-					animation_current->reset();
-				}
-			} else {
-				death = 2;
-			}
-		}
-		*/
-
-		animation_current->Act();
-
-	} else if ( getStatus() == Status_Hurt ){
-		if ( animation_current->Act() ){
-			if ( getLink() == NULL ){
-				setStatus( Status_Ground );	
-			} else {
-				setStatus( Status_Grabbed );
-				// animation_current = movements["pain"];
-				animation_current = getMovement( "pain" );
-			}
-		}
-	} else if ( getStatus() == Status_Rise || getStatus() == Status_Get ){
-		if ( animation_current->Act() ){
-			animation_current = getMovement( "idle" );
-			setStatus( Status_Ground );
-		}
-	} else if ( getStatus() == Status_Grabbed ){
-		if ( ++grab_time > 120 ){
-			setStatus( Status_Ground );
-			if ( getLink() ){
-				getLink()->unGrab();
-				setLink( NULL );
-			}
-			world->addMessage( ungrabMessage() );
-		} else {
-                    /* probably not necessary */
-                    /*
-			if ( getLink() ){
-				world->addMessage( grabMessage( getLink()->getId(), getId() ) );
-			}
-                        */
-		}
-	}
-
-        if (getScriptObject() != NULL){
-            Script::Engine::getEngine()->objectTick(getScriptObject());
-        }
-
-    if (trail_generator > 0){
-        if (trail_counter <= 1){
-            if (animation_current != NULL){
-                trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), trail_life));
-            }
-            trail_counter = trail_generator;
-        } else {
-            trail_counter -= 1;
-        }
+    if (speedBoost.ticks > 0){
+        speedBoost.ticks -= 1;
     }
 
-    for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); ){
-        AnimationTrail * trail = *it;
-        if (trail->act()){
-            delete trail;
-            it = trails.erase(it);
+    if ( invincibility > 0 ){
+        invincibility--;
+    }
+
+    for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); ){
+        DrawEffect * effect = *it;
+        if (effect->act()){
+            delete effect;
+            it = effects.erase(it);
         } else {
             it++;
         }
     }
 
+    for ( vector< Object * >::iterator it = projectiles.begin(); it != projectiles.end(); it++ ){
+        Object * obj = *it;
+        obj->setAlliance( getAlliance() );
+        obj->setFacing( getFacing() );
+    }
+    add->insert( add->end(), projectiles.begin(), projectiles.end() );
+    projectiles.clear();
 
-	/*
-	if ( isJumping() ){
-		// cout<<"Jumping: "<<getJumpingYVelocity()<<endl;
-		// moveX( getXVelocity() );
-		// moveY( getYVelocity() );
-		decreaseYVelocity();
-		if ( getY() == 0 ){
-			// setY( 0 );
-			setStatus( Status_Ground );
-			animation_current = movements["idle"];
-			animation_current->reset();
+    reduceDamage();
+    // cout << getName() << " now has " << currentDamage() << endl;
 
-			setXVelocity( 0 );
-			setYVelocity( 0 );
-		}
-		// cout<<"Y: "<<getY() <<endl;
-	}
-	*/
+    /* when the character moves not because of a move or walking */
+    if ( isMoving() ){
+        // cout << this << " is moving with velocities " << getXVelocity() << " " << getYVelocity() << " " << getZVelocity() << endl;
+
+        /* force of gravity, subtract acceleration for
+         * downward movement
+         */
+        decreaseYVelocity();
+        moveX( getXVelocity() );
+        moveY( getYVelocity() );
+        moveZ( getZVelocity() );
+
+        /* moveY ensures that getY() will never be below 0, but we use <=
+         * to make the compiler happy
+         */
+        if (getY() <= 0){
+            landed(world);
+            setMoving(false);
+        }
+    }
+
+    /*
+       if ( animation_current ){
+       if ( animation_current->Act() ){
+// animation_current->reset();
+nextTicket();
+if ( getStatus() == Status_Fell ){
+animation_current = movements[ "rise" ];
+setStatus( Status_Ground );
+} else	animation_current = movements[ "idle" ];
+
+animation_current->reset();
+}
+}
+*/
+
+// cout<<getName()<<" death is "<<death<<endl;
+if ( death >= 2 ){
+    // cout<<getName()<<" Death is "<<death<<endl;
+    if ( ++death > 60 ){
+        Global::debug( 1 ) << this << " dying" << endl;
+        setHealth( 0 );
+        world->addMessage( healthMessage() );
+    }
+}
+
+if ( getStatus() == Status_Fell ){
+    // setLink( NULL );
+
+    /*
+       if ( getY() == 0 ){
+
+       double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
+       cout<<getName()<<" taking "<<cur<<" from falling"<<endl;
+    // Object::takeDamage( NULL, (int)cur );
+
+    // setStatus( Status_Hurt );
+
+    / *
+    if ( getHealth() <= 0 && death == 0 ){
+    death = 1;
+    setHealth( 1 );
+    // setStatus( Status_Dead );
+    }
+     * /
+
+     setXVelocity( 0 );
+     setYVelocity( 0 );
+     } else 
+     decreaseYVelocity();
+
+     if ( animation_current->Act() && death < 2 ){
+     if ( death == 0 ){
+     if ( getY() == 0 ){
+     setStatus( Status_Hurt );
+     animation_current = movements[ "rise" ];
+     animation_current->reset();
+     }
+     } else {
+     death = 2;
+     }
+     }
+     */
+
+    animation_current->Act();
+
+} else if ( getStatus() == Status_Hurt ){
+    if ( animation_current->Act() ){
+        if ( getLink() == NULL ){
+            setStatus( Status_Ground );	
+        } else {
+            setStatus( Status_Grabbed );
+            // animation_current = movements["pain"];
+            animation_current = getMovement( "pain" );
+        }
+    }
+} else if ( getStatus() == Status_Rise || getStatus() == Status_Get ){
+    if ( animation_current->Act() ){
+        animation_current = getMovement( "idle" );
+        setStatus( Status_Ground );
+    }
+} else if ( getStatus() == Status_Grabbed ){
+    if ( ++grab_time > 120 ){
+        setStatus( Status_Ground );
+        if ( getLink() ){
+            getLink()->unGrab();
+            setLink( NULL );
+        }
+        world->addMessage( ungrabMessage() );
+    } else {
+        /* probably not necessary */
+        /*
+           if ( getLink() ){
+           world->addMessage( grabMessage( getLink()->getId(), getId() ) );
+           }
+           */
+    }
+}
+
+if (getScriptObject() != NULL){
+    Script::Engine::getEngine()->objectTick(getScriptObject());
+}
+
+if (trail_generator > 0){
+    if (trail_counter <= 1){
+        if (animation_current != NULL){
+            trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), trail_life));
+        }
+        trail_counter = trail_generator;
+    } else {
+        trail_counter -= 1;
+    }
+}
+
+for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); ){
+    AnimationTrail * trail = *it;
+    if (trail->act()){
+        delete trail;
+        it = trails.erase(it);
+    } else {
+        it++;
+    }
+}
+
+
+/*
+   if ( isJumping() ){
+// cout<<"Jumping: "<<getJumpingYVelocity()<<endl;
+// moveX( getXVelocity() );
+// moveY( getYVelocity() );
+decreaseYVelocity();
+if ( getY() == 0 ){
+// setY( 0 );
+setStatus( Status_Ground );
+animation_current = movements["idle"];
+animation_current->reset();
+
+setXVelocity( 0 );
+setYVelocity( 0 );
+}
+// cout<<"Y: "<<getY() <<endl;
+}
+*/
 }
 	
 void Character::unGrab(){

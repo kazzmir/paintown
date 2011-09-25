@@ -37,7 +37,7 @@ public:
 		return stimulationType;
 	}
 
-	inline int getStimulationValue() const {
+	inline double getStimulationValue() const {
 		return stimulationValue;
 	}
 
@@ -89,8 +89,8 @@ public:
 		stimulationType = s;
 	}
 
-	inline void setStimulationValue( int i ){
-		stimulationValue = i;
+        inline void setStimulationValue( double i ){
+            stimulationValue = i;
 	}
 
 	inline void setHealth( int h ) {
@@ -132,7 +132,7 @@ protected:
         int id;
 
         std::string stimulationType;
-        int stimulationValue;
+        double stimulationValue;
 };
 
 #endif

@@ -20,7 +20,8 @@ public:
     /* for network mode to translate types back to objects */
     enum Type{
         Health,
-        Invincibility
+        Invincibility,
+        Speed
     };
 
     /* translate type to the string name so a block object can be made */
@@ -49,6 +50,7 @@ protected:
     int value;
 };
 
+/* makes a player temporarily invincibile */
 class InvincibilityStimulation: public Stimulation {
 public:
     InvincibilityStimulation(int duration);
@@ -61,6 +63,21 @@ public:
 
 protected:
     int duration;
+};
+
+/* adds speed to a player */
+class SpeedStimulation: public Stimulation {
+public:
+    SpeedStimulation(double boost);
+    SpeedStimulation(const SpeedStimulation & copy);
+
+    virtual void stimulate(Object & o) const;
+    virtual void stimulate(Character & c) const;
+    virtual Stimulation * copy() const;
+    virtual void createMessage(Network::Message & message) const;
+
+protected:
+    double boost;
 };
 
 }

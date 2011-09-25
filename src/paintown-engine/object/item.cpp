@@ -16,75 +16,81 @@ using namespace std;
 
 namespace Paintown{
 
-Item::Item( const Filesystem::AbsolutePath & filename, Stimulation * const stimulation ):
-ObjectNonAttack( 0, 0 ),
-collide( 0 ),
-stimulation( stimulation ){
-	TokenReader tr(filename.path());
+Item::Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation):
+ObjectNonAttack(0, 0),
+collide(0),
+stimulation(stimulation){
+    TokenReader tr(filename.path());
 
-	setMaxHealth( 1 );
-	setHealth( 1 );
+    setMaxHealth( 1 );
+    setHealth( 1 );
 
-        try{
-            Token * head;
-            head = tr.readToken();
+    try{
+        Token * head;
+        head = tr.readToken();
 
-            if ( *head != "item" ){
-                throw LoadException(__FILE__, __LINE__, "Item does not begin with 'item'" );
+        if ( *head != "item" ){
+            throw LoadException(__FILE__, __LINE__, "Item does not begin with 'item'" );
+        }
+
+        TokenView view = head->view();
+        while (view.hasMore()){
+            const Token * next = NULL;
+            view >> next;
+            if (*next == "frame"){
+                string file;
+                next->view() >> file;
+                picture.load(Storage::instance().find(Filesystem::RelativePath(file)).path());
+            } else if (*next == "sound"){
+                string path;
+                next->view() >> path;
+                sound = Sound(Storage::instance().find(Filesystem::RelativePath(path)).path());
             }
+        }
+    } catch (const TokenException & ex){
+        // Global::debug(0) << "Could not read "<<filename.path()<< ": "<<ex.getReason()<<endl;
+        throw LoadException(__FILE__, __LINE__, ex, "Could not open item file");
+    }
 
-            TokenView view = head->view();
-            while (view.hasMore()){
-                const Token * next = NULL;
-                view >> next;
-                if (*next == "frame"){
-                    string file;
-                    next->view() >> file;
-                    picture.load(Storage::instance().find(Filesystem::RelativePath(file)).path());
-                } else if (*next == "sound"){
-                    string path;
-                    next->view() >> path;
-                    sound = Sound(Storage::instance().find(Filesystem::RelativePath(path)).path());
-                }
-            }
-        } catch (const TokenException & ex){
-            // Global::debug(0) << "Could not read "<<filename.path()<< ": "<<ex.getReason()<<endl;
-            throw LoadException(__FILE__, __LINE__, ex, "Could not open item file");
-	}
-
-	collide = new ECollide( picture );
-	path = filename;
+    collide = new ECollide( picture );
+    path = filename;
 }
 
-Item::Item( const Item & item ):
-ObjectNonAttack( item ),
-collide( 0 ),
-stimulation( item.copyStimulation() ){
-	this->picture = item.picture;
-	collide = new ECollide( this->picture );
-	setHealth( item.getHealth() );
-	sound = item.sound;
-	path = item.getPath();
-	setX( item.getX() );
-	setY( item.getY() );
-	setZ( item.getZ() );
+Item::Item(const Item & item):
+ObjectNonAttack(item),
+collide(0),
+stimulation(item.stimulation){
+    this->picture = item.picture;
+    collide = new ECollide(this->picture);
+    setHealth(item.getHealth());
+    sound = item.sound;
+    path = item.getPath();
+    setX(item.getX());
+    setY(item.getY());
+    setZ(item.getZ());
 }
 	
+/*
 Stimulation * Item::copyStimulation() const {
-	return getStimulation()->copy();
+    return getStimulation()->copy();
 }
+*/
 	
 Object * Item::copy(){
-	return new Item( *this );
+    return new Item(*this);
 }
 	
 bool Item::isGettable(){
-	return true;
+    return true;
 }
 	
-void Item::touch( Object * obj ){
-	obj->stimulate( *getStimulation() );
-	sound.play();
+void Item::touch(Object * obj){
+    obj->stimulate(*getStimulation());
+    sound.play();
+}
+    
+void Item::setStimulation(const Util::ReferenceCount<Stimulation> & stimulation){
+    this->stimulation = stimulation;
 }
 
 vector<ECollide*> Item::getCollide() const {
@@ -93,8 +99,8 @@ vector<ECollide*> Item::getCollide() const {
     return out;
 }
 	
-bool Item::collision( ObjectAttack * obj ){
-    if ( getAlliance() == obj->getAlliance() ){
+bool Item::collision(ObjectAttack * obj){
+    if (getAlliance() == obj->getAlliance()){
         return false;
     }
 
@@ -129,55 +135,52 @@ bool Item::collision( ObjectAttack * obj ){
     return false;
 }
 
-void Item::act( vector< Object * > * others, World * world, vector< Object * > * add ){
-	// cout << "tough actin tinactin: " << this << endl;
+void Item::act(vector< Object * > * others, World * world, vector< Object * > * add){
 }
 
 void Item::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
-	// cout << "draw item at " << getRX() - rel_x << " " << getRY() << endl;
-	picture.draw( getRX() - rel_x - picture.getWidth() / 2, getRY() - picture.getHeight(), *work );
+    picture.draw( getRX() - rel_x - picture.getWidth() / 2, getRY() - picture.getHeight(), *work );
 
-	if ( Global::getDebug() > 5 ){
-		work->circleFill( getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ) );
-	}
+    if ( Global::getDebug() > 5 ){
+        work->circleFill( getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ) );
+    }
 }
 	
 Network::Message Item::getCreateMessage(){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = 0;
-	message << World::CREATE_ITEM;
-	message << getId();
-	message << (int) getX();
-	message << (int) getZ();
-	this->stimulation->createMessage(message);
+    message.id = 0;
+    message << World::CREATE_ITEM;
+    message << getId();
+    message << (int) getX();
+    message << (int) getZ();
+    this->stimulation->createMessage(message);
 
-        Filesystem::RelativePath mypath = Storage::instance().cleanse(path);
-        Global::debug(2) << "Create item id " << getId() << " path " << mypath.path() << endl;
-        message << mypath.path();
-        /*
-	mypath.erase( 0, Util::getDataPath().length() );
-	message << mypath;
-        */
+    Filesystem::RelativePath mypath = Storage::instance().cleanse(path);
+    Global::debug(2) << "Create item id " << getId() << " path " << mypath.path() << endl;
+    message << mypath.path();
+    /*
+       mypath.erase( 0, Util::getDataPath().length() );
+       message << mypath;
+       */
 
-	return message;
+    return message;
 }
 
 bool Item::isCollidable( Object * obj ){
-	return false;
+    return false;
 }
 
 int Item::getWidth() const {
-	return picture.getWidth();
+    return picture.getWidth();
 }
 
 int Item::getHeight() const {
-	return picture.getHeight();
+    return picture.getHeight();
 }
 	
 Item::~Item(){
     delete collide;
-    delete stimulation;
 }
 
 }
