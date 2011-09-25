@@ -1536,6 +1536,8 @@ public:
     };
 
     static vector<string> findLanguages(const MenuClass & original){
+        return original.getLanguages();
+#if 0
         /* get all languages used in the menu */
         vector<Util::ReferenceCount<MenuOption> > options = original.getRenderer()->getOptions();
         map<string, bool> languages;
@@ -1557,6 +1559,7 @@ public:
             out.push_back((*it).first);
         }
         return out;
+#endif
     }
 
     static vector<string> putEnglishFirst(vector<string> languages){
@@ -1605,6 +1608,10 @@ void Menu::Menu::closeOptions(){
         Util::ReferenceCount<MenuOption> & option = *it;
         option->close();
     }
+}
+        
+vector<string> Menu::Menu::getLanguages() const {
+    return languages;
 }
 
 void Menu::Menu::run(const Context & parentContext){
@@ -1954,6 +1961,23 @@ void Menu::Menu::handleCurrentVersion(const Token * token){
 void Menu::Menu::handleCompatibility(const Token * token, int version, const OptionFactory & factory){
     Global::debug(1,"menu") << "Trying version: " << version << endl;
     if (version <= Global::getVersion(3, 3, 1)){
+
+        const Token * languages = token->findToken("_/languages");
+        if (languages != NULL){
+            try{
+                TokenView view = languages->view();
+                while (true){
+                    string language;
+                    view >> language;
+                    this->languages.push_back(language);
+                }
+            } catch (const TokenException & fail){
+            }
+        }
+        if (this->languages.size() == 0){
+            this->languages.push_back("English");
+        }
+
         TokenView view = token->view();
         while (view.hasMore()){
             try {

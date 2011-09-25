@@ -497,6 +497,9 @@ class Menu{
         virtual void render(Context &, const Graphics::Bitmap &);
 
         virtual void setRenderer(const Type &);
+
+        /* a list of languages (translations) supported by this menu */
+        virtual std::vector<std::string> getLanguages() const;
         
         /*! Get Name */
         virtual std::string getName();
@@ -559,6 +562,7 @@ class Menu{
         
         /*! Check type */
         virtual Renderer * rendererType(const Type &);
+        std::vector<std::string> languages;
 };
 
 }
