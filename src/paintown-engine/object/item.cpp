@@ -85,7 +85,9 @@ bool Item::isGettable(){
 }
 	
 void Item::touch(Object * obj){
-    obj->stimulate(*getStimulation());
+    if (getStimulation() != NULL){
+        obj->stimulate(*getStimulation());
+    }
     sound.play();
 }
     
@@ -154,7 +156,9 @@ Network::Message Item::getCreateMessage(){
     message << getId();
     message << (int) getX();
     message << (int) getZ();
-    this->stimulation->createMessage(message);
+    if (this->stimulation != NULL){
+        this->stimulation->createMessage(message);
+    }
 
     Filesystem::RelativePath mypath = Storage::instance().cleanse(path);
     Global::debug(2) << "Create item id " << getId() << " path " << mypath.path() << endl;

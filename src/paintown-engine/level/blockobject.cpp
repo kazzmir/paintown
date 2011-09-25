@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "blockobject.h"
+#include "../object/stimulation.h"
 #include "../factory/object_factory.h"
 #include "util/load_exception.h"
 #include "util/token_exception.h"
@@ -18,9 +19,7 @@ map( 0 ),
 health( 1 ),
 coords_x( 0 ),
 coords_z( 0 ),
-id(-1),
-stimulationType("none"),
-stimulationValue(0){
+id(-1){
 }
 
 BlockObject::BlockObject(const BlockObject & copy):
@@ -34,8 +33,7 @@ health(copy.health),
 coords_x(copy.coords_x),
 coords_z(copy.coords_z),
 id(copy.id),
-stimulationType(copy.stimulationType),
-stimulationValue(copy.stimulationValue){
+stimulation(copy.stimulation){
 }
 
 BlockObject::BlockObject(const Token * tok):
@@ -45,9 +43,7 @@ map( 0 ),
 health( 1 ),
 coords_x( 0 ),
 coords_z( 0 ),
-id(-1),
-stimulationType( "none" ),
-stimulationValue( 0 ){
+id(-1){
     TokenView view = tok->view();
     while (view.hasMore()){
         try{
@@ -70,6 +66,8 @@ stimulationValue( 0 ){
                     throw LoadException(__FILE__, __LINE__, "Not a valid type");
                 }
             } else if ( *current == "stimulation" ){
+                setStimulation(Paintown::Stimulation::create(*current));
+                /*
                 string type;
                 double value;
                 const Token * next;
@@ -78,6 +76,7 @@ stimulationValue( 0 ){
                 next->view() >> value;
                 setStimulationValue(value);
                 setStimulationType(type);
+                */
             } else if (*current == "id"){
                 int id;
                 current->view() >> id;
@@ -146,6 +145,14 @@ stimulationValue( 0 ){
         str += getName();
         throw LoadException(__FILE__, __LINE__, str);
     }
+}
+
+Util::ReferenceCount<Paintown::Stimulation> BlockObject::getStimulation() const {
+    return stimulation;
+}
+
+void BlockObject::setStimulation(const Util::ReferenceCount<Paintown::Stimulation> & stimulation){
+    this->stimulation = stimulation;
 }
 
 BlockObject::~BlockObject(){

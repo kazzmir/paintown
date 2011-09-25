@@ -3,6 +3,8 @@
 
 #include <string>
 
+class Token;
+
 namespace Network{
     struct Message;
 }
@@ -25,7 +27,13 @@ public:
     };
 
     /* translate type to the string name so a block object can be made */
-    static std::string typeToName(Type type);
+    // static std::string typeToName(Type type);
+
+    /* create from a token */
+    static Stimulation * create(const Token & token);
+
+    /* create from a message */
+    static Stimulation * create(Network::Message & message);
 
     virtual void stimulate(Object & o) const;
     virtual void stimulate(Character & c) const;
@@ -39,6 +47,8 @@ public:
 class HealthStimulation: public Stimulation {
 public:
     HealthStimulation(int value);
+    HealthStimulation(const Token & data);
+    HealthStimulation(Network::Message & message);
     HealthStimulation(const HealthStimulation & h);
 
     virtual void stimulate(Object & o) const;
@@ -54,6 +64,8 @@ protected:
 class InvincibilityStimulation: public Stimulation {
 public:
     InvincibilityStimulation(int duration);
+    InvincibilityStimulation(const Token & data);
+    InvincibilityStimulation(Network::Message & data);
     InvincibilityStimulation(const InvincibilityStimulation & copy);
 
     virtual void stimulate(Object & o) const;
@@ -68,7 +80,9 @@ protected:
 /* adds speed to a player */
 class SpeedStimulation: public Stimulation {
 public:
-    SpeedStimulation(double boost);
+    SpeedStimulation(double boost, int ticks);
+    SpeedStimulation(const Token & data);
+    SpeedStimulation(Network::Message & data);
     SpeedStimulation(const SpeedStimulation & copy);
 
     virtual void stimulate(Object & o) const;
@@ -78,6 +92,7 @@ public:
 
 protected:
     double boost;
+    int ticks;
 };
 
 }

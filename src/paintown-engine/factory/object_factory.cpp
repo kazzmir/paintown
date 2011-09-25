@@ -50,6 +50,7 @@ ObjectFactory::ObjectFactory():
 nextObjectId(0){
 }
 
+/*
 static Paintown::Stimulation * makeStimulation(const string & str, double value){
     if (str == "health"){
         return new Paintown::HealthStimulation(value);
@@ -62,11 +63,12 @@ static Paintown::Stimulation * makeStimulation(const string & str, double value)
     }
     return new Paintown::Stimulation();
 }
+*/
 
 Paintown::Object * ObjectFactory::makeItem( Paintown::Item * item, const BlockObject * block ){
     int x, z;
     block->getCoords(x, z);
-    item->setStimulation(makeStimulation(block->getStimulationType(), block->getStimulationValue())); 
+    item->setStimulation(block->getStimulation());
     item->setX(x);
     item->setZ(z);
     item->setObjectId(block->getId());
@@ -145,7 +147,7 @@ Paintown::Object * ObjectFactory::makeObject( const BlockObject * block ){
             case ItemType: {
                 string cachePath = "item:" + block->getPath().path();
                 if (cached[cachePath] == NULL){
-                    cached[cachePath] = new Paintown::Item(block->getPath(), makeStimulation( block->getStimulationType(), block->getStimulationValue())); 
+                    cached[cachePath] = new Paintown::Item(block->getPath(), block->getStimulation());
                     Global::debug(1) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }

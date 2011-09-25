@@ -263,13 +263,12 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
         int x, z;
         int value;
         int type;
-        message >> x >> z >> type >> value;
+        message >> x >> z;
         Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
         BlockObject block;
         block.setType(ObjectFactory::ItemType);
         block.setPath(path);
-        block.setStimulationType(Paintown::Stimulation::typeToName(Paintown::Stimulation::Type(type)));
-        block.setStimulationValue(value);
+        block.setStimulation(Paintown::Stimulation::create(message));
         block.setCoords(x, z);
         Paintown::Item * item = (Paintown::Item *) ObjectFactory::createObject( &block );
         if ( item == NULL ){
