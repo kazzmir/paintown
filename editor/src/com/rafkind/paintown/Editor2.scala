@@ -311,7 +311,7 @@ class NewEditor extends JFrame("Paintown Editor"){
 
         def editSelected(thing:Thing){
           val dialog = new JDialog(NewEditor.this, "Edit");
-          dialog.setSize(350, 300);
+          dialog.setSize(350, 350);
           val editor = thing.getEditor();
           dialog.getContentPane().add(editor.createPane(level, new Lambda0(){
               override def invoke():Object = {
