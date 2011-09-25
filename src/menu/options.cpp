@@ -78,6 +78,7 @@ static bool miguelBirthday(){
 
 OptionCredits::OptionCredits(const Gui::ContextBox & parent, const Token * token):
 MenuOption(parent, token),
+creditsContext(new Menu::Context()),
 music(""),
 color(Graphics::makeColor(255,255,255)),
 title(Graphics::makeColor(0,255,255)){
@@ -135,7 +136,9 @@ title(Graphics::makeColor(0,255,255)){
                 /* Create an image and push it back on to vector */
                 std::string temp;
                 tok->view() >> temp;
-                background = Filesystem::RelativePath(temp);
+                creditsContext->addBackground(temp);
+            } else if ( *tok == "anim" || *tok == "animation" ){
+                creditsContext->addBackground(tok);
             } else if ( *tok == "additional" ) {
                 std::string str;
                 TokenView additionalView = tok->view();
@@ -181,7 +184,9 @@ void OptionCredits::logic(){
 
 void OptionCredits::run(const Menu::Context & context){
     // Keyboard key;
-    Graphics::Bitmap backgroundImage(Storage::instance().find(background).path());
+    //Graphics::Bitmap backgroundImage(Storage::instance().find(background).path());
+    Menu::Context localContext(context, *creditsContext);
+    localContext.initialize();
 
     const int maxCredits = credits.size();
 
@@ -224,15 +229,17 @@ void OptionCredits::run(const Menu::Context & context){
 
     class Logic: public Util::Logic {
     public:
-        Logic(State & state, InputMap<CreditKey> & input):
+        Logic(State & state, InputMap<CreditKey> & input, Menu::Context & context):
         state(state),
         input(input),
-        quit(false){
+        quit(false),
+        context(context){
         }
 
         State & state;
         InputMap<CreditKey> & input;
         bool quit;
+        Menu::Context & context;
 
         void run(){
             vector<InputMap<CreditKey>::InputEvent> out = InputManager::getEvents(input, InputSource());
@@ -241,6 +248,7 @@ void OptionCredits::run(const Menu::Context & context){
                 if (event.enabled){
                     if (event.out == Exit){
                         quit = true;
+                        context.finish();
                     }
                 }
             }
@@ -250,6 +258,7 @@ void OptionCredits::run(const Menu::Context & context){
                 state.min_y = GFX_Y;
             }
             // state.fire.update();
+            context.act();
         }
 
         bool done(){
@@ -263,18 +272,19 @@ void OptionCredits::run(const Menu::Context & context){
 
     class Draw: public Util::Draw {
     public:
-        Draw(State & state, Graphics::Bitmap & background):
+        Draw(State & state, Menu::Context & context):
         state(state),
-        background(background){
+        context(context){
         }
     
         State & state;
 
         /* use Bitmap::temporaryBitmap here? no! BlitToScreen uses temporaryBitmap */
-        Graphics::Bitmap & background;
+        Menu::Context & context;
 
         void draw(const Graphics::Bitmap & work){
-            background.Blit(work);
+            //background.Blit(work);
+            context.render(NULL, work);
             int y = (int) state.min_y;
             vector<std::string>::const_iterator b = state.credits.begin();
             vector<std::string>::const_iterator e = state.credits.end();
@@ -299,8 +309,8 @@ void OptionCredits::run(const Menu::Context & context){
     };
 
     State state(vFont, credits, color, title);
-    Logic logic(state, input);
-    Draw draw(state, backgroundImage);
+    Logic logic(state, input, localContext);
+    Draw draw(state, localContext);
 
     Util::standardLoop(logic, draw);
 

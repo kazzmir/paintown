@@ -31,7 +31,7 @@ public:
 
     virtual ~OptionCredits();
 private:
-    Filesystem::RelativePath background;
+    Util::ReferenceCount<Menu::Context> creditsContext;
     std::vector<std::string> credits;
     std::string music;
     Graphics::Color color, title;
