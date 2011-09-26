@@ -66,9 +66,53 @@ def iphoneEnvironment():
     base = Environment(ENV = os.environ)
     gccversion = '4.2'
     iostarget = '4.3'
-    osxtarget = '10.5'
+    osxtarget = '10.6'
     platform_phone = 'iPhoneOS'
-    # fill the rest in ...
+    arch_phone = 'armv6'
+    phone_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_phone
+    base.PrependENVPath('PATH', phone_bin_dir)
+    sdkroot_phone = '/Developer/Platforms/%s.platform/Developer/SDKs/%s%s.sdk' % (platform_phone, platform_phone, iostarget)
+    postfix = '-%s' % gccversion
+    def setup(x, post):
+        return '%s%s' % (x, post)
+    # only the compiler can have different versions
+    base['CC'] = setup('gcc', postfix)
+    base['CXX'] = setup('g++', postfix)
+
+    def stringify(array):
+        str = ''
+        for item in array:
+            str += item + ' '
+        return [str.split(" ")]
+
+    cflags_phone = ['-std=gnu99', '-fobjc-legacy-dispatch', '-fobjc-abi-version=2']
+    ccflags_phone = ['-arch %s' % arch_phone, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_phone, '-mmacosx-version-min=%s' % osxtarget] + Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -gdwarf-2 -Wall -fno-strict-aliasing""")
+    ldflags_phone = ['-arch %s' % arch_phone, '-isysroot %s' % sdkroot_phone, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget, '-Xlinker -objc_abi_version', '-Xlinker 2', '-Wl,-search_paths_first', '-Wl,-headerpad_max_install_names']
+    #frameworks = Split("""OpenGLES CoreGraphics QuartzCore UIKit Foundation CoreFoundation OpenAL""")
+
+    # ldflags_phone = ['-arch %s' % arch_phone, '-framework OpenGLES']
+    defines_phone = Split("""__IPHONE_OS_VERSION_MIN_REQUIRED=40300""")
+    cppflags = Split("")
+
+    def setFlags(includes, cflags, ccflags, cppflags, ldflags, defines, env):
+        env.Append(CPATH = includes)
+        env.Append(CPPPATH = includes)
+        env.Append(CFLAGS = cflags)
+        env.Append(CCFLAGS = ccflags)
+        env.Append(CPPFLAGS = cppflags)
+        env.Append(LINKFLAGS = ldflags)
+        env.Append(CPPDEFINES = defines)
+        
+    # base.Append(LIBS = ['allegro-phone'])
+    #base.Append(FRAMEWORKS = frameworks)
+    base['LIBS'] = ['allegro', 'allegro_acodec', 'allegro_audio', 'allegro_image', 'allegro_memfile', 'allegro_primitives', 'allegro_ttf', 'allegro_font']
+    base.ParseConfig('misc/allegro-iphone/install/phone/bin/freetype-config --cflags --libs')
+    base.Append(LIBPATH = ['#misc/allegro-iphone/install/phone/lib'])
+    includes = [sdkroot_phone, '#misc/allegro-iphone/allegro/include/allegro5/']
+    #  + ['%s/usr/include/c++/4.2.1' % sdkroot_phone] + ['%s/usr/include/c++/4.2.1/i686-apple-darwin10' % sdkroot_phone]
+    setFlags(includes + ['%s/usr/include' % sdkroot_phone], stringify(cflags_phone), stringify(ccflags_phone), cppflags, stringify(ldflags_phone), defines_phone, base)
+
+    return base
 
 def simulatorEnvironment():
     base = Environment(ENV = os.environ)
@@ -116,30 +160,55 @@ def simulatorEnvironment():
     base['LIBS'] = ['allegro', 'allegro_acodec', 'allegro_audio', 'allegro_image', 'allegro_memfile', 'allegro_primitives', 'allegro_ttf', 'allegro_font']
     base.ParseConfig('misc/allegro-iphone/install/sim/bin/freetype-config --cflags --libs')
     base.Append(LIBPATH = ['#misc/allegro-iphone/install/sim/lib'])
-    includes = [sdkroot_sim]
+    includes = [sdkroot_sim, '#misc/allegro-iphone/allegro/include/allegro5/']
     #  + ['%s/usr/include/c++/4.2.1' % sdkroot_sim] + ['%s/usr/include/c++/4.2.1/i686-apple-darwin10' % sdkroot_sim]
     setFlags(includes + ['%s/usr/include' % sdkroot_sim], stringify(cflags_sim), stringify(ccflags_sim), cppflags, stringify(ldflags_sim), defines_sim, base)
 
     return base
 
-env = simulatorEnvironment()
-env['PEG_MAKE'] = 'Creating peg parser $TARGET'
+def buildForEnvironment(env, name):
+    env['PEG_MAKE'] = 'Creating peg parser $TARGET'
 
-buildDir = 'build-allegro5-iphone'
+    buildDir = 'build-allegro5-iphone-%s' % name
 
-# Generates a single .cpp file from a .peg description
-peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']),
+    # Generates a single .cpp file from a .peg description
+    peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']),
                       suffix = '.cpp',
                       src_suffix = '.peg')
 
-env.Append(BUILDERS = {'Peg' : peg_builder})
-env['PAINTOWN_NETWORKING'] = False
-env['PAINTOWN_BACKEND'] = 'allegro5'
-env['PAINTOWN_BUILD_TESTS'] = False
-env['PAINTOWN_TESTS'] = {'CheckPython': dummyCheck}
-env['PAINTOWN_COLORIZE'] = colorize
-env['PAINTOWN_USE_PRX'] = False
-env.Append(CPPPATH = ["#%s" % buildDir, '#misc/allegro-iphone/install/sim/include'])
-env.Append(CPPDEFINES = ['USE_ALLEGRO5', 'IPHONE'])
-use = env
-shared = SConscript('src/SConscript', variant_dir = buildDir, exports = ['use'] );
+    env.Append(BUILDERS = {'Peg' : peg_builder})
+    env['PAINTOWN_NETWORKING'] = False
+    env['PAINTOWN_BACKEND'] = 'allegro5'
+    env['PAINTOWN_BUILD_TESTS'] = False
+    env['PAINTOWN_TESTS'] = {'CheckPython': dummyCheck}
+    env['PAINTOWN_COLORIZE'] = colorize
+    env['PAINTOWN_USE_PRX'] = False
+    env.Append(CPPPATH = ["#%s" % buildDir, '#misc/allegro-iphone/install/%s/include' % name])
+    env.Append(CPPDEFINES = ['USE_ALLEGRO5', 'IPHONE'])
+    use = env
+    shared = SConscript('src/SConscript', variant_dir = buildDir, exports = ['use'] );
+
+#env = simulatorEnvironment()
+#env['PEG_MAKE'] = 'Creating peg parser $TARGET'
+
+#buildDir = 'build-allegro5-iphone-sim'
+
+# Generates a single .cpp file from a .peg description
+#peg_builder = Builder(action = Action(peg_to_cpp, env['PEG_MAKE']),
+#                      suffix = '.cpp',
+#                      src_suffix = '.peg')
+
+#env.Append(BUILDERS = {'Peg' : peg_builder})
+#env['PAINTOWN_NETWORKING'] = False
+#env['PAINTOWN_BACKEND'] = 'allegro5'
+#env['PAINTOWN_BUILD_TESTS'] = False
+#env['PAINTOWN_TESTS'] = {'CheckPython': dummyCheck}
+#env['PAINTOWN_COLORIZE'] = colorize
+#env['PAINTOWN_USE_PRX'] = False
+#env.Append(CPPPATH = ["#%s" % buildDir, '#misc/allegro-iphone/install/sim/include'])
+#env.Append(CPPDEFINES = ['USE_ALLEGRO5', 'IPHONE'])
+#use = env
+#shared = SConscript('src/SConscript', variant_dir = buildDir, exports = ['use'] );
+
+buildForEnvironment(simulatorEnvironment(), 'sim')
+buildForEnvironment(iphoneEnvironment(), 'phone')
