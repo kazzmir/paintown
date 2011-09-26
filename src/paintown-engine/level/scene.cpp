@@ -10,6 +10,7 @@
 #include "../object/object.h"
 #include "scene.h"
 #include "../object/enemy.h"
+#include "../game/mod.h"
 #include "globals.h"
 #include "util/debug.h"
 #include "util/token.h"
@@ -424,10 +425,15 @@ void Scene::startMusic(){
 
         /* this lets you give music paths like foo*.mp3 or use a sub directory */
         try{
+            Filesystem::AbsolutePath modMusic = Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("music"));
             Filesystem::AbsolutePath root = Storage::instance().find(Filesystem::RelativePath("music"));
             for (vector<string>::iterator it = music.begin(); it != music.end(); it++){
                 vector<Filesystem::AbsolutePath> more = Storage::instance().getFiles(root, Filesystem::RelativePath(*it), false);
                 songs.insert(songs.end(), more.begin(), more.end());
+                if (modMusic != root){
+                    vector<Filesystem::AbsolutePath> modMore = Storage::instance().getFiles(modMusic, Filesystem::RelativePath(*it), false);
+                    songs.insert(songs.end(), modMore.begin(), modMore.end());
+                }
             }
         } catch (const Filesystem::NotFound & fail){
         }
