@@ -66,7 +66,7 @@ def iphoneEnvironment():
     base = Environment(ENV = os.environ)
     gccversion = '4.2'
     iostarget = '4.3'
-    osxtarget = '10.6'
+    osxtarget = '10.5'
     platform_phone = 'iPhoneOS'
     arch_phone = 'armv6'
     phone_bin_dir = '/Developer/Platforms/%s.platform/Developer/usr/bin' % platform_phone
@@ -86,10 +86,10 @@ def iphoneEnvironment():
         return [str.split(" ")]
 
     cflags_phone = ['-std=gnu99', '-fobjc-legacy-dispatch', '-fobjc-abi-version=2']
-    ccflags_phone = ['-arch %s' % arch_phone, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_phone, '-mmacosx-version-min=%s' % osxtarget] + Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -gdwarf-2 -Wall -fno-strict-aliasing""")
-    ldflags_phone = ['-arch %s' % arch_phone, '-isysroot %s' % sdkroot_phone, '-Wl,-dead_strip', '-mmacosx-version-min=%s' % osxtarget, '-Xlinker -objc_abi_version', '-Xlinker 2', '-Wl,-search_paths_first', '-Wl,-headerpad_max_install_names']
-    #frameworks = Split("""OpenGLES CoreGraphics QuartzCore UIKit Foundation CoreFoundation OpenAL""")
-
+    ccflags_phone = ['-arch %s' % arch_phone, '-pipe', '-mdynamic-no-pic', '-fvisibility=hidden', '-isysroot %s' % sdkroot_phone] + Split("""-g -O2 -gdwarf-2 -mthumb -Wall -Wmissing-prototypes -ffast-math -fno-strict-aliasing -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -gdwarf-2 -Wall -fno-strict-aliasing""")
+    ldflags_phone = ['-arch %s' % arch_phone, '-isysroot %s' % sdkroot_phone, '-Wl,-dead_strip', '-Xlinker -objc_abi_version', '-Xlinker 2', '-Wl,-search_paths_first', '-Wl,-headerpad_max_install_names']
+    frameworks = Split("""OpenGLES CoreGraphics QuartzCore UIKit Foundation CoreFoundation OpenAL""")
+    
     # ldflags_phone = ['-arch %s' % arch_phone, '-framework OpenGLES']
     defines_phone = Split("""__IPHONE_OS_VERSION_MIN_REQUIRED=40300""")
     cppflags = Split("")
@@ -104,7 +104,7 @@ def iphoneEnvironment():
         env.Append(CPPDEFINES = defines)
         
     # base.Append(LIBS = ['allegro-phone'])
-    #base.Append(FRAMEWORKS = frameworks)
+    base.Append(FRAMEWORKS = frameworks)
     base['LIBS'] = ['allegro', 'allegro_acodec', 'allegro_audio', 'allegro_image', 'allegro_memfile', 'allegro_primitives', 'allegro_ttf', 'allegro_font']
     base.ParseConfig('misc/allegro-iphone/install/phone/bin/freetype-config --cflags --libs')
     base.Append(LIBPATH = ['#misc/allegro-iphone/install/phone/lib'])
