@@ -97,8 +97,6 @@ title(Graphics::makeColor(0,255,255)){
     credits.push_back("");
     credits.push_back("Programming");
     credits.push_back("Jon Rafkind");
-    credits.push_back("");
-    credits.push_back("Contributions");
     credits.push_back("Miguel Gavidia");
     credits.push_back("");
     credits.push_back("Level design");
