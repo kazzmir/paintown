@@ -57,13 +57,14 @@ test/util/sound.cpp
 test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/environment/atmosphere.cpp
 test/platformer/game/world.cpp
-test/platformer/game/cutscene.cpp
 test/platformer/game/animation.cpp
 test/platformer/game/background.cpp
 test/platformer/game/camera.cpp
 test/platformer/game/game.cpp
 test/platformer/game/tile.cpp
 test/platformer/script/script.cpp
+test/util/gui/cutscene.cpp
+test/util/gui/select-list.cpp
 test/util/resource.cpp
 test/paintown-engine/object/actor.cpp
 test/paintown-engine/object/animation.cpp
@@ -78,7 +79,6 @@ test/paintown-engine/object/draw-effect.cpp
 test/paintown-engine/object/effect.cpp
 test/paintown-engine/object/enemy.cpp
 test/paintown-engine/object/gib.cpp
-test/paintown-engine/object/health_stimulation.cpp
 test/paintown-engine/object/heart.cpp
 test/paintown-engine/object/item.cpp
 test/paintown-engine/object/network_character.cpp

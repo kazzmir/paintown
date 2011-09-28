@@ -141,7 +141,6 @@ test/paintown-engine/object/character.cpp
 test/paintown-engine/object/display_character.cpp
 test/paintown-engine/object/heart.cpp
 test/paintown-engine/object/stimulation.cpp
-test/paintown-engine/object/health_stimulation.cpp
 test/paintown-engine/object/object.cpp
 test/paintown-engine/object/object_attack.cpp
 test/paintown-engine/object/network_player.cpp
@@ -223,7 +222,6 @@ test/paintown-engine/object/display_character.cpp
 test/paintown-engine/object/heart.cpp
 test/paintown-engine/game/mod.cpp
 test/paintown-engine/object/stimulation.cpp
-test/paintown-engine/object/health_stimulation.cpp
 test/paintown-engine/object/network_player.cpp
 test/paintown-engine/object/network_character.cpp
 test/nameplacer.cpp
@@ -285,7 +283,6 @@ test/mugen/sprite.cpp
 test/mugen/util.cpp
 test/mugen/config.cpp
 test/paintown-engine/object/stimulation.cpp
-test/paintown-engine/object/health_stimulation.cpp
 test/paintown-engine/object/item.cpp
 test/paintown-engine/object/network_player.cpp
 test/paintown-engine/object/network_character.cpp
@@ -307,6 +304,7 @@ test/paintown-engine/object/animation_trail.cpp
 test/configuration.cpp
 test/util/input/keyboard.cpp
 test/paintown-engine/level/utils.cpp
+test/paintown-engine/level/blockobject.cpp
 test/util/network/network.cpp
 test/util/audio.cpp
 test/openbor/mod.cpp
@@ -378,7 +376,6 @@ test/mugen/sprite.cpp
 test/mugen/util.cpp
 test/mugen/config.cpp
 test/paintown-engine/object/stimulation.cpp
-test/paintown-engine/object/health_stimulation.cpp
 test/paintown-engine/object/item.cpp
 test/paintown-engine/object/network_player.cpp
 test/paintown-engine/object/network_character.cpp
