@@ -1,7 +1,10 @@
 #!/bin/bash
+
 function use(){
-echo "Usage: $0 [sim|phone] painown-dir"
+    echo "Usage: $0 [sim|phone] paintown-dir"
 }
+
+# Check if arguments are given and the paintown directory exists
 if [ -n "$2" ] && [ -d "$2" ]; then
     if [ "$1" = "sim" ]; then
         make clean
@@ -10,5 +13,6 @@ if [ -n "$2" ] && [ -d "$2" ]; then
         make clean
         CFLAGS='-arch armv6 -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk -DDARWIN_NO_CARBON' LDFLAGS='-arch armv6 -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk' CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.2 ./configure --host=arm --build=i386 --prefix=$2/misc/allegro-iphone/install/phone/ --with-sysroot=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk && make && make install
     fi
+else
+    use
 fi
-use
