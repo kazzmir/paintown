@@ -13,7 +13,7 @@ SConscript('../../mugen/parser/SConstruct', exports = ['use', 'addObjects'], var
 
 source = Split("""
 test.cpp
-init.cpp
+test/common/init.cpp
 test/util/file-system.cpp
 test/menu/menu.cpp
 test/menu/actionfactory.cpp
