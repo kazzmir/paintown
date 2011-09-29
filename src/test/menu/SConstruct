@@ -3,6 +3,7 @@ Import('use')
 testEnv = use.Clone()
 # testEnv.VariantDir('test', '../../', duplicate = False)
 testEnv.VariantDir('test', '../../')
+testEnv.VariantDir('common', '../common')
 
 more_files = []
 def addObjects(files):
@@ -13,7 +14,7 @@ SConscript('../../mugen/parser/SConstruct', exports = ['use', 'addObjects'], var
 
 source = Split("""
 test.cpp
-test/common/init.cpp
+common/init.cpp
 test/util/file-system.cpp
 test/menu/menu.cpp
 test/menu/actionfactory.cpp

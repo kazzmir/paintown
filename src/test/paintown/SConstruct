@@ -2,6 +2,7 @@ Import('use')
 
 testEnv = use.Clone()
 testEnv.VariantDir('test', '../../')
+testEnv.VariantDir('common', '../common')
 
 more_source = []
 def addObjects(files):
@@ -81,12 +82,12 @@ test/mugen/section.cpp
 
 load_source = Split("""
 load.cpp
-test/common/init.cpp
+common/init.cpp
 """)
 
 stage_source = Split("""
 load-stage.cpp
-test/common/init.cpp
+common/init.cpp
 test/mugen/stage.cpp
 test/mugen/character.cpp
 test/mugen/helper.cpp
@@ -190,7 +191,7 @@ test/mugen/section.cpp
 
 full_source = most_game_source + Split("""
 load-full.cpp
-test/common/init.cpp
+common/init.cpp
 test/factory/collector.cpp
 test/paintown-engine/factory/shadow.cpp
 test/paintown-engine/factory/object_factory.cpp
@@ -246,7 +247,7 @@ test/exceptions/exception.cpp
 """)
 
 load_source = Split("""
-test/common/init.cpp
+common/init.cpp
 load.cpp
 test/util/file-system.cpp
 test/util/bitmap.cpp
@@ -339,7 +340,7 @@ test/util/message-queue.cpp
 load_source.append(testEnv.Peg('test/openbor/data.peg'))
 
 game_source = Split("""
-test/common/init.cpp
+common/init.cpp
 game.cpp
 test/util/file-system.cpp
 test/util/bitmap.cpp

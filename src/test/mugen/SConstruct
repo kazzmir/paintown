@@ -2,6 +2,7 @@ Import('use')
 
 testEnv = use.Clone()
 testEnv.VariantDir('test', '../../', duplicate = False)
+testEnv.VariantDir('common', '../common/', duplicate = False)
 
 more_source = []
 def addObjects(files):
@@ -82,12 +83,12 @@ test/mugen/section.cpp
 
 load_source = Split("""
 load.cpp
-test/common/init.cpp
+common/init.cpp
 """)
 
 stage_source = Split("""
 load-stage.cpp
-test/common/init.cpp
+common/init.cpp
 test/util/gui/animation.cpp
 test/util/gui/coordinate.cpp
 test/mugen/stage.cpp
@@ -195,7 +196,7 @@ test/mugen/section.cpp
 
 select_source = most_game_source + Split("""
 load-select.cpp
-test/common/init.cpp
+common/init.cpp
 test/paintown-engine/object/object_nonattack.cpp
 test/mugen/character-select.cpp
 test/mugen/search.cpp
@@ -237,7 +238,7 @@ test/paintown-engine/game/mod.cpp
 
 full_source = most_game_source + Split("""
 load-full.cpp
-test/common/init.cpp
+common/init.cpp
 test/factory/collector.cpp
 test/util/gui/animation.cpp
 test/util/gui/coordinate.cpp
