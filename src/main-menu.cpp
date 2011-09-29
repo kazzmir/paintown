@@ -240,6 +240,129 @@ static string systemMod(){
     throw LoadException(__FILE__, __LINE__, "Could not get system mod");
 }
 
+struct NetworkJoin{
+    NetworkJoin():
+        enabled(false){
+        }
+
+    bool enabled;
+    string name;
+    string host;
+    string port;
+}; 
+
+struct MugenInstant{
+    enum Kind{
+        None,
+        Training,
+        Watch
+    };
+
+    MugenInstant():
+        enabled(false),
+        kind(None){
+        }
+
+    bool enabled;
+    string player1;
+    string player2;
+    string stage;
+    Kind kind;
+}; 
+
+/* dispatch to the top level function */
+static int startMain(bool just_network_server, const NetworkJoin & networkJoin, const MugenInstant & mugenInstant, bool mugen, bool allow_quit){
+    while (true){
+        bool normal_quit = false;
+        try{
+            /* fadein from white */
+            if (just_network_server){
+#ifdef HAVE_NETWORKING
+                Network::networkServer();
+#endif
+            } else if (networkJoin.enabled){
+#ifdef HAVE_NETWORKING
+                string port = networkJoin.port;
+                string host = networkJoin.host;
+                string name = networkJoin.name;
+                if (port == ""){
+                    /* FIXME: replace 7887 with a constant */
+                    port = Configuration::getStringProperty(Network::propertyLastClientPort, "7887");
+                }
+                if (host == ""){
+                    host = Configuration::getStringProperty(Network::propertyLastClientHost, "127.0.0.1");
+                }
+                if (name == ""){
+                    name = Configuration::getStringProperty(Network::propertyLastClientName, "player");
+                }
+                Global::debug(1) << "Client " << name << " " << host << " " << port << endl;
+                try{
+                    Network::runClient(name, host, port);
+                } catch (const Network::NetworkException & fail){
+                    Global::debug(0) << "Error running the network client: " << fail.getMessage() << endl;
+                }
+#endif
+            } else if (mugen){
+                setMugenMotif(mainMenuPath());
+                Mugen::run();
+            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Training){
+                setMugenMotif(mainMenuPath());
+                runMugenTraining(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
+            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Watch){
+                setMugenMotif(mainMenuPath());
+                runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
+            } else {
+                MainMenuOptionFactory factory;
+                Menu::Menu game(mainMenuPath(), factory);
+                game.run(Menu::Context());
+            }
+            normal_quit = true;
+        } catch (const Filesystem::Exception & ex){
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
+        } catch (const TokenException & ex){
+            Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getTrace() << endl;
+            return -1;
+        } catch (const LoadException & ex){
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
+            return -1;
+        } catch (const Exception::Return & ex){
+        } catch (const ShutdownException & shutdown){
+            Global::debug(1) << "Forced a shutdown. Cya!" << endl;
+        } catch (const MugenException & m){
+            Global::debug(0) << "Mugen exception: " << m.getReason() << endl;
+        } catch (const ReloadMenuException & ex){
+            Global::debug(1) << "Menu Reload Requested. Restarting...." << endl;
+            continue;
+        } catch (const ftalleg::Exception & ex){
+            Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
+        } catch (const Exception::Base & base){
+            // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
+            Global::debug(0) << "Base exception: " << base.getTrace() << endl;
+/* android doesn't have bad_alloc for some reason */
+// #ifndef ANDROID
+        } catch (const std::bad_alloc & fail){
+            Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
+// #endif
+        } catch (...){
+            Global::debug(0) << "Uncaught exception!" << endl;
+        }
+
+        if (allow_quit && normal_quit){
+            break;
+        } else if (normal_quit && !allow_quit){
+        } else if (!normal_quit){
+            break;
+        }
+    }
+
+    return 0;
+}
+
+/* 1. parse arguments
+ * 2. initialize environment
+ * 3. run main dispatcher
+ * 4. quit
+ */
 int paintown_main(int argc, char ** argv){
     /* -1 means use whatever is in the configuration */
     int gfx = -1;
@@ -250,36 +373,8 @@ int paintown_main(int argc, char ** argv){
     bool just_network_server = false;
     bool allow_quit = true;
     Collector janitor;
-
-    struct NetworkJoin{
-        NetworkJoin():
-        enabled(false){
-        }
-
-        bool enabled;
-        string name;
-        string host;
-        string port;
-    } networkJoin;
-
-    struct MugenInstant{
-        enum Kind{
-            None,
-            Training,
-            Watch
-        };
-
-        MugenInstant():
-            enabled(false),
-            kind(None){
-            }
-
-        bool enabled;
-        string player1;
-        string player2;
-        string stage;
-        Kind kind;
-    } mugenInstant;
+    NetworkJoin networkJoin;
+    MugenInstant mugenInstant;
 
     System::startMemoryUsage();
 
@@ -455,88 +550,7 @@ int paintown_main(int argc, char ** argv){
 
     Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(Menu::menuFontParameter, new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
 
-    while (true){
-        bool normal_quit = false;
-        try{
-            /* fadein from white */
-            if (just_network_server){
-#ifdef HAVE_NETWORKING
-                Network::networkServer();
-#endif
-            } else if (networkJoin.enabled){
-#ifdef HAVE_NETWORKING
-                string port = networkJoin.port;
-                string host = networkJoin.host;
-                string name = networkJoin.name;
-                if (port == ""){
-                    /* FIXME: replace 7887 with a constant */
-                    port = Configuration::getStringProperty(Network::propertyLastClientPort, "7887");
-                }
-                if (host == ""){
-                    host = Configuration::getStringProperty(Network::propertyLastClientHost, "127.0.0.1");
-                }
-                if (name == ""){
-                    name = Configuration::getStringProperty(Network::propertyLastClientName, "player");
-                }
-                Global::debug(1) << "Client " << name << " " << host << " " << port << endl;
-                try{
-                    Network::runClient(name, host, port);
-                } catch (const Network::NetworkException & fail){
-                    Global::debug(0) << "Error running the network client: " << fail.getMessage() << endl;
-                }
-#endif
-            } else if (mugen){
-                setMugenMotif(mainMenuPath());
-                Mugen::run();
-            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Training){
-                setMugenMotif(mainMenuPath());
-                runMugenTraining(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
-            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Watch){
-                setMugenMotif(mainMenuPath());
-                runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
-            } else {
-                MainMenuOptionFactory factory;
-                Menu::Menu game(mainMenuPath(), factory);
-                game.run(Menu::Context());
-            }
-            normal_quit = true;
-        } catch (const Filesystem::Exception & ex){
-            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
-        } catch (const TokenException & ex){
-            Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getTrace() << endl;
-            return -1;
-        } catch (const LoadException & ex){
-            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
-            return -1;
-        } catch (const Exception::Return & ex){
-        } catch (const ShutdownException & shutdown){
-            Global::debug(1) << "Forced a shutdown. Cya!" << endl;
-        } catch (const MugenException & m){
-            Global::debug(0) << "Mugen exception: " << m.getReason() << endl;
-        } catch (const ReloadMenuException & ex){
-            Global::debug(1) << "Menu Reload Requested. Restarting...." << endl;
-            continue;
-        } catch (const ftalleg::Exception & ex){
-            Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
-        } catch (const Exception::Base & base){
-            // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
-            Global::debug(0) << "Base exception: " << base.getTrace() << endl;
-/* android doesn't have bad_alloc for some reason */
-// #ifndef ANDROID
-        } catch (const std::bad_alloc & fail){
-            Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
-// #endif
-        } catch (...){
-            Global::debug(0) << "Uncaught exception!" << endl;
-        }
-
-        if (allow_quit && normal_quit){
-            break;
-        } else if (normal_quit && !allow_quit){
-        } else if (!normal_quit){
-            break;
-        }
-    }
+    startMain(just_network_server, networkJoin, mugenInstant, mugen, allow_quit);
 
     Configuration::saveConfiguration();
 
