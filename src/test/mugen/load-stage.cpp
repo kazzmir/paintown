@@ -16,7 +16,7 @@
 using namespace std;
 
 int paintown_main(int argc, char ** argv){
-    Screen::init();
+    Screen::fakeInit();
     Collector janitor;
     InputManager input;
     Util::Thread::initializeLock(&Global::messageLock);
@@ -37,7 +37,7 @@ int paintown_main(int argc, char ** argv){
             die = 1;
         }
     // }
-    Screen::finish();
+    Screen::fakeFinish();
     return die;
 }
 

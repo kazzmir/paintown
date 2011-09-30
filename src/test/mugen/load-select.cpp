@@ -61,7 +61,7 @@ static int load(const char * path){
 }
 
 int main(int argc, char ** argv){
-    Screen::init();
+    Screen::fakeInit();
 
     Global::setDebug(1);
     Mugen::ParseCache cache;
@@ -74,7 +74,7 @@ int main(int argc, char ** argv){
         die = load(argv[1]);
     }
 
-    Screen::finish();
+    Screen::fakeFinish();
 
     // for (int i = 0; i < 3; i++){
       // }

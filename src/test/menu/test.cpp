@@ -43,12 +43,12 @@ int paintown_main(int argc, char ** argv){
     } catch (const LoadException & e){
         cout << "Error: " << e.getTrace() << endl;
     }
-    Screen::finish();
+    Screen::fakeFinish();
     return 0;
 }
 
 int main(int argc, char ** argv){
-    Screen::init();
+    Screen::fakeInit();
     return paintown_main(argc, argv);
 }
 #ifdef USE_ALLEGRO

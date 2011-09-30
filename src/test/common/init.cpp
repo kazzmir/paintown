@@ -26,7 +26,7 @@ namespace Global{
 }
 
 
-void Screen::init(){
+void Screen::fakeInit(){
 #ifdef USE_ALLEGRO
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
@@ -40,8 +40,26 @@ void Screen::init(){
     al_init_primitives_addon();
 #endif
 }
-    
-void Screen::finish(){
+void Screen::fakeFinish(){
+#ifdef USE_SDL
+    SDL_Quit();
+#endif
+}
+void Screen::realInit(){
+#ifdef USE_ALLEGRO
+    install_allegro(GFX_AUTODETECT_WINDOWED, &errno, atexit);
+    set_color_depth(16);
+    //set_color_conversion(COLORCONV_NONE);
+#elif USE_SDL
+    SDL_Init(SDL_INIT_VIDEO);
+    Graphics::setGfxModeWindowed(640, 480);
+#elif USE_ALLEGRO5
+    al_init();
+    al_init_image_addon();
+    al_init_primitives_addon();
+#endif
+}
+void Screen::realFinish(){
 #ifdef USE_SDL
     SDL_Quit();
 #endif

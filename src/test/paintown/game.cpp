@@ -67,7 +67,7 @@ static int load(const char * path){
 }
 
 int paintown_main(int argc, char ** argv){
-    Screen::init();
+    Screen::fakeInit();
     Collector janitor;
     Sound::initialize();
     InputManager manager;
@@ -82,7 +82,7 @@ int paintown_main(int argc, char ** argv){
     } else {
         die = load(argv[1]);
     }
-    Screen::finish();
+    Screen::fakeFinish();
     Sound::uninitialize();
 
     // for (int i = 0; i < 3; i++){
