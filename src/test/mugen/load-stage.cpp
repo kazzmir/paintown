@@ -18,7 +18,6 @@ using namespace std;
 int paintown_main(int argc, char ** argv){
     Screen::init();
     Collector janitor;
-    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
     InputManager input;
     Util::Thread::initializeLock(&Global::messageLock);
     
@@ -32,10 +31,10 @@ int paintown_main(int argc, char ** argv){
             Global::debug(0, "test") << "Success" << endl;
         } catch (const MugenException & e){
             Global::debug(0, "test") << "Exception: " << e.getReason() << endl;
-            die = -1;
+            die = 1;
         } catch (const Filesystem::NotFound & e){
             Global::debug(0, "test") << "Exception: " << e.getTrace() << endl;
-            die = -1;
+            die = 1;
         }
     // }
     Screen::finish();
