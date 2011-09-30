@@ -1,4 +1,5 @@
 #include "../common/init.h"
+#include "../common/timer.h"
 
 #include "util/stretch-bitmap.h"
 #include "util/input/input.h"
@@ -69,7 +70,7 @@ public:
     }
 
     double ticks(double system){
-        return system * 30;//Global::LOGIC_MULTIPLIER;
+        return system;
     }
 };
 
@@ -77,15 +78,18 @@ class Draw: public Util::Draw {
 public:
     Draw(){
     }
+
     void draw(const Graphics::Bitmap & buffer){
-        buffer.putPixel( rand() % 640, rand() % 480, Graphics::makeColor(rand() % 255, rand() % 255, rand() % 255) );
+        buffer.putPixel(rand() % 640, rand() % 480, Graphics::makeColor(rand() % 255, rand() % 255, rand() % 255));
         buffer.BlitToScreen();
     }
 };
 
 int main(int argc, char ** argv){
     Screen::realInit();
+    Common::startTimers();
     
+    InputManager manager;
     Graphics::Bitmap screen(Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
     

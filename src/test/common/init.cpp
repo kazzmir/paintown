@@ -18,9 +18,10 @@ namespace Global{
     volatile int second_counter;
     int FULLSCREEN;
     int WINDOWED;
-    int TICS_PER_SECOND;
+    int TICS_PER_SECOND = 40;
     double LOGIC_MULTIPLIER;
     int rateLimit;
+
     void close(){
     }
 }
@@ -40,11 +41,13 @@ void Screen::fakeInit(){
     al_init_primitives_addon();
 #endif
 }
+
 void Screen::fakeFinish(){
 #ifdef USE_SDL
     SDL_Quit();
 #endif
 }
+
 void Screen::realInit(){
 #ifdef USE_ALLEGRO
     install_allegro(GFX_AUTODETECT_WINDOWED, &errno, atexit);

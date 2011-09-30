@@ -5,7 +5,8 @@ testEnv.VariantDir('test', '../../')
 testEnv.VariantDir('common', '../common')
 
 source = Split("""
-../common/init.cpp
+common/init.cpp
+common/timer.cpp
 test.cpp
 test/configuration.cpp
 test/globals.cpp
