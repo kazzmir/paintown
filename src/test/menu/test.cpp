@@ -1,14 +1,4 @@
-#ifdef USE_ALLEGRO
-#include <allegro.h>
-#endif
-#ifdef USE_SDL
-#include <SDL/SDL.h>
-#endif
-#ifdef USE_ALLEGRO5
-#include <allegro5/allegro5.h>
-#include <allegro5/allegro_image.h>
-#include <allegro5/allegro_primitives.h>
-#endif
+#include "../common/init.h"
 #include <iostream>
 #include "util/token_exception.h"
 #include "util/file-system.h"
@@ -53,24 +43,12 @@ int paintown_main(int argc, char ** argv){
     } catch (const LoadException & e){
         cout << "Error: " << e.getTrace() << endl;
     }
+    Screen::finish();
     return 0;
 }
 
 int main(int argc, char ** argv){
-#ifdef USE_ALLEGRO
-    install_allegro(SYSTEM_NONE, &errno, atexit);
-    set_color_depth(16);
-    set_color_conversion(COLORCONV_NONE);
-    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
-    loadpng_init();
-#elif USE_SDL
-    SDL_Init(SDL_INIT_VIDEO);
-    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
-#elif USE_ALLEGRO5
-    al_init();
-    al_init_image_addon();
-    al_init_primitives_addon();
-#endif
+    Screen::init();
     return paintown_main(argc, argv);
 }
 #ifdef USE_ALLEGRO
