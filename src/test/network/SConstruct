@@ -1,0 +1,10 @@
+Import('use')
+
+source = Split("""
+test.cpp
+""")
+
+x = []
+x.append(token_test)
+use.AddPostAction(token_test, use['PAINTOWN_TEST'])
+Return('x')
