@@ -33,7 +33,7 @@ protected:
     std::list<Ast::Section*> * loadFile(const std::string & path);
 
     std::map<const std::string, std::list<Ast::Section*>*> cache;
-    PaintownUtil::Thread::Lock lock;
+    PaintownUtil::Thread::LockObject lock;
 };
 
 class CmdCache: public Parser {
