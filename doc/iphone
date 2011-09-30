@@ -3,31 +3,21 @@
   $ mkdir -p install/sim
   $ mkdir -p install/phone
   
-2. get freetype and build for the simulator
+2. get freetype and build for the simulator and phone
   $ mkdir tmp
   $ wget http://download.savannah.gnu.org/releases/freetype/freetype-2.4.6.tar.bz2
   $ tar -xf freetype-2.4.6.tar.bz2
   $ cd freetype-2.4.6
-  $ CFLAGS='-arch i386' LDFLAGS='-arch i386' CC=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 ./configure --prefix=`pwd`/misc/allegro-iphone/install/sim/ && make && make install
-  
+  # build for the simulator
+  $ misc/allegro-iphone/build-freetype.sh sim /path/to/paintown
+  # build for the phone
+  $ misc/allegro-iphone/build-freetype.sh phone /path/to/paintown
 
-3. get the precompiled freetype for the iphone
-  $ wget http://alleg.sourceforge.net/files/freetype-iphone-2.3.12-bin.zip
-  $ unzip freetype-iphone-2.3.12-bin.zip
-  $ mkdir -p install/phone/include/freetype2
-  $ mv freetype install/phone/include/freetype2
-  $ mv ft2build.h install/phone/include
-  $ mkdir -p install/phone/lib
-  $ mv libfreetype.a install/phone/lib
-  $ mkdir -p install/phone/bin
-  $ cp install/sim/bin/freetype-config install/phone/bin
-  # edit install/phone/freetype-config and change 'sim' to 'phone'
-
-4. allegro 5.1 from svn
+3. allegro 5.1 from svn
   misc/allegro-iphone $ svn co https://alleg.svn.sourceforge.net/svnroot/alleg/allegro/branches/5.1 allegro
   $ scons
 
-5. build paintown for the iphone simulator
+4. build paintown for the iphone simulator and phone
   paintown $ scons -f scons/iphone.py
 
 5. get ios-sim to run in the simulator (https://github.com/Fingertips/ios-sim)
@@ -39,9 +29,12 @@
 
 6. create a .app directory and run it in the simulator
   $ mkdir paintown.app
-  $ cp build-allegro5-iphone/paintown paintown.app
+  $ cp build-allegro5-iphone-phone/paintown paintown.app
   $ cp -a data paintown.app
   $ cp misc/iphone/* paintown.app
   $ ios-sim launch `pwd`/paintown.app --env paintown.app/Info.plist --stdout sim-out.txt --stderr sim-err.txt
+
+7. run paintown on a real ios device
+  * TODO
 
 * Note that if you make changes to the paintown source and rebuild you must copy build-allegro5-iphone/paintown into paintown.app/ again. It won't work with symlinks.
