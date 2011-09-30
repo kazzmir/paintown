@@ -39,6 +39,7 @@ if use['PAINTOWN_BUILD_TESTS']:
     all.extend(SConscript('thread/SConstruct', exports = ['use']))
     all.extend(SConscript('paintown/SConstruct', exports = ['use']))
     all.extend(SConscript('util/SConstruct', exports = ['use']))
+    all.extend(SConscript('network/SConstruct', exports = ['use']))
 
     # Don't run with other tests because it has special requirements
     Alias('audio-test', SConscript('audio/SConstruct'))

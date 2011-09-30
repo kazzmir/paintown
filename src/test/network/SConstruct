@@ -1,10 +1,23 @@
 Import('use')
 
+testEnv = use.Clone()
+testEnv.VariantDir('test', '../../')
+testEnv.VariantDir('common', '../common')
+
+testEnv.Append(CPPDEFINES = ['HAVE_NETWORKING'])
+
 source = Split("""
 test.cpp
+test/util/network/network.cpp
+test/util/system.cpp
+test/util/debug.cpp
 """)
 
+env = testEnv
+testEnv.Append(LIBS = [testEnv.SConscript('test/util/network/hawknl/SConscript', exports = ['env'])])
+
 x = []
-x.append(token_test)
-use.AddPostAction(token_test, use['PAINTOWN_TEST'])
+test = testEnv.Program('network', source)
+x.append(test)
+use.AddPostAction(test, use['PAINTOWN_TEST'])
 Return('x')

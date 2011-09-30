@@ -2,5 +2,9 @@
  * through network sockets
  */
 
+#include "util/network/network.h"
+
 int main(){
+    Network::init();
+    Network::closeAll();
 }
