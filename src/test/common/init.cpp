@@ -48,10 +48,11 @@ void Screen::fakeFinish(){
 void Screen::realInit(){
 #ifdef USE_ALLEGRO
     install_allegro(GFX_AUTODETECT_WINDOWED, &errno, atexit);
+    // TODO add keyboard, timers
     set_color_depth(16);
     //set_color_conversion(COLORCONV_NONE);
 #elif USE_SDL
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_EVERYTHING);
     Graphics::setGfxModeWindowed(640, 480);
 #elif USE_ALLEGRO5
     al_init();

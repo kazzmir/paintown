@@ -44,6 +44,9 @@ if use['PAINTOWN_BUILD_TESTS']:
     audio = SConscript('audio/SConstruct')
     # The audio test is not run by default. To actually run it call 'audio-test'
     all.extend(audio)
+    
+    # The gui test is not run by default.
+    all.extend(SConscript('gui/SConstruct', exports= ['use']))
 
     # Don't run with other tests because it has special requirements
     Alias('audio-test', audio)

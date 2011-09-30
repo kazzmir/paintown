@@ -1,0 +1,67 @@
+Import('use')
+
+testEnv = use.Clone()
+testEnv.VariantDir('test', '../../')
+testEnv.VariantDir('common', '../common')
+
+source = Split("""
+../common/init.cpp
+test.cpp
+test/configuration.cpp
+test/globals.cpp
+test/exceptions/exception.cpp
+test/factory/font_factory.cpp
+test/factory/font_render.cpp
+test/util/audio.cpp
+test/util/bitmap.cpp
+test/util/debug.cpp
+test/util/events.cpp
+test/util/file-system.cpp
+test/util/font.cpp
+test/util/ftalleg.cpp
+test/util/funcs.cpp
+test/util/gradient.cpp
+test/util/language-string.cpp
+test/util/load_exception.cpp
+test/util/messages.cpp
+test/util/message-queue.cpp
+test/util/system.cpp
+test/util/resource.cpp
+test/util/sound.cpp
+test/util/thread.cpp
+test/util/token.cpp
+test/util/token_exception.cpp
+test/util/tokenreader.cpp
+test/util/gui/al_keyinput.cpp
+test/util/gui/animation.cpp
+test/util/gui/box.cpp
+test/util/gui/container.cpp
+test/util/gui/context-box.cpp
+test/util/gui/coordinate.cpp
+test/util/gui/cutscene.cpp
+test/util/gui/fadetool.cpp
+test/util/gui/keys.cpp
+test/util/gui/keyinput.cpp
+test/util/gui/keyinput_manager.cpp
+test/util/gui/lineedit.cpp
+test/util/gui/rectarea.cpp
+test/util/gui/popup-box.cpp
+test/util/gui/scroll-list.cpp
+test/util/gui/select-list.cpp
+test/util/gui/tabbed-box.cpp
+test/util/gui/timer.cpp
+test/util/gui/widget.cpp
+test/util/input/keyboard.cpp
+test/util/input/joystick.cpp
+test/util/input/input-manager.cpp
+test/util/input/input-source.cpp
+test/util/input/input.cpp
+test/util/input/text-input.cpp
+test/util/input/sdl/joystick.cpp
+test/util/network/network.cpp
+""")
+
+x = []
+gui_test = testEnv.Program('gui', source)
+x.append(gui_test)
+Return('x')
