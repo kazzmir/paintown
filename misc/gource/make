@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# This script doesn't produce the best videos. Probably some options given to
+# ffmpeg would result in a better video so play with it at some point
+
+# Edit svn-gource.py and remove the reverse(...) thing otherwise the history
+# will be backwards
+
+# sudo apt-get install gource ffmpeg libx264
+
+# Read this for a way to do it on the command line
+# http://code.google.com/p/gource/issues/detail?id=29#c11
+
+echo "Get svn history"
+svn log -r 1:HEAD --xml --verbose --quiet https://paintown.svn.sourceforge.net/svnroot/paintown/trunk > paintown.xml
+echo "Converting to gource log format"
+python svn-gource.py --filter-dirs paintown.xml > paintown.log
+echo "Running gource"
+# gource -1280x720 -o - paintown.log | ffmpeg -y -b 10000K -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -vpre slow -threads 0 -bf 0 gource.x264.mp4
+# gource -s 0.001 -o - paintown.log | netcat -l -p 8426
+
+gource -s 0.0001 -o - paintown.log | ffmpeg -y -b 10000K -r 60 -f image2pipe -vcodec ppm -i - -bf 0 gource.mp4
+echo "Output is gource.mp4"
