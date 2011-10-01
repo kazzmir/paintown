@@ -102,6 +102,7 @@ public:
     }
     void drawComponent(const Graphics::Bitmap & where, const Font & font){
         box.render(where);
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
     }
 protected:
     Gui::Box box;
@@ -127,28 +128,36 @@ public:
     
     void up(){
         if (!selected){
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
             list.previous();
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         } else {
             components[list.getCurrentIndex()].convert<GuiComponent>()->up();
         }
     }
     void down(){
         if (!selected){
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
             list.next();
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         } else {
             components[list.getCurrentIndex()].convert<GuiComponent>()->down();
         }
     }
     void left(){
         if (!selected){
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
             list.previous();
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         } else {
             components[list.getCurrentIndex()].convert<GuiComponent>()->left();
         }
     }
     void right(){
         if (!selected){
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
             list.next();
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         } else {
             components[list.getCurrentIndex()].convert<GuiComponent>()->right();
         }
@@ -156,7 +165,9 @@ public:
     
     void act(){
         if (!selected){
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
             list.act();
+            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         } else {
             components[list.getCurrentIndex()].convert<GuiComponent>()->actComponent();
         }
@@ -172,13 +183,11 @@ public:
     void enter(){
         if (!selected) {
             selected = true;
-            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         }
     }
     void esc(){
         if (selected){
             selected = false;
-            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         }
     }
     
@@ -250,15 +259,18 @@ public:
 class Draw: public Util::Draw {
 public:
     Draw(GuiHandler & handler):
-    handler(handler){
+    handler(handler),
+    controls("Controls: Up, Down, Left, Right, Enter, Esc"){
     }
     
     GuiHandler & handler;
+    std::string controls;
 
     void draw(const Graphics::Bitmap & buffer){
         //buffer.putPixel(rand() % 640, rand() % 480, Graphics::makeColor(rand() % 255, rand() % 255, rand() % 255));
         buffer.clear();
         handler.draw(buffer, Font::getDefaultFont());
+        Font::getDefaultFont().printf(320 - Font::getDefaultFont().textLength(controls.c_str())/2, 460, Graphics::makeColor(255, 255, 255), buffer, "%s", 0, controls.c_str());
         buffer.BlitToScreen();
     }
 };
