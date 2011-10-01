@@ -234,6 +234,174 @@ protected:
     Gui::FadeTool fader;
 };
 
+/*! TODO LineEdit Gui Component */
+class TestLineEdit : public GuiComponent {
+public:
+    TestLineEdit():
+    GuiComponent("Gui::LineEdit"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO PopupBox Gui Component */
+class TestPopupBox : public GuiComponent {
+public:
+    TestPopupBox():
+    GuiComponent("Gui::PopupBox"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO ScrollList Gui Component */
+class TestScrollList : public GuiComponent {
+public:
+    TestScrollList():
+    GuiComponent("Gui::ScrollList"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO NormalList Gui Component */
+class TestNormalList : public GuiComponent {
+public:
+    TestNormalList():
+    GuiComponent("Gui::NormalList"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO SimpleSelect Gui Component */
+class TestSimpleSelect : public GuiComponent {
+public:
+    TestSimpleSelect():
+    GuiComponent("Gui::SimpleSelect"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO GridSelect Gui Component */
+class TestGridSelect : public GuiComponent {
+public:
+    TestGridSelect():
+    GuiComponent("Gui::GridSelect"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO TabbedBox Gui Component */
+class TestTabbedBox : public GuiComponent {
+public:
+    TestTabbedBox():
+    GuiComponent("Gui::TabbedBox"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
 /*! Gui Handler */
 class GuiHandler {
 public:
@@ -245,6 +413,13 @@ public:
         components.push_back(new TestContextBox());
         components.push_back(new TestCutScene());
         components.push_back(new TestFadeTool());
+        components.push_back(new TestLineEdit());
+        components.push_back(new TestPopupBox());
+        components.push_back(new TestScrollList());
+        components.push_back(new TestNormalList());
+        components.push_back(new TestSimpleSelect());
+        components.push_back(new TestGridSelect());
+        components.push_back(new TestTabbedBox());
         
         // Set first as active
         components[0].convert<GuiComponent>()->toggle();
@@ -294,9 +469,7 @@ public:
     
     void act(){
         if (!selected){
-            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
             list.act();
-            components[list.getCurrentIndex()].convert<GuiComponent>()->toggle();
         } else {
             components[list.getCurrentIndex()].convert<GuiComponent>()->actComponent();
         }
@@ -396,7 +569,6 @@ public:
     std::string controls;
 
     void draw(const Graphics::Bitmap & buffer){
-        //buffer.putPixel(rand() % 640, rand() % 480, Graphics::makeColor(rand() % 255, rand() % 255, rand() % 255));
         buffer.clear();
         handler.draw(buffer, Font::getDefaultFont());
         Font::getDefaultFont().printf(320 - Font::getDefaultFont().textLength(controls.c_str())/2, 460, Graphics::makeColor(255, 255, 255), buffer, "%s", 0, controls.c_str());
