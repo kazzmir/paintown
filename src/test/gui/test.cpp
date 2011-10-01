@@ -76,6 +76,30 @@ protected:
     bool active;
 };
 
+/*! TODO Animation Gui Component */
+class TestAnimation : public GuiComponent {
+public:
+    TestAnimation():
+    GuiComponent("Gui::Animation"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
 /*! Box Gui Component */
 class TestBox : public GuiComponent {
 public:
@@ -109,13 +133,118 @@ protected:
     Gui::Coordinate size;
 };
 
+/*! TODO ContextBox Gui Component */
+class TestContextBox : public GuiComponent {
+public:
+    TestContextBox():
+    GuiComponent("Gui::ContextBox"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO Cutscene Gui Component */
+class TestCutScene : public GuiComponent {
+public:
+    TestCutScene():
+    GuiComponent("Gui::CutScene"){
+    }
+    void up(){
+    }
+    void down(){
+    }
+    void right(){
+    }
+    void left(){
+    }
+    void actComponent(){
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        const std::string info = "TODO - Not Implemented yet";
+        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+    }
+protected:
+};
+
+/*! TODO FadeTool Gui Component */
+class TestFadeTool : public GuiComponent {
+public:
+    TestFadeTool():
+    GuiComponent("Gui::FadeTool"),
+    time(50),
+    bitmap(640, 480){
+        bitmap.clear();
+        fader.setState(FadeTool::FadeIn);
+        fader.setFadeInTime(time);
+        fader.setFadeOutTime(time);
+    }
+    void up(){
+        time+=5;
+        fader.setFadeInTime(time);
+        fader.setFadeOutTime(time);
+    }
+    void down(){
+        time-=5;
+        fader.setFadeInTime(time);
+        fader.setFadeOutTime(time);
+    }
+    void right(){
+        time+=5;
+        fader.setFadeInTime(time);
+        fader.setFadeOutTime(time);
+    }
+    void left(){
+        time-=5;
+        fader.setFadeInTime(time);
+        fader.setFadeOutTime(time);
+    }
+    void actComponent(){
+        fader.act();
+        if (fader.getState() == FadeTool::NoFade){
+            fader.setState(FadeTool::FadeOut);
+        } else if (fader.getState() == FadeTool::EndFade){
+            fader.setState(FadeTool::FadeIn);
+        }
+    }
+    void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        bitmap.putPixel(rand() % 640, rand() % 480, Graphics::makeColor(rand() % 255, rand() % 255, rand() % 255));
+        bitmap.Blit(where);
+        font.printf(270, 215, Graphics::makeColor(255, 255, 255), where, "Fade Time: %d", 0, time);
+        font.printf(320 - font.textLength(name.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
+        fader.draw(where);
+    }
+protected:
+    int time;
+    Graphics::Bitmap bitmap;
+    Gui::FadeTool fader;
+};
+
 /*! Gui Handler */
 class GuiHandler {
 public:
     GuiHandler():
     selected(false){
         // Initialize components and store
+        components.push_back(new TestAnimation());
         components.push_back(new TestBox());
+        components.push_back(new TestContextBox());
+        components.push_back(new TestCutScene());
+        components.push_back(new TestFadeTool());
         
         // Set first as active
         components[0].convert<GuiComponent>()->toggle();
