@@ -2081,6 +2081,7 @@ OptionMusic::~OptionMusic(){
 OptionLanguage::OptionLanguage(const Gui::ContextBox & parent, const Token * token):
 MenuOption(parent, token){
     readName(token);
+#if 0
     const Token * start = token->getRootParent();
     vector<const Token*> tokens = start->findTokens("*/language");
     vector<string> all;
@@ -2094,6 +2095,7 @@ MenuOption(parent, token){
     sort(all.begin(), all.end());
     unique_copy(all.begin(), all.end(), back_insert_iterator<vector<string> >(languages));
     // Global::debug(0) << "Found " << languages.size() << " languages" << endl;
+#endif
 }
 
 void OptionLanguage::run(const Menu::Context & context){
@@ -2116,11 +2118,13 @@ void OptionLanguage::run(const Menu::Context & context){
     };
 
     Menu::Menu temp;
+    /* FIXME don't hardcode arial.ttf */
     Util::ReferenceCount<Menu::FontInfo> info = new Menu::RelativeFontInfo(Filesystem::RelativePath("fonts/arial.ttf"), 24, 24);
     temp.setFont(info);
 
     const Gui::ContextBox & box = ((Menu::DefaultRenderer*) temp.getRenderer())->getBox();
 
+    vector<string> languages = context.getLanguages();
     for (vector<string>::iterator it = languages.begin(); it != languages.end(); it++){
         temp.addOption(new LanguageOption(box, *it));
     }

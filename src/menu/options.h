@@ -538,8 +538,6 @@ public:
     OptionLanguage(const Gui::ContextBox & parent, const Token * token);
     virtual void logic();
     virtual void run(const Menu::Context &);
-protected:
-    std::vector<std::string> languages;
 };
 
 class OptionPlatformer: public MenuOption {

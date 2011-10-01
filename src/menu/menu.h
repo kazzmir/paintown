@@ -441,6 +441,9 @@ class Context{
             return this->menuInfo;
         }
         
+        virtual std::vector<std::string> getLanguages() const;
+        virtual void setLanguages(const std::vector<std::string> & languages);
+        
     private:
         /*! Require cleanup *default constructor only* */
         bool cleanup;
@@ -471,6 +474,8 @@ class Context{
         
         /*! Menu Info Text */
         std::string menuInfo;
+
+        std::vector<std::string> languages;
 };
 
 /*! New Menu class */

@@ -938,7 +938,9 @@ fades(NULL),
 background(NULL),
 font(NULL),
 infoLocation(0,-.5),
-menuInfoLocation(0,.95){
+menuInfoLocation(0,.95),
+/* include child's languages?? */
+languages(parent.getLanguages()){
     // Update with parents info
     fades = parent.fades;
     background = parent.background;
@@ -995,6 +997,14 @@ Menu::Context::~Context(){
             delete background;
         }
     }
+}
+
+std::vector<std::string> Menu::Context::getLanguages() const {
+    return languages;
+}
+
+void Menu::Context::setLanguages(const std::vector<std::string> & languages){
+    this->languages = languages;
 }
 
 bool Menu::Context::hasFont() const {
@@ -1366,6 +1376,20 @@ void Menu::Menu::run(const Context & parentContext){
             currentFont.push(context.getFontInfo());
         }
         localContext.initialize();
+
+        /* Not sure if this is the right place to set the languages.
+         * For now the semantics is that if a sub-menu specifies a set
+         * of languages then we will use those, otherwise the
+         * languages will come from the parentContext.
+         *
+         * getLanguages() is supposed to hold at least one language
+         * which might be English, the default.
+         *
+         * This logic is sort of lame.. fix it.
+         */
+        if (getLanguages().size() > 1 || (getLanguages().size() == 1 && getLanguages()[0] != "English")){
+            localContext.setLanguages(getLanguages());
+        }
 
         // Setup menu fonts etc
         if (renderer){        
