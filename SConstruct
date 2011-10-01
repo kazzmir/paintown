@@ -1914,7 +1914,8 @@ def ps3_pkg(target, source, env):
     else:
         env.Execute('ppu-strip %s -o %s.elf' % (file, file))
     env.Execute('%s/bin/sprxlinker %s.elf' % (ps3devPath(), file))
-    env.Execute('python %s/bin/fself.py %s.elf %s.self' % (ps3devPath(), file, file))
+    env.Execute('python %s/bin/fself.py %s.elf %s.fself' % (ps3devPath(), file, file))
+    env.Execute('%s/bin/make_self %s.elf %s.self' % (ps3devPath(), file, file))
     env.Execute('mkdir -p pkg/USRDIR')
     env.Execute('%s/bin/make_self_npdrm %s.elf pkg/USRDIR/EBOOT.BIN %s' % (ps3devPath(), file, app))
     # env.Execute('cp %s %s.elf' % (file, file))
