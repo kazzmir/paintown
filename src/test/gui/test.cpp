@@ -48,6 +48,7 @@ public:
     name(name),
     active(false){
     }
+    
     virtual ~GuiComponent(){
     }
     // pure virtual funcs
@@ -358,8 +359,9 @@ public:
         select.setCellDimensions(32, 32);
         select.setCellSpacing(11, 0);
         select.setCursors(1);
-        select.setWrap(false);
+        select.setWrap(true);
         select.setViewable(15);
+        select.setScrollOffset(2);
         //select.setLayout(Gui::SimpleSelect::Vertical);
         for (unsigned int i = 0; i < 30; ++i){
             select.addItem(new SimpleSelectItem(i, select));
