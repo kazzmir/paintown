@@ -619,6 +619,7 @@ int main(int argc, char ** argv){
     InputManager manager;
     Graphics::Bitmap screen(Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
+    Keyboard::pushRepeatState(true);
     
     InputMap<Keys> input;
     input.set(Keyboard::Key_ESC, 0, true, Esc);
