@@ -420,7 +420,7 @@ public:
         bitmap.clearToMask();
         select.setGridSize(7, 7);
         select.setCellDimensions(32, 32);
-        select.setCellSpacing(0, 11);
+        //select.setCellSpacing(0, 11);
         select.setCellMargins(10, 10);
         select.setCursors(1);
         select.setWrap(true);
