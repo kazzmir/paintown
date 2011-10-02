@@ -430,14 +430,19 @@ public:
         }
     }
     void up(){
+        select.up(0);
     }
     void down(){
+        select.down(0);
     }
     void right(){
+        select.right(0);
     }
     void left(){
+        select.left(0);
     }
     void actComponent(){
+        select.act();
     }
     void drawComponent(const Graphics::Bitmap & where, const Font & font){
         font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
