@@ -357,7 +357,8 @@ public:
     bitmap(640, 34){
         bitmap.clearToMask();
         select.setCellDimensions(32, 32);
-        select.setCellSpacing(11, 0);
+        //select.setCellSpacing(11, 0);
+        select.setCellMargins(10, 0);
         select.setCursors(1);
         select.setWrap(true);
         select.setViewable(15);
