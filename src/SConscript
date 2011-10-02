@@ -74,6 +74,7 @@ util/sdl/image/IMG_tif.c
 util/sdl/image/IMG_xxx.c
 util/sdl/image/IMG_gif.c
 util/sdl/image/IMG_png.c
+util/sdl/image/IMG_savepng.c
 util/sdl/image/IMG_xcf.c
 """)
 

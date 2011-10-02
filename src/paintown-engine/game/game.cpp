@@ -171,7 +171,7 @@ namespace Game{
 }
 
 static void doTakeScreenshot(const Graphics::Bitmap & work){
-    string file = findNextFile("paintown-screenshot.bmp");
+    string file = findNextFile("paintown-screenshot.png");
     Global::debug(2) << "Saved screenshot to " << file << endl;
     work.save(file);
 }
@@ -530,7 +530,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             run(screen_buffer, state);
         }
 
-        void run(const Graphics::Bitmap & screen_buffer, const GameState & state){
+        void run(const Graphics::Bitmap & screen_buffer, GameState & state){
             Graphics::RestoreState graphicsState;
             /* FIXME: replace these constants */
             Graphics::StretchedBitmap work(320, 240, screen_buffer);
@@ -566,6 +566,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             screen.BlitToScreen();
 
             if (state.takeScreenshot){
+                state.takeScreenshot = false;
                 doTakeScreenshot(work);
             }
         }
