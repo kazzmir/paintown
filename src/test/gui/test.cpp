@@ -330,28 +330,64 @@ public:
 protected:
 };
 
-/*! TODO SimpleSelect Gui Component */
+/*! For Simple Select List */
+class SimpleSelectItem : public Gui::SelectItem {
+public:
+    SimpleSelectItem(unsigned int index, const Gui::SimpleSelect & parent):
+    index(index),
+    parent(parent){ }
+    void draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
+        bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
+        font.printf( x + width/2, y + height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
+        if (parent.getCurrentIndex(0) == index){
+            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+        }
+    }
+protected:
+    unsigned int index;
+    const Gui::SimpleSelect & parent;
+};
+
+/*! SimpleSelect Gui Component */
 class TestSimpleSelect : public GuiComponent {
 public:
     TestSimpleSelect():
-    GuiComponent("Gui::SimpleSelect"){
+    GuiComponent("Gui::SimpleSelect"),
+    bitmap(640, 34){
+        bitmap.clearToMask();
+        select.setCellDimensions(32, 32);
+        select.setCellSpacing(11, 0);
+        select.setCursors(1);
+        select.setWrap(false);
+        select.setViewable(15);
+        //select.setLayout(Gui::SimpleSelect::Vertical);
+        for (unsigned int i = 0; i < 30; ++i){
+            select.addItem(new SimpleSelectItem(i, select));
+        }
     }
     void up(){
+        select.up(0);
     }
     void down(){
+        select.down(0);
     }
     void right(){
+        select.right(0);
     }
     void left(){
+        select.left(0);
     }
     void actComponent(){
+        select.act();
     }
     void drawComponent(const Graphics::Bitmap & where, const Font & font){
         font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
-        const std::string info = "TODO - Not Implemented yet";
-        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+        select.render(bitmap, Font::getDefaultFont());
+        bitmap.draw(0, 223, where);
     }
 protected:
+    Graphics::Bitmap bitmap;
+    Gui::SimpleSelect select;
 };
 
 /*! TODO GridSelect Gui Component */
