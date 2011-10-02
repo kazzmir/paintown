@@ -393,11 +393,41 @@ protected:
     Gui::SimpleSelect select;
 };
 
+/*! For Grid Select List */
+class GridSelectItem : public Gui::SelectItem {
+public:
+    GridSelectItem(unsigned int index, const Gui::GridSelect & parent):
+    index(index),
+    parent(parent){ }
+    void draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
+        bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
+        font.printf( x + width/2, y + height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
+        if (parent.getCurrentIndex(0) == index){
+            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+        }
+    }
+protected:
+    unsigned int index;
+    const Gui::GridSelect & parent;
+};
+
 /*! TODO GridSelect Gui Component */
 class TestGridSelect : public GuiComponent {
 public:
     TestGridSelect():
-    GuiComponent("Gui::GridSelect"){
+    GuiComponent("Gui::GridSelect"),
+    bitmap(300, 300){
+        bitmap.clearToMask();
+        select.setGridSize(7, 7);
+        select.setCellDimensions(32, 32);
+        //select.setCellSpacing(11, 0);
+        select.setCellMargins(10, 10);
+        select.setCursors(1);
+        select.setWrap(true);
+        //select.setLayout(Gui::GridSelect::Static);
+        for (unsigned int i = 0; i < 49; ++i){
+            select.addItem(new GridSelectItem(i, select));
+        }
     }
     void up(){
     }
@@ -411,10 +441,12 @@ public:
     }
     void drawComponent(const Graphics::Bitmap & where, const Font & font){
         font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
-        const std::string info = "TODO - Not Implemented yet";
-        font.printf(320 - font.textLength(info.c_str())/2, 240, Graphics::makeColor(255, 255, 255), where, "%s", 0, info.c_str());
+        select.render(bitmap, Font::getDefaultFont());
+        bitmap.draw(160, 80, where);
     }
 protected:
+    Graphics::Bitmap bitmap;
+    Gui::GridSelect select;
 };
 
 /*! TODO TabbedBox Gui Component */
