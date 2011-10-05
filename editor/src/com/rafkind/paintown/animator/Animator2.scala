@@ -235,7 +235,11 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             val file = file_.asInstanceOf[File]
             new Thread(new Runnable(){
               def run(){
-                loadPlayer(file)
+                if (isPlayerFile(file)){
+                  loadPlayer(file)
+                } else if (isProjectileFile(file)){
+                  loadProjectile(file)
+                }
               }
              }).start();
             }
@@ -491,6 +495,20 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
   }
 
   construct()
+
+  def isPlayerFile(file:File):Boolean = {
+    /* TODO: check if the file is a token that starts with *character* */
+    true
+  }
+
+  def isProjectileFile(file:File):Boolean = {
+    /* TODO */
+    false
+  }
+
+  def loadProjectile(file:File) = {
+    println("TODO: implement projectile loading")
+  }
 
   def loadPlayer(file:File) = {
     try{

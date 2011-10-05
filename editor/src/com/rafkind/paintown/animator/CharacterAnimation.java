@@ -65,6 +65,7 @@ public class CharacterAnimation extends JPanel {
 
     private boolean loaded = false;
     private Lambda0 loader;
+    private final Animation animation;
 
     private synchronized boolean isLoaded(){
         return loaded;
@@ -89,6 +90,7 @@ public class CharacterAnimation extends JPanel {
     }
 
     public CharacterAnimation(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
+        this.animation = animation;
         this.loader = new Lambda0(){
             public Object invoke() throws Exception {
                 CharacterAnimation.this.setLayout(new GridBagLayout());
@@ -306,6 +308,10 @@ public class CharacterAnimation extends JPanel {
                 return null;
             }
         };
+    }
+
+    public Animation getAnimation(){
+        return animation;
     }
 
     private JPanel makeGridTool(final DrawArea area, final Animation animation){

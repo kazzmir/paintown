@@ -23,7 +23,6 @@
                 weighty="1"
                 gridheight="1"
                 anchor="GridBagConstraints.NORTHWEST"
-                fill="GridBagConstraints.BOTH"
                 />
 
             <hbox>

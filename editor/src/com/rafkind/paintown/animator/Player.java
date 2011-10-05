@@ -72,9 +72,27 @@ public final class Player{
                 Animation animation = new Animation();
                 character.addAnimation(animation);
                 new Thread(animation).start();
-                animations.add("New animation", new CharacterAnimation(character, animation, changeName));
+                JComponent tab = new CharacterAnimation(character, animation, changeName);
+                animations.add("New animation", tab);
+                animations.setSelectedComponent(tab);
             }
         });
+
+        final JButton removeAnimButton = (JButton) playerEditor.find("remove-animation");
+        removeAnimButton.addActionListener( new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (okToRemoveAnimation(character)){
+                    /* TODO: if the player is unsaved then ask them if they
+                     * really mean to remove the animation
+                     */
+                    CharacterAnimation tab = (CharacterAnimation) animations.getSelectedComponent();
+                    tab.getAnimation().kill();
+                    character.removeAnimation(tab.getAnimation());
+                    animations.remove(tab);
+                }
+            }
+        });
+
 
         for (Animation animation : character.getAnimations()){
             animations.add(animation.getName(), new CharacterAnimation(character, animation, changeName));
@@ -462,6 +480,23 @@ public final class Player{
         */
 
         context.add((JComponent)contextEditor.getRootComponent());
+    }
+
+    private boolean okToRemoveAnimation(CharacterStats character){
+        return !isUnsaved(character) ||
+               (isUnsaved(character) && acceptRemoval());
+    }
+
+    /* true if the character has any unsaved changes */
+    private boolean isUnsaved(CharacterStats character){
+        /* TODO */
+        return false;
+    }
+
+    /* popup a dialog box asking if the user really wants to do this */
+    private boolean acceptRemoval(){
+        /* TODO */
+        return false;
     }
 
     private void debugSwixml( SwingEngine engine ){
