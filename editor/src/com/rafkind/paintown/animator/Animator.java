@@ -669,7 +669,7 @@ public class Animator extends JFrame {
     }
 
     public static RelativeFileChooser getNewFileChooser(){
-        return new RelativeFileChooser( animator, Data.getDataPath() );
+        return new RelativeFileChooser(animator, Data.getDataPath());
     }
 
     public void addNewTab(final SpecialPanel panel, final String name){

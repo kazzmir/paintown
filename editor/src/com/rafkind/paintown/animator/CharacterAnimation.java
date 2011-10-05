@@ -20,7 +20,7 @@ import com.rafkind.paintown.RelativeFileChooser;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.DrawState;
 import com.rafkind.paintown.animator.SpecialPanel;
-import com.rafkind.paintown.animator.Animator;
+import com.rafkind.paintown.animator.NewAnimator;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.events.EventFactory;
 import com.rafkind.paintown.animator.events.FrameEvent;
@@ -683,14 +683,14 @@ public class CharacterAnimation extends JPanel {
         }
         basedirField.setText( animation.getBaseDirectory() );
         JButton basedirButton = (JButton) contextEditor.find( "change-basedir" );
-        basedirButton.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = Animator.getNewFileChooser();
+        basedirButton.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
                 int ret = chooser.open();
-                if ( ret == RelativeFileChooser.OK ){
+                if (ret == RelativeFileChooser.OK){
                     final String path = chooser.getPath();
-                    basedirField.setText( path );
-                    animation.setBaseDirectory( path );
+                    basedirField.setText(path);
+                    animation.setBaseDirectory(path);
                 }
             }
         });

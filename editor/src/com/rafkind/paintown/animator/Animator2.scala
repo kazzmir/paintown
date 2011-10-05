@@ -590,8 +590,13 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 }
 
 object NewAnimator extends swing.JFrame("Paintown Animator"){
+  var animator:NewAnimator = null
   def dataPath(f:File):File = {
     new File(Data.getDataPath().getPath() + "/" + f.getPath());
+  }
+
+  def getNewFileChooser():RelativeFileChooser = {
+    return new RelativeFileChooser(animator, Data.getDataPath());
   }
 
   def getFiles(path:String):List[String] = {
@@ -615,7 +620,8 @@ object NewAnimator extends swing.JFrame("Paintown Animator"){
 
 object Animator2{
   def main(args: Array[String]):Unit = {
-    val editor = new NewAnimator();
+    val editor = new NewAnimator()
+    NewAnimator.animator = editor
     swing.SwingUtilities.invokeLater(new Runnable(){
       def run(){
         editor.setVisible(true);
