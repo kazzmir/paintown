@@ -406,8 +406,12 @@ public:
     void draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
         bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
         font.printf( x + width/2, y + height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
-        if (parent.getCurrentIndex(0) == index){
+        if (parent.getCurrentIndex(0) == parent.getCurrentIndex(1) && parent.getCurrentIndex(0) == index){
+            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(random() % 255, random() % 255, random() % 255));
+        } else if (parent.getCurrentIndex(0) == index){
             bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+        } else if (parent.getCurrentIndex(1) == index){
+            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(0,0,255));
         }
     }
     bool isEmpty() const {
@@ -423,16 +427,20 @@ class TestGridSelect : public GuiComponent {
 public:
     TestGridSelect():
     GuiComponent("Gui::GridSelect"),
-    bitmap(300, 300){
+    bitmap(300, 300),
+    timer(0){
         bitmap.clearToMask();
-        select.setGridSize(7, 7);
+        select.setGridSize(7, 5);
         select.setCellDimensions(32, 32);
-        //select.setCellSpacing(0, -11);
+        select.setCellSpacing(0, -11);
         select.setCellMargins(10, 10);
-        select.setCursors(1);
+        select.setCursors(2);
         select.setWrap(true);
-        select.setLayout(Gui::GridSelect::InfiniteVertical);
-        for (unsigned int i = 0; i < 99; ++i){
+        select.setLayout(Gui::GridSelect::Static);
+        //select.setLayout(Gui::GridSelect::InfiniteVertical);
+        //select.setLayout(Gui::GridSelect::InfiniteHorizontal);
+        //for (unsigned int i = 0; i < 99; ++i){
+        for (unsigned int i = 0; i < 35; ++i){
             select.addItem(new GridSelectItem(i, select));
         }
     }
@@ -450,6 +458,26 @@ public:
     }
     void actComponent(){
         select.act();
+        timer++;
+        if (timer >= 100){
+            timer = 0;
+            switch (random() % 3){
+                case 0:
+                    select.up(1);
+                    break;
+                case 1:
+                    select.down(1);
+                    break;
+                case 2:
+                    select.left(1);
+                    break;
+                case 3:
+                    select.right(1);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     void drawComponent(const Graphics::Bitmap & where, const Font & font){
         bitmap.clearToMask();
@@ -460,6 +488,7 @@ public:
 protected:
     Graphics::Bitmap bitmap;
     Gui::GridSelect select;
+    int timer;
 };
 
 /*! TODO TabbedBox Gui Component */
