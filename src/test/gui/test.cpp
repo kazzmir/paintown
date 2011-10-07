@@ -431,7 +431,7 @@ public:
         select.setCellMargins(10, 10);
         select.setCursors(1);
         select.setWrap(true);
-        select.setLayout(Gui::GridSelect::InfiniteHorizontal);
+        select.setLayout(Gui::GridSelect::InfiniteVertical);
         for (unsigned int i = 0; i < 99; ++i){
             select.addItem(new GridSelectItem(i, select));
         }
