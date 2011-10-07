@@ -344,6 +344,9 @@ public:
             bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
         }
     }
+    bool isEmpty() const {
+        return false;
+    }
 protected:
     unsigned int index;
     const Gui::SimpleSelect & parent;
@@ -384,6 +387,7 @@ public:
         select.act();
     }
     void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        bitmap.clearToMask();
         font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
         select.render(bitmap, Font::getDefaultFont());
         bitmap.draw(0, 223, where);
@@ -405,6 +409,9 @@ public:
         if (parent.getCurrentIndex(0) == index){
             bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
         }
+    }
+    bool isEmpty() const {
+        return false;
     }
 protected:
     unsigned int index;
@@ -445,6 +452,7 @@ public:
         select.act();
     }
     void drawComponent(const Graphics::Bitmap & where, const Font & font){
+        bitmap.clearToMask();
         font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
         select.render(bitmap, Font::getDefaultFont());
         bitmap.draw(160, 80, where);
