@@ -14,7 +14,7 @@ public abstract class BasicObject{
 		this.name = name;
 	}
 
-	public void setPath( File f ){
+	public void setPath(File f){
 		path = f;
 	}
 

@@ -16,7 +16,7 @@ public abstract class AnimatedObject extends BasicObject {
 	private Vector<Animation> animations = new Vector<Animation>();
 	private List updates;
 
-	public AnimatedObject( String name ){
+	public AnimatedObject(String name){
 		super(name);
 		updates = new ArrayList();
 	}

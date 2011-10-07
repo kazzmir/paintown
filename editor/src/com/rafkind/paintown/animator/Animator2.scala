@@ -443,7 +443,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         });
 
         def saveObject(obj:BasicObject, path:File){
-          obj.setPath( path );
+          obj.setPath(path);
           try{
             obj.saveData();
             doMessagePopup("Saved to " + path);
@@ -543,11 +543,11 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             }
 
             override def insertUpdate(event:swing.event.DocumentEvent){
-              pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+              pane.setTitleAt(pane.indexOfComponent(tempPanel), tempPanel.getTextBox().getText());
             }
 
             override def removeUpdate(event:swing.event.DocumentEvent){
-              pane.setTitleAt(pane.indexOfComponent(tempPanel),tempPanel.getTextBox().getText());
+              pane.setTitleAt(pane.indexOfComponent(tempPanel), tempPanel.getTextBox().getText());
             }
           });
          }
@@ -595,9 +595,11 @@ object NewAnimator extends swing.JFrame("Paintown Animator"){
     new File(Data.getDataPath().getPath() + "/" + f.getPath());
   }
 
-  def getNewFileChooser():RelativeFileChooser = {
-    return new RelativeFileChooser(animator, Data.getDataPath());
-  }
+  def getNewFileChooser():RelativeFileChooser = 
+    getNewFileChooser(Data.getDataPath())
+
+  def getNewFileChooser(path:File):RelativeFileChooser =
+    new RelativeFileChooser(animator, path);
 
   def getFiles(path:String):List[String] = {
       val dir = dataPath(new File(path));

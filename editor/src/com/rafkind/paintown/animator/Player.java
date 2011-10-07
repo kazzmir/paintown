@@ -501,7 +501,7 @@ public final class Player{
 
     private void debugSwixml( SwingEngine engine ){
         Map all = engine.getIdMap();
-        System.out.println( "Debugging swixml" );
+        System.out.println("Debugging swixml");
         for ( Iterator it = all.entrySet().iterator(); it.hasNext(); ){
             Map.Entry entry = (Map.Entry) it.next();
             System.out.println( "Id: " + entry.getKey() + " = " + entry.getValue() );
