@@ -685,12 +685,7 @@ public class CharacterAnimation extends JPanel {
         JButton basedirButton = (JButton) contextEditor.find( "change-basedir" );
         basedirButton.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
-                RelativeFileChooser chooser;
-                if (object.getPath() != null){
-                   chooser = NewAnimator.getNewFileChooser(object.getPath().getParentFile());
-                } else {
-                    chooser = NewAnimator.getNewFileChooser();
-                }
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser(object.getPath());
                 int ret = chooser.open();
                 if (ret == RelativeFileChooser.OK){
                     final String path = chooser.getPath();

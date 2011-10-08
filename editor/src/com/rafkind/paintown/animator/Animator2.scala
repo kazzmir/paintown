@@ -596,10 +596,10 @@ object NewAnimator extends swing.JFrame("Paintown Animator"){
   }
 
   def getNewFileChooser():RelativeFileChooser = 
-    getNewFileChooser(Data.getDataPath())
+    new RelativeFileChooser(animator, Data.getDataPath())
 
   def getNewFileChooser(path:File):RelativeFileChooser =
-    new RelativeFileChooser(animator, path);
+    new RelativeFileChooser(animator, Data.getDataPath(), path);
 
   def getFiles(path:String):List[String] = {
       val dir = dataPath(new File(path));
