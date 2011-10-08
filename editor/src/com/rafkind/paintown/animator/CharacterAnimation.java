@@ -59,7 +59,7 @@ public class CharacterAnimation extends JPanel {
         private Object obj;
     }
 
-    private boolean rightClick( MouseEvent event ){
+    private boolean rightClick(MouseEvent event){
         return event.getButton() == MouseEvent.BUTTON3;
     }
 
@@ -455,7 +455,7 @@ public class CharacterAnimation extends JPanel {
             }
         });
 
-        final JComboBox typeCombo = (JComboBox) contextEditor.find( "type" );
+        final JComboBox typeCombo = (JComboBox) contextEditor.find("type");
         typeCombo.addItem("none");
         typeCombo.addItem("attack");
         typeCombo.addActionListener( new AbstractAction(){
@@ -463,10 +463,10 @@ public class CharacterAnimation extends JPanel {
                 animation.setType((String) typeCombo.getSelectedItem());
             }
         });
-        typeCombo.setSelectedItem( animation.getType() );
+        typeCombo.setSelectedItem(animation.getType());
 
-        final JList keyList = (JList) contextEditor.find( "keys");
-        final JComboBox keySelect = (JComboBox) contextEditor.find( "key-select" );
+        final JList keyList = (JList) contextEditor.find("keys");
+        final JComboBox keySelect = (JComboBox) contextEditor.find("key-select");
 
         keySelect.addItem("key_idle");
         keySelect.addItem("key_up");
@@ -486,28 +486,28 @@ public class CharacterAnimation extends JPanel {
         keySelect.addItem("key_attack5");
         keySelect.addItem("key_attack6");
 
-        keyList.setListData( animation.getKeys() );
+        keyList.setListData(animation.getKeys());
 
-        JButton keyAdd = (JButton) contextEditor.find( "add-key" );
-        keyAdd.addActionListener( new AbstractAction(){
+        JButton keyAdd = (JButton) contextEditor.find("add-key");
+        keyAdd.addActionListener(new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                animation.addKey( (String) keySelect.getSelectedItem() );
-                keyList.setListData( animation.getKeys() );
+                animation.addKey((String) keySelect.getSelectedItem());
+                keyList.setListData(animation.getKeys());
             }
         });
-        JButton keyRemove = (JButton) contextEditor.find( "remove-key" );
-        keyRemove.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( ! animation.getKeys().isEmpty() ){
-                    animation.removeKey( keyList.getSelectedIndex() );
-                    keyList.setListData( animation.getKeys() );
+        JButton keyRemove = (JButton) contextEditor.find("remove-key");
+        keyRemove.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (! animation.getKeys().isEmpty()){
+                    animation.removeKey(keyList.getSelectedIndex());
+                    keyList.setListData(animation.getKeys());
                 }
             }
         });
-        JButton keyUp = (JButton) contextEditor.find( "up-key" );
+        JButton keyUp = (JButton) contextEditor.find("up-key");
         keyUp.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( ! animation.getKeys().isEmpty() ){
+            public void actionPerformed(ActionEvent event){
+                if (! animation.getKeys().isEmpty()){
                     int index1 = keyList.getSelectedIndex()-1 < 0 ? 0 : keyList.getSelectedIndex() - 1;
                     int index2 = keyList.getSelectedIndex();
                     String temp1 = (String) animation.getKeys().elementAt( index1 );
@@ -515,34 +515,34 @@ public class CharacterAnimation extends JPanel {
 
                     animation.getKeys().setElementAt(temp1,index2);
                     animation.getKeys().setElementAt(temp2,index1);
-                    keyList.setListData( animation.getKeys() );
-                    keyList.setSelectedIndex( index1 );
+                    keyList.setListData(animation.getKeys());
+                    keyList.setSelectedIndex(index1);
                 }
             }
         });
 
-        JButton keyDown = (JButton) contextEditor.find( "down-key" );
-        keyDown.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( ! animation.getKeys().isEmpty() ){
-                    int index1 = keyList.getSelectedIndex()+1 > animation.getKeys().size() ? animation.getKeys().size() : keyList.getSelectedIndex() + 1;
+        JButton keyDown = (JButton) contextEditor.find("down-key");
+        keyDown.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event ){
+                if (! animation.getKeys().isEmpty()){
+                    int index1 = keyList.getSelectedIndex() + 1 > animation.getKeys().size() ? animation.getKeys().size() : keyList.getSelectedIndex() + 1;
                     int index2 = keyList.getSelectedIndex();
-                    String temp1 = (String) animation.getKeys().elementAt( index1 );
-                    String temp2 = (String) animation.getKeys().elementAt( index2 );
+                    String temp1 = (String) animation.getKeys().elementAt(index1);
+                    String temp2 = (String) animation.getKeys().elementAt(index2);
 
                     animation.getKeys().setElementAt(temp1,index2);
                     animation.getKeys().setElementAt(temp2,index1);
-                    keyList.setListData( animation.getKeys() );
-                    keyList.setSelectedIndex( index1 );
+                    keyList.setListData(animation.getKeys());
+                    keyList.setSelectedIndex(index1);
                 }
             }
         });
 
-        final JSpinner rangeSpinner = (JSpinner) contextEditor.find( "range" );
-        rangeSpinner.setValue( new Integer( animation.getRange() ) );
-        rangeSpinner.addChangeListener( new ChangeListener(){
+        final JSpinner rangeSpinner = (JSpinner) contextEditor.find("range");
+        rangeSpinner.setValue(new Integer(animation.getRange()));
+        rangeSpinner.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent changeEvent){
-                animation.setRange( ((Integer)rangeSpinner.getValue()).intValue() );
+                animation.setRange(((Integer)rangeSpinner.getValue()).intValue());
                 animation.forceRedraw();
             }
         });
@@ -629,7 +629,7 @@ public class CharacterAnimation extends JPanel {
                 return animations.size();
             }
         }
-        final JComboBox sequence = (JComboBox) contextEditor.find( "sequence" );
+        final JComboBox sequence = (JComboBox) contextEditor.find("sequence");
         sequence.setModel( new SequenceModel() );
         /*
            sequence.getModel().addListDataListener( new ListDataListener(){
@@ -953,8 +953,8 @@ public class CharacterAnimation extends JPanel {
         final JComboBox tools = (JComboBox) contextEditor.find("tools");
         final JPanel toolPane = (JPanel) contextEditor.find("tool-area");
         final String chooseNone = "None";
-        final String chooseOnionSkinning = "Onion Skinning";
-        final String chooseAdjustOffsets = "AdjustOffsets";
+        final String chooseOnionSkinning = "Onion skinning";
+        final String chooseAdjustOffsets = "Adjust offsets";
         tools.addItem(chooseNone);
         tools.addItem(chooseOnionSkinning);
         tools.addItem(chooseAdjustOffsets);
@@ -992,16 +992,6 @@ public class CharacterAnimation extends JPanel {
 
             }
         });
-
-        /*
-           JButton adjustOffsets = (JButton) contextEditor.find("adjust-offsets");
-           adjustOffsets.addActionListener(new AbstractAction(){
-           public void actionPerformed(ActionEvent event){
-           showAdjustOffsetsDialog(animation, animation.getEvents());
-           eventList.repaint();
-           }
-           });
-           */
 
         JButton addAllFrames = (JButton) contextEditor.find("add-frames");
         addAllFrames.addActionListener(new AbstractAction(){
@@ -1106,18 +1096,22 @@ public class CharacterAnimation extends JPanel {
             }
         });
 
-        JButton eventRemove = (JButton) contextEditor.find( "remove-event" );
-        eventRemove.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( ! animation.getEvents().isEmpty() ){
-                    animation.removeEvent( eventList.getSelectedIndex() );
-                    eventList.setListData( animation.getEvents() );
+        JButton eventRemove = (JButton) contextEditor.find("remove-event");
+        AbstractAction doRemove = new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (! animation.getEvents().isEmpty()){
+                    animation.removeEvent(eventList.getSelectedIndex());
+                    eventList.setListData(animation.getEvents());
                 }
             }
-        });
+        };
+        eventList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remove-event");
+        eventList.getActionMap().put("remove-event", doRemove);
+        
+        eventRemove.addActionListener(doRemove);
 
         JButton eventUp = (JButton) contextEditor.find( "up-event" );
-        eventUp.addActionListener( new AbstractAction(){
+        eventUp.addActionListener(new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
                 if ( ! animation.getEvents().isEmpty() ){
                     int index1 = eventList.getSelectedIndex()-1 < 0 ? 0 : eventList.getSelectedIndex() - 1;
@@ -1283,124 +1277,6 @@ public class CharacterAnimation extends JPanel {
         }));
 
         return (JPanel) optionsEngine.getRootComponent();
-    }
-                        
-    private void showAdjustOffsetsDialog(final Animation animation, final Vector<AnimationEvent> events){
-        final JDialog dialog = new JDialog();
-        dialog.setTitle("Adjust offsets");
-        dialog.setSize(new Dimension(200, 200));
-                
-        final SwingEngine optionsEngine = new SwingEngine("animator/adjust-offsets.xml");
-
-        class OffsetAction extends AbstractAction {
-            public OffsetAction(Lambda1 doOffset){
-                this.doOffset = doOffset;
-            }
-
-            Lambda1 doOffset;
-
-            public List<OffsetEvent> getOffsets(Vector<AnimationEvent> events){
-                List<OffsetEvent> offsets = new ArrayList<OffsetEvent>();
-                for (AnimationEvent event: events){
-                    /* instanceof is justified here because we can treat
-                     * events like an ADT
-                     */
-                    if (event instanceof OffsetEvent){
-                        offsets.add((OffsetEvent) event);
-                    }
-                }
-                return offsets;
-            }
-
-            private void updateOffsets(){
-                for (OffsetEvent offset: getOffsets(events)){
-                    try{
-                        doOffset.invoke(offset);
-                    } catch (Exception e){
-                        System.out.println(e);
-                    }
-                }
-            }
-
-            public void actionPerformed(ActionEvent event){
-                updateOffsets();
-                animation.applyEvents();
-                animation.forceRedraw();
-            }
-        };
-
-        JButton left = (JButton) optionsEngine.find("left");
-        JButton right = (JButton) optionsEngine.find("right");
-        JButton up = (JButton) optionsEngine.find("up");
-        JButton down = (JButton) optionsEngine.find("down");
-
-        left.addActionListener(new OffsetAction(new Lambda1(){
-            public Object invoke(Object o){
-                OffsetEvent offset = (OffsetEvent) o;
-                offset.setX(offset.getX() - 1);
-                return null;
-            }
-        }));
-
-        right.addActionListener(new OffsetAction(new Lambda1(){
-            public Object invoke(Object o){
-                OffsetEvent offset = (OffsetEvent) o;
-                offset.setX(offset.getX() + 1);
-                return null;
-            }
-        }));
-
-        up.addActionListener(new OffsetAction(new Lambda1(){
-            public Object invoke(Object o){
-                OffsetEvent offset = (OffsetEvent) o;
-                offset.setY(offset.getY() - 1);
-                return null;
-            }
-        }));
-
-        down.addActionListener(new OffsetAction(new Lambda1(){
-            public Object invoke(Object o){
-                OffsetEvent offset = (OffsetEvent) o;
-                offset.setY(offset.getY() + 1);
-                return null;
-            }
-        }));
-
-        /*
-        JButton apply = (JButton) optionsEngine.find("apply");
-        JButton cancel = (JButton) optionsEngine.find("apply");
-
-        apply.addActionListener(new AbstractAction(){
-            public List<OffsetEvent> getOffsets(Vector<AnimationEvent> events){
-                List<OffsetEvent> offsets = new ArrayList<OffsetEvent>();
-                for (AnimationEvent event: events){
-                    if (event instanceof OffsetEvent){
-                        offsets.add((OffsetEvent) event);
-                    }
-                }
-                return offsets;
-            }
-
-            public void actionPerformed(ActionEvent event){
-                int xValue = ((Integer) x.getValue()).intValue();
-                int yValue = ((Integer) y.getValue()).intValue();
-                for (OffsetEvent offset: getOffsets(events)){
-                    offset.setX(offset.getX() + xValue);
-                    offset.setY(offset.getY() + yValue);
-                }
-            }
-        });
-
-        cancel.addActionListener(new AbstractAction(){
-            public void actionPerformed(ActionEvent event){
-                dialog.hide();
-            }
-        });
-        */
-
-        dialog.getContentPane().add((JPanel) optionsEngine.getRootComponent());
-        dialog.show();
-
     }
 
     private void adjustSlider(JSlider slider, int much){

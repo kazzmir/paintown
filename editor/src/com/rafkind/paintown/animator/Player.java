@@ -316,10 +316,10 @@ public final class Player{
             }
         });
 
-        final JTextField origMapField = (JTextField) contextEditor.find( "original-map" );
-        origMapField.setText( character.getOriginalMap() );
+        final JTextField origMapField = (JTextField) contextEditor.find("original-map");
+        origMapField.setText(character.getOriginalMap());
 
-        final JButton origMapButton = (JButton) contextEditor.find( "change-origmap" );
+        final JButton origMapButton = (JButton) contextEditor.find("change-origmap");
 
         origMapButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
