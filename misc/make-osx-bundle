@@ -3,6 +3,7 @@
 version=3-5-0
 
 resources="paintown-$version.app/Contents/Resources"
+root="../../.."
 
 if [ ! -f paintown-static ]; then
     echo "Cannot find the 'paintown-static' binary. Building it for you.."
@@ -33,7 +34,8 @@ fixbundle paintown-$version -v $version -V "Paintown $version" misc/icon.bmp
 # cp scripts.zip $resources
 cp editor/editor.jar $resources
 cp editor/run.sh $resources
-(cd $resources; svn export https://paintown.svn.sf.net/svnroot/paintown/data)
+echo "Copy data"
+(cd $resources; cp -a $root/data .; find . -name .svn | xargs rm -rf)
 echo "Create .dmg file"
 misc/buildDMG.pl -compressionLevel 9 -dmgName paintown-$version paintown-$version.app/
 echo "Created paintown-$version.dmg"
