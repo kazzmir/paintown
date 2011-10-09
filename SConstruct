@@ -1800,6 +1800,7 @@ else:
         staticEnv.Append(LIBS = [png])
     else:
         safeParseConfig(staticEnv, 'freetype-config --libs')
+        safeParseConfig(staticEnv, 'libpng-config --libs --ldflags --cflags')
 
     #if useSDL():
     #    sdl = staticEnv.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
