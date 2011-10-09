@@ -610,6 +610,7 @@ object NewAnimator extends swing.JFrame("Paintown Animator"){
           for (file <- all){
               if (file.getName().endsWith(".png") ||
                   file.getName().endsWith(".tga") ||
+                  file.getName().endsWith(".pcx") ||
                   file.getName().endsWith(".bmp")){
                     files = files :+ file.getName()
               }
