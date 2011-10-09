@@ -14,17 +14,20 @@ import org.swixml.SwingEngine;
 public class FaceEvent implements AnimationEvent {
 	private String _face = "reverse";
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token){
 		_face = token.readString(0);
 	}
 	
-	public void interact( Animation area ){
-		
+	public void interact(Animation area){
 	}
+
+    public AnimationEvent copy(){
+        FaceEvent event = new FaceEvent();
+        event._face = _face;
+        return event;
+    }
 	
-	public String getName()
-	{
+	public String getName(){
 		return getToken().toString();
 	}
 	

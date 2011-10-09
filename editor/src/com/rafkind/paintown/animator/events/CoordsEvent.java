@@ -27,6 +27,10 @@ public class CoordsEvent implements AnimationEvent
 	public void interact( Animation animation ){
 		
 	}
+
+    public AnimationEvent copy(){
+        return null;
+    }
 	
 	public String getName()
 	{

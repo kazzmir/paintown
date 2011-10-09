@@ -18,9 +18,14 @@ public class ZDistanceEvent implements AnimationEvent {
 		_d = token.readInt(0);
 	}
 	
-	public void interact( Animation animation ){
-		
+	public void interact(Animation animation){
 	}
+
+    public AnimationEvent copy(){
+        ZDistanceEvent event = new ZDistanceEvent();
+        event._d = _d;
+        return event;
+    }
 	
 	public String getName()
 	{

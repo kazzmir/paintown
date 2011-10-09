@@ -24,6 +24,14 @@ public class JumpEvent implements AnimationEvent {
 	
 	public void interact( Animation animation ){
 	}
+
+    public AnimationEvent copy(){
+        JumpEvent event = new JumpEvent();
+        event._x = _x;
+        event._y = _y;
+        event._z = _z;
+        return event;
+    }
 	
 	public String getName(){
 		return getToken().toString();

@@ -42,6 +42,10 @@ public class AttackEvent implements AnimationEvent {
         this.attacks = new ArrayList();
     }
 
+    public AnimationEvent copy(){
+        return null;
+    }
+
     public Attack parse(Token token){
         Attack attack = new Attack();
 

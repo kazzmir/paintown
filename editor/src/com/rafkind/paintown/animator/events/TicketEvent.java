@@ -20,6 +20,10 @@ public class TicketEvent implements AnimationEvent {
 	
 	public void interact( Animation animation ){
 	}
+
+    public AnimationEvent copy(){
+        return new TicketEvent();
+    }
 	
 	public String getName(){
 		return getToken().toString();

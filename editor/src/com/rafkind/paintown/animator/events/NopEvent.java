@@ -19,6 +19,10 @@ public class NopEvent implements AnimationEvent{
 	public void interact( Animation animation ){
 		animation.delay();
 	}
+
+    public AnimationEvent copy(){
+        return new NopEvent();
+    }
 	
 	public String getName(){
 		return getToken().toString();

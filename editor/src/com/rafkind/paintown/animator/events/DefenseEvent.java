@@ -36,6 +36,10 @@ public class DefenseEvent implements AnimationEvent {
         this.boxes = new ArrayList();
     }
 
+    public AnimationEvent copy(){
+        return null;
+    }
+
     public Defense parse(Token token){
         Defense defense = new Defense();
 

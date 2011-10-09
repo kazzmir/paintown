@@ -14,4 +14,5 @@ public interface AnimationEvent{
     public Token getToken();
     public void loadToken(Token token);
     public void destroy();
+    public AnimationEvent copy();
 }

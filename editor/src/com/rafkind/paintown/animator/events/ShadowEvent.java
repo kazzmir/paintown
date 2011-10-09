@@ -20,6 +20,13 @@ public class ShadowEvent implements AnimationEvent {
 		_x = token.readInt(0);
 		_y = token.readInt(1);
 	}
+
+    public AnimationEvent copy(){
+        ShadowEvent event = new ShadowEvent();
+        event._x = _x;
+        event._y = _y;
+        return event;
+    }
 	
 	public void interact( Animation animation )
 	{

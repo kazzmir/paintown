@@ -43,6 +43,10 @@ public class BBoxEvent implements AnimationEvent {
         //area.setAttack(new BoundingBox(_x1,_y1,_x2,_y2));
     }
 
+    public AnimationEvent copy(){
+        return null;
+    }
+
     public String getName(){
         return getToken().toString();
     }

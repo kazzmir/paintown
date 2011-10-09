@@ -46,6 +46,17 @@ public class ProjectileEvent implements AnimationEvent
 	public void interact( Animation animation ){
 		
 	}
+
+    public AnimationEvent copy(){
+        ProjectileEvent event = new ProjectileEvent();
+        event._at_x = _at_x;
+        event._at_y = _at_y;
+        event._projectile = _projectile;
+        event._life = _life;
+        event._speed_x = _speed_x;
+        event._speed_y = _speed_y;
+        return event;
+    }
 	
 	public String getName()
 	{

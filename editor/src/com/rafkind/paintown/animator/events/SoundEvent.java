@@ -17,13 +17,20 @@ public class SoundEvent implements AnimationEvent
 {
 	private String _sound;
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token){
 		_sound = token.readString(0);
 	}
 	
 	public void interact( Animation animation ){
 	}
+
+    public AnimationEvent copy(){
+        SoundEvent event = new SoundEvent();
+
+        event._sound = _sound;
+
+        return event;
+    }
 	
 	public String getName(){
 		return getToken().toString();

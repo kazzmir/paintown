@@ -27,6 +27,13 @@ public class TrailEvent implements AnimationEvent {
         }
     }
 
+    public AnimationEvent copy(){
+        TrailEvent event = new TrailEvent();
+        event.generate = generate;
+        event.length = length;
+        return event;
+    }
+
     public void interact(Animation animation){
     }
 

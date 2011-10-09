@@ -26,6 +26,12 @@ public class DelayEvent implements AnimationEvent {
         return getToken().toString();
     }
 
+    public AnimationEvent copy(){
+        DelayEvent event = new DelayEvent();
+        event._delay = _delay;
+        return event;
+    }
+
     public JPanel getEditor(final Animation animation, final DrawArea area){
         SwingEngine engine = new SwingEngine("animator/eventdelay.xml");
         ((JPanel)engine.getRootComponent()).setSize(200,100);

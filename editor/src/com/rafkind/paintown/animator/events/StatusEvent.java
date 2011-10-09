@@ -14,14 +14,18 @@ import org.swixml.SwingEngine;
 public class StatusEvent implements AnimationEvent {
 	private String _status = "ground";
 	
-	public void loadToken(Token token)
-	{
+	public void loadToken(Token token){
 		_status = token.readString(0);
 	}
 	
 	public void interact( Animation animation ){
-		
 	}
+
+    public AnimationEvent copy(){
+        StatusEvent event = new StatusEvent();
+        event._status = _status;
+        return event;
+    }
 	
 	public String getName(){
 		return getToken().toString();

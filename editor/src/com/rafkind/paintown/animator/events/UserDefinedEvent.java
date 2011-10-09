@@ -19,6 +19,15 @@ public class UserDefinedEvent implements AnimationEvent {
         name = "";
         value = "";
     }
+
+    public AnimationEvent copy(){
+        UserDefinedEvent event = new UserDefinedEvent();
+
+        event.name = name;
+        event.value = value;
+
+        return event;
+    }
     
     public void loadToken(Token token){
 		name = token.readString(0);

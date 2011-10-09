@@ -19,6 +19,13 @@ public class OffsetEvent implements AnimationEvent {
 		_x = token.readInt(0);
 		_y = token.readInt(1);
 	}
+
+    public AnimationEvent copy(){
+        OffsetEvent event = new OffsetEvent();
+        event._x = _x;
+        event._y = _y;
+        return event;
+    }
 	
 	public void interact(Animation animation){
 		animation.setOffsetX(_x);

@@ -45,6 +45,10 @@ public class FrameEvent implements AnimationEvent {
         }
     }
 
+    public AnimationEvent copy(){
+        return null;
+    }
+
     public String getName(){
         return getToken().toString();
     }

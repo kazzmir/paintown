@@ -33,25 +33,47 @@ object Utils{
   }
 }
 
-class AttackEvent extends AnimationEvent {
+class Attack(){
   val DEFAULT_FORCE_X = 1.7
   val DEFAULT_FORCE_Y = 4.4
 
+  var x1:Int = 0
+  var y1:Int = 0
+  var x2:Int = 0
+  var y2:Int = 0
+  var damage:Int = 0
+  var forceX:Double = DEFAULT_FORCE_X
+  var forceY:Double = DEFAULT_FORCE_Y
+
+  def copy() = {
+    val attack = new Attack()
+    attack.x1 = x1
+    attack.y1 = y1
+    attack.x2 = x2
+    attack.y2 = y2
+    attack.damage = damage
+    attack.forceX = forceX
+    attack.forceY = forceY
+    attack
+  }
+
+  def isEmpty():Boolean = {
+    x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0
+  }
+}
+
+class AttackEvent extends AnimationEvent {
   var onDestroy = () => { }
   var attacks:List[Attack] = List[Attack]()
 
-  class Attack(){
-    var x1:Int = 0
-    var y1:Int = 0
-    var x2:Int = 0
-    var y2:Int = 0
-    var damage:Int = 0
-    var forceX:Double = DEFAULT_FORCE_X
-    var forceY:Double = DEFAULT_FORCE_Y
+  private def addAttack(attack:Attack) = {
+    attacks = attacks :+ attack
+  }
 
-    def isEmpty():Boolean = {
-      x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0
-    }
+  override def copy() = {
+    val event = new AttackEvent()
+    event.attacks = attacks.map((attack:Attack) => { attack.copy() })
+    event
   }
     
   override def destroy() = {
@@ -134,7 +156,6 @@ class AttackEvent extends AnimationEvent {
 
       temp
     }
-
 
     override def getName():String = {
       getToken().toString()
@@ -284,6 +305,12 @@ class FrameEvent extends AnimationEvent {
         frame = token.readString(0)
     }
 
+    override def copy() = {
+      val event = new FrameEvent()
+      event.frame = frame
+      event
+    }
+
     def interact(animation:Animation){
         val path = Data.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame
         try{
@@ -406,6 +433,14 @@ class MoveEvent extends AnimationEvent {
 	var x:Int = 0
 	var y:Int = 0
 	var z:Int = 0
+
+    override def copy() = {
+      val event = new MoveEvent()
+      event.x = x
+      event.y = y
+      event.z = z
+      event
+    }
 	
 	def loadToken(token:Token){
 		x = token.readInt(0)
@@ -464,13 +499,21 @@ class MoveEvent extends AnimationEvent {
     }
 }
 
+case class Defense(var x1:Int, var y1:Int, var x2:Int, var y2:Int){
+}
+
 class DefenseEvent extends AnimationEvent {
-  case class Defense(var x1:Int, var y1:Int, var x2:Int, var y2:Int){
-  }
 
   var boxes:List[Defense] = List[Defense]()
-
   var onDestroy = () => null
+
+  override def copy() = {
+    val event = new DefenseEvent()
+    event.boxes = boxes.map(box => box match {
+      case Defense(x1, y1, x2, y2) => Defense(x1, y1, x2, y2)
+    })
+    event
+  }
 
   def destroy(){
     onDestroy()

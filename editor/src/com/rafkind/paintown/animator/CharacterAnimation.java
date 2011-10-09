@@ -1105,12 +1105,13 @@ public class CharacterAnimation extends JPanel {
                 }
             }
         };
+
         eventList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remove-event");
         eventList.getActionMap().put("remove-event", doRemove);
         
         eventRemove.addActionListener(doRemove);
 
-        JButton eventUp = (JButton) contextEditor.find( "up-event" );
+        JButton eventUp = (JButton) contextEditor.find("up-event");
         eventUp.addActionListener(new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
                 if ( ! animation.getEvents().isEmpty() ){
@@ -1134,6 +1135,37 @@ public class CharacterAnimation extends JPanel {
                     eventList.setListData( animation.getEvents() );
                     eventList.setSelectedIndex( index1 );
                     eventList.ensureIndexIsVisible( index1 );
+                }
+            }
+        });
+
+        final ObjectBox eventCopy = new ObjectBox();
+        
+        /* ctrl-c */
+        eventList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, 2), "copy-event");
+        /* ctrl-v */
+        eventList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, 2), "paste-event");
+        eventList.getActionMap().put("copy-event", new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (eventList.getSelectedIndex() != -1){
+                    AnimationEvent what = (AnimationEvent) animation.getEvents().elementAt(eventList.getSelectedIndex());
+                    eventCopy.set(what.copy());
+                }
+            }
+        });
+
+        eventList.getActionMap().put("paste-event", new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (eventCopy.get() != null){
+                    AnimationEvent temp = ((AnimationEvent) eventCopy.get()).copy();
+                    int index = 0;
+                    if (eventList.getSelectedIndex() != -1){
+                        index = animation.addEvent(temp, eventList.getSelectedIndex() + 1);
+                    } else {
+                        index = animation.addEvent(temp);
+                    }
+                    eventList.setListData(animation.getEvents());
+                    eventList.setSelectedIndex(index);
                 }
             }
         });

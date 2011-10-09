@@ -21,6 +21,14 @@ public class MoveEvent implements AnimationEvent {
 		_y = token.readInt(1);
 		_z = token.readInt(2);
 	}
+
+    public AnimationEvent copy(){
+        MoveEvent event = new MoveEvent();
+        event._x = _x;
+        event._y = _y;
+        event._z = _z;
+        return event;
+    }
 	
 	public void interact( Animation animation ){
 		animation.moveX( _x );
