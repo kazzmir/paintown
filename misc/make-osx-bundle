@@ -5,22 +5,36 @@ version=3-5-0
 resources="paintown-$version.app/Contents/Resources"
 
 if [ ! -f paintown-static ]; then
-	echo "Cannot find the 'paintown-static' binary. Please build the static version of paintown first using scons or cmake"
-	exit 0
+    echo "Cannot find the 'paintown-static' binary. Building it for you.."
+    make static
+    if [ ! -f paintown-static ]; then
+        echo "Could not build paintown-static. Build it manually"
+        exit 0
+    fi
 fi
 if [ ! -f editor/editor.jar ]; then
-	echo "Cannot find 'editor/editor.jar'. Please build the editor using ant."
+    echo "Cannot find 'editor/editor.jar'. Building it for you.."
+    (cd editor; make)
+    if [ ! -f editor/editor.jar ]; then
+        echo "Could not build editor.jar. Build it manually"
+        exit 0
+    fi
 fi
 
 cp paintown-static paintown-$version
 rm -rf paintown-$version.app
+ok=$(which fixbundle &> /dev/null)
+if [ "x$?" = "x1" ]; then
+    echo "Cannot find fixbundle. Get it from allegro"
+    exit 0
+fi
 echo "Create bundle"
 fixbundle paintown-$version -v $version -V "Paintown $version" misc/icon.bmp
 # cp scripts.zip $resources
 cp editor/editor.jar $resources
 cp editor/run.sh $resources
-(cd $resources; svn export https://paintown.svn.sf.net/svnroot/paintown/data; rm -rf $resources/graveyard)
+(cd $resources; svn export https://paintown.svn.sf.net/svnroot/paintown/data)
 echo "Create .dmg file"
-buildDMG.pl -compressionLevel 9 -dmgName paintown-$version paintown-$version.app/
+misc/buildDMG.pl -compressionLevel 9 -dmgName paintown-$version paintown-$version.app/
 echo "Created paintown-$version.dmg"
 ls -l paintown-$version.dmg
