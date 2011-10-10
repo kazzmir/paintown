@@ -328,6 +328,20 @@ public class CharacterAnimation extends JPanel {
     }
 
     private JPanel makeBackgroundTool(final DrawArea area, final Animation animation){
+        JPanel panel = new JPanel();
+        final JColorChooser color = new JColorChooser();
+        color.setPreviewPanel(new JPanel());
+        panel.add(color);
+        color.getSelectionModel().addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent change){
+                area.setBackgroundColor(color.getSelectionModel().getSelectedColor());
+                animation.forceRedraw();
+            }
+        });
+        return panel;
+    }
+
+    private JPanel makeBackgroundTool2(final DrawArea area, final Animation animation){
         final SwingEngine context = new SwingEngine("animator/animation-tools.xml");
         final JButton blackBackground = (JButton) context.find("black-background");
         final JButton whiteBackground = (JButton) context.find("white-background");
