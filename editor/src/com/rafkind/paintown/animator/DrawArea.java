@@ -252,14 +252,12 @@ public final class DrawArea extends JComponent {
         backgroundColor = color;
     }
 
-    private Color backgroundColor(){
+    public Color backgroundColor(){
         return backgroundColor;
     }
 
     private Color oppositeColor(Color what){
-        /* this should really convert to HSV and rotate H half way
-         * through its possible values then convert back to rgb
-         */
+        /* don't bother fooling with HSB. the code here looks fine */
         return new Color(255 - what.getRed(),
                          255 - what.getGreen(),
                          255 - what.getBlue());

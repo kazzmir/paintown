@@ -20,78 +20,76 @@
                 anchor="GridBagConstraints.NORTHWEST"
                 fill="GridBagConstraints.BOTH"
                 />
-            <panel>
+        </panel>
+        <panel layout="GridBagLayout">
+            <tabbedpane id="tabs">
+                <gridbagconstraints
+                    gridx="0"
+                    gridy="0"
+                    weightx="1"
+                    weighty="0.9"
+                    gridheight="1"
+                    anchor="GridBagConstraints.NORTHWEST"
+                    fill="GridBagConstraints.BOTH"
+                    />
+            </tabbedpane>
+            <vbox>
                 <gridbagconstraints
                     gridx="0"
                     gridy="1"
                     weightx="1"
-                    weighty="0.2"
+                    weighty="0.1"
                     gridheight="1"
                     anchor="GridBagConstraints.NORTHWEST"
-                    fill="GridBagConstraints.NONE"
+                    fill="GridBagConstraints.BOTH"
                     />
                 <vbox>
-                    <panel layout="GridBagLayout">
-                        <vbox>
-                            <gridbagconstraints
-                                gridx="0"
-                                gridy="0"
-                                weightx="0.1"
-                                weighty="0.1"
-                                gridheight="1"
-                                gridwidth="1"
-                                fill="GridBagConstraints.NONE"
-                                anchor="GridBagConstraints.NORTHWEST"
-                                />
-                            <label text="Tools" />
-                            <combobox id="tools" />
-                            <panel id="tool-area" layout="GridBagLayout" />
-                        </vbox>
-                    </panel>
-
-                    <hbox>
-                        <label id="speed-num" />
-                        <glue />
-                    </hbox>
-                    <hbox>
-                        <button id="speed:decrease" icon="animator/minus.png" />
-                        <slider id="speed" minimum="1" maximum="50" />
-                        <button id="speed:increase" icon="animator/plus.png" />
-                    </hbox>
-                    <glue size="1" />
-                    <hbox>
-                        <label id="scale-num" />
-                        <glue />
-                    </hbox>
-                    <hbox>
-                        <button id="scale:decrease" icon="animator/minus.png" />
-                        <slider id="scale" minimum="1" maximum="20" />
-                        <button id="scale:increase" icon="animator/plus.png" />
-                    </hbox>
-                    <glue size="1" />
-                    <hbox>
-                        <button id="previous-frame" text="Previous Frame" />
-                        <glue size="1" />
-                        <button id="play" icon="animator/play.png" />
-                        <glue size="1" />
-                        <button id="stop" icon="animator/stop.png" />
-                        <glue size="1" />
-                        <button id="next-frame" text="Next Frame" />
-                        <glue />
-                    </hbox>
+                    <gridbagconstraints
+                        gridx="0"
+                        gridy="0"
+                        weightx="0.1"
+                        weighty="0.1"
+                        gridheight="1"
+                        gridwidth="1"
+                        fill="GridBagConstraints.NONE"
+                        anchor="GridBagConstraints.NORTHWEST"
+                        />
+                    <label text="Tools" />
+                    <combobox id="tools" />
+                    <panel id="tool-area" layout="GridBagLayout" />
                 </vbox>
-            </panel>
+
+                <hbox>
+                    <label id="speed-num" />
+                    <glue />
+                </hbox>
+                <hbox>
+                    <button id="speed:decrease" icon="animator/minus.png" />
+                    <slider id="speed" minimum="1" maximum="50" />
+                    <button id="speed:increase" icon="animator/plus.png" />
+                </hbox>
+                <glue size="1" />
+                <hbox>
+                    <label id="scale-num" />
+                    <glue />
+                </hbox>
+                <hbox>
+                    <button id="scale:decrease" icon="animator/minus.png" />
+                    <slider id="scale" minimum="1" maximum="20" />
+                    <button id="scale:increase" icon="animator/plus.png" />
+                </hbox>
+                <glue size="1" />
+                <hbox>
+                    <button id="previous-frame" text="Previous Frame" />
+                    <glue size="1" />
+                    <button id="play" icon="animator/play.png" />
+                    <glue size="1" />
+                    <button id="stop" icon="animator/stop.png" />
+                    <glue size="1" />
+                    <button id="next-frame" text="Next Frame" />
+                    <glue />
+                </hbox>
+            </vbox>
         </panel>
-        <tabbedpane id="tabs">
-            <gridbagconstraints
-                gridx="1"
-                gridy="0"
-                weightx="0.3"
-                weighty="1"
-                gridheight="1"
-                anchor="GridBagConstraints.NORTHWEST"
-                fill="GridBagConstraints.HORIZONTAL"
-                />
-        </tabbedpane>
     </splitpane>
 </panel>

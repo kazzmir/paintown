@@ -329,7 +329,7 @@ public class CharacterAnimation extends JPanel {
 
     private JPanel makeBackgroundTool(final DrawArea area, final Animation animation){
         JPanel panel = new JPanel();
-        final JColorChooser color = new JColorChooser();
+        final JColorChooser color = new JColorChooser(area.backgroundColor());
         color.setPreviewPanel(new JPanel());
         panel.add(color);
         color.getSelectionModel().addChangeListener(new ChangeListener(){
