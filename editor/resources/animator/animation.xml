@@ -22,7 +22,7 @@
                 />
         </panel>
         <panel layout="GridBagLayout">
-            <tabbedpane id="tabs">
+            <tabbedpane id="tabs" layout="GridBagLayout">
                 <gridbagconstraints
                     gridx="0"
                     gridy="0"

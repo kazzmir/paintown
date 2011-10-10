@@ -19,10 +19,11 @@
             <gridbagconstraints
                 gridx="0"
                 gridy="0"
-                weightx="0"
+                weightx="1"
                 weighty="1"
                 gridheight="1"
                 anchor="GridBagConstraints.NORTHWEST"
+                fill="GridBagConstraints.BOTH"
                 />
 
             <hbox>
