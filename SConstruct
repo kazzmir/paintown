@@ -1795,8 +1795,8 @@ else:
     
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
-    if not isOSX():
-        png = staticEnv.Install( 'misc', readExec( 'libpng-config --libdir' ) + '/libpng.a' )
+    if True or not isOSX():
+        png = staticEnv.Install('misc', readExec('libpng-config --libdir' ) + '/libpng.a')
         staticEnv.Append(LIBS = [png])
     else:
         safeParseConfig(staticEnv, 'freetype-config --libs')
@@ -1810,7 +1810,7 @@ else:
     #    staticEnv.Append(CPPDEFINES = ['USE_SDL'])
 
     staticEnv.Append(LIBS = ['z','m'])
-    if not isOSX():
+    if True or not isOSX():
         freetype = staticEnv.Install( 'misc', readExec('freetype-config --prefix') + '/lib/libfreetype.a' )
         staticEnv.Append(LIBS = freetype)
 
