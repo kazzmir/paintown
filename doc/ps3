@@ -39,14 +39,15 @@
   3. Execute the toolchain script *note this takes a long while (this downloads all necessary requirements and builds them all if you are missing dependencies it will tell you)
     ./toolchain.sh
 
-  # Hack for now, set the sdl thread size to 256kb. Edit SDL/src/thread/psl1ght/SDL_systhread.c line 73, add a 0 to the size to make it 40000.
-
-   size_t stack_size = 0x40000;
+  4. Patch SDL for the PS3
+  $ cd build/ps3libraries/build/sdl_psl1ght
+  $ patch -p1 < /path/to/paintown/misc/SDL-ps3.diff
+  $ make && make install
     
-  4. Make symlinks to the ps3dev directory you just checked out in /opt
+  5. Make symlinks to the ps3dev directory you just checked out in /opt
     ln -s /path/to/ps3dev /opt/ps3dev
 
-  5. Set the build type environment variable to 'ps3' and build paintown
+  6. Set the build type environment variable to 'ps3' and build paintown
     export ps3=1
     cd /path/to/paintown
     make
