@@ -22,6 +22,9 @@ def isOSX():
 def isLinux():
     return isPlatform("linux")
 
+def file_exists(path):
+    return os.path.exists(path)
+
 def noColors():
     try:
         return int(ARGUMENTS['colors']) == 0
@@ -1811,8 +1814,12 @@ else:
 
     staticEnv.Append(LIBS = ['z','m'])
     if True or not isOSX():
-        freetype = staticEnv.Install( 'misc', readExec('freetype-config --prefix') + '/lib/libfreetype.a' )
-        staticEnv.Append(LIBS = freetype)
+        path = readExec('freetype-config --prefix') + '/lib/libfreetype.a'
+        if file_exists(path):
+            freetype = staticEnv.Install('misc', path)
+            staticEnv.Append(LIBS = freetype)
+        else:
+            safeParseConfig(staticEnv, 'freetype-config --libs')
 
     if not config.TryCompile("int main(){ return 0; }\n", ".c"):
         print "You need a C compiler such as gcc installed"
