@@ -1,0 +1,42 @@
+diff --git a/src/joystick/psl1ght/SDL_sysjoystick.c b/src/joystick/psl1ght/SDL_sysjoystick.c
+index 12fdefc..d12cfee 100644
+--- a/src/joystick/psl1ght/SDL_sysjoystick.c
++++ b/src/joystick/psl1ght/SDL_sysjoystick.c
+@@ -61,19 +61,22 @@ SDL_SYS_JoystickInit(void)
+ 	int iReturn = 0;
+     SDL_numjoysticks = MAX_PADS;
+ 	padInfo padinfo;
++    static int init_once = 0;
+ 
+ 	pdprintf("SDL_SYS_JoystickInit\n");
+ 
+ 	SDL_zero( joy_data);
+ 
+-	if( iReturn == 0)
++	if( iReturn == 0 && init_once == 0)
+ 	{
+ 		iReturn =  ioPadInit( MAX_PADS) ;
+ 		pdprintf("\tPad initialized\n");
+ 		if( iReturn != 0)
+ 		{
+ 			SDL_SetError("SDL_SYS_JoystickInit() : Couldn't initialize PS3 pads");
+-		}
++		} else {
++            init_once = 1;
++        }
+ 	}
+ 
+ 
+diff --git a/src/thread/psl1ght/SDL_systhread.c b/src/thread/psl1ght/SDL_systhread.c
+index dcdbe3f..9c8d976 100644
+--- a/src/thread/psl1ght/SDL_systhread.c
++++ b/src/thread/psl1ght/SDL_systhread.c
+@@ -70,7 +70,7 @@ int
+ SDL_SYS_CreateThread(SDL_Thread * thread, void *args)
+ {
+ 	sys_ppu_thread_t id;
+-	size_t stack_size = 0x4000;
++	size_t stack_size = 0x10000;
+ 	u64 priority = 1500;
+ 
+     /* Create the thread and go! */
