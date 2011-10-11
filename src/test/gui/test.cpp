@@ -404,14 +404,21 @@ public:
     index(index),
     parent(parent){ }
     void draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
-        bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
+        const int radius = 14;
+        x = x+width/2;
+        y = y+height/2;
+        //bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
+        bmp.circleFill(x, y, radius, Graphics::makeColor(255,255,255));
         font.printf( x + width/2, y + height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
         if (parent.getCurrentIndex(0) == parent.getCurrentIndex(1) && parent.getCurrentIndex(0) == index){
-            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(random() % 255, random() % 255, random() % 255));
+            //bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(random() % 255, random() % 255, random() % 255));
+            bmp.circle(x, y, radius, Graphics::makeColor(random() % 255, random() % 255, random() % 255));
         } else if (parent.getCurrentIndex(0) == index){
-            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+            //bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+            bmp.circle(x, y, radius, Graphics::makeColor(255,0,0));
         } else if (parent.getCurrentIndex(1) == index){
-            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(0,0,255));
+            //bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(0,0,255));
+            bmp.circle(x, y, radius, Graphics::makeColor(0,0,255));
         }
     }
     bool isEmpty() const {
@@ -427,20 +434,21 @@ class TestGridSelect : public GuiComponent {
 public:
     TestGridSelect():
     GuiComponent("Gui::GridSelect"),
-    bitmap(300, 300),
+    bitmap(500, 200),
     timer(0){
         bitmap.clearToMask();
-        select.setGridSize(7, 5);
+        select.setGridSize(12, 3);
         select.setCellDimensions(32, 32);
-        select.setCellSpacing(0, -11);
-        select.setCellMargins(10, 10);
+        select.setCellSpacing(1, -1);
+        select.setCellMargins(1, 0);
         select.setCursors(2);
+        select.setCurrentIndex(1, 11);
         select.setWrap(true);
         select.setLayout(Gui::GridSelect::Static);
         //select.setLayout(Gui::GridSelect::InfiniteVertical);
         //select.setLayout(Gui::GridSelect::InfiniteHorizontal);
         //for (unsigned int i = 0; i < 99; ++i){
-        for (unsigned int i = 0; i < 35; ++i){
+        for (unsigned int i = 0; i < 36; ++i){
             select.addItem(new GridSelectItem(i, select));
         }
     }
@@ -483,7 +491,7 @@ public:
         bitmap.clearToMask();
         font.printf(320 - font.textLength(name.c_str())/2, 15, Graphics::makeColor(255, 255, 255), where, "%s", 0, name.c_str());
         select.render(bitmap, Font::getDefaultFont());
-        bitmap.draw(160, 80, where);
+        bitmap.draw(100, 240, where);
     }
 protected:
     Graphics::Bitmap bitmap;
