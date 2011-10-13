@@ -51,12 +51,12 @@ continuous( false ){
                 setFinished( f );
             } else if ( *current == "object" ){
                 try{ 
-                    BlockObject * so = new BlockObject( current );
+                    BlockObject * so = new BlockObject(current);
 
                     /* cache the object in the factory */
                     // Object * tmp = ObjectFactory::createObject(so);
                     Paintown::Object * tmp = cacher.cache(*so);
-                    if ( tmp == NULL ){
+                    if (tmp == NULL){
                         current->print(" ");
                         delete so;
                         throw LoadException(__FILE__, __LINE__, "Could not cache object" );
@@ -66,9 +66,10 @@ continuous( false ){
                         delete tmp;
                         objects.push_back( so );
                     }
-
-                } catch ( const LoadException & le ){
+                } catch (const LoadException & le){
                     throw le;
+                } catch (const Filesystem::NotFound & fail){
+                    throw LoadException(__FILE__, __LINE__, fail, "Could not load object");
                 }
             }
         } catch( const TokenException & te ){
