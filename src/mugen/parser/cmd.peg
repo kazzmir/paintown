@@ -882,7 +882,7 @@ rules:
 
     # Keys and key modifiers need their own AST structures
     keys = key_value_list
-    key_value_list = first:key rest:(s "," s key)* {{ value = makeKeyList(first, rest); }}
+    key_value_list = first:key rest:(s "," s key)* (s ",")? {{ value = makeKeyList(first, rest); }}
                    | <void> {{ value = makeEmptyKeyList(); }}
     key = key_real ok:key_rest($1) !identifier {{ value = ok; }}
     key_rest(left) = s "+" s another:key_real new_left:{{ value = makeKeyCombined(left, another); }} key_rest(new_left)

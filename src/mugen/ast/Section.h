@@ -202,14 +202,14 @@ public:
         return section;
     }
     
-    std::string toString(){
+    std::string toString() const {
         std::ostringstream out;
 
         out << "[" << *name << "]" << std::endl;
         
-        std::list<Attribute*>::iterator attribute_it = attributes.begin();
-        std::list<Value*>::iterator value_it = values.begin();
-        for (std::list<WalkList>::iterator it = walkList.begin(); it != walkList.end(); it++){
+        std::list<Attribute*>::const_iterator attribute_it = attributes.begin();
+        std::list<Value*>::const_iterator value_it = values.begin();
+        for (std::list<WalkList>::const_iterator it = walkList.begin(); it != walkList.end(); it++){
             WalkList what = *it;
             switch (what){
                 case WalkAttribute : {

@@ -70,7 +70,7 @@ public:
      * between the code and any existing serialized files then you *must*
      * increment this variable.
      */
-    static const int SERIAL_VERSION = 9;
+    static const int SERIAL_VERSION = 10;
 
     virtual void mark(std::map<const void*, bool> & marks) const = 0;
 

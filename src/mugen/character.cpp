@@ -713,11 +713,16 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
 
                     virtual void onSectionFinished(const Ast::Section & section){
                         if (name == ""){
-                            throw MugenException("No name given for command");
+                            ostringstream out;
+                            out << "No name given for command at line " << section.getLine();
+                            throw MugenException(out.str());
                         }
 
                         if (key == NULL){
-                            throw MugenException("No key sequence given for command");
+                            Global::debug(0) << section.toString() << std::endl;
+                            ostringstream out;
+                            out << "No 'command' attribute given for command '" << name << "' at line " << section.getLine();
+                            throw MugenException(out.str());
                         }
 
                         /* parser guarantees the key will be a KeyList */
