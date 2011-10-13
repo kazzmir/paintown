@@ -510,6 +510,8 @@ public:
             std::vector<OptionLevel *> options;
             Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
             box.setListType(Gui::ContextBox::Normal);
+            box.getListValues().setDistanceFade(false);
+            box.getListValues().setOtherColor(Graphics::makeColor(192, 192, 192));
             for (vector<ModType>::iterator it = mods.begin(); it != mods.end(); it++){
                 OptionLevel *opt = new OptionLevel(box, 0, &select, index);
                 string name = modName(*it);
