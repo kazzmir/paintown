@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# version=3.4.4
+
+if [ "x$1" = "x" ]; then
+	echo "Give some files as arguments"
+	exit 0
+fi
+
+# new way
+# rsync -e ssh file.zip jsmith,fooproject@frs.sourceforge.net:/home/frs/project/f/fo/fooproject/Rel_1/
+# http://sourceforge.net/apps/trac/sourceforge/wiki/Release files for download
+
+home=/home/frs/project/p/pa/paintown/paintown/pre-release
+rsync -avP -e ssh $* kazzmir,paintown@frs.sourceforge.net:$home
+
+# old way
+# rsync --bwlimit=40 -avP -e ssh $* kazzmir,paintown@frs.sourceforge.net:/home/frs/project/p/pa/paintown/paintown/$version
+# rsync --bwlimit=40 -avP -e ssh $* kazzmir,paintown@frs.sourceforge.net:/secureweb/projects/paintown/
