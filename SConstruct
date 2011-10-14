@@ -454,6 +454,24 @@ def checkNativeOgg(context):
     ret = context.TryLink("""
         #include <vorbis/vorbisfile.h>
         #include <stdio.h>
+
+        /* nacl stuff. remove this once nacl gets its own scons file */
+        int __wrap_open(const char * path, int mode, int params){
+            return 0;
+        }
+
+        int __wrap_read(int fd, void * buf, int count){
+            return 0;
+        }
+
+        int __wrap_close(int fd){
+            return 0;
+        }
+
+        int __wrap_lseek(int fd, int offset, int whence){
+            return 0;
+        }
+
         int main(int argc, char ** argv){
           OggVorbis_File ovf;
           FILE * f;
@@ -1233,17 +1251,18 @@ rsx
             prefix = 'nacl64-'
             flags += ['-m64']
             libs.append('')
-            paths.append([setup(path, '/toolchain/linux_x86/nacl64/include/')])
-            usr_path = setup(path, '/toolchain/linux_x86/nacl64/usr')
+            paths.append([setup(path, '/toolchain/linux_x86/x86_64-nacl/usr/include/')])
+            usr_path = setup(path, '/toolchain/linux_x86/x86_64-nacl/usr')
             env['PAINTOWN_NACL_ARCH'] = '64'
         elif arch == '32bit' or arch_override == '32bit':
             prefix = 'nacl-'
             flags += ['-m32']
             libs.append('')
-            paths.append([setup(path, '/toolchain/linux_x86/nacl/include')])
-            usr_path = setup(path, '/toolchain/linux_x86/nacl/usr')
+            paths.append([setup(path, '/toolchain/linux_x86/i686-nacl/usr/include')])
+            usr_path = setup(path, '/toolchain/linux_x86/i686-nacl/usr')
         
         env.PrependENVPath('PATH', usr_path)
+        env.PrependENVPath('PKG_CONFIG_PATH', "%s/%s" % (usr_path, "lib/pkgconfig"))
         paths.append([setup(usr_path,'/include')])
         
         def set_prefix(x):
