@@ -16,6 +16,9 @@ Mugen Engine:
  to modify select.def
  - Many parser bugs were fixed
 
+Menu:
+ - Menu items can be customized
+
 Other:
  - Ports to Android, PS3, Wii
 
