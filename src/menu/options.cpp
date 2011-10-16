@@ -94,6 +94,7 @@ title(Graphics::makeColor(0,255,255)){
     }
 
     credits.push_back("Paintown");
+    credits.push_back(string("Version ") + Global::getVersionString());
     credits.push_back("");
     credits.push_back("Programming");
     credits.push_back("Jon Rafkind");
