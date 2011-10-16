@@ -68,7 +68,7 @@ except Exception, e:
 
 print
 
-for version in ["2.1", "3.0", "paintown 3.1", "3.2", "3.3", "3.3.1", "3.4.0"]:
+for version in ["2.1", "3.0", "paintown 3.1", "3.2", "3.3", "3.3.1", "3.4.0", '3.5.0']:
     try:
         print "Downloads for version %s in the last week %s" % (version, downloads(readJson(lastWeek(), today(), version)))
     except Exception:
