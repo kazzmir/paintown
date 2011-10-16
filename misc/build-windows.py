@@ -23,7 +23,7 @@ server_ip = '10.0.2.2'
 quit_message = '**quit**'
 clear_errors_message = '**clear-errors**'
 transfer_message = '**transfer**'
-paintown_version = '3.5.0'
+paintown_version = '3.6.0'
 
 class CommandFailure(Exception):
     pass

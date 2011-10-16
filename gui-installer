@@ -24,7 +24,7 @@ app = QtGui.QApplication(sys.argv)
 QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
 # Globals
-paintownVersion = ["3.5.0"]
+paintownVersion = ["3.6.0"]
 binLocation = ['/usr/share/games/paintown']
 dataLocation = ['/usr/games']
 allowExit = [True]
