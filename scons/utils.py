@@ -33,6 +33,17 @@ def isPlatform(platform):
 def isWindows():
     return isPlatform("win32")
 
+def isLinux():
+    return isPlatform("linux")
+
+def isOSX104():
+    import platform
+    return isPlatform("darwin") and platform.processor() == 'powerpc'
+
+# Assume 10.6 and up
+def isOSX():
+    return isPlatform("darwin") and not isOSX104()
+
 # todo: figure out when we are on an xterm
 def isXterm():
     # assume linux and osx are ok
@@ -50,3 +61,23 @@ def colorResult(what):
         return colorize('yes', 'light-green')
     else:
         return colorize('no', 'light-red')
+
+def peg_to_cpp(target, source, env):
+    import sys
+    sys.path.append("src/mugen/parser")
+    sys.path.append(".")
+    import peg, re, cpp_generator
+    name = source[0].name
+    parser = peg.make_peg_parser(re.sub('\..*', '', name))
+    fout = open(target[0].path, 'w')
+    fout.write(cpp_generator.generate(parser(source[0].path)))
+    fout.write('\n')
+    fout.close()
+
+def pegBuilder(environment):
+    from SCons.Builder import Builder
+    from SCons.Action import Action
+    return Builder(action = Action(peg_to_cpp, environment['PEG_MAKE']),
+                   suffix = '.cpp',
+                   src_suffix = '.peg')
+

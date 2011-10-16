@@ -21,7 +21,17 @@ import helpers
 
 obj_files = []
 
-filelist = helpers.read_cmake_list("../cmake/FileList.cmake")
+def findCmake():
+    import os.path
+    cmake = '.'
+    # just try 5 directories
+    for i in xrange(0, 5):
+        if os.path.exists("%s/cmake" % cmake):
+            return "%s/cmake" % cmake
+        cmake = os.path.join(cmake, '..')
+    raise Exception("Could not find the cmake directory")
+
+filelist = helpers.read_cmake_list("%s/FileList.cmake" % findCmake())
 
 def sprigLibrary(env):
     sprig = env.Clone()
