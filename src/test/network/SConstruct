@@ -10,6 +10,7 @@ source = Split("""
 test.cpp
 test/util/network/network.cpp
 test/util/system.cpp
+test/util/thread.cpp
 test/util/debug.cpp
 """)
 
