@@ -34,7 +34,7 @@ static void * serverInput( void * client_ ){
     while ( ! done ){
         try{
             debug(1) << "Waiting to receive a message" << endl;
-            Network::Message message( client->getSocket() );
+            Network::Message message(client->getSocket());
             int x;
             ChatType kind;
             message >> x;
@@ -119,7 +119,7 @@ enterPressed( false ){
         nameMessage << Global::MagicId;
         nameMessage << Global::getVersion();
         nameMessage.send(socket);
-    } catch ( const Network::NetworkException & n ){
+    } catch (const Network::NetworkException & n){
         debug( 0 ) << "Could not send username: " << n.getMessage() << endl;
     }
 

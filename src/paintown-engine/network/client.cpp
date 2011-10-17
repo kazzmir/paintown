@@ -433,6 +433,7 @@ void runClient(const string & name, const string & host, const string & port){
     istringstream stream(port);
     int portNumber;
     stream >> portNumber;
+    Global::debug(1) << "Connecting to host " << host << " on port " << portNumber << std::endl;
     Network::Socket socket = Network::connect(host, portNumber);
     try{
         ChatClient chat(socket, name);
@@ -522,25 +523,25 @@ void networkClient(){
     portInput.addBlockingHandle(Keyboard::Key_DOWN, nextFocus, &bundle);
     hostInput.addBlockingHandle(Keyboard::Key_DOWN, nextFocus, &bundle);
     
-    nameInput.addBlockingHandle(Joystick::Down, nextFocus, &bundle);
-    portInput.addBlockingHandle(Joystick::Down, nextFocus, &bundle);
-    hostInput.addBlockingHandle(Joystick::Down, nextFocus, &bundle);
+    nameInput.addBlockingJoystickHandle(Joystick::Down, nextFocus, &bundle);
+    portInput.addBlockingJoystickHandle(Joystick::Down, nextFocus, &bundle);
+    hostInput.addBlockingJoystickHandle(Joystick::Down, nextFocus, &bundle);
     
     nameInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     portInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     hostInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     
-    nameInput.addBlockingHandle(Joystick::Up, previousFocus, &bundle);
-    portInput.addBlockingHandle(Joystick::Up, previousFocus, &bundle);
-    hostInput.addBlockingHandle(Joystick::Up, previousFocus, &bundle);
+    nameInput.addBlockingJoystickHandle(Joystick::Up, previousFocus, &bundle);
+    portInput.addBlockingJoystickHandle(Joystick::Up, previousFocus, &bundle);
+    hostInput.addBlockingJoystickHandle(Joystick::Up, previousFocus, &bundle);
     
     nameInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
     portInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
     hostInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
     
-    nameInput.addBlockingHandle(Joystick::Quit, doQuit, NULL);
-    portInput.addBlockingHandle(Joystick::Quit, doQuit, NULL);
-    hostInput.addBlockingHandle(Joystick::Quit, doQuit, NULL);
+    nameInput.addBlockingJoystickHandle(Joystick::Quit, doQuit, NULL);
+    portInput.addBlockingJoystickHandle(Joystick::Quit, doQuit, NULL);
+    hostInput.addBlockingJoystickHandle(Joystick::Quit, doQuit, NULL);
 
     struct State{
         bool draw;
@@ -548,7 +549,6 @@ void networkClient(){
 
     class Logic: public Util::Logic {
     public:
-        /* it sucks that `work' has to be passed in */
         Logic(Focus & focus, State & state, TextInput & nameInput, TextInput & portInput, TextInput & hostInput, FocusBundle & bundle):
         is_done(false),
         focus(focus),
@@ -714,129 +714,6 @@ void networkClient(){
 
     draw.draw(*Graphics::screenParameter.current());
     Util::standardLoop(logic, draw);
-
-#if 0
-    bool done = false;
-    bool draw = true;
-    while ( ! done ){
-        int think = Global::speed_counter;
-        Global::speed_counter = 0;
-        Focus oldFocus = focus;
-        while (think > 0){
-            InputManager::poll();
-            think -= 1;
-
-            vector<InputMap<ClientActions>::InputEvent> events = InputManager::getEvents(input);
-
-            switch (focus){
-                case Name: draw = draw || nameInput.doInput(); break;
-                case Port: draw = draw || portInput.doInput(); break;
-                case Host: draw = draw || hostInput.doInput(); break;
-                default: break;
-            }
-
-            // draw = draw || nameInput.doInput() || portInput.doInput() || hostInput.doInput();
-
-            for (vector<InputMap<ClientActions>::InputEvent>::iterator it = events.begin(); it != events.end() && !done; it++){
-                const InputMap<ClientActions>::InputEvent & event = *it;
-                if (!event.enabled){
-                    continue;
-                }
-
-                if (event[Next]){
-                    nextFocus(&bundle);
-                }
-
-                if (event[Back]){
-                    previousFocus(&bundle);
-                }
-
-                if (event[Quit]){
-                    throw Exception::Return(__FILE__, __LINE__);
-                }
-
-                if (event[Action]){
-                    switch (focus){
-                        case Name:
-                        case Host:
-                        case Port: break;
-                        case Connect: {
-                            done = true;
-                            try{
-                                runClient(nameInput.getText(), hostInput.getText(), portInput.getText(), input);
-                            } catch ( const NetworkException & e ){
-                                popup( work, font, e.getMessage() );
-                                InputManager::waitForRelease(input, Action);
-                                InputManager::waitForPress(input, Action);
-                                InputManager::waitForRelease(input, Action);
-                                /*
-                                   keyboard.wait();
-                                   keyboard.readKey();
-                                   */
-                                /*
-                                   Global::showTitleScreen();
-                                   font.printf( 20, min_y - font.getHeight() * 3 - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Name", 0 );
-                                   font.printf( 20, min_y - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Host", 0 );
-                                   font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Port", 0 );
-                                   font.printf( 20, 20, Bitmap::makeColor( 255, 255, 255 ), *Bitmap::Screen, "Press TAB to cycle the next input", 0 );
-                                   */
-                                done = false;
-                                draw = true;
-                                think = 0;
-                            }
-                            break;
-                        }
-                        case FocusBack : done = true; break;
-                    }
-                }
-
-            }
-
-            draw = draw || oldFocus != focus;
-        }
-
-        if (draw){
-            draw = false;
-
-            background.Blit(work);
-
-            const int inputBoxLength = font.textLength( "a" ) * 40;
-            const int min_y = 140;
-
-            font.printf( 20, min_y - font.getHeight() * 3 - 1, Graphics::makeColor( 255, 255, 255 ), work, "Your name", 0 );
-            Graphics::Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
-            Graphics::Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
-            nameBox.Blit(copyNameBox);
-
-            font.printf( 20, min_y - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
-            Graphics::Bitmap hostBox(work, 20, min_y, inputBoxLength, font.getHeight());
-            Graphics::Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
-            hostBox.Blit(copyHostBox);
-
-            font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
-            Graphics::Bitmap portBox(work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight());
-            Graphics::Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
-            portBox.Blit(copyPortBox);
-
-            font.printf( 20, 20, Graphics::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
-
-            int focusColor = Graphics::makeColor( 255, 255, 0 );
-            int unFocusColor = Graphics::makeColor( 255, 255, 255 );
-
-            drawBox(nameBox, copyNameBox, nameInput.getText(), font, focus == Name);
-            drawBox(hostBox, copyHostBox, hostInput.getText(), font, focus == Host);
-            drawBox(portBox, copyPortBox, portInput.getText(), font, focus == Port);
-            font.printf( 20, min_y + font.getHeight() * 5, focus == Connect ? focusColor : unFocusColor, work, "Connect", 0 );
-            font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == FocusBack ? focusColor : unFocusColor, work, "Back", 0 );
-
-            work.BlitToScreen();
-        }
-
-        while (Global::speed_counter == 0){
-            Util::rest(1);
-        }
-    }
-#endif
 }
 
 }
