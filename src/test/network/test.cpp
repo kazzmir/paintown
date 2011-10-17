@@ -36,8 +36,7 @@ static void * serverWorker(void * arg){
         Network::Socket socket = Network::open(port);
         Network::listen(socket);
         Network::Socket client = Network::accept(socket);
-        unsigned char length = 0;
-        Network::readBytes(client, &length, 1);
+        short length = Network::read16(client);
         if (length != string(message).size()){
             testResult = 1;
             return NULL;
@@ -58,8 +57,8 @@ static void * serverWorker(void * arg){
 static void * clientWorker(void * arg){
     try{
         Network::Socket socket = Network::connect("127.0.0.1", port);
-        unsigned char length = string(message).size();
-        Network::sendBytes(socket, &length, 1);
+        short length = string(message).size();
+        Network::send16(socket, length);
         Network::sendStr(socket, message);
         Network::close(socket);
     } catch (...){
