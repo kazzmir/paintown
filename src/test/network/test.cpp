@@ -3,10 +3,27 @@
  */
 
 #include <string>
+#include <iostream>
 #include "util/network/network.h"
 #include "util/thread.h"
 
 using std::string;
+
+namespace Util{
+/* sleep for `x' milliseconds */
+void rest(int x){
+#ifdef USE_ALLEGRO
+    ::rest(x);
+#endif
+#ifdef USE_SDL
+    SDL_Delay(x);
+#endif
+#ifdef USE_ALLEGRO5
+    al_rest((double) x / 1000.0);
+#endif
+}
+
+}
 
 /* global shared port */
 volatile int port = 8923;
@@ -29,7 +46,9 @@ static void * serverWorker(void * arg){
         if (get != message){
             testResult = 1;
         }
+        std::cout << "Message received" << std::endl;
         Network::close(socket);
+        Network::close(client);
     } catch (...){
         testResult = 1;
     }
@@ -52,6 +71,9 @@ static void * clientWorker(void * arg){
 static void test(){
     Util::Thread::ThreadObject server(NULL, serverWorker);
     Util::Thread::ThreadObject client(NULL, clientWorker);
+
+    server.start();
+    client.start();
 }
 
 int main(){
