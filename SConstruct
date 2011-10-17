@@ -1068,6 +1068,8 @@ gcm_sys
 sysutil
 lv2
 io
+net
+sysmodule
 audio
 png
 z
@@ -1537,7 +1539,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not useIos() and not usePs3():
+if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not useIos():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
