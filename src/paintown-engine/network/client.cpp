@@ -522,13 +522,25 @@ void networkClient(){
     portInput.addBlockingHandle(Keyboard::Key_DOWN, nextFocus, &bundle);
     hostInput.addBlockingHandle(Keyboard::Key_DOWN, nextFocus, &bundle);
     
+    nameInput.addBlockingHandle(Joystick::Down, nextFocus, &bundle);
+    portInput.addBlockingHandle(Joystick::Down, nextFocus, &bundle);
+    hostInput.addBlockingHandle(Joystick::Down, nextFocus, &bundle);
+    
     nameInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     portInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     hostInput.addBlockingHandle(Keyboard::Key_UP, previousFocus, &bundle);
     
+    nameInput.addBlockingHandle(Joystick::Up, previousFocus, &bundle);
+    portInput.addBlockingHandle(Joystick::Up, previousFocus, &bundle);
+    hostInput.addBlockingHandle(Joystick::Up, previousFocus, &bundle);
+    
     nameInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
     portInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
     hostInput.addBlockingHandle(Keyboard::Key_ESC, doQuit, NULL);
+    
+    nameInput.addBlockingHandle(Joystick::Quit, doQuit, NULL);
+    portInput.addBlockingHandle(Joystick::Quit, doQuit, NULL);
+    hostInput.addBlockingHandle(Joystick::Quit, doQuit, NULL);
 
     struct State{
         bool draw;
@@ -547,9 +559,13 @@ void networkClient(){
         bundle(bundle){
             input.set(Keyboard::Key_TAB, 0, true, Next);
             input.set(Keyboard::Key_DOWN, 0, true, Next);
+            input.set(Joystick::Down, 0, true, Next);
             input.set(Keyboard::Key_UP, 0, true, Back);
+            input.set(Joystick::Up, 0, true, Back);
             input.set(Keyboard::Key_ESC, 0, true, Quit);
+            input.set(Joystick::Quit, 0, true, Quit);
             input.set(Keyboard::Key_ENTER, 0, true, Action);
+            input.set(Joystick::Button1, 0, true, Action);
         }
 
         bool is_done;
