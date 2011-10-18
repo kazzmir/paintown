@@ -36,7 +36,7 @@ index dcdbe3f..9c8d976 100644
  {
  	sys_ppu_thread_t id;
 -	size_t stack_size = 0x4000;
-+	size_t stack_size = 0x10000;
++	size_t stack_size = 0x40000;
  	u64 priority = 1500;
  
      /* Create the thread and go! */
