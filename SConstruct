@@ -1539,7 +1539,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useWii() and not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not useIos():
+if not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not useIos():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
