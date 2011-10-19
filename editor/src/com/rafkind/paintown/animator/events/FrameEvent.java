@@ -6,7 +6,7 @@ import java.awt.image.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.io.File;
-import com.rafkind.paintown.animator.Animator;
+import com.rafkind.paintown.animator.NewAnimator;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawState;
 import com.rafkind.paintown.animator.DrawArea;
@@ -132,7 +132,7 @@ public class FrameEvent implements AnimationEvent {
     }
 
     private List getFiles( String path ){
-        File dir = Animator.dataPath( new File( path ) );
+        File dir = NewAnimator.dataPath( new File( path ) );
         List files = new ArrayList();
         /* use a FileFilter here */
         if ( dir.isDirectory() ){

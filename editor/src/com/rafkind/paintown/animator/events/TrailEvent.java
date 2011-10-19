@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import com.rafkind.paintown.animator.Animator;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;

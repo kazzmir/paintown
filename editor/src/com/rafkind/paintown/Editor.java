@@ -93,7 +93,7 @@ public class Editor extends JFrame {
         animationEditor.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
                 String[] args = new String[0];
-                com.rafkind.paintown.animator.Animator.main(args);
+                com.rafkind.paintown.animator.Animator2.main(args);
             }
         });
 

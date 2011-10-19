@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.RelativeFileChooser;
 import com.rafkind.paintown.animator.DrawArea;
-import com.rafkind.paintown.animator.Animator;
+import com.rafkind.paintown.animator.NewAnimator;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
@@ -45,7 +45,7 @@ public class SoundEvent implements AnimationEvent
 		soundfield.setText(_sound);
 		soundbutton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = Animator.getNewFileChooser();
+					RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();
