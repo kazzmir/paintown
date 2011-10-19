@@ -10,6 +10,34 @@ import com.rafkind.paintown.exception._
 
 import com.rafkind.paintown._
 
+class DrawPropertiesListener {
+  def updateBackgroundColor(color:awt.Color) = {
+  }
+}
+
+/* putting this class here for now, but it should probably be somewhere else */
+class DrawProperties {
+  var color:awt.Color = new awt.Color(0, 0, 0)
+  var listeners:List[DrawPropertiesListener] = List()
+
+  def setBackgroundColor(newColor:awt.Color) = {
+    color = newColor
+    for (listener <- listeners){
+      listener.updateBackgroundColor(color)
+    }
+  }
+
+  def getBackgroundColor():awt.Color = color
+
+  def addListener(listener:DrawPropertiesListener){
+    listeners = listeners :+ listener
+  }
+
+  def removeListener(listener:DrawPropertiesListener){
+    // listeners = listeners :- listener
+  }
+}
+
 class NewAnimator extends swing.JFrame("Paintown Animator"){
 
   def get[T](list:List[T], index:Int):T = {
@@ -119,16 +147,16 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     // quickDisplay.setIcon(quickDisplayIcon);
 
     class QuickCharacterLoaderModel extends swing.ListModel {
-      var listeners:List[swing.event.ListDataListener] = List[swing.event.ListDataListener]()
-      var data:List[File] = List[File]()
-      var filtered:List[File] = List[File]()
+      var listeners:List[swing.event.ListDataListener] = List()
+      var data:List[File] = List()
+      var filtered:List[File] = List()
       var filter:Pattern = Pattern.compile(".*")
 
       load(Data.getDataPath())
 
       def load(path:File){
         val self = this
-        data = List[File]()
+        data = List()
         new swing.SwingWorker[List[File], File]{
           override def doInBackground():List[File] = {
             val filter = new FilenameFilter(){
@@ -153,7 +181,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
             }
 
             find(path)
-            return List[File]()
+            return List()
           }
 
           override def done(){

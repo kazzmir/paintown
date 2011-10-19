@@ -24,14 +24,19 @@ public final class DrawArea extends JComponent {
     private boolean canMove = true;
     private boolean snapToGrid = false;
     /* start background as black */
-    private Color backgroundColor = new Color(0, 0, 0);
+    private DrawProperties drawProperties;
 
     private AnimationEvent currentEvent;
     private Animation currentAnimation;
 
     public DrawArea(final Lambda0 loader){
+        this(new DrawProperties(), loader);
+    }
+
+    public DrawArea(DrawProperties properties, final Lambda0 loader){
         setFocusable(true);
         currentAnimation = null;
+        this.drawProperties = properties;
 
         scale = 1.0;
 
@@ -248,12 +253,18 @@ public final class DrawArea extends JComponent {
        }
        */
 
+    /*
     public void setBackgroundColor(Color color){
         backgroundColor = color;
     }
 
     public Color backgroundColor(){
         return backgroundColor;
+    }
+    */
+    
+    public Color backgroundColor(){
+        return drawProperties.getBackgroundColor();
     }
 
     private Color oppositeColor(Color what){

@@ -109,7 +109,7 @@ public class CharacterAnimation extends JPanel {
 
                 final JTabbedPane tabs = (JTabbedPane) animEditor.find("tabs");
 
-                final DrawArea area = new DrawArea(new Lambda0(){
+                final DrawArea area = new DrawArea(object.getDrawProperties(), new Lambda0(){
                     public Object invoke(){
                         /*
                            if ( eventList.getSelectedIndex() != -1 ){
@@ -215,7 +215,7 @@ public class CharacterAnimation extends JPanel {
 
                 tools.addActionListener(new AbstractAction(){
                     final JPanel toolNone = new JPanel();
-                    final JPanel toolBackground = makeBackgroundTool(area, animation);
+                    final JPanel toolBackground = makeBackgroundTool(object, area, animation);
                     final JPanel toolGrid = makeGridTool(area, animation);
 
                     private JPanel getTool(String name){
@@ -327,14 +327,20 @@ public class CharacterAnimation extends JPanel {
         return (JPanel) context.find("grid");
     }
 
-    private JPanel makeBackgroundTool(final DrawArea area, final Animation animation){
+    private JPanel makeBackgroundTool(final AnimatedObject character, final DrawArea area, final Animation animation){
         JPanel panel = new JPanel();
         final JColorChooser color = new JColorChooser(area.backgroundColor());
         color.setPreviewPanel(new JPanel());
         panel.add(color);
         color.getSelectionModel().addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent change){
-                area.setBackgroundColor(color.getSelectionModel().getSelectedColor());
+                character.getDrawProperties().setBackgroundColor(color.getSelectionModel().getSelectedColor());
+                animation.forceRedraw();
+            }
+        });
+        character.getDrawProperties().addListener(new DrawPropertiesListener(){
+            public void updateBackgroundColor(Color newColor){
+                color.setColor(newColor);
                 animation.forceRedraw();
             }
         });
@@ -470,12 +476,15 @@ public class CharacterAnimation extends JPanel {
                 selected = null;
 
                 object.addAnimationUpdate( new Lambda1(){
-                    public Object invoke( Object o ){
-                        CharacterStats who = (CharacterStats) o;
-                        animations = new ArrayList();
-                        animations = getAnimations( who );
+                    public Object invoke(Object o){
+                        /* FIXME: is this an animated object? */
+                        if (o instanceof CharacterStats){
+                            CharacterStats who = (CharacterStats) o;
+                            animations = new ArrayList();
+                            animations = getAnimations(who);
 
-                        updateAll();
+                            updateAll();
+                        }
                         return null;
                     }
                 });

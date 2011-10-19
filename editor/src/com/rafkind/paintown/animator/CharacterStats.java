@@ -35,7 +35,7 @@ public class CharacterStats extends AnimatedObject {
 		super(name);
 		loadData(f);
 	}
-	
+
 	public int getHealth(){
 		return health;
 	}

@@ -15,11 +15,17 @@ public abstract class AnimatedObject extends BasicObject {
 	
 	private Vector<Animation> animations = new Vector<Animation>();
 	private List updates;
+    private DrawProperties drawProperties = new DrawProperties();
 
 	public AnimatedObject(String name){
 		super(name);
 		updates = new ArrayList();
+        this.drawProperties = drawProperties;
 	}
+
+    public DrawProperties getDrawProperties(){
+        return drawProperties;
+    }
 
 	public void addAnimationUpdate( Lambda1 update ){
 		updates.add(update);

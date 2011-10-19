@@ -41,7 +41,7 @@ public class ProjectilePane {
 		final Lambda1 editAnimation = new Lambda1(){
 			public Object invoke( Object i ){
 				int index = ((Integer) i).intValue();
-				Animation temp = projectile.getAnimation( index );
+				Animation temp = projectile.getAnimation(index);
 				CharacterAnimation edit = new CharacterAnimation( projectile, temp, new Lambda2(){
                                     public Object invoke(Object o1, Object o2){
                                         return null;
