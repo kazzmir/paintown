@@ -7,7 +7,6 @@ testEnv.VariantDir('common', '../common')
 source = Split("""
 common/init.cpp
 common/timer.cpp
-test.cpp
 test/configuration.cpp
 test/globals.cpp
 test/exceptions/exception.cpp
@@ -63,6 +62,8 @@ test/util/network/network.cpp
 """)
 
 x = []
-gui_test = testEnv.Program('gui', source)
+gui_test = testEnv.Program('gui', source + ['test.cpp'])
 x.append(gui_test)
+character_select = testEnv.Program('character-select', source + ['character-select.cpp', 'select-main.cpp'])
+x.append(character_select)
 Return('x')
