@@ -858,7 +858,7 @@ void Character::doJump( double vx, double vz ){
 }
 	
 void Character::initJumpingYVelocity(){
-    setYVelocity(jumping_starting_velocity * getSpriteScale());
+    setYVelocity(jumping_starting_velocity);
 }
 
 /** TODO **/
