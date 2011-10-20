@@ -899,7 +899,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
 
     /* copy the section because it might be parsed again later */
     /* FIXME: this is sort of ugly, instead use some sort of view on the ast */
-    PaintownUtil::ReferenceCount<Ast::Section> copy = (Ast::Section*) section->copy();
+    PaintownUtil::ReferenceCount<Ast::Section> copy((Ast::Section*) section->copy());
     Walker walker(animation, sprites, mask);
     copy->walk(walker);
 

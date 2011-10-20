@@ -743,7 +743,7 @@ vector<ECollide*> Animation::getCollide(int facing){
                 Attack & attack = *it;
                 if (attack.getX1() != attack.getX2() && attack.getY1() != attack.getY2()){
                     /* Have to create our own ECollide structure */
-                    Util::ReferenceCount<ECollide> collide = new ECollide(getWidth(), getHeight());
+                    Util::ReferenceCount<ECollide> collide(new ECollide(getWidth(), getHeight()));
                     EQuad * ac = collide->getHead();
                     EQuad * adder = new EQuad(attack.getXLen() * scale, attack.getYLen() * scale, NULL);
                     if (facing == Object::FACING_LEFT){

@@ -146,7 +146,7 @@ hasMusic(false){
                 triggers.push_back(trigger);
             } else if ( *tok == "block" ){
                 Block * b = new Block(tok, cacher);
-                level_blocks.push_back(b);
+                level_blocks.push_back(Util::ReferenceCount<Block>(b));
             } else if ( *tok == "frontpanel" ){
                 string file;
                 tok->view() >> file;

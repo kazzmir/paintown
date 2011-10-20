@@ -168,11 +168,11 @@ static Util::ReferenceCount<Animation> findAnimation(const map<string, Util::Ref
     if (movements.find(name) != movements.end()){
         return movements.find(name)->second;
     }
-    return NULL;
+    return Util::ReferenceCount<Animation>(NULL);
 }
 
 static Util::ReferenceCount<MoveGraph> buildMoveGraph(const map<string, Util::ReferenceCount<Animation> > & movements){
-    Util::ReferenceCount<MoveGraph> graph = new MoveGraph();
+    Util::ReferenceCount<MoveGraph> graph(new MoveGraph());
 
     for (map<string, Util::ReferenceCount<Animation> >::const_iterator it = movements.begin(); it != movements.end(); it++){
         string name = it->first;
@@ -597,7 +597,7 @@ void showMoveList(Player * player, const Menu::Context & context){
         return;
     }
 
-    Util::ReferenceCount<Character> playerCopy = new Character(*player);
+    Util::ReferenceCount<Character> playerCopy(new Character(*player));
     Gui::PopupBox area;
     area.location.setDimensions(GFX_X - 75, GFX_Y - 75);
     area.location.setCenterPosition(Gui::RelativePoint(0, 0));
@@ -620,7 +620,7 @@ public:
     MoveListTab(Player * player, const Menu::Context & context):
         opened(false),
         player(player),
-        main(player->getInput(), new Character(*player), getContext().getBoard(), context){
+        main(player->getInput(), Util::ReferenceCount<Character>(new Character(*player)), getContext().getBoard(), context){
             setName(player->getName());
 
             /*

@@ -268,11 +268,11 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
         BlockObject block;
         block.setType(ObjectFactory::ItemType);
         block.setPath(path);
-        block.setStimulation(Paintown::Stimulation::create(message));
+        block.setStimulation(Util::ReferenceCount<Paintown::Stimulation>(Paintown::Stimulation::create(message)));
         block.setCoords(x, z);
         Paintown::Item * item = (Paintown::Item *) ObjectFactory::createObject( &block );
-        if ( item == NULL ){
-            debug( 0 ) << "Could not create item" << endl;
+        if (item == NULL){
+            debug(0) << "Could not create item" << endl;
             return;
         }
 

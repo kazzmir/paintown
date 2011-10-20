@@ -1609,25 +1609,25 @@ static vector<Util::ReferenceCount<Menu::FontInfo> > findFonts(){
         Global::debug(1, "fonts") << "Found otf fonts " << joinPaths(otfFonts, ", ") << endl;
 
         for (vector<Filesystem::AbsolutePath>::iterator it = ttfFonts.begin(); it != ttfFonts.end(); it++){
-            fonts.push_back(new Menu::RelativeFontInfo(Storage::instance().cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+            fonts.push_back(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Storage::instance().cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
         }
 
         for (vector<Filesystem::AbsolutePath>::iterator it = otfFonts.begin(); it != otfFonts.end(); it++){
-            fonts.push_back(new Menu::RelativeFontInfo(Storage::instance().cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+            fonts.push_back(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Storage::instance().cleanse(*it), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
         }
         
         /* linux specific fonts */
         vector<Filesystem::AbsolutePath> systemFonts = findSystemFonts();
         for (vector<Filesystem::AbsolutePath>::iterator it = systemFonts.begin(); it != systemFonts.end(); it++){
             Global::debug(1) << "Adding system font `" << (*it).path() << "'" << endl;
-            fonts.push_back(new Menu::AbsoluteFontInfo(*it, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+            fonts.push_back(Util::ReferenceCount<Menu::FontInfo>(new Menu::AbsoluteFontInfo(*it, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
         }
 
         sort(fonts.begin(), fonts.end(), sortInfo);
         
         // DEFAULT (blank)
         // fonts.insert(fonts.begin(), new Menu::DefaultFontInfo());
-        fonts.insert(fonts.begin(), NULL);
+        fonts.insert(fonts.begin(), Util::ReferenceCount<Menu::FontInfo>(NULL));
     } catch (const Filesystem::NotFound & e){
         throw LoadException(__FILE__, __LINE__, e, "Could not load font");
     }
@@ -2120,7 +2120,7 @@ void OptionLanguage::run(const Menu::Context & context){
 
     Menu::Menu temp;
     /* FIXME don't hardcode arial.ttf */
-    Util::ReferenceCount<Menu::FontInfo> info = new Menu::RelativeFontInfo(Filesystem::RelativePath("fonts/arial.ttf"), 24, 24);
+    Util::ReferenceCount<Menu::FontInfo> info(new Menu::RelativeFontInfo(Filesystem::RelativePath("fonts/arial.ttf"), 24, 24));
     temp.setFont(info);
 
     const Gui::ContextBox & box = ((Menu::DefaultRenderer*) temp.getRenderer())->getBox();

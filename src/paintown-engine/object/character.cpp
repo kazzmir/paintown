@@ -716,7 +716,7 @@ Util::ReferenceCount<Animation> Character::getMovement(const string & name){
     if (find != getMovements().end()){
         return find->second;
     }
-    return NULL;
+    return Util::ReferenceCount<Animation>(NULL);
 }
 
 /*

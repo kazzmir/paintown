@@ -502,7 +502,7 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
         try{
             MenuOption * temp = factory.getOption(menu, token);
             if (temp){
-                options.push_back(temp);
+                options.push_back(Util::ReferenceCount<MenuOption>(temp));
                 if (!hasOverride){
                     const Token * tok;
                     token->view() >> tok;
@@ -598,7 +598,7 @@ void Menu::DefaultRenderer::render(const Graphics::Bitmap & bmp, const Font & fo
 }
 
 void Menu::DefaultRenderer::addOption(MenuOption * opt){
-    this->options.push_back(opt);
+    this->options.push_back(Util::ReferenceCount<MenuOption>(opt));
 }
 
 void Menu::DefaultRenderer::doAction(const Actions & action, Context & context){
@@ -1337,7 +1337,7 @@ public:
 
 void Menu::Menu::setupDefaultLanguage(const Context & context, const MenuClass & parent){
     LanguageMenu menu(parent);
-    menu.setFont(new RelativeFontInfo(Filesystem::RelativePath(sharedFont), sharedFontWidth, sharedFontHeight));
+    menu.setFont(Util::ReferenceCount<FontInfo>(new RelativeFontInfo(Filesystem::RelativePath(sharedFont), sharedFontWidth, sharedFontHeight)));
     Configuration::setLanguage("English");
     try{
         menu.run(context);
@@ -1723,7 +1723,7 @@ void Menu::Menu::handleCompatibility(const Token * token, int version, const Opt
                         /*context.setFont(Filesystem::RelativePath(font));
                           context.setFontWidth(w);
                           context.setFontHeight(h);*/
-                        context.setFont(new RelativeFontInfo(Filesystem::RelativePath(font), w, h));
+                        context.setFont(Util::ReferenceCount<FontInfo>(new RelativeFontInfo(Filesystem::RelativePath(font), w, h)));
                     } catch (const MenuException & ex){
                     }
                 } else if ( *tok == "action"){

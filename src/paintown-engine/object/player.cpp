@@ -640,14 +640,14 @@ void Player::grabEnemy( Object * enemy ){
 }
 			
 static Util::ReferenceCount<Animation> hasGetAnimation( const map<Util::ReferenceCount<Animation>, int > & animations ){
-	for ( map<Util::ReferenceCount<Animation>, int >::const_iterator it = animations.begin(); it != animations.end(); it++ ){
-            Util::ReferenceCount<Animation> a = (*it).first;
-		if ( a->getName() == "get" ){
-			return a;
-		}
-	}
+    for ( map<Util::ReferenceCount<Animation>, int >::const_iterator it = animations.begin(); it != animations.end(); it++ ){
+        Util::ReferenceCount<Animation> a = (*it).first;
+        if ( a->getName() == "get" ){
+            return a;
+        }
+    }
 
-	return NULL;
+    return Util::ReferenceCount<Animation>(NULL);
 }
 
 /* things to do when the player dies */
@@ -873,7 +873,7 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
 	// animation_current = NULL;
 
 	if ( true ){
-            Util::ReferenceCount<Animation> final = NULL;
+            Util::ReferenceCount<Animation> final(NULL);
 		// unsigned int num_keys = 0;
 		map<Util::ReferenceCount<Animation>, int > possible_animations;
 

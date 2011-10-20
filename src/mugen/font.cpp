@@ -271,7 +271,7 @@ Graphics::Bitmap * MugenFont::makeBank(int bank) const {
 
 Util::ReferenceCount<Graphics::Bitmap> MugenFont::changeBank(int bank){
     if (bank < 0 || bank > (colors -1)){
-        return NULL;
+        return Util::ReferenceCount<Graphics::Bitmap>(NULL);
     }
 
     if (banks[bank] == NULL){

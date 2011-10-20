@@ -66,7 +66,7 @@ id(-1){
                     throw LoadException(__FILE__, __LINE__, "Not a valid type");
                 }
             } else if ( *current == "stimulation" ){
-                setStimulation(Paintown::Stimulation::create(*current));
+                setStimulation(Util::ReferenceCount<Paintown::Stimulation>(Paintown::Stimulation::create(*current)));
                 /*
                 string type;
                 double value;

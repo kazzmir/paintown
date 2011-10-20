@@ -548,7 +548,7 @@ int paintown_main(int argc, char ** argv){
     mugenInstant.stage = "kfm";
     */
 
-    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(Menu::menuFontParameter, new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight()));
+    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
 
     startMain(just_network_server, networkJoin, mugenInstant, mugen, allow_quit);
 
