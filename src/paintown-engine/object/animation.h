@@ -55,7 +55,6 @@ struct Frame{
  */
 class Animation{
 public:
-	
 	Animation(const Token * tok, Character * const owner );
 	Animation(const Animation & animation, Character * const owner);
 
@@ -139,6 +138,8 @@ public:
 	void moveX( const int x );
 	void moveY( const int y );
 	void moveZ( const int z );
+
+        virtual double getScale() const;
 
 	inline void setShadowX( const int x ){
 		shadowX = x;
@@ -250,7 +251,7 @@ public:
 
 	void setFacing( const int direction );
 
-        std::vector<ECollide*> getCollide(int facing, double scale);
+        std::vector<ECollide*> getCollide(int facing);
         std::vector<ECollide*> getNormalCollide();
 	void Draw(int x, int y, Remap * remap, Graphics::Bitmap * work );
 	void DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );

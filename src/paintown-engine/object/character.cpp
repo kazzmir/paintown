@@ -849,14 +849,17 @@ void Character::setName( const string & str ){
 }
 
 void Character::doJump( double vx, double vz ){
-	setStatus( Status_Jumping );
-	setXVelocity( vx );
-	setZVelocity( vz );
-	initJumpingYVelocity();
-	// cout<<"Jumping velocity: "<<getMaxJumpingVelocity()<<endl;
-	// cout<<"Do jump: "<<getJumpingYVelocity()<<endl;
+    setStatus(Status_Jumping );
+    setXVelocity(vx);
+    setZVelocity(vz);
+    initJumpingYVelocity();
+    // cout<<"Jumping velocity: "<<getMaxJumpingVelocity()<<endl;
+    // cout<<"Do jump: "<<getJumpingYVelocity()<<endl;
 }
 	
+void Character::initJumpingYVelocity(){
+    setYVelocity(jumping_starting_velocity * getSpriteScale());
+}
 
 /** TODO **/
 void Character::jump(){
@@ -1080,7 +1083,7 @@ void Character::setTrails(const int produce, const int life){
 }
 
 void Character::createProjectile( Projectile * projectile ){
-    projectiles.push_back( (Object *) projectile );
+    projectiles.push_back((Object *) projectile);
 }
 	
 Network::Message Character::grabMessage( Object::networkid_t from, Object::networkid_t who ){
@@ -1414,9 +1417,9 @@ void Character::collided(World * world, ObjectAttack * obj, vector< Object * > &
 int Character::getRX() const {
     if (animation_current != NULL){
         if (getFacing() == FACING_LEFT){
-            return Object::getRX() - animation_current->getOffsetX() * getSpriteScale();
+            return Object::getRX() - animation_current->getOffsetX();
         } else {
-            return Object::getRX() + animation_current->getOffsetX() * getSpriteScale();
+            return Object::getRX() + animation_current->getOffsetX();
         }
     }
     return Object::getRX();
@@ -1433,7 +1436,7 @@ int Character::getRZ() const {
 
 int Character::getRY() const {
     if (animation_current != NULL){
-        return Object::getRY() + animation_current->getOffsetY() * getSpriteScale();
+        return Object::getRY() + animation_current->getOffsetY();
     }
     return Object::getRY();
 }
@@ -1965,7 +1968,7 @@ int Character::getHeight() const{
 
 vector<ECollide*> Character::getCollide() const {
     if (animation_current != NULL){
-        return animation_current->getCollide(getFacing(), getSpriteScale());
+        return animation_current->getCollide(getFacing());
     }
     Global::debug(0) << "No animation collide"<<endl;
     return vector<ECollide*>();

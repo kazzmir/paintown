@@ -273,9 +273,7 @@ public:
         jumping_starting_velocity = j;
     }
 
-    inline void initJumpingYVelocity(){
-        setYVelocity( jumping_starting_velocity );
-    }
+    virtual void initJumpingYVelocity();
 
     void decreaseYVelocity();
     void decreaseXVelocity();

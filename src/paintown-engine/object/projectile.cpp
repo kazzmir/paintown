@@ -59,43 +59,43 @@ life( 0 ){
 }
 	
 Projectile::Projectile( const Projectile * const projectile ):
-ObjectAttack( projectile->getAlliance() ),
-mainAnimation( new Animation( *projectile->mainAnimation, NULL ) ),
+ObjectAttack(projectile->getAlliance()),
+mainAnimation(new Animation(*projectile->mainAnimation, NULL)),
 death( NULL ),
 dx( projectile->getDX() ),
 dy( projectile->getDY() ),
 life( projectile->getLife() ){
-	if ( projectile->death != NULL ){
-		death = new Animation( *projectile->death, NULL );
-	}
+    if (projectile->death != NULL){
+        death = new Animation(*projectile->death, NULL);
+    }
 
-	currentAnimation = mainAnimation;
-	
-	nextTicket();
+    currentAnimation = mainAnimation;
+
+    nextTicket();
 }
 	
 Projectile::~Projectile(){
-	if ( mainAnimation ){
-		delete mainAnimation;
-	}
-	if ( death ){
-		delete death;
-	}
+    if (mainAnimation){
+        delete mainAnimation;
+    }
+    if (death){
+        delete death;
+    }
 }
 	
 int Projectile::getHealth() const {
-	if ( death ){
-		return getLife() <= 0 && death->empty() ? 0 : 1;
-	}
-	return getLife() <= 0 ? 0 : 1;
+    if ( death ){
+        return getLife() <= 0 && death->empty() ? 0 : 1;
+    }
+    return getLife() <= 0 ? 0 : 1;
 }
 
 int Projectile::getRX() const {
-	if ( getFacing() == FACING_LEFT ){
-		return Object::getRX() - currentAnimation->getOffsetX();
-	} else {
-		return Object::getRX() + currentAnimation->getOffsetX();
-	}
+    if ( getFacing() == FACING_LEFT ){
+        return Object::getRX() - currentAnimation->getOffsetX();
+    } else {
+        return Object::getRX() + currentAnimation->getOffsetX();
+    }
 }
 
 int Projectile::getRY() const {
@@ -152,7 +152,7 @@ void Projectile::unGrab(){
 }
 		
 vector<ECollide*> Projectile::getCollide() const {
-    return currentAnimation->getCollide(getFacing(), 1);
+    return currentAnimation->getCollide(getFacing());
 }
 
 Object * Projectile::copy(){

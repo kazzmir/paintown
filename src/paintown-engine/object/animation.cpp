@@ -539,16 +539,16 @@ changedAttacks(false){
 	*/
 }
 
-void Animation::createProjectile( int x, int y, Projectile * projectile ){
-	if ( parent ){
-		int direction = parent->getFacing() == Object::FACING_LEFT ? -1 : 1;
-		projectile->setX( parent->getX() + (getOffsetX() + x) * direction );
-		projectile->setY( -getOffsetY() + y + parent->getY() );
-		projectile->setZ( parent->getZ() );
-		parent->createProjectile( projectile );
-	} else {
-		delete projectile;
-	}
+void Animation::createProjectile(int x, int y, Projectile * projectile){
+    if (parent){
+        int direction = parent->getFacing() == Object::FACING_LEFT ? -1 : 1;
+        projectile->setX(parent->getX() + (getOffsetX() + x) * direction);
+        projectile->setY(-getOffsetY() + y + parent->getY());
+        projectile->setZ(parent->getZ());
+        parent->createProjectile(projectile);
+    } else {
+        delete projectile;
+    }
 }
 	
 void Animation::nextTicket(){
@@ -592,6 +592,13 @@ double Animation::getForceY() const {
         }
     }
     return forceY;
+}
+        
+double Animation::getScale() const {
+    if (parent != NULL){
+        return parent->getSpriteScale();
+    }
+    return 1;
 }
 
 void Animation::upperCase( string & who ){
@@ -726,7 +733,8 @@ vector<ECollide*> Animation::getNormalCollide(){
     return out;
 }
 
-vector<ECollide*> Animation::getCollide(int facing, double scale){
+vector<ECollide*> Animation::getCollide(int facing){
+    double scale = getScale();
     if (isAttack()){
         if (changedAttacks){
             changedAttacks = false;

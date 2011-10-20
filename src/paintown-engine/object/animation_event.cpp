@@ -111,9 +111,9 @@ z(_z){
 }
 
 void AnimationEventMove::Interact(Animation * animation){
-    animation->moveX(x);
-    animation->moveY(y);
-    animation->moveZ(z);
+    animation->moveX(x * animation->getScale());
+    animation->moveY(y * animation->getScale());
+    animation->moveZ(z * animation->getScale());
 }
 
 AnimationEventNOP::AnimationEventNOP():
@@ -130,9 +130,9 @@ x( _x ),
 y( _y ){
 }
 
-void AnimationEventOffset::Interact( Animation * animation ){
-	animation->setOffsetX( x );
-	animation->setOffsetY( y );
+void AnimationEventOffset::Interact(Animation * animation){
+    animation->setOffsetX(x * animation->getScale());
+    animation->setOffsetY(y * animation->getScale());
 }
 
 AnimationEventProjectile::AnimationEventProjectile(const Token * token ):
@@ -188,18 +188,18 @@ life( 0 ){
     }
 }
 
-void AnimationEventProjectile::Interact( Animation * animation ){
-	Projectile * copy = (Projectile *) projectile->copy();
-	copy->setDX( getDX() );
-	copy->setDY( getDY() );
-	copy->setLife( getLife() );
-	animation->createProjectile( getX(), -getY(), copy );
+void AnimationEventProjectile::Interact(Animation * animation){
+    Projectile * copy = (Projectile *) projectile->copy();
+    copy->setDX(getDX());
+    copy->setDY(getDY());
+    copy->setLife(getLife());
+    animation->createProjectile(getX() * animation->getScale(), -getY() * animation->getScale(), copy);
 }
 	
 AnimationEventProjectile::~AnimationEventProjectile(){
-	if ( projectile != NULL ){
-		delete projectile;
-	}
+    if (projectile != NULL){
+        delete projectile;
+    }
 }
 
 AnimationEventShadow::AnimationEventShadow( int x, int y ):
