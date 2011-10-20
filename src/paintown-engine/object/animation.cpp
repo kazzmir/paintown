@@ -105,8 +105,8 @@ static vector<Attack> parseAttacks(const Token & token){
     return out;
 }
 
-Animation::Animation(const Token * tok, Character * const owner ):
-parent( owner ),
+Animation::Animation(const Token * tok, Character * const owner):
+parent(owner),
 current_frame( NULL ),
 // attack_collide( NULL ),
 delay(1),
@@ -391,6 +391,10 @@ changedAttacks(false){
                 // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
                 if (frames.find(full.path()) == frames.end()){
                     Graphics::Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
+                    if (owner != NULL && owner->getSpriteScale() != 1){
+                        *pic = pic->scaleBy(owner->getSpriteScale(), owner->getSpriteScale());
+                    }
+
                     ECollide * collide = new ECollide(pic);
                     Frame * f = new Frame(pic, collide);
                     frames[full.path()] = f;

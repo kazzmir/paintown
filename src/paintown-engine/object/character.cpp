@@ -122,7 +122,8 @@ lives( 0 ),
 draw_shadow( true ),
 trail_generator(0),
 trail_counter(0),
-trail_life(0){
+trail_life(0),
+spriteScale(1){
     mapper[current_map] = NULL;
 }
 
@@ -153,7 +154,8 @@ lives( 0 ),
 draw_shadow( true ),
 trail_generator(0),
 trail_counter(0),
-trail_life(0){
+trail_life(0),
+spriteScale(1){
     name = "";
     loadSelf(filename);
 }
@@ -206,7 +208,8 @@ explode( false ),
 draw_shadow( true ),
 trail_generator(chr.trail_generator),
 trail_counter(chr.trail_counter),
-trail_life(chr.trail_life){
+trail_life(chr.trail_life),
+spriteScale(chr.spriteScale){
 
     /* these are set in object.cpp */
     // setHealth( chr.getHealth() );
@@ -400,6 +403,11 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
                 int x;
                 n->view() >> x;
                 setShadow( x );
+            } else if (*n == "scale"){
+                n->view() >> spriteScale;
+                if (spriteScale < 0.01){
+                    spriteScale = 0.01;
+                }
             } else if ( *n == "icon" ){
                 string icon_path;
                 n->view() >> icon_path;
@@ -493,6 +501,10 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
     gibBloodImage = new Graphics::Bitmap(2, 2);
     gibBloodImage->clearToMask();
     gibBloodImage->circleFill(gibBloodImage->getWidth() / 2, gibBloodImage->getHeight() / 2, 1, Graphics::makeColor(255, 0, 0));
+}
+    
+double Character::getSpriteScale() const {
+    return spriteScale;
 }
 
 void Character::addRemap(Remap * remap){

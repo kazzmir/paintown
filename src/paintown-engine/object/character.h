@@ -386,6 +386,8 @@ public:
     virtual int spawnTime(){
         return 0;
     }
+
+    virtual double getSpriteScale() const;
     
     /* true for human controlled characters */
     virtual bool isPlayer() const;
@@ -572,6 +574,9 @@ protected:
         double boost;
         int ticks;
     } speedBoost;
+
+    /* scale the size of the images (and all related events like attack boxes) */
+    double spriteScale;
 };
 
 }
