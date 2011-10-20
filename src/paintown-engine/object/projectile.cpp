@@ -152,7 +152,7 @@ void Projectile::unGrab(){
 }
 		
 vector<ECollide*> Projectile::getCollide() const {
-    return currentAnimation->getCollide(getFacing());
+    return currentAnimation->getCollide(getFacing(), 1);
 }
 
 Object * Projectile::copy(){

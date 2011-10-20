@@ -726,7 +726,7 @@ vector<ECollide*> Animation::getNormalCollide(){
     return out;
 }
 
-vector<ECollide*> Animation::getCollide(int facing){
+vector<ECollide*> Animation::getCollide(int facing, double scale){
     if (isAttack()){
         if (changedAttacks){
             changedAttacks = false;
@@ -737,13 +737,13 @@ vector<ECollide*> Animation::getCollide(int facing){
                     /* Have to create our own ECollide structure */
                     Util::ReferenceCount<ECollide> collide = new ECollide(getWidth(), getHeight());
                     EQuad * ac = collide->getHead();
-                    EQuad * adder = new EQuad(attack.getXLen(), attack.getYLen(), NULL);
+                    EQuad * adder = new EQuad(attack.getXLen() * scale, attack.getYLen() * scale, NULL);
                     if (facing == Object::FACING_LEFT){
-                        adder->setMinX(getWidth() - attack.getX2() );
-                        adder->setMinY(attack.getY1());
+                        adder->setMinX((getWidth() - attack.getX2()) * scale);
+                        adder->setMinY(attack.getY1() * scale);
                     } else {
-                        adder->setMinX(attack.getX1());
-                        adder->setMinY(attack.getY1());
+                        adder->setMinX(attack.getX1() * scale);
+                        adder->setMinY(attack.getY1() * scale);
                     }
 
                     adder->setFull(true);
@@ -1033,46 +1033,46 @@ void Animation::contacted(){
 		contact->play();
 }
 
-void Animation::moveX( const int x ){
-	if ( parent ){
-		// cout<<"Moving by "<<x<<endl;
-		parent->moveX( x );
-		/*
-		if ( parent->getFacing() == Object::FACING_LEFT ){
-			parent->moveX( x );
-		} else	parent->moveX( -x );
-		*/
-	}
+void Animation::moveX(const int x){
+    if (parent){
+        parent->moveX(x);
+    }
 }
 
-void Animation::moveY( const int y ){
-	if ( parent )
-		parent->moveY( y );
+void Animation::moveY(const int y){
+    if (parent){
+        parent->moveY(y);
+    }
 }
 
-void Animation::moveZ( const int z ){
-	if ( parent )
-		parent->moveZ( z );
+void Animation::moveZ(const int z){
+    if (parent){
+        parent->moveZ(z);
+    }
 }
 
 void Animation::setX( const int x ){
-	if ( parent )
-		parent->setX( x );
+    if (parent){
+        parent->setX(x);
+    }
 }
 
-void Animation::setY( const int y ){
-	if ( parent )
-		parent->setY( y );
+void Animation::setY(const int y){
+    if (parent){
+        parent->setY(y);
+    }
 }
 
-void Animation::setZ( const int z ){
-	if ( parent )
-		parent->setZ( z );
+void Animation::setZ(const int z){
+    if (parent){
+        parent->setZ(z);
+    }
 }
 
-void Animation::setStatus( const int status ){
-	if ( parent )
-		parent->setStatus( status );
+void Animation::setStatus(const int status){
+    if (parent){
+        parent->setStatus(status);
+    }
 }
 
 void Animation::setFrame( const string & path ){

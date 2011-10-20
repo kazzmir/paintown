@@ -250,7 +250,7 @@ public:
 
 	void setFacing( const int direction );
 
-        std::vector<ECollide*> getCollide( int facing );
+        std::vector<ECollide*> getCollide(int facing, double scale);
         std::vector<ECollide*> getNormalCollide();
 	void Draw(int x, int y, Remap * remap, Graphics::Bitmap * work );
 	void DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );

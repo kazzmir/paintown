@@ -1414,9 +1414,9 @@ void Character::collided(World * world, ObjectAttack * obj, vector< Object * > &
 int Character::getRX() const {
     if (animation_current != NULL){
         if (getFacing() == FACING_LEFT){
-            return Object::getRX() - animation_current->getOffsetX();
+            return Object::getRX() - animation_current->getOffsetX() * getSpriteScale();
         } else {
-            return Object::getRX() + animation_current->getOffsetX();
+            return Object::getRX() + animation_current->getOffsetX() * getSpriteScale();
         }
     }
     return Object::getRX();
@@ -1433,7 +1433,7 @@ int Character::getRZ() const {
 
 int Character::getRY() const {
     if (animation_current != NULL){
-        return Object::getRY() + animation_current->getOffsetY();
+        return Object::getRY() + animation_current->getOffsetY() * getSpriteScale();
     }
     return Object::getRY();
 }
@@ -1965,7 +1965,7 @@ int Character::getHeight() const{
 
 vector<ECollide*> Character::getCollide() const {
     if (animation_current != NULL){
-        return animation_current->getCollide(getFacing());
+        return animation_current->getCollide(getFacing(), getSpriteScale());
     }
     Global::debug(0) << "No animation collide"<<endl;
     return vector<ECollide*>();

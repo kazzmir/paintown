@@ -101,19 +101,19 @@ vz( vz ){
 }
 
 void AnimationEventJump::Interact( Animation * animation ){
-	animation->jump( vx, vy, vz );
+    animation->jump(vx, vy, vz);
 }
 
-AnimationEventMove::AnimationEventMove( int _x, int _y, int _z ):
-x( _x ),
-y( _y ),
-z( _z ){
+AnimationEventMove::AnimationEventMove(int _x, int _y, int _z):
+x(_x),
+y(_y),
+z(_z){
 }
 
-void AnimationEventMove::Interact( Animation * animation ){
-	animation->moveX( x );
-	animation->moveY( y );
-	animation->moveZ( z );
+void AnimationEventMove::Interact(Animation * animation){
+    animation->moveX(x);
+    animation->moveY(y);
+    animation->moveZ(z);
 }
 
 AnimationEventNOP::AnimationEventNOP():
