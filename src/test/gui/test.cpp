@@ -368,7 +368,7 @@ public:
         select.setScrollOffset(2);
         //select.setLayout(Gui::SimpleSelect::Vertical);
         for (unsigned int i = 0; i < 30; ++i){
-            select.addItem(new SimpleSelectItem(i, select));
+            select.addItem(Util::ReferenceCount<SelectItem>(new SimpleSelectItem(i, select)));
         }
     }
     void up(){
@@ -449,7 +449,7 @@ public:
         //select.setLayout(Gui::GridSelect::InfiniteHorizontal);
         //for (unsigned int i = 0; i < 99; ++i){
         for (unsigned int i = 0; i < 36; ++i){
-            select.addItem(new GridSelectItem(i, select));
+            select.addItem(Util::ReferenceCount<SelectItem>(new GridSelectItem(i, select)));
         }
     }
     void up(){
@@ -529,18 +529,18 @@ public:
     GuiHandler():
     selected(false){
         // Initialize components and store
-        components.push_back(new TestAnimation());
-        components.push_back(new TestBox());
-        components.push_back(new TestContextBox());
-        components.push_back(new TestCutScene());
-        components.push_back(new TestFadeTool());
-        components.push_back(new TestLineEdit());
-        components.push_back(new TestPopupBox());
-        components.push_back(new TestScrollList());
-        components.push_back(new TestNormalList());
-        components.push_back(new TestSimpleSelect());
-        components.push_back(new TestGridSelect());
-        components.push_back(new TestTabbedBox());
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestAnimation()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestBox()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestContextBox()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestCutScene()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestFadeTool()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestLineEdit()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestPopupBox()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestScrollList()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestNormalList()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestSimpleSelect()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestGridSelect()));
+        components.push_back(Util::ReferenceCount<Gui::ScrollItem>(new TestTabbedBox()));
         
         // Set first as active
         components[0].convert<GuiComponent>()->toggle();
