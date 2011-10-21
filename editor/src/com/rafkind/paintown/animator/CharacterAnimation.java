@@ -23,7 +23,6 @@ import com.rafkind.paintown.animator.SpecialPanel;
 import com.rafkind.paintown.animator.NewAnimator;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.events.EventFactory;
-import com.rafkind.paintown.animator.events.FrameEvent;
 import com.rafkind.paintown.animator.events.OffsetEvent;
 
 import java.awt.geom.AffineTransform;
