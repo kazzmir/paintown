@@ -13,6 +13,8 @@ public class CharacterStats extends AnimatedObject {
 	protected double speed;
 	protected int shadow;
 
+    protected double scale = 1;
+
 	// Sound data
 	protected String dieSound = "";
 	protected String hitSound = "";
@@ -51,6 +53,14 @@ public class CharacterStats extends AnimatedObject {
 	public void setJumpVelocity( double j ){
 		jumpVelocity = j;
 	}
+
+    public double getSpriteScale(){
+        return scale;
+    }
+
+    public void setSpriteScale(double x){
+        this.scale = x;
+    }
 	
 	public double getSpeed(){
 		return speed;
@@ -191,6 +201,7 @@ public class CharacterStats extends AnimatedObject {
 		temp.addToken(new String[]{"health", Integer.toString(health)});
 		temp.addToken(new String[]{"jump-velocity", Double.toString(jumpVelocity)});
 		temp.addToken(new String[]{"speed", Double.toString(speed)});
+		temp.addToken(new String[]{"scale", Double.toString(scale)});
 		temp.addToken(new String[]{"type", "Player"});
 		temp.addToken(new String[]{"shadow", Integer.toString(shadow)});
 		if ( ! getDieSound().equals( "" ) ){
@@ -220,10 +231,10 @@ public class CharacterStats extends AnimatedObject {
 
 	public void saveData() throws LoadException {
 		try{
-			FileOutputStream out = new FileOutputStream( getPath() );
-			PrintStream printer = new PrintStream( out );
-			printer.print( getToken().toString() );
-			printer.print( "\n" );
+			FileOutputStream out = new FileOutputStream(getPath());
+			PrintStream printer = new PrintStream(out);
+			printer.print(getToken().toString());
+			printer.print("\n" );
 			out.close();
 			System.out.println( getToken().toString() );
 		} catch ( Exception e ){
@@ -261,6 +272,11 @@ public class CharacterStats extends AnimatedObject {
 			speed = speedToken.readDouble(0);
 		}
 		
+        Token scaleToken = head.findToken("scale");
+        if (scaleToken != null){
+            scale = scaleToken.readDouble(0);
+        }
+
 		Token shadowToken = head.findToken( "shadow" );
 		if ( shadowToken != null ){
 			shadow = shadowToken.readInt(0);

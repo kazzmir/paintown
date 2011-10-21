@@ -206,8 +206,17 @@ public final class Player{
             }
         });
 
-        final JSpinner healthSpinner = (JSpinner) contextEditor.find( "health" );
-        healthSpinner.setValue( new Integer( character.getHealth() ) );
+        final JSpinner scaleSpinner = (JSpinner) contextEditor.find("scale");
+        scaleSpinner.setModel(new SpinnerNumberModel(character.getSpriteScale(), 0.001, 100, 0.1));
+        scaleSpinner.setValue(new Double(character.getSpriteScale()));
+        scaleSpinner.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent changeEvent){
+                character.setSpriteScale(((Double) scaleSpinner.getValue()).doubleValue());
+            }
+        });
+
+        final JSpinner healthSpinner = (JSpinner) contextEditor.find("health");
+        healthSpinner.setValue(new Integer(character.getHealth()));
 
         healthSpinner.addChangeListener( new ChangeListener(){
             public void stateChanged(ChangeEvent changeEvent){

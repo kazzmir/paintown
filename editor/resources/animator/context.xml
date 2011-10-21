@@ -28,6 +28,11 @@
 			<panel id="speed" />
 			<glue />
 		</hbox>
+        <hbox>
+			<label text="Scale" />
+            <spinner id="scale" />
+			<glue />
+		</hbox>
 		<hbox>
 			<label text="Shadow" />
 			<spinner id="shadow" />
