@@ -120,16 +120,22 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
 void CharacterItem::drawProfile(int width, int height, const Graphics::Bitmap & bmp, const Font & font) const {
     bmp.clearToMask();
     bmp.rectangleFill(width/4, height/4, width/2, height/2, Graphics::makeColor(0,0,255));
-    font.printf( width/2, height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
+    font.printf(10, 25, Graphics::makeColor(255,255,255), bmp, "Pick a player", 0);
+    font.printf(10+5, 25+font.getHeight()+5, Graphics::makeColor(0,0,0), bmp, "SomePlayer%d", 0, index);
+    font.printf(10, 25+font.getHeight(), Graphics::makeColor(255,255,255), bmp, "SomePlayer%d", 0, index);
 }
     
 
 CharacterSelect::CharacterSelect():
-autoPopulate(false){
+autoPopulate(false),
+fontWidth(15),
+fontHeight(15){
 }
 
 CharacterSelect::CharacterSelect(const std::string & filename):
-autoPopulate(false){
+autoPopulate(false),
+fontWidth(15),
+fontHeight(15){
     Global::debug(1) << "Loading Character Select Screen: " << filename << std::endl;
     TokenReader tr(Filesystem::AbsolutePath(filename).path());
     Token * token = tr.readToken();
@@ -137,7 +143,9 @@ autoPopulate(false){
 }
 
 CharacterSelect::CharacterSelect(const Token * token):
-autoPopulate(false){
+autoPopulate(false),
+fontWidth(15),
+fontHeight(15){
     load(token);
 }
 
@@ -159,7 +167,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     backgrounds.render(Gui::Animation::BackgroundTop, work);
     
     // Our font
-    const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont();
+    const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont(fontWidth, fontHeight);
     
     // Select List
     if (list != NULL){
@@ -220,6 +228,7 @@ void CharacterSelect::load(const Token * token){
                     items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list)));
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
                     font = Filesystem::AbsolutePath(string_match);
+                } else if (tok->match("font-dimensions", fontWidth, fontHeight)){
                 } else {
                     Global::debug(0) << "Uknown Character Select property: " << tok->getName() << std::endl;
                 }
