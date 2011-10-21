@@ -1,0 +1,55 @@
+(select-screen
+  (name "paintown-select")
+  ;; Uncomment the background token and put it in whatever png file you want
+  ;; to change the select screen background
+  ;; (background paintown-title.png)
+  ; Use a menu animation (This will override the background if it is set)
+  (animation
+    (location 0)
+    (image 0 "menu/paintown.png")
+    (velocity -.001 0)
+    (frame
+      (image 0)
+      (time -1)))
+  
+  ; Grid type
+  ; - simple-list
+  ; - grid-list
+  (grid-list 
+    (grid-size 3 5)
+    (layout "infinite-vertical")
+    (cell-dimensions 70 70)
+    (cell-spacing 0 0)
+    (cell-margins 20 20)
+    (cursors true)
+    (wrap true))
+  ; Auto populate the grid ?
+  (auto-populate true)
+  ; Directory in which to populate from
+  (auto-populate-directory "players")
+  ; Window coordinates where list will be
+  ; x y width height
+  (list-window 300 0 340 480)
+  ; Profile window is where the character avatar or animation can be drawn make one per cursor
+  (profile-window 0 0 300 480)
+  
+  ; FIXME Remove or replace these later (only for testing)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  
+  ; Font
+  ; (font somefont.ttf 32 32)
+  ; Font dimensions
+  (font-dimensions 35 35)
+)
