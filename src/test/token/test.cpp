@@ -2,6 +2,7 @@
 #include "../../util/tokenreader.h"
 #include <exception>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <stdlib.h>
 #include <string>
@@ -129,6 +130,26 @@ static void test6(){
     }
 }
 
+static void test7_helper(string on, string off){
+    std::ostringstream out;
+    out << "(foo " << on << " " << off << ")";
+    TokenReader reader;
+    Token * head = reader.readTokenFromString(out.str());
+    bool xtrue = false;
+    bool xfalse = true;
+    head->match("foo", xtrue, xfalse);
+    if (!xtrue || xfalse){
+        throw Failure(7);
+    }
+}
+
+static void test7(){
+    test7_helper("on", "off");
+    test7_helper("1", "0");
+    test7_helper("true", "false");
+    test7_helper("enable", "disable");
+}
+
 int main(){
     try{
         test1();
@@ -137,6 +158,7 @@ int main(){
         test4();
         test5();
         test6();
+        test7();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){
