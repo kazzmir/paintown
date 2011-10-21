@@ -61,9 +61,18 @@ test/util/input/sdl/joystick.cpp
 test/util/network/network.cpp
 """)
 
+test_source = Split("""
+test.cpp
+""")
+
+character_select_source = Split("""
+character-select.cpp
+select-main.cpp
+""")
+
 x = []
-gui_test = testEnv.Program('gui', source + ['test.cpp'])
+gui_test = testEnv.Program('gui', source + test_source)
 x.append(gui_test)
-character_select = testEnv.Program('character-select', source + ['character-select.cpp', 'select-main.cpp'])
+character_select = testEnv.Program('character-select', source + character_select_source)
 x.append(character_select)
 Return('x')
