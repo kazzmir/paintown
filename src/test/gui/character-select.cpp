@@ -51,16 +51,18 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const 
             std::string layout;
             bool viewable = false;
             if (parseBaseList(list.convert<Gui::SelectListInterface>(), tok)){
-            } else if (token->match("viewable", viewable)){
+            } else if (tok->match("viewable", viewable)){
                 list->setViewable(viewable);
-            } else if (token->match("layout", layout)){
+            } else if (tok->match("layout", layout)){
                 if (layout == "horizontal"){
                     list->setLayout(Gui::SimpleSelect::Horizontal);
                 } else if (layout == "vertical"){
                     list->setLayout(Gui::SimpleSelect::Vertical);
                 }
-            } else if (token->match("scroll-offset", offset)){
+            } else if (tok->match("scroll-offset", offset)){
                 list->setScrollOffset(offset);
+            } else {
+                Global::debug(0) << "Uknown Simple List property: " << token->getName() << std::endl;
             }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Simple Select parse error");
@@ -80,9 +82,9 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, const Toke
             int x=0,y=0;
             std::string layout;
             if (parseBaseList(list.convert<Gui::SelectListInterface>(), tok)){
-            } else if (token->match("grid-size", x, y)){
+            } else if (tok->match("grid-size", x, y)){
                 list->setGridSize(x, y);
-            } else if (token->match("layout", layout)){
+            } else if (tok->match("layout", layout)){
                 if (layout == "static"){
                     list->setLayout(Gui::GridSelect::Static);
                 } else if (layout == "infinite-vertical"){
@@ -90,14 +92,16 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, const Toke
                 } else if (layout == "infinite-horizontal"){
                     list->setLayout(Gui::GridSelect::InfiniteHorizontal);
                 }
-            } 
+            } else {
+                Global::debug(0) << "Uknown Grid List property: " << token->getName() << std::endl;
+            }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Grid Select parse error");
         }
     }
 }
 
-CharacterItem::CharacterItem(unsigned int index, const Gui::SimpleSelect & parent):
+CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent):
 index(index),
 parent(parent){ 
 }
@@ -108,13 +112,14 @@ CharacterItem::~CharacterItem(){
 void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
     bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
     font.printf( x + width/2, y + height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
-    if (parent.getCurrentIndex(0) == index){
+    if (parent->getCurrentIndex(0) == index){
         bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
     }
 }
 
 void CharacterItem::drawProfile(int width, int height, const Graphics::Bitmap & bmp, const Font & font) const {
-    bmp.rectangleFill(0, 0, width, height, Graphics::makeColor(255,255,255));
+    bmp.clearToMask();
+    bmp.rectangleFill(width/4, height/4, width/2, height/2, Graphics::makeColor(0,0,255));
     font.printf( width/2, height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
 }
     
@@ -153,10 +158,12 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     backgrounds.render(Gui::Animation::BackgroundMiddle, work);
     backgrounds.render(Gui::Animation::BackgroundTop, work);
     
+    // Our font
+    const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont();
+    
     // Select List
     if (list != NULL){
         listBitmap->clearToMask();
-        const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont();
         list->render(*listBitmap, listFont);
         listBitmap->draw(listWindow.x, listWindow.y, work);
     }
@@ -164,6 +171,8 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Profiles
     for (unsigned int i = 0; i < profileWindow.size(); ++i){
         Util::ReferenceCount<Graphics::Bitmap> bitmap = profileBitmaps[i];
+        Util::ReferenceCount<CharacterItem> item = list->getItems()[list->getCurrentIndex(i)].convert<CharacterItem>();
+        item->drawProfile(profileWindow[i].width, profileWindow[i].height, *bitmap, listFont);
         bitmap->draw(profileWindow[i].x, profileWindow[i].y, work);
     }
     
@@ -206,9 +215,13 @@ void CharacterSelect::load(const Token * token){
                     Window window;
                     tok->view() >> window.x >> window.y >> window.width >> window.height;
                     profileWindow.push_back(window);
+                /* TODO - For testing only, remove later or replace with a more elegant solution to adding elements */
+                } else if (*tok == "add"){
+                    items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list)));
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
                     font = Filesystem::AbsolutePath(string_match);
                 } else {
+                    Global::debug(0) << "Uknown Character Select property: " << tok->getName() << std::endl;
                 }
             } catch ( const TokenException & ex ) {
                 throw LoadException(__FILE__, __LINE__, ex, "Character Select parse error");
@@ -228,4 +241,10 @@ void CharacterSelect::load(const Token * token){
         bitmap = new Graphics::Bitmap(window.width, window.height);
         profileBitmaps.push_back(bitmap);
     }
+    /* Add items
+     * FIXME handle auto-populate prior to adding
+     */
+    list->addItems(items);
+    
+    Global::debug(0) << "List size is: " << list->getItems().size() << std::endl;
 }

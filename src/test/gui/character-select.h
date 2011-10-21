@@ -21,7 +21,7 @@ struct Window{
 
 class CharacterItem : public Gui::SelectItem {
 public:
-    CharacterItem(unsigned int index, const Gui::SimpleSelect & parent);
+    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent);
     ~CharacterItem();
     void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
     void drawProfile(int width, int height, const Graphics::Bitmap &, const Font &) const;
@@ -30,7 +30,7 @@ public:
     }
 protected:
     unsigned int index;
-    const Gui::SimpleSelect & parent;
+    const Util::ReferenceCount<Gui::SelectListInterface> parent;
 };
 
 class CharacterSelect{

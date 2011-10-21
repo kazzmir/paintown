@@ -46,13 +46,18 @@ public:
                 if (event.out == Esc){
                     is_done = true;
                 }
+                /* NOTE Assumes only one cursor */
                 if (event.out == Up){
+                    select.getList()->up(0);
                 }
                 if (event.out == Down){
+                    select.getList()->down(0);
                 }
                 if (event.out == Left){
+                    select.getList()->left(0);
                 }
                 if (event.out == Right){
+                    select.getList()->right(0);
                 }
                 if (event.out == Enter){
                 }
