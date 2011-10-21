@@ -371,47 +371,6 @@ static bool parseDisplayList(const Token * token, ContextBox & menu){
     return false;
 }
 
-/* backgrounds */
-Menu::Background::Background(){
-}
-
-Menu::Background::~Background(){
-    for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
-        std::vector<Gui::Animation *> & animations = i->second;
-        for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
-            Gui::Animation * anim = *j;
-            if (anim){
-                delete anim;
-            }
-        }
-    }
-}
-
-void Menu::Background::act(const Gui::Coordinate & coord){
-    for (std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
-        std::vector<Gui::Animation *> & animations = i->second;
-        for (std::vector<Gui::Animation *>::iterator j = animations.begin(); j != animations.end(); ++j){
-            Gui::Animation * anim = *j;
-            if (anim){
-                anim->act();
-            }
-        }
-    }
-}
-
-void Menu::Background::render(const Gui::Animation::Depth & depth, const Graphics::Bitmap & bmp){
-    for (std::vector<Gui::Animation *>::iterator i = backgrounds[depth].begin(); i != backgrounds[depth].end(); ++i){
-        Gui::Animation * anim = *i;
-        if (anim){
-            anim->draw(bmp);
-        }   
-    }
-}
-
-void Menu::Background::add(Gui::Animation * anim){
-    backgrounds[anim->getDepth()].push_back(anim);
-}
-
 Menu::Renderer::Renderer(){
 }
 
@@ -925,7 +884,6 @@ Menu::Context::Context():
 cleanup(true),
 state(NotStarted),
 fades(0),
-background(0),
 font(NULL),
 infoLocation(0, -.5),
 menuInfoLocation(0,.95){
@@ -935,7 +893,6 @@ Menu::Context::Context(const Context & parent, const Context & child):
 cleanup(false),
 state(NotStarted),
 fades(NULL),
-background(NULL),
 font(NULL),
 infoLocation(0,-.5),
 menuInfoLocation(0,.95),
@@ -955,7 +912,7 @@ languages(parent.getLanguages()){
         fades = child.fades;
     }
 
-    if (child.background != NULL){
+    if (!child.background.empty()){
         background = child.background;
     }
 
@@ -992,9 +949,6 @@ Menu::Context::~Context(){
     if (cleanup){
         if (fades != NULL){
             delete fades;
-        }
-        if (background != NULL){
-            delete background;
         }
     }
 }
@@ -1049,25 +1003,25 @@ void Menu::Context::parseToken(const Token * token){
 
 void Menu::Context::addBackground(const Token * token){
     // Backgrounds
-    if (!background){
-        background = new Background();
-    }
-    background->add(new Gui::Animation(token));
+    /*if (background == NULL){
+        background = new Gui::AnimationManager();
+    }*/
+    background.add(Util::ReferenceCount<Gui::Animation>(new Gui::Animation(token)));
 }
 
 void Menu::Context::addBackground(const Graphics::Bitmap & image){
-    if (!background){
-        background = new Background();
-    }
-    background->add(new Gui::Animation(new Graphics::Bitmap(image)));
+    /*if (background == NULL){
+        background = new Gui::AnimationManager();
+    }*/
+    background.add(Util::ReferenceCount<Gui::Animation>(new Gui::Animation(Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(image)))));
 }
 
 void Menu::Context::addBackground(const std::string & image){
     // Backgrounds
-    if (!background){
-        background = new Background();
-    }
-    background->add(new Gui::Animation(image));
+    /*if (background == NULL){
+        background = new Gui::AnimationManager();
+    }*/
+    background.add(Util::ReferenceCount<Gui::Animation>(new Gui::Animation(image)));
 }
 
 void Menu::Context::initialize(){
@@ -1129,17 +1083,15 @@ void Menu::Context::act(){
        }
     }
     // Backgrounds
-    if (background){    
-        background->act(Gui::Coordinate(Gui::AbsolutePoint(0,0),Gui::AbsolutePoint(Menu::Width, Menu::Height)));
-    }
+    background.act();
 }
 
 void Menu::Context::render(Renderer * renderer, const Graphics::Bitmap & bmp){
-    if (background){
+    if (!background.empty()){
         // background
-        background->render(Gui::Animation::BackgroundBottom, bmp);
-        background->render(Gui::Animation::BackgroundMiddle, bmp);
-        background->render(Gui::Animation::BackgroundTop, bmp);
+        background.render(Gui::Animation::BackgroundBottom, bmp);
+        background.render(Gui::Animation::BackgroundMiddle, bmp);
+        background.render(Gui::Animation::BackgroundTop, bmp);
     } else {
         bmp.fill(Graphics::makeColor(0,0,0));
     }
@@ -1149,11 +1101,11 @@ void Menu::Context::render(Renderer * renderer, const Graphics::Bitmap & bmp){
         renderer->render(bmp, currentFont());
     }
 
-    if (background){
+    if (!background.empty()){
         // foreground
-        background->render(Gui::Animation::ForegroundBottom, bmp);
-        background->render(Gui::Animation::ForegroundMiddle, bmp);
-        background->render(Gui::Animation::ForegroundTop, bmp);
+        background.render(Gui::Animation::ForegroundBottom, bmp);
+        background.render(Gui::Animation::ForegroundMiddle, bmp);
+        background.render(Gui::Animation::ForegroundTop, bmp);
     }
     
     // Fades
@@ -1165,10 +1117,11 @@ void Menu::Context::render(Renderer * renderer, const Graphics::Bitmap & bmp){
 void Menu::Context::setFadeTool(Gui::FadeTool *fade){
     fades = fade;
 }
-
+/*
 void Menu::Context::setBackground(Background *bg){
     background = bg;
 }
+*/
 
 /* New Menu */
 

@@ -140,15 +140,7 @@ CharacterSelect::~CharacterSelect(){
 }
 
 void CharacterSelect::act(){
-    for (std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<Gui::Animation > > >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i){
-        std::vector<Util::ReferenceCount<Gui::Animation> > animations = i->second;
-        for (std::vector<Util::ReferenceCount<Gui::Animation > >::iterator j = animations.begin(); j != animations.end(); ++j){
-            Util::ReferenceCount<Gui::Animation> animation = *j;
-            if (animation != NULL){
-                animation->act();
-            }
-        }
-    }
+    backgrounds.act();
     
     if (list != NULL){
         list->act();
@@ -157,9 +149,9 @@ void CharacterSelect::act(){
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Backgrounds
-    renderBackgrounds(Gui::Animation::BackgroundBottom, work);
-    renderBackgrounds(Gui::Animation::BackgroundMiddle, work);
-    renderBackgrounds(Gui::Animation::BackgroundTop, work);
+    backgrounds.render(Gui::Animation::BackgroundBottom, work);
+    backgrounds.render(Gui::Animation::BackgroundMiddle, work);
+    backgrounds.render(Gui::Animation::BackgroundTop, work);
     
     // Select List
     if (list != NULL){
@@ -176,9 +168,9 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     }
     
     // Foregrounds
-    renderBackgrounds(Gui::Animation::ForegroundBottom, work);
-    renderBackgrounds(Gui::Animation::ForegroundMiddle, work);
-    renderBackgrounds(Gui::Animation::ForegroundTop, work);
+    backgrounds.render(Gui::Animation::ForegroundBottom, work);
+    backgrounds.render(Gui::Animation::ForegroundMiddle, work);
+    backgrounds.render(Gui::Animation::ForegroundTop, work);
 }
 
 void CharacterSelect::load(const Token * token){
@@ -194,21 +186,15 @@ void CharacterSelect::load(const Token * token){
                 std::string string_match;
                 if (tok->match("name", name)){
                 } else if (tok->match("background", string_match)){
-                    Util::ReferenceCount<Gui::Animation> animation;
-                    animation = new Gui::Animation(string_match);
-                    backgrounds[animation->getDepth()].push_back(animation);
+                    backgrounds.add(Util::ReferenceCount<Gui::Animation>(new Gui::Animation(string_match)));
                 } else if (*tok == "animation"){
-                    Util::ReferenceCount<Gui::Animation> animation;
-                    animation = new Gui::Animation(tok);
-                    backgrounds[animation->getDepth()].push_back(animation);
+                    backgrounds.add(Util::ReferenceCount<Gui::Animation>(new Gui::Animation(tok)));
                 } else if (*tok == "simple-list"){
-                    Util::ReferenceCount<Gui::SimpleSelect> simpleList;
-                    simpleList = new Gui::SimpleSelect();
+                    Util::ReferenceCount<Gui::SimpleSelect> simpleList(new Gui::SimpleSelect());
                     parseSimpleList(simpleList, tok);
                     list = simpleList.convert<Gui::SelectListInterface>();
                 } else if (*tok == "grid-list"){
-                    Util::ReferenceCount<Gui::GridSelect> gridList;
-                    gridList = new Gui::GridSelect();
+                    Util::ReferenceCount<Gui::GridSelect> gridList(new Gui::GridSelect());
                     parseGridList(gridList, tok);
                     list = gridList.convert<Gui::SelectListInterface>();
                 } else if (tok->match("auto-populate", autoPopulate)){
@@ -241,14 +227,5 @@ void CharacterSelect::load(const Token * token){
         Util::ReferenceCount<Graphics::Bitmap> bitmap;
         bitmap = new Graphics::Bitmap(window.width, window.height);
         profileBitmaps.push_back(bitmap);
-    }
-}
-
-void CharacterSelect::renderBackgrounds(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
-    for (std::vector<Util::ReferenceCount<Gui::Animation> >::iterator i = backgrounds[depth].begin(); i != backgrounds[depth].end(); ++i){
-        Util::ReferenceCount<Gui::Animation> animation = *i;
-        if (animation != NULL){
-            animation->draw(work);
-        }   
     }
 }

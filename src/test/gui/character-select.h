@@ -57,8 +57,8 @@ protected:
     /*! Name of Character Select Menu */
     std::string name;
     
-    /*! Backgrounds */
-    std::map< Gui::Animation::Depth, std::vector< Util::ReferenceCount<Gui::Animation> > > backgrounds;
+    /*! Backgrounds (animations) */
+    Gui::AnimationManager backgrounds;
     
     /*! List (Simple or Grid) */
     Util::ReferenceCount<Gui::SelectListInterface> list;

@@ -155,24 +155,6 @@ class ValueHolder{
         void next();
 };
 
-/*! Menu Backgrounds */
-class Background{
-    public:
-        Background();
-        ~Background();
-
-        /*! Logic - Change over to Gui::Space later */
-        void act(const Gui::Coordinate &);
-
-        void render(const Gui::Animation::Depth &, const Graphics::Bitmap &);
-
-        void add(Gui::Animation *);
-    private:
-        std::map<Gui::Animation::Depth, std::vector<Gui::Animation *> > backgrounds;
-
-        void drawBackgrounds(std::vector<Gui::Animation *> &, const Graphics::Bitmap &);
-};
-
 /*! Menu actions */
 enum Actions{
     Up,
@@ -396,13 +378,13 @@ class Context{
         virtual inline Gui::FadeTool * getFadeTool(){
             return this->fades;
         }
+/*
+        virtual void setBackground(Util::ReferenceCount<Gui::AnimationManager> background);
 
-        virtual void setBackground(Background *);
-
-        virtual inline Background * getBackground(){
+        virtual inline Util::ReferenceCount<Gui::AnimationManager> getBackground(){
             return this->background;
         }
-        
+  */      
         virtual inline void setFont(const Util::ReferenceCount<FontInfo> & font){
             this->font = font;
         }
@@ -455,7 +437,7 @@ class Context{
         Gui::FadeTool * fades;
 
         /*! Backgrounds */
-        Background * background;
+        Gui::AnimationManager background;
 
         /*! Sounds */
         std::map<Actions, Filesystem::RelativePath> sounds;
