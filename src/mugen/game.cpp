@@ -115,6 +115,16 @@ public:
     }
 };
 
+enum MugenInput{
+    SlowDown,
+    SpeedUp,
+    NormalSpeed,
+    ToggleDebug,
+    QuitGame,
+    SetHealth,
+    ShowFps
+};
+
 static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = ""){
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
@@ -150,15 +160,14 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         gameSpeed(1.0),
         stage(stage),
         show_fps(show_fps){
-            /* FIXME: use an enum here */
-            gameInput.set(Keyboard::Key_F1, 10, false, 0);
-            gameInput.set(Keyboard::Key_F2, 10, false, 1);
-            gameInput.set(Keyboard::Key_F3, 10, false, 2);
-            gameInput.set(Keyboard::Key_F4, 10, true, 3);
-            gameInput.set(Keyboard::Key_ESC, 0, true, 4);
-            gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, 4);
-            gameInput.set(Keyboard::Key_F5, 10, true, 5);
-            gameInput.set(Keyboard::Key_F9, 10, true, 6);
+            gameInput.set(Keyboard::Key_F1, 10, false, SlowDown);
+            gameInput.set(Keyboard::Key_F2, 10, false, SpeedUp);
+            gameInput.set(Keyboard::Key_F3, 10, false, NormalSpeed);
+            gameInput.set(Keyboard::Key_F4, 10, true, ToggleDebug);
+            gameInput.set(Keyboard::Key_ESC, 0, true, QuitGame);
+            gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, QuitGame);
+            gameInput.set(Keyboard::Key_F5, 10, true, SetHealth);
+            gameInput.set(Keyboard::Key_F9, 10, true, ShowFps);
         }
 
         InputMap<int> gameInput;
@@ -168,6 +177,50 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         bool & show_fps;
 
         void doInput(){
+            class Handler: public InputHandler<int> {
+            public:
+                Handler(Logic & logic):
+                    logic(logic){
+                    }
+
+                Logic & logic;
+
+                void release(const int & out, Keyboard::unicode_t code){
+                }
+
+                void press(const int & out, Keyboard::unicode_t code){
+                    if (out == SlowDown){
+                        logic.gameSpeed -= 0.1;
+                    }
+                    if (out == SpeedUp){
+                        logic.gameSpeed += 0.1;
+                    }
+                    if (out == NormalSpeed){
+                        logic.gameSpeed = 1;
+                    }
+                    if (out == ToggleDebug){
+                        logic.stage->toggleDebug();
+                    }
+                    if (out == QuitGame){
+                        throw QuitGameException();
+                        /*
+                           quit = true;
+                           endMatch = true;
+                           */
+                    }
+                    if (out == SetHealth){
+                        logic.stage->setPlayerHealth(1);
+                    }
+                    if (out == ShowFps){
+                        logic.show_fps = ! logic.show_fps;
+                    }
+                }
+            };
+
+            Handler handler(*this);
+            InputManager::handleEvents(gameInput, InputSource(), handler);
+
+            /*
             std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput, InputSource());
             for (std::vector<InputMap<int>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
                 const InputMap<int>::InputEvent & event = *it;
@@ -175,32 +228,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                     continue;
                 }
 
-                if (event[0]){
-                    gameSpeed -= 0.1;
-                }
-                if (event[1]){
-                    gameSpeed += 0.1;
-                }
-                if (event[2]){
-                    gameSpeed = 1;
-                }
-                if (event[3]){
-                    stage->toggleDebug();
-                }
-                if (event[4]){
-                    throw QuitGameException();
-                    /*
-                       quit = true;
-                       endMatch = true;
-                       */
-                }
-                if (event[5]){
-                    stage->setPlayerHealth(1);
-                }
-                if (event[6]){
-                    show_fps = ! show_fps;
-                }
             }
+            */
 
             if (gameSpeed < 0.1){
                 gameSpeed = 0.1;
@@ -253,7 +282,6 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             stage->render(&work);
             work.finish();
             screen.BlitToScreen();
-            // work.BlitToScreen();
         }
     };
 
@@ -262,109 +290,6 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     Draw draw(stage, show_fps);
 
     PaintownUtil::standardLoop(logic, draw);
-
-#if 0
-    Global::speed_counter = 0;
-
-    while (!endMatch){
-        bool draw = false;
-
-        if (Global::speed_counter > 0){
-            runCounter += Mugen::Util::gameTicks(gameSpeed);
-            Global::speed_counter = 0;
-
-            while (runCounter > 1){
-                InputManager::poll();
-                // Do stage logic catch match exception to handle the next match
-                stage->logic();
-                endMatch = stage->isMatchOver();
-
-                runCounter -= 1;
-                draw = true;
-
-                if (Global::shutdown()){
-                    throw ShutdownException();
-                }
-
-                std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput);
-                for (std::vector<InputMap<int>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-                    const InputMap<int>::InputEvent & event = *it;
-                    if (!event.enabled){
-                        continue;
-                    }
-
-                    if (event[0]){
-                        gameSpeed -= 0.1;
-                    }
-                    if (event[1]){
-                        gameSpeed += 0.1;
-                    }
-                    if (event[2]){
-                        gameSpeed = 1;
-                    }
-                    if (event[3]){
-                        stage->toggleDebug();
-                    }
-                    if (event[4]){
-                        throw QuitGameException();
-                        /*
-                           quit = true;
-                           endMatch = true;
-                           */
-                    }
-                    if (event[5]){
-                        stage->setPlayerHealth(1);
-                    }
-                }
-
-                if (gameSpeed < 0.1){
-                    gameSpeed = 0.1;
-                }
-            }
-            // Global::speed_counter = 0;
-        }
-
-        if (second_counter != Global::second_counter){
-            int difference = Global::second_counter - second_counter;
-            double alpha = 0.2;
-            /* unlikely, but just in case */
-            if (difference == 0){
-                difference = 1;
-            }
-            fps = (alpha * fps) + ((1-alpha) * (double) frames / difference);
-            // fps[fps_index] = (double) frames / (double) difference;
-            // fps_index = (fps_index+1) % max_fps_index;
-            second_counter = Global::second_counter;
-            frames = 0;
-        }
-
-        if (draw){
-            frames += 1;
-            stage->render(&work);
-            /*
-            work.Stretch(buffer);
-
-            FontRender * render = FontRender::getInstance();
-            render->render(&buffer);
-
-            
-
-            buffer.BlitToScreen();
-            */
-
-            if (show_fps){
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
-                font.printf(work.getWidth() - 60, work.getHeight() - font.getHeight() - 1, Graphics::makeColor(255,255,255), work, "FPS: %0.2f", 0, fps);
-            }
-
-            work.BlitToScreen();
-        }
-
-        while (Global::speed_counter == 0){
-            PaintownUtil::rest(1);
-        }
-    }
-#endif
 }
 
 /*
@@ -562,13 +487,7 @@ void Game::doWatch(Searcher & searcher){
     }
 }
 
-/* is there a reason why doArcade and doVersus don't share the main loop?
- * answer: jon moved the main loop to runMatch(). versus should use this eventually
- */
 void Game::doArcade(Searcher & searcher){
-    /* FIXME: there isn't really a need to have this bitmap exist forever.
-     * a temporary bitmap can be created when its needed.
-     */
     Mugen::CharacterSelect select(systemFile, playerType, gameType);
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
     select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
