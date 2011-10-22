@@ -240,7 +240,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     /* 150 pixel tall console */
     Console::Console console(150);
     {
-        class CommandQuit: public Console::Command{
+        class CommandQuit: public Console::Command {
         public:
             CommandQuit(){
             }
@@ -262,7 +262,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
         };
 
-        class CommandHelp: public Console::Command{
+        class CommandHelp: public Console::Command {
         public:
             CommandHelp(){
             }

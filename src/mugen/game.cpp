@@ -14,6 +14,7 @@
 #include "util/input/input-source.h"
 #include "util/input/input-map.h"
 #include "util/funcs.h"
+#include "util/system.h"
 #include "util/timedifference.h"
 #include "util/events.h"
 #include "util/console.h"
@@ -38,9 +39,11 @@
 namespace PaintownUtil = ::Util;
 
 using namespace Mugen;
+using std::string;
+using std::ostringstream;
 
-const int DEFAULT_WIDTH = 320;
-const int DEFAULT_HEIGHT = 240;
+static const int DEFAULT_WIDTH = 320;
+static const int DEFAULT_HEIGHT = 240;
 
 Game::Game(const PlayerType & playerType, const GameType & gameType, const Filesystem::AbsolutePath & systemFile):
 playerType(playerType),
@@ -146,6 +149,47 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     Music::play();
 
     Console::Console console(150);
+    {
+        class CommandQuit: public Console::Command {
+        public:
+            CommandQuit(){
+            }
+
+            string act(){
+                throw ShutdownException();
+            }
+        };
+
+        class CommandMemory: public Console::Command {
+        public:
+            CommandMemory(){
+            }
+
+            string act(){
+                ostringstream out;
+                out << "Memory usage: " << PaintownUtil::niceSize(System::memoryUsage()) << "\n";
+                return out.str();
+            }
+        };
+
+        class CommandHelp: public Console::Command {
+        public:
+            CommandHelp(){
+            }
+
+            string act(){
+                ostringstream out;
+                out << "quit - quit the game entirely" << "\n";
+                out << "memory - current memory usage" << "\n";
+                out << "help - this help menu";
+                return out.str();
+            }
+        };
+
+        console.addCommand("quit", new CommandQuit());
+        console.addCommand("help", new CommandHelp());
+        console.addCommand("memory", new CommandMemory());
+    }
 
     bool show_fps = false;
 
