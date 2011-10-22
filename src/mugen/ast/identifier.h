@@ -15,29 +15,32 @@ namespace Ast{
 
 class Identifier: public Value {
 public:
+    static int lowerCase( int c ){
+        return tolower(c);
+    }
+
+    static const std::string downcase(std::string str){
+        std::transform(str.begin(), str.end(), str.begin(), lowerCase);
+        return str;
+    }
+
     Identifier(int line, int column, const std::list<std::string> & names):
     Value(line, column),
     names(names){
         stringed = toStringSlow();
+        stringedLower = downcase(stringed);
     }
 
     Identifier(const std::list<std::string> & names):
     Value(-1, -1),
     names(names){
         stringed = toStringSlow();
+        stringedLower = downcase(stringed);
     }
 
-    static int lowerCase( int c ){
-        return tolower(c);
-    }
     
     virtual Element * copy() const {
         return new Identifier(line, column, names);
-    }
-
-    static std::string downcase(std::string str){
-        std::transform(str.begin(), str.end(), str.begin(), lowerCase);
-        return str;
     }
     
     virtual void walk(Walker & walker) const {
@@ -58,7 +61,7 @@ public:
     }
 
     bool operator==(const std::string & str) const {
-        return downcase(toString()) == downcase(str);
+        return toLowerString() == downcase(str);
     }
     
     virtual std::string getType() const {
@@ -73,6 +76,10 @@ public:
 
     virtual std::string toString() const {
         return stringed;
+    }
+
+    virtual const std::string & toLowerString() const {
+        return stringedLower;
     }
 
     virtual std::string toStringSlow() const {
@@ -115,6 +122,7 @@ public:
 protected:
     std::list<std::string> names;
     std::string stringed;
+    std::string stringedLower;
     int line, column;
 };
 

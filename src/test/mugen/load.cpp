@@ -64,7 +64,7 @@ static int load(const char * path){
 int main(int argc, char ** argv){
     Screen::fakeInit();
 
-    Global::setDebug(0);
+    Global::setDebug(1);
     Mugen::ParseCache cache;
     Util::Thread::initializeLock(&Global::messageLock);
 

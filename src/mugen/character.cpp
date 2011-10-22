@@ -20,6 +20,7 @@
 #include "util/font.h"
 #include "util/parameter.h"
 #include "util/file-system.h"
+#include "util/timedifference.h"
 #include "util/debug.h"
 #include "factory/font_render.h"
 
@@ -1260,6 +1261,9 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
 
     return definition;
 }
+        
+static map<string, StateController::Type> types;
+static bool typesSetup = false;
 
 StateController * Character::parseState(Ast::Section * section){
     std::string head = section->getName();
@@ -1272,98 +1276,99 @@ StateController * Character::parseState(Ast::Section * section){
     public:
         StateControllerWalker():
         type(StateController::Unknown){
-            types["afterimage"] = StateController::AfterImage;
-            types["afterimagetime"] = StateController::AfterImageTime;
-            types["allpalfx"] = StateController::AllPalFX;
-            types["angleadd"] = StateController::AngleAdd;
-            types["angledraw"] = StateController::AngleDraw;
-            types["anglemul"] = StateController::AngleMul;
-            types["angleset"] = StateController::AngleSet;
-            types["appendtoclipboard"] = StateController::AppendToClipboard;
-            types["assertspecial"] = StateController::AssertSpecial;
-            types["attackdist"] = StateController::AttackDist;
-            types["attackmulset"] = StateController::AttackMulSet;
-            types["bgpalfx"] = StateController::BGPalFX;
-            types["bindtoparent"] = StateController::BindToParent;
-            types["bindtoroot"] = StateController::BindToRoot;
-            types["bindtotarget"] = StateController::BindToTarget;
-            types["changeanim"] = StateController::ChangeAnim;
-            types["changeanim2"] = StateController::ChangeAnim2;
-            types["changestate"] = StateController::ChangeState;
-            types["clearclipboard"] = StateController::ClearClipboard;
-            types["ctrlset"] = StateController::CtrlSet;
-            types["defencemulset"] = StateController::DefenceMulSet;
-            types["destroyself"] = StateController::DestroySelf;
-            types["displaytoclipboard"] = StateController::DisplayToClipboard;
-            types["envcolor"] = StateController::EnvColor;
-            types["envshake"] = StateController::EnvShake;
-            types["explod"] = StateController::Explod;
-            types["explodbindtime"] = StateController::ExplodBindTime;
-            types["forcefeedback"] = StateController::ForceFeedback;
-            types["fallenvshake"] = StateController::FallEnvShake;
-            types["gamemakeanim"] = StateController::GameMakeAnim;
-            types["gravity"] = StateController::Gravity;
-            types["helper"] = StateController::Helper;
-            types["hitadd"] = StateController::HitAdd;
-            types["hitby"] = StateController::HitBy;
-            types["hitdef"] = StateController::HitDef;
-            types["hitfalldamage"] = StateController::HitFallDamage;
-            types["hitfallset"] = StateController::HitFallSet;
-            types["hitfallvel"] = StateController::HitFallVel;
-            types["hitoverride"] = StateController::HitOverride;
-            types["hitvelset"] = StateController::HitVelSet;
-            types["lifeadd"] = StateController::LifeAdd;
-            types["lifeset"] = StateController::LifeSet;
-            types["makedust"] = StateController::MakeDust;
-            types["modifyexplod"] = StateController::ModifyExplod;
-            types["movehitreset"] = StateController::MoveHitReset;
-            types["nothitby"] = StateController::NotHitBy;
-            types["null"] = StateController::Null;
-            types["offset"] = StateController::Offset;
-            types["palfx"] = StateController::PalFX;
-            types["parentvaradd"] = StateController::ParentVarAdd;
-            types["parentvarset"] = StateController::ParentVarSet;
-            types["pause"] = StateController::Pause;
-            types["playerpush"] = StateController::PlayerPush;
-            types["playsnd"] = StateController::PlaySnd;
-            types["posadd"] = StateController::PosAdd;
-            types["posfreeze"] = StateController::PosFreeze;
-            types["posset"] = StateController::PosSet;
-            types["poweradd"] = StateController::PowerAdd;
-            types["powerset"] = StateController::PowerSet;
-            types["projectile"] = StateController::Projectile;
-            types["removeexplod"] = StateController::RemoveExplod;
-            types["reversaldef"] = StateController::ReversalDef;
-            types["screenbound"] = StateController::ScreenBound;
-            types["selfstate"] = StateController::SelfState;
-            types["sprpriority"] = StateController::SprPriority;
-            types["statetypeset"] = StateController::StateTypeSet;
-            types["sndpan"] = StateController::SndPan;
-            types["stopsnd"] = StateController::StopSnd;
-            types["superpause"] = StateController::SuperPause;
-            types["targetbind"] = StateController::TargetBind;
-            types["targetdrop"] = StateController::TargetDrop;
-            types["targetfacing"] = StateController::TargetFacing;
-            types["targetlifeadd"] = StateController::TargetLifeAdd;
-            types["targetpoweradd"] = StateController::TargetPowerAdd;
-            types["targetstate"] = StateController::TargetState;
-            types["targetveladd"] = StateController::TargetVelAdd;
-            types["targetvelset"] = StateController::TargetVelSet;
-            types["trans"] = StateController::Trans;
-            types["turn"] = StateController::Turn;
-            types["varadd"] = StateController::VarAdd;
-            types["varrandom"] = StateController::VarRandom;
-            types["varrangeset"] = StateController::VarRangeSet;
-            types["varset"] = StateController::VarSet;
-            types["veladd"] = StateController::VelAdd;
-            types["velmul"] = StateController::VelMul;
-            types["velset"] = StateController::VelSet;
-            types["width"] = StateController::Width;
-
+            if (!typesSetup){
+                typesSetup = true;
+                types["afterimage"] = StateController::AfterImage;
+                types["afterimagetime"] = StateController::AfterImageTime;
+                types["allpalfx"] = StateController::AllPalFX;
+                types["angleadd"] = StateController::AngleAdd;
+                types["angledraw"] = StateController::AngleDraw;
+                types["anglemul"] = StateController::AngleMul;
+                types["angleset"] = StateController::AngleSet;
+                types["appendtoclipboard"] = StateController::AppendToClipboard;
+                types["assertspecial"] = StateController::AssertSpecial;
+                types["attackdist"] = StateController::AttackDist;
+                types["attackmulset"] = StateController::AttackMulSet;
+                types["bgpalfx"] = StateController::BGPalFX;
+                types["bindtoparent"] = StateController::BindToParent;
+                types["bindtoroot"] = StateController::BindToRoot;
+                types["bindtotarget"] = StateController::BindToTarget;
+                types["changeanim"] = StateController::ChangeAnim;
+                types["changeanim2"] = StateController::ChangeAnim2;
+                types["changestate"] = StateController::ChangeState;
+                types["clearclipboard"] = StateController::ClearClipboard;
+                types["ctrlset"] = StateController::CtrlSet;
+                types["defencemulset"] = StateController::DefenceMulSet;
+                types["destroyself"] = StateController::DestroySelf;
+                types["displaytoclipboard"] = StateController::DisplayToClipboard;
+                types["envcolor"] = StateController::EnvColor;
+                types["envshake"] = StateController::EnvShake;
+                types["explod"] = StateController::Explod;
+                types["explodbindtime"] = StateController::ExplodBindTime;
+                types["forcefeedback"] = StateController::ForceFeedback;
+                types["fallenvshake"] = StateController::FallEnvShake;
+                types["gamemakeanim"] = StateController::GameMakeAnim;
+                types["gravity"] = StateController::Gravity;
+                types["helper"] = StateController::Helper;
+                types["hitadd"] = StateController::HitAdd;
+                types["hitby"] = StateController::HitBy;
+                types["hitdef"] = StateController::HitDef;
+                types["hitfalldamage"] = StateController::HitFallDamage;
+                types["hitfallset"] = StateController::HitFallSet;
+                types["hitfallvel"] = StateController::HitFallVel;
+                types["hitoverride"] = StateController::HitOverride;
+                types["hitvelset"] = StateController::HitVelSet;
+                types["lifeadd"] = StateController::LifeAdd;
+                types["lifeset"] = StateController::LifeSet;
+                types["makedust"] = StateController::MakeDust;
+                types["modifyexplod"] = StateController::ModifyExplod;
+                types["movehitreset"] = StateController::MoveHitReset;
+                types["nothitby"] = StateController::NotHitBy;
+                types["null"] = StateController::Null;
+                types["offset"] = StateController::Offset;
+                types["palfx"] = StateController::PalFX;
+                types["parentvaradd"] = StateController::ParentVarAdd;
+                types["parentvarset"] = StateController::ParentVarSet;
+                types["pause"] = StateController::Pause;
+                types["playerpush"] = StateController::PlayerPush;
+                types["playsnd"] = StateController::PlaySnd;
+                types["posadd"] = StateController::PosAdd;
+                types["posfreeze"] = StateController::PosFreeze;
+                types["posset"] = StateController::PosSet;
+                types["poweradd"] = StateController::PowerAdd;
+                types["powerset"] = StateController::PowerSet;
+                types["projectile"] = StateController::Projectile;
+                types["removeexplod"] = StateController::RemoveExplod;
+                types["reversaldef"] = StateController::ReversalDef;
+                types["screenbound"] = StateController::ScreenBound;
+                types["selfstate"] = StateController::SelfState;
+                types["sprpriority"] = StateController::SprPriority;
+                types["statetypeset"] = StateController::StateTypeSet;
+                types["sndpan"] = StateController::SndPan;
+                types["stopsnd"] = StateController::StopSnd;
+                types["superpause"] = StateController::SuperPause;
+                types["targetbind"] = StateController::TargetBind;
+                types["targetdrop"] = StateController::TargetDrop;
+                types["targetfacing"] = StateController::TargetFacing;
+                types["targetlifeadd"] = StateController::TargetLifeAdd;
+                types["targetpoweradd"] = StateController::TargetPowerAdd;
+                types["targetstate"] = StateController::TargetState;
+                types["targetveladd"] = StateController::TargetVelAdd;
+                types["targetvelset"] = StateController::TargetVelSet;
+                types["trans"] = StateController::Trans;
+                types["turn"] = StateController::Turn;
+                types["varadd"] = StateController::VarAdd;
+                types["varrandom"] = StateController::VarRandom;
+                types["varrangeset"] = StateController::VarRangeSet;
+                types["varset"] = StateController::VarSet;
+                types["veladd"] = StateController::VelAdd;
+                types["velmul"] = StateController::VelMul;
+                types["velset"] = StateController::VelSet;
+                types["width"] = StateController::Width;
+            }
         }
 
         StateController::Type type;
-        map<string, StateController::Type> types;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "type"){
@@ -1598,6 +1603,9 @@ void Character::load(int useAct){
                 Ast::Section * section = *section_it;
                 section->walk(walker);
 
+                TimeDifference compileTime;
+                compileTime.startTime();
+
                 /* state controllers with no obvious parent. after parsing all
                  * the state files, go through this list and try to find the right parent
                  */
@@ -1619,6 +1627,9 @@ void Character::load(int useAct){
                 }
 
                 loadCmdFile(cmdFile);
+
+                compileTime.endTime();
+                Global::debug(1) << compileTime.printTime("Compile time") << std::endl;
 
 #if 0
                 for (vector<Location>::iterator it = walker.stateFiles.begin(); it != walker.stateFiles.end(); it++){
