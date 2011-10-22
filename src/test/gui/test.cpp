@@ -699,6 +699,7 @@ public:
 
 int main(int argc, char ** argv){
     Screen::realInit();
+    atexit(Screen::realFinish);
     Common::startTimers();
     
     InputManager manager;
@@ -721,7 +722,6 @@ int main(int argc, char ** argv){
 
     Util::standardLoop(logic, draw);
     
-    Screen::realFinish();
     return 0;
 }
 #ifdef USE_ALLEGRO
