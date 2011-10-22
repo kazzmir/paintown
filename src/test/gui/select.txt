@@ -32,6 +32,11 @@
   (list-window 300 0 340 480)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
   (profile-window 0 0 300 480)
+  ; text Message
+  (text (message "Pick a Player") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
+  (text (message "Player Select") (location 320 0) (color 0 255 255) (depth foreground top) (font-dimensions 15 15) (justification center))
+  (text (message "SomePlayer%s") (location 15 65) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (profile-association 0))
+  (text (message "SomePlayer%s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
   
   ; FIXME Remove or replace these later (only for testing)
   (add)

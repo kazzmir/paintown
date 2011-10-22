@@ -19,6 +19,67 @@ struct Window{
     int x, y, width, height;
 };
 
+class TextMessage{
+public:
+    TextMessage();
+    TextMessage(const Token *);
+    TextMessage(const TextMessage &);
+    ~TextMessage();
+    
+    const TextMessage & operator=(const TextMessage &);
+    
+    void draw(const Graphics::Bitmap &);
+    
+    inline void setReplaceMessage(const std::string & message){
+        this->replace = message;
+    }
+    
+    inline const Gui::Animation::Depth & getDepth() const {
+        return this->depth;
+    }
+    
+    inline int getProfileAssociation() const {
+        return this->profileAssociation;
+    }
+    
+private:
+    /*! Message */
+    std::string message;
+    
+    /*! Extra Replace message */
+    std::string replace;
+    
+    /*! Location */
+    int x, y;
+    
+    /*! color */
+    int r, g, b;
+    
+    /*! Depth */
+    Gui::Animation::Depth depth;
+    
+    /*! Font */
+    Filesystem::AbsolutePath font;
+    
+    /*! Font width */
+    int width;
+    
+    /*! Font height */
+    int height;
+    
+    enum Justification{
+        Left,
+        Center,
+        Right,
+    };
+    
+    /*! Justification */
+    Justification justification;
+    
+    /*! Profile association */
+    int profileAssociation;
+};
+
 class CharacterItem : public Gui::SelectItem {
 public:
     CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent);
@@ -28,7 +89,9 @@ public:
     inline bool isEmpty() const {
         return false;
     }
-protected:
+    const std::string getName();
+    
+private:
     unsigned int index;
     const Util::ReferenceCount<Gui::SelectListInterface> parent;
 };
@@ -51,8 +114,11 @@ protected:
     /*! Load */
     void load(const Token *);
     
-    /*! Render backgrounds by depth */
-    void renderBackgrounds(const Gui::Animation::Depth &, const Graphics::Bitmap &);
+    /*! Check associated text */
+    void checkMessages();
+    
+    /*! Render messages by depth */
+    void renderMessages(const Gui::Animation::Depth &, const Graphics::Bitmap &);
     
     /*! Name of Character Select Menu */
     std::string name;
@@ -93,6 +159,8 @@ protected:
     /*! Font height */
     int fontHeight;
     
+    /*! Messages */
+    std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > > messages;
 };
 
 #endif

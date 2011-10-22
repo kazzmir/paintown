@@ -12,6 +12,8 @@
 
 #include "util/gui/select-list.h"
 
+#include <sstream>
+
 static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, const Token * token){
     int x = 0, y = 0;
     bool bool_value = false;
@@ -47,7 +49,7 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const 
         try{
             const Token * tok;
             view >> tok;
-            int offset=0;;
+            int offset=0;
             std::string layout;
             bool viewable = false;
             if (parseBaseList(list.convert<Gui::SelectListInterface>(), tok)){
@@ -62,7 +64,7 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const 
             } else if (tok->match("scroll-offset", offset)){
                 list->setScrollOffset(offset);
             } else {
-                Global::debug(0) << "Uknown Simple List property: " << token->getName() << std::endl;
+                Global::debug(0) << "Unknown Simple List property: " << token->getName() << std::endl;
             }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Simple Select parse error");
@@ -93,13 +95,151 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, const Toke
                     list->setLayout(Gui::GridSelect::InfiniteHorizontal);
                 }
             } else {
-                Global::debug(0) << "Uknown Grid List property: " << token->getName() << std::endl;
+                Global::debug(0) << "Unknown Grid List property: " << token->getName() << std::endl;
             }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Grid Select parse error");
         }
     }
 }
+
+TextMessage::TextMessage():
+x(0),
+y(0),
+r(255),
+g(255),
+b(255),
+depth(Gui::Animation::BackgroundTop),
+width(0),
+height(0),
+justification(Right),
+profileAssociation(-1){
+}
+
+TextMessage::TextMessage(const TextMessage & txt):
+message(txt.message),
+replace(txt.replace),
+x(txt.x),
+y(txt.y),
+r(txt.r),
+g(txt.g),
+b(txt.b),
+depth(txt.depth),
+font(txt.font),
+width(txt.width),
+height(txt.height),
+justification(txt.justification),
+profileAssociation(txt.profileAssociation){
+}
+
+TextMessage::TextMessage(const Token * token){
+    if ( *token != "text" ){
+        throw LoadException(__FILE__, __LINE__, "Not a Text Message");
+    }
+    TokenView view = token->view();
+    while (view.hasMore()){
+        try{
+            const Token * tok;
+            view >> tok;
+            std::string match_text, level;
+            if (tok->match("message", message)){
+            } else if (tok->match("replace-message", replace)){
+            } else if (tok->match("location", x, y)){
+            } else if (tok->match("depth", match_text, level)){
+                if (match_text == "background"){
+                    if (level == "bottom"){
+                        depth = Gui::Animation::BackgroundBottom;
+                    } else if (level == "middle"){
+                        depth = Gui::Animation::BackgroundMiddle;
+                    } else if (level == "top"){
+                        depth = Gui::Animation::BackgroundTop;
+                    }
+                } else if (match_text == "foreground"){
+                    if (level == "bottom"){
+                        depth = Gui::Animation::ForegroundBottom;
+                    } else if (level == "middle"){
+                        depth = Gui::Animation::ForegroundMiddle;
+                    } else if (level == "top"){
+                        depth = Gui::Animation::ForegroundTop;
+                    }
+                }
+            } else if (tok->match("color", r, g, b)){
+            } else if (tok->match("font", match_text, width, height)){
+                font = Filesystem::AbsolutePath(match_text);
+            } else if (tok->match("font-dimensions", width, height)){
+            } else if (tok->match("justification", match_text)){
+                if (match_text == "left"){
+                    justification = Left;
+                } else if (match_text == "center"){
+                    justification = Center;
+                } else if (match_text == "right"){
+                    justification = Right;
+                }
+            } else if (tok->match("profile-association", profileAssociation)){
+            } else {
+                Global::debug(0) << "Unknown Text Message List property: " << token->getName() << std::endl;
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Text message parse error");
+        }
+    }
+}
+
+TextMessage::~TextMessage(){
+}
+
+static std::string replaceString(const std::string & original, const std::string & replacement, const std::string & mod){
+    if (replacement.empty()){
+        return original;
+    }
+    std::string copy = original;
+    std::size_t pos = copy.find(mod);
+    if (pos != std::string::npos){
+        copy = original.substr(0, pos);
+        copy+=replacement;
+        copy+= original.substr(pos+mod.size());
+    }
+    return copy;
+}
+
+void TextMessage::draw(const Graphics::Bitmap & work){
+    // Our font
+    const Font & useFont = !font.path().empty() ? Font::getFont(font, width, height) : Font::getDefaultFont(width, height);
+    const std::string & useMessage = replaceString(message, replace, "%s");
+    int modifier;
+    switch (justification){
+        case Left:
+            modifier = useFont.textLength(useMessage.c_str());
+            break;
+        case Center:
+            modifier = useFont.textLength(useMessage.c_str())/2;
+            break;
+        case Right:
+        default:
+            modifier = 0;
+            break;
+    }
+    useFont.printf(x - modifier, y, Graphics::makeColor(r, g, b), work, useMessage, 0);
+}
+
+const TextMessage & TextMessage::operator=(const TextMessage & txt){
+    message = txt.message;
+    replace = txt.replace;
+    x = txt.x;
+    y = txt.y;
+    r = txt.r;
+    g = txt.g;
+    b = txt.b;
+    depth = txt.depth;
+    font = txt.font;
+    width = txt.width;
+    height = txt.height;
+    justification = txt.justification;
+    profileAssociation = txt.profileAssociation;
+    
+    return *this;
+}
+
 
 CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent):
 index(index),
@@ -109,6 +249,7 @@ parent(parent){
 CharacterItem::~CharacterItem(){
 }
 
+/* NOTE assuming only one cursor */
 void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
     bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
     font.printf( x + width/2, y + height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
@@ -120,9 +261,12 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
 void CharacterItem::drawProfile(int width, int height, const Graphics::Bitmap & bmp, const Font & font) const {
     bmp.clearToMask();
     bmp.rectangleFill(width/4, height/4, width/2, height/2, Graphics::makeColor(0,0,255));
-    font.printf(10, 25, Graphics::makeColor(255,255,255), bmp, "Pick a player", 0);
-    font.printf(10+5, 25+font.getHeight()+5, Graphics::makeColor(0,0,0), bmp, "SomePlayer%d", 0, index);
-    font.printf(10, 25+font.getHeight(), Graphics::makeColor(255,255,255), bmp, "SomePlayer%d", 0, index);
+}
+
+const std::string CharacterItem::getName(){
+    std::ostringstream name;
+    name << index;
+    return name.str();
 }
     
 
@@ -157,14 +301,18 @@ void CharacterSelect::act(){
     
     if (list != NULL){
         list->act();
+        checkMessages();
     }
 }
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Backgrounds
     backgrounds.render(Gui::Animation::BackgroundBottom, work);
+    renderMessages(Gui::Animation::BackgroundBottom, work);
     backgrounds.render(Gui::Animation::BackgroundMiddle, work);
+    renderMessages(Gui::Animation::BackgroundMiddle, work);
     backgrounds.render(Gui::Animation::BackgroundTop, work);
+    renderMessages(Gui::Animation::BackgroundTop, work);
     
     // Our font
     const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont(fontWidth, fontHeight);
@@ -186,8 +334,11 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     
     // Foregrounds
     backgrounds.render(Gui::Animation::ForegroundBottom, work);
+    renderMessages(Gui::Animation::ForegroundBottom, work);
     backgrounds.render(Gui::Animation::ForegroundMiddle, work);
+    renderMessages(Gui::Animation::ForegroundMiddle, work);
     backgrounds.render(Gui::Animation::ForegroundTop, work);
+    renderMessages(Gui::Animation::ForegroundTop, work);
 }
 
 void CharacterSelect::load(const Token * token){
@@ -224,13 +375,16 @@ void CharacterSelect::load(const Token * token){
                     tok->view() >> window.x >> window.y >> window.width >> window.height;
                     profileWindow.push_back(window);
                 /* TODO - For testing only, remove later or replace with a more elegant solution to adding elements */
+                } else if (*tok == "text"){
+                    Util::ReferenceCount<TextMessage> message(new TextMessage(tok));
+                    messages[message->getDepth()].push_back(message);
                 } else if (*tok == "add"){
                     items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list)));
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
                     font = Filesystem::AbsolutePath(string_match);
                 } else if (tok->match("font-dimensions", fontWidth, fontHeight)){
                 } else {
-                    Global::debug(0) << "Uknown Character Select property: " << tok->getName() << std::endl;
+                    Global::debug(0) << "Unknown Character Select property: " << tok->getName() << std::endl;
                 }
             } catch ( const TokenException & ex ) {
                 throw LoadException(__FILE__, __LINE__, ex, "Character Select parse error");
@@ -256,4 +410,26 @@ void CharacterSelect::load(const Token * token){
     list->addItems(items);
     
     Global::debug(0) << "List size is: " << list->getItems().size() << std::endl;
+}
+
+void CharacterSelect::checkMessages(){
+    for (std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > >::iterator i = messages.begin(); i != messages.end(); ++i){
+        for (std::vector<Util::ReferenceCount<TextMessage> >::iterator j = i->second.begin(); j != i->second.end(); ++j){
+            // if associated with a profile set the replacement string
+            Util::ReferenceCount<TextMessage> message = *j;
+            if (message->getProfileAssociation() != -1){
+                if (message->getProfileAssociation() < list->getItems().size()){
+                    Util::ReferenceCount<CharacterItem> item = list->getItems()[message->getProfileAssociation()].convert<CharacterItem>();
+                    message->setReplaceMessage(item->getName());
+                }
+            }
+        }
+    }
+}
+
+void CharacterSelect::renderMessages(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
+    for (std::vector<Util::ReferenceCount<TextMessage> >::iterator i = messages[depth].begin(); i != messages[depth].end(); ++i){
+        Util::ReferenceCount<TextMessage> message = *i;
+        message->draw(work);
+    }
 }
