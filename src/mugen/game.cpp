@@ -16,6 +16,7 @@
 #include "util/funcs.h"
 #include "util/timedifference.h"
 #include "util/events.h"
+#include "util/console.h"
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
 #include "search.h"
@@ -122,7 +123,8 @@ enum MugenInput{
     ToggleDebug,
     QuitGame,
     SetHealth,
-    ShowFps
+    ShowFps,
+    ToggleConsole
 };
 
 static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = ""){
@@ -143,6 +145,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     Music::pause();
     Music::play();
 
+    Console::Console console(150);
+
     bool show_fps = false;
 
     struct GameState{
@@ -155,11 +159,12 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps):
+        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console):
         state(state),
         gameSpeed(1.0),
         stage(stage),
-        show_fps(show_fps){
+        show_fps(show_fps),
+        console(console){
             gameInput.set(Keyboard::Key_F1, 10, false, SlowDown);
             gameInput.set(Keyboard::Key_F2, 10, false, SpeedUp);
             gameInput.set(Keyboard::Key_F3, 10, false, NormalSpeed);
@@ -168,16 +173,18 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, QuitGame);
             gameInput.set(Keyboard::Key_F5, 10, true, SetHealth);
             gameInput.set(Keyboard::Key_F9, 10, true, ShowFps);
+            gameInput.set(Keyboard::Key_TILDE, 10, true, ToggleConsole);
         }
 
-        InputMap<int> gameInput;
+        InputMap<MugenInput> gameInput;
         GameState & state;
         double gameSpeed;
         Mugen::Stage * stage;
         bool & show_fps;
+        Console::Console & console;
 
         void doInput(){
-            class Handler: public InputHandler<int> {
+            class Handler: public InputHandler<MugenInput> {
             public:
                 Handler(Logic & logic):
                     logic(logic){
@@ -185,51 +192,48 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
                 Logic & logic;
 
-                void release(const int & out, Keyboard::unicode_t code){
+                void release(const MugenInput & out, Keyboard::unicode_t code){
                 }
 
-                void press(const int & out, Keyboard::unicode_t code){
-                    if (out == SlowDown){
-                        logic.gameSpeed -= 0.1;
-                    }
-                    if (out == SpeedUp){
-                        logic.gameSpeed += 0.1;
-                    }
-                    if (out == NormalSpeed){
-                        logic.gameSpeed = 1;
-                    }
-                    if (out == ToggleDebug){
-                        logic.stage->toggleDebug();
-                    }
-                    if (out == QuitGame){
-                        throw QuitGameException();
-                        /*
-                           quit = true;
-                           endMatch = true;
-                           */
-                    }
-                    if (out == SetHealth){
-                        logic.stage->setPlayerHealth(1);
-                    }
-                    if (out == ShowFps){
-                        logic.show_fps = ! logic.show_fps;
+                void press(const MugenInput & out, Keyboard::unicode_t code){
+                    switch (out){
+                        case SlowDown: {
+                            logic.gameSpeed -= 0.1;
+                            break;
+                        }
+                        case SpeedUp: {
+                            logic.gameSpeed += 0.1;
+                            break;
+                        }
+                        case NormalSpeed: {
+                            logic.gameSpeed = 1;
+                            break;
+                        }
+                        case ToggleDebug: {
+                            logic.stage->toggleDebug();
+                            break;
+                        }
+                        case QuitGame: {
+                            throw QuitGameException();
+                        }
+                        case SetHealth: {
+                            logic.stage->setPlayerHealth(1);
+                            break;
+                        }
+                        case ShowFps: {
+                            logic.show_fps = ! logic.show_fps;
+                            break;
+                        }
+                        case ToggleConsole: {
+                            logic.console.toggle();
+                            break;
+                        }
                     }
                 }
             };
 
             Handler handler(*this);
             InputManager::handleEvents(gameInput, InputSource(), handler);
-
-            /*
-            std::vector<InputMap<int>::InputEvent> out = InputManager::getEvents(gameInput, InputSource());
-            for (std::vector<InputMap<int>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-                const InputMap<int>::InputEvent & event = *it;
-                if (!event.enabled){
-                    continue;
-                }
-
-            }
-            */
 
             if (gameSpeed < 0.1){
                 gameSpeed = 0.1;
@@ -239,9 +243,15 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         virtual void run(){
             // Do stage logic catch match exception to handle the next match
             stage->logic();
+            console.act();
             state.endMatch = stage->isMatchOver();
 
             doInput();
+            try{
+                console.doInput();
+            } catch (Exception::Return & r){
+                throw QuitGameException();
+            }
         }
 
         virtual bool done(){
@@ -255,15 +265,17 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(Mugen::Stage * stage, bool & show_fps):
+        Draw(Mugen::Stage * stage, bool & show_fps, Console::Console & console):
             stage(stage),
             show(true),
-            show_fps(show_fps){
+            show_fps(show_fps),
+            console(console){
             }
 
         Mugen::Stage * stage;
         bool show;
         bool & show_fps;
+        Console::Console & console;
     
         virtual void draw(const Graphics::Bitmap & screen){
             if (show_fps){
@@ -281,13 +293,14 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             work.start();
             stage->render(&work);
             work.finish();
+            console.draw(screen);
             screen.BlitToScreen();
         }
     };
 
     GameState state;
-    Logic logic(state, stage, show_fps);
-    Draw draw(stage, show_fps);
+    Logic logic(state, stage, show_fps, console);
+    Draw draw(stage, show_fps, console);
 
     PaintownUtil::standardLoop(logic, draw);
 }
