@@ -5782,22 +5782,120 @@ public:
 class ControllerDisplayToClipboard: public StateController {
 public:
     ControllerDisplayToClipboard(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    message(false){
+    StateController(name, state, section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(string & text, vector<Compiler::Value*> & parameters):
+            text(text),
+            parameters(parameters){
+            }
+
+            string & text;
+            vector<Compiler::Value*> & parameters;
+
+            void getParameters(const Ast::Value * value){
+                if (value->hasMultiple()){
+                    try{
+                        while (true){
+                            const Ast::Value * next;
+                            *value >> next;
+                            parameters.push_back(Compiler::compile(value));
+                        }
+                    } catch (const Ast::Exception & fail){
+                    }
+                } else {
+                    Compiler::Value * compiled = Compiler::compile(value);
+                    parameters.push_back(compiled);
+                }
+            }
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "text"){
+                    simple >> text;
+                } else if (simple == "params"){
+                    getParameters(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(text, parameters);
+        section->walk(walker);
     }
 
     ControllerDisplayToClipboard(const ControllerDisplayToClipboard & you):
     StateController(you),
-    message(you.message){
+    text(you.text){
     }
 
-    mutable bool message;
+    ~ControllerDisplayToClipboard(){
+        for (vector<Compiler::Value*>::iterator it = parameters.begin(); it != parameters.end(); it++){
+            delete *it;
+        }
+    }
+
+    string text;
+    vector<Compiler::Value*> parameters;
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        if (!message){
-            Global::debug(0) << "Warning: DisplayToClipboard is unimplemented" << endl;
-            message = true;
+        ostringstream out;
+        out << "[" << guy.getName() << "] ";
+
+        vector<Compiler::Value*>::const_iterator current = parameters.begin();
+        for (int i = 0; i < text.size(); i++){
+            if (text[i] == '%'){
+                i += 1;
+                if (i < text.size()){
+                    switch (text[i]){
+                        case 'u':
+                        case 'i':
+                        case 'd': {
+                            if (current == parameters.end()){
+                                out << "not enough parameters";
+                            } else {
+                                out << (int) evaluateNumber(*current, FullEnvironment(stage, guy, commands), 0);
+                            }
+                            current++;
+                            break;
+                        }
+                        case 'f': {
+                            if (current == parameters.end()){
+                                out << "not enough parameters";
+                            } else {
+                                out << (int) evaluateNumber(*current, FullEnvironment(stage, guy, commands), 0);
+                            }
+                            current++;
+                            break;
+                        }
+                        case 's': {
+                            if (current == parameters.end()){
+                                out << "not enough parameters";
+                            } else {
+                                out << (*current)->evaluate(FullEnvironment(stage, guy, commands)).getStringValue();
+                            }
+                            current++;
+                            break;
+                        }
+                        case 'b': {
+                            if (current == parameters.end()){
+                                out << "not enough parameters";
+                            } else {
+                                out << (*current)->evaluate(FullEnvironment(stage, guy, commands)).getBoolValue();
+                            }
+                            current++;
+                            break;
+                        }
+                        default: {
+                            out << text[i];
+                            break;
+                        }
+                    }
+                }
+            } else {
+                out << text[i];
+            }
         }
+
+        Global::info(out.str());
     }
 
     StateController * deepCopy() const {

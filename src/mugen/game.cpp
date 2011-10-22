@@ -18,6 +18,7 @@
 #include "util/timedifference.h"
 #include "util/events.h"
 #include "util/console.h"
+#include "util/message-queue.h"
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
 #include "search.h"
@@ -218,6 +219,12 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             gameInput.set(Keyboard::Key_F5, 10, true, SetHealth);
             gameInput.set(Keyboard::Key_F9, 10, true, ShowFps);
             gameInput.set(Keyboard::Key_TILDE, 10, true, ToggleConsole);
+
+            Global::registerInfo(&messages);
+        }
+
+        ~Logic(){
+            Global::unregisterInfo(&messages);
         }
 
         InputMap<MugenInput> gameInput;
@@ -226,6 +233,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         Mugen::Stage * stage;
         bool & show_fps;
         Console::Console & console;
+        /* global info messages will appear in the console */
+        MessageQueue messages;
 
         void doInput(){
             class Handler: public InputHandler<MugenInput> {
@@ -287,6 +296,9 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         virtual void run(){
             // Do stage logic catch match exception to handle the next match
             stage->logic();
+            while (messages.hasAny()){
+                console.addLine(messages.get());
+            }
             console.act();
             state.endMatch = stage->isMatchOver();
 
