@@ -418,10 +418,8 @@ void CharacterSelect::checkMessages(){
             // if associated with a profile set the replacement string
             Util::ReferenceCount<TextMessage> message = *j;
             if (message->getProfileAssociation() != -1){
-                if (message->getProfileAssociation() < list->getItems().size()){
-                    Util::ReferenceCount<CharacterItem> item = list->getItems()[message->getProfileAssociation()].convert<CharacterItem>();
-                    message->setReplaceMessage(item->getName());
-                }
+                Util::ReferenceCount<CharacterItem> item = list->getItems()[list->getCurrentIndex(message->getProfileAssociation())].convert<CharacterItem>();
+                message->setReplaceMessage(item->getName());
             }
         }
     }

@@ -21,7 +21,14 @@
     (cell-dimensions 70 70)
     (cell-spacing 0 0)
     (cell-margins 20 20)
-    (cursors true)
+    (cursors 1)
+    (wrap true))
+  ;@(simple-list
+    (layout "vertical")
+    (cell-dimensions 70 70)
+    (cell-spacing 0 0)
+    (cell-margins 20 20)
+    (cursors 1)
     (wrap true))
   ; Auto populate the grid ?
   (auto-populate true)
