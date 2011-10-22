@@ -91,6 +91,7 @@ public:
 int main(int argc, char ** argv){
     if (argc > 1){
         Screen::realInit();
+        atexit(Screen::realFinish);
         Common::startTimers();
         
         Global::setDebug(0);
@@ -124,7 +125,6 @@ int main(int argc, char ** argv){
             Global::debug(0) << "Problem parsing file [" << file << "]. Reason: " << ex.getTrace() << std::endl;
         }
         
-        Screen::realFinish();
     } else {
         std::cout << "Usage: ./" << argv[0] << " select-screen.txt" << std::endl;
     }
