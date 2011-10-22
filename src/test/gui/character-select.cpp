@@ -51,7 +51,7 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const 
             view >> tok;
             int offset=0;
             std::string layout;
-            bool viewable = false;
+            int viewable = 0;
             if (parseBaseList(list.convert<Gui::SelectListInterface>(), tok)){
             } else if (tok->match("viewable", viewable)){
                 list->setViewable(viewable);
@@ -407,6 +407,9 @@ void CharacterSelect::load(const Token * token){
     /* Add items
      * FIXME handle auto-populate prior to adding
      */
+    if (autoPopulate){
+        
+    }
     list->addItems(items);
     
     Global::debug(0) << "List size is: " << list->getItems().size() << std::endl;

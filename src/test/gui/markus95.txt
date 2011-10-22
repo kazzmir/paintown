@@ -1,0 +1,55 @@
+(select-screen
+  (name "markus95-select")
+  (animation
+    (location 0)
+    (image 0 "menu/paintown.png")
+    (velocity -.001 0)
+    (frame
+      (image 0)
+      (time -1)))
+  
+  ; Grid type
+  ; - simple-list
+  ; - grid-list
+  (simple-list
+    (layout "horizontal")
+    (viewable 8)
+    (cell-dimensions 55 55)
+    (cell-spacing 0 0)
+    (cell-margins 20 20)
+    (cursors 1)
+    (wrap true))
+  ; Auto populate the grid ?
+  (auto-populate true)
+  ; Directory in which to populate from
+  (auto-populate-directory "players")
+  ; Window coordinates where list will be
+  ; x y width height
+  (list-window 0 0 640 110)
+  ; Profile window is where the character avatar or animation can be drawn make one per cursor
+  (profile-window 60 140 180 340)
+  ; text Message
+  ;(text (message "Pick a Player") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
+  (text (message "Cursor at location %s") (location 205 165) (color 0 0 0) (depth background top) (font-dimensions 45 45) (justification right) (profile-association 0))
+  (text (message "Cursor at location %s") (location 200 160) (color 255 255 255) (depth foreground bottom) (font-dimensions 45 45) (justification right) (profile-association 0))
+  
+  ; FIXME Remove or replace these later (only for testing)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  (add)
+  
+  ; Font
+  ; (font somefont.ttf 32 32)
+  ; Font dimensions
+  (font-dimensions 35 35)
+)
