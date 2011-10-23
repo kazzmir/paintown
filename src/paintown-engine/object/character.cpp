@@ -506,6 +506,10 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
 double Character::getSpriteScale() const {
     return spriteScale;
 }
+    
+void Character::setSpriteScale(double scale){
+    spriteScale = scale;
+}
 
 void Character::addRemap(Remap * remap){
     mapper[mapper.size()] = remap;

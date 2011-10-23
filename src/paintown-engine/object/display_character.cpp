@@ -47,8 +47,15 @@ void DisplayCharacter::load(){
             if ( *current == "name" ){
                 string n;
                 current->view() >> n;
-                setName( n );
-            } else if ( *current == "anim" ){
+                setName(n);
+            } else if (*current == "scale"){
+                double scale;
+                current->view() >> scale;
+                if (scale < 0.01){
+                    scale = 0.01;
+                }
+                setSpriteScale(scale);
+            } else if (*current == "anim"){
 
                 const Token * name = current->findToken("_/name");
                 if (name == NULL){

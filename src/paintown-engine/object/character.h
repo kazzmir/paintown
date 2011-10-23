@@ -386,6 +386,7 @@ public:
     }
 
     virtual double getSpriteScale() const;
+    virtual void setSpriteScale(double scale);
     
     /* true for human controlled characters */
     virtual bool isPlayer() const;
