@@ -14,6 +14,30 @@
 
 #include <sstream>
 
+Gui::Animation::Depth Profile::depth = Gui::Animation::BackgroundBottom;
+
+static Gui::Animation::Depth parseDepth(const std::string & position, const std::string & level){
+    Gui::Animation::Depth depth = Gui::Animation::BackgroundBottom;
+    if (position == "background"){
+        if (level == "bottom"){
+            depth = Gui::Animation::BackgroundBottom;
+        } else if (level == "middle"){
+            depth = Gui::Animation::BackgroundMiddle;
+        } else if (level == "top"){
+            depth = Gui::Animation::BackgroundTop;
+        }
+    } else if (position == "foreground"){
+        if (level == "bottom"){
+            depth = Gui::Animation::ForegroundBottom;
+        } else if (level == "middle"){
+            depth = Gui::Animation::ForegroundMiddle;
+        } else if (level == "top"){
+            depth = Gui::Animation::ForegroundTop;
+        }
+    }
+    return depth;
+}
+
 static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, const Token * token){
     int x = 0, y = 0;
     bool bool_value = false;
@@ -146,23 +170,7 @@ TextMessage::TextMessage(const Token * token){
             } else if (tok->match("replace-message", replace)){
             } else if (tok->match("location", x, y)){
             } else if (tok->match("depth", match_text, level)){
-                if (match_text == "background"){
-                    if (level == "bottom"){
-                        depth = Gui::Animation::BackgroundBottom;
-                    } else if (level == "middle"){
-                        depth = Gui::Animation::BackgroundMiddle;
-                    } else if (level == "top"){
-                        depth = Gui::Animation::BackgroundTop;
-                    }
-                } else if (match_text == "foreground"){
-                    if (level == "bottom"){
-                        depth = Gui::Animation::ForegroundBottom;
-                    } else if (level == "middle"){
-                        depth = Gui::Animation::ForegroundMiddle;
-                    } else if (level == "top"){
-                        depth = Gui::Animation::ForegroundTop;
-                    }
-                }
+                depth = parseDepth(match_text, level);
             } else if (tok->match("color", r, g, b)){
             } else if (tok->match("font", match_text, width, height)){
                 font = Filesystem::AbsolutePath(match_text);
@@ -243,7 +251,11 @@ const TextMessage & TextMessage::operator=(const TextMessage & txt){
 
 CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent):
 index(index),
-parent(parent){ 
+parent(parent),
+r(random() % 255),
+g(random() % 255),
+b(random() % 255),
+letter((int)'A'+random() % 26){ 
 }
 
 CharacterItem::~CharacterItem(){
@@ -252,7 +264,10 @@ CharacterItem::~CharacterItem(){
 /* NOTE assuming only one cursor */
 void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
     bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
-    font.printf( x + width/2, y + height/2, Graphics::makeColor(0,0,0), bmp, "%d", 0, index);
+    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(font.textLength("00"), font.getHeight());
+    temp.clearToMask();
+    font.printf(0,0, Graphics::makeColor(0,0,0), temp, "%2d", 0, index);
+    temp.BlitMasked(0,0,width, height, x, y, bmp);
     if (parent->getCurrentIndex(0) == index){
         bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
     }
@@ -260,7 +275,12 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
 
 void CharacterItem::drawProfile(int width, int height, const Graphics::Bitmap & bmp, const Font & font) const {
     bmp.clearToMask();
-    bmp.rectangleFill(width/4, height/4, width/2, height/2, Graphics::makeColor(0,0,255));
+    std::ostringstream randomLetter;
+    randomLetter << (char)letter;
+    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(font.textLength(randomLetter.str().c_str()), font.getHeight());
+    temp.clearToMask();
+    font.printf(0,0, Graphics::makeColor(r,g,b), temp, randomLetter.str().c_str(),0);
+    temp.Stretch(bmp,0,0,temp.getWidth(),temp.getHeight(),0,0,width, height);
 }
 
 const std::string CharacterItem::getName(){
@@ -271,12 +291,14 @@ const std::string CharacterItem::getName(){
     
 
 CharacterSelect::CharacterSelect():
+listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
 fontWidth(15),
 fontHeight(15){
 }
 
 CharacterSelect::CharacterSelect(const std::string & filename):
+listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
 fontWidth(15),
 fontHeight(15){
@@ -287,6 +309,7 @@ fontHeight(15){
 }
 
 CharacterSelect::CharacterSelect(const Token * token):
+listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
 fontWidth(15),
 fontHeight(15){
@@ -308,37 +331,19 @@ void CharacterSelect::act(){
 void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Backgrounds
     backgrounds.render(Gui::Animation::BackgroundBottom, work);
-    renderMessages(Gui::Animation::BackgroundBottom, work);
+    render(Gui::Animation::BackgroundBottom, work);
     backgrounds.render(Gui::Animation::BackgroundMiddle, work);
-    renderMessages(Gui::Animation::BackgroundMiddle, work);
+    render(Gui::Animation::BackgroundMiddle, work);
     backgrounds.render(Gui::Animation::BackgroundTop, work);
-    renderMessages(Gui::Animation::BackgroundTop, work);
-    
-    // Our font
-    const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont(fontWidth, fontHeight);
-    
-    // Select List
-    if (list != NULL){
-        listBitmap->clearToMask();
-        list->render(*listBitmap, listFont);
-        listBitmap->draw(listWindow.x, listWindow.y, work);
-    }
-    
-    // Profiles
-    for (unsigned int i = 0; i < profileWindow.size(); ++i){
-        Util::ReferenceCount<Graphics::Bitmap> bitmap = profileBitmaps[i];
-        Util::ReferenceCount<CharacterItem> item = list->getItems()[list->getCurrentIndex(i)].convert<CharacterItem>();
-        item->drawProfile(profileWindow[i].width, profileWindow[i].height, *bitmap, listFont);
-        bitmap->draw(profileWindow[i].x, profileWindow[i].y, work);
-    }
+    render(Gui::Animation::BackgroundTop, work);
     
     // Foregrounds
     backgrounds.render(Gui::Animation::ForegroundBottom, work);
-    renderMessages(Gui::Animation::ForegroundBottom, work);
+    render(Gui::Animation::ForegroundBottom, work);
     backgrounds.render(Gui::Animation::ForegroundMiddle, work);
-    renderMessages(Gui::Animation::ForegroundMiddle, work);
+    render(Gui::Animation::ForegroundMiddle, work);
     backgrounds.render(Gui::Animation::ForegroundTop, work);
-    renderMessages(Gui::Animation::ForegroundTop, work);
+    render(Gui::Animation::ForegroundTop, work);
 }
 
 void CharacterSelect::load(const Token * token){
@@ -351,7 +356,7 @@ void CharacterSelect::load(const Token * token){
             try{
                 const Token * tok;
                 view >> tok;
-                std::string string_match;
+                std::string string_match, level;
                 if (tok->match("name", name)){
                 } else if (tok->match("background", string_match)){
                     backgrounds.add(Util::ReferenceCount<Gui::Animation>(new Gui::Animation(string_match)));
@@ -370,11 +375,16 @@ void CharacterSelect::load(const Token * token){
                     populateFromDirectory = Filesystem::AbsolutePath(string_match);
                 } else if (*tok == "list-window"){
                     tok->view() >> listWindow.x >> listWindow.y >> listWindow.width >> listWindow.height;
+                } else if (tok->match("list-depth", string_match, level)){
+                    listDepth = parseDepth(string_match, level);
                 } else if (*tok =="profile-window"){
-                    Window window;
-                    tok->view() >> window.x >> window.y >> window.width >> window.height;
-                    profileWindow.push_back(window);
+                    Util::ReferenceCount<Profile> profile(new Profile());
+                    tok->view() >> profile->window.x >> profile->window.y >> profile->window.width >> profile->window.height;
+                    profile->bitmap = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(profile->window.width, profile->window.height));
+                    profiles.push_back(profile);
                 /* TODO - For testing only, remove later or replace with a more elegant solution to adding elements */
+                } else if (tok->match("profile-depth", string_match, level)){
+                    Profile::depth = parseDepth(string_match, level);
                 } else if (*tok == "text"){
                     Util::ReferenceCount<TextMessage> message(new TextMessage(tok));
                     messages[message->getDepth()].push_back(message);
@@ -398,12 +408,7 @@ void CharacterSelect::load(const Token * token){
     
     // Setup windows
     listBitmap = new Graphics::Bitmap(listWindow.width, listWindow.height);
-    for (std::vector<Window>::iterator i = profileWindow.begin(); i != profileWindow.end(); ++i){
-        const Window & window = *i;
-        Util::ReferenceCount<Graphics::Bitmap> bitmap;
-        bitmap = new Graphics::Bitmap(window.width, window.height);
-        profileBitmaps.push_back(bitmap);
-    }
+    
     /* Add items
      * FIXME handle auto-populate prior to adding
      */
@@ -428,9 +433,32 @@ void CharacterSelect::checkMessages(){
     }
 }
 
-void CharacterSelect::renderMessages(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
+void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
+    // Our font
+    const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont(fontWidth, fontHeight);
+    
+    // Lists first
+    if (list != NULL && listDepth == depth){
+        listBitmap->clearToMask();
+        list->render(*listBitmap, listFont);
+        listBitmap->draw(listWindow.x, listWindow.y, work);
+    }
+    
+    // Profiles next
+    for (unsigned int i = 0; i < profiles.size(); ++i){
+        Util::ReferenceCount<Profile> profile = profiles[i];
+        if (profile->depth == depth){
+            Util::ReferenceCount<CharacterItem> item = list->getItems()[list->getCurrentIndex(i)].convert<CharacterItem>();
+            item->drawProfile(profile->window.width, profile->window.height, *profile->bitmap, listFont);
+            profile->bitmap->draw(profile->window.x, profile->window.y, work);
+        }
+    }
+    
+    // Messages last
     for (std::vector<Util::ReferenceCount<TextMessage> >::iterator i = messages[depth].begin(); i != messages[depth].end(); ++i){
         Util::ReferenceCount<TextMessage> message = *i;
-        message->draw(work);
+        if (message->getDepth() == depth){
+            message->draw(work);
+        }
     }
 }

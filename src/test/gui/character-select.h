@@ -19,6 +19,12 @@ struct Window{
     int x, y, width, height;
 };
 
+struct Profile{
+    Window window;
+    Util::ReferenceCount<Graphics::Bitmap> bitmap;
+    static Gui::Animation::Depth depth;
+};
+
 class TextMessage{
 public:
     TextMessage();
@@ -94,6 +100,8 @@ public:
 private:
     unsigned int index;
     const Util::ReferenceCount<Gui::SelectListInterface> parent;
+    int r,g,b;
+    int letter;
 };
 
 class CharacterSelect{
@@ -117,8 +125,8 @@ protected:
     /*! Check associated text */
     void checkMessages();
     
-    /*! Render messages by depth */
-    void renderMessages(const Gui::Animation::Depth &, const Graphics::Bitmap &);
+    /*! Render List, Profiles and Messages by depth */
+    void render(const Gui::Animation::Depth &, const Graphics::Bitmap &);
     
     /*! Name of Character Select Menu */
     std::string name;
@@ -132,6 +140,9 @@ protected:
     /*! List Items */
     std::vector<Util::ReferenceCount<Gui::SelectItem> > items;
     
+    /*! List Depth */
+    Gui::Animation::Depth listDepth;
+    
     /*! Populate the list automatically? */
     bool autoPopulate;
     
@@ -144,11 +155,8 @@ protected:
     /*! List window bitmap */
     Util::ReferenceCount<Graphics::Bitmap> listBitmap;
     
-    /*! Profile Window (dependant on cursor total) */
-    std::vector<Window> profileWindow;
-    
-    /*! Profile window Bitmap */
-    std::vector<Util::ReferenceCount<Graphics::Bitmap> > profileBitmaps;
+    /*! Profile Windows (dependant on cursor total) */
+    std::vector<Util::ReferenceCount<Profile> > profiles;
     
     /*! Font */
     Filesystem::AbsolutePath font;

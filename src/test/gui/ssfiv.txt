@@ -26,8 +26,12 @@
   ; Window coordinates where list will be
   ; x y width height
   (list-window 50 240 550 200)
+  ; List depth
+  (list-depth foreground middle)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
-  (profile-window 0 0 320 240)
+  (profile-window 0 -10 320 480)
+  ; Depth in which to display the profiles
+  (profile-depth foreground bottom)
   ; text Message
   (text (message "Character Select") (location 160 45) (color 0 255 255) (depth background top) (font-dimensions 40 40) (justification center))
   (text (message "Character%s") (location 5 215) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (profile-association 0))
