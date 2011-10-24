@@ -5841,7 +5841,7 @@ public:
         out << "[" << guy.getName() << "] ";
 
         vector<Compiler::Value*>::const_iterator current = parameters.begin();
-        for (int i = 0; i < text.size(); i++){
+        for (unsigned int i = 0; i < text.size(); i++){
             if (text[i] == '%'){
                 i += 1;
                 if (i < text.size()){
