@@ -196,24 +196,12 @@ TextMessage::TextMessage(const Token * token){
 TextMessage::~TextMessage(){
 }
 
-static std::string replaceString(const std::string & original, const std::string & replacement, const std::string & mod){
-    if (replacement.empty()){
-        return original;
-    }
-    std::string copy = original;
-    std::size_t pos = copy.find(mod);
-    if (pos != std::string::npos){
-        copy = original.substr(0, pos);
-        copy+=replacement;
-        copy+= original.substr(pos+mod.size());
-    }
-    return copy;
-}
-
 void TextMessage::draw(const Graphics::Bitmap & work){
     // Our font
-    const Font & useFont = !font.path().empty() ? Font::getFont(font, width, height) : Font::getDefaultFont(width, height);
-    const std::string & useMessage = replaceString(message, replace, "%s");
+    const Font & useFont = !font.isEmpty() ? Font::getFont(font, width, height) : Font::getDefaultFont(width, height);
+    char newString[255];
+    sprintf(newString, message.c_str(), replace.c_str());
+    const std::string & useMessage = std::string(newString);
     int modifier;
     switch (justification){
         case Left:
@@ -435,7 +423,7 @@ void CharacterSelect::checkMessages(){
 
 void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
     // Our font
-    const Font & listFont = !font.path().empty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont(fontWidth, fontHeight);
+    const Font & listFont = !font.isEmpty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont(fontWidth, fontHeight);
     
     // Lists first
     if (list != NULL && listDepth == depth){
