@@ -11,6 +11,7 @@
 #include "util/stretch-bitmap.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
+#include "paintown-engine/game/mod.h"
 
 
 enum Keys{
@@ -97,6 +98,8 @@ int main(int argc, char ** argv){
         
         Global::setDebug(0);
         std::string file = argv[1];
+
+        Paintown::Mod::loadDefaultMod();
         
         InputManager manager;
         Graphics::Bitmap screen(Graphics::getScreenBuffer());
