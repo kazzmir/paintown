@@ -127,36 +127,74 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, const Toke
     }
 }
 
+static Effects::Gradient defaultGradient(){
+    return Effects::Gradient(0, Graphics::makeColor(255, 255, 255), Graphics::makeColor(255, 255, 255));
+}
+
 TextMessage::TextMessage():
 x(0),
 y(0),
-r(255),
-g(255),
-b(255),
+low_r(255),
+low_g(255),
+low_b(255),
+high_r(255),
+high_g(255),
+high_b(255),
+interpolateDistance(50),
 depth(Gui::Animation::BackgroundTop),
 width(0),
 height(0),
 justification(Right),
-profileAssociation(-1){
+profileAssociation(-1),
+gradient(defaultGradient()){
 }
 
-TextMessage::TextMessage(const TextMessage & txt):
-message(txt.message),
-replace(txt.replace),
-x(txt.x),
-y(txt.y),
-r(txt.r),
-g(txt.g),
-b(txt.b),
-depth(txt.depth),
-font(txt.font),
-width(txt.width),
-height(txt.height),
-justification(txt.justification),
-profileAssociation(txt.profileAssociation){
+TextMessage::TextMessage(const TextMessage & copy):
+message(copy.message),
+replace(copy.replace),
+x(copy.x),
+y(copy.y),
+low_r(copy.low_r),
+low_g(copy.low_g),
+low_b(copy.low_b),
+high_r(copy.high_r),
+high_g(copy.high_g),
+high_b(copy.high_b),
+interpolateDistance(copy.interpolateDistance),
+depth(copy.depth),
+font(copy.font),
+width(copy.width),
+height(copy.height),
+justification(copy.justification),
+profileAssociation(copy.profileAssociation),
+gradient(copy.gradient){
 }
 
-TextMessage::TextMessage(const Token * token){
+static int clamp(int low, int high, int value){
+    if (value < low){
+        return low;
+    } else if (value > high){
+        return high;
+    }
+    return value;
+}
+
+TextMessage::TextMessage(const Token * token):
+x(0),
+y(0),
+low_r(255),
+low_g(255),
+low_b(255),
+high_r(255),
+high_g(255),
+high_b(255),
+interpolateDistance(50),
+depth(Gui::Animation::BackgroundTop),
+width(0),
+height(0),
+justification(Right),
+profileAssociation(-1),
+gradient(defaultGradient()){
     if ( *token != "text" ){
         throw LoadException(__FILE__, __LINE__, "Not a Text Message");
     }
@@ -171,7 +209,24 @@ TextMessage::TextMessage(const Token * token){
             } else if (tok->match("location", x, y)){
             } else if (tok->match("depth", match_text, level)){
                 depth = parseDepth(match_text, level);
-            } else if (tok->match("color", r, g, b)){
+            } else if (*tok == "color"){
+                int r, g, b;
+                tok->view() >> r >> g >> b;
+                r = clamp(0, 255, r);
+                g = clamp(0, 255, g);
+                b = clamp(0, 255, b);
+                low_r = high_r = r;
+                low_g = high_g = g;
+                low_b = high_b = b;
+            } else if (tok->match("color-low", low_r, low_g, low_b)){
+                low_r = clamp(0, 255, low_r);
+                low_g = clamp(0, 255, low_g);
+                low_b = clamp(0, 255, low_b);
+            } else if (tok->match("color-high", high_r, high_g, high_b)){
+                high_r = clamp(0, 255, high_r);
+                high_g = clamp(0, 255, high_g);
+                high_b = clamp(0, 255, high_b);
+            } else if (tok->match("interpolate-distance", interpolateDistance)){
             } else if (tok->match("font", match_text, width, height)){
                 font = Filesystem::AbsolutePath(match_text);
             } else if (tok->match("font-dimensions", width, height)){
@@ -191,9 +246,15 @@ TextMessage::TextMessage(const Token * token){
             throw LoadException(__FILE__, __LINE__, ex, "Text message parse error");
         }
     }
+    
+    gradient = Effects::Gradient(interpolateDistance, Graphics::makeColor(low_r, low_g, low_b), Graphics::makeColor(high_r, high_g, high_b));
 }
 
 TextMessage::~TextMessage(){
+}
+
+void TextMessage::act(){
+    gradient.update();
 }
 
 void TextMessage::draw(const Graphics::Bitmap & work){
@@ -215,23 +276,27 @@ void TextMessage::draw(const Graphics::Bitmap & work){
             modifier = 0;
             break;
     }
-    useFont.printf(x - modifier, y, Graphics::makeColor(r, g, b), work, useMessage, 0);
+    useFont.printf(x - modifier, y, gradient.current(), work, useMessage, 0);
 }
 
-const TextMessage & TextMessage::operator=(const TextMessage & txt){
-    message = txt.message;
-    replace = txt.replace;
-    x = txt.x;
-    y = txt.y;
-    r = txt.r;
-    g = txt.g;
-    b = txt.b;
-    depth = txt.depth;
-    font = txt.font;
-    width = txt.width;
-    height = txt.height;
-    justification = txt.justification;
-    profileAssociation = txt.profileAssociation;
+const TextMessage & TextMessage::operator=(const TextMessage & copy){
+    message = copy.message;
+    replace = copy.replace;
+    x = copy.x;
+    y = copy.y;
+    low_r = copy.low_r;
+    low_g = copy.low_g;
+    low_b = copy.low_b;
+    high_r = copy.high_r;
+    high_g = copy.high_g;
+    high_b = copy.high_b;
+    depth = copy.depth;
+    font = copy.font;
+    width = copy.width;
+    height = copy.height;
+    justification = copy.justification;
+    profileAssociation = copy.profileAssociation;
+    gradient = copy.gradient;
     
     return *this;
 }
@@ -256,8 +321,12 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     temp.clearToMask();
     font.printf(0,0, Graphics::makeColor(0,0,0), temp, "%2d", 0, index);
     temp.BlitMasked(0,0,width, height, x, y, bmp);
-    if (parent->getCurrentIndex(0) == index){
+    if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) && parent->getCurrentIndex(0) == index){
+        bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(random() % 255, random() % 255,0));
+    } else if (parent->getCurrentIndex(0) == index){
         bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+    } else if (parent->getCurrentIndex(1) == index){
+        bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(0,255,0));
     }
 }
 
@@ -276,20 +345,72 @@ const std::string CharacterItem::getName(){
     name << index;
     return name.str();
 }
-    
+
+MessageCollection::MessageCollection(const Token * token){
+    if ( *token != "messages" ){
+        throw LoadException(__FILE__, __LINE__, "Not a Message Block");
+    }
+    TokenView view = token->view();
+    while (view.hasMore()){
+        try{
+            const Token * tok;
+            view >> tok;
+            std::string match_text, level;
+            if (*tok == "text"){
+                Util::ReferenceCount<TextMessage> message(new TextMessage(tok));
+                messages[message->getDepth()].push_back(message);
+            } else {
+                Global::debug(0) << "Unknown Text Message block property: " << token->getName() << std::endl;
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Message collection parse error");
+        }
+    }
+}
+
+MessageCollection::~MessageCollection(){
+}
+
+void MessageCollection::act(Util::ReferenceCount<Gui::SelectListInterface> & list){
+    for (std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > >::iterator i = messages.begin(); i != messages.end(); ++i){
+        for (std::vector<Util::ReferenceCount<TextMessage> >::iterator j = i->second.begin(); j != i->second.end(); ++j){
+            Util::ReferenceCount<TextMessage> message = *j;
+            
+            // Act
+            message->act();
+            
+            // if associated with a profile set the replacement string
+            if (message->getProfileAssociation() != -1){
+                Util::ReferenceCount<CharacterItem> item = list->getItems()[list->getCurrentIndex(message->getProfileAssociation())].convert<CharacterItem>();
+                message->setReplaceMessage(item->getName());
+            }
+        }
+    }
+}
+
+void MessageCollection::draw(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
+    for (std::vector<Util::ReferenceCount<TextMessage> >::iterator i = messages[depth].begin(); i != messages[depth].end(); ++i){
+        Util::ReferenceCount<TextMessage> message = *i;
+        if (message->getDepth() == depth){
+            message->draw(work);
+        }
+    }
+}
 
 CharacterSelect::CharacterSelect():
 listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
 fontWidth(15),
-fontHeight(15){
+fontHeight(15),
+currentMessages(0){
 }
 
 CharacterSelect::CharacterSelect(const std::string & filename):
 listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
 fontWidth(15),
-fontHeight(15){
+fontHeight(15),
+currentMessages(0){
     Global::debug(1) << "Loading Character Select Screen: " << filename << std::endl;
     TokenReader tr(Filesystem::AbsolutePath(filename).path());
     Token * token = tr.readToken();
@@ -300,7 +421,8 @@ CharacterSelect::CharacterSelect(const Token * token):
 listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
 fontWidth(15),
-fontHeight(15){
+fontHeight(15),
+currentMessages(0){
     load(token);
 }
 
@@ -312,7 +434,7 @@ void CharacterSelect::act(){
     
     if (list != NULL){
         list->act();
-        checkMessages();
+        messages[currentMessages]->act(list);
     }
 }
 
@@ -332,6 +454,22 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     render(Gui::Animation::ForegroundMiddle, work);
     backgrounds.render(Gui::Animation::ForegroundTop, work);
     render(Gui::Animation::ForegroundTop, work);
+}
+
+void CharacterSelect::nextMessages(){
+    if (currentMessages < messages.size()-1){
+        currentMessages++;
+    } else {
+        currentMessages = 0;
+    }
+}
+
+void CharacterSelect::previousMessages(){
+    if (currentMessages > 0){
+        currentMessages--;
+    } else {
+        currentMessages = messages.size()-1;
+    }
 }
 
 void CharacterSelect::load(const Token * token){
@@ -374,8 +512,11 @@ void CharacterSelect::load(const Token * token){
                 } else if (tok->match("profile-depth", string_match, level)){
                     Profile::depth = parseDepth(string_match, level);
                 } else if (*tok == "text"){
-                    Util::ReferenceCount<TextMessage> message(new TextMessage(tok));
-                    messages[message->getDepth()].push_back(message);
+                    //Util::ReferenceCount<TextMessage> message(new TextMessage(tok));
+                    //messages[message->getDepth()].push_back(message);
+                } else if (*tok == "messages"){
+                    Util::ReferenceCount<MessageCollection> message(new MessageCollection(tok));
+                    messages.push_back(message);
                 } else if (*tok == "add"){
                     items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list)));
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
@@ -408,19 +549,6 @@ void CharacterSelect::load(const Token * token){
     Global::debug(0) << "List size is: " << list->getItems().size() << std::endl;
 }
 
-void CharacterSelect::checkMessages(){
-    for (std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > >::iterator i = messages.begin(); i != messages.end(); ++i){
-        for (std::vector<Util::ReferenceCount<TextMessage> >::iterator j = i->second.begin(); j != i->second.end(); ++j){
-            // if associated with a profile set the replacement string
-            Util::ReferenceCount<TextMessage> message = *j;
-            if (message->getProfileAssociation() != -1){
-                Util::ReferenceCount<CharacterItem> item = list->getItems()[list->getCurrentIndex(message->getProfileAssociation())].convert<CharacterItem>();
-                message->setReplaceMessage(item->getName());
-            }
-        }
-    }
-}
-
 void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
     // Our font
     const Font & listFont = !font.isEmpty() ? Font::getFont(font, fontWidth, fontHeight) : Font::getDefaultFont(fontWidth, fontHeight);
@@ -442,11 +570,5 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
         }
     }
     
-    // Messages last
-    for (std::vector<Util::ReferenceCount<TextMessage> >::iterator i = messages[depth].begin(); i != messages[depth].end(); ++i){
-        Util::ReferenceCount<TextMessage> message = *i;
-        if (message->getDepth() == depth){
-            message->draw(work);
-        }
-    }
+    messages[currentMessages]->draw(depth, work);
 }

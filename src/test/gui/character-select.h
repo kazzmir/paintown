@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include "util/file-system.h"
+#include "util/gradient.h"
 #include "util/pointer.h"
 #include "util/gui/animation.h"
 #include "util/gui/select-list.h"
@@ -34,6 +35,7 @@ public:
     
     const TextMessage & operator=(const TextMessage &);
     
+    void act();
     void draw(const Graphics::Bitmap &);
     
     inline void setReplaceMessage(const std::string & message){
@@ -58,8 +60,12 @@ private:
     /*! Location */
     int x, y;
     
-    /*! color */
-    int r, g, b;
+    /*! colors */
+    int low_r, low_g, low_b;
+    int high_r, high_g, high_b;
+    
+    /*! Interpolate distance */
+    int interpolateDistance;
     
     /*! Depth */
     Gui::Animation::Depth depth;
@@ -84,6 +90,9 @@ private:
     
     /*! Profile association */
     int profileAssociation;
+    
+    /*! gradient */
+    Effects::Gradient gradient;
 };
 
 class CharacterItem : public Gui::SelectItem {
@@ -104,6 +113,16 @@ private:
     int letter;
 };
 
+class MessageCollection{
+public:
+    MessageCollection(const Token *);
+    ~MessageCollection();
+    void act(Util::ReferenceCount<Gui::SelectListInterface> &);
+    void draw(const Gui::Animation::Depth &, const Graphics::Bitmap &);
+private:
+    std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > > messages;
+};
+
 class CharacterSelect{
 public:
     CharacterSelect();
@@ -114,6 +133,9 @@ public:
     virtual void act();
     virtual void draw(const Graphics::Bitmap &);
     
+    virtual void nextMessages();
+    virtual void previousMessages();
+    
     virtual inline Util::ReferenceCount<Gui::SelectListInterface> & getList() {
         return this->list;
     }
@@ -121,9 +143,6 @@ public:
 protected:
     /*! Load */
     void load(const Token *);
-    
-    /*! Check associated text */
-    void checkMessages();
     
     /*! Render List, Profiles and Messages by depth */
     void render(const Gui::Animation::Depth &, const Graphics::Bitmap &);
@@ -168,7 +187,10 @@ protected:
     int fontHeight;
     
     /*! Messages */
-    std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > > messages;
+    std::vector<Util::ReferenceCount<MessageCollection> > messages;
+    
+    /*! Current Messages */
+    unsigned int currentMessages;
 };
 
 #endif

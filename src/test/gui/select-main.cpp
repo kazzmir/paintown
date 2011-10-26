@@ -60,6 +60,7 @@ public:
                     select.getList()->right(0);
                 }
                 if (event.out == Enter){
+                    select.nextMessages();
                 }
             }
         }
