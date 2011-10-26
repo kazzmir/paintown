@@ -38,10 +38,10 @@
     ; text Message
     (text (message "Character Select") (location 160 45) (color 0 255 255) (depth background top) (font-dimensions 40 40) (justification center))
     (text (message "Character Select") (location 480 45) (color 0 255 255) (depth background top) (font-dimensions 40 40) (justification center))
-    (text (message "Character%s") (location 5 215) (color-low 0 0 0) (color-high 50 50 50) (interpolate-distance 50) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
-    (text (message "Character%s") (location 0 210) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
-    (text (message "Character%s") (location 600 205) (color-low 0 0 0) (color-high 50 50 50) (interpolate-distance 50) (depth foreground bottom) (font-dimensions 35 35) (justification left) (profile-association 1))
-    (text (message "Character%s") (location 595 200) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification left) (profile-association 1))
+    (text (message "%s") (location 5 215) (color-low 0 0 0) (color-high 50 50 50) (interpolate-distance 50) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
+    (text (message "%s") (location 0 210) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
+    (text (message "%s") (location 600 205) (color-low 0 0 0) (color-high 50 50 50) (interpolate-distance 50) (depth foreground bottom) (font-dimensions 35 35) (justification left) (profile-association 1))
+    (text (message "%s") (location 595 200) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification left) (profile-association 1))
     )
   
   ; FIXME Remove or replace these later (only for testing)

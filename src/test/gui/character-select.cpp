@@ -30,19 +30,19 @@ struct playerInfo{
     }
 };
 
-static playerInfo getPlayer(const Filesystem::AbsolutePath & path){
+static Util::ReferenceCount<playerInfo> getPlayer(const Filesystem::AbsolutePath & path){
     std::string ourPath = path.path();
-    Global::debug(0, DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
+    Global::debug(2, DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
     std::string file = ourPath + "/" + ourPath.substr(ourPath.find_last_of('/') + 1) + ".txt";
-    Global::debug(0, DEBUG_CONTEXT) << "Checking " << file << std::endl;
+    Global::debug(1, DEBUG_CONTEXT) << "Checking " << file << std::endl;
     if (Util::exists(file)){
-        Global::debug(0, DEBUG_CONTEXT) << "Loading " << file << std::endl;
-        return playerInfo(Util::ReferenceCount<Paintown::DisplayCharacter>(new Paintown::DisplayCharacter(file)), Filesystem::AbsolutePath(file));
+        Global::debug(1, DEBUG_CONTEXT) << "Loading " << file << std::endl;
+        return Util::ReferenceCount<playerInfo>(new playerInfo(Util::ReferenceCount<Paintown::DisplayCharacter>(new Paintown::DisplayCharacter(file)), Filesystem::AbsolutePath(file)));
     }
     throw LoadException(__FILE__, __LINE__, "File '" + file + "' not found.");
 }
 
-typedef std::vector<playerInfo> PlayerVector;
+typedef std::vector<Util::ReferenceCount<playerInfo> > PlayerVector;
 static PlayerVector loadPlayers(const std::string & path){
     PlayerVector players;
     std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(Storage::instance().find(Filesystem::RelativePath(path + "/")), "*" );
@@ -60,7 +60,7 @@ static PlayerVector loadPlayers(const std::string & path){
 static std::vector<Paintown::DisplayCharacter *> getCharacters(PlayerVector players){
     std::vector<Paintown::DisplayCharacter *> characters;
     for (PlayerVector::iterator it = players.begin(); it != players.end(); it++){
-        characters.push_back(it->guy.raw());
+        characters.push_back((*it)->guy.raw());
     }
 
     return characters;
@@ -142,7 +142,7 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const 
             } else if (tok->match("scroll-offset", offset)){
                 list->setScrollOffset(offset);
             } else {
-                Global::debug(0) << "Unknown Simple List property: " << token->getName() << std::endl;
+                Global::debug(0) << "Unknown Simple List property: " << tok->getName() << std::endl;
             }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Simple Select parse error");
@@ -173,7 +173,7 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, const Toke
                     list->setLayout(Gui::GridSelect::InfiniteHorizontal);
                 }
             } else {
-                Global::debug(0) << "Unknown Grid List property: " << token->getName() << std::endl;
+                Global::debug(0) << "Unknown Grid List property: " << tok->getName() << std::endl;
             }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Grid Select parse error");
@@ -356,7 +356,7 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
 }
 
 
-CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, playerInfo & player):
+CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player):
 index(index),
 parent(parent),
 r(random() % 255),
@@ -372,10 +372,31 @@ CharacterItem::~CharacterItem(){
 /* NOTE assuming only one cursor */
 void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
     bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
-    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(font.textLength("00"), font.getHeight());
-    temp.clearToMask();
-    font.printf(0,0, Graphics::makeColor(0,0,0), temp, "%2d", 0, index);
-    temp.BlitMasked(0,0,width, height, x, y, bmp);
+    //const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(font.textLength("00"), font.getHeight());
+    //temp.clearToMask();
+    //font.printf(0,0, Graphics::makeColor(0,0,0), temp, "%2d", 0, index);
+    //temp.BlitMasked(0,0,width, height, x, y, bmp);
+    
+    // Player 
+    Util::ReferenceCount<Paintown::DisplayCharacter> displayed = player->guy;
+    if (displayed->isLoaded()){
+        Graphics::Bitmap temp = Graphics::Bitmap(width, height);
+        temp.clearToMask();
+        Paintown::Character smaller(*displayed);
+
+        /* draw a border */
+        // box.border( 0, 3, color[ clock % maxColor ] );
+
+        smaller.setX( width / 2 );
+        smaller.setY( 0 );
+        smaller.setZ( height );
+        smaller.draw( &temp, 0, 0 );
+        temp.drawStretched(0, 0, width, height, bmp);
+    } else {
+        /* FIXME: center the text */
+        font.printf(width / 2 - font.textLength(displayed->getName().c_str()) / 2, height / 2 - font.getHeight() / 2, Graphics::makeColor(255, 255, 255), bmp, player->guy->getName(), 0);
+    }
+    
     if (parent->totalCursors() > 1){
         if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) && parent->getCurrentIndex(0) == index){
             bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(random() % 255, random() % 255,0));
@@ -402,9 +423,11 @@ void CharacterItem::drawProfile(int width, int height, const Graphics::Bitmap & 
 }
 
 const std::string CharacterItem::getName(){
-    std::ostringstream name;
-    name << index;
-    return name.str();
+    return player->guy->getName();
+}
+
+Util::ReferenceCount<playerInfo> CharacterItem::getPlayer(){
+    return player;
 }
 
 MessageCollection::MessageCollection(const Token * token){
@@ -442,7 +465,7 @@ void MessageCollection::act(Util::ReferenceCount<Gui::SelectListInterface> & lis
             
             // if associated with a profile set the replacement string
             if (message->getProfileAssociation() != -1){
-                Util::ReferenceCount<Gui::SelectItem> item = list->getItem(list->getCurrentIndex(message->getProfileAssociation()));
+                Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(message->getProfileAssociation());
                 if (item != NULL){
                     message->setReplaceMessage(item.convert<CharacterItem>()->getName());
                 }
@@ -498,6 +521,14 @@ void CharacterSelect::act(){
     if (list != NULL){
         list->act();
         messages[currentMessages]->act(list);
+        
+        // Update loader
+        for (int i = 0; i < list->totalCursors(); ++i){
+            Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(i);
+            if (item != NULL){
+                loader->update(item.convert<CharacterItem>()->getPlayer()->guy.raw());
+            }
+        }
     }
 }
 
@@ -605,17 +636,16 @@ void CharacterSelect::load(const Token * token){
     if (autoPopulate){
         PlayerVector autoload = loadPlayers(populateFromDirectory.path());
         players.insert(players.begin(), autoload.begin(), autoload.end());
-        Paintown::DisplayCharacterLoader loader(getCharacters(players));
-        Util::Thread::Id loadingThread;
+        loader = Util::ReferenceCount<Paintown::DisplayCharacterLoader>(new Paintown::DisplayCharacterLoader(getCharacters(players)));
 
         class DisplayThread: public Util::Thread::ThreadObject {
         public:
-            DisplayThread(Paintown::DisplayCharacterLoader & loader):
-            ThreadObject(&loader, characterLoader),
+            DisplayThread(Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader):
+            ThreadObject(loader.raw(), characterLoader),
             loader(loader){
             }
 
-            Paintown::DisplayCharacterLoader & loader;
+            Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader;
 
             /* run the loader in a separate thread */
             static void * characterLoader(void * arg){
@@ -625,13 +655,13 @@ void CharacterSelect::load(const Token * token){
             }
 
             virtual ~DisplayThread(){
-                loader.stop();
+                loader->stop();
             }
         };
 
-        DisplayThread loading(loader);
+        loadingThread = Util::ReferenceCount<Util::Thread::ThreadObject>(new DisplayThread(loader));
         
-        if (!loading.start()){
+        if (!loadingThread->start()){
             throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
         }
     }
@@ -659,7 +689,7 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
     for (unsigned int i = 0; i < profiles.size(); ++i){
         Util::ReferenceCount<Profile> profile = profiles[i];
         if (profile->depth == depth){
-            Util::ReferenceCount<Gui::SelectItem> item = list->getItem(list->getCurrentIndex(i));
+            Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(i);
             if (item != NULL){
                 item.convert<CharacterItem>()->drawProfile(profile->window.width, profile->window.height, *profile->bitmap, listFont);
                 profile->bitmap->draw(profile->window.x, profile->window.y, work);

@@ -31,8 +31,8 @@
   ; text Message
   (messages
     ;(text (message "Pick a Player") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
-    (text (message "Cursor at location %s") (location 205 165) (color 0 0 0) (depth background top) (font-dimensions 45 45) (justification right) (profile-association 0))
-    (text (message "Cursor at location %s") (location 200 160) (color 255 255 255) (depth foreground bottom) (font-dimensions 45 45) (justification right) (profile-association 0))
+    (text (message "%s") (location 205 165) (color 0 0 0) (depth background top) (font-dimensions 45 45) (justification right) (profile-association 0))
+    (text (message "%s") (location 200 160) (color 255 255 255) (depth foreground bottom) (font-dimensions 45 45) (justification right) (profile-association 0))
     )
   
   ; FIXME Remove or replace these later (only for testing)

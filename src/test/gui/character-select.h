@@ -16,6 +16,15 @@ namespace Graphics{
     class Bitmap;
 }
 
+namespace Util{
+namespace Thread{
+    class ThreadObject;
+}}
+
+namespace Paintown{
+    class DisplayCharacterLoader;
+}
+
 struct Window{
     int x, y, width, height;
 };
@@ -99,7 +108,7 @@ struct playerInfo;
 
 class CharacterItem : public Gui::SelectItem {
 public:
-    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, playerInfo &);
+    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player);
     ~CharacterItem();
     void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
     void drawProfile(int width, int height, const Graphics::Bitmap &, const Font &) const;
@@ -107,13 +116,14 @@ public:
         return false;
     }
     const std::string getName();
+    Util::ReferenceCount<playerInfo> getPlayer();
     
 private:
     unsigned int index;
     const Util::ReferenceCount<Gui::SelectListInterface> parent;
     int r,g,b;
     int letter;
-    playerInfo & player;
+    Util::ReferenceCount<playerInfo> player;
 };
 
 class MessageCollection{
@@ -194,6 +204,12 @@ protected:
     
     /*! Current Messages */
     unsigned int currentMessages;
+    
+    /*! DisplayLoader */
+    Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader;
+    
+    /*! Display thread */
+    Util::ReferenceCount<Util::Thread::ThreadObject> loadingThread;
 };
 
 #endif
