@@ -64,20 +64,8 @@
     (text (message "Cursor at location %s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
     )
   
-  ; FIXME Remove or replace these later (only for testing)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
-  (add)
+  ; Add player by relative path
+  ;(add "players/akuma")
   
   ; Font
   ; (font somefont.ttf 32 32)

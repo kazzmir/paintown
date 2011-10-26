@@ -68,6 +68,35 @@ test.cpp
 character_select_source = Split("""
 character-select.cpp
 select-main.cpp
+test/nameplacer.cpp
+test/mugen/exception.cpp
+test/util/ebox.cpp
+test/util/loading.cpp
+test/util/regex.cpp
+test/util/timedifference.cpp
+test/openbor/data.cpp
+test/openbor/mod.cpp
+test/openbor/pack-reader.cpp
+test/openbor/util.cpp
+test/paintown-engine/game/mod.cpp
+test/paintown-engine/game/select_player.cpp
+test/paintown-engine/level/utils.cpp
+test/paintown-engine/object/animation.cpp
+test/paintown-engine/object/animation_event.cpp
+test/paintown-engine/object/animation_trail.cpp
+test/paintown-engine/object/attack.cpp
+test/paintown-engine/object/character.cpp
+test/paintown-engine/object/display_character.cpp
+test/paintown-engine/object/draw-effect.cpp
+test/paintown-engine/object/effect.cpp
+test/paintown-engine/object/gib.cpp
+test/paintown-engine/object/object.cpp
+test/paintown-engine/object/object_attack.cpp
+test/paintown-engine/object/object_nonattack.cpp
+test/paintown-engine/object/player.cpp
+test/paintown-engine/object/player-common.cpp
+test/paintown-engine/object/projectile.cpp
+test/paintown-engine/script/script.cpp
 """)
 
 x = []

@@ -95,9 +95,11 @@ private:
     Effects::Gradient gradient;
 };
 
+struct playerInfo;
+
 class CharacterItem : public Gui::SelectItem {
 public:
-    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent);
+    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, playerInfo &);
     ~CharacterItem();
     void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
     void drawProfile(int width, int height, const Graphics::Bitmap &, const Font &) const;
@@ -111,6 +113,7 @@ private:
     const Util::ReferenceCount<Gui::SelectListInterface> parent;
     int r,g,b;
     int letter;
+    playerInfo & player;
 };
 
 class MessageCollection{
