@@ -53,7 +53,7 @@
     )
   
   ; Add player by relative path
-  ;(add "players/akuma")
+  ;(add "players/akuma/akuma.txt")
   
   ; Font
   ; (font somefont.ttf 32 32)

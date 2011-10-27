@@ -30,10 +30,7 @@ struct playerInfo{
     }
 };
 
-static Util::ReferenceCount<playerInfo> getPlayer(const Filesystem::AbsolutePath & path){
-    std::string ourPath = path.path();
-    Global::debug(2, DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
-    std::string file = ourPath + "/" + ourPath.substr(ourPath.find_last_of('/') + 1) + ".txt";
+static Util::ReferenceCount<playerInfo> getPlayer(const std::string & file){
     Global::debug(1, DEBUG_CONTEXT) << "Checking " << file << std::endl;
     if (Util::exists(file)){
         Global::debug(1, DEBUG_CONTEXT) << "Loading " << file << std::endl;
@@ -49,7 +46,10 @@ static PlayerVector loadPlayers(const std::string & path){
     std::sort(files.begin(), files.end());
     for ( std::vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++ ){
         try{
-            players.push_back(getPlayer(*it));
+            std::string ourPath = (*it).path();
+            Global::debug(2, DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
+            std::string file = ourPath + "/" + ourPath.substr(ourPath.find_last_of('/') + 1) + ".txt";
+            players.push_back(getPlayer(file));
         } catch (const LoadException & le){
             Global::debug(0, DEBUG_CONTEXT) << "Could not load because " << le.getTrace() << std::endl;
         }
@@ -853,8 +853,7 @@ void CharacterSelect::load(const Token * token){
                     Util::ReferenceCount<MessageCollection> message(new MessageCollection(tok));
                     messages.push_back(message);
                 } else if (tok->match("add", string_match)){
-                    //items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list)));
-                    players.push_back(getPlayer(Storage::instance().find(Filesystem::RelativePath(string_match))));
+                    players.push_back(getPlayer(Storage::instance().find(Filesystem::RelativePath(string_match)).path()));
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
                     font = Filesystem::AbsolutePath(string_match);
                 } else if (tok->match("font-dimensions", fontWidth, fontHeight)){
