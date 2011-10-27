@@ -594,6 +594,13 @@ void CharacterSelect::previousMessages(){
     }
 }
 
+void CharacterSelect::playSound(const Sounds & sound){
+    std::map<Sounds, std::string>::iterator play = sounds.find(sound);
+    if (play != sounds.end()){
+        // FIXME do something useful
+    }
+}
+
 void CharacterSelect::load(const Token * token){
     PlayerVector players;
     try {
@@ -642,6 +649,28 @@ void CharacterSelect::load(const Token * token){
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
                     font = Filesystem::AbsolutePath(string_match);
                 } else if (tok->match("font-dimensions", fontWidth, fontHeight)){
+                } else if (tok->match("sound", string_match, level)){
+                    Sounds sound = NO_USE;
+                    if (string_match == "up"){
+                        sound = UP;
+                    } else if (string_match == "down"){
+                        sound = DOWN;
+                    } else if (string_match == "left"){
+                        sound = LEFT;
+                    } else if (string_match == "right"){
+                        sound = RIGHT;
+                    } else if (string_match == "enter"){
+                        sound = ENTER;
+                    } else if (string_match == "esc"){
+                        sound = ESC;
+                    } else if (string_match == "swap"){
+                        sound = SWAP;
+                    } else if (string_match == "misc"){
+                        sound = MISC;
+                    }
+                    if (sound != NO_USE){
+                        sounds[sound] = level;
+                    }
                 } else {
                     Global::debug(0) << "Unknown Character Select property: " << tok->getName() << std::endl;
                 }

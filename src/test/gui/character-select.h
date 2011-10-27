@@ -148,6 +148,20 @@ public:
     virtual void nextMessages();
     virtual void previousMessages();
     
+    enum Sounds{
+        NO_USE,
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+        ENTER,
+        ESC,
+        SWAP,
+        MISC,
+    };
+    
+    virtual void playSound(const Sounds &);
+    
     virtual inline Util::ReferenceCount<Gui::SelectListInterface> & getList() {
         return this->list;
     }
@@ -209,6 +223,9 @@ protected:
     
     /*! Display thread */
     Util::ReferenceCount<Util::Thread::ThreadObject> loadingThread;
+    
+    /*! Sounds */
+    std::map<Sounds, std::string> sounds;
 };
 
 #endif
