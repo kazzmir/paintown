@@ -32,6 +32,7 @@ struct Window{
 struct Profile{
     Window window;
     Util::ReferenceCount<Graphics::Bitmap> bitmap;
+    bool facingRight;
     static Gui::Animation::Depth depth;
 };
 
@@ -172,7 +173,7 @@ public:
     ~CharacterItem();
     void act();
     void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
-    void drawProfile(int width, int height, const Graphics::Bitmap &, const Font &) const;
+    void drawProfile(int width, int height, bool facingRight, const Graphics::Bitmap &, const Font &) const;
     inline bool isEmpty() const {
         return false;
     }

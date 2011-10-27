@@ -563,7 +563,6 @@ void CharacterItem::act(){
 }
 
 typedef std::map<std::string, Util::ReferenceCount<CellData> > cellmap;
-/* NOTE assuming only one cursor */
 void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
     cellmap::const_iterator back = cells.find("back");
     cellmap::const_iterator top = cells.find("top");
@@ -621,11 +620,15 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     }
 }
 
-void CharacterItem::drawProfile(int width, int height, const Graphics::Bitmap & bmp, const Font & font) const {
+void CharacterItem::drawProfile(int width, int height, bool facingRight, const Graphics::Bitmap & bmp, const Font & font) const {
     bmp.clearToMask();
     const int stand = 100;
     Util::ReferenceCount<Paintown::DisplayCharacter> character = player->guy;
-    character->setFacing(Paintown::Object::FACING_RIGHT);
+    if (facingRight){
+        character->setFacing(Paintown::Object::FACING_RIGHT);
+    } else {
+        character->setFacing(Paintown::Object::FACING_LEFT);
+    }
     Paintown::Character copy(*character);
     Graphics::Bitmap temp(copy.getWidth(), copy.getHeight()*2);
     temp.clearToMask();
@@ -829,7 +832,19 @@ void CharacterSelect::load(const Token * token){
                     listDepth = parseDepth(string_match, level);
                 } else if (*tok =="profile-window"){
                     Util::ReferenceCount<Profile> profile(new Profile());
-                    tok->view() >> profile->window.x >> profile->window.y >> profile->window.width >> profile->window.height;
+                    profile->facingRight = true;
+                    TokenView profileView = tok->view();
+                    profileView >> profile->window.x >> profile->window.y >> profile->window.width >> profile->window.height;
+                    try {
+                        std::string facing;
+                        profileView >> facing;
+                        if (facing == "facing-left"){
+                            profile->facingRight = false;
+                        } else if (facing == "facing-right"){
+                            profile->facingRight = true;
+                        }
+                    } catch (const TokenException & ex){
+                    }
                     profile->bitmap = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(profile->window.width, profile->window.height));
                     profiles.push_back(profile);
                 } else if (tok->match("profile-depth", string_match, level)){
@@ -951,7 +966,7 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
         if (profile->depth == depth){
             Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(i);
             if (item != NULL){
-                item.convert<CharacterItem>()->drawProfile(profile->window.width, profile->window.height, *profile->bitmap, listFont);
+                item.convert<CharacterItem>()->drawProfile(profile->window.width, profile->window.height, profile->facingRight, *profile->bitmap, listFont);
                 profile->bitmap->draw(profile->window.x, profile->window.y, work);
             }
         }

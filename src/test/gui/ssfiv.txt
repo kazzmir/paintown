@@ -38,7 +38,7 @@
   (list-depth foreground top)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
   (profile-window 0 -10 320 480)
-  (profile-window 320 -10 320 480)
+  (profile-window 320 -10 320 480 facing-left)
   ; Depth in which to display the profiles
   (profile-depth foreground bottom)
   ; Message Block they are added in the sequence that they are read, this can be useful for multiple selections (ie player1, then player2.. etc)
