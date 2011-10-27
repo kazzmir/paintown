@@ -30,6 +30,12 @@
     (cell-margins 20 20)
     (cursors 1)
     (wrap true))
+  ; Cells
+  (cell (name back) (shape square) (color 0 0 0) (color-fill true))
+  (cell (name top) (shape square) (color 255 255 255) (color-fill false))
+  (cell (name select0) (shape square) (color 255 0 0) (color-fill false))
+  (cell (name select1) (shape square) (color 0 0 255) (color-fill false))
+  (cell (name select-alternative) (shape square) (color 0 255 0) (color-fill false))
   ; Auto populate the grid ?
   (auto-populate true)
   ; Directory in which to populate from

@@ -308,7 +308,7 @@ gradient(defaultGradient()){
                 }
             } else if (tok->match("profile-association", profileAssociation)){
             } else {
-                Global::debug(0) << "Unknown Text Message List property: " << token->getName() << std::endl;
+                Global::debug(0) << "Unknown Text Message List property: " << tok->getName() << std::endl;
             }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Text message parse error");
@@ -369,11 +369,185 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
     return *this;
 }
 
+Image::Image(const Token * token):
+time(-1),
+empty(true){
+    if ( *token != "image" ){
+        throw LoadException(__FILE__, __LINE__, "Not an Image");
+    }
+    TokenView view = token->view();
+    while (view.hasMore()){
+        try{
+            const Token * tok;
+            view >> tok;
+            std::string file;
+            if (tok->match("file", file)){
+                Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(file)).path()));
+                if (!bmp->getError()){
+                    image = bmp;
+                    empty = false;
+                }
+            } else if (tok->match("time", time)){
+            } else {
+                Global::debug(0) << "Unknown Image property: " << tok->getName() << std::endl;
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Image parse error");
+        }
+    }
+}
 
-CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player):
+Image::~Image(){
+}
+
+void Image::draw(int x, int y, int width, int height, const Graphics::Bitmap & work) const {
+    if (!empty){
+        image->drawStretched(x, y, width, height, work);
+    }
+}
+
+ImageData::ImageData(const Token * token):
+timer(0),
+loop(0),
+current(0){
+    int loopLocation = 0;
+    if ( *token != "image-collection" ){
+        throw LoadException(__FILE__, __LINE__, "Not an Image Collection");
+    }
+    TokenView view = token->view();
+    while (view.hasMore()){
+        try{
+            const Token * tok;
+            view >> tok;
+            if (*tok =="image"){
+                Util::ReferenceCount<Image> image(new Image(tok));
+                images.push_back(image);
+            } else if (tok->match("loop", loopLocation)){
+            } else {
+                Global::debug(0) << "Unknown Image Collection property: " << tok->getName() << std::endl;
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Image Collection parse error");
+        }
+    }
+    if (loopLocation >= 0 && loopLocation < (int)images.size()){
+        loop = loopLocation;
+    }
+}
+
+ImageData::~ImageData(){
+}
+
+void ImageData::act(){
+    if (images[current]->getTime() >= 0){
+        timer++;
+        if (timer >= images[current]->getTime()){
+            next();
+        }
+    }
+}
+    
+void ImageData::draw(int x, int y, int width, int height, const Graphics::Bitmap & work) const {
+    images[current]->draw(x,y,width,height,work);
+}
+
+void ImageData::next(){
+    if (current < images.size()){
+        current++;
+    } else {
+        current = loop;
+    }
+}
+
+CellData::CellData(const Token * token):
+shape(SQUARE),
+radius(0),
+r(0),
+g(0),
+b(0),
+alpha(255),
+fill(false){
+    if ( *token != "cell" ){
+        throw LoadException(__FILE__, __LINE__, "Not a cell");
+    }
+    TokenView view = token->view();
+    while (view.hasMore()){
+        try{
+            const Token * tok;
+            view >> tok;
+            std::string string_match;
+            if (tok->match("name", name)){
+            } else if (tok->match("shape", string_match)){
+                if (string_match == "square"){
+                    shape = SQUARE;
+                } else if (string_match == "round"){
+                    shape = ROUND;
+                }
+            } else if (tok->match("radius",radius)){
+            } else if (tok->match("color",r,g,b)){
+            } else if (tok->match("alpha",alpha)){
+            } else if (tok->match("color-fill",string_match)){
+                if (string_match == "true"){
+                    fill = true;
+                } else if (string_match == "false"){
+                    fill = false;
+                }
+            } else if (*tok == "image-collection"){
+                Util::ReferenceCount<ImageData> image(new ImageData(tok));
+                cell = image;
+            } else {
+                Global::debug(0) << "Unknown Cell property: " << tok->getName() << std::endl;
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Cell parse error");
+        }
+    }
+}
+
+CellData::~CellData(){
+}
+
+void CellData::act(){
+    if (cell != NULL){
+        cell->act();
+    }
+}
+
+void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap & work) const {
+    if (cell != NULL){
+        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        cell->draw(x,y,width,height,work);
+    } else {
+        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        if (fill){
+            switch (shape){
+                case ROUND:
+                    work.circleFill(x+width/2, y+height/2, radius, Graphics::makeColor(r,g,b));
+                    break;
+                case SQUARE:
+                default:
+                    work.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(r,g,b));
+                    break;
+            }
+        } else {
+            switch (shape){
+                case ROUND:
+                    work.circle(x+width/2, y+height/2, radius, Graphics::makeColor(r,g,b));
+                    break;
+                case SQUARE:
+                default:
+                    work.rectangle(x, y, x+width, y+height, Graphics::makeColor(r,g,b));
+                    break;
+            }
+        }
+    }
+}
+
+CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player, const std::map<std::string, Util::ReferenceCount<CellData> > & cells):
 index(index),
 parent(parent),
-player(player){ 
+player(player),
+cells(cells){ 
 }
 
 CharacterItem::~CharacterItem(){
@@ -388,9 +562,18 @@ void CharacterItem::act(){
     }
 }
 
+typedef std::map<std::string, Util::ReferenceCount<CellData> > cellmap;
 /* NOTE assuming only one cursor */
 void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
-    bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(0,0,0));
+    cellmap::const_iterator back = cells.find("back");
+    cellmap::const_iterator top = cells.find("top");
+    cellmap::const_iterator select0 = cells.find("select0");
+    cellmap::const_iterator select1 = cells.find("select1");
+    cellmap::const_iterator selectAlt = cells.find("select-alternative");
+    
+    if (back != cells.end()){
+        back->second->draw(x,y,width,height,bmp);
+    }
     // Player 
     Util::ReferenceCount<Paintown::DisplayCharacter> displayed = player->guy;
     if (displayed->isLoaded()){
@@ -411,19 +594,29 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         temp.drawStretched(x, y, width, (font.getHeight() > height ? height : font.getHeight()), bmp);
     }
     
-    bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
+    if (top != cells.end()){
+        top->second->draw(x,y,width,height,bmp);
+    }
     
     if (parent->totalCursors() > 1){
         if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) && parent->getCurrentIndex(0) == index){
-            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(random() % 255, random() % 255,0));
+            if (selectAlt != cells.end()){
+                selectAlt->second->draw(x,y,width,height,bmp);
+            }
         } else if (parent->getCurrentIndex(0) == index){
-            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+            if (select0 != cells.end()){
+                select0->second->draw(x,y,width,height,bmp);
+            }
         } else if (parent->getCurrentIndex(1) == index){
-            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(0,255,0));
+            if (select1 != cells.end()){
+                select1->second->draw(x,y,width,height,bmp);
+            }
         }
     } else {
         if (parent->getCurrentIndex(0) == index){
-            bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,0,0));
+            if (select0 != cells.end()){
+                select0->second->draw(x,y,width,height,bmp);
+            }
         } 
     }
 }
@@ -470,7 +663,7 @@ MessageCollection::MessageCollection(const Token * token){
                 Util::ReferenceCount<TextMessage> message(new TextMessage(tok));
                 messages[message->getDepth()].push_back(message);
             } else {
-                Global::debug(0) << "Unknown Text Message block property: " << token->getName() << std::endl;
+                Global::debug(0) << "Unknown Text Message block property: " << tok->getName() << std::endl;
             }
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Message collection parse error");
@@ -650,6 +843,9 @@ void CharacterSelect::load(const Token * token){
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
                     font = Filesystem::AbsolutePath(string_match);
                 } else if (tok->match("font-dimensions", fontWidth, fontHeight)){
+                } else if (*tok == "cell"){
+                    Util::ReferenceCount<CellData> cell(new CellData(tok));
+                    cells[cell->getName()] = cell;
                 } else if (tok->match("sound", string_match, level)){
                     Sounds sound = NO_USE;
                     if (string_match == "up"){
@@ -726,7 +922,7 @@ void CharacterSelect::load(const Token * token){
     }
     
     for (PlayerVector::iterator i = players.begin(); i != players.end(); ++i){
-        items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list, *i)));
+        items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list, *i, cells)));
     }
     list->addItems(items);
     

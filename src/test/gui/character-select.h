@@ -35,6 +35,7 @@ struct Profile{
     static Gui::Animation::Depth depth;
 };
 
+/*! Text Message */
 class TextMessage{
 public:
     TextMessage();
@@ -104,11 +105,70 @@ private:
     Effects::Gradient gradient;
 };
 
+/*! Image */
+class Image{
+public:
+    Image(const Token *);
+    ~Image();
+    void draw(int x, int y, int width, int height, const Graphics::Bitmap &) const;
+    inline int getTime() const{
+        return this->time;
+    }
+private:
+    int time;
+    bool empty;
+    Util::ReferenceCount<Graphics::Bitmap> image;
+};
+
+/*! Images */
+class ImageData{
+public:
+    ImageData(const Token *);
+    ~ImageData();
+    void act();
+    void draw(int x, int y, int width, int height, const Graphics::Bitmap &) const;
+private:
+    void next();
+    int timer;
+    unsigned int loop;
+    unsigned int current;
+    std::vector<Util::ReferenceCount<Image> > images;
+};
+
+/*! Cell Data shape and drawings */
+class CellData{
+public:
+    CellData(const Token *);
+    ~CellData();
+    void act();
+    void draw(int x, int y, int width, int height, const Graphics::Bitmap &) const;
+    enum Shape{
+        SQUARE,
+        ROUND,
+    };
+    inline const std::string & getName() const {
+        return this->name;
+    }
+private:
+    /*! Name */
+    std::string name;
+    /*! Shape of the cell */
+    Shape shape;
+    /*! Radius if it is round */
+    int radius;
+    /*! cell colors */
+    int r, g, b, alpha;
+    /*! color fill */
+    bool fill;
+    /*! cell */
+    Util::ReferenceCount<ImageData> cell;
+};
+
 struct playerInfo;
 
 class CharacterItem : public Gui::SelectItem {
 public:
-    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player);
+    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player, const std::map<std::string, Util::ReferenceCount<CellData> > &);
     ~CharacterItem();
     void act();
     void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
@@ -123,6 +183,7 @@ private:
     unsigned int index;
     const Util::ReferenceCount<Gui::SelectListInterface> parent;
     Util::ReferenceCount<playerInfo> player;
+    const std::map<std::string, Util::ReferenceCount<CellData> > & cells;
 };
 
 class MessageCollection{
@@ -217,6 +278,9 @@ protected:
     
     /*! Current Messages */
     unsigned int currentMessages;
+    
+    /*! CellData Collections */
+    std::map<std::string, Util::ReferenceCount<CellData> > cells;
     
     /*! DisplayLoader */
     Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader;

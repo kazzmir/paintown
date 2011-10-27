@@ -1,7 +1,7 @@
 (select-screen
   (name "ssfiv-select")
   (animation
-    (location 0)
+    (depth background bottom)
     (image 0 "menu/paintown.png")
     (velocity -.001 0)
     (frame
@@ -21,6 +21,12 @@
     (cursor-location 0 0)
     (cursor-location 1 11)
     (wrap true))
+  ; Cells
+  (cell (name back) (shape round) (radius 20) (color 0 0 0) (color-fill true))
+  (cell (name top) (shape round) (radius 20) (color 255 255 255) (color-fill false))
+  (cell (name select0) (shape round) (radius 20) (color 255 0 0) (color-fill false))
+  (cell (name select1) (shape round) (radius 20) (color 0 0 255) (color-fill false))
+  (cell (name select-alternative) (shape round) (radius 20) (color 0 255 0) (color-fill false))
   ; Auto populate the grid ?
   (auto-populate true)
   ; Directory in which to populate from
@@ -29,7 +35,7 @@
   ; x y width height
   (list-window 50 240 550 200)
   ; List depth
-  (list-depth foreground middle)
+  (list-depth foreground top)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
   (profile-window 0 -10 320 480)
   (profile-window 320 -10 320 480)

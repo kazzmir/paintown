@@ -19,6 +19,22 @@
     (cell-margins 20 325)
     (cursors 1)
     (wrap true))
+  ; Cells
+  (cell (name back) 
+    (image-collection 
+        (image (file "select/back.png") (time -1))))
+  (cell (name top) 
+    (image-collection 
+        (image (file "select/front.png") (time -1))))
+  (cell (name select0) 
+    (image-collection 
+        (image (file "select/select0.png") (time -1))))
+  (cell (name select1) 
+    (image-collection 
+        (image (file "select/select1.png") (time -1))))
+  (cell (name select-alternative) 
+    (image-collection 
+        (image (file "select/selectalt.png") (time -1))))
   ; Auto populate the grid ?
   (auto-populate true)
   ; Directory in which to populate from
