@@ -92,7 +92,7 @@ static Gui::Animation::Depth parseDepth(const std::string & position, const std:
     return depth;
 }
 
-static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, const Token * token){
+static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, std::map<int, unsigned int> & cursorLocations, const Token * token){
     int x = 0, y = 0;
     std::string bool_value;
     if (token->match("cell-dimensions", x, y)){
@@ -108,7 +108,7 @@ static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, c
         list->setCursors(x);
         return true;
     } else if (token->match("cursor-location", x, y)){
-        list->setCurrentIndex(x, y);
+        cursorLocations[x] = y;
         return true;
     } else if (token->match("access-empty", bool_value)){
         bool value = false;
@@ -132,7 +132,7 @@ static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, c
     return false;
 }
 
-static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const Token * token){
+static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, std::map<int, unsigned int> & cursorLocations, const Token * token){
     if ( *token != "simple-list" ){
         throw LoadException(__FILE__, __LINE__, "Not a Simple Select List");
     }
@@ -144,7 +144,7 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const 
             int offset=0;
             std::string layout;
             int viewable = 0;
-            if (parseBaseList(list.convert<Gui::SelectListInterface>(), tok)){
+            if (parseBaseList(list.convert<Gui::SelectListInterface>(), cursorLocations, tok)){
             } else if (tok->match("viewable", viewable)){
                 list->setViewable(viewable);
             } else if (tok->match("layout", layout)){
@@ -164,7 +164,7 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, const 
     }
 }
 
-static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, const Token * token){
+static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, std::map<int, unsigned int> & cursorLocations, const Token * token){
     if ( *token != "grid-list" ){
         throw LoadException(__FILE__, __LINE__, "Not a Grid Select List");
     }
@@ -175,7 +175,7 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, const Toke
             view >> tok;
             int x=0,y=0;
             std::string layout;
-            if (parseBaseList(list.convert<Gui::SelectListInterface>(), tok)){
+            if (parseBaseList(list.convert<Gui::SelectListInterface>(), cursorLocations, tok)){
             } else if (tok->match("grid-size", x, y)){
                 list->setGridSize(x, y);
             } else if (tok->match("layout", layout)){
@@ -603,6 +603,7 @@ void CharacterSelect::playSound(const Sounds & sound){
 
 void CharacterSelect::load(const Token * token){
     PlayerVector players;
+    std::map<int, unsigned int> cursorLocations;
     try {
         if ( *token != "select-screen" ){
             throw LoadException(__FILE__, __LINE__, "Not a Character Select Screen");
@@ -620,11 +621,11 @@ void CharacterSelect::load(const Token * token){
                     backgrounds.add(Util::ReferenceCount<Gui::Animation>(new Gui::Animation(tok)));
                 } else if (*tok == "simple-list"){
                     Util::ReferenceCount<Gui::SimpleSelect> simpleList(new Gui::SimpleSelect());
-                    parseSimpleList(simpleList, tok);
+                    parseSimpleList(simpleList, cursorLocations, tok);
                     list = simpleList.convert<Gui::SelectListInterface>();
                 } else if (*tok == "grid-list"){
                     Util::ReferenceCount<Gui::GridSelect> gridList(new Gui::GridSelect());
-                    parseGridList(gridList, tok);
+                    parseGridList(gridList, cursorLocations, tok);
                     list = gridList.convert<Gui::SelectListInterface>();
                 } else if (tok->match("auto-populate", autoPopulate)){
                 } else if (tok->match("auto-populate-directory", string_match)){
@@ -727,6 +728,11 @@ void CharacterSelect::load(const Token * token){
         items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list, *i)));
     }
     list->addItems(items);
+    
+    // Setup cursors
+    for (int i = 0; i < list->totalCursors(); ++i){
+        list->setCurrentIndex(i, cursorLocations[i]);
+    }
     
     Global::debug(0) << "List size is: " << list->getItems().size() << std::endl;
 }
