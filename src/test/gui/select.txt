@@ -36,9 +36,9 @@
   (auto-populate-directory "players")
   ; Window coordinates where list will be
   ; x y width height
-  (list-window 300 0 340 480)
+  (list-window 300 20 340 460)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
-  (profile-window 0 0 300 480)
+  (profile-window 50 100 150 380)
   ; Message Block
   (messages
     ; text Message

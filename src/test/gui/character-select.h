@@ -110,6 +110,7 @@ class CharacterItem : public Gui::SelectItem {
 public:
     CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player);
     ~CharacterItem();
+    void act();
     void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
     void drawProfile(int width, int height, const Graphics::Bitmap &, const Font &) const;
     inline bool isEmpty() const {
@@ -121,8 +122,6 @@ public:
 private:
     unsigned int index;
     const Util::ReferenceCount<Gui::SelectListInterface> parent;
-    int r,g,b;
-    int letter;
     Util::ReferenceCount<playerInfo> player;
 };
 

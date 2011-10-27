@@ -94,7 +94,7 @@ static Gui::Animation::Depth parseDepth(const std::string & position, const std:
 
 static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, const Token * token){
     int x = 0, y = 0;
-    bool bool_value = false;
+    std::string bool_value;
     if (token->match("cell-dimensions", x, y)){
         list->setCellDimensions(x, y);
         return true;
@@ -111,9 +111,23 @@ static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, c
         list->setCurrentIndex(x, y);
         return true;
     } else if (token->match("access-empty", bool_value)){
-        list->setAccessEmpty(bool_value);
+        bool value = false;
+        if (bool_value == "true"){
+            value = true;
+        } else if (bool_value == "false"){
+            value = false;
+        }
+        list->setAccessEmpty(value);
+        return true;
     } else if (token->match("wrap", bool_value)){
-        list->setWrap(bool_value);
+        bool value = false;
+        if (bool_value == "true"){
+            value = true;
+        } else if (bool_value == "false"){
+            value = false;
+        }
+        list->setWrap(value);
+        return true;
     }
     return false;
 }
@@ -359,14 +373,19 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
 CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player):
 index(index),
 parent(parent),
-r(random() % 255),
-g(random() % 255),
-b(random() % 255),
-letter((int)'A'+random() % 26),
 player(player){ 
 }
 
 CharacterItem::~CharacterItem(){
+}
+
+void CharacterItem::act(){
+    Util::ReferenceCount<Paintown::DisplayCharacter> character = player->guy;
+    if (character->isLoaded()){
+        if (character->testAnimation()){
+            character->testReset();
+        }
+    }
 }
 
 /* NOTE assuming only one cursor */
@@ -384,8 +403,12 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         smaller.draw( &temp, 0, 0 );
         temp.drawStretched(x, y, width, height, bmp);
     } else {
-        /* FIXME: center the text */
-        font.printf(width / 2 - font.textLength(displayed->getName().c_str()) / 2, height / 2 - font.getHeight() / 2, Graphics::makeColor(255, 255, 255), bmp, player->guy->getName(), 0);
+        const int length = font.textLength(displayed->getName().c_str());
+        const int middle = font.getHeight()/4;
+        Graphics::Bitmap temp = Graphics::Bitmap(length + font.getHeight(), font.getHeight());
+        temp.clearToMask();
+        font.printf(temp.getWidth()/2 - length/2, middle, Graphics::makeColor(255, 255, 255), temp, player->guy->getName(), 0);
+        temp.drawStretched(x, y, width, (font.getHeight() > height ? height : font.getHeight()), bmp);
     }
     
     bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
@@ -407,12 +430,22 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
 
 void CharacterItem::drawProfile(int width, int height, const Graphics::Bitmap & bmp, const Font & font) const {
     bmp.clearToMask();
-    std::ostringstream randomLetter;
-    randomLetter << (char)letter;
-    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(font.textLength(randomLetter.str().c_str()), font.getHeight());
+    const int stand = 100;
+    Util::ReferenceCount<Paintown::DisplayCharacter> character = player->guy;
+    character->setFacing(Paintown::Object::FACING_RIGHT);
+    Paintown::Character copy(*character);
+    Graphics::Bitmap temp(copy.getWidth(), copy.getHeight()*2);
     temp.clearToMask();
-    font.printf(0,0, Graphics::makeColor(r,g,b), temp, randomLetter.str().c_str(),0);
-    temp.Stretch(bmp,0,0,temp.getWidth(),temp.getHeight(),0,0,width, height);
+    copy.setDrawShadow(false);
+    copy.setX(temp.getWidth()/2);
+    copy.setY(0);
+    copy.setZ(copy.getHeight());
+    
+    copy.drawOutline(&temp, 0, height - stand - stand, 0, 0, 0, 255);
+    copy.drawReflection(&temp, 0, height - stand - stand, 128);
+    copy.draw(&temp, 0, temp.getHeight()/2);
+
+    temp.drawStretched(0, 0, width, height, bmp);
 }
 
 const std::string CharacterItem::getName(){
@@ -519,7 +552,9 @@ void CharacterSelect::act(){
         for (int i = 0; i < list->totalCursors(); ++i){
             Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(i);
             if (item != NULL){
-                loader->update(item.convert<CharacterItem>()->getPlayer()->guy.raw());
+                Util::ReferenceCount<CharacterItem> ourItem = item.convert<CharacterItem>();
+                loader->update(ourItem->getPlayer()->guy.raw());
+                ourItem->act();
             }
         }
     }
