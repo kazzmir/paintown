@@ -31,7 +31,7 @@
     (cursors 1)
     (wrap true))
   ; Auto populate the grid ?
-  (auto-populate false)
+  (auto-populate true)
   ; Directory in which to populate from
   (auto-populate-directory "players")
   ; Window coordinates where list will be

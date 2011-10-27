@@ -371,31 +371,24 @@ CharacterItem::~CharacterItem(){
 
 /* NOTE assuming only one cursor */
 void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
-    bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
-    //const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(font.textLength("00"), font.getHeight());
-    //temp.clearToMask();
-    //font.printf(0,0, Graphics::makeColor(0,0,0), temp, "%2d", 0, index);
-    //temp.BlitMasked(0,0,width, height, x, y, bmp);
-    
+    bmp.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(0,0,0));
     // Player 
     Util::ReferenceCount<Paintown::DisplayCharacter> displayed = player->guy;
     if (displayed->isLoaded()){
         Graphics::Bitmap temp = Graphics::Bitmap(width, height);
         temp.clearToMask();
         Paintown::Character smaller(*displayed);
-
-        /* draw a border */
-        // box.border( 0, 3, color[ clock % maxColor ] );
-
         smaller.setX( width / 2 );
         smaller.setY( 0 );
-        smaller.setZ( height );
+        smaller.setZ( smaller.getHeight() );
         smaller.draw( &temp, 0, 0 );
-        temp.drawStretched(0, 0, width, height, bmp);
+        temp.drawStretched(x, y, width, height, bmp);
     } else {
         /* FIXME: center the text */
         font.printf(width / 2 - font.textLength(displayed->getName().c_str()) / 2, height / 2 - font.getHeight() / 2, Graphics::makeColor(255, 255, 255), bmp, player->guy->getName(), 0);
     }
+    
+    bmp.rectangle(x, y, x+width, y+height, Graphics::makeColor(255,255,255));
     
     if (parent->totalCursors() > 1){
         if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) && parent->getCurrentIndex(0) == index){
