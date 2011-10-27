@@ -48,8 +48,7 @@ public class FaceEvent implements AnimationEvent {
 		return (JPanel)engine.getRootComponent();
 	}
 	
-	public Token getToken()
-	{
+	public Token getToken(){
 		Token temp = new Token("face");
 		temp.addToken(new Token("face"));
 		temp.addToken(new Token(_face));
@@ -57,6 +56,10 @@ public class FaceEvent implements AnimationEvent {
 		return temp;
 	}
 
-        public void destroy(){
-        }
+    public void destroy(){
+    }
+
+    public String getDescription(){
+        return "Sets the direction the character is facing (either left or right)";
+    }
 }

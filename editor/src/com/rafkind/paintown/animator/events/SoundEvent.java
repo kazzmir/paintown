@@ -67,6 +67,10 @@ public class SoundEvent implements AnimationEvent
 		return temp;
 	}
         
-        public void destroy(){
-        }
+    public void destroy(){
+    }
+
+    public String getDescription(){
+        return "Plays a sound from a given file.";
+    }
 }

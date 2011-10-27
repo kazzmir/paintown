@@ -89,4 +89,8 @@ public class OffsetEvent implements AnimationEvent {
         
     public void destroy(){
     }
+
+    public String getDescription(){
+        return "Moves the location of the sprite by the given x and y amounts. Use offset to make sure sprites line up within an animation.";
+    }
 }

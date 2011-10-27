@@ -46,6 +46,10 @@ public class TicketEvent implements AnimationEvent {
 		return temp;
 	}
         
-        public void destroy(){
-        }
+    public void destroy(){
+    }
+
+    public String getDescription(){
+        return "Resets the character's attack state so that they can hit the same enemy while in the same animation. Normally when a character collides with an enemy the character is not allowed hit that same enemy while the character is in the same animation. Use 'next-ticket' if you want an attack to hit multiple times.";
+    }
 }

@@ -57,6 +57,10 @@ public class ZDistanceEvent implements AnimationEvent {
 		return temp;
 	}
         
-        public void destroy(){
-        }
+    public void destroy(){
+    }
+
+    public String getDescription(){
+        return "Sets the range of an attack in the Z dimension in pixels. The default range is 10 pixels.";
+    }
 }

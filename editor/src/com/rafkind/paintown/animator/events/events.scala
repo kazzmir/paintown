@@ -80,6 +80,8 @@ class AttackEvent extends AnimationEvent {
     onDestroy()
   }
 
+  def getDescription() = "Creates an attack box that is used to discover collissions between characters. x1, y1 specify the upper left hand corner of the box while x2, y2 specify the lower right hand corner. 'damage' specifies the amount of life this attack will take away and 'force' specifies the velocity that is given to the character being hit."
+
   def parseAttacks(token:Token):List[Attack] = {
     (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(x => ! x.isEmpty())
   }
@@ -330,6 +332,8 @@ class FrameEvent extends AnimationEvent {
           }
         }
     }
+  
+    def getDescription() = "Sets the current image to be shown. The frame event will wait for the 'delay' amount of time before moving on to the next event."
 
     def getName():String = {
         getToken().toString()
@@ -497,6 +501,8 @@ class MoveEvent extends AnimationEvent {
 
     override def destroy(){
     }
+    
+    def getDescription() = "Moves the character by the given x, y, and z coordinates"
 }
 
 case class Defense(var x1:Int, var y1:Int, var x2:Int, var y2:Int){
@@ -573,6 +579,8 @@ class DefenseEvent extends AnimationEvent {
   def loadToken(token:Token){
     this.boxes = (parse(token) :: Utils.toScalaList(token.findTokens("box")).map(parse)).filter(!isEmpty(_))
   }
+    
+  def getDescription() = "Not used yet"
 
   def interact(animation:Animation){
     if (boxes.isEmpty){

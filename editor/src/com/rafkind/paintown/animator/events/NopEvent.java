@@ -39,6 +39,10 @@ public class NopEvent implements AnimationEvent{
 		return temp;
 	}
 
-        public void destroy(){
-        }
+    public void destroy(){
+    }
+
+    public String getDescription(){
+        return "Does nothing but wait for the delay time to pass.";
+    }
 }

@@ -78,4 +78,8 @@ public class TrailEvent implements AnimationEvent {
         
     public void destroy(){
     }
+
+    public String getDescription(){
+        return "Creates a fading shadow that trails the player while they move. The 'generate' property sets the amount of time to wait before a new shadow is created. The 'length' property sets how long a shadow lives for.";
+    }
 }

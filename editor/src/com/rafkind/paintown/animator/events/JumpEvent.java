@@ -83,4 +83,8 @@ public class JumpEvent implements AnimationEvent {
 
     public void destroy(){
     }
+
+    public String getDescription(){
+        return "Not used";
+    }
 }

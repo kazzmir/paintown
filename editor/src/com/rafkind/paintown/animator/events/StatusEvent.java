@@ -59,6 +59,10 @@ public class StatusEvent implements AnimationEvent {
 		return temp;
 	}
         
-        public void destroy(){
-        }
+    public void destroy(){
+    }
+
+    public String getDescription(){
+        return "Not used";
+    }
 }

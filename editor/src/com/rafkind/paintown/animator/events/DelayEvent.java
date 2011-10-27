@@ -55,4 +55,8 @@ public class DelayEvent implements AnimationEvent {
 
     public void destroy(){
     }
+
+    public String getDescription(){
+        return "Sets the amount of time (given in terms of ticks of the game) to wait before moving on to the next event. Only certain events wait for the delay time such as 'frame' and 'nop'.";
+    }
 }

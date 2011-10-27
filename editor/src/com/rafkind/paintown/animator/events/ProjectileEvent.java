@@ -151,6 +151,10 @@ public class ProjectileEvent implements AnimationEvent
 		return temp;
 	}
 
-        public void destroy(){
-        }
+    public void destroy(){
+    }
+
+    public String getDescription(){
+        return "Creates a new projectile.";
+    }
 }
