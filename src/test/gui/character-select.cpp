@@ -694,34 +694,35 @@ void CharacterSelect::load(const Token * token){
     if (autoPopulate){
         PlayerVector autoload = loadPlayers(populateFromDirectory.path());
         players.insert(players.begin(), autoload.begin(), autoload.end());
-        loader = Util::ReferenceCount<Paintown::DisplayCharacterLoader>(new Paintown::DisplayCharacterLoader(getCharacters(players)));
+    }
+    
+    loader = Util::ReferenceCount<Paintown::DisplayCharacterLoader>(new Paintown::DisplayCharacterLoader(getCharacters(players)));
 
-        class DisplayThread: public Util::Thread::ThreadObject {
-        public:
-            DisplayThread(Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader):
-            ThreadObject(loader.raw(), characterLoader),
-            loader(loader){
-            }
-
-            Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader;
-
-            /* run the loader in a separate thread */
-            static void * characterLoader(void * arg){
-                Paintown::DisplayCharacterLoader * loader = (Paintown::DisplayCharacterLoader*) arg;
-                loader->load();
-                return NULL;
-            }
-
-            virtual ~DisplayThread(){
-                loader->stop();
-            }
-        };
-
-        loadingThread = Util::ReferenceCount<Util::Thread::ThreadObject>(new DisplayThread(loader));
-        
-        if (!loadingThread->start()){
-            throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
+    class DisplayThread: public Util::Thread::ThreadObject {
+    public:
+        DisplayThread(Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader):
+        ThreadObject(loader.raw(), characterLoader),
+        loader(loader){
         }
+
+        Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader;
+
+        /* run the loader in a separate thread */
+        static void * characterLoader(void * arg){
+            Paintown::DisplayCharacterLoader * loader = (Paintown::DisplayCharacterLoader*) arg;
+            loader->load();
+            return NULL;
+        }
+
+        virtual ~DisplayThread(){
+            loader->stop();
+        }
+    };
+
+    loadingThread = Util::ReferenceCount<Util::Thread::ThreadObject>(new DisplayThread(loader));
+    
+    if (!loadingThread->start()){
+        throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
     
     for (PlayerVector::iterator i = players.begin(); i != players.end(); ++i){
