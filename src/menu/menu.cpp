@@ -488,6 +488,9 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
     } else if ( *token == "position-border" ) {
         // This handles the border color of the menu box
         menu.setColors(token);
+    } else if ( *token == "transforms" ) {
+        // This handles the border color of the menu box
+        menu.setTransforms(token);
     } else if ( *token == "fade-speed" ) {
         // Menu fade in speed
         int speed;
@@ -715,6 +718,9 @@ bool Menu::TabRenderer::readToken(const Token * token, const OptionFactory & fac
     } else if ( *token == "position-border" ) {
         // This handles the border color of the menu box
         menu.setColors(token);
+    } else if ( *token == "transforms" ) {
+        // This handles the border color of the menu box
+        menu.setTransforms(token);
     } else if ( *token == "tab-body" ) {
         int r,g,b;
         token->view() >> r >> g >> b >> menu.tabColors.bodyAlpha;
