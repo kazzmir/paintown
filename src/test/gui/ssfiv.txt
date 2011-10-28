@@ -12,28 +12,29 @@
   ; - simple-list
   ; - grid-list
   (grid-list 
-    (grid-size 12 3)
+    (grid-size 11 3)
     (layout "static")
+    (start-offset 10 10)
     (cell-dimensions 35 35)
     (cell-spacing -3 -1)
-    (cell-margins 10 10)
+    (cell-margins 20 20)
     (cursors 2)
     (cursor-location 0 0)
-    (cursor-location 1 11)
+    (cursor-location 1 10)
     (wrap true))
   ; Cells
-  (cell (name back) (shape round) (radius 20) (color 0 0 0) (color-fill true))
-  (cell (name top) (shape round) (radius 20) (color 255 255 255) (color-fill false))
-  (cell (name select0) (shape round) (radius 20) (color 255 0 0) (color-fill false))
-  (cell (name select1) (shape round) (radius 20) (color 0 0 255) (color-fill false))
-  (cell (name select-alternative) (shape round) (radius 20) (color 0 255 0) (color-fill false))
+  (cell (name back) (shape round) (radius 25) (color 0 0 0) (color-fill true))
+  (cell (name top) (shape round) (radius 25) (color 255 255 255) (color-fill false))
+  (cell (name select0) (shape round) (radius 25) (color 255 0 0) (color-fill false))
+  (cell (name select1) (shape round) (radius 25) (color 0 0 255) (color-fill false))
+  (cell (name select-alternative) (shape round) (radius 25) (color 0 255 0) (color-fill false))
   ; Auto populate the grid ?
   (auto-populate true)
   ; Directory in which to populate from
   (auto-populate-directory "players")
   ; Window coordinates where list will be
   ; x y width height
-  (list-window 50 240 550 200)
+  (list-window 20 240 630 200)
   ; List depth
   (list-depth foreground top)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor

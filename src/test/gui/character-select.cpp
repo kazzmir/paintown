@@ -104,6 +104,9 @@ static bool parseBaseList(Util::ReferenceCount<Gui::SelectListInterface> list, s
     } else if (token->match("cell-margins", x, y)){
         list->setCellMargins(x, y);
         return true;
+    } else if (token->match("start-offset", x, y)){
+        list->setStartingOffset(x, y);
+        return true;
     } else if (token->match("cursors", x)){
         list->setCursors(x);
         return true;
