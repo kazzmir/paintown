@@ -148,7 +148,6 @@ src/menu/optionfactory.cpp
 )
 
 set(GUI_SRC
-src/util/gui/al_keyinput.cpp
 src/util/gui/animation.cpp
 src/util/gui/box.cpp
 src/util/gui/container.cpp
