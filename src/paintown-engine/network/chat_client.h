@@ -3,7 +3,6 @@
 
 #include "util/network/network.h"
 #include "util/messages.h"
-#include "util/gui/sigslot.h"
 #include <string>
 #include "util/thread.h"
 #include <queue>
@@ -27,7 +26,7 @@ struct Buddy{
 	int id;
 };
 
-class ChatClient: public sigslot::has_slots<> {
+class ChatClient{
 public:
 	ChatClient( Network::Socket socket, const std::string & name );
 
@@ -60,11 +59,6 @@ protected:
 
         static void enter_pressed(void * self);
         static void next_focus(void * self);
-
-        /*
-	sigslot::slot keyPress(const keys &k);
-	sigslot::slot keyRelease(const keys &k);
-        */
 
 private:
         Graphics::Bitmap * background;

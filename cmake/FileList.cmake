@@ -156,9 +156,6 @@ src/util/gui/context-box.cpp
 src/util/gui/coordinate.cpp
 src/util/gui/cutscene.cpp
 src/util/gui/fadetool.cpp
-src/util/gui/keys.cpp
-src/util/gui/keyinput.cpp
-src/util/gui/keyinput_manager.cpp
 src/util/gui/lineedit.cpp
 src/util/gui/rectarea.cpp
 src/util/gui/popup-box.cpp

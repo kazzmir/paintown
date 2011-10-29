@@ -15,7 +15,6 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/gui/lineedit.h"
-#include "util/gui/keys.h"
 #include "util/resource.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
@@ -143,26 +142,6 @@ enterPressed( false ){
 
     editCounter = 0;
 }
-
-/*
-sigslot::slot ChatClient::keyPress(const keys &k){
-	switch ( k.getValue() ){
-		case keys::ENTER : {
-			enterPressed = true;
-			break;
-		}
-	}
-}
-
-sigslot::slot ChatClient::keyRelease(const keys &k){
-	switch ( k.getValue() ){
-		case keys::ENTER : {
-			enterPressed = false;
-			break;
-		}
-	}
-}
-*/
 
 bool ChatClient::needToDraw(){
     return need_update;
