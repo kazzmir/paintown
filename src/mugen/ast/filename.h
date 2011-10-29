@@ -18,11 +18,36 @@ public:
         return Util::trim(*str);
     }
 
-    using Value::operator>>;
+    class FilenameView: public ViewImplementation {
+    public:
+        FilenameView(const Filename * owner):
+        owner(owner){
+        }
 
-    virtual const Value & operator>>(std::string & str) const {
-        str = Util::trim(*(this->str));
-        return *this;
+        const Filename * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+
+        using ViewImplementation::operator>>;
+        virtual FilenameView & operator>>(std::string & str){
+            str = Util::trim(*(owner->str));
+            return *this;
+        }
+    };
+
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new FilenameView(this)));
     }
     
     virtual Element * copy() const {

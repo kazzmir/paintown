@@ -259,7 +259,7 @@ void MugenMenu::loadData(){
     try{
         TimeDifference diff;
         diff.startTime();
-        Ast::AstParse parsed(Mugen::Util::parseDef(ourDefFile.path()));
+        AstRef parsed(Mugen::Util::parseDef(ourDefFile.path()));
         diff.endTime();
         Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
@@ -269,7 +269,7 @@ void MugenMenu::loadData(){
            collection = reader.getCollection();
            */
 
-        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
             head = Mugen::Util::fixCase(head);
@@ -292,7 +292,7 @@ void MugenMenu::loadData(){
                         } else if (simple == "author"){
                             try{
                                 string temp;
-                                simple >> temp;
+                                simple.view() >> temp;
                                 Global::debug(1) << "Made by: '" << temp << "'" << endl;
                             } catch (const Ast::Exception & e){
                             }
@@ -318,17 +318,17 @@ void MugenMenu::loadData(){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
-                            simple >> menu.spriteFile;
+                            simple.view() >> menu.spriteFile;
                             Global::debug(1) << "Got Sprite File: '" << menu.spriteFile << "'" << endl;
                             Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(menu.spriteFile)), Filesystem::AbsolutePath(), menu.sprites, false);
                             Mugen::Util::destroyRaw(menu.sprites);
                         } else if (simple == "snd"){
-                            simple >> menu.soundFile;
+                            simple.view() >> menu.soundFile;
                             Mugen::Util::readSounds(Mugen::Util::findFile(Filesystem::RelativePath(menu.soundFile)), menu.sounds);
                             Global::debug(1) << "Got Sound File: '" << menu.soundFile << "'" << endl;
                         } else if (simple == "logo.storyboard"){
                             try{
-                                simple >> menu.logoFile;
+                                simple.view() >> menu.logoFile;
                                 if (!menu.logoFile.empty()){
                                     try{
                                         Global::debug(1) << "Logo file " << baseDir.path() << "/" << menu.logoFile << endl;
@@ -342,7 +342,7 @@ void MugenMenu::loadData(){
                             }
                         } else if (simple == "intro.storyboard"){
                             try{
-                                simple >> menu.introFile;
+                                simple.view() >> menu.introFile;
                                 if (!menu.introFile.empty()){
                                     try{
                                         Global::debug(1) << "Intro file " << baseDir.path() << "/" << menu.introFile << endl;
@@ -355,15 +355,15 @@ void MugenMenu::loadData(){
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "select"){
-                            simple >> menu.selectFile;
+                            simple.view() >> menu.selectFile;
                             Global::debug(1) << "Got Select File: '" << menu.selectFile << "'" << endl;
                         } else if (simple == "fight"){
-                            simple >> menu.fightFile;
+                            simple.view() >> menu.fightFile;
                             Global::debug(1) << "Got Fight File: '" << menu.fightFile << "'" << endl;
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
                             try{
                                 string temp;
-                                simple >> temp;
+                                simple.view() >> temp;
                                 Filesystem::AbsolutePath path = Mugen::Util::findFile(Filesystem::RelativePath(temp));
 
                                 if (true){
@@ -394,19 +394,19 @@ void MugenMenu::loadData(){
 		    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "title.bgm"){
                             try{
-                                simple >> menu.titleMusic;
+                                simple.view() >> menu.titleMusic;
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "title.bgm.loop"){
                         } else if (simple == "select.bgm"){
                             try{
-                                simple >> menu.selectMusic;
+                                simple.view() >> menu.selectMusic;
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "select.bgm.loop"){
                         } else if (simple == "vs.bgm"){
                             try{
-                                simple >> menu.versusMusic;
+                                simple.view() >> menu.versusMusic;
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "vs.bgm.loop"){
@@ -431,49 +431,47 @@ void MugenMenu::loadData(){
                         if (simple == "fadein.time"){
                             try{
                                 int time;
-                                simple >> time;
+                                simple.view() >> time;
                                 menu.fader.setFadeInTime(time);
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "fadein.color"){
                             try{
                                 int r,g,b;
-                                simple >> r >> g >> b;
+                                simple.view() >> r >> g >> b;
                                 menu.fader.setFadeInColor(Graphics::makeColor(r,g,b));
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "fadeout.time"){
                             try{
                                 int time;
-                                simple >> time;
+                                simple.view() >> time;
                                 menu.fader.setFadeOutTime(time);
                             } catch (const Ast::Exception & fail){
                             }
                         } else if (simple == "fadeout.color"){
                             int r,g,b;
-                            simple >> r >> g >> b;
+                            simple.view() >> r >> g >> b;
                             menu.fader.setFadeOutColor(Graphics::makeColor(r,g,b));
                         } else if (simple == "menu.pos"){
-                            simple >> menu.position.x;
-                            simple >> menu.position.y;
+                            simple.view() >> menu.position.x >> menu.position.y;
                         } else if (simple == "menu.item.font"){
                             int index=0,bank=0,position=0;
                             try{
-                                simple >> index >> bank >> position;
+                                simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                             }
                             menu.fontCursor.setItemFont(index,bank,position);
                         } else if (simple == "menu.item.active.font"){
                             int index=0,bank=0,position=0;
                             try{
-                                simple >> index >> bank >> position;
+                                simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                             }
                             menu.fontCursor.setActiveFont(index,bank,position);
                         } else if (simple == "menu.item.spacing"){
                             try{
-                                simple >> menu.fontSpacing.x;
-                                simple >> menu.fontSpacing.y;
+                                simple.view() >> menu.fontSpacing.x >> menu.fontSpacing.y;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "menu.itemname.arcade"){
@@ -532,39 +530,38 @@ void MugenMenu::loadData(){
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "menu.window.margins.y"){
-                            simple >> menu.windowMargin.x;
-                            simple >> menu.windowMargin.y;
+                            simple.view() >> menu.windowMargin.x >> menu.windowMargin.y;
                             // Undocumented but it defaults to 5 if it's 0 or not specified
                             if (menu.windowMargin.y == 0){
                                 menu.windowMargin.y = 5;
                             }
                         } else if (simple == "menu.window.visibleitems"){
-                            simple >> menu.windowVisibleItems;
+                            simple.view() >> menu.windowVisibleItems;
                         } else if (simple == "menu.boxcursor.visible"){
                             bool visible = false;
-                            simple >> visible;
+                            simple.view() >> visible;
                             menu.fontCursor.setCursorVisible(visible);
                         } else if (simple == "menu.boxcursor.coords"){
                             int x1=0,y1=0,x2=0,y2=0;
                             try{
-                                simple >> x1 >> y1 >> x2 >> y2;
+                                simple.view() >> x1 >> y1 >> x2 >> y2;
                             } catch (const Ast::Exception & e){
                             }
                             menu.fontCursor.setCursor(x1,y1,x2,y2);
                         } else if (simple == "cursor.move.snd"){
                             try{
-                                simple >> menu.moveSound.x >> menu.moveSound.y;
+                                simple.view() >> menu.moveSound.x >> menu.moveSound.y;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cursor.done.snd"){
                             try{
-                                simple >> menu.doneSound.x >> menu.doneSound.y;
+                                simple.view() >> menu.doneSound.x >> menu.doneSound.y;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cancel.snd"){
                             int g=0, s=0;
                             try{
-                                simple >> menu.cancelSound.x >> menu.cancelSound.y;
+                                simple.view() >> menu.cancelSound.x >> menu.cancelSound.y;
                             } catch (const Ast::Exception & e){
                             }
                         } else {

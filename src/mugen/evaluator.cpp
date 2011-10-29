@@ -591,7 +591,7 @@ public:
 
     RuntimeValue evalString(const Ast::String & string_value){
         string out;
-        string_value >> out;
+        string_value.view() >> out;
         return RuntimeValue(out);
     }
 
@@ -763,7 +763,7 @@ public:
 
     RuntimeValue evalNumber(const Ast::Number & number){
         double x;
-        number >> x;
+        number.view() >> x;
         return RuntimeValue(x);
     }
 

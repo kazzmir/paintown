@@ -32,7 +32,6 @@ test/util/thread.cpp
 test/util/token.cpp
 test/util/token_exception.cpp
 test/util/tokenreader.cpp
-test/util/gui/al_keyinput.cpp
 test/util/gui/animation.cpp
 test/util/gui/box.cpp
 test/util/gui/container.cpp
@@ -40,9 +39,6 @@ test/util/gui/context-box.cpp
 test/util/gui/coordinate.cpp
 test/util/gui/cutscene.cpp
 test/util/gui/fadetool.cpp
-test/util/gui/keys.cpp
-test/util/gui/keyinput.cpp
-test/util/gui/keyinput_manager.cpp
 test/util/gui/lineedit.cpp
 test/util/gui/rectarea.cpp
 test/util/gui/popup-box.cpp

@@ -295,29 +295,29 @@ void Mugen::Stage::loadSectionCamera(Ast::Section * section){
         if (attribute->getKind() == Ast::Attribute::Simple){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "startx"){
-                (*simple) >> startx;
+                (*simple).view() >> startx;
             } else if (*simple == "starty"){
-                *simple >> starty;
+                simple->view() >> starty;
             } else if (*simple == "boundleft"){
-                *simple >> boundleft;
+                simple->view() >> boundleft;
             } else if (*simple == "boundright"){
-                *simple >> boundright;
+                simple->view() >> boundright;
             } else if (*simple == "boundhigh"){
-                *simple >> boundhigh;
+                simple->view() >> boundhigh;
             } else if (*simple == "boundlow"){
                 // This is always 0 so don't grab it
                 // *content->getNext() >> boundlow;
             } else if (*simple == "verticalfollow"){
-                *simple >> verticalfollow;
+                simple->view() >> verticalfollow;
                 if (verticalfollow > 1){
                     verticalfollow = 1;
                 } else if (verticalfollow < 0){
                     verticalfollow = 0;
                 }
             } else if (*simple == "floortension"){
-                *simple >> floortension;
+                simple->view() >> floortension;
             } else if (*simple == "tension"){
-                *simple >> tension;
+                simple->view() >> tension;
             } else {
                 throw MugenException( "Unhandled option in Camera Section: " + simple->toString());
             }
@@ -332,12 +332,12 @@ void Mugen::Stage::loadSectionInfo(Ast::Section * section){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "name"){
                 /* use setName() here */
-                *simple >> name;
+                simple->view() >> name;
                 Global::debug(1) << "Read name '" << name << "'" << endl;
             } else if (*simple == "author"){
                 // Seems to be that some people think that author belongs in background defs
                 std::string temp;
-                *simple >> temp;
+                simple->view() >> temp;
                 Global::debug(1) << "Made by this guy: '" << temp << "'" << endl;
             } else {
                 throw MugenException( "Unhandled option in Info Section: " + simple->toString());
@@ -352,29 +352,29 @@ void Mugen::Stage::loadSectionPlayerInfo(Ast::Section * section){
         if (attribute->getKind() == Ast::Attribute::Simple){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "p1startx"){
-                *simple >> p1startx;
+                simple->view() >> p1startx;
             } else if (*simple == "p1starty"){
-                *simple >> p1starty;
+                simple->view() >> p1starty;
             } else if (*simple == "p1startz"){
-                *simple >> p1startz;
+                simple->view() >> p1startz;
             } else if (*simple == "p1facing"){
-                *simple >> p1facing;
+                simple->view() >> p1facing;
             } else if (*simple == "p2startx"){
-                *simple >> p2startx;
+                simple->view() >> p2startx;
             } else if (*simple == "p2starty"){
-                *simple >> p2starty;
+                simple->view() >> p2starty;
             } else if (*simple == "p2startz"){
-                *simple >> p2startz;
+                simple->view() >> p2startz;
             } else if (*simple == "p2facing"){
-                *simple >> p2facing;
+                simple->view() >> p2facing;
             } else if (*simple == "leftbound"){
-                *simple >> leftbound;
+                simple->view() >> leftbound;
             } else if (*simple == "rightbound"){
-                *simple >> rightbound;
+                simple->view() >> rightbound;
             } else if (*simple == "topbound"){
-                *simple >> topbound;
+                simple->view() >> topbound;
             } else if (*simple == "botbound"){
-                *simple >> botbound;
+                simple->view() >> botbound;
             } else {
                 throw MugenException("Unhandled option in PlayerInfo Section: " + simple->toString());
             }
@@ -388,9 +388,9 @@ void Mugen::Stage::loadSectionBound(Ast::Section * section){
         if (attribute->getKind() == Ast::Attribute::Simple){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "screenleft"){
-                *simple >> screenleft;
+                simple->view() >> screenleft;
             } else if (*simple == "screenright"){
-                *simple >> screenright;
+                simple->view() >> screenright;
             } else {
                 throw MugenException("Unhandled option in Bound Section: " + simple->toString());
             }
@@ -404,13 +404,13 @@ void Mugen::Stage::loadSectionStageInfo(Ast::Section * section){
         if (attribute->getKind() == Ast::Attribute::Simple){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "zoffset" ){
-                *simple >> zoffset;
+                simple->view() >> zoffset;
             } else if (*simple == "zoffsetlink" ){
-                *simple >> zoffsetlink;
+                simple->view() >> zoffsetlink;
             } else if (*simple == "autoturn"){
-                *simple >> autoturn;
+                simple->view() >> autoturn;
             } else if (*simple == "resetbg"){
-                *simple >> resetBG;
+                simple->view() >> resetBG;
             } else {
                 throw MugenException("Unhandled option in StageInfo Section: " + simple->toString());
             }
@@ -424,23 +424,23 @@ void Mugen::Stage::loadSectionShadow(Ast::Section * section, cymk_holder & shado
         if (attribute->getKind() == Ast::Attribute::Simple){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "intensity"){
-                *simple >> shadow.k;
+                simple->view() >> shadow.k;
             // *content->getNext() >> shadowIntensity;
             // shadow.k = shadowIntensity;
             } else if (*simple == "reflect"){
-                *simple >> reflect;
+                simple->view() >> reflect;
             } else if (*simple == "color"){
                 try{
-                    *simple >> shadow.c;
-                    *simple >> shadow.y;
-                    *simple >> shadow.m;
+                    Ast::View view = simple->view();
+                    view >> shadow.c;
+                    view >> shadow.y;
+                    view >> shadow.m;
                 } catch (const Ast::Exception & fail){
                 }
             } else if (*simple == "yscale"){
-                *simple >> shadowYscale;
+                simple->view() >> shadowYscale;
             } else if (*simple == "fade.range"){
-                *simple >> shadowFadeRangeHigh;
-                *simple >> shadowFadeRangeMid;
+                simple->view() >> shadowFadeRangeHigh >> shadowFadeRangeMid;
             } else {
                 throw MugenException("Unhandled option in Shadow Section: " + simple->toString());
             }
@@ -454,7 +454,7 @@ void Mugen::Stage::loadSectionReflection(Ast::Section * section){
         if (attribute->getKind() == Ast::Attribute::Simple){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "intensity"){
-                *simple >> reflectionIntensity;
+                simple->view() >> reflectionIntensity;
             } else {
                 throw MugenException("Unhandled option in Reflection Section: " + simple->toString());
             }
@@ -469,12 +469,12 @@ void Mugen::Stage::loadSectionMusic(Ast::Section * section){
             Ast::AttributeSimple * simple = (Ast::AttributeSimple*) attribute;
             if (*simple == "bgmusic"){
 		try {
-		    *simple >> music;
+		    simple->view() >> music;
 		} catch (const MugenException &ex){
 		}
             } else if (*simple == "bgvolume"){
 		try {
-		    *simple >> musicVolume;
+		    simple->view() >> musicVolume;
 		} catch (const MugenException &ex){
 		}
 	    } else {
@@ -551,7 +551,7 @@ void Mugen::Stage::load(){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(Mugen::Util::parseDef(ourDefFile.path()));
+    AstRef parsed(Mugen::Util::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
@@ -559,7 +559,7 @@ void Mugen::Stage::load(){
     struct cymk_holder shadow;
     
     /* Extract info for our first section of our stage */
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
 	head = Mugen::Util::fixCase(head);
@@ -1548,8 +1548,8 @@ const std::string Mugen::Stage::getStageName(const std::string &filename) throw 
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    Ast::AstParse parsed(Mugen::Util::parseDef(defFile.path()));
-    return parsed.findSection("info")->findAttribute("name")->valueAsString();
+    AstRef parsed(Mugen::Util::parseDef(defFile.path()));
+    return parsed->findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname );
     return "";

@@ -8,8 +8,12 @@
 #include "exception.h"
 #include "configuration.h"
 #include "util/bitmap.h"
+#include "util/pointer.h"
+#include "ast/extra.h"
 
 #include "util/input/input-manager.h"
+
+typedef ::Util::ReferenceCount<Ast::AstParse> AstRef;
 
 class MugenAnimation;
 class MugenBackground;
@@ -20,7 +24,6 @@ class MugenSection;
 class MugenCharacterSelect;
 namespace Ast{
     class Section;
-    class AstParse;
 }
 
 namespace Mugen{
@@ -82,7 +85,7 @@ namespace Util{
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string
     // Usefull for getting names of maps, characters, etc without loading the entire Object....
     const std::string probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search);
-    const std::string probeDef(const Ast::AstParse & parsed, const std::string & section, const std::string & search);
+    const std::string probeDef(const AstRef & parsed, const std::string & section, const std::string & search);
 
     /* Use to probe a SFF file for a specific sprite without loading the
      * whole sprite list
@@ -97,9 +100,9 @@ namespace Util{
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.
      */
-    std::list<Ast::Section*>* parseAir(const std::string & filename);
-    std::list<Ast::Section*>* parseDef(const std::string & filename);
-    std::list<Ast::Section*>* parseCmd(const std::string & filename);
+    AstRef parseAir(const std::string & filename);
+    AstRef parseDef(const std::string & filename);
+    AstRef parseCmd(const std::string & filename);
 
     /* returns the number of game ticks that have passed by.
      * speed adjusts the rate. lower values slow the game down,

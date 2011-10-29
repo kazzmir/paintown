@@ -293,6 +293,9 @@ test/util/token_exception.cpp
 test/util/timedifference.cpp
 test/mugen/exception.cpp
 test/mugen/ast/ast.cpp
+test/mugen/parse-cache.cpp
+test/util/file-system.cpp
+test/util/thread.cpp
 test/exceptions/exception.cpp
 """)
 

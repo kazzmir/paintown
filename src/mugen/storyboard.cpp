@@ -72,7 +72,7 @@ void Layer::reset(){
     }
 }
 	
-Scene::Scene(Ast::Section * data, const Filesystem::AbsolutePath & file, Ast::AstParse & parsed, SpriteMap & sprites):
+Scene::Scene(Ast::Section * data, const Filesystem::AbsolutePath & file, const AstRef & parsed, SpriteMap & sprites):
 clearColor(Graphics::MaskColor()),
 clearColorSet(false),
 ticker(0),
@@ -88,7 +88,7 @@ musicLoop(true){
     }
     class SceneWalker: public Ast::Walker {
     public:
-        SceneWalker(Scene & scene, const Filesystem::AbsolutePath & file, SpriteMap & sprites, Ast::AstParse & parse):
+        SceneWalker(Scene & scene, const Filesystem::AbsolutePath & file, SpriteMap & sprites, const AstRef & parse):
             scene(scene),
             file(file),
             sprites(sprites),
@@ -101,50 +101,49 @@ musicLoop(true){
         Scene & scene;
         const Filesystem::AbsolutePath & file;
         SpriteMap & sprites;
-        Ast::AstParse & parsed;
+        const AstRef & parsed;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "fadein.time"){
                 int time;
-                simple >> time;
+                simple.view() >> time;
                 scene.fader.setFadeInTime(time);
             } else if (simple == "fadein.col"){
                 int r=0,g=0,b=0;
                 try{
-                    simple >> r >> g >> b;
+                    simple.view() >> r >> g >> b;
                 } catch (const Ast::Exception & e){
                 }
                 scene.fader.setFadeInColor(Graphics::makeColor(r,g,b));
             } else if (simple == "fadeout.time"){
                 int time;
-                simple >> time;
+                simple.view() >> time;
                 scene.fader.setFadeOutTime(time);
             } else if (simple == "fadeout.col"){
                 int r=0,g=0,b=0;
                 try {
-                    simple >> r >> g >> b;
+                    simple.view() >> r >> g >> b;
                 } catch (const Ast::Exception & e){
                 }
                 scene.fader.setFadeOutColor(Graphics::makeColor(r, g, b));
             } else if (simple == "bg.name"){
                 std::string name;
-                simple >> name;
+                simple.view() >> name;
                 // scene.background = new Background(file, name);
                 scene.background = new Background(parsed, name, sprites);
             } else if (simple == "clearcolor"){
                 int r=0,g=0,b=0;
                 try {
-                    simple >> r >> g >> b;
+                    simple.view() >> r >> g >> b;
                 } catch (const Ast::Exception & e){
                 }
                 scene.clearColor = (r == -1 ? Graphics::Color() : Graphics::makeColor(r, g, b));
                 scene.clearColorSet = true;
             } else if (simple == "end.time"){
-                simple >> scene.endTime;
+                simple.view() >> scene.endTime;
             } else if (simple == "layerall.pos"){
                 try{
-                    simple >> scene.defaultPosition.x;
-                    simple >> scene.defaultPosition.y;
+                    simple.view() >> scene.defaultPosition.x >> scene.defaultPosition.y;
                     scene.defaultPositionSet = true;
                 } catch (const Ast::Exception & e){
                 }
@@ -152,8 +151,8 @@ musicLoop(true){
                 int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
                 if (num >= 0 && num < scene.maxLayers){
                     std::string action;
-                    simple >> action;
-                    Ast::Section * section = parsed.findSection("begin action " + action);
+                    simple.view() >> action;
+                    Ast::Section * section = parsed->findSection("begin action " + action);
                     scene.layers[num]->setAnimation(Util::getAnimation(section, sprites, false));
                 }
             } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
@@ -161,7 +160,7 @@ musicLoop(true){
                 if (num >= 0 && num < scene.maxLayers){
                     int x=0,y=0;
                     try{
-                        simple >> x >> y;
+                        simple.view() >> x >> y;
                     } catch (Ast::Exception & e){
                     }
                     scene.layers[num]->setOffset(x, y);
@@ -170,14 +169,14 @@ musicLoop(true){
                 int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
                 if (num >= 0 && num < scene.maxLayers){
                     int time;
-                    simple >> time;
+                    simple.view() >> time;
                     scene.layers[num]->setStartTime(time);
                     // Global::debug(0) << "Setting layer " << scene.layers[num] << " [" << num << "] start time to " << time << endl;
                 }
             } else if (simple == "bgm"){
                 try{
                     std::string bgm;
-                    simple >> bgm;
+                    simple.view() >> bgm;
                     if (!bgm.empty()){
                         try{
                             scene.music = Util::findFile(file.getDirectory(), Filesystem::RelativePath(bgm));
@@ -190,7 +189,7 @@ musicLoop(true){
                 }
             } else if (simple == "bgm.loop"){
                 try{
-                    simple >> scene.musicLoop;
+                    simple.view() >> scene.musicLoop;
                 } catch (const Ast::Exception & e){
                 }
             } else {
@@ -309,7 +308,7 @@ startscene(0){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(Util::parseDef(ourDefFile.path()));
+    AstRef parsed(Util::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
@@ -321,7 +320,7 @@ startscene(0){
     bool clearColorSet = false;
     Graphics::Color clearColor = Graphics::makeColor(0, 0, 0);
     
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
 	
@@ -333,11 +332,11 @@ startscene(0){
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "name"){
                         string name;
-                        simple >> name;
+                        simple.view() >> name;
                         Global::debug(1) << "Read name '" << name << "'" << endl;
                     } else if (simple == "author"){
                         string name;
-                        simple >> name;
+                        simple.view() >> name;
                         Global::debug(1) << "Made by: '" << name << "'" << endl;
                     } else {
                         Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
@@ -364,10 +363,10 @@ startscene(0){
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "spr"){
                         std::string temp;
-                        simple >> temp;
+                        simple.view() >> temp;
                         Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
                     } else if (simple == "startscene"){
-                        simple >> board.startscene;
+                        simple.view() >> board.startscene;
                         Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;
                     } else {
                         Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;

@@ -104,6 +104,31 @@ public:
     bool operator==(const std::string & str) const {
         return downcase(name) == downcase(str);
     }
+
+    class FunctionView: public ViewImplementation {
+    public:
+        FunctionView(const Function * owner):
+        owner(owner){
+        }
+
+        const Function * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+    };
+
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new FunctionView(this)));
+    }
     
     virtual Element * copy() const {
         ValueList * args_copy = 0;

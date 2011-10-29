@@ -269,9 +269,9 @@ class NormalElement : public BackgroundElement {
 };
 
 /*! Animation Element */
-class AnimationElement : public BackgroundElement {
+class AnimationElement: public BackgroundElement {
 public:
-    AnimationElement(const Ast::AstParse & parse, const std::string & name, Ast::Section * data, const Mugen::SpriteMap & sprites);
+    AnimationElement(const PaintownUtil::ReferenceCount<Ast::AstParse> & parse, const std::string & name, Ast::Section * data, const Mugen::SpriteMap & sprites);
 
     virtual ~AnimationElement();
     virtual void act();
@@ -415,7 +415,7 @@ class Background{
     public:
 	//! Pass in the file that has the background and the base name ie 'BG'
 	Background(const Filesystem::AbsolutePath & file, const std::string &header);
-	Background(const Ast::AstParse & parse, const std::string & header, const SpriteMap & sprites);
+	Background(const PaintownUtil::ReferenceCount<Ast::AstParse> & parse, const std::string & header, const SpriteMap & sprites);
 
 	virtual ~Background();
 	

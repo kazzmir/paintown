@@ -21,12 +21,38 @@ public:
         return "\"" + *str + "\"";
     }
 
-    using Value::operator>>;
-    virtual const Value & operator>>(std::string & str) const {
-        str = *(this->str);
-        return *this;
-    }
+    class StringView: public ViewImplementation {
+    public:
+        StringView(const String * owner):
+        owner(owner){
+        }
 
+        const String * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+
+        using ViewImplementation::operator>>;
+        virtual ViewImplementation & operator>>(std::string & str){
+            str = *(owner->str);
+            return *this;
+        }
+    };
+
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new StringView(this)));
+    }
+    
     using Element::operator==;
     virtual bool operator==(const Value & him) const {
         return him == *this;

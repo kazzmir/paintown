@@ -348,7 +348,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(Util::parseDef(systemFile.path()));
+    AstRef parsed(Util::parseDef(systemFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
@@ -360,7 +360,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     Point doneSound;
     Point cancelSound;
     
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
 	if (head == "Files"){
@@ -379,12 +379,12 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "snd"){
 			    std::string file;
-                            simple >> file;
+                            simple.view() >> file;
                             Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
                             Global::debug(1) << "Got Sound File: '" << file << "'" << endl;
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string temp;
-                            simple >> temp;
+                            simple.view() >> temp;
                             fonts.push_back(new MugenFont(Util::findFile(Filesystem::RelativePath(temp))));
                             Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                         }
@@ -408,17 +408,17 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "cursor.move.snd"){
 			    try{
-				simple >> moveSound.x >> moveSound.y;
+				simple.view() >> moveSound.x >> moveSound.y;
 			    } catch (const Ast::Exception & e){
 			    }
                         } else if (simple == "cursor.done.snd"){
 			    try{
-				simple >> doneSound.x >> doneSound.y;
+				simple.view() >> doneSound.x >> doneSound.y;
 			    } catch (const Ast::Exception & e){
 			    }
                         } else if (simple == "cancel.snd"){
 			    try{
-				simple >> cancelSound.x >> cancelSound.y;
+				simple.view() >> cancelSound.x >> cancelSound.y;
 			    } catch (const Ast::Exception & e){
 			    }
                         } 

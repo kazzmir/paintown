@@ -86,7 +86,7 @@ public:
 
     std::string valueAsString() const {
         std::string str;
-        *this >> str;
+        view() >> str;
         return str;
     }
 
@@ -94,6 +94,20 @@ public:
         return value;
     }
 
+    virtual View view() const {
+        if (value != NULL){
+            return value->view();
+        } else {
+            std::ostringstream out;
+            out << "no values available for attribute '" << this->toString() << "'";
+            if (getLine() != -1 && getColumn() != -1){
+                out << " at line " << getLine() << " column " << getColumn();
+            }
+            throw Exception(out.str());
+        }
+    }
+
+    /*
     template <typename X>
     const AttributeSimple & operator>>(X & v) const {
         if (value != 0){
@@ -117,6 +131,7 @@ public:
         }
         return *this;
     }
+    */
 
     /*
     virtual bool referenced(const void * value) const {

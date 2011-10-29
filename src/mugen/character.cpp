@@ -634,7 +634,7 @@ void Character::loadSelectData(){
 	    Global::debug(1) << "Cannot locate player definition file for: " << location.path() << endl;
 	}
 	
-        Ast::AstParse parsed(Util::parseDef(ourDefFile.path()));
+        AstRef parsed(Util::parseDef(ourDefFile.path()));
 	// Set name of character
 	this->name = Mugen::Util::probeDef(parsed, "info", "name");
 	this->displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
@@ -667,9 +667,9 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         int defaultTime = 15;
         int defaultBufferTime = 1;
 
-        Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
+        AstRef parsed(Util::parseCmd(full.path()));
         State * currentState = NULL;
-        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
             head = Util::fixCase(head);
@@ -694,13 +694,13 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "name"){
-                            simple >> name;
+                            simple.view() >> name;
                         } else if (simple == "command"){
                             key = (Ast::Key*) simple.getValue()->copy();
                         } else if (simple == "time"){
-                            simple >> time;
+                            simple.view() >> time;
                         } else if (simple == "buffer.time"){
-                            simple >> bufferTime;
+                            simple.view() >> bufferTime;
                             /* Time that the command will be buffered for. If the command is done
                              * successfully, then it will be valid for this time. The simplest
                              * case is to set this to 1. That means that the command is valid
@@ -746,9 +746,9 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "command.time"){
-                            simple >> time;
+                            simple.view() >> time;
                         } else if (simple == "command.buffer.time"){
-                            simple >> buffer;
+                            simple.view() >> buffer;
                         }
                     }
                 };
@@ -911,8 +911,8 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
     Filesystem::AbsolutePath full = Storage::instance().findInsensitive(Storage::instance().cleanse(baseDir).join(path));
     try{
         /* cns can use the Cmd parser */
-        Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
-        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        AstRef parsed(Util::parseCmd(full.path()));
+        for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
             head = Util::fixCase(head);
@@ -930,11 +930,11 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                         string name = simple.idString();
                         if (simple.getValue() != 0 && simple.getValue()->hasMultiple()){
                             vector<double> values;
-                            simple >> values;
+                            simple.view() >> values;
                             self.setConstant(name, values);
                         } else {
                             double value;
-                            simple >> value;
+                            simple.view() >> value;
                             self.setConstant(name, value);
                         }
                     }
@@ -954,55 +954,55 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "walk.fwd"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setWalkForwardX(speed);
                         } else if (simple == "walk.back"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setWalkBackX(speed);
                         } else if (simple == "run.fwd"){
                             double x, y;
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                             self.setRunForwardX(x);
                             self.setRunForwardY(y);
                         } else if (simple == "run.back"){
                             double x, y;
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                             self.setRunBackX(x);
                             self.setRunBackY(y);
                         } else if (simple == "jump.neu"){
                             double x, y;
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                             self.setNeutralJumpingX(x);
                             self.setNeutralJumpingY(y);
                         } else if (simple == "jump.back"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setJumpBack(speed);
                         } else if (simple == "jump.fwd"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setJumpForward(speed);
                         } else if (simple == "runjump.back"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setRunJumpBack(speed);
                         } else if (simple == "runjump.fwd"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setRunJumpForward(speed);
                         } else if (simple == "airjump.neu"){
                             double x, y;
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                             self.setAirJumpNeutralX(x);
                             self.setAirJumpNeutralY(y);
                         } else if (simple == "airjump.back"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setAirJumpBack(speed);
                         } else if (simple == "airjump.fwd"){
                             double speed;
-                            simple >> speed;
+                            simple.view() >> speed;
                             self.setAirJumpForward(speed);
                         }
                     }
@@ -1022,20 +1022,20 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "liedown.time"){
                             int x;
-                            simple >> x;
+                            simple.view() >> x;
                             self.setLieDownTime(x);
                         } else if (simple == "airjuggle"){
                             int x;
-                            simple >> x;
+                            simple.view() >> x;
                             self.setJugglePoints(x);
                         } else if (simple == "life"){
                             int x;
-                            simple >> x;
+                            simple.view() >> x;
                             self.setMaxHealth(x);
                             self.setHealth(x);
                         } else if (simple == "sparkno"){
                             string spark;
-                            simple >> spark;
+                            simple.view() >> spark;
                             spark = PaintownUtil::lowerCaseAll(spark);
                             if (PaintownUtil::matchRegex(spark, "s[0-9]+")){
                                 /* FIXME: handle S */
@@ -1044,7 +1044,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             }
                         } else if (simple == "guard.sparkno"){
                             string spark;
-                            simple >> spark;
+                            simple.view() >> spark;
                             spark = PaintownUtil::lowerCaseAll(spark);
                             if (PaintownUtil::matchRegex(spark, "s[0-9]+")){
                                 /* FIXME: handle S */
@@ -1070,44 +1070,44 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "height"){
                             int x;
-                            simple >> x;
+                            simple.view() >> x;
                             self.setHeight(x);
                         } else if (simple == "xscale"){
-			    simple >> self.xscale;
+			    simple.view() >> self.xscale;
 			} else if (simple == "yscale"){
-			    simple >> self.yscale;
+			    simple.view() >> self.yscale;
 			} else if (simple == "ground.back"){
-			    simple >> self.groundback;
+			    simple.view() >> self.groundback;
 			} else if (simple == "ground.front"){
-			    simple >> self.groundfront;
+			    simple.view() >> self.groundfront;
 			} else if (simple == "air.back"){
-			    simple >> self.airback;
+			    simple.view() >> self.airback;
 			} else if (simple == "air.front"){
-			    simple >> self.airfront;
+			    simple.view() >> self.airfront;
 			} else if (simple == "attack.dist"){
-			    simple >> self.attackdist;
+			    simple.view() >> self.attackdist;
 			} else if (simple == "proj.attack.dist"){
-			    simple >> self.projattackdist;
+			    simple.view() >> self.projattackdist;
 			} else if (simple == "proj.doscale"){
-			    simple >> self.projdoscale;
+			    simple.view() >> self.projdoscale;
 			} else if (simple == "head.pos"){
 			    int x=0,y=0;
 			    try{
-				simple >> self.headPosition.x >> self.headPosition.y;
+				simple.view() >> self.headPosition.x >> self.headPosition.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			} else if (simple == "mid.pos"){
 			    int x=0,y=0;
 			    try{
-				simple >> self.midPosition.x >> self.midPosition.y;
+				simple.view() >> self.midPosition.x >> self.midPosition.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			} else if (simple == "shadowoffset"){
-			    simple >> self.shadowoffset;
+			    simple.view() >> self.shadowoffset;
 			} else if (simple == "draw.offset"){
 			    int x=0,y=0;
 			    try{
-				simple >> self.drawOffset.x >> self.drawOffset.y;
+				simple.view() >> self.drawOffset.x >> self.drawOffset.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			}
@@ -1129,19 +1129,19 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "yaccel"){
                             double n;
-                            simple >> n;
+                            simple.view() >> n;
                             self.setGravity(n);
                         } else if (simple == "stand.friction"){
                             double n;
-                            simple >> n;
+                            simple.view() >> n;
                             self.setStandingFriction(n);
                         } else if (simple == "airjump.num"){
                             int x;
-                            simple >> x;
+                            simple.view() >> x;
                             self.setExtraJumps(x);
                         } else if (simple == "airjump.height"){
                             double x;
-                            simple >> x;
+                            simple.view() >> x;
                             self.setAirJumpHeight(x);
                         }
                     }
@@ -1181,7 +1181,7 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "type" || simple == "statetype"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     type = PaintownUtil::lowerCaseAll(type);
                     if (type == "s"){
                         definition->setType(State::Standing);
@@ -1200,11 +1200,11 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                     }
                 } else if (simple == "movetype"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     definition->setMoveType(type);
                 } else if (simple == "physics"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     if (type == "S"){
                         definition->setPhysics(Physics::Stand);
                     } else if (type == "N"){
@@ -1223,7 +1223,7 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                 } else if (simple == "velset"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     definition->setVelocity(Compiler::compile(x), Compiler::compile(y));
                 } else if (simple == "ctrl"){
                     definition->setControl(Compiler::compile(simple.getValue()));
@@ -1234,11 +1234,11 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                 } else if (simple == "facep2"){
                 } else if (simple == "hitdefpersist"){
                     bool what;
-                    simple >> what;
+                    simple.view() >> what;
                     definition->setHitDefPersist(what);
                 } else if (simple == "layerno"){
                     int layer;
-                    simple >> layer;
+                    simple.view() >> layer;
                     definition->setLayer(layer);
                 } else if (simple == "movehitpersist"){
                 } else if (simple == "hitcountpersist"){
@@ -1373,7 +1373,7 @@ StateController * Character::parseState(Ast::Section * section){
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "type"){
                 string type;
-                simple >> type;
+                simple.view() >> type;
                 type = Mugen::Util::fixCase(type);
                 
                 if (types.find(type) != types.end()){
@@ -1433,9 +1433,9 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
     PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(stateFileParameter, Storage::instance().cleanse(full));
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
-    Ast::AstParse parsed((list<Ast::Section*>*) Util::parseCmd(full.path()));
+    AstRef parsed(Util::parseCmd(full.path()));
     State * currentState = NULL;
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
         head = Util::fixCase(head);
@@ -1483,10 +1483,10 @@ void Character::load(int useAct){
     baseDir = location.getDirectory();
     // const std::string ourDefFile = location;
      
-    Ast::AstParse parsed(Util::parseDef(location.path()));
+    AstRef parsed(Util::parseDef(location.path()));
     try{
         /* Extract info for our first section of our stage */
-        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
             /* this should really be head = Mugen::Util::fixCase(head) */
@@ -1504,32 +1504,32 @@ void Character::load(int useAct){
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "name"){
                                 try{
-                                    simple >> self.name;
+                                    simple.view() >> self.name;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "displayname"){
                                 try{
-                                    simple >> self.displayName;
+                                    simple.view() >> self.displayName;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "versiondate"){
                                 try{
-                                    simple >> self.versionDate;
+                                    simple.view() >> self.versionDate;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "mugenversion"){
                                 try{
-                                    simple >> self.mugenVersion;
+                                    simple.view() >> self.mugenVersion;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "author"){
                                 try{
-                                    simple >> self.author;
+                                    simple.view() >> self.author;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "pal.defaults"){
                                 vector<int> numbers;
-                                simple >> numbers;
+                                simple.view() >> numbers;
                                 for (vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
                                     self.palDefaults.push_back((*it) - 1);
                                 }
@@ -1556,42 +1556,42 @@ void Character::load(int useAct){
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "cmd"){
                                 string file;
-                                simple >> file;
+                                simple.view() >> file;
                                 self.cmdFile = Filesystem::RelativePath(file);
                                 /* loaded later after the state files */
                             } else if (simple == "cns"){
                                 string file;
-                                simple >> file;
+                                simple.view() >> file;
                                 /* just loads the constants */
                                 self.loadCnsFile(Filesystem::RelativePath(file));
                             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "st[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "st([0-9]+)", 0).c_str());
                                 if (num >= 0 && num <= 12){
                                     string path;
-                                    simple >> path;
+                                    simple.view() >> path;
                                     stateFiles.push_back(Location(self.baseDir, path));
                                     // simple >> self.stFile[num];
                                 }
                             } else if (simple == "stcommon"){
                                 string path;
-                                simple >> path;
+                                simple.view() >> path;
                                 stateFiles.insert(stateFiles.begin(), Location(self.baseDir, path));
                             } else if (simple == "st"){
                                 string path;
-                                simple >> path;
+                                simple.view() >> path;
                                 stateFiles.push_back(Location(self.baseDir, path));
                             } else if (simple == "sprite"){
-                                simple >> self.sffFile;
+                                simple.view() >> self.sffFile;
                             } else if (simple == "anim"){
-                                simple >> self.airFile;
+                                simple.view() >> self.airFile;
                             } else if (simple == "sound"){
-                                simple >> self.sndFile;
+                                simple.view() >> self.sndFile;
                                 // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
                                 Util::readSounds(Storage::instance().lookupInsensitive(self.baseDir, Filesystem::RelativePath(self.sndFile)), self.sounds);
                             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal([0-9]+)", 0).c_str());
                                 string what;
-                                simple >> what;
+                                simple.view() >> what;
                                 self.palFile[num] = what;
                             } else {
                                 Global::debug(0) << "Unhandled option in Files Section: " + simple.toString() << endl;
@@ -1702,12 +1702,12 @@ void Character::load(int useAct){
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "intro.storyboard"){
                                 try{
-                                    simple >> self.introFile;
+                                    simple.view() >> self.introFile;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "ending.storyboard"){
                                 try{
-                                    simple >> self.endingFile;
+                                    simple.view() >> self.endingFile;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else {

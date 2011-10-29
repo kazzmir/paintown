@@ -79,6 +79,31 @@ public:
         out << name << ", " << original->toString();
         return Util::trim(out.str());
     }
+
+    class HelperView: public ViewImplementation {
+    public:
+        HelperView(const Helper * owner):
+        owner(owner){
+        }
+
+        const Helper * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+    };
+
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new HelperView(this)));
+    }
     
     /*
     virtual bool referenced(const void * value) const {

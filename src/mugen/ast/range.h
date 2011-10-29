@@ -79,6 +79,31 @@ public:
         return new Range(line, column, RangeType(type), Value::deserialize(low), Value::deserialize(high));
     }
 
+    class RangeView: public ViewImplementation {
+    public:
+        RangeView(const Range * owner):
+        owner(owner){
+        }
+
+        const Range * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+    };
+
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new RangeView(this)));
+    }
+
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
         low->mark(marks);

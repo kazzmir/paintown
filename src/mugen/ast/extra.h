@@ -111,6 +111,9 @@ public:
     }
 
     Token * serialize() const {
+        if (sections == NULL){
+            return NULL;
+        }
         return serialize(sections);
     }
 
@@ -125,7 +128,7 @@ public:
         return token;
     }
 
-    static int lowerCase( int c ){ return tolower(c); }
+    static int lowerCase(int c){ return tolower(c); }
 
     static std::string downcase(std::string str){
         std::transform(str.begin(), str.end(), str.begin(), lowerCase);
@@ -133,10 +136,12 @@ public:
     }
 
     Section * findSection(const std::string & find) const {
-        for (std::list<Section*>::const_iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-            Section * section = *section_it;
-            if (downcase(section->getName()) == downcase(find)){
-                return section;
+        if (sections != NULL){
+            for (std::list<Section*>::const_iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
+                Section * section = *section_it;
+                if (downcase(section->getName()) == downcase(find)){
+                    return section;
+                }
             }
         }
         throw Exception("Could not find section '" + find + "'");

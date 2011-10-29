@@ -141,11 +141,7 @@ test/paintown-engine/network/cacher.cpp
 test/util/input/text-input.cpp
 test/util/input/input.cpp
 test/util/gui/lineedit.cpp
-test/util/gui/keys.cpp
-test/util/gui/keyinput_manager.cpp
 test/util/gui/timer.cpp
-test/util/gui/keyinput.cpp
-test/util/gui/al_keyinput.cpp
 test/mugen/exception.cpp
 test-parser/air.cpp
 test-parser/def.cpp

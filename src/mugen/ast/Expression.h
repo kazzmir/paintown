@@ -84,7 +84,48 @@ public:
         marks[this] = true;
         expression->mark(marks);
     }
+
+    class ExpressionView: public ViewImplementation {
+    public:
+        ExpressionView(const ExpressionUnary * owner):
+        owner(owner){
+        }
+
+        const ExpressionUnary * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+
+        using ViewImplementation::operator>>;
+        virtual ExpressionView & operator>>(double & x){
+            owner->expression->view() >> x;
+            switch (owner->type){
+                case Minus : {
+                    x = -x;
+                    break;
+                }
+                default : {
+                    break;
+                }
+            }
+            return *this;
+        }
+    };
+
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new ExpressionView(this)));
+    }
     
+    /*
     using Value::operator>>;
 
     virtual const Value & operator>>(double & x) const {
@@ -100,6 +141,7 @@ public:
         }
         return *this;
     }
+    */
 
     virtual void walk(Walker & walker) const {
         walker.onExpressionUnary(*this);
@@ -193,6 +235,31 @@ public:
         return getExpressionType() == him.getExpressionType() &&
                *getLeft() == *him.getLeft() &&
                *getRight() == *him.getRight();
+    }
+
+    class ExpressionView: public ViewImplementation {
+    public:
+        ExpressionView(const ExpressionInfix * owner):
+        owner(owner){
+        }
+
+        const ExpressionInfix * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+    };
+
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new ExpressionView(this)));
     }
     
     static ExpressionInfix * deserialize(const Token * token){

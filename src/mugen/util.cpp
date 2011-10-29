@@ -746,10 +746,11 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             frame->attackCollision = clsn1Holder;
             frame->loopstart = setloop;
             /* Get sprite details */
+            Ast::View view = values.view();
             int group = 0, spriteNumber = 0;
             // Need to get the parsed data and populate these above items
             try{
-                values >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;
+                view >> group >> spriteNumber >> frame->xoffset >> frame->yoffset >> frame->time;
             } catch (const Ast::Exception & fail){
                 std::ostringstream out;
                 out << "Could not parse animation because " << fail.getReason();
@@ -758,7 +759,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
             string flip;
             string blend;
             try{
-                values >> flip >> blend;
+                view >> flip >> blend;
             } catch (const Ast::Exception & e){
             }
 
@@ -833,7 +834,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
         virtual void onAttributeArray(const Ast::AttributeArray & array){
             // Global::debug(1, __FILE__) << "Array item: " << array.toString() << endl;
             MugenArea area;
-            array >> area.x1 >> area.y1 >> area.x2 >> area.y2;
+            array.view() >> area.x1 >> area.y1 >> area.x2 >> area.y2;
             Global::debug(2) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
             string source = "some file";
             if (array == "clsn1"){
@@ -874,25 +875,25 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
                  * Just read 3 boxes because thats whats given.
                  */
                 int boxes;
-                simple >> boxes;
+                simple.view() >> boxes;
             } else if (simple == "clsn2default"){
                 expected = clsn2;
                 clsn2Holder.clear();
                 clsn2Reset = false;
                 int boxes;
-                simple >> boxes;
+                simple.view() >> boxes;
             } else if (simple == "clsn1"){
                 expected = clsn1;
                 clsn1Holder.clear();
                 clsn1Reset = true;
                 int boxes;
-                simple >> boxes;
+                simple.view() >> boxes;
             } else if (simple == "clsn2"){
                 expected = clsn2;
                 clsn2Holder.clear();
                 clsn2Reset = true;
                 int boxes;
-                simple >> boxes;
+                simple.view() >> boxes;
             }
         }
     };
@@ -931,7 +932,7 @@ static void parseException(const string & file, const string & error, int line, 
     throw MugenException(out.str());
 }
 
-list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
+PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseAir(const string & filename){
     try{
         return ParseCache::parseAir(filename);
     } catch (const Ast::Exception & e){
@@ -942,7 +943,7 @@ list<Ast::Section*>* Mugen::Util::parseAir(const string & filename){
     }
 }
 
-list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
+PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseDef(const string & filename){
     try{
         return ParseCache::parseDef(filename);
     } catch (const Ast::Exception & e){
@@ -953,7 +954,7 @@ list<Ast::Section*>* Mugen::Util::parseDef(const string & filename){
     }
 }
 
-list<Ast::Section*>* Mugen::Util::parseCmd(const string & filename){
+PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseCmd(const string & filename){
     try{
         return ParseCache::parseCmd(filename);
     } catch (const Ast::Exception & e){
@@ -965,11 +966,11 @@ list<Ast::Section*>* Mugen::Util::parseCmd(const string & filename){
 }
 
 std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask){
-    Ast::AstParse parsed(parseAir(filename.path()));
-    Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed.getSections()->size() << endl;
+    AstRef parsed(parseAir(filename.path()));
+    // Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed->getSections()->size() << endl;
     
     map<int, MugenAnimation*> animations;
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
         Global::debug(2, __FILE__) << "Animation section '" << head << "'" << endl;
@@ -1024,11 +1025,11 @@ const Filesystem::AbsolutePath Mugen::Util::getCorrectFileLocation(const Filesys
 }
 */
 
-const std::string Mugen::Util::probeDef(const Ast::AstParse & parsed, const std::string & section, const std::string & search){
+const std::string Mugen::Util::probeDef(const AstRef & parsed, const std::string & section, const std::string & search){
     std::string ourSection = fixCase(section);
     std::string ourSearch = fixCase(search);
    
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
 	Ast::Section * astSection = *section_it;
 	std::string head = astSection->getName();
         
@@ -1046,7 +1047,7 @@ const std::string Mugen::Util::probeDef(const Ast::AstParse & parsed, const std:
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == search){
-                        simple >> result;
+                        simple.view() >> result;
                         Global::debug(2) << "Found result: " << result << endl;
                     } 
                 }
@@ -1076,12 +1077,7 @@ void Mugen::Util::destroyRaw(const map< unsigned int, std::map< unsigned int, Mu
 }
 
 const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search){
-    TimeDifference diff;
-    diff.startTime();
-    Ast::AstParse parsed(parseDef(file.path()));
-    diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
-    return probeDef(parsed, section, search);
+    return probeDef(parseDef(file.path()), section, search);
 }
 
 MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){

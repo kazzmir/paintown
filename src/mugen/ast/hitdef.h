@@ -14,11 +14,36 @@ public:
     value(value){
     }
 
-    using Value::operator>>;
+    class HitDefAttributeView: public ViewImplementation {
+    public:
+        HitDefAttributeView(const HitDefAttribute * owner):
+        owner(owner){
+        }
 
-    virtual const Value & operator>>(std::string & str) const {
-        str = value;
-        return *this;
+        const HitDefAttribute * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+
+        using ViewImplementation::operator>>;
+        virtual HitDefAttributeView & operator>>(std::string & str){
+            str = owner->value;
+            return *this;
+        }
+    };
+
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new HitDefAttributeView(this)));
     }
 
     using Element::operator==;
@@ -72,16 +97,43 @@ public:
     Value(line, column){
     }
 
-    using Value::operator>>;
-
-    virtual const Value & operator>>(std::string & str) const {
-        if (current != values.end()){
-            str = *current;
-            current++;
-        } else {
-            throw Exception("No more values in this hitdef attack attribute: " + toString());
+    class HitDefAttackAttributeView: public ViewImplementation {
+    public:
+        HitDefAttackAttributeView(const HitDefAttackAttribute * owner):
+        owner(owner){
+            current = owner->values.begin();
         }
-        return *this;
+
+        const HitDefAttackAttribute * owner;
+        std::vector<std::string>::const_iterator current;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+
+        using ViewImplementation::operator>>;
+        virtual HitDefAttackAttributeView & operator>>(std::string & str){
+            if (current != owner->values.end()){
+                str = *current;
+                current++;
+            } else {
+                throw Exception("No more values in this hitdef attack attribute: " + owner->toString());
+            }
+            return *this;
+        }
+    };
+
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new HitDefAttackAttributeView(this)));
     }
 
     virtual void walk(Walker & walker) const {
@@ -118,10 +170,6 @@ public:
         return attribute;
     }
 
-    virtual void reset() const {
-        current = values.begin();
-    }
-
     using Element::operator==;
     virtual bool operator==(const Value & him) const {
         return him == *this;
@@ -151,7 +199,6 @@ public:
         for (std::vector<std::string>::const_iterator it = values.begin(); it != values.end(); it++){
             attribute->addAttribute(*it);
         }
-        attribute->reset();
         return attribute;
     }
           
@@ -177,7 +224,6 @@ public:
 
 protected:
     std::vector<std::string> values;
-    mutable std::vector<std::string>::const_iterator current;
 };
 
 }

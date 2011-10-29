@@ -8,8 +8,12 @@
 #include "exception.h"
 #include "util/gui/fadetool.h"
 #include "util.h"
+#include "ast/extra.h"
+#include "util/pointer.h"
 
 #include "util/input/input-map.h"
+
+namespace PaintownUtil = ::Util;
 
 namespace Graphics{
 class Bitmap;
@@ -64,7 +68,7 @@ class Layer{
 
 class Scene {
     public:
-	Scene(Ast::Section * data, const Filesystem::AbsolutePath & file, Ast::AstParse & parsed, SpriteMap & sprites);
+	Scene(Ast::Section * data, const Filesystem::AbsolutePath & file, const PaintownUtil::ReferenceCount<Ast::AstParse> & parsed, SpriteMap & sprites);
 	virtual ~Scene();
 	
         virtual void act();

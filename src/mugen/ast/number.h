@@ -21,16 +21,59 @@ public:
         */
     }
 
-    using Value::operator>>;
+    class NumberView: public ViewImplementation {
+    public:
+        NumberView(const Number * owner):
+        owner(owner){
+        }
 
-    virtual const Value & operator>>(const Value *& v) const {
-        v = this;
-        return *this;
-    }
+        const Number * owner;
 
-    virtual const Value & operator>>(int & x) const {
-        x = (int) value;
-        return *this;
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+    
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+
+        using ViewImplementation::operator>>;
+        virtual NumberView & operator>>(const Value *& v){
+            v = owner;
+            return *this;
+        }
+
+        virtual NumberView & operator>>(int & x){
+            x = (int) owner->value;
+            return *this;
+        }
+
+        virtual NumberView & operator>>(double & x){
+            x = owner->value;
+            return *this;
+        }
+
+
+        virtual NumberView & operator>>(bool & item){
+            /* cast to int here? probably not because then 0.1 would become false
+             * can an IEEE floating point value be exactly 0 in binary?
+             */
+            if (owner->value == 0){
+                item = false;
+            } else {
+                item = true;
+            }
+            return *this;
+        }
+    };
+
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new NumberView(this)));
     }
 
     virtual void walk(Walker & walker) const {
@@ -51,12 +94,7 @@ public:
         double epsilon = 0.00001;
         return fabs(value - him.value) < epsilon;
     }
-    
-    virtual const Value & operator>>(double & x) const {
-        x = value;
-        return *this;
-    }
-
+   
     static Number * deserialize(const Token * token){
         double value;
         int line, column;
@@ -70,18 +108,7 @@ public:
         return token;
     }
     
-    virtual const Value & operator>>(bool & item) const {
-        /* cast to int here? probably not because then 0.1 would become false
-         * can an IEEE floating point value be exactly 0 in binary?
-         */
-        if (value == 0){
-            item = false;
-        } else {
-            item = true;
-        }
-        return *this;
-    }
-    
+        
     virtual std::string getType() const {
         return "number";
     }
@@ -98,29 +125,6 @@ public:
 protected:
     double value;
 };
-
-/* this is hack to make double jumping work. try not to use this class if you
- * can help it.
- */
-/*
-class MutableNumber: public Number {
-public:
-    MutableNumber(double value):
-    Number(value){
-    }
-
-    virtual ~MutableNumber(){
-    }
-
-    double get() const {
-        return this->value;
-    }
-
-    void set(double v){
-        this->value = v;
-    }
-};
-*/
 
 }
 

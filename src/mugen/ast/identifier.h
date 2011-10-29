@@ -67,6 +67,32 @@ public:
     virtual std::string getType() const {
         return "identifier";
     }
+        
+    class IdentifierView: public ViewImplementation {
+    public:
+        IdentifierView(const Identifier * owner):
+        owner(owner){
+        }
+
+        const Identifier * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+    };
+
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new IdentifierView(this)));
+    }
 
     Token * serialize() const {
         Token * token = new Token();

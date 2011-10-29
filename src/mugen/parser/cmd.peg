@@ -821,7 +821,7 @@ rules:
     compare_equal = "=" {{ value = (void*) makeExpressionEquals; }}
                   | "!=" {{ value = (void*) makeExpressionUnequals; }}
 
-    hitdef-attack-attribute = attribute:{{ value = makeHitDefAttackAttribute(); }} hitdef-attack-attribute-item(attribute) (s "," s hitdef-attack-attribute-item(attribute))* {{ as<Ast::HitDefAttackAttribute*>(attribute)->reset(); value = attribute; }}
+    hitdef-attack-attribute = attribute:{{ value = makeHitDefAttackAttribute(); }} hitdef-attack-attribute-item(attribute) (s "," s hitdef-attack-attribute-item(attribute))* {{ value = attribute; }}
     hitdef-attack-attribute-item(attribute) = hitdef-attack-type hitdef-attack-movement {{
         std::string * result = toString(as<const char *>($1));
         std::string * other = toString(as<const char *>($2));

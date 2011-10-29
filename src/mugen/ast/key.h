@@ -20,10 +20,35 @@ public:
     virtual std::string getType() const {
         return "key";
     }
-
+        
     using Element::operator==;
     virtual bool operator==(const Value & him) const {
         return him == *this;
+    }
+
+    class KeyView: public ViewImplementation {
+    public:
+        KeyView(const Key * owner):
+        owner(owner){
+        }
+
+        const Key * owner;
+
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+    };
+
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new KeyView(this)));
     }
 
     /*

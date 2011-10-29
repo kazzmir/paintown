@@ -495,34 +495,34 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
     if (simple == compCopy + elementName + ".spr"){
         int g=0, s=0;
         try{
-            simple >> g >> s;
+            simple.view() >> g >> s;
         } catch (const Ast::Exception & e){
         }
         element.setSpriteData(g,s);
         element.setSprite(sprites[g][s]);
     } else if (simple == compCopy + elementName + ".anim"){
         int anim;
-        simple >> anim;
+        simple.view() >> anim;
         element.setAction(animations[anim]);
     } else if ( simple == compCopy + elementName + ".font"){
         int index=0, bank=0, position=0;
         try {
-            simple >> index >> bank >> position;
+            simple.view() >> index >> bank >> position;
         } catch (const Ast::Exception & e){
             //ignore for now
         }
         element.setFont(fonts[index-1],bank,position);
     } else if (simple == compCopy + elementName + ".facing"){
         int face;
-        simple >> face;
+        simple.view() >> face;
         element.setFacing(face);
     } else if (simple == compCopy + elementName + ".vfacing"){
         int face;
-        simple >> face;
+        simple.view() >> face;
         element.setVFacing(face);
     } else if (simple == compCopy + elementName + ".layerno"){
         int layer = 0;
-        simple >> layer;
+        simple.view() >> layer;
         if (layer == 0){
             element.setLayer(Element::Background);
         } else if (layer == 1){
@@ -533,25 +533,24 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
     } else if (simple == compCopy +  elementName + ".offset"){
         int x=0, y=0;
         try{
-            simple >> x >> y;
+            simple.view() >> x >> y;
         } catch (const Ast::Exception & e){
         }
         element.setOffset(x,y);
     } else if (simple == compCopy + elementName + ".scale"){
         double x=1, y=1;
         try{
-            simple >> x >> y;
+            simple.view() >> x >> y;
         } catch (const Ast::Exception & e){
         }
         element.setScale(x,y);
     } else if (simple == compCopy + elementName + ".displaytime"){
         int time;
-        simple >> time;
+        simple.view() >> time;
         element.setDisplayTime(time);
     } else if (simple == compCopy + elementName + ".text"){
         std::string text;
-        simple.getValue()->reset();
-        simple >> text;
+        simple.view() >> text;
         element.setText(text);
     } 
 }
@@ -1324,11 +1323,11 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(Util::parseDef(ourDefFile.path()));
+    AstRef parsed(Util::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
     if (head == "Files"){
@@ -1343,7 +1342,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "sff"){
                         std::string sff;
-                        simple >> sff;
+                        simple.view() >> sff;
                         Global::debug(1) << "Got Sprite File: '" << sff << "'" << endl;
                         Util::readSprites(Util::findFile(Filesystem::RelativePath(sff)), Filesystem::AbsolutePath(), self.sprites, true);
                         /*
@@ -1358,12 +1357,12 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         */
                     } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                         string path;
-                        simple >> path;
+                        simple.view() >> path;
                         self.fonts.push_back(new MugenFont(Util::findFile(Filesystem::RelativePath(path))));
                         Global::debug(1) << "Got Font File: '" << path << "'" << endl;
                     } else if (simple == "snd"){
                         string temp;
-                        simple >> temp;
+                        simple.view() >> temp;
                         Util::readSounds(Util::findFile(Filesystem::RelativePath(temp)), self.sounds);
                         Global::debug(1) << "Got Sound File: '" << temp << "'" << endl;
                     } 
@@ -1404,14 +1403,14 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                     if (simple == component + ".pos"){
                         int x=0, y=0;
                         try{
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                         } catch (const Ast::Exception & e){
                         }
                         bar.setPosition(x,y);
                     } else if (simple == component + ".range.x"){
                         int x = 0, y = 0;
                         try{
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                         } catch (const Ast::Exception & e){
                         }
                         bar.setRange(x, y);
@@ -1451,7 +1450,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } else if (simple == "level1.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.player1PowerBar.getLevel1Sound().setSound(sounds[g][s]);
@@ -1459,7 +1458,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } else if (simple == "level2.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.player1PowerBar.getLevel2Sound().setSound(sounds[g][s]);
@@ -1467,7 +1466,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } else if (simple == "level3.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.player1PowerBar.getLevel3Sound().setSound(sounds[g][s]);
@@ -1480,14 +1479,14 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         if (simple == component + ".pos"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             bar.setPosition(x,y);
                         } else if (simple == component + ".range.x"){
                             int x=0,y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             bar.setRange(x,y);
@@ -1526,7 +1525,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         if (simple == component + ".pos"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             face.setPosition(x,y);
@@ -1562,7 +1561,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         if (simple == component + ".pos"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             name.setPosition(x,y);
@@ -1593,7 +1592,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         if (simple == "pos"){
                             int x = 0, y = 0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             self.timer.setPosition(x,y);
@@ -1602,7 +1601,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                              * a warning if its anything other than 60?
                              */
                             int x = 0;
-                            simple >> x;
+                            simple.view() >> x;
                             self.timer.setFrameCount(x);
                         } 
                         getElementProperties(simple,"","bg", self.timer.getBackground(),sprites,animations,fonts);
@@ -1629,25 +1628,25 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         if (simple == "pos"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             self.combo.setPosition(x,y);
                         } else if (simple == "start.x"){
                             int x=0;
-                            simple >> x;
+                            simple.view() >> x;
                             self.combo.setStartOffset(x);
                         } else if (simple == "counter.shake"){
                             bool shake;
-                            simple >> shake;
+                            simple.view() >> shake;
                             self.combo.setShake(shake);
                         } else if (simple == "text.text"){
                             std::string text;
-                            simple >> text;
+                            simple.view() >> text;
                             self.combo.setMessage(text);
                         } else if (simple == "displaytime"){
                             int time;
-                            simple >> time;
+                            simple.view() >> time;
                             self.combo.setDisplayTime(time);
                         } 
                         getElementProperties(simple,"","counter", self.combo.getCombo(),sprites,animations,fonts);
@@ -1677,80 +1676,80 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "match.wins"){
                             int wins;
-                            simple >> wins;
+                            simple.view() >> wins;
                             self.roundControl.setMatchWins(wins);
                         } else if (simple == "match.maxdrawgames"){
                             int draws;
-                            simple >> draws;
+                            simple.view() >> draws;
                             self.roundControl.setMatchMaxDrawGames(draws);
                         } else if (simple == "start.waittime"){
                             int time = 0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setStartWaitTime(time);
                         } else if (simple == "pos"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.setPosition(x,y);
                         } else if (simple == "round.time"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setRoundDisplayTime(time);
                         } else if (simple == "round.default.text"){
                             std::string text;
-                            simple >> text;
+                            simple.view() >> text;
                             self.roundControl.setDefaultText(text);
                         } else if (simple == "fight.time"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setFightDisplayTime(time);
                         } else if (simple == "KO.time"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setKODisplayTime(time);
                         } else if (simple == "win.time"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setWinDisplayTime(time);
                         } else if (simple == "slow.time"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setSlowTime(time);
                         } else if (simple == "over.waittime"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setOverWaitTime(time);
                         } else if (simple == "over.hittime"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setOverHitTime(time);
                         } else if (simple == "over.time"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setOverTime(time);
                         } else if (simple == "ctrl.time"){
                             int time=0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.setControlTime(time);
                         } else if (simple == "round.sndtime"){
                             int time = 0;
-                            simple >> soundTime;
+                            simple.view() >> soundTime;
                         } else if (simple == "fight.sndtime"){
                             int time = 0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.getFightSound().setSoundTime(time);
                         } else if (simple == "KO.sndtime"){
                             int time = 0;
-                            simple >> time;
+                            simple.view() >> time;
                             self.roundControl.getKOSound().setSoundTime(time);
                             self.roundControl.getDKOSound().setSoundTime(time);
                             self.roundControl.getTOSound().setSoundTime(time);
                         } else if (simple == "fight.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getFightSound().setSound(self.sounds[g][s]);
@@ -1759,7 +1758,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } else if (simple == "ko.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getKOSound().setSound(self.sounds[g][s]);
@@ -1768,7 +1767,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } else if (simple == "dko.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getDKOSound().setSound(self.sounds[g][s]);
@@ -1777,7 +1776,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } else if (simple == "to.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getTOSound().setSound(self.sounds[g][s]);
@@ -1786,29 +1785,29 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         } else if (simple == "win.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getWinSound().setSound(self.sounds[g][s]);
                         } else if (simple == "win.text"){
                             std::string text;
-                            simple >> text;
+                            simple.view() >> text;
                             self.roundControl.setWinText(text);
                         } else if (simple == "win2.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getWin2Sound().setSound(self.sounds[g][s]);
                         } else if (simple == "win2.text"){
                             std::string text;
-                            simple >> text;
+                            simple.view() >> text;
                             self.roundControl.setWin2Text(text);
                         } else if (simple == "draw.snd"){
                             int g=0,s=0;
                             try{
-                                simple >> g >> s;
+                                simple.view() >> g >> s;
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getDrawSound().setSound(self.sounds[g][s]);
@@ -1829,7 +1828,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             if (simple == str.str() + ".snd"){
                                 int g=0,s=0;
                                 try{
-                                    simple >> g >> s;
+                                    simple.view() >> g >> s;
                                 } catch (const Ast::Exception & e){
                                 }
                                 self.roundControl.getRoundSound(num).setSound(self.sounds[g][s]);
@@ -1862,28 +1861,28 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         if (simple == "p1.pos"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             self.winIconDisplay.setPlayer1Position(x,y);
                         } else if (simple == "p2.pos"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             self.winIconDisplay.setPlayer2Position(x,y);
                         } else if (simple == "p1.iconoffset"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             self.winIconDisplay.setPlayer1Offset(x,y);
                         } else if (simple == "p2.iconoffset"){
                             int x=0, y=0;
                             try{
-                                simple >> x >> y;
+                                simple.view() >> x >> y;
                             } catch (const Ast::Exception & e){
                             }
                             self.winIconDisplay.setPlayer2Offset(x,y);
@@ -1929,7 +1928,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             getElementProperties(simple,"p2","perfect", self.winIconDisplay.getPlayer2Win(WinGame::Perfect),sprites,animations,fonts);
                         } else if (simple == "useiconupto"){
                             int num;
-                            simple >> num;
+                            simple.view() >> num;
                             self.winIconDisplay.setUseIconUpTo(num);
                         }
                     }
@@ -2028,8 +2027,8 @@ void GameInfo::reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Ch
     roundControl.reset(stage, player1, player2);
 }
 
-void GameInfo::parseAnimations(Ast::AstParse & parsed){
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+void GameInfo::parseAnimations(const AstRef & parsed){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
         head = Util::fixCase(head);

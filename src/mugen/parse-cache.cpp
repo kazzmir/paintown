@@ -12,6 +12,8 @@
 
 using namespace std;
 
+typedef PaintownUtil::ReferenceCount<Ast::AstParse> AstRef;
+
 namespace Mugen{
 
 static int replaceSlash(int what){
@@ -33,7 +35,7 @@ static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::Abso
     return System::getModificationTime(path1.path()) >= System::getModificationTime(path2.path());
 }
 
-static list<Ast::Section*> * loadCached(const string & path){
+static AstRef loadCached(const string & path){
     string converted = path;
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
     if (!Storage::instance().exists(Filesystem::AbsolutePath(path))){
@@ -45,19 +47,19 @@ static list<Ast::Section*> * loadCached(const string & path){
     }
     TokenReader reader;
     Global::debug(1, "mugen-parse-cache") << "Loading from cache " << fullPath.path() << endl;
-    return Ast::AstParse::deserialize(reader.readTokenFromFile(fullPath.path().c_str()));
+    return PaintownUtil::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reader.readTokenFromFile(fullPath.path().c_str())));
 }
 
-static void saveParse(const Filesystem::AbsolutePath & path, list<Ast::Section*> * parse){
+static void saveParse(const Filesystem::AbsolutePath & path, const PaintownUtil::ReferenceCount<Ast::AstParse> & parse){
     ofstream out(path.path().c_str());
-    Token * serial = Ast::AstParse::serialize(parse);
+    Token * serial = parse->serialize();
     serial->toStringCompact(out);
     out << endl;
     out.close();
     delete serial;
 }
 
-static void saveCached(list<Ast::Section*> * parse, const string & path){
+static void saveCached(const Util::ReferenceCount<Ast::AstParse> & parse, const string & path){
     string converted = path;
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
     Filesystem::AbsolutePath cache = Storage::instance().userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE));
@@ -75,14 +77,14 @@ static void saveCached(list<Ast::Section*> * parse, const string & path){
 /* attempts to load from a file on disk. if the file doesn't exist then
  * parse it for real and save it to disk.
  */
-list<Ast::Section*> * Parser::loadFile(const string & path){
+Util::ReferenceCount<Ast::AstParse> Parser::loadFile(const string & path){
     try{
         return loadCached(path);
     } catch (const TokenException & fail){
     } catch (const MugenException & e){
     }
 
-    list<Ast::Section*> * out = doParse(path);
+    Util::ReferenceCount<Ast::AstParse> out = doParse(path);
     try{
         saveCached(out, path);
     } catch (...){
@@ -93,21 +95,7 @@ list<Ast::Section*> * Parser::loadFile(const string & path){
     return out;
 }
 
-static void destroySectionList(list<Ast::Section*> * sections){
-    for (list<Ast::Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-        delete (*section_it);
-    }
-    delete sections;
-}
-
 void Parser::destroy(){
-    for (map<const string, list<Ast::Section*>* >::iterator it = cache.begin(); it != cache.end(); it++){
-        list<Ast::Section*> * sections = (*it).second;
-        if (sections != NULL){
-            destroySectionList(sections);
-        }
-    }
-
     cache.clear();
 }
 
@@ -118,6 +106,7 @@ Parser::~Parser(){
     destroy();
 }
 
+/*
 static list<Ast::Section*> * copy(list<Ast::Section*> * input){
     list<Ast::Section*> * output = new list<Ast::Section*>();
 
@@ -127,19 +116,19 @@ static list<Ast::Section*> * copy(list<Ast::Section*> * input){
 
     return output;
 }
+*/
 
 /* check for an in-memory copy of the parse. if it doesnt exist
  * then either load it from disk or parse it.
  * returns a new copy of the AST so you must delete it later.
  */
-list<Ast::Section*> * Parser::parse(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> Parser::parse(const std::string & path){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cache[path] == NULL){
         cache[path] = loadFile(path);
     }
 
-    list<Ast::Section*> * copied = copy(cache[path]);
-    return copied;
+    return cache[path];
 }
 
 CmdCache::CmdCache(){
@@ -172,37 +161,37 @@ static list<Ast::Section*> * reallyParseDef(const std::string & path){
     return (list<Ast::Section*>*) Def::parse(path);
 }
 
-list<Ast::Section*> * CmdCache::doParse(const std::string & path){
-    return reallyParseCmd(path);
+Util::ReferenceCount<Ast::AstParse> CmdCache::doParse(const std::string & path){
+    return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseCmd(path)));
 }
 
-list<Ast::Section*> * AirCache::doParse(const std::string & path){
-    return reallyParseAir(path);
+Util::ReferenceCount<Ast::AstParse> AirCache::doParse(const std::string & path){
+    return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseAir(path)));
 }
 
-list<Ast::Section*> * DefCache::doParse(const std::string & path){
-    return reallyParseDef(path);
+Util::ReferenceCount<Ast::AstParse> DefCache::doParse(const std::string & path){
+    return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseDef(path)));
 }
 
 ParseCache * ParseCache::cache = NULL;
 
-list<Ast::Section*> * ParseCache::parseCmd(const string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::parseCmd(const string & path){
     if (cache == NULL){
-        return reallyParseCmd(path);
+        return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseCmd(path)));
     }
     return cache->doParseCmd(path);
 }
     
-list<Ast::Section*> * ParseCache::parseAir(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::parseAir(const std::string & path){
     if (cache == NULL){
-        return reallyParseAir(path);
+        return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseAir(path)));
     }
     return cache->doParseAir(path);
 }
 
-list<Ast::Section*> * ParseCache::parseDef(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::parseDef(const std::string & path){
     if (cache == NULL){
-        return reallyParseDef(path);
+        return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseDef(path)));
     }
     return cache->doParseDef(path);
 }
@@ -231,15 +220,15 @@ ParseCache::~ParseCache(){
     cache = NULL;
 }
 
-list<Ast::Section*> * ParseCache::doParseCmd(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::doParseCmd(const std::string & path){
     return cmdCache.parse(path);
 }
     
-list<Ast::Section*> * ParseCache::doParseAir(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::doParseAir(const std::string & path){
     return airCache.parse(path);
 }
 
-list<Ast::Section*> * ParseCache::doParseDef(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::doParseDef(const std::string & path){
     return defCache.parse(path);
 }
 

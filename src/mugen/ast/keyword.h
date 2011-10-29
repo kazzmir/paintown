@@ -14,11 +14,36 @@ public:
     str(str){
     }
 
-    using Value::operator>>;
+    class KeywordView: public ViewImplementation {
+    public:
+        KeywordView(const Keyword * keyword):
+        keyword(keyword){
+        }
 
-    virtual const Value & operator>>(std::string & str) const {
-        str = this->str;
-        return *this;
+        const Keyword * keyword;
+
+        using ViewImplementation::operator>>;
+        virtual const KeywordView & operator>>(std::string & str) const {
+            str = keyword->str;
+            return *this;
+        }
+
+        virtual std::string getType() const {
+            return keyword->getType();
+        }
+        
+        virtual const Value * self() const {
+            return keyword;
+        }
+        
+        virtual std::string toString() const {
+            return keyword->toString();
+        }
+    };
+
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new KeywordView(this)));
     }
     
     virtual void walk(Walker & walker) const {

@@ -7,10 +7,86 @@
 #include "walker.h"
 #include "exception.h"
 #include "ast.h"
+#include "util/pointer.h"
 
 class Token;
 
 namespace Ast{
+
+class Value;
+class ViewImplementation{
+public:
+    virtual ViewImplementation & operator>>(const Value *& value){
+        value = self();
+        return *this;
+    }
+
+    virtual ViewImplementation & operator>>(std::string & value){
+        value = toString();
+        return *this;
+    }
+    
+    virtual ViewImplementation & operator>>(int & x){
+        fail("int");
+        return *this;
+    }
+
+    virtual ViewImplementation & operator>>(double & x){
+        fail("double");
+        return *this;
+    }
+    
+    virtual ViewImplementation & operator>>(bool & x){
+        fail("bool");
+        return *this;
+    }
+    
+    virtual ViewImplementation & operator>>(std::vector<int> & x){
+        fail("list of int");
+        return *this;
+    }
+    
+    virtual ViewImplementation & operator>>(std::vector<double> & x){
+        fail("list of double");
+        return *this;
+    }
+
+    virtual ~ViewImplementation(){
+    }
+
+protected:
+    virtual std::string getType() const = 0;
+    virtual std::string toString() const = 0;
+    virtual const Value * self() const = 0;
+
+    virtual void fail(const std::string & what) const {
+        throw Exception("Cannot read a " + what + " from a " + getType());
+    }
+};
+
+class View{
+public:
+    View(const Util::ReferenceCount<ViewImplementation> & view):
+    view(view){
+    }
+
+    View(const View & copy):
+    view(copy.view){
+    }
+
+    View & operator=(const View & copy){
+        view = copy.view;
+        return *this;
+    }
+
+    template <typename X>
+    View & operator>>(X & value){
+        view->operator>>(value);
+        return *this;
+    }
+
+    Util::ReferenceCount<ViewImplementation> view;
+};
 
 class Value: public Element {
 public:
@@ -35,10 +111,6 @@ public:
         return false;
     }
 
-    /* resets the internals so that operator>> starts over */
-    virtual void reset() const {
-    }
-
     virtual void debugExplain(){
         std::cout << toString() << std::endl;
     }
@@ -51,42 +123,41 @@ public:
         throw Exception("Override this method");
     }
     */
-    
-    virtual const Value & operator>>(const Value *& value) const {
-        value = this;
-        // fail("value");
-        return *this;
-    }
 
-    virtual const Value & operator>>(std::string & str) const {
-        str = toString();
-        return *this;
-    }
-    
-    virtual const Value & operator>>(int & x) const {
-        fail("int");
-        return *this;
-    }
+    class ValueView: public ViewImplementation {
+    public:
+        ValueView(const Value * owner):
+        owner(owner){
+        }
 
-    virtual const Value & operator>>(double & x) const {
-        fail("double");
-        return *this;
+        using ViewImplementation::operator>>;
+        virtual const ValueView & operator>>(const Value *& value) const {
+            value = owner;
+            // fail("value");
+            return *this;
+        }
+
+        const Value * owner;
+
+    protected:
+        virtual std::string getType() const {
+            return owner->getType();
+        }
+
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+    };
+
+    /*
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new ValueView(this)));
     }
+    */
+
+    virtual View view() const = 0;
     
-    virtual const Value & operator>>(bool & x) const {
-        fail("bool");
-        return *this;
-    }
     
-    virtual const Value & operator>>(std::vector<int> & x) const {
-        fail("bool");
-        return *this;
-    }
-    
-    virtual const Value & operator>>(std::vector<double> & x) const {
-        fail("bool");
-        return *this;
-    }
 
     /*
     virtual bool referenced(const void * value) const {

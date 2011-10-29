@@ -11,6 +11,7 @@
 #include "mugen/ast/all.h"
 #include "mugen/parser/all.h"
 #include "mugen/ast/extra.h"
+#include "mugen/parse-cache.h"
 
 using namespace std;
 
@@ -30,6 +31,19 @@ string trim(const std::string & str){
     return str;
 }
 
+static int upperCase(int c){
+    return toupper(c);
+}
+
+string upperCaseAll(std::string str){
+    std::transform(str.begin(), str.end(), str.begin(), upperCase);
+    return str;
+}
+
+Filesystem::AbsolutePath getDataPath2(){
+    return Filesystem::AbsolutePath("/");
+}
+
 }
 
 static string randomFile(){
@@ -40,6 +54,21 @@ static string randomFile(){
 }
 
 typedef const void * (*parser)(const string & path, bool what);
+
+static void timeit(const char * path, parser what){
+    Mugen::ParseCache cache;
+    what(path, false); // ignore first time
+    for (int count = 1; count < 1000; count *= 10){
+        TimeDifference diff;
+        diff.startTime();
+        for (int i = 0; i < count; i++){
+            what(path, false);
+        }
+        diff.endTime();
+        Global::debug(0) << diff.printTime("total time") << std::endl;
+        Global::debug(0) << diff.getTime() / (double) count / (1000) << " ms per copy" << std::endl;
+    }
+}
 
 static void load(const char * path, parser what){
     try{
@@ -89,6 +118,8 @@ static void load(const char * path, parser what){
         /* cleanup */
         delete serial;
         remove(file.c_str());
+
+        // timeit(path, what);
     } catch (const Filesystem::NotFound & e){
         Global::debug(0, "test") << "Test failure! Couldn't find a file: " << e.getTrace() << endl;
     } catch (const Mugen::Cmd::ParseException & e){

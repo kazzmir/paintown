@@ -785,7 +785,7 @@ class GameInfo{
 	
     private:
         
-        void parseAnimations(Ast::AstParse & parsed);
+        void parseAnimations(const PaintownUtil::ReferenceCount<Ast::AstParse> & parsed);
 	
 	//! Player Data
 	Bar player1LifeBar;

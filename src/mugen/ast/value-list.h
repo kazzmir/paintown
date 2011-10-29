@@ -17,29 +17,22 @@ public:
     ValueList(int line, int column, const std::list<Value*> & values):
     Value(line, column),
     values(values){
-        current_value = this->values.begin();
     }
 
     ValueList(const std::list<Value*> & values):
     Value(-1, -1),
     values(values){
-        current_value = this->values.begin();
     }
 
     ValueList(Value * value):
     Value(-1, -1){
         values.push_back(value);
-        current_value = this->values.begin();
     }
     
     virtual void walk(Walker & walker) const {
         walker.onValueList(*this);
     }
     
-    virtual void reset() const {
-        current_value = this->values.begin();
-    }
-
     virtual bool hasMultiple() const {
         return true;
     }
@@ -115,7 +108,6 @@ public:
         return my_it == values.end() && him_it == him.values.end();
     }
 
-    using Value::operator>>;
 
     void listfail() const {
         if (getLine() != -1 && getColumn() != -1){
@@ -126,78 +118,112 @@ public:
             throw Exception("No more values in this value list: " + toString());
         }
     }
+
+    class ValueListView: public ViewImplementation {
+    public:
+        ValueListView(const ValueList * owner):
+        owner(owner){
+            current_value = owner->values.begin();
+        }
     
-    virtual const Value & operator>>(const Value *& value) const {
-        if (current_value == this->values.end()){
-            listfail();
+        const ValueList * owner;
+        std::list<Value*>::const_iterator current_value;
+
+        virtual std::string getType() const {
+            return owner->getType();
         }
-        value = *current_value;
-        current_value++;
-        return *this;
-    }
+        
+        virtual const Value * self() const {
+            return owner;
+        }
+        
+        virtual std::string toString() const {
+            return owner->toString();
+        }
+
+        /* why doesn't this work?
+        using ViewImplementation::operator>>;
+        template <typename Kind>
+        ViewImplementation & operator>>(Kind & value){
+            if (current_value == owner->values.end()){
+                owner->listfail();
+            }
+            (*current_value)->view() >> value;
+            current_value++;
+            return *this;
+        }
+        */
+
+        virtual ViewImplementation & operator>>(const Value *& value){
+            if (current_value == owner->values.end()){
+                owner->listfail();
+            }
+            (*current_value)->view() >> value;
+            current_value++;
+            return *this;
+        }
+
+        virtual ViewImplementation & operator>>(std::string & value){
+            if (current_value == owner->values.end()){
+                owner->listfail();
+            }
+            (*current_value)->view() >> value;
+            current_value++;
+            return *this;
+        }
+
+        virtual ViewImplementation & operator>>(int & x){
+            if (current_value == owner->values.end()){
+                owner->listfail();
+            }
+            (*current_value)->view() >> x;
+            current_value++;
+            return *this;
+        }
+
+        virtual ViewImplementation & operator>>(double & x){
+            if (current_value == owner->values.end()){
+                owner->listfail();
+            }
+            (*current_value)->view() >> x;
+            current_value++;
+            return *this;
+        }
+
+        virtual ViewImplementation & operator>>(bool & x){
+            if (current_value == owner->values.end()){
+                owner->listfail();
+            }
+            (*current_value)->view() >> x;
+            current_value++;
+            return *this;
+        }
+
+        virtual ViewImplementation & operator>>(std::vector<int> & x){
+            while (current_value != owner->values.end()){
+                int get;
+                (*current_value)->view() >> get;
+                x.push_back(get);
+                current_value++;
+            }
+            return *this;
+        }
+
+        virtual ViewImplementation & operator>>(std::vector<double> & x){
+            while (current_value != owner->values.end()){
+                double get;
+                (*current_value)->view() >> get;
+                x.push_back(get);
+                current_value++;
+            }
+            return *this;
+        }
+    };
     
-    virtual const Value & operator>>(std::string & item) const {
-        if (current_value == this->values.end()){
-            listfail();
-        }
-        Value * value = *current_value;
-        *value >> item;
-        current_value++;
-        return *this;
+    using Value::view;
+    virtual View view() const {
+        return View(Util::ReferenceCount<ViewImplementation>(new ValueListView(this)));
     }
-
-    virtual const Value & operator>>(int & item) const {
-        if (current_value == this->values.end()){
-            listfail();
-        }
-        Value * value = *current_value;
-        *value >> item;
-        current_value++;
-        return *this;
-    }
-
-    virtual const Value & operator>>(std::vector<int> & itemList) const {
-        while (current_value != this->values.end()){
-            int item;
-            Value * value = *current_value;
-            *value >> item;
-            itemList.push_back(item);
-            current_value++;
-        }
-        return *this;
-    }
-
-    virtual const Value & operator>>(std::vector<double> & itemList) const {
-        while (current_value != this->values.end()){
-            double item;
-            Value * value = *current_value;
-            *value >> item;
-            itemList.push_back(item);
-            current_value++;
-        }
-        return *this;
-    }
-
-    virtual const Value & operator>>(double & item) const {
-        if (current_value == this->values.end()){
-            listfail();
-        }
-        Value * value = *current_value;
-        *value >> item;
-        current_value++;
-        return *this;
-    }
-
-    virtual const Value & operator>>(bool & item) const {
-        if (current_value == this->values.end()){
-            listfail();
-        }
-        Value * value = *current_value;
-        *value >> item;
-        current_value++;
-        return *this;
-    }
-
 
     /*
     virtual const Value & operator>>(std::string & str) const {
@@ -243,7 +269,6 @@ public:
 
 protected:
     std::list<Value*> values;
-    mutable std::list<Value*>::const_iterator current_value;
 };
 
 }

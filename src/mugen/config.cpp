@@ -51,11 +51,11 @@ firstRun(){
     
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(Util::parseDef(ourDefFile.path()));
+    AstRef parsed(Util::parseDef(ourDefFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 
-    for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
 	std::string head = section->getName();
         if (head == "Options"){
@@ -67,20 +67,20 @@ firstRun(){
                 Data & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "difficulty"){
-			simple >> self.difficulty;
+			simple.view() >> self.difficulty;
                     } else if (simple == "life"){
-                        simple >> self.life;
+                        simple.view() >> self.life;
                     } else if (simple == "time"){
-                        simple >> self.time;
+                        simple.view() >> self.time;
                     } else if (simple == "gamespeed"){
-                        simple >> self.gameSpeed;
+                        simple.view() >> self.gameSpeed;
                     } else if (simple == "team.1vs2life"){
-                        simple >> self.team1vs2Life;
+                        simple.view() >> self.team1vs2Life;
                     } else if (simple == "team.loseonko"){
-                        simple >> self.teamLoseOnKO;
+                        simple.view() >> self.teamLoseOnKO;
                     } else if (simple == "motif"){
                         string out;
-                        simple >> out;
+                        simple.view() >> out;
                         self.motif = Filesystem::RelativePath(out);
                     } 
                 }  

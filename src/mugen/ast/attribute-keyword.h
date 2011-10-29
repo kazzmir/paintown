@@ -60,7 +60,7 @@ public:
 
     std::string valueAsString() const {
         std::string str;
-        *this >> str;
+        view() >> str;
         return str;
     }
 
@@ -87,16 +87,18 @@ public:
         }
     }
 
-    template <typename X>
-    const AttributeKeyword & operator>>(X & v) const {
-        if (value != 0){
-            try{
-                *value >> v;
-            } catch (const Exception & ex){
-                throw Exception("tried to read the wrong type for '" + this->toString() + "' : " + ex.getReason());
+    virtual View view() const {
+        if (value != NULL){
+            return value->view();
+        } else {
+            std::ostringstream out;
+            out << "no values available for attribute '" << this->toString() << "'";
+            if (getLine() != -1 && getColumn() != -1){
+                out << " at line " << getLine() << " column " << getColumn();
             }
+            throw Exception(out.str());
         }
-        return *this;
+
     }
 
     /*

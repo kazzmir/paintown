@@ -379,10 +379,11 @@ public:
 
     Value * compileHitDefAttackAttribute(const Ast::HitDefAttackAttribute & attribute){
         std::vector<AttackType::Attribute> attacks;
+        Ast::View view = attribute.view();
         try{
             while (true){
                 std::string type;
-                attribute >> type;
+                view >> type;
                 type = PaintownUtil::upperCaseAll(type);
                 std::vector<AttackType::Attribute> more = convertAttackType(type);
                 attacks.insert(attacks.begin(), more.begin(), more.end());
@@ -417,7 +418,7 @@ public:
 
     Value * compileHitDefAttribute(const Ast::HitDefAttribute & attribute){
         std::string stuff;
-        attribute >> stuff;
+        attribute.view() >> stuff;
         stuff = PaintownUtil::upperCaseAll(stuff);
         return parseStateType(stuff);
     }
@@ -1954,7 +1955,7 @@ public:
         };
 
         std::string out;
-        string_value >> out;
+        string_value.view() >> out;
         return new JustString(out);
     }
 
@@ -1991,7 +1992,7 @@ public:
         };
 
         double x;
-        number >> x;
+        number.view() >> x;
         return new JustNumber(x);
     }
 

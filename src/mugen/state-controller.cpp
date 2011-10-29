@@ -59,7 +59,7 @@ spritePriority(0){
                 int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger([0-9]+)", 0).c_str());
                 controller.addTrigger(trigger, Compiler::compile(simple.getValue()));
             } else if (simple == "persistent"){
-                simple >> controller.persistent;
+                simple.view() >> controller.persistent;
                 controller.currentPersistent = controller.persistent;
             } else if (simple == "debug"){
                 controller.debug = true;
@@ -499,7 +499,7 @@ public:
         try{
             string group;
             const Ast::Value * item;
-            *value >> group >> item;
+            value->view() >> group >> item;
             group = PaintownUtil::lowerCaseAll(group);
             if (PaintownUtil::matchRegex(group, "f[0-9]+")){
                 int realGroup = atoi(PaintownUtil::captureRegex(group, "f([0-9]+)", 0).c_str());
@@ -1738,7 +1738,7 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "attr"){
                     string type, attack;
-                    simple >> type >> attack;
+                    simple.view() >> type >> attack;
                     type = PaintownUtil::upperCaseAll(type);
                     if (type == StateType::Stand ||
                         type == StateType::Crouch ||
@@ -1762,36 +1762,37 @@ public:
                     }
                 } else if (simple == "hitflag"){
                     string flags;
-                    simple >> flags;
+                    simple.view() >> flags;
                     hit.hitFlag = flags;
                 } else if (simple == "guardflag"){
                     try{
                         string flags;
-                        simple >> flags;
+                        simple.view() >> flags;
                         hit.guardFlag = flags;
                     } catch (const Ast::Exception & fail){
                     }
                 } else if (simple == "animtype"){
                     string anim;
-                    simple >> anim;
+                    simple.view() >> anim;
                     hit.animationType = parseAnimationType(anim, simple);
                 } else if (simple == "air.animtype"){
                     string anim;
-                    simple >> anim;
+                    simple.view() >> anim;
                     hit.animationTypeAir = parseAnimationType(anim, simple);
                 } else if (simple == "debug"){
                     // setDebug(true);
                 } else if (simple == "fall.animtype"){
                     string anim;
-                    simple >> anim;
+                    simple.view() >> anim;
                     hit.animationTypeFall = parseAnimationType(anim, simple);
                 } else if (simple == "priority"){
                     const Ast::Value * hit;
-                    simple >> hit;
+                    Ast::View view = simple.view();
+                    view >> hit;
                     this->hit.priority.hit = Compiler::compile(hit);
                     try{
                         string type;
-                        simple >> type;
+                        view >> type;
                         this->hit.priority.type = type;
                     } catch (const Ast::Exception & e){
                     }
@@ -1807,11 +1808,11 @@ public:
 
                         /* has guard */
                         if (container->hasMultiple()){
-                            container->reset();
+                            Ast::View view = container->view();
                             const Ast::Value * value;
-                            *container >> value;
+                            view >> value;
                             hit.damage.damage = Compiler::compile(value);
-                            *container >> value;
+                            view >> value;
                             hit.damage.guardDamage = Compiler::compile(value);
                         } else {
                             /* otherwise its a single expression */
@@ -1826,8 +1827,7 @@ public:
                     try{
                         const Ast::Value * player1;
                         const Ast::Value * player2;
-                        simple >> player1;
-                        simple >> player2;
+                        simple.view() >> player1 >> player2;
                         hit.pause.player1 = Compiler::compile(player1);
                         hit.pause.player2 = Compiler::compile(player2);
                     } catch (const Ast::Exception & e){
@@ -1836,21 +1836,21 @@ public:
                     try{
                         const Ast::Value * player1;
                         const Ast::Value * player2;
-                        simple >> player1 >> player2;
+                        simple.view() >> player1 >> player2;
                         hit.guardPause.player1 = Compiler::compile(player1);
                         hit.guardPause.player2 = Compiler::compile(player2);
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "sparkno"){
                     string what;
-                    simple >> what;
+                    simple.view() >> what;
                     /* FIXME: either S123 or 123 */
                     if (PaintownUtil::matchRegex(what, "[0-9]+")){
                         hit.spark = atoi(what.c_str());
                     }
                 } else if (simple == "guard.sparkno"){
                     string what;
-                    simple >> what;
+                    simple.view() >> what;
                     /* FIXME: either S123 or 123 */
                     if (PaintownUtil::matchRegex(what, "[0-9]+")){
                         hit.guardSpark = atoi(what.c_str());
@@ -1858,14 +1858,14 @@ public:
                 } else if (simple == "getpower"){
                     const Ast::Value * hit;
                     const Ast::Value * guarded;
-                    simple >> hit >> guarded;
+                    simple.view() >> hit >> guarded;
                     this->hit.getPower.hit = Compiler::compile(hit);
                     this->hit.getPower.guarded = Compiler::compile(guarded);
                 } else if (simple == "sparkxy"){
                     try{
                         const Ast::Value * x;
                         const Ast::Value * y;
-                        simple >> x >> y;
+                        simple.view() >> x >> y;
                         hit.sparkPosition.x = Compiler::compile(x);
                         hit.sparkPosition.y = Compiler::compile(y);
                     } catch (const Ast::Exception & e){
@@ -1873,14 +1873,14 @@ public:
                 } else if (simple == "hitsound-own"){
                     const Ast::Value * item;
                     const Ast::Value * group;
-                    simple >> item >> group;
+                    simple.view() >> item >> group;
                     hit.hitSound.own = true;
                     hit.hitSound.item = Compiler::compile(item);
                     hit.hitSound.group = Compiler::compile(group);
                 } else if (simple == "hitsound"){
                     const Ast::Value * item;
                     const Ast::Value * group;
-                    simple >> item >> group;
+                    simple.view() >> item >> group;
                     hit.hitSound.own = false;
                     hit.hitSound.item = Compiler::compile(item);
                     hit.hitSound.group = Compiler::compile(group);
@@ -1907,14 +1907,14 @@ public:
                 } else if (simple == "guardsound-own"){
                     const Ast::Value * item;
                     const Ast::Value * group;
-                    simple >> item >> group;
+                    simple.view() >> item >> group;
                     hit.guardHitSound.own = true;
                     hit.guardHitSound.item = Compiler::compile(item);
                     hit.guardHitSound.group = Compiler::compile(group);
                 } else if (simple == "guardsound"){
                     const Ast::Value * item;
                     const Ast::Value * group;
-                    simple >> item >> group;
+                    simple.view() >> item >> group;
                     hit.guardHitSound.own = false;
                     hit.guardHitSound.item = Compiler::compile(item);
                     hit.guardHitSound.group = Compiler::compile(group);
@@ -1936,7 +1936,7 @@ public:
                     */
                 } else if (simple == "ground.type"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     type = Util::fixCase(type);
                     if (type == "low"){
                         hit.groundType = AttackType::Low;
@@ -1947,7 +1947,7 @@ public:
                     }
                 } else if (simple == "air.type"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     type = Util::fixCase(type);
                     if (type == "low"){
                         hit.airType = AttackType::Low;
@@ -1977,7 +1977,7 @@ public:
                         try{
                             const Ast::Value * x;
                             const Ast::Value * y;
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                             hit.groundVelocity.x = Compiler::compile(x);
                             hit.groundVelocity.y = Compiler::compile(y);
                         } catch (const Ast::Exception & e){
@@ -1992,7 +1992,7 @@ public:
                         try{
                             const Ast::Value * x;
                             const Ast::Value * y;
-                            simple >> x >> y;
+                            simple.view() >> x >> y;
                             hit.airVelocity.x = Compiler::compile(x);
                             hit.airVelocity.y = Compiler::compile(y);
                         } catch (const Ast::Exception & e){
@@ -2004,7 +2004,7 @@ public:
                     try{
                         const Ast::Value * x;
                         const Ast::Value * y;
-                        simple >> x >> y;
+                        simple.view() >> x >> y;
                         hit.airGuardVelocity.x = Compiler::compile(x);
                         hit.airGuardVelocity.y = Compiler::compile(y);
                     } catch (const Ast::Exception & e){
@@ -2026,28 +2026,28 @@ public:
                 } else if (simple == "mindist"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     hit.minimum.x = Compiler::compile(x);
                     hit.minimum.y = Compiler::compile(y);
                 } else if (simple == "maxdist"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     hit.maximum.x = Compiler::compile(x);
                     hit.maximum.y = Compiler::compile(y);
                 } else if (simple == "snap"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     hit.snap.x = Compiler::compile(x);
                     hit.snap.y = Compiler::compile(y);
                 } else if (simple == "id"){
                     const Ast::Value * id;
-                    simple >> id;
+                    simple.view() >> id;
                     hit.id = Compiler::compile(id);
                 } else if (simple == "chainid"){
                     const Ast::Value * id;
-                    simple >> id;
+                    simple.view() >> id;
                     hit.chainId = Compiler::compile(id);
                 } else if (simple == "p1sprpriority"){
                     hit.player1SpritePriority = Compiler::compile(simple.getValue());
@@ -2096,28 +2096,28 @@ public:
                 } else if (simple == "down.velocity"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     hit.down.x = Compiler::compile(x);
                     hit.down.y = Compiler::compile(y);
                 } else if (simple == "down.hittime"){
                     const Ast::Value * x;
-                    simple >> x;
+                    simple.view() >> x;
                     hit.down.time = Compiler::compile(x);
                 } else if (simple == "envshake.time"){
                     const Ast::Value * x;
-                    simple >> x;
+                    simple.view() >> x;
                     hit.envShake.time = Compiler::compile(x);
                 } else if (simple == "envshake.freq"){
                     const Ast::Value * x;
-                    simple >> x;
+                    simple.view() >> x;
                     hit.envShake.frequency = Compiler::compile(x);
                 } else if (simple == "envshake.ampl"){
                     const Ast::Value * x;
-                    simple >> x;
+                    simple.view() >> x;
                     hit.envShake.amplitude = Compiler::compile(x);
                 } else if (simple == "envshake.phase"){
                     const Ast::Value * x;
-                    simple >> x;
+                    simple.view() >> x;
                     hit.envShake.phase = Compiler::compile(x);
                 } else if (shouldIgnore(simple)){
                     /* ignore triggers, parsed already */
@@ -2247,11 +2247,11 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "movetype"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     controller.setMoveType(type);
                 } else if (simple == "physics"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     if (type == "S"){
                         controller.setPhysics(Physics::Stand);
                     } else if (type == "N"){
@@ -2263,7 +2263,7 @@ public:
                     }
                 } else if (simple == "statetype"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     controller.setStateType(type);
                 }
             }
@@ -2379,7 +2379,7 @@ public:
                         bool own = false;
                         int group;
                         const Ast::Value * item;
-                        simple >> first >> item;
+                        simple.view() >> first >> item;
                         if (tolower(first[0]) == 's'){
                             own = true;
                             group = atoi(first.substr(1).c_str());
@@ -2394,7 +2394,7 @@ public:
                     if (simple.getValue()->hasMultiple()){
                         const Ast::Value * posX;
                         const Ast::Value * posY;
-                        simple >> posX >> posY;
+                        simple.view() >> posX >> posY;
                         super.posX = Compiler::compile(posX);
                         super.posY = Compiler::compile(posY);
                     }
@@ -2541,7 +2541,7 @@ public:
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     image.bright.red = Compiler::compile(red);
                     image.bright.green = Compiler::compile(green);
                     image.bright.blue = Compiler::compile(blue);
@@ -2549,7 +2549,7 @@ public:
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     image.contrast.red = Compiler::compile(red);
                     image.contrast.green = Compiler::compile(green);
                     image.contrast.blue = Compiler::compile(blue);
@@ -2557,7 +2557,7 @@ public:
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     image.postbright.red = Compiler::compile(red);
                     image.postbright.green = Compiler::compile(green);
                     image.postbright.blue = Compiler::compile(blue);
@@ -2565,7 +2565,7 @@ public:
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     image.add.red = Compiler::compile(red);
                     image.add.green = Compiler::compile(green);
                     image.add.blue = Compiler::compile(blue);
@@ -2573,7 +2573,7 @@ public:
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     image.multiply.red = Compiler::compile(red);
                     image.multiply.green = Compiler::compile(green);
                     image.multiply.blue = Compiler::compile(blue);
@@ -2583,7 +2583,7 @@ public:
                     image.frameGap = Compiler::compile(simple.getValue());
                 } else if (simple == "trans"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     image.translucent = parseTrans(PaintownUtil::lowerCaseAll(type));
                 }
                 /* time = duration (int)
@@ -2909,7 +2909,7 @@ public:
                 } else if (simple == "scale"){
                     const Ast::Value * x = NULL;
                     const Ast::Value * y = NULL;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     scaleX = Compiler::compile(x);
                     scaleY = Compiler::compile(y);
                 }
@@ -2991,7 +2991,7 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "flag" || simple == "flag2" || simple == "flag3"){
                     string what;
-                    simple >> what;
+                    simple.view() >> what;
                     what = Util::fixCase(what);
                     if (names.find(what) != names.end()){
                         asserts.push_back(names[what]);
@@ -3247,19 +3247,19 @@ public:
                 if (simple == "edge"){
                     const Ast::Value * front;
                     const Ast::Value * back;
-                    simple >> front >> back;
+                    simple.view() >> front >> back;
                     edgeFront = Compiler::compile(front);
                     edgeBack = Compiler::compile(back);
                 } else if (simple == "player"){
                     const Ast::Value * front;
                     const Ast::Value * back;
-                    simple >> front >> back;
+                    simple.view() >> front >> back;
                     playerFront = Compiler::compile(front);
                     playerBack = Compiler::compile(back);
                 } else if (simple == "value"){
                     const Ast::Value * front;
                     const Ast::Value * back;
-                    simple >> front >> back;
+                    simple.view() >> front >> back;
                     edgeFront = Compiler::compile(front);
                     edgeBack = Compiler::compile(back);
                     playerFront = Compiler::compile(front);
@@ -3351,13 +3351,13 @@ public:
                 if (simple == "pos"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     posX = Compiler::compile(x);
                     posY = Compiler::compile(y);
                 } else if (simple == "pos2"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     posX2 = Compiler::compile(x);
                     posY2 = Compiler::compile(y);
                 } else if (simple == "spacing"){
@@ -3603,12 +3603,12 @@ public:
                 } else if (simple == "pos"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.posX = Compiler::compile(x);
                     controller.posY = Compiler::compile(y);
                 } else if (simple == "postype"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     type = PaintownUtil::lowerCaseAll(type);
                     if (type == "p1"){
                         controller.positionType = Player1;
@@ -3631,18 +3631,18 @@ public:
                     /* TODO */
                 } else if (simple == "bindtime"){
                     const Ast::Value * time;
-                    simple >> time;
+                    simple.view() >> time;
                     controller.bindTime = Compiler::compile(time);
                 } else if (simple == "velocity" || simple == "vel"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.velocityX = Compiler::compile(x);
                     controller.velocityY = Compiler::compile(y);
                 } else if (simple == "accel"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.accelerationX = Compiler::compile(x);
                     controller.accelerationY = Compiler::compile(y);
                 } else if (simple == "random"){
@@ -3759,7 +3759,7 @@ public:
                 } else if (simple == "pos"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.posX = Compiler::compile(x);
                     controller.posY = Compiler::compile(y);
                 } else if (simple == "random"){
@@ -3861,14 +3861,15 @@ public:
                         vector<string> moreTypes;
                         if (simple.getValue() != NULL && ! simple.getValue()->hasMultiple()){
                             string type;
-                            simple >> type;
+                            simple.view() >> type;
                             type = PaintownUtil::lowerCaseAll(type);
                         } else {
-                            simple >> type;
+                            Ast::View view = simple.view();
+                            view >> type;
                             try{
                                 while (true){
                                     string what;
-                                    simple >> what;
+                                    view >> what;
                                     what = PaintownUtil::lowerCaseAll(what);
                                     moreTypes.push_back(what);
                                 }
@@ -3982,14 +3983,15 @@ public:
                     vector<string> moreTypes;
                     if (! simple.getValue()->hasMultiple()){
                         string type;
-                        simple >> type;
+                        simple.view() >> type;
                         type = PaintownUtil::lowerCaseAll(type);
                     } else {
-                        simple >> type;
+                        Ast::View view = simple.view();
+                        view >> type;
                         try{
                             while (true){
                                 string what;
-                                simple >> what;
+                                view >> what;
                                 what = PaintownUtil::lowerCaseAll(what);
                                 moreTypes.push_back(what);
                             }
@@ -4176,7 +4178,7 @@ public:
                 } else if (simple == "pos"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.posX = Compiler::compile(x);
                     controller.posY = Compiler::compile(y);
                 }
@@ -4273,7 +4275,7 @@ public:
                     if (simple.getValue()->hasMultiple()){
                         const Ast::Value * min;
                         const Ast::Value * max;
-                        simple >> min >> max;
+                        simple.view() >> min >> max;
                         controller.minimum = Compiler::compile(min);
                         controller.maximum = Compiler::compile(max);
                     } else {
@@ -4530,13 +4532,13 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
                     const Ast::Value * time;
-                    simple >> time;
+                    simple.view() >> time;
                     controller.time = Compiler::compile(time);
                 } else if (simple == "add"){
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     controller.addRed = Compiler::compile(red);
                     controller.addGreen = Compiler::compile(green);
                     controller.addBlue = Compiler::compile(blue);
@@ -4545,16 +4547,17 @@ public:
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     controller.multiplyRed = Compiler::compile(red);
                     controller.multiplyGreen = Compiler::compile(green);
                     controller.multiplyBlue = Compiler::compile(blue);
                 } else if (simple == "sinadd"){
                     try{
-                        simple >> controller.sinRed;
-                        simple >> controller.sinGreen;
-                        simple >> controller.sinBlue;
-                        simple >> controller.period;
+                        Ast::View view = simple.view();
+                        view >> controller.sinRed;
+                        view >> controller.sinGreen;
+                        view >> controller.sinBlue;
+                        view >> controller.period;
                     } catch (const Ast::Exception & fail){
                         /* I guess we don't care about failures here */
                     }
@@ -4592,9 +4595,9 @@ public:
                     }
                     */
                 } else if (simple == "invertall"){
-                    simple >> controller.invert;
+                    simple.view() >> controller.invert;
                 } else if (simple == "color"){
-                    simple >> controller.color;
+                    simple.view() >> controller.color;
                 }
             }
         };
@@ -5031,7 +5034,7 @@ public:
                 } else if (simple == "movecamera"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.moveCameraX = Compiler::compile(x);
                     controller.moveCameraY = Compiler::compile(y);
                 }
@@ -5139,7 +5142,7 @@ public:
                     const Ast::Value * red;
                     const Ast::Value * green;
                     const Ast::Value * blue;
-                    simple >> red >> green >> blue;
+                    simple.view() >> red >> green >> blue;
                     controller.red = Compiler::compile(red);
                     controller.green = Compiler::compile(green);
                     controller.blue = Compiler::compile(blue);
@@ -5449,7 +5452,7 @@ public:
             /* extract an item and compile it */
             Compiler::Value * compile1(const Ast::AttributeSimple & simple){
                 const Ast::Value * item;
-                simple >> item;
+                simple.view() >> item;
                 return Compiler::compile(item);
             }
 
@@ -5463,7 +5466,7 @@ public:
                     /* name = "name_string" (string)
                      * Specifies a name for this helper, which must be enclosed in double quotes. If omitted, the name defaults to "<parent>'s helper", where <parent> represents the name of the player creating the helper.
                      */
-                    simple >> controller.name;
+                    simple.view() >> controller.name;
                 } else if (simple == "ID"){
                     /* ID = id_no (int)
                      * Sets an ID number to refer to this helper by. Defaults to 0.
@@ -5475,7 +5478,7 @@ public:
                      */
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.posX = Compiler::compile(x);
                     controller.posY = Compiler::compile(y);
                 } else if (simple == "postype"){
@@ -5497,7 +5500,7 @@ public:
                      * Interprets xpos relative to the right edge of the screen, and ypos relative to p1's axis. A positive x offset is toward the left of the screen.
                      */
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     controller.posType = parsePosType(PaintownUtil::lowerCaseAll(type));
                 } else if (simple == "facing"){
                      /* facing = facing (int)
@@ -5796,9 +5799,10 @@ public:
             void getParameters(const Ast::Value * value){
                 if (value->hasMultiple()){
                     try{
+                        Ast::View view = value->view();
                         while (true){
                             const Ast::Value * next;
-                            *value >> next;
+                            view >> next;
                             parameters.push_back(Compiler::compile(value));
                         }
                     } catch (const Ast::Exception & fail){
@@ -5811,7 +5815,7 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "text"){
-                    simple >> text;
+                    simple.view() >> text;
                 } else if (simple == "params"){
                     getParameters(simple.getValue());
                 }
@@ -5970,7 +5974,7 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "attr"){
-                    simple >> controller.attribute;
+                    simple.view() >> controller.attribute;
                 }
             }
         };
@@ -6028,7 +6032,7 @@ public:
                 if (simple == "pos"){
                     const Ast::Value * x;
                     const Ast::Value * y;
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                     controller.x = Compiler::compile(x);
                     controller.y = Compiler::compile(y);
                 }
@@ -6130,15 +6134,14 @@ public:
                     try{
                         const Ast::Value * player1;
                         const Ast::Value * player2;
-                        simple >> player1;
-                        simple >> player2;
+                        simple.view() >> player1 >> player2;
                         hit.pause.player1 = Compiler::compile(player1);
                         hit.pause.player2 = Compiler::compile(player2);
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "sparkno"){
                     string what;
-                    simple >> what;
+                    simple.view() >> what;
                     /* FIXME: either S123 or 123 */
                     if (PaintownUtil::matchRegex(what, "[0-9]+")){
                         hit.spark = atoi(what.c_str());
@@ -6149,9 +6152,10 @@ public:
                     int group = 0;
                     int item = 0;
                     /* If not specified, assume item 0 */
-                    simple >> first;
+                    Ast::View view = simple.view();
+                    view >> first;
                     if (simple.getValue()->hasMultiple()){
-                        simple >> item;
+                        view >> item;
                     }
                     if (tolower(first[0]) == 's'){
                         own = true;
@@ -6171,14 +6175,15 @@ public:
                     vector<string> moreTypes;
                     if (! simple.getValue()->hasMultiple()){
                         string type;
-                        simple >> type;
+                        simple.view() >> type;
                         type = PaintownUtil::lowerCaseAll(type);
                     } else {
-                        simple >> type;
+                        Ast::View view = simple.view();
+                        view >> type;
                         try{
                             while (true){
                                 string what;
-                                simple >> what;
+                                view >> what;
                                 what = PaintownUtil::lowerCaseAll(what);
                                 moreTypes.push_back(what);
                             }
@@ -6480,12 +6485,12 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "trans"){
                     string type;
-                    simple >> type;
+                    simple.view() >> type;
                     controller.trans = parseTrans(PaintownUtil::lowerCaseAll(type));
                 } else if (simple == "alpha"){
                     const Ast::Value * from;
                     const Ast::Value * to;
-                    simple >> from >> to;
+                    simple.view() >> from >> to;
                     controller.alphaSource = Compiler::compile(from);
                     controller.alphaDestination = Compiler::compile(to);
                 }

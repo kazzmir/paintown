@@ -113,12 +113,12 @@ linkedElement(0){
                 /* ignore.. */
             } else if (simple == "id"){
 		int id;
-                simple >> id;
+                simple.view() >> id;
 		self.setID(id);
             } else if (simple == "layerno"){
                 try{
                     int layerno;
-                    simple >> layerno;
+                    simple.view() >> layerno;
                     if (layerno == 0){
                         self.setLayer(Element::Background);
                     } else if (layerno == 1){
@@ -129,21 +129,21 @@ linkedElement(0){
             } else if (simple == "start"){
 		Mugen::Point point;
 		try {
-		    simple >> point.x >> point.y;
+		    simple.view() >> point.x >> point.y;
 		} catch (const Ast::Exception & e){
 		}
 		self.setStart(point);
             } else if (simple == "delta"){
 		double x = 0, y = 0;
 		try {
-		    simple >> x >> y;
+		    simple.view() >> x >> y;
                     /* the y part is not always given */
                 } catch (const Ast::Exception & e){
                 }
 		self.setDelta(x,y);
             } else if (simple == "trans"){
                 std::string type;
-                simple >> type;
+                simple.view() >> type;
                 type = Mugen::Util::fixCase(Mugen::Util::removeSpaces(type));
 		TransType trans = None;
                 if (type == "none" ){
@@ -161,64 +161,64 @@ linkedElement(0){
             } else if (simple == "alpha"){
 		int l = 0,h=0;
                 try{
-                    simple >> l >> h;
+                    simple.view() >> l >> h;
                 } catch (const Ast::Exception & e){
                 }
 		self.setAlpha(l,h);
             } else if (simple == "mask"){
 		bool mask;
-                simple >> mask;
+                simple.view() >> mask;
 		self.setMask(mask);
             } else if (simple == "tile"){
 		Mugen::Point point;
                 try{
-                    simple >> point.x >> point.y;
+                    simple.view() >> point.x >> point.y;
                 } catch (const Ast::Exception & e){
                 }
 		self.setTile(point);
             } else if (simple == "tilespacing"){
 		Mugen::Point point;
                 try{
-                    simple >> point.x >> point.y;
+                    simple.view() >> point.x >> point.y;
                 } catch (const Ast::Exception & e){
                 }
 		self.setTileSpacing(point);
             } else if (simple == "window"){
                 int x1=0,y1=0,x2=319,y2=239;
                 try {
-                    simple >> x1 >> y1 >> x2 >> y2;
+                    simple.view() >> x1 >> y1 >> x2 >> y2;
 		} catch (const Ast::Exception & e){
 		}
 		self.setWindow(x1,y1,x2,y2);
             } else if (simple == "windowdelta"){
 		double x=0,y=0;
                 try{
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                 } catch (const Ast::Exception & e){
                 }
 		self.setWindowDelta(x,y);
             } else if (simple == "positionlink"){
 		bool link;
-                simple >> link;
+                simple.view() >> link;
 		self.setPositionLink(link);
             } else if (simple == "velocity"){
                 double x = 0, y = 0;
 		try{
-		    simple >> x >> y;
+		    simple.view() >> x >> y;
                 } catch (const Ast::Exception & e){
                 }
 		self.setVelocity(x,y);
             } else if (simple == "sin.x"){
 		Sin x;
                 try{
-                    simple >> x.amp >> x.period >> x.offset;
+                    simple.view() >> x.amp >> x.period >> x.offset;
                 } catch (const Ast::Exception & e){
                 }
 		self.setSinX(x);
             } else if (simple == "sin.y"){
                 Sin y;
                 try{
-                    simple >> y.amp >> y.period >> y.offset;
+                    simple.view() >> y.amp >> y.period >> y.offset;
                 } catch (const Ast::Exception & e){
                 }
 		self.setSinY(y);
@@ -343,7 +343,7 @@ sprite(NULL){
             if (simple == "spriteno"){
                 int group=0, sprite=0;
                 try{
-                    simple >> group >> sprite;
+                    simple.view() >> group >> sprite;
                 } catch (const Ast::Exception & e){
                 }
                 MugenSprite * found = Util::getSprite(sprites, group, sprite);
@@ -631,28 +631,28 @@ void NormalElement::render(int cameraX, int cameraY, const Graphics::Bitmap &bmp
     bmp.setClipRect(0, 0,bmp.getWidth(),bmp.getHeight());
 }
 
-AnimationElement::AnimationElement(const Ast::AstParse & parse, const string & name, Ast::Section * data, const Mugen::SpriteMap & sprites):
+AnimationElement::AnimationElement(const AstRef & parse, const string & name, Ast::Section * data, const Mugen::SpriteMap & sprites):
 BackgroundElement(name, data),
 animation(0){
     class Walker: public Ast::Walker{
     public:
-        Walker(AnimationElement & self, const Ast::AstParse & parse, const Mugen::SpriteMap & sprites):
+        Walker(AnimationElement & self, const AstRef & parse, const Mugen::SpriteMap & sprites):
             self(self),
             parse(parse),
             sprites(sprites){
             }
 
         AnimationElement & self;
-        const Ast::AstParse & parse;
+        const AstRef & parse;
         const Mugen::SpriteMap & sprites;
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "actionno"){
                 int action = 0;
-                simple >> action;
+                simple.view() >> action;
                 std::ostringstream all;
                 all << "begin action " << action;
-                Ast::Section * section = parse.findSection(all.str());
+                Ast::Section * section = parse->findSection(all.str());
                 if (section == NULL){
                     throw MugenException("No action for actionno " + action, __FILE__, __LINE__);
                 }
@@ -806,7 +806,7 @@ yscaleDelta(0){
             if (simple == "spriteno"){
                 int group=0, sprite=0;
                 try{
-                    simple >> group >> sprite;
+                    simple.view() >> group >> sprite;
                 } catch (const Ast::Exception & e){
                 }
                 MugenSprite * found = Util::getSprite(sprites, group, sprite);
@@ -819,24 +819,24 @@ yscaleDelta(0){
             } else if (simple == "xscale"){
                 double x=0, y=0;
                 try{
-                    simple >> x >> y;
+                    simple.view() >> x >> y;
                 } catch (const Ast::Exception & e){
                 }
                 self.setXScale(x,y);
             } else if (simple == "width"){
                 Mugen::Point point;
                 try{
-                    simple >> point.x >> point.y;
+                    simple.view() >> point.x >> point.y;
                 } catch (const Ast::Exception & e){
                 }
                 self.setWidth(point);
             } else if (simple == "yscalestart"){
                 double x;
-                simple >> x;
+                simple.view() >> x;
                 self.setYScale(x);
             } else if (simple == "yscaledelta"){
                 double x;
-                simple >> x;
+                simple.view() >> x;
                 self.setYScaleDelta(x);
             }
         }
@@ -1136,14 +1136,14 @@ enum ElementType{
     Dummy,
 };
 
-static BackgroundElement *getElement(Ast::Section * section, const Mugen::SpriteMap & sprites, const Ast::AstParse & parsed){
+static BackgroundElement *getElement(Ast::Section * section, const Mugen::SpriteMap & sprites, const AstRef & parsed){
     std::string head = section->getName();
     head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
     std::string name = head;
     Global::debug(2) << "Found background element: " << name << endl;
 
     string type;
-    *section->findAttribute("type") >> type;
+    section->findAttribute("type")->view() >> type;
 
     if (type == "normal"){
         return new NormalElement(name, section, sprites);
@@ -1190,7 +1190,7 @@ dontReset(false){
             if (simple == "time"){
                 int start=0, end=0, loop=-2;
                 try {
-                    simple >> start >> end >> loop;
+                    simple.view() >> start >> end >> loop;
                 } catch (const Ast::Exception & e){
                 }
                 self.timeStart = start;
@@ -1209,9 +1209,10 @@ dontReset(false){
                 */
             } else if (simple == "ctrlid"){
                 try{
+                    Ast::View view = simple.view();
                     while (true){
                         int id;
-                        simple >> id;
+                        view >> id;
                         self.addElements(background.getIDList(id));
                         hasID = true;
                     }
@@ -1269,9 +1270,9 @@ class PosAddController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "x"){
-			simple >> self.x;
+			simple.view() >> self.x;
 		    } else if (simple == "y"){
-			simple >> self.y;
+			simple.view() >> self.y;
 		    } 
 		}
 	    };
@@ -1315,9 +1316,9 @@ class PosSetController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "x"){
-			simple >> self.x;
+			simple.view() >> self.x;
 		    } else if (simple == "y"){
-			simple >> self.y;
+			simple.view() >> self.y;
 		    } 
 		}
 	    };
@@ -1364,7 +1365,7 @@ public:
                 if (simple == "value"){
                     if (simple == "value"){
                       try{
-                          simple >> self.sin.amp >> self.sin.period >> self.sin.offset;
+                          simple.view() >> self.sin.amp >> self.sin.period >> self.sin.offset;
                       } catch (const Ast::Exception & e){
                       }
                     } 
@@ -1414,7 +1415,7 @@ class SinYController : public Controller{
 		    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 			if (simple == "value"){
 			  try{
-			      simple >> self.sin.amp >> self.sin.period >> self.sin.offset;
+			      simple.view() >> self.sin.amp >> self.sin.period >> self.sin.offset;
 			  } catch (const Ast::Exception & e){
 			  }
 			} 
@@ -1459,9 +1460,9 @@ class VelAddController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "x"){
-			simple >> self.x;
+			simple.view() >> self.x;
 		    } else if (simple == "y"){
-			simple >> self.y;
+			simple.view() >> self.y;
 		    } 
 		}
 	    };
@@ -1504,9 +1505,9 @@ class VelSetController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "x"){
-			simple >> self.x;
+			simple.view() >> self.x;
 		    } else if (simple == "y"){
-			simple >> self.y;
+			simple.view() >> self.y;
 		    } 
 		}
 	    };
@@ -1548,7 +1549,7 @@ class EnabledController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
-			simple >> self.enabled;
+			simple.view() >> self.enabled;
 		    }
 		}
 	    };
@@ -1590,7 +1591,7 @@ class VisibleController : public Controller{
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
-			simple >> self.visible;
+			simple.view() >> self.visible;
 		    } 
 		}
 	    };
@@ -1620,28 +1621,28 @@ class VisibleController : public Controller{
 /*! Change current animation of Background to given value */
 class AnimationController: public Controller {
     public:
-        AnimationController(const std::string & name, Ast::Section * data, const Ast::AstParse & parse, BackgroundController & control, Background & background, const SpriteMap & sprites):
+        AnimationController(const std::string & name, Ast::Section * data, const AstRef & parse, BackgroundController & control, Background & background, const SpriteMap & sprites):
 	Controller(name,data,control,background),
 	animation(NULL){
 	    class Walker: public Ast::Walker{
 	    public:
-		Walker(AnimationController & self, const Ast::AstParse & parse, const SpriteMap & sprites):
+		Walker(AnimationController & self, const AstRef & parse, const SpriteMap & sprites):
                 self(self),
                 parse(parse),
                 sprites(sprites){
                 }
 
 		AnimationController & self;
-                const Ast::AstParse & parse;
+                const AstRef & parse;
                 const SpriteMap & sprites;
 		
 		virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
 		    if (simple == "value"){
                         int action = 0;
-                        simple >> action;
+                        simple.view() >> action;
                         std::ostringstream all;
                         all << "begin action " << action;
-                        self.animation = Util::getAnimation(parse.findSection(all.str()), sprites, false);
+                        self.animation = Util::getAnimation(parse->findSection(all.str()), sprites, false);
 
 		    } 
 		}
@@ -1695,17 +1696,18 @@ ticker(0){
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "eventid"){
-                simple >> self.ID;
+                simple.view() >> self.ID;
             } else if (simple == "looptime"){
-                simple >> self.globalLooptime;
+                simple.view() >> self.globalLooptime;
                 if (self.globalLooptime == 0){
                     self.globalLooptime = -1;
                 }
             } else if (simple == "ctrlid"){
                 try{
+                    Ast::View view = simple.view();
                     while (true){
                         int id;
-                        simple >> id;
+                        view >> id;
                         self.addElements(background.getIDList(id));
                         hasID = true;
                     }
@@ -1761,7 +1763,7 @@ debug(false),
 clearColor(Graphics::MaskColor()){
     TimeDifference diff;
     diff.startTime();
-    Ast::AstParse parsed(Mugen::Util::parseDef(file.path()));
+    AstRef parsed(Mugen::Util::parseDef(file.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     
@@ -1769,7 +1771,7 @@ clearColor(Graphics::MaskColor()){
     BackgroundElement *priorElement = 0;
     
     try{
-        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;;
             std::string head = section->getName();
             head = Mugen::Util::fixCase(head);
@@ -1787,7 +1789,7 @@ clearColor(Graphics::MaskColor()){
                     Mugen::SpriteMap & sprites;
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
-                            simple >> self.spriteFile;
+                            simple.view() >> self.spriteFile;
                             Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
                             // Strip it of any directory it might have
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
@@ -1840,7 +1842,7 @@ clearColor(Graphics::MaskColor()){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
-                            simple >> self.spriteFile;
+                            simple.view() >> self.spriteFile;
                             Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
                             // Strip it of any directory it might have
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
@@ -1849,11 +1851,11 @@ clearColor(Graphics::MaskColor()){
                             // Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                             Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } else if (simple == "debugbg"){
-                            simple >> self.debug;
+                            simple.view() >> self.debug;
                         } else if (simple == "bgclearcolor"){
                             int r=0, g=0, b=0;
                             try{
-                                simple >> r >> g >> b;
+                                simple.view() >> r >> g >> b;
                             } catch (const Ast::Exception & e){
                             }
                             self.clearColor = Graphics::makeColor(r,g,b);
@@ -1920,13 +1922,13 @@ clearColor(Graphics::MaskColor()){
 
                 // Check type
                 string type;
-                *section->findAttribute("type") >> type;
+                section->findAttribute("type")->view() >> type;
                 type = Util::fixCase(type);
 
                 // Our Controller
                 Controller *controller=0;
                 if (type == "anim"){
-                    controller = new AnimationController(head,section, parsed, *control,*this, sprites);
+                    controller = new AnimationController(head, section, parsed, *control,*this, sprites);
                 } else if (type == "enabled" || type == "enable"){
                     controller = new EnabledController(head,section,*control,*this);
                 } else if (type == "null"){
@@ -1964,7 +1966,7 @@ clearColor(Graphics::MaskColor()){
     destroyRaw(sprites);
 }
 
-Background::Background(const Ast::AstParse & parsed, const string & header, const Mugen::SpriteMap & sprites):
+Background::Background(const AstRef & parsed, const string & header, const Mugen::SpriteMap & sprites):
 header(header),
 debug(false),
 clearColor(Graphics::MaskColor()){
@@ -1976,7 +1978,7 @@ clearColor(Graphics::MaskColor()){
     bool ownSprites = false;
     
     try{
-        for (Ast::AstParse::section_iterator section_it = parsed.getSections()->begin(); section_it != parsed.getSections()->end(); section_it++){
+        for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;;
             std::string head = section->getName();
             head = Mugen::Util::fixCase(head);
@@ -1997,7 +1999,7 @@ clearColor(Graphics::MaskColor()){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
-                            simple >> self.spriteFile;
+                            simple.view() >> self.spriteFile;
                             Global::debug(1) << "Reading Sff (sprite) Data..." << endl;
                             // Strip it of any directory it might have
                             Filesystem::AbsolutePath baseDir = Filesystem::AbsolutePath(self.file).getDirectory();
@@ -2007,11 +2009,11 @@ clearColor(Graphics::MaskColor()){
                             Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                             ownSprites = true;
                         } else if (simple == "debugbg"){
-                            simple >> self.debug;
+                            simple.view() >> self.debug;
                         } else if (simple == "bgclearcolor"){
                             int r=0, g=0, b=0;
                             try{
-                                simple >> r >> g >> b;
+                                simple.view() >> r >> g >> b;
                             } catch (const Ast::Exception & e){
                             }
                             self.clearColor = Graphics::makeColor(r,g,b);
@@ -2073,7 +2075,7 @@ clearColor(Graphics::MaskColor()){
 
                 // Check type
                 string type;
-                *section->findAttribute("type") >> type;
+                section->findAttribute("type")->view() >> type;
                 type = Util::fixCase(type);
 
                 // Our Controller

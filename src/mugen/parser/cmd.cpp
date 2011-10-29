@@ -14976,7 +14976,7 @@ Result rule_hitdef__attack__attribute(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    as<Ast::HitDefAttackAttribute*>(attribute)->reset(); value = attribute;
+                    value = attribute;
                     result_peg_2.setValue(value);
                 }
             
