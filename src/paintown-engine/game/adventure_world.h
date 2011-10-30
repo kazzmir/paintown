@@ -149,7 +149,7 @@ protected:
 	void loadLevel( const Filesystem::AbsolutePath & path );
 	void threadedLoadLevel( const Filesystem::AbsolutePath & path );
 
-	void drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const std::map< int, std::vector< Paintown::Object * > > & object_z );
+	void drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const std::map< int, std::vector< Paintown::Object * > > & object_z, double cameraX);
 
 	virtual void deleteObjects( std::vector< Paintown::Object * > * objects );
 

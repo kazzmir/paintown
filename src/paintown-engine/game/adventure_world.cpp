@@ -699,18 +699,18 @@ void AdventureWorld::addObject( Paintown::Object * o ){
     objects.push_back(o);
 }
 
-void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z ){
-    scene->drawBack((int) camera.getX(), where);
+void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z, double cameraX){
+    scene->drawBack((int) cameraX, where);
 
     for (map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
         const vector<Paintown::Object *> & xx = (*it).second;
         for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
 
-            (*mm)->draw(where, (int) camera.getX(), 0);
+            (*mm)->draw(where, (int) cameraX, 0);
         }
     }
 
-    scene->drawFront((int) camera.getX(), where);
+    scene->drawFront((int) cameraX, where);
 
     /* need a special case to draw object stuff in front.
      * this is things like icon/name/health, not objects that are part of
@@ -719,7 +719,7 @@ void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap *
     for (map<int,vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++){
         const vector<Paintown::Object *> & xx = (*it).second;
         for ( vector<Paintown::Object *>::const_iterator mm = xx.begin(); mm != xx.end(); mm++ ){
-            (*mm)->drawFront(where, camera.getX());
+            (*mm)->drawFront(where, cameraX);
         }
     }
 }
@@ -813,7 +813,13 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
         }
 
         /* either draw on the buffer or the mini-map */
-        drawWorld(*it, on, object_z);
+        if (it == players.begin()){
+            drawWorld(*it, on, object_z, camera.getX());
+        } else {
+            /* draw the minimaps where the camera is always centered on the guy */
+            drawWorld(*it, on, object_z, it->min_x);
+        }
+
         if (on != work){
             on->Stretch(mini);
             Graphics::Bitmap::transBlender(0, 0, 0, 128);
