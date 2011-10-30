@@ -7,6 +7,4 @@ if [ ! -d trunk ]; then
   fi
 fi
 
-./update
-./run-stats
-./sync-with-site
+./update && ./run-stats && ./sync-with-site
