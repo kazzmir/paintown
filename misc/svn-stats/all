@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ ! -d trunk ]; then
+  ./setup
+  if [ "x$?" = "x1" ]; then
+    exit 1
+  fi
+fi
+
+./update
+./run-stats
+./sync-with-site

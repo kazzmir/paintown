@@ -1,0 +1,5 @@
+These scripts will generate an html webpage of svn statistics.
+
+Run ./all to perform all the steps. You need to put statsvn.jar in this directory.
+
+  http://www.statsvn.org/downloads.html

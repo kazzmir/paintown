@@ -1,0 +1,7 @@
+#!/bin/sh
+
+statsvn=statsvn.jar
+
+svn update trunk
+svn log trunk -v --xml > logfile.log
+java -jar $statsvn -output-dir stats logfile.log trunk

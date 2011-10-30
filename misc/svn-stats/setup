@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ ! -e statsvn.jar ]; then
+  echo "Download statsvn.jar and put it here"
+  echo "http://www.statsvn.org/downloads.html"
+  exit 1
+fi
+
+./update
+svn co file://$(pwd)/repo/trunk trunk
