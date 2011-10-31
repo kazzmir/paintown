@@ -5842,7 +5842,7 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         ostringstream out;
-        out << "[" << guy.getName() << "] ";
+        out << "[" << guy.getName() << ", " << stage.getTicks() << "] ";
 
         vector<Compiler::Value*>::const_iterator current = parameters.begin();
         for (unsigned int i = 0; i < text.size(); i++){
