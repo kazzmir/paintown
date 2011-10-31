@@ -1,0 +1,8 @@
+# This is for libx264
+$ sudo wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list && sudo apt-get --quiet update && sudo apt-get --yes --quiet --allow-unauthenticated install medibuntu-keyring && sudo apt-get --quiet update
+$ sudo apt-get non-free-codecs
+
+# 3,51 are the coordinates of the paintown window. you can find them using xwininfo
+$ ffmpeg -f alsa -ac 2 -i pulse -f x11grab -r 30 -s 640x480 -i :0.0+3,51 -vcodec libx264 -vpre lossless_ultrafast -threads 2 out.avi
+
+Get ffdshow and virtualdub to open the avi file on windows. Install avisynth and write .avs files that you can open in virtualdub to create a nice movie.
