@@ -5865,7 +5865,7 @@ public:
                             if (current == parameters.end()){
                                 out << "not enough parameters";
                             } else {
-                                out << (int) evaluateNumber(*current, FullEnvironment(stage, guy, commands), 0);
+                                out << evaluateNumber(*current, FullEnvironment(stage, guy, commands), 0);
                             }
                             current++;
                             break;
