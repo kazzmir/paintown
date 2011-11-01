@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scrollpane>
+    <panel layout="GridBagLayout">
+        <vbox id="upper">
+            <gridbagconstraints
+                gridx="0"
+                gridy="0"
+                weightx="1"
+                weighty="1"
+                gridheight="1"
+                anchor="GridBagConstraints.NORTHWEST"
+                fill="GridBagConstraints.BOTH"
+                />
+            <hbox>
+                <label text="Base Directory" />
+                <textfield id="basedir" />
+                <button text="Change" id="change-basedir" />
+                <button text="Clear" id="clear-basedir" />
+                <glue />
+            </hbox>
+        </vbox>
+    </panel>
+</scrollpane>
