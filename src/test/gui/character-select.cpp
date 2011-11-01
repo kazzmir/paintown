@@ -711,8 +711,8 @@ void MessageCollection::draw(const Gui::Animation::Depth & depth, const Graphics
 HasMore::HasMore(const Token * token):
 x(0),
 y(0),
-width(0),
-height(0),
+width(80),
+height(80),
 low_r(255),
 low_g(255),
 low_b(255),
@@ -789,23 +789,20 @@ void HasMore::draw(const Gui::Animation::Depth & depth, const Graphics::Bitmap &
         if (image != NULL){
             image->draw(x, y, width, height, work);
         } else {
-            const int x1 = 80;
-            const int x2 = 140;
             switch (direction){
                 case DOWN:
-                    work.triangle(x + x1, y - 8, x + x2, y - 8, x + (x1 + x2) / 2, y - 3, gradient.current());
+                    // Point 1
+                    work.triangle(x, y, x + width, y, x + width / 2, y + height, gradient.current());
                     break;
                 case LEFT:
-                    /* FIXME */
-                    work.triangle(x + 8, y + x1, x + 8, y - x2, x + (x1 + x2) / 2, y - 3, gradient.current());
+                    work.triangle(x, y, x, y + height, x - width, y + height / 2, gradient.current());
                     break;
                 case RIGHT:
-                    /* FIXME */
-                    work.triangle(x + 8, y + x1, x + 8, y - x2, x + (x1 + x2) / 2, y - 3, gradient.current());
+                    work.triangle(x, y, x, y + height, x + width, y + height / 2, gradient.current());
                     break;
                 case UP:
                 default:
-                    work.triangle(x + x1, y + 8, x + x2, y + 8, x + (x1 + x2) / 2, y + 3, gradient.current());
+                    work.triangle(x, y, x + width, y, x + width / 2, y - height, gradient.current());
                     break;
             }
         }
