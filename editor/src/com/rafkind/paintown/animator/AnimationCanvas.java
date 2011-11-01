@@ -78,7 +78,10 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
-        tabs.addTab("Properties", makeProperties(object, animation, changeName));
+        JComponent properties = makeProperties(object, animation, changeName);
+        if (properties != null){
+            tabs.addTab("Properties", properties);
+        }
         tabs.addTab("Events", makeEvents(animation, area));
         // this.save = object;
 

@@ -20,6 +20,77 @@ public class ProjectilePane {
 
     public ProjectilePane(final NewAnimator animator, final Projectile projectile){
         this.projectile = projectile;
+        
+        SwingEngine engine = new SwingEngine("animator/projectile.xml");
+
+        final JTabbedPane tabs = (JTabbedPane) engine.find("tabs");
+
+        for (Animation animation: projectile.getAnimations()){
+            tabs.add(new ProjectileCanvas(projectile, animation), animation.getName());
+        }
+        
+        /*
+        final JList animations = (JList) engine.find("animations");
+        final JButton edit = (JButton) engine.find("edit");
+
+        animations.setListData(projectile.getAnimations());
+
+        final Lambda1 editAnimation = new Lambda1(){
+            public Object invoke(Object i){
+                int index = ((Integer) i).intValue();
+                Animation temp = projectile.getAnimation(index);
+                canvas.removeAll();
+
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.fill = GridBagConstraints.BOTH;
+                constraints.anchor = GridBagConstraints.NORTHWEST;
+
+                canvas.add(new ProjectileCanvas(projectile, temp), constraints);
+                return null;
+            }
+        };
+
+        animations.addMouseListener( new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int index = animations.locationToIndex(e.getPoint());
+                    editAnimation.invoke_(new Integer(index));
+                }
+            }
+        });
+
+        edit.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                editAnimation.invoke_(new Integer(animations.getSelectedIndex()));
+            }
+        });
+        */
+
+        mainPanel = (JPanel) engine.getRootComponent();
+    }
+
+    private class ProjectileCanvas extends AnimationCanvas {
+        ProjectileCanvas(Projectile projectile, Animation animation){
+            super(projectile, animation, new Lambda2(){
+                public Object invoke(Object o1, Object o2){
+                    return null;
+                }
+            });
+        }
+    
+        protected JComponent makeProperties(AnimatedObject object, Animation animation, Lambda2 changeName){
+            return null;
+            // return new JPanel();
+        }
+    }
+
+    /*
+    public ProjectilePane(final NewAnimator animator, final Projectile projectile){
+        this.projectile = projectile;
 
         SwingEngine engine = new SwingEngine("animator/projectile.xml");
 
@@ -112,6 +183,7 @@ public class ProjectilePane {
 
         mainPanel = (JPanel) engine.getRootComponent();
     }
+    */
 
 	public SpecialPanel getEditor(){
 		return new SpecialPanel(mainPanel, null, projectile);

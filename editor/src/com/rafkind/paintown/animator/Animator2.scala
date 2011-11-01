@@ -389,7 +389,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 
         newProjectile.addActionListener(new swing.AbstractAction(){
           override def actionPerformed(event:awt.event.ActionEvent){
-                val projectile = new Projectile("new projectile");
+                val projectile = new Projectile("New Projectile");
                 val pane = new ProjectilePane(NewAnimator.this, projectile);
                 addNewTab(pane.getEditor(), projectile.getName());
             }
