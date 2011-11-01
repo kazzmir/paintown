@@ -71,13 +71,6 @@ private:
     /*! Location */
     int x, y;
     
-    /*! colors */
-    int low_r, low_g, low_b;
-    int high_r, high_g, high_b;
-    
-    /*! Interpolate distance */
-    int interpolateDistance;
-    
     /*! Depth */
     Gui::Animation::Depth depth;
     
@@ -212,11 +205,6 @@ private:
     };
     /*! location */
     int x, y, width, height;
-    /*! colors */
-    int low_r, low_g, low_b;
-    int high_r, high_g, high_b;
-    /*! Interpolate distance */
-    int interpolateDistance;
     /*! image */
     Util::ReferenceCount<ImageData> image;
     /*! Direction */

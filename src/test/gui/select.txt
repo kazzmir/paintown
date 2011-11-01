@@ -39,13 +39,13 @@
   
   ; Has more arrows only two (low and high) with four directions
   ; UP
-  (more "low" (location 480 15) (dimensions 70 8) (direction up) (depth foreground bottom) (color-low 128 128 128) (color-high 255 255 255) (interpolation-distance 20))
+  (more "low" (location 480 15) (dimensions 70 8) (direction up) (depth foreground bottom) (gradient (low 128 128 128) (high 255 255 255) (distance 20)))
   ; DOWN
-  (more "high" (location 480 455) (dimensions 70 8) (direction down) (depth foreground bottom) (color-low 128 128 128) (color-high 255 255 255) (interpolation-distance 20))
+  (more "high" (location 480 455) (dimensions 70 8) (direction down) (depth foreground bottom) (gradient (low 128 128 128) (high 255 255 255) (distance 20)))
   ; LEFT
-  ;(more "low" (location 295 20) (dimensions 8 70) (direction left) (depth foreground bottom) (color-low 0 0 0) (color-high 255 255 255) (interpolation-distance 50))
+  ;(more "low" (location 295 20) (dimensions 8 70) (direction left) (depth foreground bottom) (gradient (low 0 0 0) (high 255 255 255) (distance 50)))
   ; RIGHT
-  ;(more "high" (location 555 20) (dimensions 8 70) (direction right) (depth foreground bottom) (color-low 0 0 0) (color-high 255 255 255) (interpolation-distance 50))
+  ;(more "high" (location 555 20) (dimensions 8 70) (direction right) (depth foreground bottom) (gradient (low 0 0 0) (high 255 255 255) (distance 50)))
   
   ; Auto populate the grid ?
   (auto-populate true)

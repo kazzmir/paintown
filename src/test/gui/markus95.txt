@@ -21,25 +21,25 @@
     (wrap true))
   ; Arrows 
   ; LEFT
-  ;(more "low" (location 40 220) (dimensions 40 40) (direction left) (depth foreground bottom) (image-collection (image (file "android/arrowleft.png") (time -1))))
+  ;(more "low" (location 40 220) (dimensions 40 40) (direction left) (depth foreground bottom) (images (image (file "android/arrowleft.png") (time -1))))
   ; RIGHT
-  ;(more "high" (location 600 220) (dimensions 40 40) (direction right) (depth foreground bottom) (image-collection (image (file "android/arrowright.png") (time -1))))
+  ;(more "high" (location 600 220) (dimensions 40 40) (direction right) (depth foreground bottom) (images (image (file "android/arrowright.png") (time -1))))
   
   ; Cells
   (cell (name back) 
-    (image-collection 
+    (images 
         (image (file "select/back.png") (time -1))))
   (cell (name top) 
-    (image-collection 
+    (images 
         (image (file "select/front.png") (time -1))))
   (cell (name select0) 
-    (image-collection 
+    (images 
         (image (file "select/select0.png") (time -1))))
   (cell (name select1) 
-    (image-collection 
+    (images 
         (image (file "select/select1.png") (time -1))))
   (cell (name select-alternative) 
-    (image-collection 
+    (images 
         (image (file "select/selectalt.png") (time -1))))
   ; Auto populate the grid ?
   (auto-populate true)

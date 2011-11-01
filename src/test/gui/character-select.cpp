@@ -198,20 +198,32 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, std::map<i
     }
 }
 
+static bool handleGradient(const Token * token, Effects::Gradient & gradient){
+    if (*token == "color"){
+        int r, g, b;
+        token->view() >> r >> g >> b;
+        r = Util::clamp(r, 0, 255);
+        g = Util::clamp(g, 0, 255);
+        b = Util::clamp(b, 0, 255);
+        gradient = Effects::Gradient(50, Graphics::makeColor(r, g, b), Graphics::makeColor(r, g, b));
+        return true;
+    } else if (*token =="gradient"){
+        TokenView view = token->view();
+        const Token * tok;
+        view >> tok;
+        gradient = Effects::Gradient(tok);
+        return true;
+    }
+    return false;
+}
+
 static Effects::Gradient defaultGradient(){
-    return Effects::Gradient(0, Graphics::makeColor(255, 255, 255), Graphics::makeColor(255, 255, 255));
+    return Effects::Gradient(50, Graphics::makeColor(255, 255, 255), Graphics::makeColor(255, 255, 255));
 }
 
 TextMessage::TextMessage():
 x(0),
 y(0),
-low_r(255),
-low_g(255),
-low_b(255),
-high_r(255),
-high_g(255),
-high_b(255),
-interpolateDistance(50),
 depth(Gui::Animation::BackgroundTop),
 width(0),
 height(0),
@@ -225,13 +237,6 @@ message(copy.message),
 replace(copy.replace),
 x(copy.x),
 y(copy.y),
-low_r(copy.low_r),
-low_g(copy.low_g),
-low_b(copy.low_b),
-high_r(copy.high_r),
-high_g(copy.high_g),
-high_b(copy.high_b),
-interpolateDistance(copy.interpolateDistance),
 depth(copy.depth),
 font(copy.font),
 width(copy.width),
@@ -241,25 +246,9 @@ profileAssociation(copy.profileAssociation),
 gradient(copy.gradient){
 }
 
-static int clamp(int low, int high, int value){
-    if (value < low){
-        return low;
-    } else if (value > high){
-        return high;
-    }
-    return value;
-}
-
 TextMessage::TextMessage(const Token * token):
 x(0),
 y(0),
-low_r(255),
-low_g(255),
-low_b(255),
-high_r(255),
-high_g(255),
-high_b(255),
-interpolateDistance(50),
 depth(Gui::Animation::BackgroundTop),
 width(0),
 height(0),
@@ -280,24 +269,7 @@ gradient(defaultGradient()){
             } else if (tok->match("location", x, y)){
             } else if (tok->match("depth", match_text, level)){
                 depth = parseDepth(match_text, level);
-            } else if (*tok == "color"){
-                int r, g, b;
-                tok->view() >> r >> g >> b;
-                r = clamp(0, 255, r);
-                g = clamp(0, 255, g);
-                b = clamp(0, 255, b);
-                low_r = high_r = r;
-                low_g = high_g = g;
-                low_b = high_b = b;
-            } else if (tok->match("color-low", low_r, low_g, low_b)){
-                low_r = clamp(0, 255, low_r);
-                low_g = clamp(0, 255, low_g);
-                low_b = clamp(0, 255, low_b);
-            } else if (tok->match("color-high", high_r, high_g, high_b)){
-                high_r = clamp(0, 255, high_r);
-                high_g = clamp(0, 255, high_g);
-                high_b = clamp(0, 255, high_b);
-            } else if (tok->match("interpolate-distance", interpolateDistance)){
+            } else if (handleGradient(tok, gradient)){
             } else if (tok->match("font", match_text, width, height)){
                 font = Filesystem::AbsolutePath(match_text);
             } else if (tok->match("font-dimensions", width, height)){
@@ -317,8 +289,6 @@ gradient(defaultGradient()){
             throw LoadException(__FILE__, __LINE__, ex, "Text message parse error");
         }
     }
-    
-    gradient = Effects::Gradient(interpolateDistance, Graphics::makeColor(low_r, low_g, low_b), Graphics::makeColor(high_r, high_g, high_b));
 }
 
 TextMessage::~TextMessage(){
@@ -355,12 +325,6 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
     replace = copy.replace;
     x = copy.x;
     y = copy.y;
-    low_r = copy.low_r;
-    low_g = copy.low_g;
-    low_b = copy.low_b;
-    high_r = copy.high_r;
-    high_g = copy.high_g;
-    high_b = copy.high_b;
     depth = copy.depth;
     font = copy.font;
     width = copy.width;
@@ -414,7 +378,7 @@ timer(0),
 loop(0),
 current(0){
     int loopLocation = 0;
-    if ( *token != "image-collection" ){
+    if ( *token != "images" ){
         throw LoadException(__FILE__, __LINE__, "Not an Image Collection");
     }
     TokenView view = token->view();
@@ -495,7 +459,7 @@ fill(false){
                 } else if (string_match == "false"){
                     fill = false;
                 }
-            } else if (*tok == "image-collection"){
+            } else if (*tok == "images"){
                 Util::ReferenceCount<ImageData> image(new ImageData(tok));
                 cell = image;
             } else {
@@ -713,13 +677,6 @@ x(0),
 y(0),
 width(80),
 height(80),
-low_r(255),
-low_g(255),
-low_b(255),
-high_r(255),
-high_g(255),
-high_b(255),
-interpolateDistance(50),
 direction(UP),
 depth(Gui::Animation::BackgroundTop),
 gradient(defaultGradient()){
@@ -746,26 +703,9 @@ gradient(defaultGradient()){
                 }
             } else if (tok->match("depth", match_text, level)){
                 depth = parseDepth(match_text, level);
-            } else if (*tok == "image-collection"){
+            } else if (*tok == "images"){
                 image = Util::ReferenceCount<ImageData>(new ImageData(tok));
-            } else if (*tok == "color"){
-                int r, g, b;
-                tok->view() >> r >> g >> b;
-                r = clamp(0, 255, r);
-                g = clamp(0, 255, g);
-                b = clamp(0, 255, b);
-                low_r = high_r = r;
-                low_g = high_g = g;
-                low_b = high_b = b;
-            } else if (tok->match("color-low", low_r, low_g, low_b)){
-                low_r = clamp(0, 255, low_r);
-                low_g = clamp(0, 255, low_g);
-                low_b = clamp(0, 255, low_b);
-            } else if (tok->match("color-high", high_r, high_g, high_b)){
-                high_r = clamp(0, 255, high_r);
-                high_g = clamp(0, 255, high_g);
-                high_b = clamp(0, 255, high_b);
-            } else if (tok->match("interpolate-distance", interpolateDistance)){
+            } else if (handleGradient(tok, gradient)){
             } else {
                 Global::debug(0) << "Unknown Has More property: " << tok->getName() << std::endl;
             }
@@ -773,7 +713,6 @@ gradient(defaultGradient()){
             throw LoadException(__FILE__, __LINE__, ex, "Has More parse error");
         }
     }
-    gradient = Effects::Gradient(interpolateDistance, Graphics::makeColor(low_r, low_g, low_b), Graphics::makeColor(high_r, high_g, high_b));
 }
 
 HasMore::~HasMore(){
