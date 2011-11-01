@@ -746,6 +746,8 @@ gradient(defaultGradient()){
                 }
             } else if (tok->match("depth", match_text, level)){
                 depth = parseDepth(match_text, level);
+            } else if (*tok == "image-collection"){
+                image = Util::ReferenceCount<ImageData>(new ImageData(tok));
             } else if (*tok == "color"){
                 int r, g, b;
                 tok->view() >> r >> g >> b;

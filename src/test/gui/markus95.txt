@@ -19,6 +19,12 @@
     (cell-margins 20 325)
     (cursors 1)
     (wrap true))
+  ; Arrows 
+  ; LEFT
+  ;(more "low" (location 40 220) (dimensions 40 40) (direction left) (depth foreground bottom) (image-collection (image (file "android/arrowleft.png") (time -1))))
+  ; RIGHT
+  ;(more "high" (location 600 220) (dimensions 40 40) (direction right) (depth foreground bottom) (image-collection (image (file "android/arrowright.png") (time -1))))
+  
   ; Cells
   (cell (name back) 
     (image-collection 
@@ -52,7 +58,11 @@
     )
   
   ; Add player by relative path
-  ;(add "players/akuma/akuma.txt")
+  (add "players/akuma/akuma.txt")
+  (add "players/akuma/akuma.txt")
+  (add "players/akuma/akuma.txt")
+  (add "players/akuma/akuma.txt")
+  (add "players/akuma/akuma.txt")
   
   ; Font
   ; (font somefont.ttf 32 32)
