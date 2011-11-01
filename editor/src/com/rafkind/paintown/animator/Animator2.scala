@@ -525,17 +525,44 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
   construct()
 
   def isPlayerFile(file:File):Boolean = {
-    /* TODO: check if the file is a token that starts with *character* */
-    true
+    try{
+      val reader = new TokenReader(file)
+      return reader.nextToken().getName() == "character"
+    } catch {
+      case le:LoadException => {
+        return false
+      }
+    }
   }
 
   def isProjectileFile(file:File):Boolean = {
-    /* TODO */
-    false
+    try{
+      val reader = new TokenReader(file)
+      return reader.nextToken().getName() == "projectile"
+    } catch {
+      case le:LoadException => {
+        return false
+      }
+    }
   }
 
   def loadProjectile(file:File) = {
-    println("TODO: implement projectile loading")
+    try{
+      println("Loading projectile " + file)
+      val projectile = new Projectile(file.getName(), file)
+      val pane = new ProjectilePane(NewAnimator.this, projectile);
+      swing.SwingUtilities.invokeLater(new Runnable(){
+        def run(){
+          addNewTab(pane.getEditor(), projectile.getName());
+        }
+      })
+     } catch {
+       case le:LoadException => {
+         //showError( "Could not load " + f.getName() );
+         System.out.println("Could not load " + file.getName());
+         le.printStackTrace();
+       }
+     }
   }
 
   def loadPlayer(file:File) = {
