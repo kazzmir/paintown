@@ -18,21 +18,21 @@ public class Projectile extends AnimatedObject {
 	private Animation main;
 	private Animation death;
 
-	public Projectile( String name ){
-		super( name );
+	public Projectile(String name){
+		super(name);
 
 		main = new Animation( "main" );
-		new Thread( main ).start();
+		new Thread(main).start();
 		death = new Animation( "death" );
-		new Thread( death ).start();
+		new Thread(death).start();
 
-		addAnimation( main );
-		addAnimation( death );
+		addAnimation(main);
+		addAnimation(death);
 	}
 
-	public Projectile( String name, File f ) throws LoadException {
-		super( name );
-		loadData( f );
+	public Projectile(String name, File f) throws LoadException {
+		super(name);
+		loadData(f);
 	}
 	
 	public Animation getMain(){
@@ -55,12 +55,12 @@ public class Projectile extends AnimatedObject {
 	
 	public void saveData() throws LoadException {
 		try{
-			FileOutputStream out = new FileOutputStream( getPath() );
-			PrintStream printer = new PrintStream( out );
-			printer.print( getToken().toString() );
-			printer.print( "\n" );
+			FileOutputStream out = new FileOutputStream(getPath());
+			PrintStream printer = new PrintStream(out);
+			printer.print(getToken().toString());
+			printer.print("\n");
 			out.close();
-			System.out.println( getToken().toString() );
+			System.out.println(getToken().toString());
 		} catch ( Exception e ){
 			throw new LoadException( "Couldn't save!" );
 		}
@@ -80,15 +80,15 @@ public class Projectile extends AnimatedObject {
 			if ( name != null ){
 				if ( name.readString( 0 ).equals( "main" ) ){
 					main = new Animation( animation );
-					addAnimation( main );
-					new Thread( main ).start();
+					addAnimation(main);
+					new Thread(main).start();
 				} else if ( name.readString( 0 ).equals( "death" ) ){
 					death = new Animation( animation );
-					addAnimation( death );
-					new Thread( death ).start();
+					addAnimation(death);
+					new Thread(death).start();
 				} else {
-					System.out.println( "Unknown animation" );
-					System.out.println( animation.toString() );
+					System.out.println("Unknown animation");
+					System.out.println(animation.toString());
 				}
 			}
 		}
