@@ -205,7 +205,7 @@ static bool handleGradient(const Token * token, Effects::Gradient & gradient){
         r = Util::clamp(r, 0, 255);
         g = Util::clamp(g, 0, 255);
         b = Util::clamp(b, 0, 255);
-        gradient = Effects::Gradient(1, Graphics::makeColor(r, g, b), Graphics::makeColor(r, g, b));
+        gradient = Effects::Gradient(2, Graphics::makeColor(r, g, b), Graphics::makeColor(r, g, b));
         return true;
     } else if (*token =="gradient"){
         gradient = Effects::Gradient(token);
@@ -215,7 +215,7 @@ static bool handleGradient(const Token * token, Effects::Gradient & gradient){
 }
 
 static Effects::Gradient defaultGradient(){
-    return Effects::Gradient(50, Graphics::makeColor(255, 255, 255), Graphics::makeColor(255, 255, 255));
+    return Effects::Gradient(2, Graphics::makeColor(255, 255, 255), Graphics::makeColor(255, 255, 255));
 }
 
 TextMessage::TextMessage():
