@@ -36,6 +36,11 @@
   (cell (name select0) (shape square) (color 255 0 0) (color-fill false))
   (cell (name select1) (shape square) (color 0 0 255) (color-fill false))
   (cell (name select-alternative) (shape square) (color 0 255 0) (color-fill false))
+  
+  ; Has more arrows only two (low and high)
+  (more "low" (location 410 8) (dimensions 20 20) (direction up) (depth foreground bottom) (color-low 0 0 0) (color-high 255 255 255) (interpolation-distance 50))
+  (more "high" (location 410 463) (dimensions 20 20) (direction down) (depth foreground bottom) (color-low 0 0 0) (color-high 255 255 255) (interpolation-distance 50))
+  
   ; Auto populate the grid ?
   (auto-populate true)
   ; Directory in which to populate from

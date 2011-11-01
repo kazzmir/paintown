@@ -197,6 +197,36 @@ private:
     std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > > messages;
 };
 
+class HasMore{
+public:
+    HasMore(const Token *);
+    ~HasMore();
+    void act();
+    void draw(const Gui::Animation::Depth &, const Graphics::Bitmap &);
+private:
+    enum Direction{
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+    };
+    /*! location */
+    int x, y, width, height;
+    /*! colors */
+    int low_r, low_g, low_b;
+    int high_r, high_g, high_b;
+    /*! Interpolate distance */
+    int interpolateDistance;
+    /*! image */
+    Util::ReferenceCount<ImageData> image;
+    /*! Direction */
+    Direction direction;
+    /*! Depth */
+    Gui::Animation::Depth depth;
+    /*! gradient */
+    Effects::Gradient gradient;
+};
+
 class CharacterSelect{
 public:
     CharacterSelect();
@@ -288,6 +318,12 @@ protected:
     
     /*! Display thread */
     Util::ReferenceCount<Util::Thread::ThreadObject> loadingThread;
+    
+    /*! Has More Low */
+    Util::ReferenceCount<HasMore> hasMoreLow;
+    
+    /*! Has More High */
+    Util::ReferenceCount<HasMore> hasMoreHigh;
     
     /*! Sounds */
     std::map<Sounds, std::string> sounds;

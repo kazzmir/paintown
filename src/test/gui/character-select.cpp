@@ -708,6 +708,110 @@ void MessageCollection::draw(const Gui::Animation::Depth & depth, const Graphics
     }
 }
 
+HasMore::HasMore(const Token * token):
+x(0),
+y(0),
+width(0),
+height(0),
+low_r(255),
+low_g(255),
+low_b(255),
+high_r(255),
+high_g(255),
+high_b(255),
+interpolateDistance(50),
+direction(UP),
+depth(Gui::Animation::BackgroundTop),
+gradient(defaultGradient()){
+    if ( *token != "more" ){
+        throw LoadException(__FILE__, __LINE__, "Not a Has More context");
+    }
+    TokenView view = token->view();
+    while (view.hasMore()){
+        try{
+            const Token * tok;
+            view >> tok;
+            std::string match_text, level;
+            if (tok->match("location",x, y)){
+            } else if (tok->match("dimensions",width, height)){
+            } else if (tok->match("direction", match_text)){
+                if (match_text == "up"){
+                    direction = UP;
+                } else if (match_text == "down"){
+                    direction = DOWN;
+                } else if (match_text == "left"){
+                    direction = LEFT;
+                } else if (match_text == "right"){
+                    direction = RIGHT;
+                }
+            } else if (tok->match("depth", match_text, level)){
+                depth = parseDepth(match_text, level);
+            } else if (*tok == "color"){
+                int r, g, b;
+                tok->view() >> r >> g >> b;
+                r = clamp(0, 255, r);
+                g = clamp(0, 255, g);
+                b = clamp(0, 255, b);
+                low_r = high_r = r;
+                low_g = high_g = g;
+                low_b = high_b = b;
+            } else if (tok->match("color-low", low_r, low_g, low_b)){
+                low_r = clamp(0, 255, low_r);
+                low_g = clamp(0, 255, low_g);
+                low_b = clamp(0, 255, low_b);
+            } else if (tok->match("color-high", high_r, high_g, high_b)){
+                high_r = clamp(0, 255, high_r);
+                high_g = clamp(0, 255, high_g);
+                high_b = clamp(0, 255, high_b);
+            } else if (tok->match("interpolate-distance", interpolateDistance)){
+            } else {
+                Global::debug(0) << "Unknown Has More property: " << tok->getName() << std::endl;
+            }
+        } catch ( const TokenException & ex ) {
+            throw LoadException(__FILE__, __LINE__, ex, "Has More parse error");
+        }
+    }
+    gradient = Effects::Gradient(interpolateDistance, Graphics::makeColor(low_r, low_g, low_b), Graphics::makeColor(high_r, high_g, high_b));
+}
+
+HasMore::~HasMore(){
+}
+
+void HasMore::act(){
+    if (image != NULL){
+        image->act();
+    }
+    gradient.update();
+}
+
+void HasMore::draw(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
+    if (this->depth == depth){
+        if (image != NULL){
+            image->draw(x, y, width, height, work);
+        } else {
+            const int x1 = 80;
+            const int x2 = 140;
+            switch (direction){
+                case DOWN:
+                    work.triangle(x + x1, y - 8, x + x2, y - 8, x + (x1 + x2) / 2, y - 3, gradient.current());
+                    break;
+                case LEFT:
+                    /* FIXME */
+                    work.triangle(x + 8, y + x1, x + 8, y - x2, x + (x1 + x2) / 2, y - 3, gradient.current());
+                    break;
+                case RIGHT:
+                    /* FIXME */
+                    work.triangle(x + 8, y + x1, x + 8, y - x2, x + (x1 + x2) / 2, y - 3, gradient.current());
+                    break;
+                case UP:
+                default:
+                    work.triangle(x + x1, y + 8, x + x2, y + 8, x + (x1 + x2) / 2, y + 3, gradient.current());
+                    break;
+            }
+        }
+    }
+}
+
 CharacterSelect::CharacterSelect():
 listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
@@ -756,6 +860,14 @@ void CharacterSelect::act(){
                 ourItem->act();
             }
         }
+    }
+    
+    if (hasMoreLow != NULL){
+        hasMoreLow->act();
+    }
+    
+    if (hasMoreHigh != NULL){
+        hasMoreHigh->act();
     }
 }
 
@@ -863,6 +975,12 @@ void CharacterSelect::load(const Token * token){
                 } else if (*tok == "cell"){
                     Util::ReferenceCount<CellData> cell(new CellData(tok));
                     cells[cell->getName()] = cell;
+                } else if (tok->match("more", string_match)){
+                    if (string_match == "low"){
+                        hasMoreLow = Util::ReferenceCount<HasMore>(new HasMore(tok));
+                    } else if (string_match == "high"){
+                        hasMoreHigh = Util::ReferenceCount<HasMore>(new HasMore(tok));
+                    }
                 } else if (tok->match("sound", string_match, level)){
                     Sounds sound = NO_USE;
                     if (string_match == "up"){
@@ -960,6 +1078,15 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
         listBitmap->clearToMask();
         list->render(*listBitmap, listFont);
         listBitmap->draw(listWindow.x, listWindow.y, work);
+    }
+    
+    // Directional arrows next
+    if (hasMoreLow != NULL && list->hasMoreLow()){
+        hasMoreLow->draw(depth, work);
+    }
+    
+    if (hasMoreHigh != NULL && list->hasMoreHigh()){
+        hasMoreHigh->draw(depth, work);
     }
     
     // Profiles next
