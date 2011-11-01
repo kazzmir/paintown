@@ -205,13 +205,10 @@ static bool handleGradient(const Token * token, Effects::Gradient & gradient){
         r = Util::clamp(r, 0, 255);
         g = Util::clamp(g, 0, 255);
         b = Util::clamp(b, 0, 255);
-        gradient = Effects::Gradient(50, Graphics::makeColor(r, g, b), Graphics::makeColor(r, g, b));
+        gradient = Effects::Gradient(1, Graphics::makeColor(r, g, b), Graphics::makeColor(r, g, b));
         return true;
     } else if (*token =="gradient"){
-        TokenView view = token->view();
-        const Token * tok;
-        view >> tok;
-        gradient = Effects::Gradient(tok);
+        gradient = Effects::Gradient(token);
         return true;
     }
     return false;
