@@ -4,6 +4,8 @@
 #include "animation.h"
 #include "util/bitmap.h"
 #include "character.h" 
+#include "util/token.h"
+#include "util/tokenreader.h"
 #include "util/font.h"
 #include "util/funcs.h"
 #include "factory/font_render.h"
@@ -47,20 +49,21 @@ attack_bonus(0),
 invincible(false),
 ignore_lives(false),
 source(new InputSource()){
-	lives = DEFAULT_LIVES;
-	
-	/*
-	if ( getMovement( "grab" ) == NULL ){
-		throw LoadException("No 'grab' movement");
-	}
-	*/
+    lives = DEFAULT_LIVES;
 
-	show_life = getHealth();
+    /*
+       if ( getMovement( "grab" ) == NULL ){
+       throw LoadException("No 'grab' movement");
+       }
+       */
 
-	int x, y;
-	NamePlacer::getPlacement(x, y, name_id);
+    show_life = getHealth();
 
-        commonInitialize();
+    int x, y;
+    NamePlacer::getPlacement(x, y, name_id);
+
+    commonInitialize();
+    load(Filesystem::AbsolutePath(string(filename)));
 }
 	
 Player::Player(const Filesystem::AbsolutePath & filename, Util::ReferenceCount<InputSource> source):
@@ -71,21 +74,21 @@ attack_bonus(0),
 invincible( false ),
 ignore_lives(false),
 source(source){
+    lives = DEFAULT_LIVES;
 
-	lives = DEFAULT_LIVES;
-	
-	// if ( movements[ "grab" ] == NULL ){
-	/*
-	if ( getMovement( "grab" ) == NULL ){
-		throw LoadException("No 'grab' movement");
-	}
-	*/
+    // if ( movements[ "grab" ] == NULL ){
+    /*
+       if ( getMovement( "grab" ) == NULL ){
+       throw LoadException("No 'grab' movement");
+       }
+       */
 
-	show_life = getHealth();
+    show_life = getHealth();
 
-	int x, y;
-	NamePlacer::getPlacement(x, y, name_id);
-        commonInitialize();
+    int x, y;
+    NamePlacer::getPlacement(x, y, name_id);
+    commonInitialize();
+    load(filename);
 }
 	
 Player::Player(const Character & chr):
@@ -108,7 +111,8 @@ name_id(-1),
 attack_bonus(pl.attack_bonus),
 invincible(pl.invincible),
 ignore_lives(false),
-source(pl.source){
+source(pl.source),
+intro(pl.intro){
     show_life = getHealth();
     ignore_lives = pl.ignore_lives;
     commonInitialize();
@@ -117,6 +121,17 @@ source(pl.source){
 void Player::commonInitialize(){
     Graphics::blend_palette(attack_gradient, num_attack_gradient / 2, Graphics::makeColor(255,255,255), Graphics::makeColor(255,255,0));
     Graphics::blend_palette(attack_gradient + num_attack_gradient / 2, num_attack_gradient / 2, Graphics::makeColor(255,255,0), Graphics::makeColor(255,0,0));
+}
+
+void Player::load(const Filesystem::AbsolutePath & path){
+    TokenReader reader;
+    Token * token = reader.readTokenFromFile(path.path().c_str());
+    if (token != NULL){
+        string introPath;
+        if (token->match("_/intro", introPath)){
+            intro = Filesystem::RelativePath(introPath);
+        }
+    }
 }
 
 Player::~Player(){

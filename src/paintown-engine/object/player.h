@@ -7,6 +7,7 @@
 #include "util/load_exception.h"
 #include "util/network/network.h"
 #include "util/input/input.h"
+#include "util/file-system.h"
 #include "util/pointer.h"
 #include "../game/adventure_world.h"
 #include "util/thread.h"
@@ -94,6 +95,7 @@ protected:
 
     /* more initialization called by all the constructors */
     void commonInitialize();
+    void load(const Filesystem::AbsolutePath & path);
 
     std::vector<Input::PaintownInput> fillKeyCache();
     void debugDumpKeyCache(int level);

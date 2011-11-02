@@ -682,6 +682,8 @@ static void showIntro(Paintown::Player * player){
     if (player->getIntroFile() != Filesystem::RelativePath("")){
         try{
             Gui::CutScene intro(Storage::instance().find(player->getIntroFile()));
+            /* FIXME: hack */
+            intro.setResolution(GFX_X, GFX_Y);
             intro.playAll();
         } catch (const Filesystem::NotFound & fail){
             Global::debug(0) << "Could not find file while trying to play cutscene " << player->getIntroFile().path() << ": " << fail.getTrace() << std::endl;
