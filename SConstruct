@@ -1250,7 +1250,7 @@ rsx
         env['PAINTOWN_NACL_ARCH'] = '32'
         
         if arch == '64bit' and not arch_override == '32bit' or arch_override == '64bit':
-            prefix = 'nacl64-'
+            prefix = 'x86_64-nacl-'
             flags += ['-m64']
             libs.append('')
             paths.append([setup(path, '/toolchain/linux_x86/x86_64-nacl/usr/include/')])
