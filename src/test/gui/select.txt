@@ -5,7 +5,7 @@
   ;; (background paintown-title.png)
   ; Use a menu animation (This will override the background if it is set)
   (animation
-    (location 0)
+    (depth background bottom)
     (image 0 "menu/paintown.png")
     (velocity -.001 0)
     (frame
@@ -39,11 +39,11 @@
   
   ; Has more arrows only two (low and high) with four directions
   ; UP
-  (more "low" (location 480 15) (dimensions 70 8) (direction up) (depth foreground bottom) (gradient (low 128 128 128) (high 255 255 255) (distance 20)))
+  (more "low" (location 480 8) (dimensions 70 8) (direction up) (depth foreground bottom) (gradient (low 128 128 128) (high 255 255 255) (distance 20)))
   ; DOWN
   (more "high" (location 480 455) (dimensions 70 8) (direction down) (depth foreground bottom) (gradient (low 128 128 128) (high 255 255 255) (distance 20)))
   ; LEFT
-  ;(more "low" (location 295 20) (dimensions 8 70) (direction left) (depth foreground bottom) (gradient (low 0 0 0) (high 255 255 255) (distance 50)))
+  ;(more "low" (location 287 20) (dimensions 8 70) (direction left) (depth foreground bottom) (gradient (low 0 0 0) (high 255 255 255) (distance 50)))
   ; RIGHT
   ;(more "high" (location 555 20) (dimensions 8 70) (direction right) (depth foreground bottom) (gradient (low 0 0 0) (high 255 255 255) (distance 50)))
   

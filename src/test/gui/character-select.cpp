@@ -686,7 +686,9 @@ gradient(defaultGradient()){
             const Token * tok;
             view >> tok;
             std::string match_text, level;
-            if (tok->match("location",x, y)){
+            if (*tok == "low" || *tok == "high"){
+                // Ignore
+            } else if (tok->match("location",x, y)){
             } else if (tok->match("dimensions",width, height)){
             } else if (tok->match("direction", match_text)){
                 if (match_text == "up"){
@@ -733,14 +735,14 @@ void HasMore::draw(const Gui::Animation::Depth & depth, const Graphics::Bitmap &
                     work.triangle(x, y, x + width, y, x + width / 2, y + height, gradient.current());
                     break;
                 case LEFT:
-                    work.triangle(x, y, x, y + height, x - width, y + height / 2, gradient.current());
+                    work.triangle(x + width, y, x + width, y + height, x, y + height / 2, gradient.current());
                     break;
                 case RIGHT:
                     work.triangle(x, y, x, y + height, x + width, y + height / 2, gradient.current());
                     break;
                 case UP:
                 default:
-                    work.triangle(x, y, x + width, y, x + width / 2, y - height, gradient.current());
+                    work.triangle(x, y + height, x + width, y + height, x + width / 2, y, gradient.current());
                     break;
             }
         }

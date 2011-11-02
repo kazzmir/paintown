@@ -1,7 +1,7 @@
 (select-screen
   (name "markus95-select")
   (animation
-    (location 0)
+    (depth background bottom)
     (image 0 "menu/paintown.png")
     (velocity -.001 0)
     (frame
