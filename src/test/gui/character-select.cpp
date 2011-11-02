@@ -702,8 +702,8 @@ gradient(defaultGradient()){
                 }
             } else if (tok->match("depth", match_text, level)){
                 depth = parseDepth(match_text, level);
-            } else if (*tok == "images"){
-                image = Util::ReferenceCount<ImageData>(new ImageData(tok));
+            } else if (*tok == "animation"){
+                image = Util::ReferenceCount<Gui::Animation>(new Gui::Animation(tok));
             } else if (handleGradient(tok, gradient)){
             } else {
                 Global::debug(0) << "Unknown Has More property: " << tok->getName() << std::endl;

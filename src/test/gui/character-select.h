@@ -206,7 +206,7 @@ private:
     /*! location */
     int x, y, width, height;
     /*! image */
-    Util::ReferenceCount<ImageData> image;
+    Util::ReferenceCount<Gui::Animation> image;
     /*! Direction */
     Direction direction;
     /*! Depth */

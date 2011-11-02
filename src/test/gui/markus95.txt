@@ -21,9 +21,9 @@
     (wrap true))
   ; Arrows 
   ; LEFT
-  (more "low" (location 40 220) (dimensions 40 40) (direction left) (depth foreground bottom) (images (image (file "android/arrowleft.png") (time -1))))
+  (more "low" (location 0 220) (dimensions 40 40) (direction left) (depth foreground bottom) (animation (image 0 "android/arrowleft.png") (frame (image 0) (time -1))))
   ; RIGHT
-  (more "high" (location 600 220) (dimensions 40 40) (direction right) (depth foreground bottom) (images (image (file "android/arrowright.png") (time -1))))
+  (more "high" (location 600 220) (dimensions 40 40) (direction right) (depth foreground bottom) (animation (image 0 "android/arrowright.png") (frame (image 0) (time -1))))
   
   ; Cells
   (cell (name back) 
