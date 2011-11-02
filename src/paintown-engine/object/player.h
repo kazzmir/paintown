@@ -46,6 +46,8 @@ public:
     virtual inline void setExplode( bool b ){
         /* */
     }
+    
+    virtual const Filesystem::RelativePath & getIntroFile();
 
     virtual bool getExplode(){
         return false;
@@ -146,6 +148,8 @@ protected:
     
     /* players this object is bound to */
     std::vector<Player*> binds;
+
+    Filesystem::RelativePath intro;
 };
 
 class PlayerFuture: public Util::Future<Object*> {

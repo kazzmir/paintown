@@ -550,7 +550,11 @@ const char * Player::keyToName(Input::PaintownInput key){
     }
     return "key-to-name-error";
 }
-	
+    
+const Filesystem::RelativePath & Player::getIntroFile(){
+    return intro;
+}
+
 /*
 int Player::getKey(Input::PaintownInput x){
 	return this->getKey( x, getFacing() );
