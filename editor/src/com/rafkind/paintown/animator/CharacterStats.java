@@ -251,8 +251,9 @@ public class CharacterStats extends AnimatedObject {
 			printer.print("\n" );
 			out.close();
 			System.out.println( getToken().toString() );
-		} catch ( Exception e ){
-			throw new LoadException( "Couldn't save!" );
+		} catch (Exception e){
+            System.out.println(e);
+			throw new LoadException("Couldn't save! Reason: " + e.getMessage());
 		}
 	}
 
