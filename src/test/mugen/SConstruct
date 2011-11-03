@@ -119,7 +119,7 @@ test/paintown-engine/factory/shadow.cpp
 test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/factory/heart_factory.cpp
 test/util/resource.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/paintown-engine/game/mod.cpp
 test/util/ebox.cpp
 test/paintown-engine/level/utils.cpp
@@ -212,7 +212,7 @@ test/paintown-engine/object/heart.cpp
 
 ignore = """
 test/util/ebox.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/paintown-engine/object/item.cpp
 test/paintown-engine/object/attack.cpp
 test/paintown-engine/object/cat.cpp
@@ -274,7 +274,7 @@ test/paintown-engine/object/heart.cpp
 test/paintown-engine/game/mod.cpp
 test/paintown-engine/object/stimulation.cpp
 test/paintown-engine/object/network_player.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/paintown-engine/object/network_character.cpp
 """)
 

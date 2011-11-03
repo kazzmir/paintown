@@ -93,7 +93,7 @@ test/paintown-engine/object/projectile.cpp
 test/paintown-engine/object/stimulation.cpp
 test/paintown-engine/object/versus_enemy.cpp
 test/paintown-engine/object/versus_player.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/util/font.cpp
 test/util/network/network.cpp
 test/util/system.cpp

@@ -27,20 +27,20 @@
   
   ; Cells
   (cell (name back) 
-    (images 
-        (image (file "select/back.png") (time -1))))
+    (animation 
+        (image 0 "select/back.png") (frame (image 0) (time -1))))
   (cell (name top) 
-    (images 
-        (image (file "select/front.png") (time -1))))
+    (animation 
+        (image 0 "select/front.png")  (frame (image 0) (time -1))))
   (cell (name select0) 
-    (images 
-        (image (file "select/select0.png") (time -1))))
+    (animation 
+        (image 0 "select/select0.png") (frame (image 0) (time -1))))
   (cell (name select1) 
-    (images 
-        (image (file "select/select1.png") (time -1))))
+    (animation 
+        (image 0 "select/select1.png") (frame (image 0) (time -1))))
   (cell (name select-alternative) 
-    (images 
-        (image (file "select/selectalt.png") (time -1))))
+    (animation 
+        (image 0 "select/selectalt.png") (frame (image 0) (time -1))))
   ; Auto populate the grid ?
   (auto-populate true)
   ; Directory in which to populate from

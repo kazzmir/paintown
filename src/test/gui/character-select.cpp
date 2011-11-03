@@ -333,96 +333,6 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
     return *this;
 }
 
-Image::Image(const Token * token):
-time(-1),
-empty(true){
-    if ( *token != "image" ){
-        throw LoadException(__FILE__, __LINE__, "Not an Image");
-    }
-    TokenView view = token->view();
-    while (view.hasMore()){
-        try{
-            const Token * tok;
-            view >> tok;
-            std::string file;
-            if (tok->match("file", file)){
-                Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(file)).path()));
-                if (!bmp->getError()){
-                    image = bmp;
-                    empty = false;
-                }
-            } else if (tok->match("time", time)){
-            } else {
-                Global::debug(0) << "Unknown Image property: " << tok->getName() << std::endl;
-            }
-        } catch ( const TokenException & ex ) {
-            throw LoadException(__FILE__, __LINE__, ex, "Image parse error");
-        }
-    }
-}
-
-Image::~Image(){
-}
-
-void Image::draw(int x, int y, int width, int height, const Graphics::Bitmap & work) const {
-    if (!empty){
-        image->drawStretched(x, y, width, height, work);
-    }
-}
-
-ImageData::ImageData(const Token * token):
-timer(0),
-loop(0),
-current(0){
-    int loopLocation = 0;
-    if ( *token != "images" ){
-        throw LoadException(__FILE__, __LINE__, "Not an Image Collection");
-    }
-    TokenView view = token->view();
-    while (view.hasMore()){
-        try{
-            const Token * tok;
-            view >> tok;
-            if (*tok =="image"){
-                Util::ReferenceCount<Image> image(new Image(tok));
-                images.push_back(image);
-            } else if (tok->match("loop", loopLocation)){
-            } else {
-                Global::debug(0) << "Unknown Image Collection property: " << tok->getName() << std::endl;
-            }
-        } catch ( const TokenException & ex ) {
-            throw LoadException(__FILE__, __LINE__, ex, "Image Collection parse error");
-        }
-    }
-    if (loopLocation >= 0 && loopLocation < (int)images.size()){
-        loop = loopLocation;
-    }
-}
-
-ImageData::~ImageData(){
-}
-
-void ImageData::act(){
-    if (images[current]->getTime() >= 0){
-        timer++;
-        if (timer >= images[current]->getTime()){
-            next();
-        }
-    }
-}
-    
-void ImageData::draw(int x, int y, int width, int height, const Graphics::Bitmap & work) const {
-    images[current]->draw(x,y,width,height,work);
-}
-
-void ImageData::next(){
-    if (current < images.size()){
-        current++;
-    } else {
-        current = loop;
-    }
-}
-
 CellData::CellData(const Token * token):
 shape(SQUARE),
 radius(0),
@@ -456,9 +366,8 @@ fill(false){
                 } else if (string_match == "false"){
                     fill = false;
                 }
-            } else if (*tok == "images"){
-                Util::ReferenceCount<ImageData> image(new ImageData(tok));
-                cell = image;
+            } else if (*tok == "animation"){
+                cell = Util::ReferenceCount<Gui::Animation>(new Gui::Animation(tok));
             } else {
                 Global::debug(0) << "Unknown Cell property: " << tok->getName() << std::endl;
             }

@@ -64,7 +64,6 @@ test.cpp
 character_select_source = Split("""
 character-select.cpp
 select-main.cpp
-test/nameplacer.cpp
 test/mugen/exception.cpp
 test/util/ebox.cpp
 test/util/loading.cpp
@@ -75,6 +74,7 @@ test/openbor/mod.cpp
 test/openbor/pack-reader.cpp
 test/openbor/util.cpp
 test/paintown-engine/game/mod.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/paintown-engine/game/select_player.cpp
 test/paintown-engine/level/utils.cpp
 test/paintown-engine/object/animation.cpp

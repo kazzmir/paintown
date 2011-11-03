@@ -99,36 +99,6 @@ private:
     Effects::Gradient gradient;
 };
 
-/*! Image */
-class Image{
-public:
-    Image(const Token *);
-    ~Image();
-    void draw(int x, int y, int width, int height, const Graphics::Bitmap &) const;
-    inline int getTime() const{
-        return this->time;
-    }
-private:
-    int time;
-    bool empty;
-    Util::ReferenceCount<Graphics::Bitmap> image;
-};
-
-/*! Images */
-class ImageData{
-public:
-    ImageData(const Token *);
-    ~ImageData();
-    void act();
-    void draw(int x, int y, int width, int height, const Graphics::Bitmap &) const;
-private:
-    void next();
-    int timer;
-    unsigned int loop;
-    unsigned int current;
-    std::vector<Util::ReferenceCount<Image> > images;
-};
-
 /*! Cell Data shape and drawings */
 class CellData{
 public:
@@ -155,7 +125,7 @@ private:
     /*! color fill */
     bool fill;
     /*! cell */
-    Util::ReferenceCount<ImageData> cell;
+    Util::ReferenceCount<Gui::Animation> cell;
 };
 
 struct playerInfo;

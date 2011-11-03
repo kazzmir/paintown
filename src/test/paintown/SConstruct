@@ -115,7 +115,7 @@ test/paintown-engine/factory/shadow.cpp
 test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/factory/heart_factory.cpp
 test/util/resource.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/paintown-engine/game/mod.cpp
 test/util/ebox.cpp
 test/paintown-engine/level/utils.cpp
@@ -225,7 +225,7 @@ test/paintown-engine/game/mod.cpp
 test/paintown-engine/object/stimulation.cpp
 test/paintown-engine/object/network_player.cpp
 test/paintown-engine/object/network_character.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 """)
 
 stage_source.append(testEnv.Peg('test/openbor/data.peg'))
@@ -299,7 +299,7 @@ test/paintown-engine/object/display_character.cpp
 test/menu/font-info.cpp
 test/mugen/exception.cpp
 test/paintown-engine/object/player-common.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/paintown-engine/object/animation.cpp
 test/paintown-engine/object/animation_trail.cpp
 test/configuration.cpp
@@ -393,7 +393,7 @@ test/paintown-engine/object/effect.cpp
 test/menu/font-info.cpp
 test/mugen/exception.cpp
 test/paintown-engine/object/player-common.cpp
-test/nameplacer.cpp
+test/paintown-engine/game/nameplacer.cpp
 test/paintown-engine/object/animation.cpp
 test/paintown-engine/object/animation_trail.cpp
 test/configuration.cpp
