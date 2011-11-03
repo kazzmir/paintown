@@ -4,4 +4,4 @@ statsvn=statsvn.jar
 
 svn update trunk
 svn log trunk -v --xml > logfile.log
-java -jar $statsvn -exclude '**/*.html' -output-dir stats logfile.log trunk
+java -jar $statsvn -exclude '**/*.html;src/mugen/parser/*.cpp' -output-dir stats logfile.log trunk
