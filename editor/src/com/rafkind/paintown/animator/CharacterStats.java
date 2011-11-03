@@ -20,7 +20,7 @@ public class CharacterStats extends AnimatedObject {
 	protected String hitSound = "";
 	protected String landed = "";
 
-    protected String intro;
+    protected String intro = "";
 	
 	// Bitmaps
 	protected String icon = "";
@@ -248,9 +248,9 @@ public class CharacterStats extends AnimatedObject {
 			FileOutputStream out = new FileOutputStream(getPath());
 			PrintStream printer = new PrintStream(out);
 			printer.print(getToken().toString());
-			printer.print("\n" );
+			printer.print("\n");
 			out.close();
-			System.out.println( getToken().toString() );
+			System.out.println(getToken().toString());
 		} catch (Exception e){
             System.out.println(e);
 			throw new LoadException("Couldn't save! Reason: " + e.getMessage());
