@@ -19,6 +19,8 @@ public class CharacterStats extends AnimatedObject {
 	protected String dieSound = "";
 	protected String hitSound = "";
 	protected String landed = "";
+
+    protected String intro;
 	
 	// Bitmaps
 	protected String icon = "";
@@ -77,6 +79,14 @@ public class CharacterStats extends AnimatedObject {
 	public void setShadow(int s){
 		shadow = s;
 	}
+
+    public String getIntro(){
+        return intro;
+    }
+
+    public void setIntro(String intro){
+        this.intro = intro;
+    }
 	
 	public String getDieSound(){
 		return dieSound;
@@ -168,31 +178,31 @@ public class CharacterStats extends AnimatedObject {
 		return map;
 	}
 
-	public void setMap( int map ){
-		if ( map == -1 ){
-			Lambda1.foreach_( new ArrayList( getAnimations() ), new Lambda1(){
-					public Object invoke( Object a ){
-						Animation ani = (Animation) a;
-						ani.setMap( null );
-						return null;
-					}
-			});
-		} else {
-			try{
-				final HashMap hash = createRemap( map );
-				final Lambda1 remap = new Lambda1(){
-					public Object invoke( Object a ){
-						Animation ani = (Animation) a;
-						ani.setMap( hash );
-						return null;
-					}
-				};
-				Lambda1.foreach_( new ArrayList( getAnimations() ), remap );
-			} catch ( IOException e ){
-				e.printStackTrace();
-			}
-		}
-	}
+    public void setMap( int map ){
+        if ( map == -1 ){
+            Lambda1.foreach_( new ArrayList( getAnimations() ), new Lambda1(){
+                public Object invoke( Object a ){
+                    Animation ani = (Animation) a;
+                    ani.setMap( null );
+                    return null;
+                }
+            });
+        } else {
+            try{
+                final HashMap hash = createRemap( map );
+                final Lambda1 remap = new Lambda1(){
+                    public Object invoke( Object a ){
+                        Animation ani = (Animation) a;
+                        ani.setMap( hash );
+                        return null;
+                    }
+                };
+                Lambda1.foreach_( new ArrayList( getAnimations() ), remap );
+            } catch ( IOException e ){
+                e.printStackTrace();
+            }
+        }
+    }
 	
 	public Token getToken(){
 		Token temp = new Token("character");
@@ -204,6 +214,10 @@ public class CharacterStats extends AnimatedObject {
 		temp.addToken(new String[]{"scale", Double.toString(scale)});
 		temp.addToken(new String[]{"type", "Player"});
 		temp.addToken(new String[]{"shadow", Integer.toString(shadow)});
+        if (!getIntro().equals("")){
+			temp.addToken(new String[]{"intro", getIntro()});
+        }
+
 		if ( ! getDieSound().equals( "" ) ){
 			temp.addToken(new String[]{"die-sound", getDieSound() });
 		}
@@ -271,6 +285,11 @@ public class CharacterStats extends AnimatedObject {
 		if ( speedToken != null ){
 			speed = speedToken.readDouble(0);
 		}
+
+        Token introToken = head.findToken("intro");
+        if (introToken != null){
+            intro = introToken.readString(0);
+        }
 		
         Token scaleToken = head.findToken("scale");
         if (scaleToken != null){

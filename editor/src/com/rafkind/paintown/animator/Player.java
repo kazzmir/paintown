@@ -308,6 +308,24 @@ public final class Player{
             }
         });
 
+        final JTextField introField = (JTextField) contextEditor.find("intro");
+        introField.setText(character.getIntro());
+
+        final JButton introButton = (JButton) contextEditor.find("change-intro");
+
+        introButton.addActionListener( new AbstractAction(){
+            public void actionPerformed( ActionEvent event ){
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                int ret = chooser.open();
+                if ( ret == RelativeFileChooser.OK ){
+                    final String path = chooser.getPath();
+                    introField.setText(path);
+                    character.setIntro(path);
+                }
+            }
+        });
+
+
         final JTextField iconField = (JTextField) contextEditor.find( "icon" );
         iconField.setText( character.getIcon() );
 

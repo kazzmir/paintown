@@ -62,6 +62,12 @@
 			<button text="Change" id="change-icon" />
 			<glue />
 		</hbox>
+        <hbox>
+            <label text="Intro: " />
+            <textfield id="intro" />
+            <button text="Change" id="change-intro" />
+            <glue />
+        </hbox>
 		<glue size="1" />
 		<hbox>
 			<label text="Map" />
