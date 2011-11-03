@@ -73,8 +73,8 @@ static vector<Background> readBackgrounds( const Filesystem::AbsolutePath & path
     vector<Background> backgrounds;
 
     try{
-        TokenReader reader( path.path() + "/bgs.txt" );
-        Token * head = reader.readToken();
+        TokenReader reader;
+        Token * head = reader.readTokenFromFile(path.path() + "/bgs.txt");
 
         if ( *head == "backgrounds" ){
             TokenView view = head->view();

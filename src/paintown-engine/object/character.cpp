@@ -324,11 +324,11 @@ Network::Message Character::getCreateMessage(){
 void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
 
     // setInvincibility( 1000 );
-    TokenReader tr(filename.path());
+    TokenReader tr;
 
     Token * head = NULL;
     try{
-        head = tr.readToken();
+        head = tr.readTokenFromFile(filename.path());
     } catch( const TokenException & ex ){
         throw LoadException(__FILE__, __LINE__, ex, string("Could not open character file: ") + filename.path());
     }

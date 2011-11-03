@@ -16,10 +16,10 @@ ObjectNonAttack( 0, 0 ){
 	setMaxHealth( 1 );
 	setHealth( 1 );
 	
-	TokenReader tr( filename.path() );
+	TokenReader tr;
 	try{
 		Token * head;
-		head = tr.readToken();
+		head = tr.readTokenFromFile(filename.path());
 		if ( *head != "actor" ){
 			throw LoadException(__FILE__, __LINE__, "File does not begin with 'actor'" );
 		}

@@ -35,8 +35,8 @@ static void test1(){
     try{
         string file = randomFile();
         test1_write(file);
-        TokenReader reader(file);
-        reader.readToken();
+        TokenReader reader;
+        reader.readTokenFromFile(file);
     } catch (...){
         throw Failure(1);
     }
@@ -52,8 +52,8 @@ static void test2(){
     try{
         string file = randomFile();
         test2_write(file);
-        TokenReader reader(file);
-        reader.readToken();
+        TokenReader reader;
+        reader.readTokenFromFile(file);
         throw Failure(2);
     } catch (const TokenException & e){
         /* good */
@@ -69,8 +69,8 @@ static void test3_write(string file){
 static void test3(){
     string file = randomFile();
     test3_write(file);
-    TokenReader reader(file);
-    Token * head = reader.readToken();
+    TokenReader reader;
+    Token * head = reader.readTokenFromFile(file);
     vector<const Token*> tokens = head->findTokens("foo1/foo2/foo3");
     if (tokens.size() != 2){
         throw Failure(3);
@@ -86,8 +86,8 @@ static void test4_write(string file){
 static void test4(){
     string file = randomFile();
     test4_write(file);
-    TokenReader reader(file);
-    Token * head = reader.readToken();
+    TokenReader reader;
+    Token * head = reader.readTokenFromFile(file);
     string words;
     head->match("foo/bar", words);
     if (words != "cheese"){
@@ -104,8 +104,8 @@ static void test5_write(string file){
 static void test5(){
     string file = randomFile();
     test5_write(file);
-    TokenReader reader(file);
-    Token * head = reader.readToken();
+    TokenReader reader;
+    Token * head = reader.readTokenFromFile(file);
     double n1 = 0, n2 = 0;
     double epsilon = 0.00000001;
     if (*head != "relative-position"){

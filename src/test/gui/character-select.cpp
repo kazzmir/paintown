@@ -764,8 +764,8 @@ fontWidth(15),
 fontHeight(15),
 currentMessages(0){
     Global::debug(1) << "Loading Character Select Screen: " << filename << std::endl;
-    TokenReader tr(Filesystem::AbsolutePath(filename).path());
-    Token * token = tr.readToken();
+    TokenReader tr;
+    Token * token = tr.readTokenFromFile(filename);
     load(token);
 }
 

@@ -31,9 +31,9 @@ loaded(false){
 
 void DisplayCharacter::load(){
     Global::debug(1) << "Loading " << path << endl;
-    TokenReader reader( path );
+    TokenReader reader;
     try{
-        Token * head = reader.readToken();
+        Token * head = reader.readTokenFromFile(path);
         if ( *head != "character" ){
             throw LoadException(__FILE__, __LINE__, "First token is not 'character' in " + path );
         }

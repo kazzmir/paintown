@@ -20,14 +20,14 @@ Item::Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount
 ObjectNonAttack(0, 0),
 collide(0),
 stimulation(stimulation){
-    TokenReader tr(filename.path());
+    TokenReader tr;
 
-    setMaxHealth( 1 );
-    setHealth( 1 );
+    setMaxHealth(1);
+    setHealth(1);
 
     try{
         Token * head;
-        head = tr.readToken();
+        head = tr.readTokenFromFile(filename.path());
 
         if ( *head != "item" ){
             throw LoadException(__FILE__, __LINE__, "Item does not begin with 'item'" );

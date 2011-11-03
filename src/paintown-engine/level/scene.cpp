@@ -45,7 +45,7 @@ foregroundParallax(1.2),
 frontBuffer(NULL),
 hasMusic(false){
 
-    TokenReader tr(filename);
+    TokenReader tr;
 
     // Token * current = tr.readToken();
     Token * current;
@@ -56,7 +56,7 @@ hasMusic(false){
     // char panel_num = 'a';
 
     try {
-        current = tr.readToken();
+        current = tr.readTokenFromFile(filename);
 
         if ( *current != "level" )
             throw LoadException(__FILE__, __LINE__, "Not a level");

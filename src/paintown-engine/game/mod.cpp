@@ -18,8 +18,8 @@ Mod * Mod::currentMod = NULL;
 Mod::Mod(const string & name, const Filesystem::AbsolutePath & path):
 name(name){
     try{
-        TokenReader reader(path.path());
-        Token * head = reader.readToken();
+        TokenReader reader;
+        Token * head = reader.readTokenFromFile(path.path());
 
         const Token * name = head->findToken("game/name");
         const Token * token_menu = head->findToken("game/menu");

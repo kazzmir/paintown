@@ -602,8 +602,8 @@ void Configuration::loadConfigurations(){
 
     try{
         Filesystem::AbsolutePath file = Storage::instance().configFile();
-        TokenReader tr(file.path());
-        Token * head = tr.readToken();
+        TokenReader tr;
+        Token * head = tr.readTokenFromFile(file.path());
         if (*head != config_configuration){
             throw LoadException(__FILE__, __LINE__, string("Config file ") + Storage::instance().configFile().path() + " does not use the configuration format" );
         }

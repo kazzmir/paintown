@@ -31,13 +31,13 @@ Effect::Effect( const char * _filename, int alliance ):
 ObjectNonAttack( 0, 0, alliance ),
 image(NULL){
 
-    TokenReader tr( _filename );
+    TokenReader tr;
 
     setMaxHealth( 100 );
 
     Token * head;
     try{ 
-        head = tr.readToken();
+        head = tr.readTokenFromFile(_filename);
     } catch ( const TokenException * te ){
         throw LoadException(__FILE__, __LINE__, "Could not load effect");
     }

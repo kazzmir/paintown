@@ -159,10 +159,10 @@ life( 0 ){
             string path;
             current->view() >> path;
             Filesystem::AbsolutePath full = Storage::instance().find(Filesystem::RelativePath(path));
-            TokenReader reader(full.path());
+            TokenReader reader;
             try{
-                projectile = new Projectile(reader.readToken());
-            } catch ( const TokenException & ex ){
+                projectile = new Projectile(reader.readTokenFromFile(full.path()));
+            } catch (const TokenException & ex){
                 // cerr<< "Could not read " << full.path() <<" : " << ex.getReason() << endl;
                 // delete head;
                 throw LoadException(__FILE__, __LINE__, ex, "Could not open projectile file: " + full.path());

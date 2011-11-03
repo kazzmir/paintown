@@ -387,9 +387,9 @@ public:
 
     static bool isModFile(const std::string & path){
         try{
-            TokenReader reader(path);
+            TokenReader reader;
             Global::debug(1) << "Checking for a mod in " << path << endl;
-            if (*reader.readToken() == "game"){
+            if (*reader.readTokenFromFile(path) == "game"){
                 return true;
             }
         } catch (const TokenException & e){
@@ -452,9 +452,9 @@ public:
 
     static string modNamePaintown(const Filesystem::AbsolutePath & path){
         try{
-            TokenReader reader(path.path());
+            TokenReader reader;
             Global::debug(1) << "Checking for a mod in " << path.path() << endl;
-            const Token * name_token = reader.readToken()->findToken("game/name");
+            const Token * name_token = reader.readTokenFromFile(path.path())->findToken("game/name");
             if (name_token != NULL){
                 string name;
                 name_token->view() >> name;

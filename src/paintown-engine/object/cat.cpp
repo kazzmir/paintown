@@ -24,10 +24,10 @@ state( IDLE1 ){
 	setMaxHealth( 1 );
 	setHealth( 1 );
 	
-	TokenReader tr(path.path());
+	TokenReader tr;
 	try{
 		Token * head;
-		head = tr.readToken();
+		head = tr.readTokenFromFile(path.path());
 		if ( *head != "cat" ){
 			throw LoadException(__FILE__, __LINE__, "File does not begin with 'Cat'" );
 		}
