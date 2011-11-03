@@ -6,7 +6,7 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "factory/font_render.h"
-#include "nameplacer.h"
+#include "../game/nameplacer.h"
 #include "util/file-system.h"
 #include "globals.h"
 #include "util/debug.h"

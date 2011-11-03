@@ -1,7 +1,7 @@
 #include "util/bitmap.h"
 #include "collector.h"
 #include "paintown-engine/factory/heart_factory.h"
-#include "nameplacer.h"
+#include "paintown-engine/game/nameplacer.h"
 #include "font_factory.h"
 #include "font_render.h"
 #include "paintown-engine/factory/object_factory.h"

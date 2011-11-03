@@ -1,7 +1,7 @@
 #include "character.h"
 #include "util/bitmap.h"
 #include "util/load_exception.h"
-#include "nameplacer.h"
+#include "../game/nameplacer.h"
 #include "animation.h"
 #include "util/font.h"
 #include "../game/world.h"

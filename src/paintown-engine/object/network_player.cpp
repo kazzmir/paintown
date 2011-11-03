@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "util/debug.h"
 #include <math.h>
-#include "nameplacer.h"
+#include "../game/nameplacer.h"
 #include "network_character.h"
 #include "network_player.h"
 #include "object.h"

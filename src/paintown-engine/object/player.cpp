@@ -11,7 +11,7 @@
 #include "factory/font_render.h"
 #include "configuration.h"
 #include "globals.h"
-#include "nameplacer.h"
+#include "../game/nameplacer.h"
 #include "util/load_exception.h"
 #include "../game/world.h"
 #include "util/file-system.h"

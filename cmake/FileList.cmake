@@ -1,22 +1,17 @@
 set(BASE_SRC 
 src/configuration.cpp
 src/globals.cpp
-src/main-menu.cpp
-src/nameplacer.cpp)
+src/main-menu.cpp)
 
 set(GAME_SRC
 src/paintown-engine/game/world.cpp
 src/paintown-engine/game/game.cpp
 src/paintown-engine/game/move-list.cpp
 src/paintown-engine/game/select_player.cpp
-src/util/console.cpp
+src/paintown-engine/game/nameplacer.cpp
 src/paintown-engine/game/adventure_world.cpp
 src/paintown-engine/game/mod.cpp
-src/paintown-engine/game/options.cpp
-src/util/input/input.cpp
-src/util/input/text-input.cpp
-src/util/input/input-manager.cpp
-src/util/input/input-source.cpp)
+src/paintown-engine/game/options.cpp)
 
 set(SCRIPT_SRC
 src/paintown-engine/script/script.cpp
@@ -91,6 +86,7 @@ src/util/sound.cpp
 src/util/timer.cpp
 src/util/music.cpp
 src/util/init.cpp
+src/util/console.cpp
 src/util/input/keyboard.cpp
 src/util/loading.cpp
 src/util/messages.cpp
@@ -107,6 +103,10 @@ src/util/ebox.cpp
 src/util/regex.cpp
 src/util/language-string.cpp
 src/util/thread.cpp
+src/util/input/input.cpp
+src/util/input/text-input.cpp
+src/util/input/input-manager.cpp
+src/util/input/input-source.cpp
 src/util/input/joystick.cpp
 src/util/input/allegro5/joystick.cpp
 src/util/input/allegro/allegro-joystick.cpp

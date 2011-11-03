@@ -8,7 +8,7 @@
 #include "util/funcs.h"
 #include "util/font.h"
 #include "factory/font_render.h"
-#include "nameplacer.h"
+#include "../game/nameplacer.h"
 #include "globals.h"
 #include "util/debug.h"
 #include "heart.h"
