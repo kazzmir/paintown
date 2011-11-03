@@ -4,6 +4,7 @@
 #include "move-list.h"
 #include "util/token.h"
 #include "../object/animation.h"
+#include "../object/animation_event.h"
 #include "../object/player.h"
 #include "util/gui/scroll-list.h"
 #include "util/input/input-map.h"
@@ -80,14 +81,24 @@ public:
     }
 };
 
+static bool hasProjectileEvent(const Util::ReferenceCount<Animation> & animation){
+    const vector<AnimationEvent *> & events = animation->getEvents();
+    for (vector<AnimationEvent*>::const_iterator it = events.begin(); it != events.end(); it++){
+        AnimationEvent * event = *it;
+        if (event->getType() == AnimationEvent::ProjectileEvent){
+            return true;
+        }
+    }
 
+    return false;
+}
 
 static map<string, Util::ReferenceCount<Animation> > getAttacks(const map<string, Util::ReferenceCount<Animation> > & movements){
     map<string, Util::ReferenceCount<Animation> > out;
     for (map<std::string, Util::ReferenceCount<Animation> >::const_iterator find = movements.begin(); find != movements.end(); find++){
         string name = find->first;
         Util::ReferenceCount<Animation> animation = find->second;
-        if (animation->isAttack()){
+        if (animation->isAttack() || hasProjectileEvent(animation)){
             out[name] = animation;
         }
     }

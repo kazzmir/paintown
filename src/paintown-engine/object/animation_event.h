@@ -15,8 +15,30 @@ class Animation;
 
 class AnimationEvent{
 public:
+    /* Event is suffixed when the name conflicts with some other type */
+    enum Type{
+        AttackEvent,
+        Move,
+        Trail,
+        Ticket,
+        Status,
+        Sound,
+        Shadow,
+        Offset,
+        Nop,
+        Coords,
+        Jump,
+        ZDistance,
+        Frame,
+        Delay,
+        Facing,
+        ProjectileEvent,
+        BBox
+    };
+
     AnimationEvent();
-    virtual void Interact( Animation * animation );
+    virtual void Interact(Animation * animation);
+    virtual Type getType() = 0;
     virtual ~AnimationEvent();
 };
 
@@ -26,6 +48,7 @@ class AnimationEventAttack: public AnimationEvent {
 public:
     AnimationEventAttack(const std::vector<Attack> & a);
     virtual void Interact(Animation * animation); 
+    virtual Type getType();
 
 protected:
     std::vector<Attack> attacks;
@@ -33,217 +56,223 @@ protected:
 
 class AnimationEventBBox: public AnimationEvent {
 public:
-	AnimationEventBBox( int _x1, int _y1, int _x2, int _y2 );
+    AnimationEventBBox( int _x1, int _y1, int _x2, int _y2 );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	int x1, y1, x2, y2;
-
+    int x1, y1, x2, y2;
 };
 
 class AnimationEventCoords: public AnimationEvent{
 public:
-	AnimationEventCoords( int _x, int _y, int _z );
+    AnimationEventCoords( int _x, int _y, int _z );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	int x, y, z;
-
+    int x, y, z;
 };
 
 class AnimationEventDelay: public AnimationEvent{
 public:
-	AnimationEventDelay( double _delay );
+    AnimationEventDelay( double _delay );
 
-	virtual void Interact( Animation * animation );
+    virtual void Interact( Animation * animation );
+    virtual Type getType();
 
 protected:
-	double delay;
+    double delay;
 };
 
 class AnimationEventFace: public AnimationEvent{
 public:
-	AnimationEventFace( int direction );
+    AnimationEventFace( int direction );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	int direction;
-
+    int direction;
 };
 
 class AnimationEventFrame: public AnimationEvent{
 public:
-	AnimationEventFrame( const std::string & _path );
+    AnimationEventFrame( const std::string & _path );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
-	virtual ~AnimationEventFrame();
+    virtual ~AnimationEventFrame();
 
 protected:
-        std::string path;
+    std::string path;
 };
 
 class AnimationEventJump: public AnimationEvent{
 public:
-	AnimationEventJump( double vx, double vy, double vz );
+    AnimationEventJump( double vx, double vy, double vz );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	double vx, vy, vz;
-
+    double vx, vy, vz;
 };
 
 class AnimationEventMove: public AnimationEvent{
 public:
-	AnimationEventMove( int _x, int _y, int _z );
+    AnimationEventMove( int _x, int _y, int _z );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	int x, y, z;
-
+    int x, y, z;
 };
 
 class AnimationEventNOP: public AnimationEvent{
 public:
-	AnimationEventNOP();
+    AnimationEventNOP();
 
-	virtual void Interact( Animation * animation ); 
-
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 };
 
 class AnimationEventOffset: public AnimationEvent{
 public:
-	AnimationEventOffset( int _x, int _y );
+    AnimationEventOffset( int _x, int _y );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	int x, y;
-
+    int x, y;
 };
 
 class AnimationEventProjectile: public AnimationEvent {
 public:
-	AnimationEventProjectile(const Token * token );
+    AnimationEventProjectile(const Token * token );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
-	virtual ~AnimationEventProjectile();
+    virtual ~AnimationEventProjectile();
 
 protected:
-	inline void setX( int x ){
-		this->x = x;
-	}
+    inline void setX( int x ){
+        this->x = x;
+    }
 
-	inline void setY( int y ){
-		this->y = y;
-	}
+    inline void setY( int y ){
+        this->y = y;
+    }
 
-	inline int getX() const {
-		return x;
-	}
+    inline int getX() const {
+        return x;
+    }
 
-	inline int getY() const {
-		return y;
-	}
+    inline int getY() const {
+        return y;
+    }
 
-	inline void setDX( double dx ){
-		this->dx = dx;
-	}
+    inline void setDX( double dx ){
+        this->dx = dx;
+    }
 
-	inline void setDY( double dy ){
-		this->dy = dy;
-	}
+    inline void setDY( double dy ){
+        this->dy = dy;
+    }
 
-	inline double getDX() const {
-		return this->dx;
-	}
-	
-	inline double getDY() const {
-		return this->dy;
-	}
+    inline double getDX() const {
+        return this->dx;
+    }
 
-	inline void setLife( int life ){
-		this->life = life;
-	}
+    inline double getDY() const {
+        return this->dy;
+    }
 
-	inline int getLife() const {
-		return life;
-	}
+    inline void setLife( int life ){
+        this->life = life;
+    }
 
-	Projectile * projectile;
-	int x, y;
-	double dx, dy;
-	int life;
+    inline int getLife() const {
+        return life;
+    }
+
+    Projectile * projectile;
+    int x, y;
+    double dx, dy;
+    int life;
 };
 
 class AnimationEventShadow: public AnimationEvent {
 public:
-	AnimationEventShadow( int x, int y );
+    AnimationEventShadow( int x, int y );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
 
-	int x, y;
+    int x, y;
 };
 
 class AnimationEventSound: public AnimationEvent {
 public:
-	AnimationEventSound( const std::string & path );
+    AnimationEventSound( const std::string & path );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
-	virtual ~AnimationEventSound();
+    virtual ~AnimationEventSound();
 
 protected:
 
-        std::string path;
-
+    std::string path;
 };
 
 class AnimationEventStatus: public AnimationEvent{
 public:
-	AnimationEventStatus( int _stat );
+    AnimationEventStatus( int _stat );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	int status;
-
+    int status;
 };
 
 class AnimationEventTicket: public AnimationEvent{
 public:
-	AnimationEventTicket();
+    AnimationEventTicket();
 
-	virtual void Interact( Animation * animation ); 
-
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 };
 
 class AnimationEventTrail: public AnimationEvent {
 public:
     AnimationEventTrail(const int produce, const int life);
     virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	const int produce;
-        const int life;
+    const int produce;
+    const int life;
 };
 
 class AnimationEventZDistance: public AnimationEvent {
 public:
-	AnimationEventZDistance( const double d );
+    AnimationEventZDistance( const double d );
 
-	virtual void Interact( Animation * animation ); 
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
 
 protected:
-	double d;
+    double d;
 };
 
 }

@@ -267,6 +267,10 @@ public:
 	void Delay();
 	void nextTicket();
 
+        virtual const std::vector<AnimationEvent*> & getEvents(){
+            return events;
+        }
+
     virtual AnimationTrail * makeTrail(const int x, const int y, const int facing, const int life) const;
 
 	int getDamage() const;

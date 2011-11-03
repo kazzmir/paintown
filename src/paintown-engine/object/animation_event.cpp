@@ -25,6 +25,10 @@ AnimationEvent::~AnimationEvent(){
 AnimationEventAttack::AnimationEventAttack(const vector<Attack> & a){
     attacks = a;
 }
+    
+AnimationEvent::Type AnimationEventAttack::getType(){
+    return AttackEvent;
+}
 
 void AnimationEventAttack::Interact(Animation * animation){
     animation->setAttacks(attacks);
@@ -48,12 +52,20 @@ y2(_y2){
 void AnimationEventBBox::Interact( Animation * animation ){
 	animation->setBBox( x1, y1, x2, y2 );
 }
+    
+AnimationEvent::Type AnimationEventBBox::getType(){
+    return BBox;
+}
 
 AnimationEventCoords::AnimationEventCoords( int _x, int _y, int _z ):
 AnimationEvent(),
 x( _x ),
 y( _y ),
 z( _z ){
+}
+    
+AnimationEvent::Type AnimationEventCoords::getType(){
+    return Coords;
 }
 
 void AnimationEventCoords::Interact( Animation * animation ){
@@ -70,6 +82,10 @@ AnimationEvent(),
 delay(_delay){
 }
 
+AnimationEvent::Type AnimationEventDelay::getType(){
+    return Delay;
+}
+
 void AnimationEventDelay::Interact( Animation * animation ){
     animation->setDelay(delay);
 }
@@ -77,13 +93,21 @@ void AnimationEventDelay::Interact( Animation * animation ){
 AnimationEventFace::AnimationEventFace( int direction ):
 direction(direction){
 }
-
+    
+AnimationEvent::Type AnimationEventFace::getType(){
+    return Facing;
+}
+    
 void AnimationEventFace::Interact( Animation * animation ){
 	animation->setFacing( direction );
 }
 
 AnimationEventFrame::AnimationEventFrame( const string & _path ){
     path = _path;
+}
+
+AnimationEvent::Type AnimationEventFrame::getType(){
+    return Frame;
 }
 
 void AnimationEventFrame::Interact( Animation * animation ){
@@ -98,6 +122,10 @@ AnimationEventJump::AnimationEventJump( double vx, double vy, double vz ):
 vx( vx ),
 vy( vy ),
 vz( vz ){
+}
+    
+AnimationEvent::Type AnimationEventJump::getType(){
+    return Jump;
 }
 
 void AnimationEventJump::Interact( Animation * animation ){
@@ -115,19 +143,31 @@ void AnimationEventMove::Interact(Animation * animation){
     animation->moveY(y * animation->getScale());
     animation->moveZ(z * animation->getScale());
 }
+    
+AnimationEvent::Type AnimationEventMove::getType(){
+    return Move;
+}
 
 AnimationEventNOP::AnimationEventNOP():
 AnimationEvent(){
 }
 
 void AnimationEventNOP::Interact( Animation * animation ){
-	animation->Delay();
+    animation->Delay();
+}
+    
+AnimationEvent::Type AnimationEventNOP::getType(){
+    return Nop;
 }
 
 AnimationEventOffset::AnimationEventOffset( int _x, int _y ):
 AnimationEvent(),
 x( _x ),
 y( _y ){
+}
+    
+AnimationEvent::Type AnimationEventOffset::getType(){
+    return Offset;
 }
 
 void AnimationEventOffset::Interact(Animation * animation){
@@ -201,11 +241,19 @@ AnimationEventProjectile::~AnimationEventProjectile(){
         delete projectile;
     }
 }
+    
+AnimationEvent::Type AnimationEventProjectile::getType(){
+    return ProjectileEvent;
+}
 
 AnimationEventShadow::AnimationEventShadow( int x, int y ):
 AnimationEvent(),
 x( x ),
 y( y ){
+}
+    
+AnimationEvent::Type AnimationEventShadow::getType(){
+    return Shadow;
 }
 
 void AnimationEventShadow::Interact( Animation * animation ){
@@ -215,6 +263,10 @@ void AnimationEventShadow::Interact( Animation * animation ){
 
 AnimationEventSound::AnimationEventSound( const string & _path ){
 	path = _path;
+}
+
+AnimationEvent::Type AnimationEventSound::getType(){
+    return Sound;
 }
 
 void AnimationEventSound::Interact( Animation * animation ){
@@ -232,6 +284,10 @@ status( _stat ){
 void AnimationEventStatus::Interact( Animation * animation ){
 	animation->setStatus( status );
 }
+    
+AnimationEvent::Type AnimationEventStatus::getType(){
+    return Status;
+}
 
 AnimationEventTicket::AnimationEventTicket():
 AnimationEvent(){
@@ -239,6 +295,10 @@ AnimationEvent(){
 
 void AnimationEventTicket::Interact( Animation * animation ){
 	animation->nextTicket();
+}
+    
+AnimationEvent::Type AnimationEventTicket::getType(){
+    return Ticket;
 }
 
 AnimationEventTrail::AnimationEventTrail(const int produce, const int life):
@@ -249,6 +309,10 @@ life(life){
 void AnimationEventTrail::Interact(Animation * animation){
     animation->setTrails(produce, life);
 }
+    
+AnimationEvent::Type AnimationEventTrail::getType(){
+    return Trail;
+}
 
 AnimationEventZDistance::AnimationEventZDistance( const double d ):
 d( d ){
@@ -256,6 +320,10 @@ d( d ){
 
 void AnimationEventZDistance::Interact( Animation * animation ){
 	animation->setMinZDistance( d );
+}
+    
+AnimationEvent::Type AnimationEventZDistance::getType(){
+    return ZDistance;
 }
 
 }
