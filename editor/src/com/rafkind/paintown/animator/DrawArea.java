@@ -292,11 +292,11 @@ public final class DrawArea extends JComponent {
         g2d.scale(getScale(), getScale());
 
         g.setColor(backgroundColor());
-        g.fillRect(0, 0, getWidth(), getHeight());
+        g.fillRect(0, 0, (int) (getWidth() / getScale()), (int) (getHeight() / getScale()));
         drawGrid(g2d);
         g.setColor(new Color(255, 255, 0));
-        g.drawLine(0, y, getWidth(), y);
-        g.drawLine(x, 0, x, getHeight());
+        g.drawLine(0, y, (int) (getWidth() / getScale()), y);
+        g.drawLine(x, 0, x, (int) (getHeight() / getScale()));
 
         if (currentAnimation != null){
             currentAnimation.draw(g, x, y);
