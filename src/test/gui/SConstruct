@@ -96,6 +96,10 @@ test/paintown-engine/script/script.cpp
 """)
 
 space_source = Split("""
+test/util/gui/coordinate.cpp
+test/util/load_exception.cpp
+test/util/debug.cpp
+test/exceptions/exception.cpp
 space.cpp
 """)
 
@@ -107,6 +111,7 @@ x.append(gui_test)
 character_select = testEnv.Program('character-select', source + character_select_source)
 x.append(character_select)
 # spaces test
-space = testEnv.Program('space', source + space_source)
+# space = testEnv.Program('space', source + space_source)
+space = testEnv.Program('space', space_source)
 x.append(space)
 Return('x')
