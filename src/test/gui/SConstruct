@@ -95,9 +95,18 @@ test/paintown-engine/object/projectile.cpp
 test/paintown-engine/script/script.cpp
 """)
 
+space_source = Split("""
+space.cpp
+""")
+
 x = []
+# General widget/gui element tests
 gui_test = testEnv.Program('gui', source + test_source)
 x.append(gui_test)
+# Character select test
 character_select = testEnv.Program('character-select', source + character_select_source)
 x.append(character_select)
+# spaces test
+space = testEnv.Program('space', source + space_source)
+x.append(space)
 Return('x')

@@ -10,6 +10,7 @@
 #include <allegro5/allegro_primitives.h>
 #endif
 
+#include "configuration.h"
 #include "init.h"
 #include "util/bitmap.h"
 
@@ -27,14 +28,14 @@ namespace Global{
 }
 
 
-void Screen::fakeInit(){
+void Screen::fakeInit(int x, int y){
 #ifdef USE_ALLEGRO
     install_allegro(SYSTEM_NONE, &errno, atexit);
     set_color_depth(16);
     set_color_conversion(COLORCONV_NONE);
 #elif USE_SDL
     SDL_Init(SDL_INIT_VIDEO);
-    Graphics::Bitmap::setFakeGraphicsMode(640, 480);
+    Graphics::Bitmap::setFakeGraphicsMode(x, y);
 #elif USE_ALLEGRO5
     al_init();
     al_init_image_addon();
@@ -48,7 +49,7 @@ void Screen::fakeFinish(){
 #endif
 }
 
-void Screen::realInit(){
+void Screen::realInit(int x, int y){
 #ifdef USE_ALLEGRO
     install_allegro(GFX_AUTODETECT_WINDOWED, &errno, atexit);
     // TODO add keyboard, timers
@@ -56,7 +57,7 @@ void Screen::realInit(){
     //set_color_conversion(COLORCONV_NONE);
 #elif USE_SDL
     SDL_Init(SDL_INIT_EVERYTHING);
-    Graphics::setGfxModeWindowed(640, 480);
+    Graphics::setGfxModeWindowed(x, y);
 #elif USE_ALLEGRO5
     al_init();
     al_init_image_addon();
@@ -67,4 +68,15 @@ void Screen::realFinish(){
 #ifdef USE_SDL
     SDL_Quit();
 #endif
+}
+
+void Screen::change(int x, int y){
+    int gfx = Configuration::getFullscreen() ? Global::FULLSCREEN : Global::WINDOWED;
+    int ok = Graphics::setGraphicsMode(gfx, x, y);
+    if (ok == 0){
+        Configuration::setScreenWidth(x);
+        Configuration::setScreenHeight(y);
+    } else {
+        int ok = Graphics::setGraphicsMode(gfx, Configuration::getScreenWidth(), Configuration::getScreenHeight());
+    }
 }
