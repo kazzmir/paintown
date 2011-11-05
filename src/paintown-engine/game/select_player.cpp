@@ -703,12 +703,10 @@ static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
     return context.players;
 }
 
-static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & remap, const InputSource & source){
-
-    class Selecter: public Util::Logic, public Util::Draw {
+class Selecter: public Util::Logic, public Util::Draw {
     public:
         Selecter(const InputSource & source):
-        select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path()),
+            select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path()),
         source(source),
         is_done(false){
             // input.set(Keyboard::Key_ESC, 0, true, Quit);
@@ -782,9 +780,9 @@ static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & re
             select.draw(buffer);
             buffer.BlitToScreen();
         }
-    
-    };
+};
 
+static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & remap, const InputSource & source){
     Selecter run(source);
     Util::standardLoop(run, run);
 
