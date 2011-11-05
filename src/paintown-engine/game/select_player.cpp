@@ -27,12 +27,12 @@
 #include "util/loading.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
+#include "character-select.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <sstream>
 #include <map>
-
 
 #include "util/gui/animation.h"
 
@@ -103,7 +103,6 @@ namespace Select{
         Right, Remap, Quit,
         Choose,
     };
-
 }
     
 namespace{
@@ -704,10 +703,97 @@ static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
     return context.players;
 }
 
+static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & remap, const InputSource & source){
+
+    class Selecter: public Util::Logic, public Util::Draw {
+    public:
+        Selecter(const InputSource & source):
+        select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path()),
+        source(source),
+        is_done(false){
+            // input.set(Keyboard::Key_ESC, 0, true, Quit);
+            if (source.useKeyboard()){
+                Configuration & configuration = Configuration::config(source.getKeyboard());
+                input.set(configuration.getRight(), Select::Right);
+                input.set(configuration.getUp(), Select::Up);
+                input.set(configuration.getDown(), Select::Down);
+                input.set(configuration.getLeft(), Select::Left);
+                input.set(Keyboard::Key_ESC, Select::Quit);
+                input.set(Keyboard::Key_TAB, Select::Remap);
+                input.set(Keyboard::Key_ENTER, Select::Choose);
+                input.set(Keyboard::Key_SPACE, Select::Choose);
+                input.set(configuration.getAttack1(), Select::Choose);
+            }
+
+            if (source.useJoystick()){
+                Configuration & configuration = Configuration::config(source.getJoystick());
+                input.set(configuration.getJoystickUp(), Select::Up);
+                input.set(configuration.getJoystickDown(), Select::Down);
+                input.set(configuration.getJoystickLeft(), Select::Left);
+                input.set(configuration.getJoystickRight(), Select::Right);
+                input.set(configuration.getJoystickAttack1(), Select::Choose);
+                input.set(configuration.getJoystickAttack2(), Select::Choose);
+                input.set(configuration.getJoystickAttack3(), Select::Remap);
+                input.set(configuration.getJoystickQuit(), Select::Quit);
+            }
+        }
+
+        CharacterSelect select;
+        InputMap<Select::Input> input;
+        const InputSource & source;
+        bool is_done;
+
+        bool done(){
+            return is_done;
+        }
+
+        void run(){
+            std::vector<InputMap<Select::Input>::InputEvent> out = InputManager::getEvents(input, source);
+            for (std::vector<InputMap<Select::Input>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                const InputMap<Select::Input>::InputEvent & event = *it;
+                if (event.enabled){
+                    if (event.out == Select::Quit){
+                        is_done = true;
+                    } else if (event.out == Select::Up){
+                        select.getList()->up(0);
+                    } else if (event.out == Select::Down){
+                        select.getList()->down(0);
+                    } else if (event.out == Select::Left){
+                        select.getList()->left(0);
+                    } else if (event.out == Select::Right){
+                        select.getList()->right(0);
+                    } else if (event.out == Select::Choose){
+                        is_done = true;
+                    }
+                }
+            }
+
+            select.act();
+        }
+
+        double ticks(double system){
+            return system * Global::LOGIC_MULTIPLIER;
+        }
+
+        void draw(const Graphics::Bitmap & buffer){
+            buffer.clear();
+            select.draw(buffer);
+            buffer.BlitToScreen();
+        }
+    
+    };
+
+    Selecter run(source);
+    Util::standardLoop(run, run);
+
+    return Filesystem::AbsolutePath("");
+}
+
 namespace Paintown{
 
 Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, const InputSource & source){
-    return doSelectPlayer(getDisplayPlayers(info), message, info, remap, source);
+    return doSelectPlayer2(message, remap, source);
+    // return doSelectPlayer(getDisplayPlayers(info), message, info, remap, source);
 }
 
 }

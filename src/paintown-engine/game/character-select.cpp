@@ -598,7 +598,7 @@ gradient(defaultGradient()){
             if (*tok == "low" || *tok == "high"){
                 // Ignore
             } else if (tok->match("location",x, y)){
-            } else if (tok->match("dimensions",width, height)){
+            } else if (tok->match("dimensions", width, height)){
             } else if (tok->match("direction", match_text)){
                 if (match_text == "up"){
                     direction = UP;
@@ -695,7 +695,9 @@ void CharacterSelect::act(){
     
     if (list != NULL){
         list->act();
-        messages[currentMessages]->act(list);
+        if (currentMessages < messages.size()){
+            messages[currentMessages]->act(list);
+        }
         
         // Update loader
         for (int i = 0; i < list->totalCursors(); ++i){
@@ -786,6 +788,7 @@ void CharacterSelect::load(const Token * token){
                     list = gridList.convert<Gui::SelectListInterface>();
                 } else if (tok->match("auto-populate", autoPopulate)){
                 } else if (tok->match("auto-populate-directory", string_match)){
+                    autoPopulate = true;
                     populateFromDirectory = Filesystem::AbsolutePath(string_match);
                 } else if (*tok == "list-window"){
                     tok->view() >> listWindow.x >> listWindow.y >> listWindow.width >> listWindow.height;
@@ -912,7 +915,7 @@ void CharacterSelect::load(const Token * token){
         list->setCurrentIndex(i, cursorLocations[i]);
     }
     
-    Global::debug(0) << "List size is: " << list->getItems().size() << std::endl;
+    Global::debug(1) << "List size is: " << list->getItems().size() << std::endl;
 }
 
 void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
@@ -947,6 +950,8 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
         }
     }
     
-    // Messages last
-    messages[currentMessages]->draw(depth, work);
+    if (currentMessages < messages.size()){
+        // Messages last
+        messages[currentMessages]->draw(depth, work);
+    }
 }

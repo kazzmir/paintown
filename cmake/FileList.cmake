@@ -8,6 +8,7 @@ src/paintown-engine/game/world.cpp
 src/paintown-engine/game/game.cpp
 src/paintown-engine/game/move-list.cpp
 src/paintown-engine/game/select_player.cpp
+src/paintown-engine/game/character-select.cpp
 src/paintown-engine/game/nameplacer.cpp
 src/paintown-engine/game/adventure_world.cpp
 src/paintown-engine/game/mod.cpp
