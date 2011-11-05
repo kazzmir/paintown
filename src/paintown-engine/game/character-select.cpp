@@ -493,8 +493,8 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     }
 }
 
-void CharacterItem::drawProfile(int width, int height, bool facingRight, const Graphics::Bitmap & bmp, const Font & font) const {
-    bmp.clearToMask();
+void CharacterItem::drawProfile(int width, int height, bool facingRight, const Graphics::Bitmap & work, const Font & font) const {
+    work.clearToMask();
     const int stand = 100;
     Util::ReferenceCount<Paintown::DisplayCharacter> character = player->guy;
     if (facingRight){
@@ -514,7 +514,17 @@ void CharacterItem::drawProfile(int width, int height, bool facingRight, const G
     copy.drawReflection(&temp, 0, height - stand - stand, 128);
     copy.draw(&temp, 0, temp.getHeight()/2);
 
-    temp.drawStretched(0, 0, width, height, bmp);
+    double widthRatio = (double) work.getWidth() / temp.getWidth();
+    double heightRatio = (double) work.getHeight() / temp.getHeight();
+
+    /* use smallest ratio */
+    double use = widthRatio < heightRatio ? widthRatio : heightRatio;
+
+    // temp.draw(work.getWidth() / 2 - temp.getWidth() / 2, work.getHeight() / 2 - temp.getHeight() / 2, work);
+
+    temp.drawStretched(work.getWidth() / 2 - temp.getWidth() * use / 2,
+                       work.getHeight() / 2 - temp.getHeight() * use / 2,
+                       temp.getWidth() * use, temp.getHeight() * use, work);
 }
 
 const std::string CharacterItem::getName(){
