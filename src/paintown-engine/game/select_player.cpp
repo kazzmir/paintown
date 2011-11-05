@@ -742,6 +742,7 @@ static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & re
         InputMap<Select::Input> input;
         const InputSource & source;
         bool is_done;
+        Filesystem::AbsolutePath chosen;
 
         bool done(){
             return is_done;
@@ -763,6 +764,7 @@ static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & re
                     } else if (event.out == Select::Right){
                         select.getList()->right(0);
                     } else if (event.out == Select::Choose){
+                        chosen = select.getCurrentSelectedPath(0);
                         is_done = true;
                     }
                 }
@@ -786,7 +788,7 @@ static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & re
     Selecter run(source);
     Util::standardLoop(run, run);
 
-    return Filesystem::AbsolutePath("");
+    return run.chosen;
 }
 
 namespace Paintown{

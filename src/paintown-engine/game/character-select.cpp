@@ -917,6 +917,11 @@ void CharacterSelect::load(const Token * token){
     
     Global::debug(1) << "List size is: " << list->getItems().size() << std::endl;
 }
+    
+Filesystem::AbsolutePath CharacterSelect::getCurrentSelectedPath(int cursor){
+    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor).convert<CharacterItem>();
+    return selected->getPlayer()->path;
+}
 
 void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
     // Our font

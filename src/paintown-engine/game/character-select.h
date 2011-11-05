@@ -130,7 +130,7 @@ private:
 
 struct playerInfo;
 
-class CharacterItem : public Gui::SelectItem {
+class CharacterItem: public Gui::SelectItem {
 public:
     CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player, const std::map<std::string, Util::ReferenceCount<CellData> > &);
     ~CharacterItem();
@@ -197,6 +197,8 @@ public:
     
     virtual void nextMessages();
     virtual void previousMessages();
+
+    Filesystem::AbsolutePath getCurrentSelectedPath(int cursor);
     
     enum Sounds{
         NO_USE,
