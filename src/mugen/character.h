@@ -654,6 +654,10 @@ public:
     /* same thing for the front */
     virtual int getFrontX() const;
 
+    /* record moves */
+    virtual void startRecording(int filename);
+    virtual void stopRecording();
+
     virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
     /* change back to states in the players own cns file */
     virtual void changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
@@ -1549,6 +1553,22 @@ protected:
             int alphaSource;
             int alphaDestination;
         } transOverride;
+
+        struct RecordingInformation{
+            std::ofstream out;
+            /* last set of commands */
+            std::vector<std::string> commands;
+            /* last count of ticks for the current set of commands */
+            int ticks;
+
+            ~RecordingInformation(){
+                out.close();
+            }
+        };
+
+        PaintownUtil::ReferenceCount<RecordingInformation> record;
+
+        virtual void recordCommands(const std::vector<std::string> & commands);
 public:
         /* this definition is down here so we can get access to the AfterImage
          * struct definition

@@ -145,6 +145,8 @@ public:
 
     // Reset scenario
     void reset();
+    
+    virtual std::vector<Object *> getPlayers() const;
 
     // Add player1 people
     virtual void addPlayer1(Object * o);

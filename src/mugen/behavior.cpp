@@ -144,6 +144,8 @@ dontMove(0){
 
     /* this is just to give the AI a starting move that does nothing, this is
      * basically a noop. eventualy the AI will learn other moves to do.
+     *
+     * the name is something that the user can't write for a command (hopefully) 
      */
     moves["not-possible+#$*(@#$"].points = 5;
 }
@@ -277,6 +279,20 @@ void LearningAIBehavior::hit(Object * enemy){
 LearningAIBehavior::~LearningAIBehavior(){
 }
 
+/* crummy regex parsing */
+static vector<string> parseCommands(string stuff){
+    vector<string> out;
+
+    while (PaintownUtil::matchRegex(stuff, "\\s*(\\w+)")){
+        string get;
+        get = PaintownUtil::captureRegex(stuff, "\\s*(\\w+)",0);
+        out.push_back(get);
+        stuff = PaintownUtil::captureRegex(stuff, "\\s*\\w+,?\\s*(.*)", 0);
+    }
+
+    return out;
+}
+
 ScriptedBehavior::ScriptedBehavior(const Filesystem::AbsolutePath & path){
     ifstream file(path.path().c_str());
     while (file.good() && !file.eof()){
@@ -286,19 +302,23 @@ ScriptedBehavior::ScriptedBehavior(const Filesystem::AbsolutePath & path){
         line[sizeof(line) - 1] = '\0';
         string whole(line);
         
-        if (PaintownUtil::matchRegex(whole, "\\d+\\s+\\w+")){
+        if (PaintownUtil::matchRegex(whole, "\\d+\\s+")){
             int ticks = atoi(PaintownUtil::captureRegex(whole, "(\\d+)", 0).c_str());
-            string command = PaintownUtil::captureRegex(whole, "\\d+\\s+(\\w+)", 0);
-            actions.push_back(Action(ticks, command));
-            Global::debug(1) << "Added action " << command << " for " << ticks << std::endl;
-        } else if (PaintownUtil::matchRegex(whole, "\\d+")){
+            string command = PaintownUtil::captureRegex(whole, "\\d+\\s+(.*)", 0);
+            vector<string> commands = parseCommands(command);
+            actions.push_back(Action(ticks, commands));
+            // Global::debug(0) << "Added action " << PaintownUtil::join(commands, ", ") << " for " << ticks << std::endl;
+        } else if (PaintownUtil::matchRegex(whole, "\\d+\\s$")){
             int ticks = atoi(PaintownUtil::captureRegex(whole, "(\\d+)", 0).c_str());
-            actions.push_back(Action(ticks, ""));
-            Global::debug(1) << "Added no action for " << ticks << std::endl;
-        } else if (PaintownUtil::matchRegex(whole, "\\w+\\s*")){
+            actions.push_back(Action(ticks, vector<string>()));
+            // Global::debug(1) << "Added no action for " << ticks << std::endl;
+        } else {
             string command = PaintownUtil::captureRegex(whole, "(\\w+)\\s*", 0);
-            actions.push_back(Action(1, command));
-            Global::debug(1) << "Added action " << command << " for 1" << std::endl;
+            vector<string> commands = parseCommands(command);
+            if (commands.size() > 0){
+                actions.push_back(Action(1, commands));
+            }
+            // Global::debug(1) << "Added action " << command << " for 1" << std::endl;
         }
     }
 
@@ -312,7 +332,7 @@ std::vector<std::string> ScriptedBehavior::currentCommands(const Stage & stage, 
         Action & action = *currentAction;
 
         action.ticks -= 1;
-        out.push_back(action.command);
+        out = action.commands;
 
         if (action.ticks == 0){
             currentAction++;

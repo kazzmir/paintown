@@ -1421,6 +1421,10 @@ void Mugen::Stage::reset(){
     gameHUD->reset(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 }
 
+std::vector<Mugen::Object *> Mugen::Stage::getPlayers() const {
+    return players;
+}
+
 // Add player1 people
 void Mugen::Stage::addPlayer1( Mugen::Object * o ){
     o->setAlliance(Player1Side);

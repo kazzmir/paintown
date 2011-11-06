@@ -520,6 +520,8 @@ health(copy.health){
 }
 
 Character::~Character(){
+    stopRecording();
+
      // Get rid of sprites
     for (std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
@@ -1453,6 +1455,50 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
         }
     }
 }
+    
+void Character::startRecording(int count){
+    record = PaintownUtil::ReferenceCount<RecordingInformation>(new RecordingInformation());
+    ostringstream filename;
+    filename << getDisplayName() << "-" << count << ".txt";
+    record->out.open(filename.str().c_str());
+    record->ticks = 1;
+}
+
+static bool differentCommands(std::vector<std::string> list1, std::vector<std::string> list2){
+    if (list1.size() != list2.size()){
+        return true;
+    }
+
+    std::sort(list1.begin(), list1.end());
+    std::sort(list2.begin(), list2.end());
+
+    for (int i = 0; i < list1.size(); i++){
+        if (list1[i] != list2[i]){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Character::recordCommands(const std::vector<std::string> & commands){
+    if (record != NULL){
+        if (differentCommands(commands, record->commands)){
+            record->out << record->ticks << " " << PaintownUtil::join(record->commands, ", ") << std::endl;
+            record->ticks = 1;
+            record->commands = commands;
+        } else {
+            record->ticks += 1;
+        }
+    }
+}
+
+void Character::stopRecording(){
+    /* force the last set of commands to be written if any */
+    std::vector<std::string> last;
+    recordCommands(last);
+    record = NULL;
+}
 
 /* a container for a directory and a file */
 struct Location{
@@ -2338,6 +2384,9 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     
     /* active is the current set of commands */
     vector<string> active = doInput(*stage);
+
+    recordCommands(active);
+
     /* always run through the negative states */
 
     blocking = holdingBlock(active);

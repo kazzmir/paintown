@@ -79,13 +79,13 @@ public:
     ScriptedBehavior(const Filesystem::AbsolutePath & path);
 
     struct Action{
-        Action(int ticks, const std::string & command):
+        Action(int ticks, const std::vector<std::string> & commands):
             ticks(ticks),
-            command(command){
+            commands(commands){
             }
 
         int ticks;
-        std::string command;
+        std::vector<std::string> commands;
     };
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
