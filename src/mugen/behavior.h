@@ -21,6 +21,9 @@ public:
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed) = 0;
 
+    /* called when the player changes direction. useful for updating
+     * the input mapping.
+     */
     virtual void flip() = 0;
 
     /* hit someone */
@@ -60,6 +63,7 @@ public:
     virtual ~DummyBehavior();
 };
 
+/* This behavior chooses commands completely at random */
 class RandomAIBehavior: public Behavior {
 public:
     RandomAIBehavior();
@@ -70,9 +74,22 @@ public:
     virtual ~RandomAIBehavior();
 };
 
+class ScriptedBehavior: public Behavior {
+public:
+    ScriptedBehavior(const Filesystem::AbsolutePath & path);
+
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual void flip();
+
+    virtual ~ScriptedBehavior();
+};
+
+/* This behavior will attempt to learn which moves do damage and how likely
+ * they are to hit.
+ */
 class LearningAIBehavior: public Behavior {
 public:
-    /* 1 is easy, 10 is high */
+    /* 1 is easy, 10 is hard */
     LearningAIBehavior(int difficult);
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);

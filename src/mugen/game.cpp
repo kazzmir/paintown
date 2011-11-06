@@ -491,6 +491,47 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
     runMatch(&stage);
 }
 
+void Game::startScript(const std::string & player1Name, const string & player1Script, const std::string & player2Name, const string & player2Script, const std::string & stageName){
+    /* This has its own parse cache because its started by the main menu and not
+     * by Game::run()
+     */
+    ParseCache cache;
+    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+    std::random_shuffle(allCharacters.begin(), allCharacters.end());
+    bool random1 = player1Name == "_";
+    bool random2 = player2Name == "_";
+    PaintownUtil::ReferenceCount<Character> player1;
+    PaintownUtil::ReferenceCount<Character> player2;
+
+    player1 = makeCharacter(player1Name, random1, allCharacters);
+    player2 = makeCharacter(player2Name, random2, allCharacters);
+
+    Filesystem::AbsolutePath player1Path(player1Script);
+    Filesystem::AbsolutePath player2Path(player2Script);
+    ScriptedBehavior player1Behavior(player1Path);
+    ScriptedBehavior player2Behavior(player2Path);
+
+    // Set regenerative health
+    player1->setBehavior(&player1Behavior);
+    player2->setBehavior(&player2Behavior);
+
+    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    {
+        TimeDifference timer;
+        std::ostream & out = Global::debug(0);
+        out << "Loading stage " << stageName;
+        out.flush();
+        timer.startTime();
+        stage.load();
+        timer.endTime();
+        out << timer.printTime(" took") << std::endl;
+    }
+    stage.addPlayer1(player1.raw());
+    stage.addPlayer2(player2.raw());
+    stage.reset();
+    runMatch(&stage);
+}
+
 void Game::doTraining(Searcher & searcher){
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);

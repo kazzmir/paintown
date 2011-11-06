@@ -277,4 +277,19 @@ void LearningAIBehavior::hit(Object * enemy){
 LearningAIBehavior::~LearningAIBehavior(){
 }
 
+ScriptedBehavior::ScriptedBehavior(const Filesystem::AbsolutePath & path){
+}
+
+std::vector<std::string> ScriptedBehavior::currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+    vector<string> out;
+
+    return out;
+}
+    
+void ScriptedBehavior::flip(){
+}
+    
+ScriptedBehavior::~ScriptedBehavior(){
+}
+
 }
