@@ -1136,55 +1136,55 @@ void Animation::setBBox( int x1, int y1, int x2, int y2 ){
 }
 	
 void Animation::reset(){
-	current_event = events.begin();
+    current_event = events.begin();
 
-	
-	/* set the delay to 0 in case there the animation is reset
-	 * before it completes
-	 */
-	delay_counter = 0;
-	offset_x = 0;
-	offset_y = 0;
-	
-	// cout<<"Reseting "<<getName()<<endl;
-	
-	/* reset the frame to the first picture. 
-	 * This gets around the problem when the animation changes
-	 * but the animation hasnt changed frames yet, so when it gets drawn
-	 * current_frame is still equal to the last frame in the animation
-	 */
-	if ( ! frames.empty() ){
-		setFrame( 0 );
-	}
-	
-	while ( delay_counter <= 0 && current_event != events.end() ){
-		(*current_event)->Interact( this );
-		if ( delay_counter <= 0 )
-			current_event++;
-	}
+    /* set the delay to 0 in case there the animation is reset
+     * before it completes
+     */
+    delay_counter = 0;
+    offset_x = 0;
+    offset_y = 0;
 
+    // cout<<"Reseting "<<getName()<<endl;
+
+    /* reset the frame to the first picture. 
+     * This gets around the problem when the animation changes
+     * but the animation hasnt changed frames yet, so when it gets drawn
+     * current_frame is still equal to the last frame in the animation
+     */
+    if (! frames.empty()){
+        setFrame( 0 );
+    }
+
+    /* Jon commented this out on 11/6/2011. If its needed for something then
+     * add it back.
+     */
+    /*
+    while (delay_counter <= 0 && current_event != events.end()){
+        (*current_event)->Interact( this );
+        if ( delay_counter <= 0 )
+            current_event++;
+    }
+    */
 }
 
 bool Animation::Act(){
-
-	/*
-	if ( current_event == events.end() )
-		current_event = events.begin();
-	*/
-
-	if ( delay_counter > 0 ){
-		delay_counter--;
-		if ( delay_counter <= 0 )
-			current_event++;
-	}
-	while ( delay_counter <= 0 && current_event != events.end() ){
-		(*current_event)->Interact( this );
-		if ( delay_counter <= 0 )
-			current_event++;
-	}
-	if ( delay_counter <= 0 )
-		return current_event == events.end();
-	return false;
+    if (delay_counter > 0){
+        delay_counter--;
+        if (delay_counter <= 0){
+            current_event++;
+        }
+    }
+    while (delay_counter <= 0 && current_event != events.end()){
+        (*current_event)->Interact(this);
+        if (delay_counter <= 0){
+            current_event++;
+        }
+    }
+    if (delay_counter <= 0){
+        return current_event == events.end();
+    }
+    return false;
 }
 	
 bool Animation::empty(){

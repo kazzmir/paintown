@@ -790,19 +790,6 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
 
 	vector<Input::PaintownInput> input = fillKeyCache();
 
-        /*
-        JoystickInput joyinput;
-        if (joystick != NULL){
-	    joyinput = joystick->readAll();
-	}
-        */
-
-        /*
-        bool key_forward = keyboard[getKey(Forward)] || (getFacing() == FACING_RIGHT && joyinput.right) || (getFacing() == FACING_LEFT && joyinput.left);
-        bool key_backward = keyboard[getKey(Back)] || (getFacing() == FACING_RIGHT && joyinput.left) || (getFacing() == FACING_LEFT && joyinput.right);
-        bool key_up = keyboard[getKey(Up)] || joyinput.up;
-        bool key_down = keyboard[getKey(Down)] || joyinput.down;
-        */
         bool key_forward = false;
         bool key_backward = false;
         bool key_up = false;
@@ -830,24 +817,17 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
 	
 	/* Now the real meat */
 
-	/*
-	if ( !key_cache.empty() ){
-		for ( deque<int>::iterator dit = key_cache.begin(); dit != key_cache.end(); dit++ ){
-			cout<< *dit <<" ";
-		}
-		cout<<endl;
-	}
-	*/
-	
 	bool reset = animation_current->Act();
 
 	/* cant interrupt an animation unless its walking or idling */
 	// if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ]  && animation_current != movements[ "jump" ] ){
-	if ( animation_current != getMovement( "walk" ) && animation_current != getMovement( "idle" ) && animation_current != getMovement( "jump" ) ){
+	if (animation_current != getMovement("walk") &&
+            animation_current != getMovement("idle") &&
+            animation_current != getMovement("jump")){
 	// if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ] ){
 		// if ( !animation_current->Act() ) return;
 		// animation_current = movements[ "idle" ];
-		if ( !reset ) return;
+		if (!reset) return;
 	} else {
 		/*
 		if ( animation_current->Act() )

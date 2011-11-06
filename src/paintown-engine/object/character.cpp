@@ -1164,128 +1164,112 @@ void Character::act( vector< Object * > * others, World * world, vector< Object 
         }
     }
 
-    /*
-       if ( animation_current ){
-       if ( animation_current->Act() ){
-// animation_current->reset();
-nextTicket();
-if ( getStatus() == Status_Fell ){
-animation_current = movements[ "rise" ];
-setStatus( Status_Ground );
-} else	animation_current = movements[ "idle" ];
-
-animation_current->reset();
-}
-}
-*/
-
-// cout<<getName()<<" death is "<<death<<endl;
-if ( death >= 2 ){
-    // cout<<getName()<<" Death is "<<death<<endl;
-    if ( ++death > 60 ){
-        Global::debug( 1 ) << this << " dying" << endl;
-        setHealth( 0 );
-        world->addMessage( healthMessage() );
-    }
-}
-
-if ( getStatus() == Status_Fell ){
-    // setLink( NULL );
-
-    /*
-       if ( getY() == 0 ){
-
-       double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
-       cout<<getName()<<" taking "<<cur<<" from falling"<<endl;
-    // Object::takeDamage( NULL, (int)cur );
-
-    // setStatus( Status_Hurt );
-
-    / *
-    if ( getHealth() <= 0 && death == 0 ){
-    death = 1;
-    setHealth( 1 );
-    // setStatus( Status_Dead );
-    }
-     * /
-
-     setXVelocity( 0 );
-     setYVelocity( 0 );
-     } else 
-     decreaseYVelocity();
-
-     if ( animation_current->Act() && death < 2 ){
-     if ( death == 0 ){
-     if ( getY() == 0 ){
-     setStatus( Status_Hurt );
-     animation_current = movements[ "rise" ];
-     animation_current->reset();
-     }
-     } else {
-     death = 2;
-     }
-     }
-     */
-
-    animation_current->Act();
-
-} else if ( getStatus() == Status_Hurt ){
-    if ( animation_current->Act() ){
-        if ( getLink() == NULL ){
-            setStatus( Status_Ground );	
-        } else {
-            setStatus( Status_Grabbed );
-            // animation_current = movements["pain"];
-            animation_current = getMovement( "pain" );
+    if ( death >= 2 ){
+        // cout<<getName()<<" Death is "<<death<<endl;
+        if ( ++death > 60 ){
+            Global::debug( 1 ) << this << " dying" << endl;
+            setHealth( 0 );
+            world->addMessage( healthMessage() );
         }
     }
-} else if ( getStatus() == Status_Rise || getStatus() == Status_Get ){
-    if ( animation_current->Act() ){
-        animation_current = getMovement( "idle" );
-        setStatus( Status_Ground );
-    }
-} else if ( getStatus() == Status_Grabbed ){
-    if ( ++grab_time > 120 ){
-        setStatus( Status_Ground );
-        if ( getLink() ){
-            getLink()->unGrab();
-            setLink( NULL );
-        }
-        world->addMessage( ungrabMessage() );
-    } else {
-        /* probably not necessary */
+
+    if ( getStatus() == Status_Fell ){
+        // setLink( NULL );
+
         /*
-           if ( getLink() ){
-           world->addMessage( grabMessage( getLink()->getId(), getId() ) );
-           }
-           */
-    }
-}
+           if ( getY() == 0 ){
 
-if (getScriptObject() != NULL){
-    Script::Engine::getEngine()->objectTick(getScriptObject());
-}
+           double cur = fabs( getYVelocity() ) + fabs( getXVelocity() );
+           cout<<getName()<<" taking "<<cur<<" from falling"<<endl;
+        // Object::takeDamage( NULL, (int)cur );
 
-if (trail_generator > 0){
-    if (trail_counter <= 1){
-        if (animation_current != NULL){
-            trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), trail_life));
+        // setStatus( Status_Hurt );
+
+        / *
+        if ( getHealth() <= 0 && death == 0 ){
+        death = 1;
+        setHealth( 1 );
+        // setStatus( Status_Dead );
         }
-        trail_counter = trail_generator;
-    } else {
-        trail_counter -= 1;
-    }
-}
+         * /
 
-for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); ){
-    AnimationTrail * trail = *it;
-    if (trail->act()){
-        delete trail;
-        it = trails.erase(it);
-    } else {
-        it++;
+         setXVelocity( 0 );
+         setYVelocity( 0 );
+         } else 
+         decreaseYVelocity();
+
+         if ( animation_current->Act() && death < 2 ){
+         if ( death == 0 ){
+         if ( getY() == 0 ){
+         setStatus( Status_Hurt );
+         animation_current = movements[ "rise" ];
+         animation_current->reset();
+         }
+         } else {
+         death = 2;
+         }
+         }
+         */
+
+        animation_current->Act();
+
+    } else if ( getStatus() == Status_Hurt ){
+        if ( animation_current->Act() ){
+            if ( getLink() == NULL ){
+                setStatus( Status_Ground );	
+            } else {
+                setStatus( Status_Grabbed );
+                // animation_current = movements["pain"];
+                animation_current = getMovement( "pain" );
+            }
+        }
+    } else if ( getStatus() == Status_Rise || getStatus() == Status_Get ){
+        if ( animation_current->Act() ){
+            animation_current = getMovement( "idle" );
+            setStatus( Status_Ground );
+        }
+    } else if ( getStatus() == Status_Grabbed ){
+        if ( ++grab_time > 120 ){
+            setStatus( Status_Ground );
+            if ( getLink() ){
+                getLink()->unGrab();
+                setLink( NULL );
+            }
+            world->addMessage( ungrabMessage() );
+        } else {
+            /* probably not necessary */
+            /*
+               if ( getLink() ){
+               world->addMessage( grabMessage( getLink()->getId(), getId() ) );
+               }
+               */
+        }
     }
-}
+
+    if (getScriptObject() != NULL){
+        Script::Engine::getEngine()->objectTick(getScriptObject());
+    }
+
+    if (trail_generator > 0){
+        if (trail_counter <= 1){
+            if (animation_current != NULL){
+                trails.push_back(animation_current->makeTrail(getRX(), getRY(), getFacing(), trail_life));
+            }
+            trail_counter = trail_generator;
+        } else {
+            trail_counter -= 1;
+        }
+    }
+
+    for (vector<AnimationTrail*>::iterator it = trails.begin(); it != trails.end(); ){
+        AnimationTrail * trail = *it;
+        if (trail->act()){
+            delete trail;
+            it = trails.erase(it);
+        } else {
+            it++;
+        }
+    }
 
 
 /*
