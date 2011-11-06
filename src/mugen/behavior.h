@@ -78,10 +78,24 @@ class ScriptedBehavior: public Behavior {
 public:
     ScriptedBehavior(const Filesystem::AbsolutePath & path);
 
+    struct Action{
+        Action(int ticks, const std::string & command):
+            ticks(ticks),
+            command(command){
+            }
+
+        int ticks;
+        std::string command;
+    };
+
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     virtual void flip();
 
     virtual ~ScriptedBehavior();
+
+protected:
+    std::vector<Action> actions;
+    std::vector<Action>::iterator currentAction;
 };
 
 /* This behavior will attempt to learn which moves do damage and how likely
