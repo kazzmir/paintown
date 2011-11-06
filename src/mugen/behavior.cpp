@@ -294,6 +294,12 @@ static vector<string> parseCommands(string stuff){
 }
 
 ScriptedBehavior::ScriptedBehavior(const Filesystem::AbsolutePath & path){
+    if (!Storage::instance().exists(path)){
+        ostringstream out;
+        out << "Could not load script file '" << path.path() << "'";
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+
     ifstream file(path.path().c_str());
     while (file.good() && !file.eof()){
 
