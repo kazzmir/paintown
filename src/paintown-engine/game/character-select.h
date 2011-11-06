@@ -198,18 +198,27 @@ public:
     virtual void nextMessages();
     virtual void previousMessages();
 
+    virtual void moveUp(int cursor);
+    virtual void moveDown(int cursor);
+    virtual void moveLeft(int cursor);
+    virtual void moveRight(int cursor);
+
     Filesystem::AbsolutePath getCurrentSelectedPath(int cursor);
     
     enum Sounds{
-        NO_USE,
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-        ENTER,
-        ESC,
-        SWAP,
-        MISC,
+        Nothing,
+        /* for any movement */
+        Movement,
+        /* for specific directions */
+        Up,
+        Down,
+        Left,
+        Right,
+
+        Select,
+        Quit,
+        Swap,
+        Misc,
     };
     
     virtual void playSound(const Sounds &);

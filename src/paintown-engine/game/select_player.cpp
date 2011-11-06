@@ -754,13 +754,13 @@ class Selecter: public Util::Logic, public Util::Draw {
                     if (event.out == Select::Quit){
                         is_done = true;
                     } else if (event.out == Select::Up){
-                        select.getList()->up(0);
+                        select.moveUp(0);
                     } else if (event.out == Select::Down){
-                        select.getList()->down(0);
+                        select.moveDown(0);
                     } else if (event.out == Select::Left){
-                        select.getList()->left(0);
+                        select.moveLeft(0);
                     } else if (event.out == Select::Right){
-                        select.getList()->right(0);
+                        select.moveRight(0);
                     } else if (event.out == Select::Choose){
                         chosen = select.getCurrentSelectedPath(0);
                         is_done = true;

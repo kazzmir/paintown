@@ -1,5 +1,6 @@
 #include "character-select.h"
 
+#include "util/resource.h"
 #include "util/bitmap.h"
 #include "util/debug.h"
 #include "util/font.h"
@@ -763,10 +764,37 @@ void CharacterSelect::previousMessages(){
     }
 }
 
+void CharacterSelect::moveUp(int cursor){
+    playSound(Movement);
+    playSound(Up);
+    getList()->up(cursor);
+}
+
+void CharacterSelect::moveDown(int cursor){
+    playSound(Movement);
+    playSound(Down);
+    getList()->down(cursor);
+}
+
+void CharacterSelect::moveLeft(int cursor){
+    playSound(Movement);
+    playSound(Left);
+    getList()->left(cursor);
+}
+
+void CharacterSelect::moveRight(int cursor){
+    playSound(Movement);
+    playSound(Right);
+    getList()->right(cursor);
+}
+
 void CharacterSelect::playSound(const Sounds & sound){
     std::map<Sounds, std::string>::iterator play = sounds.find(sound);
     if (play != sounds.end()){
-        // FIXME do something useful
+        Sound * sound = Resource::getSound(Filesystem::RelativePath(play->second));
+        if (sound != NULL){
+            sound->play();
+        }
     }
 }
 
@@ -841,25 +869,27 @@ void CharacterSelect::load(const Token * token){
                         hasMoreHigh = Util::ReferenceCount<HasMore>(new HasMore(tok));
                     }
                 } else if (tok->match("sound", string_match, level)){
-                    Sounds sound = NO_USE;
+                    Sounds sound = Nothing;
                     if (string_match == "up"){
-                        sound = UP;
+                        sound = Up;
                     } else if (string_match == "down"){
-                        sound = DOWN;
+                        sound = Down;
                     } else if (string_match == "left"){
-                        sound = LEFT;
+                        sound = Left;
                     } else if (string_match == "right"){
-                        sound = RIGHT;
-                    } else if (string_match == "enter"){
-                        sound = ENTER;
-                    } else if (string_match == "esc"){
-                        sound = ESC;
+                        sound = Right;
+                    } else if (string_match == "movement"){
+                        sound = Movement;
+                    } else if (string_match == "select"){
+                        sound = Select;
+                    } else if (string_match == "quit"){
+                        sound = Quit;
                     } else if (string_match == "swap"){
-                        sound = SWAP;
+                        sound = Swap;
                     } else if (string_match == "misc"){
-                        sound = MISC;
+                        sound = Misc;
                     }
-                    if (sound != NO_USE){
+                    if (sound != Nothing){
                         sounds[sound] = level;
                     }
                 } else {
