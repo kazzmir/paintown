@@ -33,7 +33,8 @@ public:
         Delay,
         Facing,
         ProjectileEvent,
-        BBox
+        BBox,
+        CanBeHit
     };
 
     AnimationEvent();
@@ -274,6 +275,18 @@ public:
 protected:
     double d;
 };
+
+class AnimationEventCanBeHit: public AnimationEvent {
+public:
+    AnimationEventCanBeHit(bool hit);
+
+    virtual void Interact( Animation * animation ); 
+    virtual Type getType();
+
+protected:
+    bool hit;
+};
+
 
 }
 

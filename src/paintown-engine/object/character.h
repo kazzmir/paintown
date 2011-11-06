@@ -424,8 +424,15 @@ public:
 
     virtual void fall( double x_vel, double y_vel );
 
+    /* Invincibility makes the player glow and is usually given to the player
+     * through picking up an item.
+     */
     virtual int getInvincibility() const;
     virtual void setInvincibility(const int x);
+
+    /* almost the same as invincibility but is set by an animation event */
+    virtual void setCanBeHit(bool b);
+    virtual bool canBeHit() const;
 
     virtual void addEffect(DrawEffect * effect);
 
@@ -544,6 +551,7 @@ protected:
     Sound * landed_sound;
     Sound * squish_sound;
     int invincibility;
+    bool canBeHit_;
     int toughness;
     bool explode;
     int lives;

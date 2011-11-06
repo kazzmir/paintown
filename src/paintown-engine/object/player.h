@@ -29,22 +29,22 @@ public:
     Player(const Character & chr);
 
     /* drawing */
-    virtual void drawFront( Graphics::Bitmap * work, int rel_x );
+    virtual void drawFront(Graphics::Bitmap * work, int rel_x);
 
     using Character::drawLifeBar;
-    virtual void drawLifeBar( int x, int y, Graphics::Bitmap * work );
+    virtual void drawLifeBar(int x, int y, Graphics::Bitmap * work);
 
     virtual Object * copy();
 
-    virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
+    virtual void act(std::vector< Object * > * others, World * world, std::vector< Object * > * add);
 
     virtual void takeDamage(World & world, ObjectAttack * obj, int x, double forceX, double forceY);
 
-    virtual void hurt( int x );
+    virtual void hurt(int x);
 
-    virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
+    virtual void attacked(World * world, Object * something, std::vector< Object * > & objects);
 
-    virtual inline void setExplode( bool b ){
+    virtual inline void setExplode(bool b){
         /* */
     }
     
@@ -54,9 +54,12 @@ public:
         return false;
     }
 
-    virtual void loseLife( int l = 1 );
-    virtual void gainLife( int l = 1 );
+    virtual void loseLife(int l = 1);
+    virtual void gainLife(int l = 1);
 
+    /* player has their own idea of invincibility because the user might
+     * have set that as an option.
+     */
     virtual void setInvincible(const bool b);
     virtual int getInvincibility() const;
 
@@ -64,7 +67,7 @@ public:
         return this->invincible;
     }
 
-    virtual void interpretMessage(World * world, Network::Message & m );
+    virtual void interpretMessage(World * world, Network::Message & m);
 
     /* reset some stuff when the player dies */
     virtual void deathReset();
@@ -107,13 +110,13 @@ protected:
     virtual int getKey( Input::PaintownInput x );
     */
 
-    bool canGrab( Object * enemy );
-    void grabEnemy( Object * enemy );
+    bool canGrab(Object * enemy);
+    void grabEnemy(Object * enemy);
 
     /* shows keys on the screen */
     void drawButtons(Graphics::Bitmap * work, int x, int y);
 
-    Network::Message thrownMessage( unsigned int id );
+    Network::Message thrownMessage(unsigned int id);
 
 protected:
 

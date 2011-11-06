@@ -326,4 +326,16 @@ AnimationEvent::Type AnimationEventZDistance::getType(){
     return ZDistance;
 }
 
+AnimationEventCanBeHit::AnimationEventCanBeHit(bool hit):
+hit(hit){
+}
+
+void AnimationEventCanBeHit::Interact(Animation * animation){
+    animation->setHittable(hit);
+}
+    
+AnimationEvent::Type AnimationEventCanBeHit::getType(){
+    return CanBeHit;
+}
+
 }

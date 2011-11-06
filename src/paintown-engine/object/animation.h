@@ -267,6 +267,8 @@ public:
 	void Delay();
 	void nextTicket();
 
+        void setHittable(bool b);
+
         virtual const std::vector<AnimationEvent*> & getEvents(){
             return events;
         }

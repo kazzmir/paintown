@@ -168,6 +168,11 @@ changedAttacks(false){
                     is_attack = true;
             } else if ( current == "basedir" ){
                 current.view() >> basedir;
+            } else if (current == "hittable"){
+                bool hit = true;
+                current.view() >> hit;
+                AnimationEventCanBeHit * event = new AnimationEventCanBeHit(hit);
+                events.push_back(event);
             } else if ( current == "offset" ){
                 // *current >> offset_x >> offset_y;
                 int x = 0;
@@ -600,11 +605,18 @@ double Animation::getScale() const {
     }
     return 1;
 }
+        
+void Animation::setHittable(bool b){
+    if (parent != NULL){
+        parent->setCanBeHit(b);
+    }
+}
 
-void Animation::upperCase( string & who ){
-	for ( string::size_type q = 0; q < who.length(); q++ )
-		if ( who[q] >= 'a' && who[q] <= 'z' )
-			who[q] = (char)(who[q] - 'a' + 'A');
+/* FIXME: use toupper() and transform() */
+void Animation::upperCase(string & who){
+    for ( string::size_type q = 0; q < who.length(); q++ )
+        if ( who[q] >= 'a' && who[q] <= 'z' )
+            who[q] = (char)(who[q] - 'a' + 'A');
 }
 	
 void Animation::setDelay(double delay){
@@ -644,14 +656,14 @@ AnimationTrail * Animation::makeTrail(const int x, const int y, const int facing
     return new AnimationTrail(x, y, facing, life, *current_frame);
 }
 	
-void Animation::setFacing( const int direction ){
-	if ( parent ){
-		if ( direction == -1 ){
-			parent->reverseFacing();
-		} else {
-			parent->setFacing( direction );
-		}
-	}
+void Animation::setFacing(const int direction){
+    if (parent){
+        if (direction == -1){
+            parent->reverseFacing();
+        } else {
+            parent->setFacing(direction);
+        }
+    }
 }
 	
 void Animation::reMap(map<Graphics::Color, Graphics::Color> & colors ){

@@ -115,7 +115,8 @@ current_map( 0 ),
 die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
-invincibility( 0 ),
+invincibility(0),
+canBeHit_(true),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -148,6 +149,7 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
+canBeHit_(true),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -181,6 +183,7 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
+canBeHit_(true),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -239,6 +242,7 @@ spriteScale(chr.spriteScale){
     setShadow( chr.getShadow() );
     status = chr.getStatus();
     invincibility = chr.invincibility;
+    canBeHit_ = chr.canBeHit();
     toughness = chr.getToughness();
 
     for (vector<DrawEffect*>::const_iterator it = chr.effects.begin(); it != chr.effects.end(); it++){
@@ -714,7 +718,7 @@ Util::ReferenceCount<Animation> Character::getCurrentMovement() const {
 void Character::setMovement(Animation * animation, const string & name){
     movements[name] = animation;
 }
-	
+
 Util::ReferenceCount<Animation> Character::getMovement(const string & name){
     map<std::string, Util::ReferenceCount<Animation> >::const_iterator find = getMovements().find(name);
     if (find != getMovements().end()){
@@ -1010,6 +1014,14 @@ void Character::decreaseXVelocity(){
 
 void Character::decreaseZVelocity(){
 	z_velocity -= 0.6;
+}
+    
+void Character::setCanBeHit(bool b){
+    canBeHit_ = b;
+}
+
+bool Character::canBeHit() const {
+    return canBeHit_;
 }
 
 void Character::landed( World * world ){
@@ -1525,27 +1537,30 @@ double Character::minZDistance() const {
 	return 10;
 }
 
-bool Character::collision( ObjectAttack * obj ){
+bool Character::collision(ObjectAttack * obj){
+    if (getInvincibility() > 0){
+        return false;
+    }
 
-	if ( getInvincibility() > 0 ){
-		return false;
-	}
+    if (!canBeHit()){
+        return false;
+    }
 
-	if ( getThrown() ){
-		return false;
-	}
+    if (getThrown()){
+        return false;
+    }
 
-	if ( collision_objects[ obj ] == obj->getTicket() ){
-		// if ( last_obj == obj && last_collide == obj->getTicket() )
-		Global::debug(3) << this << " already collided with " << obj << endl;
-		return false;
-	}
+    if (collision_objects[obj] == obj->getTicket()){
+        // if ( last_obj == obj && last_collide == obj->getTicket() )
+        Global::debug(3) << this << " already collided with " << obj << endl;
+        return false;
+    }
 
-	return realCollision( obj );
+    return realCollision(obj);
 }
 	
-void Character::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
-    drawLifeBar( x, y, getHealth(), work );
+void Character::drawLifeBar(int x, int y, Graphics::Bitmap * work){
+    drawLifeBar(x, y, getHealth(), work);
 }
 	
 /* draw a nifty translucent life bar */
