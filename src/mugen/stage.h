@@ -187,7 +187,7 @@ public:
     */
 
     // Console
-    virtual void toggleConsole();
+    // virtual void toggleConsole();
 
     // Render debug stuff like lines and crap
     virtual void toggleDebug();
@@ -571,7 +571,7 @@ protected:
 private:
 
     // Our output Console
-    Console::Console *console;
+    // Console::Console * console;
 
     // Debug enabled?
     bool debugMode;

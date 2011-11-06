@@ -182,14 +182,30 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 ostringstream out;
                 out << "quit - quit the game entirely" << "\n";
                 out << "memory - current memory usage" << "\n";
+                out << "record - record character commands" << "\n";
                 out << "help - this help menu";
                 return out.str();
             }
         };
 
-        console.addCommand("quit", new CommandQuit());
-        console.addCommand("help", new CommandHelp());
-        console.addCommand("memory", new CommandMemory());
+        class CommandRecord: public Console::Command {
+        public:
+            CommandRecord(Mugen::Stage * stage):
+            stage(stage){
+            }
+
+            Mugen::Stage * stage;
+
+            string act(){
+                return "Recording";
+            }
+        };
+
+        console.addCommand("quit", PaintownUtil::ReferenceCount<Console::Command>(new CommandQuit()));
+        console.addAlias("exit", "quit");
+        console.addCommand("help", PaintownUtil::ReferenceCount<Console::Command>(new CommandHelp()));
+        console.addCommand("memory", PaintownUtil::ReferenceCount<Console::Command>(new CommandMemory()));
+        console.addCommand("record", PaintownUtil::ReferenceCount<Console::Command>(new CommandRecord(stage)));
     }
 
     bool show_fps = false;

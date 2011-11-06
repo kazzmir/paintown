@@ -277,9 +277,9 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
         };
 
-        console.addCommand("quit", new CommandQuit());
-        console.addCommand("help", new CommandHelp());
-        console.addCommand("memory", new CommandMemory());
+        console.addCommand("quit", Util::ReferenceCount<Console::Command>(new CommandQuit()));
+        console.addCommand("help", Util::ReferenceCount<Console::Command>(new CommandHelp()));
+        console.addCommand("memory", Util::ReferenceCount<Console::Command>(new CommandMemory()));
     }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;

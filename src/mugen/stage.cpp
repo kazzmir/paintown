@@ -21,7 +21,7 @@
 #include "util/bitmap.h"
 #include "util/stretch-bitmap.h"
 #include "util/trans-bitmap.h"
-#include "util/console.h"
+// #include "util/console.h"
 /*
 #include "object/animation.h"
 #include "object/object.h"
@@ -65,7 +65,7 @@ static const int DEFAULT_OBJECT_OFFSET = 160;
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 static const double DEFAULT_JUMP_VELOCITY = 7.2;
-static const int CONSOLE_SIZE = 95;
+// static const int CONSOLE_SIZE = 95;
 static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
@@ -190,7 +190,7 @@ totalTime(99),
 time(99),
 p1points(0),
 p2points(0),
-console(new Console::Console(CONSOLE_SIZE)),
+// console(new Console::Console(CONSOLE_SIZE)),
 debugMode(false),
 inleft(0),
 inright(0),
@@ -666,9 +666,11 @@ void Mugen::Stage::load(){
     }
     */
     
+    /*
     // Console stuff
     console->setTextHeight(10);
     console->setTextWidth(10); 
+    */
     
     // *FIXME Use current motif instead of direct file access
     try{
@@ -966,7 +968,7 @@ vector<Mugen::Object*> Mugen::Stage::getOpponents(Mugen::Object * who){
 }
 
 void Mugen::Stage::logic( ){
-    Console::ConsoleEnd & cend = Console::Console::endl;
+    // Console::ConsoleEnd & cend = Console::Console::endl;
 
     /* cycles slow the stage down, like after ko */
     cycles += 1;
@@ -1008,7 +1010,7 @@ void Mugen::Stage::logic( ){
         const double diffy = starty - cameray;
 
         // Clear console so we can see our debug
-        console->clear();
+        // console->clear();
 
         /*
         //zoffsetlink
@@ -1027,7 +1029,7 @@ void Mugen::Stage::logic( ){
          }
          */
 
-        *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
+        // *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
 
         if (superPause.time > 0){
             superPause.time -= 1;
@@ -1045,7 +1047,7 @@ void Mugen::Stage::logic( ){
                 physics(player);
 
                 /* Debug crap put it on console */
-                *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
+                // *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
 
                 if (isaPlayer(player)){
                     // Lets check their boundaries and camera whateva
@@ -1077,10 +1079,12 @@ void Mugen::Stage::logic( ){
 	moveCamera( 0, verticalfollow * 3.2 );
     }
     
+    /*
     // Console
     *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << cend;
     *console << "Frames: " << getTicks() << cend;
     console->act();
+    */
 
     // Player HUD Need to make this more ellegant than casting and passing from array
     gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
@@ -1336,7 +1340,7 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     }
     
     // Render console
-    console->draw(*work);
+    // console->draw(*work);
 }
 
 void Mugen::Stage::reset(){
@@ -1466,10 +1470,12 @@ void Mugen::Stage::setPlayerHealth(int health){
     }
 }
 
+/*
 // Console
 void Mugen::Stage::toggleConsole(){ 
     console->toggle(); 
 }
+*/
 
 void Mugen::Stage::toggleDebug(){
     debugMode = !debugMode;
@@ -1569,10 +1575,12 @@ void Mugen::Stage::cleanup(){
 	}
         */
 	
+        /*
 	if (console){
 	    delete console;
 	    console = 0;
 	}
+        */
 
         for (Mugen::SpriteMap::iterator it1 = effects.begin(); it1 != effects.end(); it1++){
             for (Mugen::GroupMap::iterator it2 = (*it1).second.begin(); it2 != (*it1).second.end(); it2++){
