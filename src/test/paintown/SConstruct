@@ -120,6 +120,8 @@ test/paintown-engine/game/mod.cpp
 test/util/ebox.cpp
 test/paintown-engine/level/utils.cpp
 test/paintown-engine/game/select_player.cpp
+test/paintown-engine/game/character-select.cpp
+test/util/gui/select-list.cpp
 test/loading.cpp
 test/util/messages.cpp
 test/util/gradient.cpp
@@ -211,6 +213,8 @@ test/util/messages.cpp
 test/util/gradient.cpp
 test/util/loading.cpp
 test/paintown-engine/game/select_player.cpp
+test/paintown-engine/game/character-select.cpp
+test/util/gui/select-list.cpp
 test/openbor/util.cpp
 test/openbor/pack-reader.cpp
 test/util/resource.cpp
@@ -272,6 +276,8 @@ test/paintown-engine/factory/shadow.cpp
 test/util/loading.cpp
 test/util/gradient.cpp
 test/paintown-engine/game/select_player.cpp
+test/paintown-engine/game/character-select.cpp
+test/util/gui/select-list.cpp
 test/util/messages.cpp
 test/paintown-engine/object/object_nonattack.cpp
 test/mugen/parse-cache.cpp
@@ -363,6 +369,8 @@ test/paintown-engine/factory/shadow.cpp
 test/util/loading.cpp
 test/util/gradient.cpp
 test/paintown-engine/game/select_player.cpp
+test/paintown-engine/game/character-select.cpp
+test/util/gui/select-list.cpp
 test/util/gui/animation.cpp
 test/util/gui/coordinate.cpp
 test/util/messages.cpp

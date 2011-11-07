@@ -62,7 +62,7 @@ test.cpp
 """)
 
 character_select_source = Split("""
-character-select.cpp
+test/paintown-engine/game/character-select.cpp
 select-main.cpp
 test/mugen/exception.cpp
 test/util/ebox.cpp

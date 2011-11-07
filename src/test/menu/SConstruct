@@ -116,6 +116,7 @@ test/util/timedifference.cpp
 test/util/language-string.cpp
 test/paintown-engine/trigger/trigger.cpp
 test/paintown-engine/game/select_player.cpp
+test/paintown-engine/game/character-select.cpp
 test/paintown-engine/game/options.cpp
 test/paintown-engine/game/move-list.cpp
 test/paintown-engine/game/mod.cpp
