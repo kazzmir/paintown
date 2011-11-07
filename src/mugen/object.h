@@ -85,7 +85,7 @@ public:
     virtual void setXVelocity(double x) = 0;
     virtual bool canTurn() const = 0;
     virtual void doTurn(Mugen::Stage & stage) = 0;
-    virtual double getStandingFriction() const = 0;
+    virtual double getGroundFriction() const = 0;
     virtual const std::string & getMoveType() const = 0;
     virtual HitDefinition & getHit() = 0;
     virtual const HitDefinition & getHit() const = 0;

@@ -613,7 +613,8 @@ void Character::initialize(){
     velocity_y = 0;
 
     gravity = 0.1;
-    standFriction = 1;
+    standFriction = 0.85;
+    crouchFriction = 0.82;
 
     stateTime = 0;
 
@@ -1133,6 +1134,10 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             double n;
                             simple.view() >> n;
                             self.setGravity(n);
+                        } else if (simple == "crouch.friction"){
+                            double n;
+                            simple.view() >> n;
+                            self.setCrouchingFriction(n);
                         } else if (simple == "stand.friction"){
                             double n;
                             simple.view() >> n;
@@ -3306,6 +3311,16 @@ void Character::setTemporaryAnimation(MugenAnimation * animation){
         
 bool Character::isHelper() const {
     return false;
+}
+
+double Character::getGroundFriction() const {
+    if (getCurrentPhysics() == Mugen::Physics::Stand){
+        return getStandingFriction();
+    } else if (getCurrentPhysics() == Mugen::Physics::Crouch){
+        return getCrouchingFriction();
+    }
+
+    return getStandingFriction();
 }
         
 void Character::setReversalActive(){

@@ -2162,6 +2162,8 @@ public:
         his.id = (int) evaluateNumberLocal(hit.id, 0);
         his.chainId = (int) evaluateNumberLocal(hit.chainId, -1);
         his.groundSlideTime = evaluateNumberLocal(hit.groundSlideTime, 0);
+        his.groundHitTime = evaluateNumberLocal(hit.groundHitTime, 0);
+        his.guardGroundHitTime = evaluateNumberLocal(hit.guardGroundHitTime, 0);
         his.guardControlTime = evaluateNumberLocal(hit.guardControlTime, his.groundSlideTime);
         his.airGuardControlTime = evaluateNumberLocal(hit.airGuardControlTime, his.guardControlTime);
         his.groundVelocity.x = evaluateNumberLocal(hit.groundVelocity.x, 0);

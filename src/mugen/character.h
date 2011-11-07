@@ -901,6 +901,14 @@ public:
             return lieDownTime;
         }
 
+        virtual double getCrouchingFriction() const {
+            return crouchFriction;
+        }
+
+        virtual void setCrouchingFriction(double n){
+            crouchFriction = n;
+        }
+
         virtual void setStandingFriction(double n){
             standFriction = n;
         }
@@ -909,6 +917,8 @@ public:
             return standFriction;
         }
 
+        virtual double getGroundFriction() const;
+            
         virtual bool hasAnimation(int index) const;
 
         virtual inline void toggleDebug(){
@@ -1338,9 +1348,9 @@ protected:
 	// = .44         ;Vertical acceleration
 	double yaccel;
 	//  = .85  ;Friction coefficient when standing
-	double standfriction;
+	// double standfriction;
 	//  = .82 ;Friction coefficient when crouching
-	double crouchfriction;
+	double crouchFriction;
 
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
