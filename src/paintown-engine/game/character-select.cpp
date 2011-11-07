@@ -494,38 +494,40 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     }
 }
 
-void CharacterItem::drawProfile(int width, int height, bool facingRight, const Graphics::Bitmap & work, const Font & font) const {
-    work.clearToMask();
+void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap & work, const Font & font) const {
+    profile.bitmap->clearToMask();
     const int stand = 100;
     Util::ReferenceCount<Paintown::DisplayCharacter> character = player->guy;
-    if (facingRight){
+    if (profile.facingRight){
         character->setFacing(Paintown::Object::FACING_RIGHT);
     } else {
         character->setFacing(Paintown::Object::FACING_LEFT);
     }
     Paintown::Character copy(*character);
-    Graphics::Bitmap temp(copy.getWidth(), copy.getHeight()*2);
+    Graphics::Bitmap temp(copy.getWidth() * profile.scale, copy.getHeight() * profile.scale);
     temp.clearToMask();
     copy.setDrawShadow(false);
     copy.setX(temp.getWidth()/2);
     copy.setY(0);
     copy.setZ(copy.getHeight());
     
-    copy.drawOutline(&temp, 0, height - stand - stand, 0, 0, 0, 255);
-    copy.drawReflection(&temp, 0, height - stand - stand, 128);
+    copy.drawOutline(&temp, 0, profile.bitmap->getHeight() - stand - stand, 0, 0, 0, 255);
+    copy.drawReflection(&temp, 0, profile.bitmap->getHeight() - stand - stand, 128);
     copy.draw(&temp, 0, temp.getHeight()/2);
 
-    double widthRatio = (double) work.getWidth() / temp.getWidth();
-    double heightRatio = (double) work.getHeight() / temp.getHeight();
+    double widthRatio = (double) profile.bitmap->getWidth() / temp.getWidth();
+    double heightRatio = (double) profile.bitmap->getHeight() / temp.getHeight();
 
     /* use smallest ratio */
     double use = widthRatio < heightRatio ? widthRatio : heightRatio;
 
     // temp.draw(work.getWidth() / 2 - temp.getWidth() / 2, work.getHeight() / 2 - temp.getHeight() / 2, work);
 
-    temp.drawStretched(work.getWidth() / 2 - temp.getWidth() * use / 2,
-                       work.getHeight() / 2 - temp.getHeight() * use / 2,
-                       temp.getWidth() * use, temp.getHeight() * use, work);
+    temp.drawStretched(profile.bitmap->getWidth() / 2 - temp.getWidth() * use / 2,
+                       profile.bitmap->getHeight() / 2 - temp.getHeight() * use / 2,
+                       temp.getWidth() * use, temp.getHeight() * use, *profile.bitmap);
+    
+    profile.bitmap->draw(profile.window.x, profile.window.y, work);
 }
 
 const std::string CharacterItem::getName(){
@@ -788,6 +790,11 @@ void CharacterSelect::moveRight(int cursor){
     getList()->right(cursor);
 }
 
+void CharacterSelect::swap(int cursor){
+    playSound(Swap);
+    // FIXME TODO add in swap information
+}
+
 void CharacterSelect::playSound(const Sounds & sound){
     std::map<Sounds, std::string>::iterator play = sounds.find(sound);
     if (play != sounds.end()){
@@ -832,25 +839,25 @@ void CharacterSelect::load(const Token * token){
                     tok->view() >> listWindow.x >> listWindow.y >> listWindow.width >> listWindow.height;
                 } else if (tok->match("list-depth", string_match, level)){
                     listDepth = parseDepth(string_match, level);
-                } else if (*tok =="profile-window"){
+                } else if (*tok == "profile"){
                     Util::ReferenceCount<Profile> profile(new Profile());
                     profile->facingRight = true;
-                    TokenView profileView = tok->view();
-                    profileView >> profile->window.x >> profile->window.y >> profile->window.width >> profile->window.height;
-                    try {
-                        std::string facing;
-                        profileView >> facing;
-                        if (facing == "facing-left"){
+                    tok->match("_/window", profile->window.x, profile->window.y, profile->window.width, profile->window.height);
+                    std::string facing;
+                    if (tok->match("_/facing", facing)){
+                        if (facing == "left"){
                             profile->facingRight = false;
-                        } else if (facing == "facing-right"){
+                        } else if (facing == "right"){
                             profile->facingRight = true;
                         }
-                    } catch (const TokenException & ex){
+                    }
+                    tok->match("_/scale", profile->scale);
+                    std::string depth, level;
+                    if (tok->match("_/depth", depth, level)){
+                        Profile::depth = parseDepth(depth, level);
                     }
                     profile->bitmap = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(profile->window.width, profile->window.height));
                     profiles.push_back(profile);
-                } else if (tok->match("profile-depth", string_match, level)){
-                    Profile::depth = parseDepth(string_match, level);
                 } else if (*tok == "messages"){
                     Util::ReferenceCount<MessageCollection> message(new MessageCollection(tok));
                     messages.push_back(message);
@@ -989,8 +996,7 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
         if (profile->depth == depth){
             Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(i);
             if (item != NULL){
-                item.convert<CharacterItem>()->drawProfile(profile->window.width, profile->window.height, profile->facingRight, *profile->bitmap, listFont);
-                profile->bitmap->draw(profile->window.x, profile->window.y, work);
+                item.convert<CharacterItem>()->drawProfile(*profile, work, listFont);
             }
         }
     }

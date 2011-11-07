@@ -33,6 +33,7 @@ struct Profile{
     Window window;
     Util::ReferenceCount<Graphics::Bitmap> bitmap;
     bool facingRight;
+    double scale;
     static Gui::Animation::Depth depth;
 };
 
@@ -136,7 +137,7 @@ public:
     ~CharacterItem();
     void act();
     void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
-    void drawProfile(int width, int height, bool facingRight, const Graphics::Bitmap &, const Font &) const;
+    void drawProfile(const Profile &, const Graphics::Bitmap &, const Font &) const;
     inline bool isEmpty() const {
         return false;
     }
@@ -202,6 +203,7 @@ public:
     virtual void moveDown(int cursor);
     virtual void moveLeft(int cursor);
     virtual void moveRight(int cursor);
+    virtual void swap(int cursor);
 
     Filesystem::AbsolutePath getCurrentSelectedPath(int cursor);
     
