@@ -28,12 +28,14 @@ public:
     Logic(InputMap<Keys> & input, CharacterSelect & select):
     is_done(false),
     input(input),
-    select(select){
+    select(select),
+    ticker(0){
     }
 
     bool is_done;
     InputMap<Keys> & input;
     CharacterSelect & select;
+    int ticker;
     
     bool done(){
         return is_done;
@@ -67,6 +69,17 @@ public:
         }
         
         select.act();
+       
+        //! Update a message in a collection programmatically
+        if (ticker++ >= 50){
+            Util::ReferenceCount<MessageCollection> message = select.getMessages("player1");
+            if (message != NULL){
+                std::ostringstream number;
+                number << random() % 9999999999;
+                message->setReplaceMessage("number", number.str());
+            }
+            ticker = 0;
+        }
     
     }
 

@@ -224,11 +224,12 @@ depth(Gui::Animation::BackgroundTop),
 width(0),
 height(0),
 justification(Right),
-profileAssociation(-1),
+cursorAssociation(-1),
 gradient(defaultGradient()){
 }
 
 TextMessage::TextMessage(const TextMessage & copy):
+name(copy.name),
 message(copy.message),
 replace(copy.replace),
 x(copy.x),
@@ -238,7 +239,7 @@ font(copy.font),
 width(copy.width),
 height(copy.height),
 justification(copy.justification),
-profileAssociation(copy.profileAssociation),
+cursorAssociation(copy.cursorAssociation),
 gradient(copy.gradient){
 }
 
@@ -249,7 +250,7 @@ depth(Gui::Animation::BackgroundTop),
 width(0),
 height(0),
 justification(Right),
-profileAssociation(-1),
+cursorAssociation(-1),
 gradient(defaultGradient()){
     if ( *token != "text" ){
         throw LoadException(__FILE__, __LINE__, "Not a Text Message");
@@ -260,7 +261,8 @@ gradient(defaultGradient()){
             const Token * tok;
             view >> tok;
             std::string match_text, level;
-            if (tok->match("message", message)){
+            if (tok->match("name", name)){
+            } else if (tok->match("message", message)){
             } else if (tok->match("replace-message", replace)){
             } else if (tok->match("location", x, y)){
             } else if (tok->match("depth", match_text, level)){
@@ -277,7 +279,7 @@ gradient(defaultGradient()){
                 } else if (match_text == "right"){
                     justification = Right;
                 }
-            } else if (tok->match("profile-association", profileAssociation)){
+            } else if (tok->match("cursor-association", cursorAssociation)){
             } else {
                 Global::debug(0) << "Unknown Text Message List property: " << tok->getName() << std::endl;
             }
@@ -326,7 +328,7 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
     width = copy.width;
     height = copy.height;
     justification = copy.justification;
-    profileAssociation = copy.profileAssociation;
+    cursorAssociation = copy.cursorAssociation;
     gradient = copy.gradient;
     
     return *this;
@@ -550,7 +552,8 @@ MessageCollection::MessageCollection(const Token * token){
             const Token * tok;
             view >> tok;
             std::string match_text, level;
-            if (*tok == "text"){
+            if (tok->match("name", name)){
+            } else if (*tok == "text"){
                 Util::ReferenceCount<TextMessage> message(new TextMessage(tok));
                 messages[message->getDepth()].push_back(message);
             } else {
@@ -559,6 +562,9 @@ MessageCollection::MessageCollection(const Token * token){
         } catch ( const TokenException & ex ) {
             throw LoadException(__FILE__, __LINE__, ex, "Message collection parse error");
         }
+    }
+    if (name.empty()){
+        throw LoadException(__FILE__, __LINE__, "Message collection requires a name");
     }
 }
 
@@ -574,8 +580,8 @@ void MessageCollection::act(Util::ReferenceCount<Gui::SelectListInterface> & lis
             message->act();
             
             // if associated with a profile set the replacement string
-            if (message->getProfileAssociation() != -1){
-                Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(message->getProfileAssociation());
+            if (message->getCursorAssociation() != -1){
+                Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(message->getCursorAssociation());
                 if (item != NULL){
                     message->setReplaceMessage(item.convert<CharacterItem>()->getName());
                 }
@@ -589,6 +595,18 @@ void MessageCollection::draw(const Gui::Animation::Depth & depth, const Graphics
         Util::ReferenceCount<TextMessage> message = *i;
         if (message->getDepth() == depth){
             message->draw(work);
+        }
+    }
+}
+
+void MessageCollection::setReplaceMessage(const std::string & name, const std::string & replace){
+    for (std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > >::iterator i = messages.begin(); i != messages.end(); ++i){
+        for (std::vector<Util::ReferenceCount<TextMessage> >::iterator j = i->second.begin(); j != i->second.end(); ++j){
+            Util::ReferenceCount<TextMessage> message = *j;
+            if (message->getName() == name){
+                // Set replacement message
+                message->setReplaceMessage(replace);
+            }
         }
     }
 }
@@ -710,8 +728,8 @@ void CharacterSelect::act(){
     
     if (list != NULL){
         list->act();
-        if (currentMessages < messages.size()){
-            messages[currentMessages]->act(list);
+        if (currentMessages < messageOrder.size()){
+            messages[messageOrder[currentMessages]]->act(list);
         }
         
         // Update loader
@@ -753,7 +771,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
 }
 
 void CharacterSelect::nextMessages(){
-    if (currentMessages < messages.size()-1){
+    if (currentMessages < messageOrder.size()-1){
         currentMessages++;
     } else {
         currentMessages = 0;
@@ -764,8 +782,28 @@ void CharacterSelect::previousMessages(){
     if (currentMessages > 0){
         currentMessages--;
     } else {
-        currentMessages = messages.size()-1;
+        currentMessages = messageOrder.size()-1;
     }
+}
+
+void CharacterSelect::changeToMessages(const std::string & name){
+    int valid = -1;
+    for (unsigned int i = 0; i < messageOrder.size(); ++i){
+        if (name == messageOrder[i]){
+            valid = i;
+        }
+    }
+    if (valid != -1){
+        currentMessages = valid;
+    }
+}
+
+Util::ReferenceCount<MessageCollection> CharacterSelect::getMessages(const std::string & name){
+    std::map<std::string, Util::ReferenceCount<MessageCollection> >::iterator message_iterator = messages.find(name);
+    if (message_iterator != messages.end()){
+        return message_iterator->second;
+    }
+    return Util::ReferenceCount<MessageCollection>(NULL);
 }
 
 void CharacterSelect::moveUp(int cursor){
@@ -863,7 +901,8 @@ void CharacterSelect::load(const Token * token){
                     profiles.push_back(profile);
                 } else if (*tok == "messages"){
                     Util::ReferenceCount<MessageCollection> message(new MessageCollection(tok));
-                    messages.push_back(message);
+                    messages[message->getName()] = message;
+                    messageOrder.push_back(message->getName());
                 } else if (tok->match("add", string_match)){
                     players.push_back(getPlayer(Storage::instance().find(Filesystem::RelativePath(string_match)).path()));
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
@@ -1004,8 +1043,11 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
         }
     }
     
-    if (currentMessages < messages.size()){
-        // Messages last
-        messages[currentMessages]->draw(depth, work);
+    // Messages last
+    if (currentMessages < messageOrder.size()){
+        std::map<std::string, Util::ReferenceCount<MessageCollection> >::iterator message_iterator = messages.find(messageOrder[currentMessages]);
+        if (message_iterator != messages.end()){
+            message_iterator->second->draw(depth, work);
+        }
     }
 }

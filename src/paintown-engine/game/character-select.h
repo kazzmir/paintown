@@ -50,6 +50,10 @@ public:
     void act();
     void draw(const Graphics::Bitmap &);
     
+    inline const std::string & getName() const {
+        return this->name;
+    }
+    
     inline void setReplaceMessage(const std::string & message){
         this->replace = message;
     }
@@ -58,11 +62,14 @@ public:
         return this->depth;
     }
     
-    inline int getProfileAssociation() const {
-        return this->profileAssociation;
+    inline int getCursorAssociation() const {
+        return this->cursorAssociation;
     }
     
 private:
+    /*! ID */
+    std::string name;
+    
     /*! Message */
     std::string message;
     
@@ -93,8 +100,8 @@ private:
     /*! Justification */
     Justification justification;
     
-    /*! Profile association */
-    int profileAssociation;
+    /*! Cursor association */
+    int cursorAssociation;
     
     /*! gradient */
     Effects::Gradient gradient;
@@ -157,7 +164,12 @@ public:
     ~MessageCollection();
     void act(Util::ReferenceCount<Gui::SelectListInterface> &);
     void draw(const Gui::Animation::Depth &, const Graphics::Bitmap &);
+    void setReplaceMessage(const std::string &, const std::string &);
+    inline const std::string & getName() const {
+        return this->name;
+    }
 private:
+    std::string name;
     std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > > messages;
 };
 
@@ -198,6 +210,8 @@ public:
     
     virtual void nextMessages();
     virtual void previousMessages();
+    virtual void changeToMessages(const std::string &);
+    virtual Util::ReferenceCount<MessageCollection> getMessages(const std::string &);
 
     virtual void moveUp(int cursor);
     virtual void moveDown(int cursor);
@@ -276,7 +290,8 @@ protected:
     int fontHeight;
     
     /*! Messages */
-    std::vector<Util::ReferenceCount<MessageCollection> > messages;
+    std::vector<std::string> messageOrder;
+    std::map<std::string, Util::ReferenceCount<MessageCollection> > messages;
     
     /*! Current Messages */
     unsigned int currentMessages;

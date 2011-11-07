@@ -56,27 +56,31 @@
   (profile (window 0 50 280 480) (scale 2) (depth background middle))
   ; Message Block
   (messages
+    (name player1)
     ; text Message
     (text (message "Player1 Pick") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
     (text (message "Player Select") (location 320 0) (color 0 255 255) (depth foreground top) (font-dimensions 15 15) (justification center))
-    (text (message "%s") (location 15 65) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (profile-association 0))
-    (text (message "%s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
+    (text (message "%s") (location 15 65) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (cursor-association 0))
+    (text (message "%s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (cursor-association 0))
+    (text (name number) (message "I am thinking of this number: %s") (location 320 460) (color 0 255 255) (depth foreground top) (font-dimensions 15 15) (justification center))
     )
   
   (messages
+    (name player2)
     ; text Message
     (text (message "Player2 Pick") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
     (text (message "Player Select") (location 320 0) (color 0 255 255) (depth foreground top) (font-dimensions 15 15) (justification center))
-    (text (message "%s") (location 15 65) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (profile-association 0))
-    (text (message "%s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
+    (text (message "%s") (location 15 65) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (cursor-association 0))
+    (text (message "%s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (cursor-association 0))
     )
   
   (messages
+    (name cpu)
     ; text Message
     (text (message "Select CPU player") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
     (text (message "Player Select") (location 320 0) (color 0 255 255) (depth foreground top) (font-dimensions 15 15) (justification center))
-    (text (message "%s") (location 15 65) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (profile-association 0))
-    (text (message "%s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (profile-association 0))
+    (text (message "%s") (location 15 65) (color 0 0 0) (depth background top) (font-dimensions 35 35) (justification right) (cursor-association 0))
+    (text (message "%s") (location 10 60) (color 255 255 255) (depth foreground bottom) (font-dimensions 35 35) (justification right) (cursor-association 0))
     )
   
   ; Add player by relative path

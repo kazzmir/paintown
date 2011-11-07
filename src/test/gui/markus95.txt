@@ -50,9 +50,10 @@
   (profile (window 60 140 180 340) (scale 1.5))
   ; text Message
   (messages
+    (name info)
     ;(text (message "Pick a Player") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
-    (text (message "%s") (location 205 165) (color 0 0 0) (depth background top) (font-dimensions 45 45) (justification right) (profile-association 0))
-    (text (message "%s") (location 200 160) (color 255 255 255) (depth foreground bottom) (font-dimensions 45 45) (justification right) (profile-association 0))
+    (text (message "%s") (location 205 165) (color 0 0 0) (depth background top) (font-dimensions 45 45) (justification right) (cursor-association 0))
+    (text (message "%s") (location 200 160) (color 255 255 255) (depth foreground bottom) (font-dimensions 45 45) (justification right) (cursor-association 0))
     )
   
   ; Add player by relative path
