@@ -28,8 +28,7 @@
   (cell (name select0) (shape round) (radius 25) (color 255 0 0) (color-fill false))
   (cell (name select1) (shape round) (radius 25) (color 0 0 255) (color-fill false))
   (cell (name select-alternative) (shape round) (radius 25) (color 0 255 0) (color-fill false))
-  ; Auto populate the grid ?
-  (auto-populate true)
+  
   ; Directory in which to populate from
   (auto-populate-directory "players")
   ; Window coordinates where list will be
@@ -38,10 +37,9 @@
   ; List depth
   (list-depth foreground top)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
-  (profile-window 0 -10 320 480)
-  (profile-window 320 -10 320 480 facing-left)
-  ; Depth in which to display the profiles
-  (profile-depth foreground bottom)
+  (profile (window 0 -10 320 480) (facing right) (scale 2.1) (depth foreground bottom))
+  (profile (window 320 -10 320 480) (facing left) (scale 2.1) (depth foreground bottom))
+  
   ; Message Block they are added in the sequence that they are read, this can be useful for multiple selections (ie player1, then player2.. etc)
   (messages
     ; text Message

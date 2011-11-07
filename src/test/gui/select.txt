@@ -47,15 +47,13 @@
   ; RIGHT
   ;(more "high" (location 555 20) (dimensions 8 70) (direction right) (depth foreground bottom) (gradient (low 0 0 0) (high 255 255 255) (distance 50)))
   
-  ; Auto populate the grid ?
-  (auto-populate true)
   ; Directory in which to populate from
   (auto-populate-directory "players")
   ; Window coordinates where list will be
   ; x y width height
   (list-window 300 20 340 460)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
-  (profile-window 50 100 150 380)
+  (profile (window 0 50 280 480) (scale 2) (depth background middle))
   ; Message Block
   (messages
     ; text Message

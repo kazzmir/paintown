@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "character-select.h"
+#include "paintown-engine/game/character-select.h"
 #include "util/debug.h"
 #include "util/load_exception.h"
 #include "util/token_exception.h"
@@ -49,16 +49,16 @@ public:
                 }
                 /* NOTE Assumes only one cursor */
                 if (event.out == Up){
-                    select.getList()->up(0);
+                    select.moveUp(0);
                 }
                 if (event.out == Down){
-                    select.getList()->down(0);
+                    select.moveDown(0);
                 }
                 if (event.out == Left){
-                    select.getList()->left(0);
+                    select.moveLeft(0);
                 }
                 if (event.out == Right){
-                    select.getList()->right(0);
+                    select.moveRight(0);
                 }
                 if (event.out == Enter){
                     select.nextMessages();

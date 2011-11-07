@@ -69,8 +69,6 @@ static std::vector<Paintown::DisplayCharacter *> getCharacters(PlayerVector play
 
 /* END Borrow */
 
-Gui::Animation::Depth Profile::depth = Gui::Animation::BackgroundBottom;
-
 static Gui::Animation::Depth parseDepth(const std::string & position, const std::string & level){
     Gui::Animation::Depth depth = Gui::Animation::BackgroundBottom;
     if (position == "background"){
@@ -846,6 +844,7 @@ void CharacterSelect::load(const Token * token){
                 } else if (*tok == "profile"){
                     Util::ReferenceCount<Profile> profile(new Profile());
                     profile->facingRight = true;
+                    profile->depth = Gui::Animation::BackgroundBottom;
                     tok->match("_/window", profile->window.x, profile->window.y, profile->window.width, profile->window.height);
                     std::string facing;
                     if (tok->match("_/facing", facing)){
@@ -858,7 +857,7 @@ void CharacterSelect::load(const Token * token){
                     tok->match("_/scale", profile->scale);
                     std::string depth, level;
                     if (tok->match("_/depth", depth, level)){
-                        Profile::depth = parseDepth(depth, level);
+                        profile->depth = parseDepth(depth, level);
                     }
                     profile->bitmap = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(profile->window.width, profile->window.height));
                     profiles.push_back(profile);

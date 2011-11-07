@@ -34,7 +34,7 @@ struct Profile{
     Util::ReferenceCount<Graphics::Bitmap> bitmap;
     bool facingRight;
     double scale;
-    static Gui::Animation::Depth depth;
+    Gui::Animation::Depth depth;
 };
 
 /*! Text Message */

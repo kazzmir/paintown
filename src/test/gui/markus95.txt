@@ -41,15 +41,13 @@
   (cell (name select-alternative) 
     (animation 
         (image 0 "select/selectalt.png") (frame (image 0) (time -1))))
-  ; Auto populate the grid ?
-  (auto-populate true)
   ; Directory in which to populate from
   (auto-populate-directory "players")
   ; Window coordinates where list will be
   ; x y width height
   (list-window 20 20 620 460)
   ; Profile window is where the character avatar or animation can be drawn make one per cursor
-  (profile-window 60 140 180 340)
+  (profile (window 60 140 180 340) (scale 1.5))
   ; text Message
   (messages
     ;(text (message "Pick a Player") (location 10 25) (color 255 255 255) (depth background top) (font-dimensions 35 35) (justification right))
