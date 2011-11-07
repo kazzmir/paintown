@@ -831,6 +831,12 @@ void Mugen::Stage::physics(Object * mugen){
         /* friction */
         if (mugen->getY() == 0){
             mugen->setXVelocity(mugen->getXVelocity() * mugen->getGroundFriction());
+            if (mugen->getMoveType() == Mugen::Move::Hit && 
+                mugen->getXVelocity() < 0 &&
+                ticker % 5 == 0){
+                /* 120 is small dust */
+                addSpark((int)mugen->getX(), (int)(mugen->getRY()), 120);
+            }
         }
     }
 
