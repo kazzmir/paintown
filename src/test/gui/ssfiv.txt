@@ -24,10 +24,10 @@
     (wrap true))
   ; Cells
   (cell (name back) (shape round) (radius 25) (color 0 0 0) (color-fill true))
-  (cell (name top) (shape round) (radius 25) (color 255 255 255) (color-fill false))
-  (cell (name select0) (shape round) (radius 25) (color 255 0 0) (color-fill false))
-  (cell (name select1) (shape round) (radius 25) (color 0 0 255) (color-fill false))
-  (cell (name select-alternative) (shape round) (radius 25) (color 0 255 0) (color-fill false))
+  (cell (name top) (shape round) (radius 25) (color 255 255 255) (color-fill false) (thickness 2))
+  (cell (name select0) (shape round) (radius 25) (color 255 0 0) (color-fill false) (thickness 2))
+  (cell (name select1) (shape round) (radius 25) (color 0 0 255) (color-fill false) (thickness 2))
+  (cell (name select-alternative) (shape round) (radius 25) (color 0 255 0) (color-fill false) (thickness 2))
   
   ; Directory in which to populate from
   (auto-populate-directory "players")

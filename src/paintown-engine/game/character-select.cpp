@@ -339,7 +339,8 @@ shape(SQUARE),
 radius(0),
 gradient(defaultGradient()),
 alpha(255),
-fill(false){
+fill(false),
+thickness(1){
     if ( *token != "cell" ){
         throw LoadException(__FILE__, __LINE__, "Not a cell");
     }
@@ -359,6 +360,7 @@ fill(false){
             } else if (tok->match("radius",radius)){
             } else if (handleGradient(tok, gradient)){
             } else if (tok->match("alpha",alpha)){
+            } else if (tok->match("thickness",thickness)){
             } else if (tok->match("color-fill",string_match)){
                 if (string_match == "true"){
                     fill = true;
@@ -404,13 +406,23 @@ void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap 
             }
         } else {
             switch (shape){
-                case ROUND:
-                    work.circle(x+width/2, y+height/2, radius, gradient.current());
+                case ROUND:{
+                    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(radius*2 + 1, radius*2 + 1);
+                    temp.clearToMask();
+                    temp.circleFill(radius, radius, radius, gradient.current());
+                    temp.circleFill(radius, radius, radius - thickness, Graphics::MaskColor());
+                    temp.draw((x+width/2) - radius, (y+height/2) - radius, work);
                     break;
-                case SQUARE:
+                }
+                case SQUARE:{
                 default:
-                    work.rectangle(x, y, x+width, y+height, gradient.current());
+                    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(width+1,height+1);
+                    temp.clearToMask();
+                    temp.rectangleFill(0, 0, width, height, gradient.current());
+                    temp.rectangleFill(thickness, thickness, width - thickness, height - thickness, Graphics::MaskColor());
+                    temp.draw(x, y, work);
                     break;
+                }
             }
         }
     }

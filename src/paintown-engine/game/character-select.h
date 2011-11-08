@@ -134,6 +134,8 @@ private:
     int alpha;
     /*! color fill */
     bool fill;
+    /*! Thickness of cell */
+    int thickness;
     /*! cell */
     Util::ReferenceCount<Gui::Animation> cell;
 };
