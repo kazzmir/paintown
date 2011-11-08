@@ -407,7 +407,7 @@ void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap 
         } else {
             switch (shape){
                 case ROUND:{
-                    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(radius*2 + 1, radius*2 + 1);
+                    Graphics::Bitmap temp = Graphics::Bitmap(work, x, y, radius*2 + 1, radius*2 + 1);
                     temp.clearToMask();
                     temp.circleFill(radius, radius, radius, gradient.current());
                     temp.circleFill(radius, radius, radius - thickness, Graphics::MaskColor());
@@ -756,6 +756,13 @@ void CharacterSelect::act(){
                 loader->update(ourItem->getPlayer()->guy.raw());
                 ourItem->act();
             }
+        }
+    }
+    
+    // Cells
+    for (std::map<std::string, Util::ReferenceCount<CellData> >::iterator i = cells.begin(); i != cells.end(); ++i){
+        if (i->second != NULL){
+            i->second->act();
         }
     }
     
