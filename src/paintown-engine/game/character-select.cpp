@@ -460,10 +460,15 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     } else {
         const int length = font.textLength(displayed->getName().c_str());
         const int middle = font.getHeight()/4;
-        Graphics::Bitmap temp = Graphics::Bitmap(length + font.getHeight(), font.getHeight());
+        Graphics::Bitmap temp = Graphics::Bitmap(length, font.getHeight());
         temp.clearToMask();
-        font.printf(temp.getWidth()/2 - length/2, middle, Graphics::makeColor(255, 255, 255), temp, player->guy->getName(), 0);
-        temp.drawStretched(x, y, width, (font.getHeight() > height ? height : font.getHeight()), bmp);
+        font.printf(0, middle, Graphics::makeColor(255, 255, 255), temp, player->guy->getName(), 0);
+        // temp.draw(x, y, bmp);
+        double widthRatio = (double) width / (double) temp.getWidth();
+        double heightRatio = (double) temp.getHeight() / (double) height;
+        double use = (double) height / (2.5 * temp.getHeight());
+        Graphics::Bitmap area(bmp, x, y, width, height);
+        temp.drawStretched(1, 0, temp.getWidth() * use, temp.getHeight() * use, area);
     }
     
     if (top != cells.end()){

@@ -705,7 +705,7 @@ static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
 
 class Selecter: public Util::Logic, public Util::Draw {
     public:
-        Selecter(const InputSource & source):
+        Selecter(const InputSource & source, const string & message):
             select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path()),
         source(source),
         is_done(false){
@@ -734,6 +734,12 @@ class Selecter: public Util::Logic, public Util::Draw {
                 input.set(configuration.getJoystickAttack3(), Select::Remap);
                 input.set(configuration.getJoystickQuit(), Select::Quit);
             }
+
+            Util::ReferenceCount<MessageCollection> messages = select.getMessages("select");
+            if (messages != NULL){
+                messages->setReplaceMessage("select", message);
+            }
+            select.changeToMessages("select");
         }
 
         CharacterSelect select;
@@ -783,7 +789,8 @@ class Selecter: public Util::Logic, public Util::Draw {
 };
 
 static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & remap, const InputSource & source){
-    Selecter run(source);
+    remap = 0;
+    Selecter run(source, message);
     Util::standardLoop(run, run);
 
     return run.chosen;
