@@ -128,8 +128,10 @@ private:
     Shape shape;
     /*! Radius if it is round */
     int radius;
-    /*! cell colors */
-    int r, g, b, alpha;
+    /*! cell gradient */
+    Effects::Gradient gradient;
+    /*! cell alpha */
+    int alpha;
     /*! color fill */
     bool fill;
     /*! cell */

@@ -337,9 +337,7 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
 CellData::CellData(const Token * token):
 shape(SQUARE),
 radius(0),
-r(0),
-g(0),
-b(0),
+gradient(defaultGradient()),
 alpha(255),
 fill(false){
     if ( *token != "cell" ){
@@ -359,7 +357,7 @@ fill(false){
                     shape = ROUND;
                 }
             } else if (tok->match("radius",radius)){
-            } else if (tok->match("color",r,g,b)){
+            } else if (handleGradient(tok, gradient)){
             } else if (tok->match("alpha",alpha)){
             } else if (tok->match("color-fill",string_match)){
                 if (string_match == "true"){
@@ -382,6 +380,7 @@ CellData::~CellData(){
 }
 
 void CellData::act(){
+    gradient.update();
     if (cell != NULL){
         cell->act();
     }
@@ -396,21 +395,21 @@ void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap 
         if (fill){
             switch (shape){
                 case ROUND:
-                    work.circleFill(x+width/2, y+height/2, radius, Graphics::makeColor(r,g,b));
+                    work.circleFill(x+width/2, y+height/2, radius, gradient.current());
                     break;
                 case SQUARE:
                 default:
-                    work.rectangleFill(x, y, x+width, y+height, Graphics::makeColor(r,g,b));
+                    work.rectangleFill(x, y, x+width, y+height, gradient.current());
                     break;
             }
         } else {
             switch (shape){
                 case ROUND:
-                    work.circle(x+width/2, y+height/2, radius, Graphics::makeColor(r,g,b));
+                    work.circle(x+width/2, y+height/2, radius, gradient.current());
                     break;
                 case SQUARE:
                 default:
-                    work.rectangle(x, y, x+width, y+height, Graphics::makeColor(r,g,b));
+                    work.rectangle(x, y, x+width, y+height, gradient.current());
                     break;
             }
         }
