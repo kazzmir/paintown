@@ -48,7 +48,7 @@ public:
     const TextMessage & operator=(const TextMessage &);
     
     void act();
-    void draw(const Graphics::Bitmap &);
+    void draw(const Graphics::Bitmap &, const Font &);
     
     inline const std::string & getName() const {
         return this->name;
@@ -167,7 +167,7 @@ public:
     MessageCollection(const Token *);
     ~MessageCollection();
     void act(Util::ReferenceCount<Gui::SelectListInterface> &);
-    void draw(const Gui::Animation::Depth &, const Graphics::Bitmap &);
+    void draw(const Gui::Animation::Depth &, const Graphics::Bitmap &, const Font &);
     void setReplaceMessage(const std::string &, const std::string &);
     inline const std::string & getName() const {
         return this->name;

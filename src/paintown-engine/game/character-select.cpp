@@ -296,8 +296,8 @@ void TextMessage::act(){
     gradient.update();
 }
 
-void TextMessage::draw(const Graphics::Bitmap & work){
-    // Our font
+void TextMessage::draw(const Graphics::Bitmap & work, const Font & passedFont){
+    // Our font TODO get passedFont instead of defaultFont (resized)
     const Font & useFont = !font.isEmpty() ? Font::getFont(font, width, height) : Font::getDefaultFont(width, height);
     char newString[255];
     sprintf(newString, message.c_str(), replace.c_str());
@@ -606,11 +606,11 @@ void MessageCollection::act(Util::ReferenceCount<Gui::SelectListInterface> & lis
     }
 }
 
-void MessageCollection::draw(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work){
+void MessageCollection::draw(const Gui::Animation::Depth & depth, const Graphics::Bitmap & work, const Font & font){
     for (std::vector<Util::ReferenceCount<TextMessage> >::iterator i = messages[depth].begin(); i != messages[depth].end(); ++i){
         Util::ReferenceCount<TextMessage> message = *i;
         if (message->getDepth() == depth){
-            message->draw(work);
+            message->draw(work, font);
         }
     }
 }
@@ -1070,7 +1070,7 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
     if (currentMessages < messageOrder.size()){
         std::map<std::string, Util::ReferenceCount<MessageCollection> >::iterator message_iterator = messages.find(messageOrder[currentMessages]);
         if (message_iterator != messages.end()){
-            message_iterator->second->draw(depth, work);
+            message_iterator->second->draw(depth, work, listFont);
         }
     }
 }
