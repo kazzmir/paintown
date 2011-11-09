@@ -407,11 +407,11 @@ void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap 
         } else {
             switch (shape){
                 case ROUND:{
-                    Graphics::Bitmap temp = Graphics::Bitmap(work, x, y, radius*2 + 1, radius*2 + 1);
-                    temp.clearToMask();
-                    temp.circleFill(radius, radius, radius, gradient.current());
-                    temp.circleFill(radius, radius, radius - thickness, Graphics::MaskColor());
-                    temp.draw((x+width/2) - radius, (y+height/2) - radius, work);
+                    Graphics::Bitmap temp = Graphics::Bitmap(work, x + width / 2 - radius, y + height / 2 - radius, radius*2 + thickness, radius*2 + thickness);
+                    // temp.clearToMask();
+                    temp.circle(radius, radius, radius, thickness, gradient.current());
+                    // temp.circleFill(radius, radius, radius - thickness, Graphics::MaskColor());
+                    // temp.draw((x+width/2) - radius, (y+height/2) - radius, work);
                     break;
                 }
                 case SQUARE:{
