@@ -852,10 +852,20 @@ void CharacterSelect::moveRight(int cursor){
     playSound(Right);
     getList()->right(cursor);
 }
+            
+int CharacterSelect::getRemap(int cursor){
+    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor).convert<CharacterItem>();
+    Util::ReferenceCount<Paintown::DisplayCharacter> character = selected->getPlayer()->guy;
+    return character->getCurrentMap();
+}
 
 void CharacterSelect::swap(int cursor){
     playSound(Swap);
-    // FIXME TODO add in swap information
+    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor).convert<CharacterItem>();
+    Util::ReferenceCount<Paintown::DisplayCharacter> character = selected->getPlayer()->guy;
+    if (character->isLoaded()){
+        character->nextMap();
+    }
 }
 
 void CharacterSelect::playSound(const Sounds & sound){

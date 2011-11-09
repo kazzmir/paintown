@@ -223,6 +223,9 @@ public:
     virtual void moveRight(int cursor);
     virtual void swap(int cursor);
 
+    /* the current map of the player under the cursor */
+    virtual int getRemap(int cursor);
+
     Filesystem::AbsolutePath getCurrentSelectedPath(int cursor);
     
     enum Sounds{

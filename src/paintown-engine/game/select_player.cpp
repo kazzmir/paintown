@@ -773,11 +773,17 @@ class Selecter: public Util::Logic, public Util::Draw {
                     } else if (event.out == Select::Choose){
                         chosen = select.getCurrentSelectedPath(0);
                         is_done = true;
+                    } else if (event.out == Select::Remap){
+                        select.swap(0);
                     }
                 }
             }
 
             select.act();
+        }
+
+        int getRemap(){
+            return select.getRemap(0);
         }
 
         double ticks(double system){
@@ -795,6 +801,8 @@ static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & re
     remap = 0;
     Selecter run(source, message);
     Util::standardLoop(run, run);
+
+    remap = run.getRemap();
 
     return run.chosen;
 }
