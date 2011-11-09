@@ -758,7 +758,8 @@ class Selecter: public Util::Logic, public Util::Draw {
                 const InputMap<Select::Input>::InputEvent & event = *it;
                 if (event.enabled){
                     if (event.out == Select::Quit){
-                        is_done = true;
+                        InputManager::waitForRelease(input, source, Select::Quit);
+                        throw Exception::Return(__FILE__, __LINE__);
                     } else if (event.out == Select::Up){
                         select.moveUp(0);
                     } else if (event.out == Select::Down){

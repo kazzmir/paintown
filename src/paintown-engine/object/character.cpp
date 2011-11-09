@@ -1536,9 +1536,9 @@ void Character::drawLifeBar(int x, int y, Graphics::Bitmap * work){
 }
 	
 /* draw a nifty translucent life bar */
+/* FIXME: make this customizable */
 void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
     Graphics::TranslucentBitmap translucent(*work);
-    // Bitmap::drawingMode( Bitmap::MODE_TRANS );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     const int health_height = 7;
     const int maxHealthWidth = 100;
@@ -1566,8 +1566,6 @@ void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
 
     Graphics::TranslucentBitmap border(Graphics::Bitmap(*work, x, y, max+1, health_height));
     border.border(0, 1, Graphics::makeColor(255, 255, 255));
-
-    // Bitmap::drawingMode( Bitmap::MODE_SOLID );
 }
 
 bool Character::touchPoint(int x, int y){
