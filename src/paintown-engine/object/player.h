@@ -100,6 +100,12 @@ protected:
     void commonInitialize();
     void load(const Filesystem::AbsolutePath & path);
 
+    std::map<Util::ReferenceCount<Animation>, int> possibleMovements(const std::string & name);
+    Util::ReferenceCount<Animation> chooseLikelyAnimation(std::vector<Object*> * others, std::map<Util::ReferenceCount<Animation>, int> possible_animations, const std::string & current_name);
+
+    void handleThrow(World * world);
+    void handleGrab(World * world, std::vector<Object*> * others);
+
     std::vector<Input::PaintownInput> fillKeyCache();
     void debugDumpKeyCache(int level);
     const char * keyToName(Input::PaintownInput key);

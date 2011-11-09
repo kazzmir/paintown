@@ -661,7 +661,7 @@ void Player::grabEnemy( Object * enemy ){
 static Util::ReferenceCount<Animation> hasGetAnimation( const map<Util::ReferenceCount<Animation>, int > & animations ){
     for ( map<Util::ReferenceCount<Animation>, int >::const_iterator it = animations.begin(); it != animations.end(); it++ ){
         Util::ReferenceCount<Animation> a = (*it).first;
-        if ( a->getName() == "get" ){
+        if (a->getName() == "get"){
             return a;
         }
     }
@@ -757,6 +757,111 @@ vector<Player*> Player::getBinds() const {
     return alive;
 }
 
+map<Util::ReferenceCount<Animation>, int> Player::possibleMovements(const string & currentAnimationName){
+    map<Util::ReferenceCount<Animation>, int> possible;
+    for (map<string, Util::ReferenceCount<Animation> >::const_iterator it = getMovements().begin(); it != getMovements().end(); it++){
+        if ( (*it).second == NULL ) continue;
+        Util::ReferenceCount<Animation> animation = (*it).second;
+        if (animation->isCommisioned() &&
+            combo(animation) &&
+            animation->getStatus() == getStatus()){
+
+            if (animation->properSequence(currentAnimationName)){
+                possible[animation] = animation->getKeys().size();
+            }
+        } 
+    }
+
+    return possible;
+}
+
+Util::ReferenceCount<Animation> Player::chooseLikelyAnimation(vector<Object *> * others, map<Util::ReferenceCount<Animation>, int> possible_animations, const string & current_name){
+    Util::ReferenceCount<Animation> final(NULL);
+
+    /* if its a get animation then it takes precedence
+     * over the rest
+     */
+    Util::ReferenceCount<Animation> get = hasGetAnimation(possible_animations);
+    if (get != NULL){
+        for (vector< Object * >::iterator it = others->begin(); it != others->end(); it++){
+            Object * o = *it;
+            if (o->isGettable() && fabs((double)(o->getRX() - getRX())) < 25 && ZDistance( o ) <= get->getMinZDistance()){
+                return get;
+            }
+        }
+        possible_animations.erase(get);
+    }
+
+    /* if its not a get animation then choose the animation
+     * with the longest sequence of keys required to invoke
+     * the animation
+     */
+    if (getStatus() != Status_Get){
+
+        int max = -1;
+        for (map<Util::ReferenceCount<Animation>, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++){
+            int & cur = (*mit).second;
+            Util::ReferenceCount<Animation> blah = (*mit).first;
+            Global::debug(3) << blah->getName() << "? ";
+            if (blah->hasSequence(current_name)){
+            }
+            if (cur > max || blah->hasSequence(current_name)){
+                final = blah;
+                max = cur;
+            }
+        }
+        Global::debug(3) << endl;
+    }
+
+    return final;
+}
+
+void Player::handleGrab(World * world, vector<Object*> * others){
+    vector<Object *> my_enemies;
+    filterEnemies(my_enemies, others);
+    for (vector< Object * >:: iterator it = my_enemies.begin(); it != my_enemies.end(); it++){
+        Object * guy = *it;
+
+        if (canGrab(guy)){
+            Global::debug(2) << getId() << " grabbing " << guy->getId() << endl;
+            grabEnemy(guy);
+            world->addMessage(grabMessage(getId(), guy->getId()));
+            setZ(guy->getZ()+1);
+            animation_current = getMovement("grab");
+            animation_current->reset();
+            world->addMessage(animationMessage());
+            setStatus(Status_Grab);
+
+            return;
+        }
+    }
+
+    animation_current = getMovement("walk");
+    world->addMessage(animationMessage());
+}
+
+void Player::handleThrow(World * world){
+    if (getLink() == NULL){
+        Global::debug(0) << "*BUG* Link is null. This can't happen." <<endl;
+        return;
+    }
+    Object * link = getLink();
+    link->setFacing(getOppositeFacing());
+    link->thrown();
+    increaseScore((int)(20 * (1 + attack_bonus)));
+    attack_bonus += 1;
+    world->addMessage(scoreMessage());
+    world->addMessage(link->movedMessage());
+    /* TODO: the fall distance could be defined in the player
+     * file instead of hard-coded.
+     */
+    world->addMessage(((Character *)link)->fallMessage(3.2, 5.0));
+    world->addMessage(thrownMessage(link->getId()));
+    link->fall(3.2, 5.0);
+    setStatus(Status_Ground);
+    world->addMessage(movedMessage());
+}
+
 void Player::act(vector<Object *> * others, World * world, vector<Object *> * add){
     /* this is just for score */
     if (attack_bonus > 0){
@@ -765,402 +870,217 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
         attack_bonus = 0;
     }
 
-	if ( show_life < getHealth() ){
-		show_life++;
-	} else if ( show_life > getHealth() ){
-		show_life--;
-	}
-	
-	/* cheat */
-	/*
-	if ( getInvincibility() < 500 ){
-		setInvincibility( 1000 );
-	}
-	*/
+    if (show_life < getHealth()){
+        show_life++;
+    } else if (show_life > getHealth()){
+        show_life--;
+    }
 
-	/* isInvincible is a cheat so always set invinciblility to a positive value */
-        /*
-	if ( isInvincible() && getInvincibility() < 1 ){
-		setInvincibility( 100 );
-	}
-        */
+    /* cheat */
+    /*
+       if ( getInvincibility() < 500 ){
+       setInvincibility( 1000 );
+       }
+       */
 
-	/* Character handles jumping and possibly other things */
-	Character::act(others, world, add);
+    /* isInvincible is a cheat so always set invinciblility to a positive value */
+    /*
+       if ( isInvincible() && getInvincibility() < 1 ){
+       setInvincibility( 100 );
+       }
+       */
 
-	vector<Input::PaintownInput> input = fillKeyCache();
+    /* Character handles jumping and possibly other things */
+    Character::act(others, world, add);
 
-        bool key_forward = false;
-        bool key_backward = false;
-        bool key_up = false;
-        bool key_down = false;
-        for (vector<Input::PaintownInput>::iterator it = input.begin(); it != input.end(); it++){
-            Input::PaintownInput & key = *it;
-            switch (key){
-                case Input::Forward : key_forward = true; break;
-                case Input::Back : key_backward = true; break;
-                case Input::Up : key_up = true; break;
-                case Input::Down : key_down = true; break;
-                default : break;
+    vector<Input::PaintownInput> input = fillKeyCache();
+
+    bool key_forward = false;
+    bool key_backward = false;
+    bool key_up = false;
+    bool key_down = false;
+    for (vector<Input::PaintownInput>::iterator it = input.begin(); it != input.end(); it++){
+        Input::PaintownInput & key = *it;
+        switch (key){
+            case Input::Forward : key_forward = true; break;
+            case Input::Back : key_backward = true; break;
+            case Input::Up : key_up = true; break;
+            case Input::Down : key_down = true; break;
+            default : break;
+        }
+    }
+
+    /* special cases... */
+    if (getStatus() == Status_Hurt ||
+        getStatus() == Status_Fell ||
+        getStatus() == Status_Rise ||
+        getStatus() == Status_Get ||
+        getStatus() == Status_Falling){
+        return;
+    }
+
+    /* Now the real meat */
+
+    bool reset = animation_current->Act();
+
+    /* cant interrupt an animation unless its walking or idling */
+    if (animation_current != getMovement("walk") &&
+        animation_current != getMovement("idle") &&
+        animation_current != getMovement("jump")){
+        if (!reset) return;
+    } else {
+    }
+
+    string current_name = animation_current->getName();
+
+    // bool status = animation_current->getStatus();
+
+    if (reset){
+        if (getStatus() != Status_Grab){
+            animation_current->reset();
+        }
+
+        const vector<string> & allow = animation_current->getCommisions();
+        for ( vector<string>::const_iterator it = allow.begin(); it != allow.end(); it++ ){
+            Util::ReferenceCount<Animation> ok = getMovement(*it);
+            if ( ok != NULL ){
+                ok->setCommision( true );
             }
         }
 
-	/* special cases... */
-	if ( getStatus() == Status_Hurt || getStatus() == Status_Fell || getStatus() == Status_Rise || getStatus() == Status_Get || getStatus() == Status_Falling )
-		return;
-
-	/*
-	if ( getStatus() == Status_Grab ){
-		return;
-	}
-	*/
-	
-	/* Now the real meat */
-
-	bool reset = animation_current->Act();
-
-	/* cant interrupt an animation unless its walking or idling */
-	// if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ]  && animation_current != movements[ "jump" ] ){
-	if (animation_current != getMovement("walk") &&
-            animation_current != getMovement("idle") &&
-            animation_current != getMovement("jump")){
-	// if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ] ){
-		// if ( !animation_current->Act() ) return;
-		// animation_current = movements[ "idle" ];
-		if (!reset) return;
-	} else {
-		/*
-		if ( animation_current->Act() )
-			animation_current->reset();
-		*/
-	}
-	string current_name = animation_current->getName();
-
-	// bool status = animation_current->getStatus();
-
-        if (reset){
-            if (getStatus() != Status_Grab){
-                animation_current->reset();
+        const vector<string> & disallow = animation_current->getDecommisions();
+        for ( vector<string>::const_iterator it = disallow.begin(); it != disallow.end(); it++ ){
+            // cout<<"Decommision: "<<*it<<endl;
+            // Animation * ok = movements[ *it ];
+            Util::ReferenceCount<Animation> ok = getMovement( *it );
+            if ( ok != NULL ){
+                ok->setCommision( false );
             }
-
-            const vector<string> & allow = animation_current->getCommisions();
-            for ( vector<string>::const_iterator it = allow.begin(); it != allow.end(); it++ ){
-                Util::ReferenceCount<Animation> ok = getMovement(*it);
-                if ( ok != NULL ){
-                    ok->setCommision( true );
-                }
-            }
-
-            const vector<string> & disallow = animation_current->getDecommisions();
-            for ( vector<string>::const_iterator it = disallow.begin(); it != disallow.end(); it++ ){
-                // cout<<"Decommision: "<<*it<<endl;
-                // Animation * ok = movements[ *it ];
-                Util::ReferenceCount<Animation> ok = getMovement( *it );
-                if ( ok != NULL ){
-                    ok->setCommision( false );
-                }
-            }
-
-            /* leave this line here, ill figure out why its important later
-             * if you need the animation_current->getName(), use current_name
-             */
-            // cout << "Set current animation to null" << endl;
-            animation_current = NULL;
         }
+
+        /* leave this line here, ill figure out why its important later
+         * if you need the animation_current->getName(), use current_name
+         */
+        // cout << "Set current animation to null" << endl;
+        animation_current = NULL;
+    }
 	// animation_current = NULL;
 
-	if ( true ){
-            Util::ReferenceCount<Animation> final(NULL);
-		// unsigned int num_keys = 0;
-		map<Util::ReferenceCount<Animation>, int > possible_animations;
+    if (true){
+        Util::ReferenceCount<Animation> final(NULL);
+        // unsigned int num_keys = 0;
+        map<Util::ReferenceCount<Animation>, int> possible_animations = possibleMovements(current_name);
 
-                debugDumpKeyCache(3);
+        debugDumpKeyCache(3);
 
-		/*
-		vector< Animation * > xv;
-		for ( map<string,Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++ ){
-			xv.push_back( (*it).second );
-		}
-		for ( vector< Animation * >::iterator it = xv.begin(); it != xv.end(); ){
-			Animation * b = *it;
-			if ( combo( b ) ){
-				it++;
-				if ( b->getStatus() == getStatus() && (b->getPreviousSequence() == "none" || current_name == b->getPreviousSequence() ) ){
-					possible_animations[ b ] = b->getKeys().size();
-				}
-			} else it = xv.erase( it );
-		}
-		*/
-
-		for ( map<string, Util::ReferenceCount<Animation> >::const_iterator it = getMovements().begin(); it != getMovements().end(); it++ ){
-			if ( (*it).second == NULL ) continue;
-                        Util::ReferenceCount<Animation>  b = (*it).second;
-			if ( b->isCommisioned() && combo(b) && b->getStatus() == getStatus() ){
-				// cout<<b->getName() << " has sequences"<<endl;
-				/*
-				for ( vector<string>::const_iterator it = b->getSequences().begin(); it != b->getSequences().end(); it++ ){
-					cout<< *it << endl;
-				}
-				*/
-				// cout<<"Testing proper sequence with "<<b->getName()<<endl;
-				if ( b->properSequence( current_name ) ){
-				// if ( b->getPreviousSequence() == "none" || current_name == b->getPreviousSequence() ){
-					// cout<<"Possible sequence " <<b->getName()<<endl;
-					possible_animations[b] = b->getKeys().size();
-				}
-			} 
-		}
-
-		/*
-		for ( map<string,Animation*>::const_iterator it = movements.begin(); it != movements.end(); it++ ){
-
-			// word up
-			debug
-			Animation *const & ani = (*it).second;
-		
-			if ( animation_current != movements[ "walk" ] && animation_current != movements[ "idle" ] ){
-				debug
-				if ( current_name != ani->getPreviousSequence() )
-					continue;
-			}
-
-			const vector< KeyPress > & keys = ani->getKeys();
-			for ( vector<KeyPress>::const_iterator k = keys.begin(); k != keys.end(); k++ ){
-				const KeyPress & kp = *k;
-				bool all_pressed = false;
-				debug
-				for ( vector<int>::const_iterator cur_key = kp.combo.begin(); cur_key != kp.combo.end(); cur_key++ ){
-		
-					int find_key = getKey(*cur_key);
-
-					/ *
-					if ( key[ *cur_key ] )
-						all_pressed = true;
-					else {
-						all_pressed = false;
-						break;
-					}
-					* /
-					bool found_it = false;
-					for ( deque<int>::iterator dit = key_cache.begin(); dit != key_cache.end(); dit++ ){
-						if ( find_key == *dit ) 
-							found_it = true;
-					}
-
-					if ( found_it ){
-						all_pressed = true;
-					} else {
-						all_pressed = false;
-						break;
-					}
-				}
-
-				debug
-				// if ( all_pressed && num_keys < keys.size() ){
-				if ( all_pressed ){
-					debug
-					if ( getStatus() == ani->getStatus() ){
-						debug
-						// cout<<"Valid movement "<<(*it).first<<" Current = "<<animation_current->getName()<<". Previous = "<<ani->getPreviousSequence()<<endl;
-						if ( ani->getPreviousSequence() == "none" || current_name == ani->getPreviousSequence() ){
-							debug
-							final = ani;
-							num_keys = keys.size();
-							// cout<< "map: " << possible_animations[ ani ] << " " << kp.combo.size() << endl;
-							if ( possible_animations[ ani ] < kp.combo.size() )
-								possible_animations[ ani ] = kp.combo.size();
-							// cout<<"Chose "<<(*it).first<<endl;
-						}
-					}
-					// cout<<endl;
-				}
-			}
-			debug
-		}
-		*/
-
-		int max = -1;
-		if ( ! possible_animations.empty() ){
-
-                        /* if its a get animation then it takes precedence
-                         * over the rest
-                         */
-                    Util::ReferenceCount<Animation> get = hasGetAnimation( possible_animations );
-			if ( get != NULL ){
-				for ( vector< Object * >::iterator it = others->begin(); it != others->end(); it++ ){
-					Object * o = *it;
-					if ( o->isGettable() && fabs((double)(o->getRX() - getRX())) < 25 && ZDistance( o ) <= get->getMinZDistance() ){
-						final = get;
-						setStatus( Status_Get );
-						world->addMessage( movedMessage() );
-					}
-				}
-				possible_animations.erase( get );
-			}
-
-                        /* if its not a get animation then choose the animation
-                         * with the longest sequence of keys required to invoke
-                         * the animation
-                         */
-			if ( getStatus() != Status_Get ){
-
-				for ( map<Util::ReferenceCount<Animation>, int>::iterator mit = possible_animations.begin(); mit != possible_animations.end(); mit++ ){
-					int & cur = (*mit).second;
-                                        Util::ReferenceCount<Animation> blah = (*mit).first;
-					Global::debug( 3 ) << blah->getName() << "? ";
-					// if ( cur > max || blah->getPreviousSequence() == current_name ){
-					// cout<<"Testing "<<blah->getName()<<endl;
-					if ( blah->hasSequence( current_name ) ){
-						// cout<<blah->getName() << " has "<< current_name << endl;
-					}
-					if ( cur > max || blah->hasSequence( current_name ) ){
-						// cout<<"Current choice = "<<blah->getName() <<endl;
-						final = blah;
-						max = cur;
-					}
-				}
-				Global::debug( 3 ) << endl;
-			}
-		}
-		
-                /* special cases when no animation has been chosen */
-		if ( final == NULL /* && animation_current == NULL ){ */ && getStatus() != Status_Grab ){
-			bool moving = key_forward || key_up || key_down;
-			if (getMovement("jump") == NULL ||
-                            animation_current != getMovement("jump")){
-				if (!moving){
-                                    if (animation_current != getMovement("idle")){
-                                        animation_current = getMovement("idle");
-                                        world->addMessage( animationMessage() );
-                                    }
-				} else	{
-					vector< Object * > my_enemies;
-					filterEnemies( my_enemies, others );
-					bool cy = false;
-					for ( vector< Object * >:: iterator it = my_enemies.begin(); it != my_enemies.end(); it++ ){
-						Object * guy = *it;
-
-						if ( canGrab( guy ) ){
-							cy = true;
-							Global::debug( 2 ) << getId() << " grabbing " << guy->getId() << endl;
-							grabEnemy(guy);
-							world->addMessage( grabMessage( getId(), guy->getId() ) );
-							setZ( guy->getZ()+1 );
-							animation_current = getMovement( "grab" );
-							animation_current->reset();
-							world->addMessage( animationMessage() );
-							setStatus( Status_Grab );
-						}
-						if ( cy )
-							break;
-					}
-					if ( !cy ){
-						animation_current = getMovement( "walk" );
-						world->addMessage( animationMessage() );
-					}
-				}
-			}
-		} else if ( final != NULL && animation_current != final ){
-			if ( final->getName() == "special" ){
-				if ( getHealth() <= 10 ){
-					animation_current = getMovement( "idle" );
-					world->addMessage( animationMessage() );
-					return;
-				} else {
-					hurt( 10 );
-					world->addMessage( healthMessage() );
-				}
-			}
-			nextTicket();
-			animation_current = final;
-			animation_current->reset();
-			world->addMessage( animationMessage() );
-
-                        /* after executing a move clear the cache so that
-                         * its not repeated forever
-                         */
-                        key_cache.clear();
-                        /*
-                        if (animation_current->getKeys().size() < key_cache.size()){
-                            key_cache.erase(key_cache.begin(), key_cache.begin() + animation_current->getKeys().size());
-                        } else {
-                            key_cache.clear();
-                        }
-                        */
-			
-			if ( animation_current == getMovement("jump") ) {
-				double x = 0;
-				double y = 0;
-				if (key_forward){
-					x = getSpeed() * 1.2;
-				}
-				if (key_down){
-					y = getSpeed() * 1.2;	
-				}
-				if (key_up){
-					y = -getSpeed() * 1.2;	
-				}
-
-				doJump( x, y );
-				world->addMessage( jumpMessage( x, y ) );
-			}
-		}
-	}
-
-	if ( getStatus() == Status_Grab && animation_current == NULL ){
-		animation_current = getMovement( "grab" );
-		world->addMessage( animationMessage() );
-	}
-	
-        if ( (getStatus() == Status_Ground) &&
-             (animation_current == getMovement("walk") ||
-              animation_current == getMovement("idle")) ){
-
-            bool moved = false;
-            if (key_forward){
-                moveX( getSpeed() );
-                moved = true;
-            } else if (key_backward){
-                setFacing(getOppositeFacing());
-                // keyHold.forward = true;
-                moved = true;
-            }
-
-            if (key_up){
-                moveZ( -getSpeed() );
-                moved = true;
-            } else if (key_down){
-                moveZ( getSpeed() );
-                moved = true;
-            }
-
-            if ( moved ){
-                world->addMessage( movedMessage() );
-            }
-        } else {
-
-            if ( getMovement( "throw" ) != NULL && animation_current == getMovement( "throw" ) ){
-                if ( getLink() == NULL ){
-                    Global::debug( 0 ) << "*BUG* Link is null. This can't happen." <<endl;
-                    return;
-                }
-                Object * link = getLink();
-                link->setFacing( getOppositeFacing() );
-                link->thrown();
-                increaseScore((int)(20 * (1 + attack_bonus)));
-                attack_bonus += 1;
-                world->addMessage(scoreMessage());
-                world->addMessage(link->movedMessage());
-                /* TODO: the fall distance could be defined in the player
-                 * file instead of hard-coded.
-                 */
-                world->addMessage( ((Character *)link)->fallMessage( 3.2, 5.0 ) );
-                world->addMessage( thrownMessage( link->getId() ) );
-                link->fall( 3.2, 5.0 );
-                setStatus( Status_Ground );
-                world->addMessage( movedMessage() );
+        if (! possible_animations.empty()){
+            final = chooseLikelyAnimation(others, possible_animations, current_name);
+            if (final == getMovement("get")){
+                setStatus(Status_Get);
+                world->addMessage(movedMessage());
             }
         }
+
+        /* special cases when no animation has been chosen */
+        if (final == NULL && getStatus() != Status_Grab){
+            bool moving = key_forward || key_up || key_down;
+            if (getMovement("jump") == NULL ||
+                animation_current != getMovement("jump")){
+                if (!moving){
+                    if (animation_current != getMovement("idle")){
+                        animation_current = getMovement("idle");
+                        world->addMessage( animationMessage() );
+                    }
+                } else{
+                    handleGrab(world, others);
+                }
+            }
+        } else if (final != NULL && animation_current != final){
+            if (final->getName() == "special"){
+                if (getHealth() <= 10){
+                    animation_current = getMovement("idle");
+                    world->addMessage(animationMessage());
+                    return;
+                } else {
+                    hurt(10);
+                    world->addMessage(healthMessage());
+                }
+            }
+            nextTicket();
+            animation_current = final;
+            animation_current->reset();
+            world->addMessage(animationMessage());
+
+            /* after executing a move clear the cache so that
+             * its not repeated forever
+             */
+            key_cache.clear();
+            /*
+               if (animation_current->getKeys().size() < key_cache.size()){
+               key_cache.erase(key_cache.begin(), key_cache.begin() + animation_current->getKeys().size());
+               } else {
+               key_cache.clear();
+               }
+               */
+
+            if (animation_current == getMovement("jump")){
+                double x = 0;
+                double z = 0;
+                if (key_forward){
+                    x = getSpeed() * 1.2;
+                }
+                if (key_down){
+                    z = getSpeed() * 1.2;	
+                }
+                if (key_up){
+                    z = -getSpeed() * 1.2;	
+                }
+
+                doJump(x, z);
+                world->addMessage(jumpMessage(x, z));
+            }
+        }
+    }
+
+    if (getStatus() == Status_Grab &&
+        animation_current == NULL){
+
+        animation_current = getMovement("grab");
+        world->addMessage(animationMessage());
+    }
+
+    if ((getStatus() == Status_Ground) &&
+        (animation_current == getMovement("walk") ||
+         animation_current == getMovement("idle"))){
+
+        bool moved = false;
+        if (key_forward){
+            moveX(getSpeed());
+            moved = true;
+        } else if (key_backward){
+            setFacing(getOppositeFacing());
+            // keyHold.forward = true;
+            moved = true;
+        }
+
+        if (key_up){
+            moveZ(-getSpeed());
+            moved = true;
+        } else if (key_down){
+            moveZ(getSpeed());
+            moved = true;
+        }
+
+        if (moved){
+            world->addMessage(movedMessage());
+        }
+    } else {
+        if (getMovement("throw") != NULL &&
+            animation_current == getMovement("throw")){
+
+            handleThrow(world);
+        }
+    }
 }
 
 PlayerFuture::PlayerFuture(const Filesystem::AbsolutePath & path, bool invincible, int lives, int remap, Util::ReferenceCount<InputSource> source):
