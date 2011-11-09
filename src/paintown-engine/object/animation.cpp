@@ -121,6 +121,7 @@ attack_y1( 0 ),
 attack_x2( 1 ),
 attack_y2( 1 ),
 */
+canBeHit_(true),
 offset_x( 0 ),
 offset_y( 0 ),
 shadowX( 0 ),
@@ -474,6 +475,7 @@ changedAttacks(false){
 		// events.push_back( *it );
 
 	events = animation.events;
+        canBeHit_ = animation.canBeHit_;
 
 	name = animation.getName();
 
@@ -607,9 +609,7 @@ double Animation::getScale() const {
 }
         
 void Animation::setHittable(bool b){
-    if (parent != NULL){
-        parent->setCanBeHit(b);
-    }
+    canBeHit_ = b;
 }
 
 /* FIXME: use toupper() and transform() */
@@ -1156,16 +1156,23 @@ void Animation::reset(){
         setFrame( 0 );
     }
 
-    /* Jon commented this out on 11/6/2011. If its needed for something then
-     * add it back.
+    /* this sets up the the offsets and all that stuff for the first frame.
+     * unfortunately it has the side effect of activating some events like
+     * sounds begin played.
      */
-    /*
     while (delay_counter <= 0 && current_event != events.end()){
         (*current_event)->Interact( this );
         if ( delay_counter <= 0 )
             current_event++;
     }
-    */
+}
+    
+void Animation::setCanBeHit(bool b){
+    canBeHit_ = b;
+}
+
+bool Animation::canBeHit() const {
+    return canBeHit_;
 }
 
 bool Animation::Act(){

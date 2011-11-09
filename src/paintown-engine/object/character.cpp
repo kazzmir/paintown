@@ -116,7 +116,6 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility(0),
-canBeHit_(true),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -149,7 +148,6 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
-canBeHit_(true),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -183,7 +181,6 @@ die_sound( NULL ),
 landed_sound( NULL ),
 squish_sound( NULL ),
 invincibility( 0 ),
-canBeHit_(true),
 toughness( 10 ),
 explode( false ),
 lives( 0 ),
@@ -242,7 +239,6 @@ spriteScale(chr.spriteScale){
     setShadow( chr.getShadow() );
     status = chr.getStatus();
     invincibility = chr.invincibility;
-    canBeHit_ = chr.canBeHit();
     toughness = chr.getToughness();
 
     for (vector<DrawEffect*>::const_iterator it = chr.effects.begin(); it != chr.effects.end(); it++){
@@ -1015,14 +1011,6 @@ void Character::decreaseXVelocity(){
 void Character::decreaseZVelocity(){
 	z_velocity -= 0.6;
 }
-    
-void Character::setCanBeHit(bool b){
-    canBeHit_ = b;
-}
-
-bool Character::canBeHit() const {
-    return canBeHit_;
-}
 
 void Character::landed( World * world ){
     if ( death >= 2 ) return;
@@ -1526,7 +1514,7 @@ bool Character::collision(ObjectAttack * obj){
         return false;
     }
 
-    if (!canBeHit()){
+    if (animation_current != NULL && !animation_current->canBeHit()){
         return false;
     }
 

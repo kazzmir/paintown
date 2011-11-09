@@ -430,10 +430,6 @@ public:
     virtual int getInvincibility() const;
     virtual void setInvincibility(const int x);
 
-    /* almost the same as invincibility but is set by an animation event */
-    virtual void setCanBeHit(bool b);
-    virtual bool canBeHit() const;
-
     virtual void addEffect(DrawEffect * effect);
 
 protected:
@@ -551,7 +547,6 @@ protected:
     Sound * landed_sound;
     Sound * squish_sound;
     int invincibility;
-    bool canBeHit_;
     int toughness;
     bool explode;
     int lives;

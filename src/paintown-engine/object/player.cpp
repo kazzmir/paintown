@@ -786,7 +786,7 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
         */
 
 	/* Character handles jumping and possibly other things */
-	Character::act( others, world, add );
+	Character::act(others, world, add);
 
 	vector<Input::PaintownInput> input = fillKeyCache();
 
@@ -838,37 +838,35 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
 
 	// bool status = animation_current->getStatus();
 
-	if ( reset ){
-		if ( getStatus() != Status_Grab ){
-			animation_current->reset();
-		}
+        if (reset){
+            if (getStatus() != Status_Grab){
+                animation_current->reset();
+            }
 
-		const vector<string> & allow = animation_current->getCommisions();
-		for ( vector<string>::const_iterator it = allow.begin(); it != allow.end(); it++ ){
-			// cout<<"Commision: "<<*it<<endl;
-			// Animation * ok = movements[ *it ];
-                    Util::ReferenceCount<Animation> ok = getMovement( *it );
-			if ( ok != NULL ){
-				ok->setCommision( true );
-			}
-		}
-		
-		const vector<string> & disallow = animation_current->getDecommisions();
-		for ( vector<string>::const_iterator it = disallow.begin(); it != disallow.end(); it++ ){
-			// cout<<"Decommision: "<<*it<<endl;
-			// Animation * ok = movements[ *it ];
-                    Util::ReferenceCount<Animation> ok = getMovement( *it );
-			if ( ok != NULL ){
-				ok->setCommision( false );
-			}
-		}
-		
-		/* leave this line here, ill figure out why its important later
-		 * if you need the animation_current->getName(), use current_name
-		 */
-		// cout << "Set current animation to null" << endl;
-		animation_current = NULL;
-	}
+            const vector<string> & allow = animation_current->getCommisions();
+            for ( vector<string>::const_iterator it = allow.begin(); it != allow.end(); it++ ){
+                Util::ReferenceCount<Animation> ok = getMovement(*it);
+                if ( ok != NULL ){
+                    ok->setCommision( true );
+                }
+            }
+
+            const vector<string> & disallow = animation_current->getDecommisions();
+            for ( vector<string>::const_iterator it = disallow.begin(); it != disallow.end(); it++ ){
+                // cout<<"Decommision: "<<*it<<endl;
+                // Animation * ok = movements[ *it ];
+                Util::ReferenceCount<Animation> ok = getMovement( *it );
+                if ( ok != NULL ){
+                    ok->setCommision( false );
+                }
+            }
+
+            /* leave this line here, ill figure out why its important later
+             * if you need the animation_current->getName(), use current_name
+             */
+            // cout << "Set current animation to null" << endl;
+            animation_current = NULL;
+        }
 	// animation_current = NULL;
 
 	if ( true ){
@@ -1028,12 +1026,13 @@ void Player::act(vector<Object *> * others, World * world, vector<Object *> * ad
                 /* special cases when no animation has been chosen */
 		if ( final == NULL /* && animation_current == NULL ){ */ && getStatus() != Status_Grab ){
 			bool moving = key_forward || key_up || key_down;
-			if ( getMovement( "jump" ) == NULL || animation_current != getMovement( "jump" ) ){
-				if ( !moving ){
-					if ( animation_current != getMovement( "idle" ) ){
-						animation_current = getMovement( "idle" );
-						world->addMessage( animationMessage() );
-					}
+			if (getMovement("jump") == NULL ||
+                            animation_current != getMovement("jump")){
+				if (!moving){
+                                    if (animation_current != getMovement("idle")){
+                                        animation_current = getMovement("idle");
+                                        world->addMessage( animationMessage() );
+                                    }
 				} else	{
 					vector< Object * > my_enemies;
 					filterEnemies( my_enemies, others );

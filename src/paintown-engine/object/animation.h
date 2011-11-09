@@ -119,6 +119,10 @@ public:
 	 */
 	int getHeight() const;
 
+        /* almost the same as invincibility but is set by an animation event */
+        virtual void setCanBeHit(bool b);
+        virtual bool canBeHit() const;
+
 	/* setX, setY, setZ:
 	 * Sets the owner's( some object ) X,Y or Z coordinate
 	 */
@@ -309,6 +313,7 @@ protected:
 	int bbox_x1, bbox_y1, bbox_x2, bbox_y2;
 	// int attack_x1, attack_y1, attack_x2, attack_y2;
 
+        bool canBeHit_;
 	int offset_x, offset_y;
 	int shadowX, shadowY;
 
