@@ -40,6 +40,7 @@
 
 using namespace std;
 
+#if 0
 /* some compilers probably won't like __FILE__. #define it in that case */
 static const char * DEBUG_CONTEXT = __FILE__;
 
@@ -95,14 +96,6 @@ static vector<Paintown::DisplayCharacter*> getCharacters(PlayerVector players){
     }
 
     return characters;
-}
-
-namespace Select{
-    enum Input{
-        Up, Down, Left,
-        Right, Remap, Quit,
-        Choose,
-    };
 }
     
 namespace{
@@ -701,6 +694,15 @@ static PlayerVector getDisplayPlayers(const Level::LevelInfo & info){
     // context.load();
 
     return context.players;
+}
+#endif
+
+namespace Select{
+    enum Input{
+        Up, Down, Left,
+        Right, Remap, Quit,
+        Choose,
+    };
 }
 
 class Selecter: public Util::Logic, public Util::Draw {
