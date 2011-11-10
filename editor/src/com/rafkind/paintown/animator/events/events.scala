@@ -505,6 +505,50 @@ class MoveEvent extends AnimationEvent {
     def getDescription() = "Moves the character by the given x, y, and z coordinates"
 }
 
+class HittableEvent extends AnimationEvent {
+  var hit:Boolean = true
+
+  override def copy() = {
+    val event = new HittableEvent()
+    event.hit = hit
+    event
+  }
+  
+  def destroy(){
+  }
+  
+  def getName():String = getToken().toString()
+
+  def getToken():Token = {
+    val temp = new Token()
+    temp.addToken(new Token("hittable"));
+    temp.addToken(new Token(hit.toString()))
+    temp
+  }
+
+  def loadToken(token:Token){
+    hit = token.readBoolean(0)
+  }
+    
+  def getDescription() = "Makes the character able to be attacked or not"
+  
+  def interact(animation:Animation){
+  }
+
+  def getEditor(animation:Animation, area:DrawArea):JPanel = {
+    val engine = new SwingEngine("animator/event-hittable.xml");
+    val change = engine.find("hit").asInstanceOf[JCheckBox]
+    change.setSelected(hit)
+    change.addChangeListener(new ChangeListener(){
+      def stateChanged(changeEvent:ChangeEvent){
+        hit = change.isSelected()
+      }
+    });
+
+    engine.getRootComponent().asInstanceOf[JPanel];
+  }
+}
+
 case class Defense(var x1:Int, var y1:Int, var x2:Int, var y2:Int){
 }
 

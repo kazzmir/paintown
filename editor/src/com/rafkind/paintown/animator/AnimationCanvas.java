@@ -437,9 +437,9 @@ public abstract class AnimationCanvas extends JPanel {
 
         final ObjectBox currentEvent = new ObjectBox();
 
-        animation.addEventNotifier( new Lambda1(){
-            public Object invoke( Object a ){
-                currentEvent.set( a );
+        animation.addEventNotifier(new Lambda1(){
+            public Object invoke(Object a){
+                currentEvent.set(a);
                 eventList.repaint();
                 return null;
             }
@@ -449,8 +449,8 @@ public abstract class AnimationCanvas extends JPanel {
             public void valueChanged(ListSelectionEvent e){
                 AnimationEvent event = (AnimationEvent) eventList.getSelectedValue();
                 animation.stopRunning();
-                animation.nextEvent( event );
-                currentEvent.set( event );
+                animation.nextEvent(event);
+                currentEvent.set(event);
             }
         });
 
@@ -532,8 +532,8 @@ public abstract class AnimationCanvas extends JPanel {
 
                 setText(((AnimationEvent)value).getName());
                 setBackground(isSelected ? Color.gray : Color.white);
-                if ( currentEvent.get() == value ){
-                    setForeground( Color.blue );
+                if (currentEvent.get() == value){
+                    setForeground(Color.blue);
                 } else {
                     setForeground(isSelected ? Color.white : Color.black);
                 }

@@ -21,6 +21,7 @@ public class EventFactory{
         events.put( "defense", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.DefenseEvent();}});
         events.put( "face", new Lambda0(){public Object invoke(){return new FaceEvent();}});
         events.put( "frame", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.FrameEvent();}});
+        events.put( "hittable", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.HittableEvent();}});
         events.put( "jump", new Lambda0(){public Object invoke(){return new JumpEvent();}});
         events.put( "move", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.MoveEvent();}});
         events.put( "nop", new Lambda0(){public Object invoke(){return new NopEvent();}});
