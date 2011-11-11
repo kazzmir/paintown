@@ -865,7 +865,7 @@ namespace Paintown{
 
 Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, const InputSource & source){
     try{
-        CharacterSelect select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path());
+        CharacterSelect select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")));
         return doSelectPlayer2(select, message, remap, source);
     } catch (...){
         TokenReader reader;

@@ -22,6 +22,14 @@
 /* BORROWED from select_player.cpp */
 static const char * DEBUG_CONTEXT = __FILE__;
 
+struct Profile{
+    Window window;
+    Util::ReferenceCount<Graphics::Bitmap> bitmap;
+    bool facingRight;
+    double scale;
+    Gui::Animation::Depth depth;
+};
+
 struct playerInfo{
     Util::ReferenceCount<Paintown::DisplayCharacter> guy;
     Filesystem::AbsolutePath path;
@@ -334,6 +342,39 @@ const TextMessage & TextMessage::operator=(const TextMessage & copy){
     return *this;
 }
 
+/*! Cell Data shape and drawings */
+class CellData{
+public:
+    CellData(const Token *);
+    ~CellData();
+    void act();
+    void draw(int x, int y, int width, int height, const Graphics::Bitmap &) const;
+    enum Shape{
+        SQUARE,
+        ROUND,
+    };
+    inline const std::string & getName() const {
+        return this->name;
+    }
+private:
+    /*! Name */
+    std::string name;
+    /*! Shape of the cell */
+    Shape shape;
+    /*! Radius if it is round */
+    int radius;
+    /*! cell gradient */
+    Effects::Gradient gradient;
+    /*! cell alpha */
+    int alpha;
+    /*! color fill */
+    bool fill;
+    /*! Thickness of cell */
+    int thickness;
+    /*! cell */
+    Util::ReferenceCount<Gui::Animation> cell;
+};
+
 CellData::CellData(const Token * token):
 shape(SQUARE),
 radius(0),
@@ -422,6 +463,28 @@ void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap 
         }
     }
 }
+
+class CharacterItem: public Gui::SelectItem {
+public:
+    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player, const std::map<std::string, Util::ReferenceCount<CellData> > &);
+    ~CharacterItem();
+    void act();
+    void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
+    void drawProfile(const Profile &, const Graphics::Bitmap &, const Font &) const;
+    inline bool isEmpty() const {
+        return false;
+    }
+    const std::string getName();
+    Util::ReferenceCount<playerInfo> getPlayer();
+    
+private:
+    unsigned int index;
+    const Util::ReferenceCount<Gui::SelectListInterface> parent;
+    Util::ReferenceCount<playerInfo> player;
+    const std::map<std::string, Util::ReferenceCount<CellData> > & cells;
+};
+
+
 
 CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player, const std::map<std::string, Util::ReferenceCount<CellData> > & cells):
 index(index),
@@ -622,6 +685,33 @@ void MessageCollection::setReplaceMessage(const std::string & name, const std::s
     }
 }
 
+class HasMore{
+public:
+    HasMore(const Token *);
+    ~HasMore();
+    void act();
+    void draw(const Gui::Animation::Depth &, const Graphics::Bitmap &);
+private:
+    enum Direction{
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+    };
+    /*! location */
+    int x, y, width, height;
+    /*! image */
+    Util::ReferenceCount<Gui::Animation> image;
+    /*! Direction */
+    Direction direction;
+    /*! Depth */
+    Gui::Animation::Depth depth;
+    /*! gradient */
+    Effects::Gradient gradient;
+};
+
+
+
 HasMore::HasMore(const Token * token):
 x(0),
 y(0),
@@ -710,15 +800,15 @@ fontHeight(15),
 currentMessages(0){
 }
 
-CharacterSelect::CharacterSelect(const std::string & filename):
+CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & filename):
 listDepth(Gui::Animation::BackgroundTop),
 autoPopulate(false),
 fontWidth(15),
 fontHeight(15),
 currentMessages(0){
-    Global::debug(1) << "Loading Character Select Screen: " << filename << std::endl;
+    Global::debug(1) << "Loading Character Select Screen: " << filename.path() << std::endl;
     TokenReader tr;
-    Token * token = tr.readTokenFromFile(filename);
+    Token * token = tr.readTokenFromFile(filename.path());
     load(token);
 }
 

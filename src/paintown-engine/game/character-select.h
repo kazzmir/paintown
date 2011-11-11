@@ -29,13 +29,7 @@ struct Window{
     int x, y, width, height;
 };
 
-struct Profile{
-    Window window;
-    Util::ReferenceCount<Graphics::Bitmap> bitmap;
-    bool facingRight;
-    double scale;
-    Gui::Animation::Depth depth;
-};
+struct Profile;
 
 /*! Text Message */
 class TextMessage{
@@ -107,60 +101,7 @@ private:
     Effects::Gradient gradient;
 };
 
-/*! Cell Data shape and drawings */
-class CellData{
-public:
-    CellData(const Token *);
-    ~CellData();
-    void act();
-    void draw(int x, int y, int width, int height, const Graphics::Bitmap &) const;
-    enum Shape{
-        SQUARE,
-        ROUND,
-    };
-    inline const std::string & getName() const {
-        return this->name;
-    }
-private:
-    /*! Name */
-    std::string name;
-    /*! Shape of the cell */
-    Shape shape;
-    /*! Radius if it is round */
-    int radius;
-    /*! cell gradient */
-    Effects::Gradient gradient;
-    /*! cell alpha */
-    int alpha;
-    /*! color fill */
-    bool fill;
-    /*! Thickness of cell */
-    int thickness;
-    /*! cell */
-    Util::ReferenceCount<Gui::Animation> cell;
-};
-
-struct playerInfo;
-
-class CharacterItem: public Gui::SelectItem {
-public:
-    CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player, const std::map<std::string, Util::ReferenceCount<CellData> > &);
-    ~CharacterItem();
-    void act();
-    void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
-    void drawProfile(const Profile &, const Graphics::Bitmap &, const Font &) const;
-    inline bool isEmpty() const {
-        return false;
-    }
-    const std::string getName();
-    Util::ReferenceCount<playerInfo> getPlayer();
-    
-private:
-    unsigned int index;
-    const Util::ReferenceCount<Gui::SelectListInterface> parent;
-    Util::ReferenceCount<playerInfo> player;
-    const std::map<std::string, Util::ReferenceCount<CellData> > & cells;
-};
+class CellData;
 
 class MessageCollection{
 public:
@@ -177,35 +118,12 @@ private:
     std::map<Gui::Animation::Depth, std::vector<Util::ReferenceCount<TextMessage> > > messages;
 };
 
-class HasMore{
-public:
-    HasMore(const Token *);
-    ~HasMore();
-    void act();
-    void draw(const Gui::Animation::Depth &, const Graphics::Bitmap &);
-private:
-    enum Direction{
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-    };
-    /*! location */
-    int x, y, width, height;
-    /*! image */
-    Util::ReferenceCount<Gui::Animation> image;
-    /*! Direction */
-    Direction direction;
-    /*! Depth */
-    Gui::Animation::Depth depth;
-    /*! gradient */
-    Effects::Gradient gradient;
-};
+class HasMore;
 
 class CharacterSelect{
 public:
     CharacterSelect();
-    CharacterSelect(const std::string &);
+    CharacterSelect(const Filesystem::AbsolutePath &);
     CharacterSelect(const Token *);
     virtual ~CharacterSelect();
     

@@ -129,7 +129,8 @@ int main(int argc, char ** argv){
        
         try {
             
-            CharacterSelect select(file);
+            Filesystem::AbsolutePath path(file);
+            CharacterSelect select(path);
             
             Logic logic(input, select);
             Draw draw(select);
