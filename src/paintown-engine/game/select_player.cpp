@@ -707,8 +707,8 @@ namespace Select{
 
 class Selecter: public Util::Logic, public Util::Draw {
     public:
-        Selecter(const InputSource & source, const string & message):
-            select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path()),
+        Selecter(CharacterSelect & select, const InputSource & source, const string & message):
+        select(select),
         source(source),
         is_done(false){
             // input.set(Keyboard::Key_ESC, 0, true, Quit);
@@ -744,7 +744,7 @@ class Selecter: public Util::Logic, public Util::Draw {
             select.changeToMessages("select");
         }
 
-        CharacterSelect select;
+        CharacterSelect & select;
         InputMap<Select::Input> input;
         const InputSource & source;
         bool is_done;
@@ -797,9 +797,9 @@ class Selecter: public Util::Logic, public Util::Draw {
         }
 };
 
-static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & remap, const InputSource & source){
+static Filesystem::AbsolutePath doSelectPlayer2(CharacterSelect & select, const string & message, int & remap, const InputSource & source){
     remap = 0;
-    Selecter run(source, message);
+    Selecter run(select, source, message);
     Util::standardLoop(run, run);
 
     remap = run.getRemap();
@@ -807,10 +807,71 @@ static Filesystem::AbsolutePath doSelectPlayer2(const string & message, int & re
     return run.chosen;
 }
 
+static string defaultSelectData(){
+    /* the default paintown select screen */
+    return "(select-screen"
+           "(name \"paintown-select\")"
+           "(animation"
+           "(depth background bottom)"
+           "(image 0 \"menu/paintown.png\")"
+           "(velocity -.001 0)"
+           "(frame"
+           "(image 0)"
+           "(time -1)))"
+           "(grid-list"
+           "(grid-size 4 5)"
+           "(layout \"infinite-vertical\")"
+           "(cell-dimensions 60 60)"
+           "(cell-spacing 0 0)"
+           "(cell-margins 20 20)"
+           "(start-offset 0 40)"
+           "(cursors 1)"
+           "(wrap true))"
+           "(cell (name back) (shape square) (color 0 0 0) (color-fill true))"
+           "(cell (name top) (shape square) (color 200 200 200) (color-fill false) (thickness 2))"
+           "(cell (name select0) (shape square)"
+           "(gradient (low 128 0 0) (high 255 0 0) (size 30))"
+           "(color-fill false) (thickness 2))"
+           "(cell (name select1) (shape square) (color 0 0 255) (color-fill false) (thickness 2))"
+           "(cell (name select-alternative) (shape square) (color 0 255 0) (color-fill false) (thickness 3))"
+           "(more \"low\" (location 405 15) (dimensions 100 8) (direction up) (depth foreground bottom) (gradient (low 128 128 128) (high 255 255 0) (distance 20)))"
+           "(more \"high\" (location 405 440) (dimensions 100 10) (direction down) (depth foreground bottom) (gradient (low 128 128 128) (high 255 255 0) (distance 20)))"
+           "(sound movement sounds/beep1.wav)"
+           "(auto-populate-directory \"players\")"
+           "(list-window 300 0 340 480)"
+           "(profile (window 0 50 300 480) (facing right) (scale 2) (depth background bottom))"
+           "(font-dimensions 35 35)"
+           "(messages"
+           "(name select)"
+           "(text"
+           " (message \"%s\")"
+           " (name select)"
+           " (location 10 15)"
+           " (color 255 255 255)"
+           " (depth foreground top)"
+           " (font-dimensions 35 35)"
+           " (justification right))"
+           "(text"
+           " (message \"%s\")"
+           " (location 10 50)"
+           " (color 255 255 255)"
+           " (depth foreground top)"
+           " (font-dimensions 35 35)"
+           " (justification right)"
+           " (cursor-association 0))))";
+}
+
 namespace Paintown{
 
 Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::LevelInfo & info, int & remap, const InputSource & source){
-    return doSelectPlayer2(message, remap, source);
+    try{
+        CharacterSelect select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")).path());
+        return doSelectPlayer2(select, message, remap, source);
+    } catch (...){
+        TokenReader reader;
+        CharacterSelect select(reader.readTokenFromString(defaultSelectData()));
+        return doSelectPlayer2(select, message, remap, source);
+    }
     // return doSelectPlayer(getDisplayPlayers(info), message, info, remap, source);
 }
 
