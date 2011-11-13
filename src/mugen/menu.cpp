@@ -364,7 +364,7 @@ void MugenMenu::loadData(){
                             try{
                                 string temp;
                                 simple.view() >> temp;
-                                Filesystem::AbsolutePath path = Mugen::Util::findFile(Filesystem::RelativePath(temp));
+                                Filesystem::AbsolutePath path = Mugen::Util::findFont(Filesystem::RelativePath(temp));
 
                                 if (true){
                                     menu.fonts.push_back(new MugenFont(path));
@@ -372,6 +372,8 @@ void MugenMenu::loadData(){
                                 }
                             } catch (const Filesystem::NotFound & fail){
                                 Global::debug(0) << "Could not find font " << fail.getTrace() << endl;
+                            } catch (const LoadException & fail){
+                                Global::debug(0) << "Could not load font " << fail.getTrace() << endl;
                             }
 
                         } else {

@@ -61,6 +61,9 @@ offsetx(0),
 offsety(0),
 pcx(NULL),
 pcxsize(0){
+    if (Mugen::Util::fixCase(file.getExtension()) != "fnt"){
+        throw LoadException(__FILE__, __LINE__, "Font files must end with an .fnt extension");
+    }
     std::string temp = file.path();
     temp = Mugen::Util::invertSlashes(temp);
     Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
@@ -282,25 +285,30 @@ Util::ReferenceCount<Graphics::Bitmap> MugenFont::changeBank(int bank){
 }
 
 void MugenFont::load(){
-
     /* 16 skips the header stuff */
+    /*
     int location = 16;
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
     ifile.seekg(location,ios::beg);
-    uint32_t pcxlocation;
-    uint32_t txtlocation;
-    uint32_t txtsize;
+    */
 
     Storage::LittleEndianReader byteReader(ifile);
-    pcxlocation = byteReader.readByte4();
+    uint8_t signature[12];
+    byteReader.readBytes(signature, 12);
+    uint16_t versionHigh = byteReader.readByte2();
+    uint16_t versionLow = byteReader.readByte2();
+
+    // Global::debug(0) << "Version for font " << versionHigh << " " << versionLow << std::endl;
+
+    uint32_t pcxlocation = byteReader.readByte4();
     pcxsize = byteReader.readByte4();
-    txtlocation = byteReader.readByte4();
-    txtsize = byteReader.readByte4();
+    uint32_t txtlocation = byteReader.readByte4();
+    uint32_t txtsize = byteReader.readByte4();
     Global::debug(2) << "PCX Location: " << pcxlocation << " | PCX Size: " << pcxsize << endl;
     Global::debug(2) << "TXT Location: " << txtlocation << " | TXT Actual location: " << pcxlocation + pcxsize << " | TXT Size: " << txtsize << endl;
 
     // Get the pcx load our bitmap
-    ifile.seekg(pcxlocation,ios::beg);
+    ifile.seekg(pcxlocation, ios::beg);
     pcx = new unsigned char[pcxsize];
     ifile.read((char *)pcx, pcxsize);
     memcpy(palette, pcx+(pcxsize)-768, 768);

@@ -145,6 +145,14 @@ const Filesystem::AbsolutePath Mugen::Util::findFile(const Filesystem::RelativeP
     }
 }
 
+const Filesystem::AbsolutePath Mugen::Util::findFont(const Filesystem::RelativePath & path){
+    try{
+        return findFile(Filesystem::RelativePath("font").join(path));
+    } catch (const Filesystem::NotFound & fail){
+        return findFile(path);
+    }
+}
+
 /* search for a file starting in the absolute path and then search the rest of the
  * mugen directories
  */

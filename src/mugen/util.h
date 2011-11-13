@@ -55,6 +55,10 @@ namespace Util{
     const Filesystem::AbsolutePath findStageDef(const Filesystem::RelativePath & name);
     const Filesystem::AbsolutePath findFont(const Filesystem::RelativePath & name);
     */
+
+    /* look for a font. check for font/name and just name */
+    const Filesystem::AbsolutePath findFont(const Filesystem::RelativePath & name);
+
     /* search in various mugen places */
     const Filesystem::AbsolutePath findFile(const Filesystem::RelativePath & name);
     /* start searching in `base' and then resort to using various mugen places */
