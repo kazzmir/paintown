@@ -25,6 +25,7 @@ public:
         Sound,
         Shadow,
         Offset,
+        RelativeOffset,
         Nop,
         Coords,
         Jump,
@@ -142,11 +143,24 @@ public:
     virtual Type getType();
 };
 
-class AnimationEventOffset: public AnimationEvent{
+/* sets the current offsets of the animation */
+class AnimationEventOffset: public AnimationEvent {
 public:
     AnimationEventOffset( int _x, int _y );
 
     virtual void Interact( Animation * animation ); 
+    virtual Type getType();
+
+protected:
+    int x, y;
+};
+
+/* adds to the current offsets of the animation */
+class AnimationEventRelativeOffset: public AnimationEvent {
+public:
+    AnimationEventRelativeOffset(int x, int y);
+
+    virtual void Interact(Animation * animation); 
     virtual Type getType();
 
 protected:

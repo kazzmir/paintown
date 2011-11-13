@@ -162,8 +162,8 @@ AnimationEvent::Type AnimationEventNOP::getType(){
 
 AnimationEventOffset::AnimationEventOffset( int _x, int _y ):
 AnimationEvent(),
-x( _x ),
-y( _y ){
+x(_x),
+y(_y){
 }
     
 AnimationEvent::Type AnimationEventOffset::getType(){
@@ -173,6 +173,19 @@ AnimationEvent::Type AnimationEventOffset::getType(){
 void AnimationEventOffset::Interact(Animation * animation){
     animation->setOffsetX(x * animation->getScale());
     animation->setOffsetY(y * animation->getScale());
+}
+
+AnimationEventRelativeOffset::AnimationEventRelativeOffset(int x, int y):
+x(x), y(y){
+}
+
+void AnimationEventRelativeOffset::Interact(Animation * animation){
+    animation->setOffsetX(animation->getOffsetX() + x * animation->getScale());
+    animation->setOffsetY(animation->getOffsetY() + y * animation->getScale());
+}
+
+AnimationEvent::Type AnimationEventRelativeOffset::getType(){
+    return RelativeOffset;
 }
 
 AnimationEventProjectile::AnimationEventProjectile(const Token * token ):

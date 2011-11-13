@@ -186,9 +186,19 @@ changedAttacks(false){
                 // cout<<"Read offset as "<<x<<" "<<y<<endl;
                 AnimationEventOffset * ani = new AnimationEventOffset( x, y );
                 events.push_back( ani );
+            } else if (current == "relative-offset"){
+                int x = 0;
+                int y = 0;
+                try{
+                    current.view() >> x >> y;
+                } catch ( const TokenException & te ){
+                    /* ignore token exceptions here */
+                }
+
+                events.push_back(new AnimationEventRelativeOffset(x, y));
             } else if (current == "projectile" ){
                 AnimationEventProjectile * ani = new AnimationEventProjectile(current1);
-                events.push_back( ani );
+                events.push_back(ani);
             } else if ( current == "move" ){
                 try{
                     int x, y, z;
@@ -196,7 +206,7 @@ changedAttacks(false){
                     current.view() >> x >> y >> z;
 
                     AnimationEventMove * em = new AnimationEventMove( x, y, z );
-                    events.push_back( em );
+                    events.push_back(em);
                 } catch( const TokenException & te ){
                     Global::debug( 0 ) << "Could not read move event: " << te.getTrace() << endl;
                     /* ignore token exceptions here */
