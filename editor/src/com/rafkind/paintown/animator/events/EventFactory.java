@@ -27,6 +27,7 @@ public class EventFactory{
         events.put( "nop", new Lambda0(){public Object invoke(){return new NopEvent();}});
         events.put( "next-ticket", new Lambda0(){public Object invoke(){return new TicketEvent();}});
         events.put( "offset", new Lambda0(){public Object invoke(){return new OffsetEvent();}});
+        events.put( "relative-offset", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.RelativeOffsetEvent();}});
         events.put( "projectile", new Lambda0(){public Object invoke(){return new ProjectileEvent();}});
         events.put("trail", new Lambda0(){public Object invoke(){ return new TrailEvent();}});
         events.put( "shadow", new Lambda0(){public Object invoke(){return new ShadowEvent();}});
