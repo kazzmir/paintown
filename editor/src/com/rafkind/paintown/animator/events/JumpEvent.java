@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class JumpEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class JumpEvent extends AnimationEventNotifier implements AnimationEvent {
 	private double _x;
 	private double _y;
 	private double _z;
@@ -48,6 +50,7 @@ public class JumpEvent implements AnimationEvent {
 		xspin.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
 				_x = ((Double)xspin.getValue()).doubleValue();
+                updateListeners();
 			}
 		});
 		final JPanel ypanel = (JPanel) engine.find( "y" );
@@ -57,6 +60,7 @@ public class JumpEvent implements AnimationEvent {
 		yspin.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
 				_y = ((Double)yspin.getValue()).doubleValue();
+                updateListeners();
 			}
 		});
 		final JPanel zpanel = (JPanel) engine.find( "z" );
@@ -66,6 +70,7 @@ public class JumpEvent implements AnimationEvent {
 		zspin.addChangeListener( new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
 				_z = ((Double)zspin.getValue()).doubleValue();
+                updateListeners();
 			}
 		});
 		return (JPanel)engine.getRootComponent();

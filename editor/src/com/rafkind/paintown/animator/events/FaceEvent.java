@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class FaceEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class FaceEvent extends AnimationEventNotifier implements AnimationEvent {
 	private String _face = "reverse";
 	
 	public void loadToken(Token token){
@@ -38,11 +40,10 @@ public class FaceEvent implements AnimationEvent {
 		final JComboBox facebox = (JComboBox) engine.find( "face" );
 		facebox.addItem(new String("reverse"));
 		
-		facebox.addActionListener( new ActionListener()
-		{
-			public void actionPerformed(ActionEvent actionEvent)
-			{
+		facebox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent actionEvent){
 				_face = (String)facebox.getSelectedItem();
+                updateListeners();
 			}
 		});
 		return (JPanel)engine.getRootComponent();

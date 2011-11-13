@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class OffsetEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class OffsetEvent extends AnimationEventNotifier implements AnimationEvent {
 	private int _x;
 	private int _y;
 	
@@ -61,6 +63,7 @@ public class OffsetEvent implements AnimationEvent {
 		xspin.addChangeListener(new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
 				_x = ((Integer)xspin.getValue()).intValue();
+                updateListeners();
 				interact(animation);
 				animation.forceRedraw();
 			}
@@ -71,6 +74,7 @@ public class OffsetEvent implements AnimationEvent {
 		yspin.addChangeListener(new ChangeListener(){
 			public void stateChanged(ChangeEvent changeEvent){
 				_y = ((Integer)yspin.getValue()).intValue();
+                updateListeners();
 				interact(animation);
 				animation.forceRedraw();
 			}

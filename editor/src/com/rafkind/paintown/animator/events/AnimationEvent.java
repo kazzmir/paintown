@@ -6,6 +6,7 @@ import javax.swing.*;
 import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.Lambda0;
 
 public interface AnimationEvent{
     /* update an animation with the event semantics */
@@ -22,6 +23,8 @@ public interface AnimationEvent{
 
     /* set up the properties of this event given the serialized form */
     public void loadToken(Token token);
+
+    public void addUpdateListener(Lambda0 update);
 
     /* destroy any data that is kept in the animation */
     public void destroy();

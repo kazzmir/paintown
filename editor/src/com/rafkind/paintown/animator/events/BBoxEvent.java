@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class BBoxEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class BBoxEvent extends AnimationEventNotifier implements AnimationEvent {
     private class Box{
         public Box(int x1, int y1, int x2, int y2){
             this.x1 = x1;
@@ -57,39 +59,35 @@ public class BBoxEvent implements AnimationEvent {
 
         final JSpinner x1spin = (JSpinner) engine.find( "x1" );
         x1spin.setValue(new Integer(box.x1));
-        x1spin.addChangeListener( new ChangeListener()
-                {
-                    public void stateChanged(ChangeEvent changeEvent)
-        {
-            box.x1 = ((Integer)x1spin.getValue()).intValue();
-        }
+        x1spin.addChangeListener( new ChangeListener(){
+            public void stateChanged(ChangeEvent changeEvent){
+                box.x1 = ((Integer)x1spin.getValue()).intValue();
+                updateListeners();
+            }
         });
         final JSpinner y1spin = (JSpinner) engine.find( "y1" );
         y1spin.setValue(new Integer(box.y1));
-        y1spin.addChangeListener( new ChangeListener()
-                {
-                    public void stateChanged(ChangeEvent changeEvent)
-        {
-            box.y1 = ((Integer)y1spin.getValue()).intValue();
-        }
+        y1spin.addChangeListener( new ChangeListener(){
+            public void stateChanged(ChangeEvent changeEvent){
+                box.y1 = ((Integer)y1spin.getValue()).intValue();
+                updateListeners();
+            }
         });
         final JSpinner x2spin = (JSpinner) engine.find( "x2" );
         x2spin.setValue(new Integer(box.x2));
-        x2spin.addChangeListener( new ChangeListener()
-                {
-                    public void stateChanged(ChangeEvent changeEvent)
-        {
-            box.x2 = ((Integer)x2spin.getValue()).intValue();
-        }
+        x2spin.addChangeListener( new ChangeListener(){
+            public void stateChanged(ChangeEvent changeEvent){
+                box.x2 = ((Integer)x2spin.getValue()).intValue();
+                updateListeners();
+            }
         });
         final JSpinner y2spin = (JSpinner) engine.find( "y2" );
         y2spin.setValue(new Integer(box.y2));
-        y2spin.addChangeListener( new ChangeListener()
-                {
-                    public void stateChanged(ChangeEvent changeEvent)
-        {
-            box.y2 = ((Integer)y2spin.getValue()).intValue();
-        }
+        y2spin.addChangeListener( new ChangeListener(){
+            public void stateChanged(ChangeEvent changeEvent){
+                box.y2 = ((Integer)y2spin.getValue()).intValue();
+                updateListeners();
+            }
         });
 
         return (JPanel)engine.getRootComponent();

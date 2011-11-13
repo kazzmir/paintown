@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class StatusEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class StatusEvent extends AnimationEventNotifier implements AnimationEvent {
 	private String _status = "ground";
 	
 	public void loadToken(Token token){
@@ -45,6 +47,7 @@ public class StatusEvent implements AnimationEvent {
 			public void actionPerformed(ActionEvent actionEvent)
 			{
 				_status = (String)statusbox.getSelectedItem();
+                updateListeners();
 			}
 		});
 		return (JPanel)engine.getRootComponent();

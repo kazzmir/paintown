@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class ShadowEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class ShadowEvent extends AnimationEventNotifier implements AnimationEvent {
 	private int _x;
 	private int _y;
 	
@@ -50,6 +52,7 @@ public class ShadowEvent implements AnimationEvent {
 			public void stateChanged(ChangeEvent changeEvent)
 			{
 				_x = ((Integer)xspin.getValue()).intValue();
+                updateListeners();
 			}
 		});
 		final JSpinner yspin = (JSpinner) engine.find( "y" );
@@ -59,6 +62,7 @@ public class ShadowEvent implements AnimationEvent {
 			public void stateChanged(ChangeEvent changeEvent)
 			{
 				_y = ((Integer)yspin.getValue()).intValue();
+                updateListeners();
 			}
 		});
 		return (JPanel)engine.getRootComponent();

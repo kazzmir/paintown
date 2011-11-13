@@ -33,6 +33,24 @@ object Utils{
   }
 }
 
+abstract class AnimationEventNotifier {
+  var listeners:List[Lambda0] = List()
+  def addUpdateListener(update:Lambda0){
+    for (listener <- listeners){
+      if (listener == update){
+        return
+      }
+    }
+    listeners = listeners :+ update;
+  }
+
+  def updateListeners(){
+    for (listener <- listeners){
+      listener.invoke()
+    }
+  }
+}
+
 class Attack(){
   val DEFAULT_FORCE_X = 1.7
   val DEFAULT_FORCE_Y = 4.4
@@ -62,7 +80,8 @@ class Attack(){
   }
 }
 
-class AttackEvent extends AnimationEvent {
+// class AttackEvent extends AnimationEvent with AnimationEventNotifer {
+class AttackEvent extends AnimationEventNotifier with AnimationEvent {
   var onDestroy = () => { }
   var attacks:List[Attack] = List[Attack]()
 
@@ -191,6 +210,7 @@ class AttackEvent extends AnimationEvent {
             def stateChanged(changeEvent:ChangeEvent){
                 attack.x1 = x1spin.getValue().asInstanceOf[Integer].intValue()
                 interact(animation);
+                updateListeners()
                 animation.forceRedraw();
             }
         });
@@ -201,6 +221,7 @@ class AttackEvent extends AnimationEvent {
           def stateChanged(changeEvent:ChangeEvent){
                 attack.y1 = y1spin.getValue().asInstanceOf[Integer].intValue();
                 interact(animation);
+                updateListeners()
                 animation.forceRedraw();
             }
         });
@@ -211,6 +232,7 @@ class AttackEvent extends AnimationEvent {
             def stateChanged(changeEvent:ChangeEvent){
                 attack.x2 = x2spin.getValue().asInstanceOf[Integer].intValue();
                 interact(animation);
+                updateListeners()
                 animation.forceRedraw();
             }
         });
@@ -221,6 +243,7 @@ class AttackEvent extends AnimationEvent {
             def stateChanged(changeEvent:ChangeEvent){
                 attack.y2 = y2spin.getValue().asInstanceOf[Integer].intValue();
                 interact(animation);
+                updateListeners()
                 animation.forceRedraw();
             }
         });
@@ -230,6 +253,7 @@ class AttackEvent extends AnimationEvent {
         forcespinX.addChangeListener(new ChangeListener(){
             def stateChanged(changeEvent:ChangeEvent){
                 attack.forceX = forcespinX.getValue().asInstanceOf[Double].doubleValue();
+                updateListeners()
             }
         });
         
@@ -238,6 +262,7 @@ class AttackEvent extends AnimationEvent {
         forcespinY.addChangeListener(new ChangeListener(){
           def stateChanged(changeEvent:ChangeEvent){
                 attack.forceY = forcespinY.getValue().asInstanceOf[Double].doubleValue();
+                updateListeners()
             }
         });
 
@@ -246,6 +271,7 @@ class AttackEvent extends AnimationEvent {
         damagespin.addChangeListener(new ChangeListener(){
             def stateChanged(changeEvent:ChangeEvent){
                 attack.damage = damagespin.getValue().asInstanceOf[Integer].intValue();
+                updateListeners()
             }
         });
 
@@ -258,6 +284,7 @@ class AttackEvent extends AnimationEvent {
                     attack.y1 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
                     x1spin.setValue(new Integer(attack.x1));
                     y1spin.setValue(new Integer(attack.y1));
+                    updateListeners()
                     interact(animation);
                     animation.forceRedraw();
                 }
@@ -268,6 +295,7 @@ class AttackEvent extends AnimationEvent {
                     attack.y2 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
                     x2spin.setValue(new Integer(attack.x2));
                     y2spin.setValue(new Integer(attack.y2));
+                    updateListeners()
                     interact(animation);
                     animation.forceRedraw();
                 }
@@ -300,7 +328,7 @@ class AttackEvent extends AnimationEvent {
     }
 }
 
-class FrameEvent extends AnimationEvent {
+class FrameEvent extends AnimationEventNotifier with AnimationEvent {
     var frame:String = ""
 
     def loadToken(token:Token){
@@ -404,6 +432,7 @@ class FrameEvent extends AnimationEvent {
                 try{
                     area.setImage(MaskedImage.load(Data.getDataPath() + "/" + animation.getBaseDirectory() + "/" + frame));
                     area.repaint();
+                    updateListeners()
                 } catch {
                   case e:Exception => {
                     System.out.println("Couldn't load file: " + frame);
@@ -433,7 +462,7 @@ class FrameEvent extends AnimationEvent {
     }
 }
 
-class MoveEvent extends AnimationEvent {
+class MoveEvent extends AnimationEventNotifier with AnimationEvent {
 	var x:Int = 0
 	var y:Int = 0
 	var z:Int = 0
@@ -470,6 +499,7 @@ class MoveEvent extends AnimationEvent {
 		xspin.addChangeListener(new ChangeListener(){
 			def stateChanged(changeEvent:ChangeEvent){
 				x = xspin.getValue().asInstanceOf[Integer].intValue()
+                updateListeners()
 			}
 		});
 		val yspin = engine.find("y").asInstanceOf[JSpinner];
@@ -477,6 +507,7 @@ class MoveEvent extends AnimationEvent {
 		yspin.addChangeListener(new ChangeListener(){
 			def stateChanged(changeEvent:ChangeEvent){
 				y = yspin.getValue().asInstanceOf[Integer].intValue();
+                updateListeners()
 			}
 		});
 		val zspin = engine.find("z").asInstanceOf[JSpinner];
@@ -484,6 +515,7 @@ class MoveEvent extends AnimationEvent {
 		zspin.addChangeListener(new ChangeListener(){
 			def stateChanged(changeEvent:ChangeEvent){
 				z = zspin.getValue().asInstanceOf[Integer].intValue()
+                updateListeners()
 			}
 		});
 
@@ -505,7 +537,7 @@ class MoveEvent extends AnimationEvent {
     def getDescription() = "Moves the character by the given x, y, and z coordinates"
 }
 
-class HittableEvent extends AnimationEvent {
+class HittableEvent extends AnimationEventNotifier with AnimationEvent {
   var hit:Boolean = true
 
   override def copy() = {
@@ -542,6 +574,7 @@ class HittableEvent extends AnimationEvent {
     change.addChangeListener(new ChangeListener(){
       def stateChanged(changeEvent:ChangeEvent){
         hit = change.isSelected()
+        updateListeners()
       }
     });
 
@@ -552,7 +585,7 @@ class HittableEvent extends AnimationEvent {
 case class Defense(var x1:Int, var y1:Int, var x2:Int, var y2:Int){
 }
 
-class DefenseEvent extends AnimationEvent {
+class DefenseEvent extends AnimationEventNotifier with AnimationEvent {
 
   var boxes:List[Defense] = List[Defense]()
   var onDestroy = () => null
@@ -655,6 +688,7 @@ class DefenseEvent extends AnimationEvent {
         defense.x1 = x1spin.getValue().asInstanceOf[Integer].intValue()
         interact(animation);
         animation.forceRedraw();
+        updateListeners()
       }
     });
 
@@ -665,6 +699,7 @@ class DefenseEvent extends AnimationEvent {
         defense.y1 = y1spin.getValue().asInstanceOf[Integer].intValue()
         interact(animation);
         animation.forceRedraw();
+        updateListeners()
       }
     });
 
@@ -675,6 +710,7 @@ class DefenseEvent extends AnimationEvent {
         defense.x2 = x2spin.getValue().asInstanceOf[Integer].intValue()
         interact(animation);
         animation.forceRedraw();
+        updateListeners()
       }
     });
 
@@ -685,6 +721,7 @@ class DefenseEvent extends AnimationEvent {
         defense.y2 = y2spin.getValue().asInstanceOf[Integer].intValue()
         interact(animation);
         animation.forceRedraw();
+        updateListeners()
       }
     });
 
@@ -698,6 +735,7 @@ class DefenseEvent extends AnimationEvent {
           x1spin.setValue(new Integer(defense.x1));
           y1spin.setValue(new Integer(defense.y1));
           interact(animation);
+          updateListeners()
           animation.forceRedraw();
         }
 
@@ -707,6 +745,7 @@ class DefenseEvent extends AnimationEvent {
           x2spin.setValue(new Integer(defense.x2));
           y2spin.setValue(new Integer(defense.y2));
           interact(animation);
+          updateListeners()
           animation.forceRedraw();
         }
       };

@@ -303,17 +303,29 @@ public abstract class AnimationCanvas extends JPanel {
         // eventScroll.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
         final JList eventList = (JList) contextEditor.find("events");
+
+        final Lambda0 updateEventList = new Lambda0(){
+            private Lambda0 update = new Lambda0(){
+                public Object invoke(){
+                    eventList.repaint();
+                    return null;
+                }
+            };
+            public Object invoke(){
+                eventList.setListData(animation.getEvents());
+                for (AnimationEvent event: animation.getEvents()){
+                    event.addUpdateListener(update);
+                }
+
+                return null;
+            }
+        };
+
         eventList.setDragEnabled(true);
-        eventList.setListData(animation.getEvents());
+        updateEventList.invoke_();
         eventList.setDropMode(DropMode.ON);
         eventList.setTransferHandler(new TransferHandler(){
             private int toRemove = -1;
-            /*
-               public boolean canImport(JComponent comp, DataFlavor[] transferFlavors){
-               System.out.println("Can I import " + transferFlavors);
-               return true;
-               }
-               */
 
             public boolean canImport(TransferHandler.TransferSupport support){
                 // System.out.println("Can I import " + support);
@@ -321,31 +333,12 @@ public abstract class AnimationCanvas extends JPanel {
                 return true;
             }
 
-            /*
-               public void exportAsDrag(JComponent component, InputEvent event, int action){
-               System.out.println("export event " + event + " action " + action + " move is " + TransferHandler.MOVE);
-               super.exportAsDrag(component, event, action);
-               }
-               */
-
             protected void exportDone(JComponent source, Transferable data, int action){
                 // System.out.println("did export action was " + action);
                 if (action == TransferHandler.MOVE){
-                    /*
-                       System.out.println("Transfered " + data);
-
-                       int index = 0;
-                       if (eventList.getSelectedIndex() != -1){
-                       AnimationEvent event = 
-                       animation.removeEvent(eventList.getSelectedIndex() );
-                       index = animation.addEvent(temp, eventList.getSelectedIndex() + 1);
-                       }
-                       eventList.setListData( animation.getEvents() );
-                       eventList.setSelectedIndex( index );
-                       */
                     // System.out.println("Removing event " + toRemove);
                     animation.removeEvent(toRemove);
-                    eventList.setListData(animation.getEvents());
+                    updateEventList.invoke_();
                 }
             }
 
@@ -377,9 +370,6 @@ public abstract class AnimationCanvas extends JPanel {
                         return true;
                     }
                 };
-                /*
-                   return new DataHandler(new Integer(eventList.getSelectedIndex()), "event-list");
-                   */
             }
 
             public boolean importData(TransferSupport supp) {
@@ -398,7 +388,7 @@ public abstract class AnimationCanvas extends JPanel {
                     }
                     AnimationEvent event = (AnimationEvent) supp.getTransferable().getTransferData(new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType));
                     animation.addEvent(event, index);
-                    eventList.setListData(animation.getEvents());
+                    updateEventList.invoke_();
                     eventList.setSelectedIndex(index);
                 } catch (ClassNotFoundException exception){
                     System.err.println(exception);
@@ -407,28 +397,6 @@ public abstract class AnimationCanvas extends JPanel {
                 } catch (IOException exception){
                     System.err.println(exception);
                 }
-
-                /*
-                   int index = 0;
-                   if (eventList.getSelectedIndex() != -1){
-                   AnimationEvent event = animation.removeEvent(eventList.getSelectedIndex() );
-                   index = animation.addEvent(temp, eventList.getSelectedIndex() + 1);
-                   }
-                   eventList.setListData( animation.getEvents() );
-                   eventList.setSelectedIndex( index );
-                   */
-
-                /*
-                // Fetch the Transferable and its data
-                Transferable t = supp.getTransferable();
-                String data = t.getTransferData(stringFlavor);
-
-                // Fetch the drop location
-                DropLocation loc = supp.getDropLocation();
-
-                // Insert the data at this location
-                insertAt(loc, data);
-                */
 
                 return true;
             }
@@ -601,7 +569,7 @@ public abstract class AnimationCanvas extends JPanel {
                     doEvent.invoke_(frame);
                     animation.addEvent(frame);
                 }
-                eventList.setListData(animation.getEvents());
+                updateEventList.invoke_();
             }
         });
 
@@ -680,7 +648,7 @@ public abstract class AnimationCanvas extends JPanel {
                 } else {
                     index = animation.addEvent(temp);
                 }
-                eventList.setListData(animation.getEvents());
+                updateEventList.invoke_();
                 eventList.setSelectedIndex(index);
             }
         });
@@ -700,7 +668,7 @@ public abstract class AnimationCanvas extends JPanel {
             public void actionPerformed(ActionEvent event){
                 if (! animation.getEvents().isEmpty()){
                     animation.removeEvent(eventList.getSelectedIndex());
-                    eventList.setListData(animation.getEvents());
+                    updateEventList.invoke_();
                 }
             }
         };
@@ -712,28 +680,28 @@ public abstract class AnimationCanvas extends JPanel {
 
         JButton eventUp = (JButton) contextEditor.find("up-event");
         eventUp.addActionListener(new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( ! animation.getEvents().isEmpty() ){
+            public void actionPerformed(ActionEvent event){
+                if (! animation.getEvents().isEmpty()){
                     int index1 = eventList.getSelectedIndex()-1 < 0 ? 0 : eventList.getSelectedIndex() - 1;
                     int index2 = eventList.getSelectedIndex();
-                    animation.swapEvents( index1, index2 );
-                    eventList.setListData( animation.getEvents() );
-                    eventList.setSelectedIndex( index1 );
-                    eventList.ensureIndexIsVisible( index1 );
+                    animation.swapEvents(index1, index2);
+                    updateEventList.invoke_();
+                    eventList.setSelectedIndex(index1);
+                    eventList.ensureIndexIsVisible(index1);
                 }
             }
         });
 
-        JButton eventDown = (JButton) contextEditor.find( "down-event" );
-        eventDown.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if ( ! animation.getEvents().isEmpty() ){
+        JButton eventDown = (JButton) contextEditor.find("down-event");
+        eventDown.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (! animation.getEvents().isEmpty()){
                     int index1 = eventList.getSelectedIndex()+1 > animation.getEvents().size() ? animation.getEvents().size() : eventList.getSelectedIndex() + 1;
                     int index2 = eventList.getSelectedIndex();
-                    animation.swapEvents( index1, index2 );
-                    eventList.setListData( animation.getEvents() );
-                    eventList.setSelectedIndex( index1 );
-                    eventList.ensureIndexIsVisible( index1 );
+                    animation.swapEvents(index1, index2);
+                    updateEventList.invoke_();
+                    eventList.setSelectedIndex(index1);
+                    eventList.ensureIndexIsVisible(index1);
                 }
             }
         });
@@ -763,7 +731,7 @@ public abstract class AnimationCanvas extends JPanel {
                     } else {
                         index = animation.addEvent(temp);
                     }
-                    eventList.setListData(animation.getEvents());
+                    updateEventList.invoke_();
                     eventList.setSelectedIndex(index);
                 }
             }

@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class TrailEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class TrailEvent extends AnimationEventNotifier implements AnimationEvent {
     private int generate;
     private int length;
 
@@ -50,6 +52,7 @@ public class TrailEvent implements AnimationEvent {
             public void stateChanged(ChangeEvent changeEvent){
                 generate = ((Integer) spin_generate.getValue()).intValue();
                 interact(animation);
+                updateListeners();
                 /* redraw when trails are working in the editor */
                 // animation.forceRedraw();
             }
@@ -61,6 +64,7 @@ public class TrailEvent implements AnimationEvent {
             public void stateChanged(ChangeEvent changeEvent){
                 length = ((Integer) spin_length.getValue()).intValue();
                 interact(animation);
+                updateListeners();
                 // animation.forceRedraw();
             }
         });

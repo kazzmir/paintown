@@ -13,7 +13,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class ProjectileEvent implements AnimationEvent
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class ProjectileEvent extends AnimationEventNotifier implements AnimationEvent
 {
 	private int _at_x;
 	private int _at_y;
@@ -74,6 +76,7 @@ public class ProjectileEvent implements AnimationEvent
 			public void stateChanged(ChangeEvent changeEvent)
 			{
 				_at_x = ((Integer)atxspin.getValue()).intValue();
+                updateListeners();
 			}
 		});
 		final JSpinner atyspin = (JSpinner) engine.find( "aty" );
@@ -83,6 +86,7 @@ public class ProjectileEvent implements AnimationEvent
 			public void stateChanged(ChangeEvent changeEvent)
 			{
 				_at_y = ((Integer)atyspin.getValue()).intValue();
+                updateListeners();
 			}
 		});
 		
@@ -97,6 +101,7 @@ public class ProjectileEvent implements AnimationEvent
 						final String path = chooser.getPath();
 						profield.setText( path );
 						_projectile = path;
+                        updateListeners();
 					}
 				}
 			});
@@ -109,6 +114,7 @@ public class ProjectileEvent implements AnimationEvent
 			public void stateChanged(ChangeEvent changeEvent)
 			{
 				_life = ((Integer)lifespin.getValue()).intValue();
+                updateListeners();
 			}
 		});
 		
@@ -122,6 +128,7 @@ public class ProjectileEvent implements AnimationEvent
 			public void stateChanged(ChangeEvent changeEvent)
 			{
 				_speed_x = ((Double)speedxspin.getValue()).doubleValue();
+                updateListeners();
 			}
 		});
 		final JPanel speedypanel = (JPanel) engine.find( "speedy" );
@@ -133,6 +140,7 @@ public class ProjectileEvent implements AnimationEvent
 			public void stateChanged(ChangeEvent changeEvent)
 			{
 				_speed_y = ((Double)speedyspin.getValue()).doubleValue();
+                updateListeners();
 			}
 		});
 		

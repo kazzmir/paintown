@@ -11,7 +11,9 @@ import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 
-public class UserDefinedEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class UserDefinedEvent extends AnimationEventNotifier implements AnimationEvent {
     private String name;
     private String value;
 
@@ -57,6 +59,10 @@ public class UserDefinedEvent implements AnimationEvent {
         return getToken().toString();
     }
 
+    public String getDescription(){
+        return "Not used";
+    }
+
     public JPanel getEditor(final Animation animation, final DrawArea area){
 
         SwingEngine engine = new SwingEngine( "animator/event-user.xml" );
@@ -68,12 +74,14 @@ public class UserDefinedEvent implements AnimationEvent {
         namePanel.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent e){
                 name = namePanel.getText();
+                updateListeners();
             }
         });
 
         valuePanel.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent e){
                 value = valuePanel.getText();
+                updateListeners();
             }
         });
 

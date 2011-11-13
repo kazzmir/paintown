@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class ZDistanceEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class ZDistanceEvent extends AnimationEventNotifier implements AnimationEvent {
 	private int _d;
 	
 	public void loadToken(Token token){
@@ -38,11 +40,10 @@ public class ZDistanceEvent implements AnimationEvent {
 		
 		final JSpinner dspin = (JSpinner) engine.find( "zdistance" );
 		dspin.setValue(new Integer(_d));
-		dspin.addChangeListener( new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent changeEvent)
-			{
+		dspin.addChangeListener( new ChangeListener(){
+			public void stateChanged(ChangeEvent changeEvent){
 				_d = ((Integer)dspin.getValue()).intValue();
+                updateListeners();
 			}
 		});
 		return (JPanel)engine.getRootComponent();

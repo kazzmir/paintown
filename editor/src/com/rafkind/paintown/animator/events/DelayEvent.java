@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class DelayEvent implements AnimationEvent {
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class DelayEvent extends AnimationEventNotifier implements AnimationEvent {
     private double _delay;
 
     public void loadToken(Token token){
@@ -41,6 +43,7 @@ public class DelayEvent implements AnimationEvent {
         delayspin.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent changeEvent){
                 _delay = ((Number) delayspin.getValue()).doubleValue();
+                updateListeners();
             }
         });
         return (JPanel)engine.getRootComponent();

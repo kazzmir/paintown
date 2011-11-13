@@ -13,7 +13,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class SoundEvent implements AnimationEvent
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class SoundEvent extends AnimationEventNotifier implements AnimationEvent
 {
 	private String _sound;
 	
@@ -51,6 +53,7 @@ public class SoundEvent implements AnimationEvent
 						final String path = chooser.getPath();
 						soundfield.setText( path );
 						_sound = path;
+                        updateListeners();
 					}
 				}
 			});

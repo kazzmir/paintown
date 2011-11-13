@@ -11,7 +11,9 @@ import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import org.swixml.SwingEngine;
 
-public class NopEvent implements AnimationEvent{	
+import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
+
+public class NopEvent extends AnimationEventNotifier implements AnimationEvent{	
 	public void loadToken(Token token){
 		// Nothing to be done
 	}
