@@ -246,7 +246,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             CommandQuit(){
             }
 
-            string act(){
+            string act(const string & line){
                 throw ShutdownException();
             }
         };
@@ -256,7 +256,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             CommandMemory(){
             }
 
-            string act(){
+            string act(const string & line){
                 ostringstream out;
                 out << "Memory usage: " << Util::niceSize(System::memoryUsage()) << "\n";
                 return out.str();
@@ -268,7 +268,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             CommandHelp(){
             }
 
-            string act(){
+            string act(const string & line){
                 ostringstream out;
                 out << "quit - quit the game entirely" << "\n";
                 out << "memory - current memory usage" << "\n";

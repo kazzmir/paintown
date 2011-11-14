@@ -156,7 +156,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             CommandQuit(){
             }
 
-            string act(){
+            string act(const string & line){
                 throw ShutdownException();
             }
         };
@@ -166,7 +166,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             CommandMemory(){
             }
 
-            string act(){
+            string act(const string & line){
                 ostringstream out;
                 out << "Memory usage: " << PaintownUtil::niceSize(System::memoryUsage()) << "\n";
                 return out.str();
@@ -178,7 +178,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             CommandHelp(){
             }
 
-            string act(){
+            string act(const string & line){
                 ostringstream out;
                 out << "quit - quit the game entirely" << "\n";
                 out << "memory - current memory usage" << "\n";
@@ -196,7 +196,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
             Mugen::Stage * stage;
 
-            string act(){
+            string act(const string & line){
                 std::vector<Object*> players = stage->getPlayers();
                 int count = 0;
                 for (std::vector<Object*>::iterator it = players.begin(); it != players.end(); it++){
