@@ -589,7 +589,7 @@ void Player::hurt( int x ){
         Character::hurt(x);
     }
 }
-        
+
 void Player::setInvincible(const bool b){
     this->invincible = b;
     if (invincibilityEffect != NULL){

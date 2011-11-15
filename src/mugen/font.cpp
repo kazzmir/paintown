@@ -26,7 +26,7 @@ static MugenItemContent *getOpts(const std::string &opt){
     std::string contentHolder = "";
     MugenItemContent *temp = new MugenItemContent();
     const char * ignored = " \r\n";
-    Global::debug(2) << "Parsing string to ItemContent: " << opt << endl;
+    Global::debug(3) << "Parsing string to ItemContent: " << opt << endl;
     for (unsigned int i = 0; i < opt.size(); ++i ){
         if (opt[i] == ';'){
             break;
@@ -34,7 +34,7 @@ static MugenItemContent *getOpts(const std::string &opt){
 
         if (opt[i] == ' '){
             if( !contentHolder.empty() ) *temp << contentHolder;
-            Global::debug(2) << "Got content: " << contentHolder << endl;
+            Global::debug(3) << "Got content: " << contentHolder << endl;
             contentHolder = "";
         }
         //Start grabbing our item
@@ -44,7 +44,7 @@ static MugenItemContent *getOpts(const std::string &opt){
     }
     if( !contentHolder.empty() ){
         *temp << contentHolder;
-        Global::debug(2) << "Got content: " << contentHolder << endl;
+        Global::debug(3) << "Got content: " << contentHolder << endl;
     }
     return temp;
 }
@@ -304,8 +304,8 @@ void MugenFont::load(){
     pcxsize = byteReader.readByte4();
     uint32_t txtlocation = byteReader.readByte4();
     uint32_t txtsize = byteReader.readByte4();
-    Global::debug(2) << "PCX Location: " << pcxlocation << " | PCX Size: " << pcxsize << endl;
-    Global::debug(2) << "TXT Location: " << txtlocation << " | TXT Actual location: " << pcxlocation + pcxsize << " | TXT Size: " << txtsize << endl;
+    Global::debug(3) << "PCX Location: " << pcxlocation << " | PCX Size: " << pcxsize << endl;
+    Global::debug(3) << "TXT Location: " << txtlocation << " | TXT Actual location: " << pcxlocation + pcxsize << " | TXT Size: " << txtsize << endl;
 
     // Get the pcx load our bitmap
     ifile.seekg(pcxlocation, ios::beg);
@@ -360,10 +360,10 @@ void MugenFont::load(){
                     temp = Mugen::Util::fixCase(temp);
                     if (temp == "variable")type = Variable;
                     else if (temp == "fixed")type = Fixed;
-                    Global::debug(2) << "Type: " << temp << endl;
+                    Global::debug(3) << "Type: " << temp << endl;
                 } //else throw MugenException( "Unhandled option in Info Section: " + itemhead );
             }
-            Global::debug(2) << "Size X: " << width << ", Size Y: " << height << ", Spacing X: " << spacingx << ", Spacing Y: " << spacingy << ", Colors: " << colors << ", Offset X: " << offsetx << ", Offset Y: " << offsety << endl;
+            Global::debug(3) << "Size X: " << width << ", Size Y: " << height << ", Spacing X: " << spacingx << ", Spacing Y: " << spacingy << ", Colors: " << colors << ", Offset X: " << offsetx << ", Offset Y: " << offsety << endl;
         } else if (head == "Map"){
             bool beginParse = false;
             int locationx = 0;
@@ -399,7 +399,7 @@ void MugenFont::load(){
                     loc.startx = startx;
                     loc.width = chrwidth;
                     char code = character[0];
-                    Global::debug(2) << "Storing Character: " << code << " | startx: " << loc.startx << " | width: " << loc.width << endl;
+                    Global::debug(3) << "Storing Character: " << code << " | startx: " << loc.startx << " | width: " << loc.width << endl;
                     positions[code] = loc;
                 }
                 delete opt;

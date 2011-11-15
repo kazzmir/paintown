@@ -143,7 +143,7 @@ bool MugenReader::hasContent( const std::string &line ){
 }
 	
 MugenSection *MugenReader::extractSection( const std::string &line ){
-    Global::debug(2) << line << endl;
+    Global::debug(3) << line << endl;
     const char comment = ';';
     const char openbracket = '[';
     const char closebracket = ']';
@@ -174,7 +174,7 @@ MugenSection *MugenReader::extractSection( const std::string &line ){
 }
 
 MugenItemContent *MugenReader::extractContent( const std::string &line ){
-    Global::debug(2) << line << endl;
+    Global::debug(3) << line << endl;
     const char openbracket = '[';
     const char closebracket = ']';
     const char comment = ';';

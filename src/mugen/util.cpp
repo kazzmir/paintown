@@ -176,12 +176,13 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::Absolu
 	Global::debug(2) << "Couldn't find file: " << str << endl;
 	std::string returnString = "";
 	std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(dir, "*");
-	Global::debug(2) << "Correcting file: " << str << ", in directory: "<< dir.path() <<".\nGot " << files.size() << " files." << endl;
+	Global::debug(2) << "Checking for " << str << " in directory: "<< dir.path() << ". Searching " << files.size() << " files." << endl;
         for (vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++){
             Filesystem::AbsolutePath & path = *it;
 	    // temp = Mugen::Util::fixCase( temp );
 	    if (Filesystem::InsensitivePath(dir.join(Filesystem::RelativePath(str))) == path){
 		// We got number one chinese retaurant
+                Global::debug(2) << "Found " << path.path() << std::endl;
                 return path;
 	    }
 	}
