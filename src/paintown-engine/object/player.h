@@ -18,6 +18,8 @@ class InputSource;
 
 namespace Paintown{
 
+class DrawGlowEffect;
+
 class Animation;
 
 class Player: public PlayerCommon {
@@ -161,6 +163,8 @@ protected:
     std::vector<Player*> binds;
 
     Filesystem::RelativePath intro;
+
+    DrawGlowEffect * invincibilityEffect;
 };
 
 class PlayerFuture: public Util::Future<Object*> {

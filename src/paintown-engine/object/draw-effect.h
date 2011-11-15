@@ -51,9 +51,11 @@ public:
     DrawGlowEffect(const Character * owner, Graphics::Color startColor, Graphics::Color endColor, double period);
     virtual void draw(int x, Remap * remap, Graphics::Bitmap * work);
     virtual bool act();
+    virtual void kill();
     virtual DrawEffect * copy(const Character * owner) const;
     virtual ~DrawGlowEffect();
 protected:
+    bool dead;
     int angle;
     double period;
     Graphics::Color startColor, endColor;

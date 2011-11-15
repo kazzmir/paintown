@@ -37,6 +37,7 @@
 #include "util/system.h"
 #include "util/events.h"
 #include "util/loading.h"
+#include "util/regex.h"
 #include "util/network/network.h"
 #include "world.h"
 #include "adventure_world.h"
@@ -272,14 +273,47 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 ostringstream out;
                 out << "quit - quit the game entirely" << "\n";
                 out << "memory - current memory usage" << "\n";
+                out << "god-mode [on] [off] - enable invincibility" << "\n";
                 out << "help - this help menu";
                 return out.str();
+            }
+        };
+
+        class CommandGodMode: public Console::Command {
+        public:
+            CommandGodMode(const vector<Paintown::Object *> & players):
+            players(players){
+            }
+
+            const vector<Paintown::Object*> & players;
+
+            void set(bool what){
+                for (vector<Paintown::Object*>::const_iterator it = players.begin(); it != players.end(); it++){
+                    Paintown::Character * maybe = (Paintown::Character*) *it;
+                    if (maybe->isPlayer()){
+                        Paintown::Player * player = (Paintown::Player*) maybe;
+                        player->setInvincible(what);
+                    }
+                }
+            }
+
+            string act(const string & line){
+                string argument = Util::captureRegex(line, "god-mode\\s+(\\w+)", 0);
+                if (argument == "on"){
+                    set(true);
+                } else if (argument == "off"){
+                    set(false);
+                } else {
+                    return "Expected either 'on' or 'off' as an argument";
+                }
+                return "";
             }
         };
 
         console.addCommand("quit", Util::ReferenceCount<Console::Command>(new CommandQuit()));
         console.addCommand("help", Util::ReferenceCount<Console::Command>(new CommandHelp()));
         console.addCommand("memory", Util::ReferenceCount<Console::Command>(new CommandMemory()));
+        console.addCommand("god-mode", Util::ReferenceCount<Console::Command>(new CommandGodMode(players)));
     }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;

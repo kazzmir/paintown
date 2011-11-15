@@ -48,7 +48,8 @@ name_id(-1),
 attack_bonus(0),
 invincible(false),
 ignore_lives(false),
-source(new InputSource()){
+source(new InputSource()),
+invincibilityEffect(NULL){
     lives = DEFAULT_LIVES;
 
     /*
@@ -73,7 +74,8 @@ name_id(-1),
 attack_bonus(0),
 invincible( false ),
 ignore_lives(false),
-source(source){
+source(source),
+invincibilityEffect(NULL){
     lives = DEFAULT_LIVES;
 
     // if ( movements[ "grab" ] == NULL ){
@@ -98,7 +100,8 @@ name_id(-1),
 attack_bonus(0),
 invincible( false ),
 ignore_lives(false),
-source(new InputSource()){
+source(new InputSource()),
+invincibilityEffect(NULL){
     show_life = getHealth();
     lives = DEFAULT_LIVES;
     commonInitialize();
@@ -112,7 +115,8 @@ attack_bonus(pl.attack_bonus),
 invincible(pl.invincible),
 ignore_lives(false),
 source(pl.source),
-intro(pl.intro){
+intro(pl.intro),
+invincibilityEffect(NULL){
     show_life = getHealth();
     ignore_lives = pl.ignore_lives;
     commonInitialize();
@@ -588,8 +592,14 @@ void Player::hurt( int x ){
         
 void Player::setInvincible(const bool b){
     this->invincible = b;
+    if (invincibilityEffect != NULL){
+        invincibilityEffect->kill();
+        invincibilityEffect = NULL;
+    }
     if (b){
-        addEffect(new DrawGlowEffect(this, Graphics::makeColor(10,10,250), Graphics::makeColor(190, 190, 255), 75));
+        /* character will delete the last effect in its act() method */
+        invincibilityEffect = new DrawGlowEffect(this, Graphics::makeColor(10,10,250), Graphics::makeColor(190, 190, 255), 75);
+        addEffect(invincibilityEffect);
     }
 }
         

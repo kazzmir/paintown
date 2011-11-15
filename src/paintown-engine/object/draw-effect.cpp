@@ -58,6 +58,7 @@ DrawCountdownEffect::~DrawCountdownEffect(){
 
 DrawGlowEffect::DrawGlowEffect(const Character * owner, Graphics::Color startColor, Graphics::Color endColor, double period):
 DrawEffect(owner, 1),
+dead(false),
 angle(0),
 period(period),
 startColor(startColor),
@@ -86,7 +87,11 @@ void DrawGlowEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
 
 bool DrawGlowEffect::act(){
     angle += 1;
-    return false;
+    return dead;
+}
+
+void DrawGlowEffect::kill(){
+    dead = true;
 }
 
 DrawEffect * DrawGlowEffect::copy(const Character * owner) const {
