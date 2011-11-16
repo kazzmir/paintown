@@ -282,12 +282,15 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         class CommandGodMode: public Console::Command {
         public:
             CommandGodMode(const vector<Paintown::Object *> & players):
-            players(players){
+            players(players),
+            last(false){
             }
 
             const vector<Paintown::Object*> & players;
+            bool last;
 
             void set(bool what){
+                last = what;
                 for (vector<Paintown::Object*>::const_iterator it = players.begin(); it != players.end(); it++){
                     Paintown::Character * maybe = (Paintown::Character*) *it;
                     if (maybe->isPlayer()){
@@ -301,10 +304,14 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                 string argument = Util::captureRegex(line, "god-mode\\s+(\\w+)", 0);
                 if (argument == "on"){
                     set(true);
+                    return "God mode enabled";
                 } else if (argument == "off"){
                     set(false);
+                    return "God mode disabled";
                 } else {
-                    return "Expected either 'on' or 'off' as an argument";
+                    ostringstream out;
+                    out << "God mode is " << (last ? "enabled" : "disabled") << ". Give either 'on' or 'off' as an argument";
+                    return out.str();
                 }
                 return "";
             }
@@ -312,6 +319,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
         console.addCommand("quit", Util::ReferenceCount<Console::Command>(new CommandQuit()));
         console.addCommand("help", Util::ReferenceCount<Console::Command>(new CommandHelp()));
+        console.addAlias("?", "help");
         console.addCommand("memory", Util::ReferenceCount<Console::Command>(new CommandMemory()));
         console.addCommand("god-mode", Util::ReferenceCount<Console::Command>(new CommandGodMode(players)));
     }
