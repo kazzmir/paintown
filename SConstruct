@@ -128,6 +128,7 @@ useIos = makeUseEnvironment('ios', False)
 usePs3 = makeUseEnvironment('ps3', False)
 useNDS = makeUseEnvironment('nds', False)
 useDingoo = makeUseEnvironment('dingoo', False)
+usePandora = makeUseEnvironment('pandora', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
 useNacl = makeUseEnvironment('nacl', False)
@@ -779,12 +780,6 @@ def isCygwin():
 def useMingw():
     try:
         return "mingw" in ARGUMENTS[ 'env' ]
-    except KeyError:
-        return False
-
-def usePandora():
-    try:
-        return "pandora" in ARGUMENTS[ 'env' ]
     except KeyError:
         return False
 
@@ -1630,6 +1625,8 @@ def buildType(dir, env):
         properties.append('ps3')
     if useNacl():
         properties.append('nacl%s' % env['PAINTOWN_NACL_ARCH'])
+    if usePandora():
+        properties.append('Pandora')
     if useNDS():
         properties.append('NDS')
     if useWii():
@@ -1682,6 +1679,8 @@ def display_build_properties(env):
         properties.append(colorize("Profiling", color))
     if useWii():
         properties.append(colorize("Wii", color))
+    if usePandora():
+        properties.append('Pandora')
     if useNDS():
         properties.append(colorize("NDS", color))
     if useMinpspw():
