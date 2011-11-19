@@ -18,15 +18,17 @@
 
       function moduleLoadProgress(event){
           var loadPercent = 0.0;
-          var loadPercentString;
+          var loadPercentString = "";
           if (event.lengthComputable && event.total > 0) {
-              loadPercent = event.loaded / event.total * 100.0;
-              loadPercentString = loadPercent + '%';
+              loadPercent = Math.round(event.loaded / event.total * 100.0 * 100) / 100;
+              loadPercentString = 'Loaded ' + loadPercent + '%';
           } else {
               // The total length is not yet known.
               loadPercent = -1.0;
               loadPercentString = 'Computing...';
           }
+
+          document.getElementById('loading').innerHTML = loadPercentString;
 
           /* TODO: do something with the progress */
           /*
@@ -242,6 +244,9 @@ Loaded files
                src="paintown.nmf"
                type="application/x-nacl" />
    </div>
+    <div class="loading">
+        <span id="loading" />
+    </div>
 
 </div>  <!-- End Content -->
 
