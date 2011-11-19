@@ -8,6 +8,12 @@ all:
 	@$(scons) || echo "Get scons at www.scons.org or read the README for compilation instructions"
 	@$(gnome_notify)
 
+# Convenient target for building 32-bit and 64-bit nacl
+nacl:
+	nacl=1 nacl_32=1 $(scons)
+	nacl=1 nacl_64=1 $(scons)
+	@$(gnome_notify)
+
 # Same as `all' but shows time taken by scons
 time:
 	@$(scons) --debug=time || echo "Get scons at www.scons.org or read the README for compilation instructions"
