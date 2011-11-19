@@ -46,10 +46,24 @@
           // appendToEventLog('abort');
       }
 
+      /* Paintown will send us a message each time it tries to open a file.
+       * We will take that message and attach it to the textarea that is floating
+       * on the left hand side. Also a timestamp in MM:SS will be added.
+       */
+      function loadingMessages(event){
+          var messages = document.getElementById('messages');
+          var date = new Date();
+          messages.value += "\n";
+          messages.value += "[" + date.getMinutes() + ":" + date.getSeconds() + "] ";
+          messages.value += event.data;
+          messages.scrollTop = messages.scrollHeight;
+      }
+
       function dorun(){ //run Nacl 
           if (paintownModule == null){
               alert('NACL module not loaded!');
           } else {
+              paintownModule.addEventListener('message', loadingMessages, false);
               paintownModule.postMessage('run');
               document.getElementById('run').style.display='none'; //Hide Button - Don't need users to click twice
           }
@@ -109,6 +123,18 @@
           margin-left: auto;
           font-size: 14px;
           text-align:center;
+      }
+
+      div.messages{
+          float: left;
+      }
+
+      textarea.messages{
+          background-color: #6D99C5;
+          color: #000;
+          font-size: 10px;
+          height: 20em;
+          width: 100%;
       }
 
       div.instructions{
@@ -184,6 +210,12 @@
         <b>Esc</b> Menu<br />
         <b>Enter</b> Select
     </div>
+    </div>
+
+    <div class="messages">
+        <textarea class="messages" id="messages">
+Loaded files
+        </textarea>
     </div>
 
     <div class='main' id='listener'>

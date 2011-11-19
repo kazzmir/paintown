@@ -1477,7 +1477,7 @@ static bool differentCommands(std::vector<std::string> list1, std::vector<std::s
     std::sort(list1.begin(), list1.end());
     std::sort(list2.begin(), list2.end());
 
-    for (int i = 0; i < list1.size(); i++){
+    for (unsigned int i = 0; i < list1.size(); i++){
         if (list1[i] != list2[i]){
             return true;
         }
