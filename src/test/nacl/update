@@ -2,4 +2,5 @@
 
 files="loader.gif paintown-32.nexe paintown-64.nexe paintown.html paintown.nmf paintown.png"
 
-rsync -avPL $files rafkind@shell.cs.utah.edu:~/http/tmp/paintown/nacl/.
+# rsync -avPL $files rafkind@shell.cs.utah.edu:~/http/tmp/paintown/nacl/.
+rsync -avPL $files jonrafkind@gotbrew.org:~/paintown/.
