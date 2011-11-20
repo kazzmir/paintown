@@ -2,6 +2,7 @@
 
 for directory in $(find . -type d  ! -regex '.*.svn.*')
 do
+        echo $directory
         # \ls "$directory" > "$directory/directory.txt"
         \ls -l "$directory" | awk -F" " '{printf "%s %s\n", $8, $5}' > "$directory/directory.txt"
 done
