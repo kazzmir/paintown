@@ -9,7 +9,6 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "util/input/input-manager.h"
-#include "factory/collector.h"
 
 #include <iostream>
 
@@ -17,7 +16,6 @@ using namespace std;
 
 int paintown_main(int argc, char ** argv){
     Screen::fakeInit();
-    Collector janitor;
     InputManager input;
     Util::Thread::initializeLock(&Global::messageLock);
     

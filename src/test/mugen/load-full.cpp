@@ -11,7 +11,6 @@
 #include "util/bitmap.h"
 #include "util/debug.h"
 #include "util/input/input-manager.h"
-#include "factory/collector.h"
 
 /*
 #include <sstream>
@@ -72,7 +71,6 @@ static int load(const char * path){
 
 int paintown_main(int argc, char ** argv){
     Screen::fakeInit();
-    Collector janitor;
     InputManager input;
     Util::Thread::initializeLock(&Global::messageLock);
     // Filesystem::initialize();
