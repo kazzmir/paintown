@@ -453,7 +453,7 @@ static void playGame(vector<Client*> & clients){
         };
 
         ClientContext context(clients, sockets, clientNames, characterToSocket, players);
-        Loader::loadScreen(context, levelInfo);
+        Loader::loadScreen(context, Level::convert(levelInfo));
 
         for (vector< string >::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
             string level = *it;
@@ -518,7 +518,7 @@ static void playGame(vector<Client*> & clients){
             }
 
             GameContext gameContext(level, sockets, characterToSocket, clientNames, players);
-            Loader::loadScreen(gameContext, levelInfo);
+            Loader::loadScreen(gameContext, Level::convert(levelInfo));
 
             NetworkWorld & world = *gameContext.world;
             world.startMessageHandlers();

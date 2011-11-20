@@ -1812,8 +1812,8 @@ static bool saneFont(const Util::ReferenceCount<Menu::FontInfo> & info){
     }
 
     Context context(info);
-    /* an empty LevelInfo object, we don't really care about it */
-    Level::LevelInfo level;
+    /* an empty Info object, we don't really care about it */
+    Loader::Info level;
     Loader::loadScreen(context, level, Loader::SimpleCircle);
     return context.isok;
 }
@@ -2225,8 +2225,8 @@ void OptionMugenMotif::run(const Menu::Context & context){
     };
 
     Context state;
-    /* an empty LevelInfo object, we don't really care about it */
-    Level::LevelInfo level;
+    /* an empty Info object, we don't really care about it */
+    Loader::Info level;
     Loader::loadScreen(state, level, Loader::SimpleCircle);
     
     if (state.paths.size() <= 1){

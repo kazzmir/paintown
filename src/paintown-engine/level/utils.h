@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "util/file-system.h"
+#include "util/loading.h"
 
 class Token;
 namespace Graphics{
@@ -64,6 +65,8 @@ protected:
 
 // LevelInfo readLevels(const std::string & filename);
 LevelInfo readLevel(const Token * level);
+
+Loader::Info convert(const LevelInfo & info);
 
 }
 

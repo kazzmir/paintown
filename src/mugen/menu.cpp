@@ -28,8 +28,6 @@
 #include "util/system.h"
 #include "util/parameter.h"
 
-/* TODO: remove this dependancy */
-#include "paintown-engine/level/utils.h"
 // #include "game/console.h"
 /*
 #include "object/animation.h"
@@ -1189,7 +1187,7 @@ void run(){
         Exception::Base * exception;
     };
     
-    Level::LevelInfo info;
+    Loader::Info info;
     info.setLoadingMessage("Loading M.U.G.E.N");
     Context menuLoader;
     Loader::loadScreen(menuLoader, info);

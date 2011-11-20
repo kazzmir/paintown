@@ -141,7 +141,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
     Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource());
 
     Context context(socket, info, playerPath, remap);
-    Loader::loadScreen(context, info);
+    Loader::loadScreen(context, Level::convert(info));
     return context.player;
 }
 
@@ -256,7 +256,7 @@ static void playGame(Socket socket){
 
             Dispatcher dispatch(players, player, clientNames, done, socket);
             Level::LevelInfo info;
-            Loader::loadScreen(dispatch, info);
+            Loader::loadScreen(dispatch, Level::convert(info));
 
             if (dispatch.play){
                 NetworkWorldClient & world = *dispatch.world;

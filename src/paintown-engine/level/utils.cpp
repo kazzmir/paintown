@@ -119,44 +119,12 @@ LevelInfo readLevel(const Token * level){
     return info;
 }
 
-#if 0
-LevelInfo readLevels( const string & filename ){
-    LevelInfo info;
-    try{
-        TokenReader tr( filename );
-        Token * head = tr.readToken();
-
-        readName(&info, head->findToken("level-set/name"));
-        readLevels(&info, head->findToken("level-set/levels"));
-        readPlayerPath(&info, head->findToken("level-set/player-path"));
-
-        /*
-        if ( *head == "levels" ){
-            while (head->hasTokens()){
-                Token * next;
-                *head >> next;
-                / * old way * /
-                if (!next->hasTokens()){
-                    Global::debug(1) << "Add level " << next->getName() << endl;
-                    info.addLevel(next->getName());
-                } else if (*next == "level"){
-                } else if (*next == "player-path"){
-                    string s;
-                    *next >> s;
-                    Global::debug(1) << "Set player path to " << s << endl;
-                    info.setPlayerPath(s);
-                }
-            }
-        }
-        */
-
-        return info;
-
-    } catch ( const TokenException & lex ){
-        Global::debug( 0 ) << "Could not load " << filename << ". Reason: " << lex.getReason() << endl;
-        return info;
-    }
+Loader::Info convert(const LevelInfo & info){
+    Loader::Info loader;
+    loader.setPosition(info.getPositionX(), info.getPositionY());
+    loader.setBackground(info.getBackground());
+    loader.setLoadingMessage(info.loadingMessage());
+    return loader;
 }
-#endif
 
 }

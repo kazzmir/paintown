@@ -29,9 +29,6 @@
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
 
-/* TODO: remove this dependancy */
-#include "paintown-engine/level/utils.h"
-
 #include "menu/menu_option.h"
 #include "menu/options.h"
 
@@ -1282,7 +1279,7 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
     PaintownUtil::standardLoop(logic1, drawer);
 
     try{
-        Level::LevelInfo info;
+        Loader::Info info;
         Graphics::Bitmap background(getScreen(), true);
         info.setBackground(&background);
         info.setLoadingMessage("Loading...");
