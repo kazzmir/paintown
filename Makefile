@@ -56,7 +56,7 @@ quiet:
 
 clean:
 	-rm -rf build
-	-rm -rf .sconf_temp .sconsign.dblite config.log fail.log
+	-rm -rf .sconf_temp .sconsign.dblite config.log fail.log *.pyc
 
 win_clean:
 	@scons -c env=mingw
