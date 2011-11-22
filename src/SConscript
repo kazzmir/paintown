@@ -15,22 +15,26 @@ obj_files = []
 def addFiles(files):
     obj_files.append(map(lambda x: x.replace('src/', ''), files))
 
+def findDirectory(name):
+    import os.path
+    where = '.'
+    # just try 5 directories
+    for i in xrange(0, 5):
+        if os.path.exists("%s/%s" % (where, name)):
+            return "%s/%s" % (where, name)
+        where = os.path.join(where, '..')
+    raise Exception("Could not find the %s directory" % name)
+
+
 import sys
-sys.path.append("../scons")
+sys.path.append(findDirectory("scons"))
 import helpers
 
 obj_files = []
 
 def findCmake():
-    import os.path
-    cmake = '.'
-    # just try 5 directories
-    for i in xrange(0, 5):
-        if os.path.exists("%s/cmake" % cmake):
-            return "%s/cmake" % cmake
-        cmake = os.path.join(cmake, '..')
-    raise Exception("Could not find the cmake directory")
-
+    return findDirectory('cmake')
+    
 filelist = helpers.read_cmake_list("%s/FileList.cmake" % findCmake())
 
 def sprigLibrary(env):

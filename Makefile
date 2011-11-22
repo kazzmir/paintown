@@ -55,7 +55,8 @@ quiet:
 	@$(gnome_notify)
 
 clean:
-	scons -c
+	-rm -rf build
+	-rm -rf .sconf_temp .sconsign.dblite config.log fail.log
 
 win_clean:
 	@scons -c env=mingw

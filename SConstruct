@@ -1607,8 +1607,8 @@ def configEnvironment(env):
 
 # allegroEnvironment = configEnvironment(getEnvironment(debug))
 
-def buildType(dir, env):
-    properties = [dir]
+def buildType(env):
+    properties = []
     # Problem with command line too long under windows
     if isWindows() and useMinpspw():
         properties.append('psp')
@@ -1641,8 +1641,9 @@ def buildType(dir, env):
         properties.append('debug')
     return '-'.join(properties)
 
-buildDir = buildType('build', env)
-buildDirStatic = buildType('build-static', env)
+import os.path
+buildDir = os.path.join('build', buildType(env))
+buildDirStatic = os.path.join('build/static', buildType(env))
 
 #if getDebug():
 #    env.Append(LIBS = ['gcov'])
