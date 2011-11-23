@@ -898,7 +898,10 @@ class PatternVerbatim(Pattern):
         return 1
 
     def generate_bnf(self):
-        return '"%s"' % self.letters
+        if type(self.letters) == type('x'):
+            return '"%s"' % self.letters
+        elif type(self.letters) == type(0):
+            return '<ascii %d>' % self.letters
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_verbatim(self, result, previous_result, stream, failure)
@@ -1657,6 +1660,7 @@ value = item
                         PatternRule("string"),
                         PatternRule("line"),
                         PatternRule("ascii"),
+                        PatternRule("utf8"),
                         PatternRule("predicate"),
                         PatternRule("call_rule"),
                         PatternRule("sub_pattern"),
@@ -1699,6 +1703,16 @@ value = pattern
                 PatternCode("value = peg.PatternPredicate(variable, code.code)"),
             ]),
         ]),
+        Rule("utf8", [
+            PatternSequence([
+                PatternVerbatim("<utf8"),
+                PatternRule("spaces"),
+                PatternBind('num', PatternRule("hex_number")),
+                PatternRule("spaces"),
+                PatternVerbatim(">"),
+                PatternCode("""value = peg.createUtf8Pattern(num)"""),
+                ]),
+            ]),
         Rule("ascii", [
             PatternSequence([
                 PatternVerbatim("<ascii"),
@@ -1884,6 +1898,12 @@ value = peg.PatternRule(name, rule_parameters, parameters)
                 PatternCode("""value = ''.join(values[0])""")]),
             ]),
         Rule('digit', [PatternRange('0123456789')]),
+        Rule('hex_number', [
+            PatternSequence([
+                PatternRepeatOnce(PatternRule('hex_digit')),
+                PatternCode("""value = ''.join(values[0])""")]),
+            ]),
+        Rule('hex_digit', [PatternRange('0123456789abcdefABCDEF')]),
         Rule("start_symbol", [
             PatternSequence([
                 PatternVerbatim("start-symbol:"),
@@ -1920,6 +1940,46 @@ value = peg.PatternRule(name, rule_parameters, parameters)
     peg = Peg("start", None, None, [peg_name], rules, [])
     # print peg.generate_python()
     return peg
+
+# Creates a sequence of <ascii #> patterns from a UTF8 code point
+def createUtf8Pattern(pattern):
+    def toUtf8(hex):
+        unicode = int(hex, 16)
+        if unicode < 128:
+            return [unicode]
+        elif unicode < 2047:
+            byte1 = 192 + unicode / 64
+            byte2 = 128 + unicode % 64
+            return [byte1, byte2]
+        elif unicode <= 65535:
+            byte1 = 224 + unicode / 4096
+            byte2 = 128 + (unicode / 64) % 64
+            byte3 = 128 + unicode % 64
+            return [byte1, byte2, byte3]
+        elif unicode <= 2097151:
+            byte1 = 240 + unicode / 262144
+            byte2 = 128 + (unicode / 4096) % 64
+            byte3 = 128 + (unicode / 64) % 64
+            byte4 = 128 + (unicode % 64)
+            return [byte1, byte2, byte3, byte4]
+        elif unicode <= 67108863:
+            byte1 = 248 + (unicode / 16777216)
+            byte2 = 128 + ((unicode / 262144) % 64)
+            byte3 = 128 + ((unicode / 4096) % 64)
+            byte4 = 128 + ((unicode / 64) % 64)
+            byte5 = 128 + (unicode % 64)
+            return [byte1, byte2, byte3, byte4, byte5]
+        elif unicode <= 2147483647:
+            byte1 = 252 + (unicode / 1073741824)
+            byte2 = 128 + ((unicode / 16777216) % 64)
+            byte3 = 128 + ((unicode / 262144) % 64)
+            byte4 = 128 + ((unicode / 4096) % 64)
+            byte5 = 128 + ((unicode / 64) % 64)
+            byte6 = 128 + (unicode % 64)
+            return [byte1, byte2, byte3, byte4, byte5, byet6]
+        raise Exception("Could not decode utf8 '%s'" % hex)
+
+    return PatternSequence([PatternVerbatim(x) for x in toUtf8(pattern)])
 
 def make_peg_parser(name = 'peg'):
     return create_peg(peg_bnf(name))

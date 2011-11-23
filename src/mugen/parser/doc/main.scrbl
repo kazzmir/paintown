@@ -216,6 +216,14 @@ Special patterns exist for specific circumstances.
   @item{@bold{<ascii #>} parses a character with the given ascii code for when
   you need to parse a character with an unprintable character (such as any
   character above 128). Put a number where the # goes, anything from 0 to 255.}
+  @item{@bold{<utf8 #>} parses a utf8 character given as a hexidecimal
+  codepoint.
+
+  This example will parse the copyright sign '©' followed by the greek capital
+  letter delta.
+  @verbatim{
+  stuff = <utf8 a9> <utf8 394>
+  }}
   @item{@bold{<void>} parses nothing.}
   @item{@bold{<line>} parses nothing but returns an object that contains
   information about the current source position. Use the methods
