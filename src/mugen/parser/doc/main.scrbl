@@ -11,6 +11,14 @@ Vembyr generates programs that use the Parsing Expression Grammar formalism.
 Input to Vembyr is specified by a BNF-like syntax. Currently Vembyr can generate
 C++, Ruby, and Python programs with C++ being the most optimized.
 
+@subsection{Current Status}
+
+@bold{C++ Generator}: production quality (with some known bugs). The C++ backend is
+used in a production manner and is highly optimized. @linebreak{}
+@bold{Python Generator}: production quality. The python generator is mainly used to
+bootstrap the system while parsing BNF input. @linebreak{}
+@bold{Ruby Generator}: beta quality. The ruby parser is tested but not heavily used.
+
 @section{Files}
 @bold{peg.py} The main executable file.@linebreak{}
 @bold{cpp_generator.py} Generates c++ parsers.@linebreak{}
@@ -247,4 +255,55 @@ Special patterns exist for specific circumstances.
   }}
 }
 
-@section{Sample Output}
+@section{Complete Example}
+
+Here is a complete example of a simple calculator. The non-peg code is C++.
+
+@verbatim{
+start-symbol: start
+code: {{
+static Value add(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() + (int) b.getValue()));
+}
+
+static Value sub(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() - (int) b.getValue()));
+}
+
+static Value multiply(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() * (int) b.getValue()));
+}
+
+static Value divide(const Value & a, const Value & b){
+    return Value((void*)((int) a.getValue() / (int) b.getValue()));
+}
+
+}}
+
+rules:
+        start = expression sw <eof> {{ value = $1; }}
+        expression = expression2 expression1_rest($1)
+        expression1_rest(a) = "+" expression2 e:{{value = add(a,$2);}} expression1_rest(e)
+                            | "-" expression2 e:{{value = sub(a,$2);}} expression1_rest(e)
+                            | <void> {{ value = a; }}
+
+        expression2 = expression3 expression2_rest($1)
+        expression2_rest(a) = "*" expression3 e:{{value = multiply(a,$2);}} expression2_rest(e)
+                            | "/" expression3 e:{{value = divide(a,$2);}} expression2_rest(e)
+                            | <void> {{ value = a; }}
+
+        expression3 = number
+                    | "(" expression ")" {{ value = $2; }}
+
+        inline number = digit+ {{
+            int total = 0;
+            for (Value::iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
+                const Value & v = *it;
+                char letter = (char) (int) v.getValue();
+                total = (total * 10) + letter - '0';
+            }
+            value = (void*) total;
+        }}
+        inline sw = "\\n"*
+        inline digit = [0123456789]
+}
