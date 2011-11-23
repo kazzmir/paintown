@@ -27,7 +27,7 @@ from cpp_generator import CppGenerator
 from python_generator import PythonGenerator
 from ruby_generator import RubyGenerator
 from cpp_interpreter_generator import CppInterpreterGenerator
-import cpp_generator, python_generator, ruby_generator
+import cpp_generator, python_generator, ruby_generator, cpp_header_generator
 
 # substitute variables in a string named by $foo
 # "$foo + $bar - $foo" with {foo:1, bar:2} => "1 + 2 - 1"
@@ -1360,7 +1360,7 @@ namespace %s{
 
     def cppNamespaceEnd(self):
         end = ""
-        for module in self.module:
+        for module in reverse(self.module):
             end = """
 %s
 } /* %s */
@@ -2044,6 +2044,7 @@ def help():
     print "--ruby : Generate Ruby parser"
     print "--python : Generate Python parser"
     print "--cpp,--c++ : Generate C++ parser"
+    print "--h : Generate C++ header for the C++ functions"
     # print "--c++-interpreter : Generate a C++ parser that uses an interpreter"
     print "--save=filename : Save all generated parser output to a file, 'filename'"
     print "--peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'."
@@ -2075,6 +2076,8 @@ if __name__ == '__main__':
             doit.append(lambda p: p.generate_bnf())
         elif arg == '--cpp' or arg == '--c++':
             doit.append(lambda p: cpp_generator.generate(p, parallel[0], separate[0]))
+        elif arg == '--h':
+            doit.append(lambda p: cpp_header_generator.generate(p))
         #elif arg == '--c++-interpreter':
         #    doit.append(lambda p: p.generate_cpp_interpreter())
         elif arg == '--ruby':

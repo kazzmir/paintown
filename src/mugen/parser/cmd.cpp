@@ -19972,8 +19972,8 @@ return doParse(stream, stats, "memory");
 
 
     
-    } /* Mugen */
+    } /* Cmd */
     
-} /* Cmd */
+} /* Mugen */
 
     

@@ -6519,8 +6519,8 @@ return doParse(stream, stats, "memory");
 
 
     
-    } /* Mugen */
+    } /* Def */
     
-} /* Def */
+} /* Mugen */
 
     
