@@ -14,6 +14,7 @@ C++, Ruby, and Python programs with C++ being the most optimized.
 @section{Files}
 @bold{peg.py} The main executable file.@linebreak{}
 @bold{cpp_generator.py} Generates c++ parsers.@linebreak{}
+@bold{cpp_header_generator.py} Generates header files for c++ parsers.@linebreak{}
 @bold{python_generator.py} Generates python parsers.@linebreak{}
 @bold{ruby_generator.py} Generates ruby parsers@linebreak{}
 @bold{cpp_interpreter_generator.py} Generates c++ parsers that use an
@@ -32,7 +33,8 @@ files @linebreak{}
 @italic{--bnf} : Generate BNF description (grammar language) @linebreak{}
 @italic{--ruby} : Generate Ruby parser @linebreak{}
 @italic{--python} : Generate Python parser @linebreak{}
-@italic{--cpp}, --c++ : Generate C++ parser @linebreak{}
+@italic{--cpp}, @italic{--c++} : Generate C++ parser @linebreak{}
+@italic{--h}, : Generate a header file for the C++ parser @linebreak{}
 @italic{--save=filename} : Save all generated parser output to a file, 'filename'.
 Without this option the output of @tt{peg.py} will be sent to standard out.
 @linebreak{}
@@ -90,10 +92,16 @@ b = "b"
 section.
 
 @subsection{Directives}
-Available options:
+
+@(define-syntax-rule (peg-example stuff ...)
+  (begin
+   @para{Example:}
+   (verbatim stuff ...)))
+
+Available options: @linebreak{}
 @italic{start-symbol} : The starting non-terminal to use when parsing
 starts.@linebreak{}
-@hspace[4] @verbatim{start-symbol: top}
+@peg-example{start-symbol: top}
 
 @italic{options}: A list of options that modify the behavior of code
 generation.@linebreak{}
@@ -101,27 +109,27 @@ generation.@linebreak{}
 @tt{debug1} - Enable some debugging.@linebreak{}
 @tt{debug2} - Enable even more debugging.@linebreak{}
 @tt{no-memo} - Disable the use of memoization completely.@linebreak{}
-@hspace[4] @verbatim{options: debug0, no-memo}
+@peg-example{options: debug0, no-memo}
 
 @italic{module}: Puts all the generated code into a form that physically
 encapsulates it. For C++ this means namespaces, for Ruby this means the
 @tt{module} keyword. In C++ the . is converted into nested namespaces so
 @tt{Foo.Bar} would become @tt{namespace Foo{ namespace Bar{ ... } }}.
-@hspace[4] @verbatim{module: Mugen.Def}.
+@peg-example{module: Mugen.Def}
 
 @italic{include}: Adds arbitrary text to the top of the file outside the
 any namespaces that might exist. This is useful for adding C++ #include
 directives. Use {{ and }} to delimit the text.
 
-@hspace[4] @verbatim{include: {{
+@peg-example{include: {{
 #include <string>
 #include <vector>
 }}
 }
 
 @italic{code}: Add arbitrary text that will appear inside any namespaces that
-might exist. This is useful for writing helper methods.
-@hspace[4] @verbatim{code: {{
+might exist. This is useful for writing helper methods. Use {{ and }} to delimit the text.
+@peg-example{code: {{
 char * get(){
   return "test";
 }
@@ -189,7 +197,7 @@ Matched patterns can also be accessed through the $ variables.
 @verbatim{
 top = "top" bottom "another" {{ use($1); // use "top"
                                 use($2); // use bottom
-                                use($3); // use "another
+                                use($3); // use "another"
                              }}
 }
 
@@ -215,6 +223,19 @@ Special patterns exist for specific circumstances.
   @verbatim{
   stuff = source:<line> "ok" {{ printf("current line %d column %d\n",
   getCurrentLine(source), getCurrentColumn(source)); }}
+  }}
+  @item{@bold{<predicate variable>} only continues with the current parse clause
+  if the predicate is true. The argument to the predicate is a variable name
+  that can be used for the code of the predicate. It starts out as @bold{true}
+  and if set to @bold{false} in the predicate body the entire predicate will
+  fail.
+
+  This example only allows positive numbers to be parsed
+  @verbatim{
+  only_positive = x:number <predicate ok>{{ if (negative(x)){
+                                              ok = false;
+                                            }
+                                         }}
   }}
 }
 
