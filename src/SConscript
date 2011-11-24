@@ -12,8 +12,38 @@ def isWindows():
 
 obj_files = []
 
+usePartialLinking = False
+
+def setupPartialLinking():
+    def linkPartial(target, source, env):
+        # FIXME: replace 'ld' with a more generic thing like $PARTIAL_LINK which should
+        # be set up by each platform
+        env.Execute(Action('@ld -r -o %s %s' % (target[0].path, ' '.join([x.path for x in source]))))
+
+    linkLine = 'Partial link $TARGET $SOURCES'
+    try:
+        linkLine = use['LINKCOMSTR']
+    except KeyError:
+        pass
+
+    import SCons
+    static_obj, shared_obj = SCons.Tool.createObjBuilders(use)
+    partialBuilder = Builder(action = Action(linkPartial, cmdstr = linkLine),
+                             suffix = '.o',
+                             src_suffix = '.o',
+                             src_builder = static_obj)
+    use.Append(BUILDERS = {'PartialObject' : partialBuilder})
+
+if usePartialLinking:
+    setupPartialLinking()
+
+partial = [0]
 def addFiles(files):
-    obj_files.append(map(lambda x: x.replace('src/', ''), files))
+    if usePartialLinking:
+        obj_files.append(use.PartialObject('partial%d.o' % partial[0], map(lambda x: x.replace('src/', ''), files)))
+        partial[0] = partial[0] + 1
+    else:
+        obj_files.append(map(lambda x: x.replace('src/', ''), files))
 
 def findDirectory(name):
     import os.path
